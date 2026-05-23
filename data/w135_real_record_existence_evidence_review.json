@@ -1,0 +1,109 @@
+{
+  "schema": "idb.w135-real-record-existence-evidence-review.v1",
+  "status": "blocked_real_records_not_provided",
+  "decision": "FAIL_REAL_RECORD_EXISTENCE__PLACEHOLDER_IDS_IMPORTED",
+  "evidenceFiles": {
+    "trace": "/path/to/downloads/intelligent-demo-builder-trace-1778888885930.json",
+    "handoff": "/path/to/downloads/idb-dcc-runner-handoff-packet-1778888885366.json"
+  },
+  "visualObservationFromUser": {
+    "buildAndRunRenderedImportedNames": true,
+    "customerClickResult": "NetSuite Notice: Invalid number REPLACE_REAL_CUSTOMER_ID",
+    "otherClickResult": "NetSuite unexpected error after opening another unresolved placeholder/result URL",
+    "implication": "This W135 run did not use real internal build-engine record ids. It used replacement tokens, so record existence is not proven."
+  },
+  "traceEvidence": {
+    "exportedAt": "2026-05-15T23:48:05.864Z",
+    "lane": "Apparel & Accessories",
+    "finalNamingStatus": "dcc_final_names_imported",
+    "finalNavigationStatus": "using_dcc_final_names",
+    "originalLinkAuthoritySummary": {
+      "verified_openable": 5
+    },
+    "correctedOpenableCount": 0,
+    "unresolvedReplacementTokenCount": 5,
+    "records": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "REPLACE_REAL_CUSTOMER_ID",
+        "url": "/app/common/entity/custjob.nl?id=REPLACE_REAL_CUSTOMER_ID",
+        "traceLinkStatus": "verified_openable",
+        "correctedLinkStatus": "preview_placeholder",
+        "correctedOpenable": false,
+        "correctedDisplayLabel": "Link pending"
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "REPLACE_REAL_SALES_ORDER_ID",
+        "url": "/app/accounting/transactions/salesord.nl?id=REPLACE_REAL_SALES_ORDER_ID",
+        "traceLinkStatus": "verified_openable",
+        "correctedLinkStatus": "preview_placeholder",
+        "correctedOpenable": false,
+        "correctedDisplayLabel": "Link pending"
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "REPLACE_REAL_HERO_ITEM_ID",
+        "url": "/app/common/item/item.nl?id=REPLACE_REAL_HERO_ITEM_ID",
+        "traceLinkStatus": "verified_openable",
+        "correctedLinkStatus": "preview_placeholder",
+        "correctedOpenable": false,
+        "correctedDisplayLabel": "Link pending"
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "REPLACE_REAL_MATRIX_ITEM_ID",
+        "url": "/app/common/item/item.nl?id=REPLACE_REAL_MATRIX_ITEM_ID",
+        "traceLinkStatus": "verified_openable",
+        "correctedLinkStatus": "preview_placeholder",
+        "correctedOpenable": false,
+        "correctedDisplayLabel": "Link pending"
+      },
+      {
+        "role": "component_item",
+        "label": "Component item 1",
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "REPLACE_REAL_COMPONENT_ITEM_ID",
+        "url": "/app/common/item/item.nl?id=REPLACE_REAL_COMPONENT_ITEM_ID",
+        "traceLinkStatus": "verified_openable",
+        "correctedLinkStatus": "preview_placeholder",
+        "correctedOpenable": false,
+        "correctedDisplayLabel": "Link pending"
+      }
+    ]
+  },
+  "handoffEvidence": {
+    "schema": "idb.dcc-runner-handoff-packet.v1",
+    "status": "ready_for_dcc_suitelet_submission_review",
+    "executionMode": "review_only_no_submit",
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true
+  },
+  "remediation": [
+    "Tightened drawer link authority so REPLACE_REAL_* and similar unresolved tokens cannot render active Open links.",
+    "Require numeric NetSuite internal id both in the record id field and URL id query before verified_openable.",
+    "Rerun W135 only after the internal build engine returns actual numeric internal ids for the required records."
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W136: Real ID Enforcement Retest And Build Engine Output Fix",
+    "prompt": "Move through W136: Real ID Enforcement Retest And Build Engine Output Fix. Use the W135 evidence showing REPLACE_REAL_* placeholder ids were imported and incorrectly appeared as Open before the link authority hardening. Verify the drawer now renders unresolved replacement ids as Link pending or Needs real URL, then update the internal build engine/operator output path so final generated names JSON contains actual numeric NetSuite internal ids and supported URLs for Customer, demo transaction, hero item, matrix/proof item, and component records. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership. Output corrected import smoke, real build-engine output requirements, trace samples, W136 report, whether targeted visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

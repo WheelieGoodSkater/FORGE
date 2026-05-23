@@ -1,0 +1,663 @@
+{
+  "schema": "idb.w172-approved-server-adapter-sandbox-one-call-execution-harness.v1",
+  "status": "approved_server_adapter_sandbox_one_call_execution_harness_ready",
+  "decision": "PASS_ONE_CALL_EXECUTION_HARNESS_READY__LIVE_DISABLED_BY_DEFAULT__VISUAL_TESTING_BLOCKED",
+  "generatedAt": "2026-05-17T21:41:15.327Z",
+  "executionHarnessContract": {
+    "defaultPath": "one_call_execution_not_authorized_no_submit",
+    "authorizedPath": "one_call_submitted_result_capture_pending",
+    "adapterErrorPath": "one_call_attempted_adapter_error_drawer_safe",
+    "liveDisabledByDefault": true,
+    "harnessAuthorizationFlag": "harnessAuthorizesSandboxCall",
+    "operatorPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+    "importRule": "W151 completed runner result import guard must validate completed result JSON before final generated names update.",
+    "oneSubmitRule": "One execution harness call may invoke the approved adapter transport once; duplicate submits stay blocked and poll existing task in later blocks."
+  },
+  "guardedHarness": {
+    "startsFromW171": true,
+    "executionHookReady": true,
+    "defaultNoSubmitBlocks": true,
+    "authorizedHarnessSubmitsOnce": true,
+    "duplicateOrUnauthorisedSecondSubmitBlocked": true,
+    "adapterErrorCapturedSafely": true,
+    "finalGeneratedNamesUnchanged": true,
+    "noActiveOpenLinks": true,
+    "w151ImportStillRequired": true,
+    "traceSamplesReady": true
+  },
+  "samples": {
+    "defaultNoSubmit": {
+      "schema": "idb.approved-server-adapter-sandbox-one-call-execution-harness.v1",
+      "status": "one_call_execution_not_authorized_no_submit",
+      "mode": "live_disabled_by_default_harness_only",
+      "authorizationGateStatus": "one_call_authorization_gate_ready_no_submit",
+      "executionAllowed": false,
+      "blockedReasons": [
+        "execution_not_requested",
+        "harness_authorization_missing"
+      ],
+      "requestEnvelope": null,
+      "submitBoundary": {
+        "defaultNoSubmit": true,
+        "submitAttemptCount": 0,
+        "maxQueueSubmitAttempts": 1,
+        "secondSubmitBehavior": "blocked_duplicate_submit",
+        "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+      },
+      "transportOutcome": {
+        "liveRequestSent": false,
+        "transportInvoked": false,
+        "queueSubmitted": false,
+        "runnerTaskId": null,
+        "adapterError": false,
+        "resultCaptureStatus": "not_started_no_submit",
+        "finalGeneratedNamesJsonReady": false
+      },
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "false_flag_no_submit",
+        "label": "False flags: no submit",
+        "message": "Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.",
+        "rawStatus": "transport_not_executed_no_submit",
+        "queueSubmitted": false,
+        "runnerTaskId": null,
+        "resultCaptureStatus": "not_started_no_submit",
+        "pollAttempted": false,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "activeOpenLinks": 0,
+        "finalGeneratedNamesImported": false,
+        "writesAttemptedFromDrawer": false
+      },
+      "rollbackPlan": {
+        "owner": "server_deployment_flags",
+        "action": "disable_server_flags_before_any_retry",
+        "flagsToDisable": [
+          "CREATE_ENABLED",
+          "GOVERNED_SANDBOX_WRITE_ENABLED",
+          "QUEUE_SUBMIT_ENABLED"
+        ]
+      },
+      "traceSamples": [
+        {
+          "event": "w172_default_no_submit_gate",
+          "ready": true,
+          "liveRequestSent": false,
+          "queueSubmitted": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false,
+          "evidence": [
+            "execution_not_requested",
+            "harness_authorization_missing"
+          ]
+        },
+        {
+          "event": "w172_authorized_harness_one_submit",
+          "ready": false,
+          "liveRequestSent": false,
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "submitAttemptCount": 0,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w172_result_capture_guard",
+          "ready": false,
+          "resultCaptureStatus": "not_started_no_submit",
+          "finalGeneratedNamesJsonReady": false,
+          "w151ImportRequiredBeforeNamesMutate": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        }
+      ],
+      "visualTestingBlocked": true,
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "oneSubmitLimit": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilRunnerResultReturns": true
+      }
+    },
+    "authorizedSubmit": {
+      "schema": "idb.approved-server-adapter-sandbox-one-call-execution-harness.v1",
+      "status": "one_call_submitted_result_capture_pending",
+      "mode": "live_disabled_by_default_harness_only",
+      "authorizationGateStatus": "one_call_authorization_gate_ready_no_submit",
+      "executionAllowed": true,
+      "blockedReasons": [],
+      "requestEnvelope": {
+        "schema": "idb.approved-server-adapter-sandbox-one-call-execution-request.v1",
+        "action": "submit_governed_runner_once",
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "method": "POST",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "oneSubmitLimit": {
+          "maxQueueSubmitAttempts": 1,
+          "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+          "secondSubmitBehavior": "blocked_duplicate_submit"
+        },
+        "pollingLimit": {
+          "maxPollAttempts": 8,
+          "pollIntervalMs": 1500,
+          "timeoutBehavior": "retry_same_idempotency_until_limit_then_stop"
+        },
+        "rollbackPlan": {
+          "owner": "server_deployment_flags",
+          "action": "disable_server_flags_before_any_retry",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        },
+        "confirmedBuildRequestJson": null,
+        "operatorApprovalEvidence": {
+          "operatorName": "Operator QA",
+          "reviewedAt": "2026-05-16T23:40:00.000Z",
+          "reviewDecision": "operator_approved_queue_submit",
+          "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+          "confirmedSandboxAccount": true,
+          "confirmedNoSubmit": true,
+          "notes": "W172 harness-only one-call execution. No real NetSuite invocation."
+        },
+        "sandboxAllowlistEvidence": {
+          "accountAllowlist": [
+            "SANDBOX_ACCOUNT_ID"
+          ],
+          "currentAccountAllowed": true,
+          "sandboxOnly": true
+        },
+        "w151ResultImportGuard": {
+          "required": true,
+          "acceptsOnlyCompletedRunnerResultJson": true,
+          "rejectsHandoffJson": true,
+          "requiresNumericInternalIds": true,
+          "requiresSupportedNetSuiteUrls": true,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "finalGeneratedNamesImportPolicy": "never_mutate_until_w151_completed_result_import"
+      },
+      "submitBoundary": {
+        "defaultNoSubmit": false,
+        "submitAttemptCount": 1,
+        "maxQueueSubmitAttempts": 1,
+        "secondSubmitBehavior": "blocked_duplicate_submit",
+        "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+      },
+      "transportOutcome": {
+        "liveRequestSent": true,
+        "transportInvoked": true,
+        "queueSubmitted": true,
+        "runnerTaskId": "task_w172_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+        "adapterError": false,
+        "resultCaptureStatus": "pending_runner_completion",
+        "finalGeneratedNamesJsonReady": false
+      },
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "queued_pending",
+        "label": "Queued: result pending",
+        "message": "The approved adapter reports a runner task id, but result capture is still pending.",
+        "rawStatus": "queued_pending_transport_fixture",
+        "queueSubmitted": true,
+        "runnerTaskId": "task_w172_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+        "resultCaptureStatus": "pending_runner_completion",
+        "pollAttempted": false,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "activeOpenLinks": 0,
+        "finalGeneratedNamesImported": false,
+        "writesAttemptedFromDrawer": false
+      },
+      "rollbackPlan": {
+        "owner": "server_deployment_flags",
+        "action": "disable_server_flags_before_any_retry",
+        "flagsToDisable": [
+          "CREATE_ENABLED",
+          "GOVERNED_SANDBOX_WRITE_ENABLED",
+          "QUEUE_SUBMIT_ENABLED"
+        ]
+      },
+      "traceSamples": [
+        {
+          "event": "w172_default_no_submit_gate",
+          "ready": false,
+          "liveRequestSent": false,
+          "queueSubmitted": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false,
+          "evidence": []
+        },
+        {
+          "event": "w172_authorized_harness_one_submit",
+          "ready": true,
+          "liveRequestSent": true,
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w172_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+          "submitAttemptCount": 1,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w172_result_capture_guard",
+          "ready": true,
+          "resultCaptureStatus": "pending_runner_completion",
+          "finalGeneratedNamesJsonReady": false,
+          "w151ImportRequiredBeforeNamesMutate": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        }
+      ],
+      "visualTestingBlocked": true,
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "oneSubmitLimit": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilRunnerResultReturns": true
+      }
+    },
+    "secondSubmitBlocked": {
+      "schema": "idb.approved-server-adapter-sandbox-one-call-execution-harness.v1",
+      "status": "one_call_execution_not_authorized_no_submit",
+      "mode": "live_disabled_by_default_harness_only",
+      "authorizationGateStatus": "one_call_authorization_gate_ready_no_submit",
+      "executionAllowed": false,
+      "blockedReasons": [
+        "harness_authorization_missing"
+      ],
+      "requestEnvelope": null,
+      "submitBoundary": {
+        "defaultNoSubmit": true,
+        "submitAttemptCount": 0,
+        "maxQueueSubmitAttempts": 1,
+        "secondSubmitBehavior": "blocked_duplicate_submit",
+        "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+      },
+      "transportOutcome": {
+        "liveRequestSent": false,
+        "transportInvoked": false,
+        "queueSubmitted": false,
+        "runnerTaskId": null,
+        "adapterError": false,
+        "resultCaptureStatus": "not_started_no_submit",
+        "finalGeneratedNamesJsonReady": false
+      },
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "false_flag_no_submit",
+        "label": "False flags: no submit",
+        "message": "Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.",
+        "rawStatus": "transport_not_executed_no_submit",
+        "queueSubmitted": false,
+        "runnerTaskId": null,
+        "resultCaptureStatus": "not_started_no_submit",
+        "pollAttempted": false,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "activeOpenLinks": 0,
+        "finalGeneratedNamesImported": false,
+        "writesAttemptedFromDrawer": false
+      },
+      "rollbackPlan": {
+        "owner": "server_deployment_flags",
+        "action": "disable_server_flags_before_any_retry",
+        "flagsToDisable": [
+          "CREATE_ENABLED",
+          "GOVERNED_SANDBOX_WRITE_ENABLED",
+          "QUEUE_SUBMIT_ENABLED"
+        ]
+      },
+      "traceSamples": [
+        {
+          "event": "w172_default_no_submit_gate",
+          "ready": true,
+          "liveRequestSent": false,
+          "queueSubmitted": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false,
+          "evidence": [
+            "harness_authorization_missing"
+          ]
+        },
+        {
+          "event": "w172_authorized_harness_one_submit",
+          "ready": false,
+          "liveRequestSent": false,
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "submitAttemptCount": 0,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w172_result_capture_guard",
+          "ready": false,
+          "resultCaptureStatus": "not_started_no_submit",
+          "finalGeneratedNamesJsonReady": false,
+          "w151ImportRequiredBeforeNamesMutate": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        }
+      ],
+      "visualTestingBlocked": true,
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "oneSubmitLimit": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilRunnerResultReturns": true
+      }
+    },
+    "adapterError": {
+      "schema": "idb.approved-server-adapter-sandbox-one-call-execution-harness.v1",
+      "status": "one_call_attempted_adapter_error_drawer_safe",
+      "mode": "live_disabled_by_default_harness_only",
+      "authorizationGateStatus": "one_call_authorization_gate_ready_no_submit",
+      "executionAllowed": true,
+      "blockedReasons": [],
+      "requestEnvelope": {
+        "schema": "idb.approved-server-adapter-sandbox-one-call-execution-request.v1",
+        "action": "submit_governed_runner_once",
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "method": "POST",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "oneSubmitLimit": {
+          "maxQueueSubmitAttempts": 1,
+          "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+          "secondSubmitBehavior": "blocked_duplicate_submit"
+        },
+        "pollingLimit": {
+          "maxPollAttempts": 8,
+          "pollIntervalMs": 1500,
+          "timeoutBehavior": "retry_same_idempotency_until_limit_then_stop"
+        },
+        "rollbackPlan": {
+          "owner": "server_deployment_flags",
+          "action": "disable_server_flags_before_any_retry",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        },
+        "confirmedBuildRequestJson": null,
+        "operatorApprovalEvidence": {
+          "operatorName": "Operator QA",
+          "reviewedAt": "2026-05-16T23:40:00.000Z",
+          "reviewDecision": "operator_approved_queue_submit",
+          "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+          "confirmedSandboxAccount": true,
+          "confirmedNoSubmit": true,
+          "notes": "W172 harness-only one-call execution. No real NetSuite invocation."
+        },
+        "sandboxAllowlistEvidence": {
+          "accountAllowlist": [
+            "SANDBOX_ACCOUNT_ID"
+          ],
+          "currentAccountAllowed": true,
+          "sandboxOnly": true
+        },
+        "w151ResultImportGuard": {
+          "required": true,
+          "acceptsOnlyCompletedRunnerResultJson": true,
+          "rejectsHandoffJson": true,
+          "requiresNumericInternalIds": true,
+          "requiresSupportedNetSuiteUrls": true,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "finalGeneratedNamesImportPolicy": "never_mutate_until_w151_completed_result_import"
+      },
+      "submitBoundary": {
+        "defaultNoSubmit": false,
+        "submitAttemptCount": 1,
+        "maxQueueSubmitAttempts": 1,
+        "secondSubmitBehavior": "blocked_duplicate_submit",
+        "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+      },
+      "transportOutcome": {
+        "liveRequestSent": true,
+        "transportInvoked": true,
+        "queueSubmitted": false,
+        "runnerTaskId": null,
+        "adapterError": true,
+        "resultCaptureStatus": "adapter_error",
+        "finalGeneratedNamesJsonReady": false
+      },
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "adapter_transport_error_drawer_safe",
+        "label": "Adapter response error",
+        "message": "The adapter response reported an error. The drawer keeps generated names and Open links unchanged.",
+        "rawStatus": "adapter_error",
+        "queueSubmitted": false,
+        "runnerTaskId": "",
+        "resultCaptureStatus": "adapter_error",
+        "pollAttempted": false,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "activeOpenLinks": 0,
+        "finalGeneratedNamesImported": false,
+        "writesAttemptedFromDrawer": false
+      },
+      "rollbackPlan": {
+        "owner": "server_deployment_flags",
+        "action": "disable_server_flags_before_any_retry",
+        "flagsToDisable": [
+          "CREATE_ENABLED",
+          "GOVERNED_SANDBOX_WRITE_ENABLED",
+          "QUEUE_SUBMIT_ENABLED"
+        ]
+      },
+      "traceSamples": [
+        {
+          "event": "w172_default_no_submit_gate",
+          "ready": false,
+          "liveRequestSent": false,
+          "queueSubmitted": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false,
+          "evidence": []
+        },
+        {
+          "event": "w172_authorized_harness_one_submit",
+          "ready": true,
+          "liveRequestSent": true,
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "submitAttemptCount": 1,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w172_result_capture_guard",
+          "ready": true,
+          "resultCaptureStatus": "adapter_error",
+          "finalGeneratedNamesJsonReady": false,
+          "w151ImportRequiredBeforeNamesMutate": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        }
+      ],
+      "visualTestingBlocked": true,
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "oneSubmitLimit": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilRunnerResultReturns": true
+      }
+    }
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "visualTestingDecision": {
+    "visualTestingBlocked": true,
+    "visualNetSuiteTestingRequiredNow": false,
+    "reason": "W172 only proves a harness-authorized one-call execution boundary. Visual testing remains blocked until a real governed runner result returns to IDB."
+  },
+  "results": [
+    {
+      "name": "w172_starts_from_w171_authorization_gate",
+      "pass": true,
+      "detail": "PASS_ONE_CALL_AUTHORIZATION_GATE_READY__NO_SUBMIT__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w172_execution_hook_ready",
+      "pass": true,
+      "detail": "approvedServerAdapterSandboxOneCallExecutionHarnessV1"
+    },
+    {
+      "name": "w172_default_no_submit_no_request",
+      "pass": true,
+      "detail": "[\"execution_not_requested\",\"harness_authorization_missing\"]"
+    },
+    {
+      "name": "w172_authorized_harness_submits_once",
+      "pass": true,
+      "detail": "{\"liveRequestSent\":true,\"transportInvoked\":true,\"queueSubmitted\":true,\"runnerTaskId\":\"task_w172_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"adapterError\":false,\"resultCaptureStatus\":\"pending_runner_completion\",\"finalGeneratedNamesJsonReady\":false}"
+    },
+    {
+      "name": "w172_duplicate_second_submit_blocked",
+      "pass": true,
+      "detail": "[\"harness_authorization_missing\"]"
+    },
+    {
+      "name": "w172_adapter_error_captured_safely",
+      "pass": true,
+      "detail": "{\"liveRequestSent\":true,\"transportInvoked\":true,\"queueSubmitted\":false,\"runnerTaskId\":null,\"adapterError\":true,\"resultCaptureStatus\":\"adapter_error\",\"finalGeneratedNamesJsonReady\":false}"
+    },
+    {
+      "name": "w172_names_and_links_unchanged_until_w151_import",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"activeOpenLinks\":0,\"finalGeneratedNamesImported\":false,\"writesAttemptedFromDrawer\":false}"
+    },
+    {
+      "name": "w172_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w172_default_no_submit_gate\",\"ready\":false,\"liveRequestSent\":false,\"queueSubmitted\":false,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false,\"evidence\":[]},{\"event\":\"w172_authorized_harness_one_submit\",\"ready\":true,\"liveRequestSent\":true,\"queueSubmitted\":true,\"runnerTaskId\":\"task_w172_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"submitAttemptCount\":1,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w172_result_capture_guard\",\"ready\":true,\"resultCaptureStatus\":\"pending_runner_completion\",\"finalGeneratedNamesJsonReady\":false,\"w151ImportRequiredBeforeNamesMutate\":true,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false}]"
+    },
+    {
+      "name": "w172_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w172_visual_testing_blocked_until_runner_result_returns",
+      "pass": true,
+      "detail": "W172 only proves a harness-authorized one-call execution boundary. Visual testing remains blocked until a real governed runner result returns to IDB."
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W173: Approved Server Adapter Real Sandbox One-Call Execution Packet",
+    "prompt": "Move through W173: Approved Server Adapter Real Sandbox One-Call Execution Packet. Use the W172 one-call execution harness to prepare the exact operator packet for one real sandbox approved server adapter call, but keep execution disabled until the user explicitly authorizes that block. Include endpoint, server flags, sandbox allowlist, operator phrase, idempotency token, one-submit limit, rollback, expected runnerTaskId or adapter error handling, and W151 import guard. Do not request visual testing until the governed runner returns completed result JSON to IDB. Output real sandbox execution packet, guarded preflight harness, trace samples, W173 report, visual testing decision blocked until runner result returns, and best next Codex prompt."
+  }
+}

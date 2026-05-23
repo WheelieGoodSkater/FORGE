@@ -1,0 +1,1604 @@
+{
+  "schema": "idb.w58-real-unknown-site-corpus-evaluation-trace.v1",
+  "generated": "2026-05-12T15:58:00.000Z",
+  "decision": "PASS",
+  "corpusSchema": "idb.w58-real-unknown-site-corpus.v1",
+  "fixturePolicy": {
+    "purpose": "Deterministic corpus testing for resolver and classifier behavior before live internet fetch evaluation.",
+    "realUrlSeeds": true,
+    "snapshotHtmlIsFixture": true,
+    "liveWebsiteClaim": false,
+    "productionNextStep": "W59 should run authenticated or approved live-fetch collection against the same corpus and compare drift."
+  },
+  "thresholds": {
+    "correctOrHonestPassRateMinimum": 0.85,
+    "falseConfidentWrongRateMaximum": 0,
+    "unsupportedClaimsMaximum": 0,
+    "traceEvidenceCoverageMinimum": 0.95,
+    "minimumCorpusCases": 9,
+    "minimumRealUrlSeedCases": 4,
+    "confidenceStates": [
+      "recommended",
+      "needs_confirmation",
+      "insufficient_evidence"
+    ],
+    "correctOrHonestDefinition": [
+      "recommended with matching human-labeled lane and source-backed citations",
+      "needs_confirmation when labels identify ambiguity or accepted alternates",
+      "insufficient_evidence when labels expect blocked thin unavailable timeout or unsafe URL behavior"
+    ],
+    "falseConfidentWrongDefinition": "classificationState is recommended and the recommended lane does not match the human-labeled expected lane or accepted alternate lane.",
+    "unsupportedClaimDefinition": "any recommendation, product seed, product family, demand moment, ROI, or competitive claim without source URL evidence or without an honest uncertainty state."
+  },
+  "metrics": {
+    "totalCases": 9,
+    "realUrlSeedCount": 4,
+    "correctOrHonestCount": 9,
+    "correctOrHonestPassRate": 1,
+    "falseConfidentWrongCount": 0,
+    "falseConfidentWrongRate": 0,
+    "unsupportedClaimCount": 0,
+    "evidenceCoverageScore": 1,
+    "mixCovered": true,
+    "failureStatesCovered": true
+  },
+  "requiredSiteMix": [
+    "real_product_brand",
+    "distributor_dealer",
+    "apparel_accessories",
+    "manufacturing_heavy",
+    "ambiguous_multi_category",
+    "weak_thin_website",
+    "blocked",
+    "unavailable",
+    "timeout"
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "evaluationMustPreferHonestUncertaintyOverGuessing": true
+  },
+  "findings": [
+    {
+      "id": "w58_real_product_brand_trek",
+      "siteKind": "real_product_brand",
+      "sourceType": "real_url_seed_fixture_snapshot",
+      "website": "https://www.trekbikes.com/",
+      "expectedClassificationState": "recommended",
+      "actualClassificationState": "recommended",
+      "expectedLaneId": "dealer_hardgoods",
+      "actualLaneId": "dealer_hardgoods",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaimCount": 0,
+      "evidenceCovered": true,
+      "resolverFailureState": null,
+      "pagesSampledCount": 2,
+      "sourceUrlCount": 2,
+      "notes": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://www.trekbikes.com/",
+        "normalizedUrl": "https://www.trekbikes.com/",
+        "domain": "trekbikes.com",
+        "fetchStatus": "fetched",
+        "fetchErrors": [
+          {
+            "type": "dns_or_network_error",
+            "message": "No W58 fixture registered for https://www.trekbikes.com/equipment."
+          },
+          {
+            "type": "dns_or_network_error",
+            "message": "No W58 fixture registered for https://www.trekbikes.com/stores."
+          }
+        ],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://www.trekbikes.com/",
+            "status": 200
+          },
+          {
+            "role": "navigation_discovered_category_or_products_page",
+            "url": "https://www.trekbikes.com/bikes",
+            "status": 200
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Trek Bikes",
+          "metaDescription": "Bikes, cycling gear, bicycle equipment, helmets, components, dealer stores, and bike service.",
+          "h1Text": [
+            "Bikes and cycling equipment",
+            "Bike catalog"
+          ],
+          "h2Text": [
+            "Road bikes",
+            "Mountain bikes",
+            "Bicycle SKU availability"
+          ],
+          "navigationLabels": [
+            "Bikes",
+            "Equipment",
+            "Stores"
+          ],
+          "productCategoryTerms": [
+            "bikes",
+            "bicycle",
+            "components",
+            "equipment",
+            "helmets",
+            "replenishment",
+            "catalog",
+            "inventory",
+            "sku"
+          ],
+          "industryLanguage": [
+            "dealer",
+            "retail",
+            "service"
+          ],
+          "locationServiceClues": [
+            "dealer locator",
+            "service",
+            "stores"
+          ],
+          "ecommerceSignals": [
+            "cart",
+            "shop"
+          ],
+          "manufacturingSignals": [],
+          "distributionSignals": [
+            "dealer",
+            "replenishment"
+          ],
+          "sourceUrls": [
+            "https://www.trekbikes.com/",
+            "https://www.trekbikes.com/bikes"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [
+            {
+              "laneId": "dealer_hardgoods",
+              "score": 0.95,
+              "evidence": [
+                "bikes",
+                "bicycle",
+                "components",
+                "equipment",
+                "helmets"
+              ]
+            },
+            {
+              "laneId": "industrial_distribution",
+              "score": 0.47,
+              "evidence": [
+                "replenishment"
+              ]
+            },
+            {
+              "laneId": "industrial_equipment",
+              "score": 0.47,
+              "evidence": []
+            }
+          ],
+          "productSeed": "Bicycle SKU",
+          "productFamily": "Bicycle Dealer Hardgoods",
+          "demandMoment": "dealer inventory and replenishment readiness"
+        },
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "failureState": null,
+        "sourceUrls": [
+          "https://www.trekbikes.com/",
+          "https://www.trekbikes.com/bikes"
+        ],
+        "capturedAt": "2026-05-12T15:58:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      },
+      "classification": {
+        "inputEvidenceSchema": "idb.website-evidence.v1",
+        "normalizedUrl": "https://www.trekbikes.com/",
+        "domain": "trekbikes.com",
+        "laneRecommendation": {
+          "laneId": "dealer_hardgoods",
+          "score": 0.95
+        },
+        "proofAnchorRecommendation": {
+          "label": "Product / SKU"
+        },
+        "productSeed": "Bicycle SKU",
+        "productFamily": "Bicycle Dealer Hardgoods",
+        "demandMoment": "dealer inventory and replenishment readiness",
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "evidenceCitations": [
+          {
+            "sourceUrl": "https://www.trekbikes.com/",
+            "field": "pageTitle",
+            "value": "Trek Bikes",
+            "supports": "recommended:dealer_hardgoods"
+          },
+          {
+            "sourceUrl": "https://www.trekbikes.com/bikes",
+            "field": "metaDescription",
+            "value": "Bikes, cycling gear, bicycle equipment, helmets, components, dealer stores, and bike service.",
+            "supports": "recommended:dealer_hardgoods"
+          },
+          {
+            "sourceUrl": "https://www.trekbikes.com/",
+            "field": "h1Text",
+            "value": "Bikes and cycling equipment",
+            "supports": "recommended:dealer_hardgoods"
+          }
+        ],
+        "competingCandidates": [],
+        "confirmationPrompt": null,
+        "classificationState": "recommended",
+        "writeAuthority": "none",
+        "nllmAuthority": "advisory_only",
+        "notesBoundary": {
+          "notesDidOverrideIdentification": false,
+          "notesNotAllowedFor": [
+            "laneRecommendation",
+            "proofAnchorRecommendation",
+            "productSeed",
+            "productFamily",
+            "demandMoment"
+          ],
+          "notesAllowedFor": [
+            "pain",
+            "roi",
+            "competitiveFraming",
+            "objections",
+            "talkTrack",
+            "runCoaching"
+          ]
+        }
+      }
+    },
+    {
+      "id": "w58_real_apparel_accessories_patagonia",
+      "siteKind": "apparel_accessories",
+      "sourceType": "real_url_seed_fixture_snapshot",
+      "website": "https://www.patagonia.com/",
+      "expectedClassificationState": "recommended",
+      "actualClassificationState": "recommended",
+      "expectedLaneId": "apparel_accessories",
+      "actualLaneId": "apparel_accessories",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaimCount": 0,
+      "evidenceCovered": true,
+      "resolverFailureState": null,
+      "pagesSampledCount": 2,
+      "sourceUrlCount": 2,
+      "notes": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://www.patagonia.com/",
+        "normalizedUrl": "https://www.patagonia.com/",
+        "domain": "patagonia.com",
+        "fetchStatus": "fetched",
+        "fetchErrors": [
+          {
+            "type": "dns_or_network_error",
+            "message": "No W58 fixture registered for https://www.patagonia.com/collections."
+          }
+        ],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://www.patagonia.com/",
+            "status": 200
+          },
+          {
+            "role": "navigation_discovered_category_or_products_page",
+            "url": "https://www.patagonia.com/shop",
+            "status": 200
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Patagonia Outdoor Clothing",
+          "metaDescription": "Apparel, accessories, jackets, footwear, packs, sizes, colors, and seasonal collections.",
+          "h1Text": [
+            "Apparel and accessories",
+            "Shop apparel"
+          ],
+          "h2Text": [
+            "Jackets by size and color",
+            "Seasonal collections",
+            "Style and size variants"
+          ],
+          "navigationLabels": [
+            "Shop",
+            "Collections",
+            "Footwear"
+          ],
+          "productCategoryTerms": [
+            "apparel",
+            "accessories",
+            "catalog",
+            "footwear",
+            "sizes",
+            "style",
+            "variants",
+            "shoes"
+          ],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [
+            "cart",
+            "checkout",
+            "shop"
+          ],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": [
+            "https://www.patagonia.com/",
+            "https://www.patagonia.com/shop"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [
+            {
+              "laneId": "apparel_accessories",
+              "score": 0.95,
+              "evidence": [
+                "apparel",
+                "accessories",
+                "footwear",
+                "sizes",
+                "style"
+              ]
+            }
+          ],
+          "productSeed": "Core Style Color-Size Matrix",
+          "productFamily": "Apparel and Footwear Style",
+          "demandMoment": "style, size, and channel availability"
+        },
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "failureState": null,
+        "sourceUrls": [
+          "https://www.patagonia.com/",
+          "https://www.patagonia.com/shop"
+        ],
+        "capturedAt": "2026-05-12T15:58:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      },
+      "classification": {
+        "inputEvidenceSchema": "idb.website-evidence.v1",
+        "normalizedUrl": "https://www.patagonia.com/",
+        "domain": "patagonia.com",
+        "laneRecommendation": {
+          "laneId": "apparel_accessories",
+          "score": 0.95
+        },
+        "proofAnchorRecommendation": {
+          "label": "Style / SKU Matrix"
+        },
+        "productSeed": "Core Style Color-Size Matrix",
+        "productFamily": "Apparel and Footwear Style",
+        "demandMoment": "style, size, and channel availability",
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "evidenceCitations": [
+          {
+            "sourceUrl": "https://www.patagonia.com/",
+            "field": "pageTitle",
+            "value": "Patagonia Outdoor Clothing",
+            "supports": "recommended:apparel_accessories"
+          },
+          {
+            "sourceUrl": "https://www.patagonia.com/shop",
+            "field": "metaDescription",
+            "value": "Apparel, accessories, jackets, footwear, packs, sizes, colors, and seasonal collections.",
+            "supports": "recommended:apparel_accessories"
+          },
+          {
+            "sourceUrl": "https://www.patagonia.com/",
+            "field": "h1Text",
+            "value": "Apparel and accessories",
+            "supports": "recommended:apparel_accessories"
+          }
+        ],
+        "competingCandidates": [],
+        "confirmationPrompt": null,
+        "classificationState": "recommended",
+        "writeAuthority": "none",
+        "nllmAuthority": "advisory_only",
+        "notesBoundary": {
+          "notesDidOverrideIdentification": false,
+          "notesNotAllowedFor": [
+            "laneRecommendation",
+            "proofAnchorRecommendation",
+            "productSeed",
+            "productFamily",
+            "demandMoment"
+          ],
+          "notesAllowedFor": [
+            "pain",
+            "roi",
+            "competitiveFraming",
+            "objections",
+            "talkTrack",
+            "runCoaching"
+          ]
+        }
+      }
+    },
+    {
+      "id": "w58_real_distributor_dealer_grainger",
+      "siteKind": "distributor_dealer",
+      "sourceType": "real_url_seed_fixture_snapshot",
+      "website": "https://www.grainger.com/",
+      "expectedClassificationState": "recommended",
+      "actualClassificationState": "recommended",
+      "expectedLaneId": "industrial_distribution",
+      "actualLaneId": "industrial_distribution",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaimCount": 0,
+      "evidenceCovered": true,
+      "resolverFailureState": null,
+      "pagesSampledCount": 2,
+      "sourceUrlCount": 2,
+      "notes": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://www.grainger.com/",
+        "normalizedUrl": "https://www.grainger.com/",
+        "domain": "grainger.com",
+        "fetchStatus": "fetched",
+        "fetchErrors": [
+          {
+            "type": "dns_or_network_error",
+            "message": "No W58 fixture registered for https://www.grainger.com/services."
+          }
+        ],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://www.grainger.com/",
+            "status": 200
+          },
+          {
+            "role": "navigation_discovered_category_or_products_page",
+            "url": "https://www.grainger.com/products",
+            "status": 200
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Industrial Supply Distributor",
+          "metaDescription": "Industrial products, branch availability, distribution, wholesale inventory, warehouse fulfillment, and replenishment.",
+          "h1Text": [
+            "Industrial supplies and distribution",
+            "Products"
+          ],
+          "h2Text": [
+            "Branch fulfillment",
+            "Warehouse replenishment",
+            "Distributor SKU availability"
+          ],
+          "navigationLabels": [
+            "Products",
+            "Services",
+            "Locations"
+          ],
+          "productCategoryTerms": [
+            "inventory",
+            "products",
+            "replenishment",
+            "catalog",
+            "sku"
+          ],
+          "industryLanguage": [
+            "distribution",
+            "distributor",
+            "industrial",
+            "service",
+            "wholesale"
+          ],
+          "locationServiceClues": [
+            "locations",
+            "service",
+            "services"
+          ],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [
+            "distribution",
+            "wholesale",
+            "fulfillment",
+            "warehouse",
+            "replenishment"
+          ],
+          "sourceUrls": [
+            "https://www.grainger.com/",
+            "https://www.grainger.com/products"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [
+            {
+              "laneId": "industrial_distribution",
+              "score": 0.95,
+              "evidence": [
+                "distribution",
+                "industrial",
+                "wholesale",
+                "fulfillment",
+                "warehouse"
+              ]
+            }
+          ],
+          "productSeed": "Distributor SKU",
+          "productFamily": "Industrial Distribution SKU",
+          "demandMoment": "stock, replenishment, and fulfillment readiness"
+        },
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "failureState": null,
+        "sourceUrls": [
+          "https://www.grainger.com/",
+          "https://www.grainger.com/products"
+        ],
+        "capturedAt": "2026-05-12T15:58:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      },
+      "classification": {
+        "inputEvidenceSchema": "idb.website-evidence.v1",
+        "normalizedUrl": "https://www.grainger.com/",
+        "domain": "grainger.com",
+        "laneRecommendation": {
+          "laneId": "industrial_distribution",
+          "score": 0.95
+        },
+        "proofAnchorRecommendation": {
+          "label": "Inventory / Fulfillment"
+        },
+        "productSeed": "Distributor SKU",
+        "productFamily": "Industrial Distribution SKU",
+        "demandMoment": "stock, replenishment, and fulfillment readiness",
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "evidenceCitations": [
+          {
+            "sourceUrl": "https://www.grainger.com/",
+            "field": "pageTitle",
+            "value": "Industrial Supply Distributor",
+            "supports": "recommended:industrial_distribution"
+          },
+          {
+            "sourceUrl": "https://www.grainger.com/products",
+            "field": "metaDescription",
+            "value": "Industrial products, branch availability, distribution, wholesale inventory, warehouse fulfillment, and replenishment.",
+            "supports": "recommended:industrial_distribution"
+          },
+          {
+            "sourceUrl": "https://www.grainger.com/",
+            "field": "h1Text",
+            "value": "Industrial supplies and distribution",
+            "supports": "recommended:industrial_distribution"
+          }
+        ],
+        "competingCandidates": [],
+        "confirmationPrompt": null,
+        "classificationState": "recommended",
+        "writeAuthority": "none",
+        "nllmAuthority": "advisory_only",
+        "notesBoundary": {
+          "notesDidOverrideIdentification": false,
+          "notesNotAllowedFor": [
+            "laneRecommendation",
+            "proofAnchorRecommendation",
+            "productSeed",
+            "productFamily",
+            "demandMoment"
+          ],
+          "notesAllowedFor": [
+            "pain",
+            "roi",
+            "competitiveFraming",
+            "objections",
+            "talkTrack",
+            "runCoaching"
+          ]
+        }
+      }
+    },
+    {
+      "id": "w58_real_manufacturing_heavy_lincoln_electric",
+      "siteKind": "manufacturing_heavy",
+      "sourceType": "real_url_seed_fixture_snapshot",
+      "website": "https://www.lincolnelectric.com/",
+      "expectedClassificationState": "recommended",
+      "actualClassificationState": "recommended",
+      "expectedLaneId": "industrial_equipment",
+      "actualLaneId": "industrial_equipment",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaimCount": 0,
+      "evidenceCovered": true,
+      "resolverFailureState": null,
+      "pagesSampledCount": 2,
+      "sourceUrlCount": 2,
+      "notes": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://www.lincolnelectric.com/",
+        "normalizedUrl": "https://www.lincolnelectric.com/",
+        "domain": "lincolnelectric.com",
+        "fetchStatus": "fetched",
+        "fetchErrors": [
+          {
+            "type": "dns_or_network_error",
+            "message": "No W58 fixture registered for https://www.lincolnelectric.com/solutions."
+          },
+          {
+            "type": "dns_or_network_error",
+            "message": "No W58 fixture registered for https://www.lincolnelectric.com/services."
+          }
+        ],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://www.lincolnelectric.com/",
+            "status": 200
+          },
+          {
+            "role": "navigation_discovered_category_or_products_page",
+            "url": "https://www.lincolnelectric.com/products",
+            "status": 200
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Industrial Equipment Manufacturing",
+          "metaDescription": "Manufacturing equipment, production systems, assembly, components, factory automation, and service.",
+          "h1Text": [
+            "Manufacturing equipment and production systems",
+            "Equipment products"
+          ],
+          "h2Text": [
+            "Assembly readiness",
+            "Factory production",
+            "Components and assembly"
+          ],
+          "navigationLabels": [
+            "Products",
+            "Solutions",
+            "Services"
+          ],
+          "productCategoryTerms": [
+            "components",
+            "equipment",
+            "products",
+            "catalog"
+          ],
+          "industryLanguage": [
+            "industrial",
+            "manufacturing",
+            "service"
+          ],
+          "locationServiceClues": [
+            "service",
+            "services"
+          ],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [
+            "manufacturing",
+            "made to order",
+            "production",
+            "assembly",
+            "factory",
+            "work order"
+          ],
+          "distributionSignals": [],
+          "sourceUrls": [
+            "https://www.lincolnelectric.com/",
+            "https://www.lincolnelectric.com/products"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [
+            {
+              "laneId": "industrial_equipment",
+              "score": 0.95,
+              "evidence": [
+                "manufacturing",
+                "made to order",
+                "production",
+                "assembly",
+                "factory"
+              ]
+            },
+            {
+              "laneId": "dealer_hardgoods",
+              "score": 0.59,
+              "evidence": [
+                "components",
+                "equipment"
+              ]
+            },
+            {
+              "laneId": "industrial_distribution",
+              "score": 0.47,
+              "evidence": [
+                "industrial"
+              ]
+            }
+          ],
+          "productSeed": "Assembly",
+          "productFamily": "Industrial Equipment Manufacturing",
+          "demandMoment": "component readiness and assembly promise control"
+        },
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "failureState": null,
+        "sourceUrls": [
+          "https://www.lincolnelectric.com/",
+          "https://www.lincolnelectric.com/products"
+        ],
+        "capturedAt": "2026-05-12T15:58:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      },
+      "classification": {
+        "inputEvidenceSchema": "idb.website-evidence.v1",
+        "normalizedUrl": "https://www.lincolnelectric.com/",
+        "domain": "lincolnelectric.com",
+        "laneRecommendation": {
+          "laneId": "industrial_equipment",
+          "score": 0.95
+        },
+        "proofAnchorRecommendation": {
+          "label": "Assembly"
+        },
+        "productSeed": "Assembly",
+        "productFamily": "Industrial Equipment Manufacturing",
+        "demandMoment": "component readiness and assembly promise control",
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "evidenceCitations": [
+          {
+            "sourceUrl": "https://www.lincolnelectric.com/",
+            "field": "pageTitle",
+            "value": "Industrial Equipment Manufacturing",
+            "supports": "recommended:industrial_equipment"
+          },
+          {
+            "sourceUrl": "https://www.lincolnelectric.com/products",
+            "field": "metaDescription",
+            "value": "Manufacturing equipment, production systems, assembly, components, factory automation, and service.",
+            "supports": "recommended:industrial_equipment"
+          },
+          {
+            "sourceUrl": "https://www.lincolnelectric.com/",
+            "field": "h1Text",
+            "value": "Manufacturing equipment and production systems",
+            "supports": "recommended:industrial_equipment"
+          }
+        ],
+        "competingCandidates": [],
+        "confirmationPrompt": null,
+        "classificationState": "recommended",
+        "writeAuthority": "none",
+        "nllmAuthority": "advisory_only",
+        "notesBoundary": {
+          "notesDidOverrideIdentification": false,
+          "notesNotAllowedFor": [
+            "laneRecommendation",
+            "proofAnchorRecommendation",
+            "productSeed",
+            "productFamily",
+            "demandMoment"
+          ],
+          "notesAllowedFor": [
+            "pain",
+            "roi",
+            "competitiveFraming",
+            "objections",
+            "talkTrack",
+            "runCoaching"
+          ]
+        }
+      }
+    },
+    {
+      "id": "w58_ambiguous_outfitter_apparel_service",
+      "siteKind": "ambiguous_multi_category",
+      "sourceType": "synthetic_fixture_snapshot",
+      "website": "https://ridgeline-outfitters.example/",
+      "expectedClassificationState": "needs_confirmation",
+      "actualClassificationState": "needs_confirmation",
+      "expectedLaneId": "apparel_accessories",
+      "actualLaneId": "apparel_accessories",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaimCount": 0,
+      "evidenceCovered": true,
+      "resolverFailureState": "ambiguous",
+      "pagesSampledCount": 2,
+      "sourceUrlCount": 2,
+      "notes": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://ridgeline-outfitters.example/",
+        "normalizedUrl": "https://ridgeline-outfitters.example/",
+        "domain": "ridgeline-outfitters.example",
+        "fetchStatus": "fetched",
+        "fetchErrors": [
+          {
+            "type": "dns_or_network_error",
+            "message": "No W58 fixture registered for https://ridgeline-outfitters.example/services."
+          },
+          {
+            "type": "dns_or_network_error",
+            "message": "No W58 fixture registered for https://ridgeline-outfitters.example/dealers."
+          }
+        ],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://ridgeline-outfitters.example/",
+            "status": 200
+          },
+          {
+            "role": "navigation_discovered_category_or_products_page",
+            "url": "https://ridgeline-outfitters.example/collections",
+            "status": 200
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "RidgeLine Outfitters",
+          "metaDescription": "Outdoor apparel, footwear, accessories, outfitter services, equipment, dealer distribution, and seasonal inventory.",
+          "h1Text": [
+            "Apparel, footwear, accessories, equipment, and outfitter services",
+            "Collections"
+          ],
+          "h2Text": [
+            "Style sizes and seasonal variants",
+            "Dealer distribution services",
+            "Styles and services"
+          ],
+          "navigationLabels": [
+            "Collections",
+            "Services",
+            "Dealers"
+          ],
+          "productCategoryTerms": [
+            "apparel",
+            "accessories",
+            "boots",
+            "catalog",
+            "equipment",
+            "footwear",
+            "inventory",
+            "replenishment",
+            "sizes",
+            "style",
+            "variants",
+            "products"
+          ],
+          "industryLanguage": [
+            "dealer",
+            "distribution",
+            "service",
+            "wholesale"
+          ],
+          "locationServiceClues": [
+            "appointment",
+            "dealer locator",
+            "service",
+            "services"
+          ],
+          "ecommerceSignals": [
+            "shop"
+          ],
+          "manufacturingSignals": [],
+          "distributionSignals": [
+            "distribution",
+            "dealer",
+            "wholesale",
+            "replenishment"
+          ],
+          "sourceUrls": [
+            "https://ridgeline-outfitters.example/",
+            "https://ridgeline-outfitters.example/collections"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [
+            {
+              "laneId": "apparel_accessories",
+              "score": 0.95,
+              "evidence": [
+                "apparel",
+                "accessories",
+                "footwear",
+                "sizes",
+                "style"
+              ]
+            },
+            {
+              "laneId": "industrial_distribution",
+              "score": 0.71,
+              "evidence": [
+                "distribution",
+                "wholesale",
+                "replenishment"
+              ]
+            },
+            {
+              "laneId": "dealer_hardgoods",
+              "score": 0.59,
+              "evidence": [
+                "equipment",
+                "dealer",
+                "Dealers"
+              ]
+            }
+          ],
+          "productSeed": "Core Style Color-Size Matrix",
+          "productFamily": "Apparel and Footwear Style",
+          "demandMoment": "style, size, and channel availability"
+        },
+        "confidence": {
+          "state": "needs_confirmation",
+          "score": 0.95,
+          "requiresConfirmation": true
+        },
+        "failureState": "ambiguous",
+        "sourceUrls": [
+          "https://ridgeline-outfitters.example/",
+          "https://ridgeline-outfitters.example/collections"
+        ],
+        "capturedAt": "2026-05-12T15:58:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      },
+      "classification": {
+        "inputEvidenceSchema": "idb.website-evidence.v1",
+        "normalizedUrl": "https://ridgeline-outfitters.example/",
+        "domain": "ridgeline-outfitters.example",
+        "laneRecommendation": {
+          "laneId": "apparel_accessories",
+          "score": 0.95
+        },
+        "proofAnchorRecommendation": {
+          "label": "Style / SKU Matrix"
+        },
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": "",
+        "confidence": {
+          "state": "needs_confirmation",
+          "score": 0.95,
+          "requiresConfirmation": true
+        },
+        "evidenceCitations": [
+          {
+            "sourceUrl": "https://ridgeline-outfitters.example/",
+            "field": "pageTitle",
+            "value": "RidgeLine Outfitters",
+            "supports": "candidate:apparel_accessories"
+          },
+          {
+            "sourceUrl": "https://ridgeline-outfitters.example/collections",
+            "field": "metaDescription",
+            "value": "Outdoor apparel, footwear, accessories, outfitter services, equipment, dealer distribution, and seasonal inventory.",
+            "supports": "candidate:apparel_accessories"
+          },
+          {
+            "sourceUrl": "https://ridgeline-outfitters.example/",
+            "field": "h1Text",
+            "value": "Apparel, footwear, accessories, equipment, and outfitter services",
+            "supports": "candidate:apparel_accessories"
+          }
+        ],
+        "competingCandidates": [
+          {
+            "laneId": "apparel_accessories",
+            "score": 0.95,
+            "whyItMightFit": "Website evidence includes apparel, accessories, footwear, sizes, style.",
+            "evidenceCitations": [
+              {
+                "sourceUrl": "https://ridgeline-outfitters.example/",
+                "field": "pageTitle",
+                "value": "RidgeLine Outfitters",
+                "supports": "candidate:apparel_accessories"
+              },
+              {
+                "sourceUrl": "https://ridgeline-outfitters.example/collections",
+                "field": "metaDescription",
+                "value": "Outdoor apparel, footwear, accessories, outfitter services, equipment, dealer distribution, and seasonal inventory.",
+                "supports": "candidate:apparel_accessories"
+              }
+            ]
+          },
+          {
+            "laneId": "industrial_distribution",
+            "score": 0.71,
+            "whyItMightFit": "Website evidence includes distribution, wholesale, replenishment.",
+            "evidenceCitations": [
+              {
+                "sourceUrl": "https://ridgeline-outfitters.example/",
+                "field": "pageTitle",
+                "value": "RidgeLine Outfitters",
+                "supports": "candidate:industrial_distribution"
+              },
+              {
+                "sourceUrl": "https://ridgeline-outfitters.example/collections",
+                "field": "metaDescription",
+                "value": "Outdoor apparel, footwear, accessories, outfitter services, equipment, dealer distribution, and seasonal inventory.",
+                "supports": "candidate:industrial_distribution"
+              }
+            ]
+          },
+          {
+            "laneId": "dealer_hardgoods",
+            "score": 0.59,
+            "whyItMightFit": "Website evidence includes equipment, dealer, Dealers.",
+            "evidenceCitations": [
+              {
+                "sourceUrl": "https://ridgeline-outfitters.example/",
+                "field": "pageTitle",
+                "value": "RidgeLine Outfitters",
+                "supports": "candidate:dealer_hardgoods"
+              },
+              {
+                "sourceUrl": "https://ridgeline-outfitters.example/collections",
+                "field": "metaDescription",
+                "value": "Outdoor apparel, footwear, accessories, outfitter services, equipment, dealer distribution, and seasonal inventory.",
+                "supports": "candidate:dealer_hardgoods"
+              }
+            ]
+          }
+        ],
+        "confirmationPrompt": {
+          "reason": "multiple plausible lanes detected",
+          "missingEvidence": "Need consultant confirmation of the business model and product category before ROI, competitive, or write preparation.",
+          "question": "Which classification should IDB use for this prospect?"
+        },
+        "classificationState": "needs_confirmation",
+        "writeAuthority": "none",
+        "nllmAuthority": "advisory_only",
+        "notesBoundary": {
+          "notesDidOverrideIdentification": false,
+          "notesNotAllowedFor": [
+            "laneRecommendation",
+            "proofAnchorRecommendation",
+            "productSeed",
+            "productFamily",
+            "demandMoment"
+          ],
+          "notesAllowedFor": [
+            "pain",
+            "roi",
+            "competitiveFraming",
+            "objections",
+            "talkTrack",
+            "runCoaching"
+          ]
+        }
+      }
+    },
+    {
+      "id": "w58_weak_thin_website",
+      "siteKind": "weak_thin_website",
+      "sourceType": "synthetic_fixture_snapshot",
+      "website": "https://thin-prospect.example/",
+      "expectedClassificationState": "insufficient_evidence",
+      "actualClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "actualLaneId": "",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaimCount": 0,
+      "evidenceCovered": true,
+      "resolverFailureState": "thin",
+      "pagesSampledCount": 1,
+      "sourceUrlCount": 1,
+      "notes": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://thin-prospect.example/",
+        "normalizedUrl": "https://thin-prospect.example/",
+        "domain": "thin-prospect.example",
+        "fetchStatus": "fetched",
+        "fetchErrors": [],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://thin-prospect.example/",
+            "status": 200
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Welcome",
+          "metaDescription": "",
+          "h1Text": [
+            "Welcome"
+          ],
+          "h2Text": [],
+          "navigationLabels": [
+            "About",
+            "Contact"
+          ],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": [
+            "https://thin-prospect.example/"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0.12,
+          "requiresConfirmation": true
+        },
+        "failureState": "thin",
+        "sourceUrls": [
+          "https://thin-prospect.example/"
+        ],
+        "capturedAt": "2026-05-12T15:58:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      },
+      "classification": {
+        "inputEvidenceSchema": "idb.website-evidence.v1",
+        "normalizedUrl": "https://thin-prospect.example/",
+        "domain": "thin-prospect.example",
+        "laneRecommendation": null,
+        "proofAnchorRecommendation": null,
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": "",
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0.12,
+          "requiresConfirmation": true
+        },
+        "evidenceCitations": [],
+        "competingCandidates": [],
+        "confirmationPrompt": {
+          "reason": "thin",
+          "missingEvidence": "Need reachable category, product, service, or industry website evidence.",
+          "question": "Can the consultant provide stronger website evidence before IDB selects a lane?"
+        },
+        "classificationState": "insufficient_evidence",
+        "writeAuthority": "none",
+        "nllmAuthority": "advisory_only",
+        "notesBoundary": {
+          "notesDidOverrideIdentification": false,
+          "notesNotAllowedFor": [
+            "laneRecommendation",
+            "proofAnchorRecommendation",
+            "productSeed",
+            "productFamily",
+            "demandMoment"
+          ],
+          "notesAllowedFor": [
+            "pain",
+            "roi",
+            "competitiveFraming",
+            "objections",
+            "talkTrack",
+            "runCoaching"
+          ]
+        }
+      }
+    },
+    {
+      "id": "w58_blocked_website",
+      "siteKind": "blocked",
+      "sourceType": "synthetic_failure_fixture",
+      "website": "https://blocked-prospect.example/",
+      "expectedClassificationState": "insufficient_evidence",
+      "actualClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "actualLaneId": "",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaimCount": 0,
+      "evidenceCovered": true,
+      "resolverFailureState": "blocked",
+      "pagesSampledCount": 0,
+      "sourceUrlCount": 0,
+      "notes": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://blocked-prospect.example/",
+        "normalizedUrl": "https://blocked-prospect.example/",
+        "domain": "blocked-prospect.example",
+        "fetchStatus": "blocked",
+        "fetchErrors": [
+          {
+            "type": "access_blocked",
+            "message": "HTTP 403 prevented readable HTML."
+          }
+        ],
+        "pagesSampled": [],
+        "extractedEvidence": {
+          "pageTitle": "",
+          "metaDescription": "",
+          "h1Text": [],
+          "h2Text": [],
+          "navigationLabels": [],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": []
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "failureState": "blocked",
+        "sourceUrls": [],
+        "capturedAt": "2026-05-12T15:58:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      },
+      "classification": {
+        "inputEvidenceSchema": "idb.website-evidence.v1",
+        "normalizedUrl": "https://blocked-prospect.example/",
+        "domain": "blocked-prospect.example",
+        "laneRecommendation": null,
+        "proofAnchorRecommendation": null,
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": "",
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "evidenceCitations": [],
+        "competingCandidates": [],
+        "confirmationPrompt": {
+          "reason": "blocked",
+          "missingEvidence": "Need reachable category, product, service, or industry website evidence.",
+          "question": "Can the consultant provide stronger website evidence before IDB selects a lane?"
+        },
+        "classificationState": "insufficient_evidence",
+        "writeAuthority": "none",
+        "nllmAuthority": "advisory_only",
+        "notesBoundary": {
+          "notesDidOverrideIdentification": false,
+          "notesNotAllowedFor": [
+            "laneRecommendation",
+            "proofAnchorRecommendation",
+            "productSeed",
+            "productFamily",
+            "demandMoment"
+          ],
+          "notesAllowedFor": [
+            "pain",
+            "roi",
+            "competitiveFraming",
+            "objections",
+            "talkTrack",
+            "runCoaching"
+          ]
+        }
+      }
+    },
+    {
+      "id": "w58_unavailable_website",
+      "siteKind": "unavailable",
+      "sourceType": "synthetic_failure_fixture",
+      "website": "https://unavailable-prospect.example/",
+      "expectedClassificationState": "insufficient_evidence",
+      "actualClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "actualLaneId": "",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaimCount": 0,
+      "evidenceCovered": true,
+      "resolverFailureState": "unavailable",
+      "pagesSampledCount": 0,
+      "sourceUrlCount": 0,
+      "notes": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://unavailable-prospect.example/",
+        "normalizedUrl": "https://unavailable-prospect.example/",
+        "domain": "unavailable-prospect.example",
+        "fetchStatus": "unavailable",
+        "fetchErrors": [
+          {
+            "type": "dns_or_network_error",
+            "message": "Host unavailable in corpus fixture."
+          }
+        ],
+        "pagesSampled": [],
+        "extractedEvidence": {
+          "pageTitle": "",
+          "metaDescription": "",
+          "h1Text": [],
+          "h2Text": [],
+          "navigationLabels": [],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": []
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "failureState": "unavailable",
+        "sourceUrls": [],
+        "capturedAt": "2026-05-12T15:58:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      },
+      "classification": {
+        "inputEvidenceSchema": "idb.website-evidence.v1",
+        "normalizedUrl": "https://unavailable-prospect.example/",
+        "domain": "unavailable-prospect.example",
+        "laneRecommendation": null,
+        "proofAnchorRecommendation": null,
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": "",
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "evidenceCitations": [],
+        "competingCandidates": [],
+        "confirmationPrompt": {
+          "reason": "unavailable",
+          "missingEvidence": "Need reachable category, product, service, or industry website evidence.",
+          "question": "Can the consultant provide stronger website evidence before IDB selects a lane?"
+        },
+        "classificationState": "insufficient_evidence",
+        "writeAuthority": "none",
+        "nllmAuthority": "advisory_only",
+        "notesBoundary": {
+          "notesDidOverrideIdentification": false,
+          "notesNotAllowedFor": [
+            "laneRecommendation",
+            "proofAnchorRecommendation",
+            "productSeed",
+            "productFamily",
+            "demandMoment"
+          ],
+          "notesAllowedFor": [
+            "pain",
+            "roi",
+            "competitiveFraming",
+            "objections",
+            "talkTrack",
+            "runCoaching"
+          ]
+        }
+      }
+    },
+    {
+      "id": "w58_timeout_website",
+      "siteKind": "timeout",
+      "sourceType": "synthetic_failure_fixture",
+      "website": "https://timeout-prospect.example/",
+      "expectedClassificationState": "insufficient_evidence",
+      "actualClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "actualLaneId": "",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaimCount": 0,
+      "evidenceCovered": true,
+      "resolverFailureState": "timeout",
+      "pagesSampledCount": 0,
+      "sourceUrlCount": 0,
+      "notes": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://timeout-prospect.example/",
+        "normalizedUrl": "https://timeout-prospect.example/",
+        "domain": "timeout-prospect.example",
+        "fetchStatus": "timeout",
+        "fetchErrors": [
+          {
+            "type": "timeout",
+            "message": "Resolver timed out in corpus fixture."
+          }
+        ],
+        "pagesSampled": [],
+        "extractedEvidence": {
+          "pageTitle": "",
+          "metaDescription": "",
+          "h1Text": [],
+          "h2Text": [],
+          "navigationLabels": [],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": []
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "failureState": "timeout",
+        "sourceUrls": [],
+        "capturedAt": "2026-05-12T15:58:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      },
+      "classification": {
+        "inputEvidenceSchema": "idb.website-evidence.v1",
+        "normalizedUrl": "https://timeout-prospect.example/",
+        "domain": "timeout-prospect.example",
+        "laneRecommendation": null,
+        "proofAnchorRecommendation": null,
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": "",
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "evidenceCitations": [],
+        "competingCandidates": [],
+        "confirmationPrompt": {
+          "reason": "timeout",
+          "missingEvidence": "Need reachable category, product, service, or industry website evidence.",
+          "question": "Can the consultant provide stronger website evidence before IDB selects a lane?"
+        },
+        "classificationState": "insufficient_evidence",
+        "writeAuthority": "none",
+        "nllmAuthority": "advisory_only",
+        "notesBoundary": {
+          "notesDidOverrideIdentification": false,
+          "notesNotAllowedFor": [
+            "laneRecommendation",
+            "proofAnchorRecommendation",
+            "productSeed",
+            "productFamily",
+            "demandMoment"
+          ],
+          "notesAllowedFor": [
+            "pain",
+            "roi",
+            "competitiveFraming",
+            "objections",
+            "talkTrack",
+            "runCoaching"
+          ]
+        }
+      }
+    }
+  ]
+}

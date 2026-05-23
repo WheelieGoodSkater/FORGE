@@ -1,0 +1,82 @@
+{
+  "schema": "idb.w177-imported-url-targeted-open-link-verification-packet-trace.v1",
+  "generatedAt": "2026-05-17T21:41:16.299Z",
+  "decision": "PASS_IMPORTED_URL_TARGETED_OPEN_LINK_VERIFICATION_PACKET_READY__TARGETED_ONLY",
+  "packetTrace": [
+    {
+      "event": "w177_packet_from_w176_import_commit",
+      "targetedReady": true,
+      "recordCount": 5,
+      "activeOpenLinksBeforeImport": 0,
+      "supportedOpenLinksAfterCommit": 9
+    },
+    {
+      "event": "w177_targeted_roles_ready",
+      "roles": [
+        "customer",
+        "sales_order",
+        "hero_item",
+        "matrix_or_proof_item",
+        "component_item"
+      ],
+      "allNumericIds": true,
+      "allSupportedUrls": true,
+      "allOpenable": true
+    },
+    {
+      "event": "w177_visual_scope_decision",
+      "targetedOnly": true,
+      "broaderVisualTestingBlocked": true,
+      "drawerCreatesRecords": false,
+      "drawerInvokesSuiteScript": false
+    }
+  ],
+  "targetedRecords": [
+    {
+      "role": "customer",
+      "name": "Ariat International Outdoor Retail Account",
+      "id": "501234",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234",
+      "readyForTargetedClick": true
+    },
+    {
+      "role": "sales_order",
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "id": "601234",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234",
+      "readyForTargetedClick": true
+    },
+    {
+      "role": "hero_item",
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "id": "701234",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234",
+      "readyForTargetedClick": true
+    },
+    {
+      "role": "matrix_or_proof_item",
+      "name": "Ariat Core Boot Size Color Matrix",
+      "id": "701235",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235",
+      "readyForTargetedClick": true
+    },
+    {
+      "role": "component_item",
+      "name": "Ariat Brown Leather Upper Component",
+      "id": "701236",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236",
+      "readyForTargetedClick": true
+    }
+  ],
+  "visualTestingDecision": {
+    "targetedOnly": true,
+    "targetedOpenLinkVerificationRequired": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "exactScreenshotsRequired": 5,
+    "reason": "W177 allows only the five imported Open-link landing checks. No broad NetSuite visual sweep is requested."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W178: Targeted Open-Link Evidence Intake And Record Landing Go/No-Go",
+    "prompt": "Move through W178: Targeted Open-Link Evidence Intake And Record Landing Go/No-Go. Use the W177 targeted verification packet and the operator-provided screenshots or notes for Customer, demo transaction, hero item, matrix/proof item, and component item Open links. Mark each link as actual_record_page_verified only if the landed NetSuite page is not Notice/Error/Invalid number and shows the matching record name or numeric internal id. If all five pass, mark imported runner URLs record-landing verified; if any fail, keep final names imported but block record-existence readiness and route remediation to runner result capture. Preserve no drawer writes, no drawer SuiteScript invocation outside the approved server adapter path, no drawer transaction writes, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output W178 evidence intake report, go/no-go decision, trace samples, broader visual testing decision, and best next Codex prompt."
+  }
+}

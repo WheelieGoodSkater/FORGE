@@ -1,0 +1,183 @@
+{
+  "schema": "idb.w74-remote-resolver-pilot-toggle-decision-consultant-smoke-trace.v1",
+  "generated": "2026-05-17T21:41:02.671Z",
+  "decision": "PASS",
+  "pilotDecision": "no_go_w73r_remote_smoke_not_executed",
+  "hostedResolverPilotEnabled": false,
+  "consultantSmokeExecuted": false,
+  "blockedReason": "w73r_remote_smoke_not_executed",
+  "inheritedW73R": {
+    "decision": "PASS",
+    "remoteSmokeExecuted": false,
+    "pilotDecision": "no_go_remote_config_missing",
+    "blockedReason": "missing_or_invalid_remote_endpoint_config",
+    "environmentObserved": {
+      "remoteSmokeOptIn": false,
+      "baseUrlConfigured": false,
+      "tokenConfigured": false,
+      "allowedOriginConfigured": false,
+      "blockedOriginConfigured": false,
+      "rawSecretsIncluded": false
+    },
+    "rawSecretsIncluded": false
+  },
+  "toggleDecision": {
+    "decision": "no_go_do_not_enable_hosted_resolver_for_consultant_pilot",
+    "hostedOnlyResolverModeAllowed": false,
+    "consultantPilotTrafficAllowed": false,
+    "drawerHostedResolverToggleAllowed": false,
+    "localFallbackAllowedForDevelopmentOnly": true,
+    "reason": "W73R did not execute against a real hosted staging endpoint because required remote endpoint configuration is missing."
+  },
+  "consultantSmokeDecision": {
+    "consultantSmokeExecuted": false,
+    "reason": "Consultant-shaped hosted-only drawer smoke is not valid until W73R passes against the real remote endpoint.",
+    "notSubstitutedWith": [
+      "local staging resolver smoke",
+      "snapshot resolver traces",
+      "synthetic fixtures",
+      "approved-live trace reuse"
+    ],
+    "requiredWhenUnblocked": [
+      "Configure hosted-only resolver endpoint URL and token.",
+      "Run Plan with a known recommended site and verify websiteEvidenceV1 owns identity.",
+      "Run Review and verify Prepare / Confirm / Blocked rows show resolver status and no writes.",
+      "Run ROI / Competitive and verify grounded cited evidence only.",
+      "Run Run and verify live script remains story-only after website identity is resolved.",
+      "Export Trace and verify endpoint status, failure state, cache state, and no raw secrets.",
+      "Toggle rollback to local fallback and verify hosted traffic stops."
+    ]
+  },
+  "remediationChecklist": [
+    {
+      "ownerRole": "Resolver Service Architect",
+      "goal": "Deploy or identify the remote staging websiteResolverServiceV1 endpoint.",
+      "doneWhen": "IDB_REMOTE_RESOLVER_BASE_URL is set to a public HTTPS staging endpoint that is not localhost or private network."
+    },
+    {
+      "ownerRole": "Security Guard",
+      "goal": "Provision resolver token through a secret manager or protected environment variable.",
+      "doneWhen": "IDB_REMOTE_RESOLVER_TOKEN is set without exposing the raw token in repo files, logs, traces, or reports."
+    },
+    {
+      "ownerRole": "Security Guard",
+      "goal": "Lock CORS to the approved NetSuite staging origin.",
+      "doneWhen": "IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN and IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN are configured and W73R proves approved pass / blocked fail behavior."
+    },
+    {
+      "ownerRole": "Website Intelligence Agent",
+      "goal": "Run approved live-site smoke through the hosted endpoint.",
+      "doneWhen": "Approved live smoke passes with zero false-confident-wrong and zero unsupported claims."
+    },
+    {
+      "ownerRole": "Regression Guard Agent",
+      "goal": "Run W73R and full preflight after remote config is present.",
+      "doneWhen": "W73R trace shows remoteSmokeExecuted true and preflight remains green."
+    },
+    {
+      "ownerRole": "Consultant UX Director",
+      "goal": "Run hosted-only consultant drawer smoke after W73R passes.",
+      "doneWhen": "Plan, Review, ROI / Competitive, Run, and Trace show concise hosted resolver status, evidence coverage, failure UX, and rollback behavior."
+    }
+  ],
+  "blockedConsultantSmokeTraceShape": {
+    "plan": {
+      "status": "blocked_not_run",
+      "visibleSummaryRequired": [
+        "Hosted resolver pilot: not enabled",
+        "Reason: remote smoke not executed",
+        "Next: configure endpoint/token/origins and rerun W73R"
+      ]
+    },
+    "review": {
+      "status": "blocked_not_run",
+      "visibleSummaryRequired": [
+        "Prepare: blocked until remote resolver passes",
+        "Confirm: remote endpoint config",
+        "Blocked: hosted-only consultant traffic"
+      ]
+    },
+    "roiCompetitive": {
+      "status": "blocked_not_run",
+      "visibleSummaryRequired": [
+        "No hosted resolver ROI smoke was run",
+        "No unsupported claims allowed",
+        "Use grounded evidence only after W73R passes"
+      ]
+    },
+    "run": {
+      "status": "blocked_not_run",
+      "visibleSummaryRequired": [
+        "No hosted live script smoke was run",
+        "Notes remain story-only",
+        "Website identity must come from hosted resolver after W73R passes"
+      ]
+    },
+    "trace": {
+      "status": "blocked_not_run",
+      "visibleSummaryRequired": [
+        "RemoteSmokeExecuted false",
+        "PilotDecision no-go",
+        "No raw secrets",
+        "No writes"
+      ]
+    }
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "hostedResolverPilotEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W75: Hosted Resolver Configuration Remediation Pack",
+    "prompt": "Move through W75: Hosted Resolver Configuration Remediation Pack. Use the W74 no-go decision to create the exact remediation package needed before consultant hosted resolver pilot traffic can be enabled: remote endpoint env setup, secret handling checklist, approved and blocked CORS origins, deployment owner checklist, W73R rerun command pack, no-secret trace rules, and pilot unlock criteria. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output remediation pack, operator checklist, updated trace samples, W75 report, validator gates, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w74_contract_schema_present",
+      "pass": true,
+      "detail": "idb.w74-remote-resolver-pilot-toggle-decision-consultant-smoke.v1"
+    },
+    {
+      "name": "w74_inherits_w73r_result",
+      "pass": true,
+      "detail": "{\"w73rRemoteSmokeExecuted\":false,\"w73rPilotDecision\":\"no_go_remote_config_missing\"}"
+    },
+    {
+      "name": "w74_no_go_when_w73r_blocked",
+      "pass": true,
+      "detail": "{\"decision\":\"no_go_do_not_enable_hosted_resolver_for_consultant_pilot\",\"hostedOnlyResolverModeAllowed\":false,\"consultantPilotTrafficAllowed\":false,\"drawerHostedResolverToggleAllowed\":false,\"localFallbackAllowedForDevelopmentOnly\":true,\"reason\":\"W73R did not execute against a real hosted staging endpoint because required remote endpoint configuration is missing.\"}"
+    },
+    {
+      "name": "w74_consultant_smoke_not_substituted",
+      "pass": true,
+      "detail": "{\"consultantSmokeExecuted\":false,\"reason\":\"Consultant-shaped hosted-only drawer smoke is not valid until W73R passes against the real remote endpoint.\",\"notSubstitutedWith\":[\"local staging resolver smoke\",\"snapshot resolver traces\",\"synthetic fixtures\",\"approved-live trace reuse\"],\"requiredWhenUnblocked\":[\"Configure hosted-only resolver endpoint URL and token.\",\"Run Plan with a known recommended site and verify websiteEvidenceV1 owns identity.\",\"Run Review and verify Prepare / Confirm / Blocked rows show resolver status and no writes.\",\"Run ROI / Competitive and verify grounded cited evidence only.\",\"Run Run and verify live script remains story-only after website identity is resolved.\",\"Export Trace and verify endpoint status, failure state, cache state, and no raw secrets.\",\"Toggle rollback to local fallback and verify hosted traffic stops.\"]}"
+    },
+    {
+      "name": "w74_remediation_checklist_complete",
+      "pass": true,
+      "detail": "[{\"ownerRole\":\"Resolver Service Architect\",\"goal\":\"Deploy or identify the remote staging websiteResolverServiceV1 endpoint.\",\"doneWhen\":\"IDB_REMOTE_RESOLVER_BASE_URL is set to a public HTTPS staging endpoint that is not localhost or private network.\"},{\"ownerRole\":\"Security Guard\",\"goal\":\"Provision resolver token through a secret manager or protected environment variable.\",\"doneWhen\":\"IDB_REMOTE_RESOLVER_TOKEN is set without exposing the raw token in repo files, logs, traces, or reports.\"},{\"ownerRole\":\"Security Guard\",\"goal\":\"Lock CORS to the approved NetSuite staging origin.\",\"doneWhen\":\"IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN and IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN are configured and W73R proves approved pass / blocked fail behavior.\"},{\"ownerRole\":\"Website Intelligence Agent\",\"goal\":\"Run approved live-site smoke through the hosted endpoint.\",\"doneWhen\":\"Approved live smoke passes with zero false-confident-wrong and zero unsupported claims.\"},{\"ownerRole\":\"Regression Guard Agent\",\"goal\":\"Run W73R and full preflight after remote config is present.\",\"doneWhen\":\"W73R trace shows remoteSmokeExecuted true and preflight remains green.\"},{\"ownerRole\":\"Consultant UX Director\",\"goal\":\"Run hosted-only consultant drawer smoke after W73R passes.\",\"doneWhen\":\"Plan, Review, ROI / Competitive, Run, and Trace show concise hosted resolver status, evidence coverage, failure UX, and rollback behavior.\"}]"
+    },
+    {
+      "name": "w74_blocked_consultant_trace_shape_present",
+      "pass": true,
+      "detail": "{\"plan\":{\"status\":\"blocked_not_run\",\"visibleSummaryRequired\":[\"Hosted resolver pilot: not enabled\",\"Reason: remote smoke not executed\",\"Next: configure endpoint/token/origins and rerun W73R\"]},\"review\":{\"status\":\"blocked_not_run\",\"visibleSummaryRequired\":[\"Prepare: blocked until remote resolver passes\",\"Confirm: remote endpoint config\",\"Blocked: hosted-only consultant traffic\"]},\"roiCompetitive\":{\"status\":\"blocked_not_run\",\"visibleSummaryRequired\":[\"No hosted resolver ROI smoke was run\",\"No unsupported claims allowed\",\"Use grounded evidence only after W73R passes\"]},\"run\":{\"status\":\"blocked_not_run\",\"visibleSummaryRequired\":[\"No hosted live script smoke was run\",\"Notes remain story-only\",\"Website identity must come from hosted resolver after W73R passes\"]},\"trace\":{\"status\":\"blocked_not_run\",\"visibleSummaryRequired\":[\"RemoteSmokeExecuted false\",\"PilotDecision no-go\",\"No raw secrets\",\"No writes\"]}}"
+    },
+    {
+      "name": "w74_no_regression_boundaries_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesCannotOwnIdentification\":true,\"blockedThinUnavailableTimeoutDoNotGuess\":true,\"transactionWriteEnabled\":false,\"mainDrawerCreateEnabled\":false,\"mainSuiteletCreateEnabled\":false,\"hostedResolverPilotEnabled\":false}"
+    },
+    {
+      "name": "w74_best_next_prompt_present",
+      "pass": true,
+      "detail": "Move through W75: Hosted Resolver Configuration Remediation Pack. Use the W74 no-go decision to create the exact remediation package needed before consultant hosted resolver pilot traffic can be enabled: remote endpoint env setup, secret handling checklist, approved and blocked CORS origins, deployment owner checklist, W73R rerun command pack, no-secret trace rules, and pilot unlock criteria. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output remediation pack, operator checklist, updated trace samples, W75 report, validator gates, and best next Codex prompt."
+    }
+  ]
+}

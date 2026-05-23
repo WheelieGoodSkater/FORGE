@@ -1,0 +1,103 @@
+{
+  "schema": "idb.w229-forge-post-install-operator-evidence-intake-trace.v1",
+  "expectedInstalledScript": "idb-drawer.user.js",
+  "evidenceFields": [
+    {
+      "id": "railButtonVisible",
+      "label": "Rail button visible",
+      "acceptanceCheck": "FORGE rail button appears."
+    },
+    {
+      "id": "railLabelNotClipped",
+      "label": "Rail label not clipped",
+      "acceptanceCheck": "FORGE rail label is not clipped."
+    },
+    {
+      "id": "drawerOpens",
+      "label": "Drawer opens",
+      "acceptanceCheck": "Drawer opens."
+    },
+    {
+      "id": "largerForgeHeaderLogoVisible",
+      "label": "Larger FORGE header logo visible",
+      "acceptanceCheck": "Larger responsive FORGE header logo appears."
+    },
+    {
+      "id": "logoDoesNotOverlapCloseButtonOnNarrowerWindow",
+      "label": "Logo does not overlap close button on narrower window",
+      "acceptanceCheck": "Logo scales without overlapping the close button on a narrower window."
+    },
+    {
+      "id": "closeButtonWorks",
+      "label": "Close button works",
+      "acceptanceCheck": "Close button works."
+    },
+    {
+      "id": "copyOperatorSummaryVisibleInTraceImportStatusSurface",
+      "label": "Copy operator summary visible in Trace/import-status surface",
+      "acceptanceCheck": "Copy operator summary appears in the Trace/import-status surface."
+    },
+    {
+      "id": "optionalScreenshotOrReferenceNote",
+      "label": "Optional screenshot/reference note",
+      "optional": true
+    }
+  ],
+  "classificationRules": [
+    {
+      "id": "accept",
+      "label": "Accept",
+      "when": "All required evidence fields pass and no block condition is present."
+    },
+    {
+      "id": "accept_with_visual_follow_up",
+      "label": "Accept with visual follow-up",
+      "when": "Core drawer controls work, but rail label fit or responsive logo spacing needs minor polish."
+    },
+    {
+      "id": "block_install",
+      "label": "Block install",
+      "when": "A required FORGE brand element, close control, drawer open action, or copy-summary control is missing or unusable."
+    }
+  ],
+  "blockConditions": [
+    "Rail label clipped.",
+    "Header logo missing.",
+    "Close button inaccessible.",
+    "Old visible header text appears.",
+    "Operator summary copy control missing."
+  ],
+  "targetedFollowUpRouting": [
+    {
+      "id": "rail_label_fit_polish",
+      "label": "Rail label fit polish",
+      "trigger": "Rail label clipped."
+    },
+    {
+      "id": "header_logo_sizing_polish",
+      "label": "Header logo sizing polish",
+      "trigger": "Logo overlaps the close button or needs spacing polish."
+    },
+    {
+      "id": "close_button_accessibility_fix",
+      "label": "Close-button accessibility fix",
+      "trigger": "Close button inaccessible."
+    },
+    {
+      "id": "copy_summary_placement_fix",
+      "label": "Copy-summary placement fix",
+      "trigger": "Operator summary copy control missing."
+    },
+    {
+      "id": "old_branding_removal_fix",
+      "label": "Old-branding removal fix",
+      "trigger": "Old visible header text appears."
+    }
+  ],
+  "sampleClassifications": {
+    "accepted": "accept",
+    "visualFollowUp": "accept_with_visual_follow_up",
+    "blocked": "block_install"
+  },
+  "visualTestingDecision": "No broad visual testing for W229. Evidence intake records targeted post-install operator observations only."
+}

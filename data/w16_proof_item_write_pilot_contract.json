@@ -1,0 +1,71 @@
+{
+  "schema": "idb.w16-proof-item-write-pilot-contract.v1",
+  "status": "proof_item_write_pilot_ready_create_disabled",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Website Intelligence Agent",
+    "Packet Contract Agent",
+    "Validation And Evidence Agent"
+  ],
+  "objective": "Define the guarded SuiteScript proof-item write path that can only run after a stable Customer result exists.",
+  "approvedScope": {
+    "laneId": "food_beverage",
+    "role": "proof anchor",
+    "recordType": "inventoryitem",
+    "operation": "lookup_then_create_or_update_proof_item",
+    "requiresCustomerResult": true,
+    "transactionWritesAllowed": false
+  },
+  "requiredPacketFields": [
+    "packetMode",
+    "mode",
+    "writePathType",
+    "consultantConfirmed",
+    "selectedLaneId",
+    "proofAnchor",
+    "trace.packetId",
+    "creationPacketContract",
+    "records[proof anchor].plannedName"
+  ],
+  "requiredParentResult": {
+    "role": "customer",
+    "recordId": true,
+    "url": true,
+    "operation": true,
+    "lookupStatus": true
+  },
+  "fieldMapping": {
+    "itemid": "records[proof anchor].plannedName",
+    "displayname": "records[proof anchor].plannedName",
+    "salesdescription": "customer.notes plus reviewed proof story",
+    "custitem_idb_packet_id": "trace.packetId",
+    "custitem_idb_lane": "selectedLaneId",
+    "custitem_idb_proof_anchor": "proofAnchor",
+    "custitem_idb_parent_customer": "parentResults.customer.recordId"
+  },
+  "lookupFirstRules": {
+    "lookupByItemId": true,
+    "createIfNoMatch": true,
+    "updateIfExactlyOneMatch": true,
+    "blockIfMultipleMatches": true,
+    "blockIfCustomerResultMissing": true,
+    "idempotencyKeyRequired": true
+  },
+  "traceResultContract": {
+    "recordId": true,
+    "url": true,
+    "operation": true,
+    "lookupStatus": true,
+    "parentCustomerRecordId": true,
+    "rollbackLabel": true,
+    "recoverableErrors": true
+  },
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "noAutomaticCreationFromDrawer": true,
+    "noProofItemWriteWithoutCustomerResult": true,
+    "noTransactionWrite": true,
+    "llmAdvisoryOnly": true
+  }
+}

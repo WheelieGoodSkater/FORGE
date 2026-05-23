@@ -1,0 +1,107 @@
+{
+  "schema": "idb.w137-real-numeric-id-visual-evidence-review.v1",
+  "status": "blocked_runner_dcc_creation_not_proven",
+  "decision": "NO_GO_REAL_RECORD_EXISTENCE__RUNNER_DCC_CREATION_REQUIRED",
+  "evidenceFiles": {
+    "trace": "/path/to/downloads/intelligent-demo-builder-trace-1778890662164.json",
+    "w137Contract": "/path/to/workspace/intelligent demo builder drawer/data/w137_internal_build_engine_real_numeric_id_output.json"
+  },
+  "evidenceFinding": {
+    "drawerNumericShapePassed": true,
+    "recordExistenceProven": false,
+    "userObservation": "Nothing was opened; numeric ids were imported, but records do not auto-create from the drawer.",
+    "architecturalConclusion": "The drawer import path is not the record creation path. Actual records must be produced or resolved by the governed DCC runner/internal build engine, then imported back into the drawer."
+  },
+  "traceEvidence": {
+    "exportedAt": "2026-05-16T00:17:42.087Z",
+    "lane": "Apparel & Accessories",
+    "finalNamingStatus": "dcc_final_names_imported",
+    "finalNavigationStatus": "using_dcc_final_names",
+    "linkAuthoritySummary": {
+      "verified_openable": 5
+    },
+    "dccHandoffStatus": "ready_for_dcc_suitelet_submission_review",
+    "dccExecutionMode": "review_only_no_submit",
+    "records": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "91001",
+        "url": "/app/common/entity/custjob.nl?id=91001",
+        "linkStatus": "verified_openable",
+        "openable": true,
+        "numericIdShape": true,
+        "supportedUrlShape": true
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "91002",
+        "url": "/app/accounting/transactions/salesord.nl?id=91002",
+        "linkStatus": "verified_openable",
+        "openable": true,
+        "numericIdShape": true,
+        "supportedUrlShape": true
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "91003",
+        "url": "/app/common/item/item.nl?id=91003",
+        "linkStatus": "verified_openable",
+        "openable": true,
+        "numericIdShape": true,
+        "supportedUrlShape": true
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "91004",
+        "url": "/app/common/item/item.nl?id=91004",
+        "linkStatus": "verified_openable",
+        "openable": true,
+        "numericIdShape": true,
+        "supportedUrlShape": true
+      },
+      {
+        "role": "component_item",
+        "label": "Component item 1",
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "91005",
+        "url": "/app/common/item/item.nl?id=91005",
+        "linkStatus": "verified_openable",
+        "openable": true,
+        "numericIdShape": true,
+        "supportedUrlShape": true
+      }
+    ]
+  },
+  "requiredNextArchitecture": {
+    "block": "governed_runner_dcc_creation_result",
+    "requirements": [
+      "Use the exported handoff packet to run the governed DCC/internal build engine path; do not expect drawer import to create records.",
+      "DCC/runner must create or resolve Customer, Sales Order/demo transaction, hero item, matrix/proof item, and component records.",
+      "DCC/runner must return the actual internal ids created/resolved by NetSuite.",
+      "The final generated names JSON must be generated from runner/DCC result output, not hand-typed sample ids.",
+      "The drawer remains no-write and import-only."
+    ]
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W138: Governed DCC Runner Creation Result Capture",
+    "prompt": "Move through W138: Governed DCC Runner Creation Result Capture. Use the W137R finding that numeric drawer imports do not create records and real record existence requires the governed DCC runner/internal build engine. Define and test the operator-only path from exported handoff packet to DCC runner execution/result capture, requiring the runner to create or resolve Customer, demo transaction, hero item, matrix/proof item, and component records and return actual NetSuite internal ids plus supported URLs. Do not enable drawer writes, do not invoke SuiteScript from the drawer, and do not create transactions from the drawer. Preserve consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership. Output runner creation result contract, operator runbook, result JSON shape, trace samples, W138 report, whether targeted visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

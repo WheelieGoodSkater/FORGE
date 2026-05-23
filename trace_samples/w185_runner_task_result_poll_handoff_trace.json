@@ -1,0 +1,164 @@
+{
+  "schema": "idb.w185-runner-task-result-poll-handoff-trace.v1",
+  "generatedAt": "2026-05-17T21:41:17.270Z",
+  "pendingTrace": [
+    {
+      "event": "w185_runner_task_capture_handoff",
+      "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+      "adapterError": false,
+      "checkRunnerResultVisible": true,
+      "checkRunnerResultEnabled": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w185_result_capture_poll_handoff",
+      "pollStatus": "poll_control_pending_or_no_submit",
+      "resultCaptureStatus": "polling_pending",
+      "completedResultReadyForW151Import": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w185_w151_import_boundary",
+      "importReady": false,
+      "stateMutationAllowedInThisBlock": false,
+      "adapterErrorStoppedSafely": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "completedTrace": [
+    {
+      "event": "w185_runner_task_capture_handoff",
+      "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+      "adapterError": false,
+      "checkRunnerResultVisible": true,
+      "checkRunnerResultEnabled": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w185_result_capture_poll_handoff",
+      "pollStatus": "poll_control_completed_result_ready_for_w151_import",
+      "resultCaptureStatus": "completed_result_capture_ready",
+      "completedResultReadyForW151Import": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w185_w151_import_boundary",
+      "importReady": true,
+      "stateMutationAllowedInThisBlock": false,
+      "adapterErrorStoppedSafely": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "adapterErrorTrace": [
+    {
+      "event": "w185_runner_task_capture_handoff",
+      "runnerTaskId": "",
+      "adapterError": true,
+      "checkRunnerResultVisible": false,
+      "checkRunnerResultEnabled": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w185_result_capture_poll_handoff",
+      "pollStatus": "poll_control_hidden_no_runner_task",
+      "resultCaptureStatus": "not_started_no_submit",
+      "completedResultReadyForW151Import": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w185_w151_import_boundary",
+      "importReady": false,
+      "stateMutationAllowedInThisBlock": false,
+      "adapterErrorStoppedSafely": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "missingRunnerTaskTrace": [
+    {
+      "event": "w185_runner_task_capture_handoff",
+      "runnerTaskId": "",
+      "adapterError": false,
+      "checkRunnerResultVisible": false,
+      "checkRunnerResultEnabled": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w185_result_capture_poll_handoff",
+      "pollStatus": "poll_control_hidden_no_runner_task",
+      "resultCaptureStatus": "not_started_no_submit",
+      "completedResultReadyForW151Import": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w185_w151_import_boundary",
+      "importReady": false,
+      "stateMutationAllowedInThisBlock": false,
+      "adapterErrorStoppedSafely": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "results": [
+    {
+      "name": "w185_runner_task_exposes_check_control",
+      "pass": true,
+      "detail": "{\"runnerTaskIdCaptured\":true,\"checkRunnerResultVisible\":true,\"checkRunnerResultEnabled\":true,\"resultCaptureStatus\":\"polling_pending\",\"completedResultReadyForW151Import\":false,\"adapterErrorStoppedSafely\":false,\"importCompletedRunnerResultEnabled\":false,\"targetedOpenLinkTestingReady\":false}"
+    },
+    {
+      "name": "w185_pending_does_not_mutate",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"finalGeneratedNamesImported\":false,\"activeOpenLinks\":0,\"writesAttemptedFromDrawer\":false,\"drawerCreatedRecords\":false}"
+    },
+    {
+      "name": "w185_completed_ready_but_not_imported",
+      "pass": true,
+      "detail": "{\"runnerTaskIdCaptured\":true,\"checkRunnerResultVisible\":true,\"checkRunnerResultEnabled\":true,\"resultCaptureStatus\":\"completed_result_capture_ready\",\"completedResultReadyForW151Import\":true,\"adapterErrorStoppedSafely\":false,\"importCompletedRunnerResultEnabled\":true,\"targetedOpenLinkTestingReady\":false}"
+    },
+    {
+      "name": "w185_adapter_error_stops_safely",
+      "pass": true,
+      "detail": "{\"required\":true,\"reason\":\"Adapter error stops Build return and requires operator evidence before retry.\"}"
+    },
+    {
+      "name": "w185_missing_runner_task_blocks_control",
+      "pass": true,
+      "detail": "{\"runnerTaskIdCaptured\":false,\"checkRunnerResultVisible\":false,\"checkRunnerResultEnabled\":false,\"resultCaptureStatus\":\"not_started_no_submit\",\"completedResultReadyForW151Import\":false,\"adapterErrorStoppedSafely\":false,\"importCompletedRunnerResultEnabled\":false,\"targetedOpenLinkTestingReady\":false}"
+    },
+    {
+      "name": "w185_w151_guard_preserved",
+      "pass": true,
+      "detail": "{\"completedResultAcceptedByW151\":true,\"completedResultStatus\":\"completed_runner_result_accepted\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"handoffStatus\":\"handoff_packet_rejected\",\"handoffRejected\":true,\"importReady\":true,\"importTarget\":\"state.dccFinalNamingResult\",\"stateMutationAllowedInThisBlock\":false}"
+    },
+    {
+      "name": "w185_no_drawer_writes_or_records",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"visualTestingBlockedUntilCompletedRunnerResultImport\":true}"
+    },
+    {
+      "name": "w185_no_open_links_before_import",
+      "pass": true,
+      "detail": "{\"visualTestingBlocked\":true,\"targetedOpenLinkTestingReady\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"reason\":\"W185 exposes polling from runnerTaskId only. Open-link visual testing remains blocked until completed runner result JSON is imported.\"}"
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlocked": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W185 exposes polling from runnerTaskId only. Open-link visual testing remains blocked until completed runner result JSON is imported."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W186: Completed Runner Result Import CTA From Poll Handoff",
+    "prompt": "Move through W186: Completed Runner Result Import CTA From Poll Handoff. Use the W185 runnerTaskId poll handoff to enable Import completed runner result only when polling returns W151-valid completed runner result JSON with numeric internal ids, supported NetSuite URLs, and internal runner ownership. Keep pending, missing runnerTaskId, adapter-error, malformed completed result, and handoff JSON non-mutating. Do not create records from the drawer, do not invoke SuiteScript outside the approved server adapter path, and do not show active Open links before import. Output completed-result import CTA contract, guarded harness, trace samples, W186 report, visual testing decision blocked until import, and best next Codex prompt."
+  }
+}

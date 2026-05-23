@@ -1,0 +1,53 @@
+[
+  {
+    "event": "w208_one_click_build_ready",
+    "status": "ready_to_build",
+    "visibleButton": "Build demo records",
+    "hiddenAdminConfig": true
+  },
+  {
+    "event": "w208_one_click_build_submitted",
+    "status": "building_records",
+    "drawerCreatesRecords": false,
+    "serverAdapterOwnsInvocation": true
+  },
+  {
+    "event": "w208_one_click_build_records_ready",
+    "status": "waiting_for_completed_result_import",
+    "openLinksVisible": false
+  },
+  {
+    "event": "w208_one_click_build_ready",
+    "status": "still_building",
+    "visibleButton": "",
+    "hiddenAdminConfig": true
+  },
+  {
+    "event": "w208_one_click_build_submitted",
+    "status": "building_records",
+    "drawerCreatesRecords": false,
+    "serverAdapterOwnsInvocation": true
+  },
+  {
+    "event": "w208_one_click_build_records_ready",
+    "status": "waiting_for_completed_result_import",
+    "openLinksVisible": false
+  },
+  {
+    "event": "w208_one_click_build_ready",
+    "status": "records_ready_to_finish",
+    "visibleButton": "",
+    "hiddenAdminConfig": true
+  },
+  {
+    "event": "w208_one_click_build_submitted",
+    "status": "building_records",
+    "drawerCreatesRecords": false,
+    "serverAdapterOwnsInvocation": true
+  },
+  {
+    "event": "w208_one_click_build_records_ready",
+    "status": "waiting_for_completed_result_import",
+    "openLinksVisible": false
+  }
+]

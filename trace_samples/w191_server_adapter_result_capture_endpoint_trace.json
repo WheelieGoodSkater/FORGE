@@ -1,0 +1,24 @@
+[
+  {
+    "event": "w191_result_capture_poll_pending",
+    "runnerTaskId": "task_w191_pending_001",
+    "status": "polling_pending",
+    "resultCaptureStatus": "pending_runner_completion",
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w191_result_capture_completed_json_returned",
+    "runnerTaskId": "task_w191_ariat_001",
+    "status": "completed_runner_result_ready",
+    "completedResultSchema": "idb.completed-runner-result-json.v1",
+    "customerInternalId": "91201",
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w191_result_capture_adapter_error",
+    "runnerTaskId": "task_w191_bad_001",
+    "status": "adapter_error",
+    "errorMessage": "Ariat International Outdoor Retail Account requires numeric internalId. Ariat International Outdoor Retail Account requires supported NetSuite record URL. salesorder name is required. salesorder requires numeric internalId. salesorder requires supported NetSuite record URL. inventoryitem name is required. inventoryitem requires numeric internalId. inventoryitem requires supported NetSuite record URL. matrixitem name is required. matrixitem requires numeric internalId. matrixitem requires supported NetSuite record URL. inventoryitem name is required. inventoryitem requires numeric internalId. inventoryitem requires supported NetSuite record URL.",
+    "activeOpenLinks": 0
+  }
+]

@@ -1,0 +1,87 @@
+{
+  "schema": "idb.w23-sandbox-suitelet-deployment-smoke.v1",
+  "status": "sandbox_smoke_ready_create_disabled",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "Sandbox Deployment Agent",
+    "SuiteScript Write Agent",
+    "Release Conductor Agent",
+    "Validation And Evidence Agent",
+    "Support Triage Agent"
+  ],
+  "objective": "Deploy and smoke the Suitelet with CREATE_ENABLED false before any controlled write-enabled branch is prepared.",
+  "goal": "Prove the NetSuite-side Suitelet receives reviewed packets, validates gates, returns traceable blocked or validated responses, and creates no records.",
+  "uploadFiles": [
+    {
+      "path": "netsuite/suitescript/idb_suitescript_write_path_suitelet.js",
+      "target": "NetSuite sandbox File Cabinet SuiteScripts folder",
+      "purpose": "Create-disabled Suitelet smoke"
+    },
+    {
+      "path": "idb-drawer.user.js",
+      "target": "Tampermonkey",
+      "purpose": "Current consultant drawer UI"
+    },
+    {
+      "path": "trace_samples/w23_sandbox_smoke_reviewed_packet.json",
+      "target": "Local evidence packet or REST client body",
+      "purpose": "Exact reviewed POST smoke packet"
+    }
+  ],
+  "suiteletDeployment": {
+    "environment": "NetSuite sandbox only",
+    "scriptType": "Suitelet",
+    "createEnabledExpected": false,
+    "methodSmoke": [
+      "GET or browser open returns blocked with traceEvent",
+      "POST reviewed packet returns validated with createEnabled false",
+      "POST missing consultantConfirmed returns blocked",
+      "POST unauthorized lane returns blocked"
+    ],
+    "runtimeParameters": {
+      "custscript_idb_enable_pilot_writes": false,
+      "custscript_idb_allow_customer_pilot": false,
+      "custscript_idb_allow_proof_item_pilot": false,
+      "custscript_idb_sandbox_account_only": false,
+      "custscript_idb_require_type_confirm": false
+    }
+  },
+  "expectedValidPostResponse": {
+    "status": "validated",
+    "traceEvent": "suitescript_write_path_result",
+    "createEnabled": false,
+    "createdRecords": [],
+    "writePlan": true,
+    "governedWritePilotBranchPlan": true,
+    "governedPilotRuntimeToggleStatus": "blocked_main_create_disabled"
+  },
+  "evidenceToCapture": [
+    "SuiteScript file internal ID or File Cabinet path",
+    "Script record ID",
+    "Deployment ID",
+    "Suitelet URL",
+    "GET blocked response",
+    "POST validated response",
+    "No record IDs returned",
+    "No records created in NetSuite",
+    "Trace export from drawer if testing from a consultant session"
+  ],
+  "stopConditions": [
+    "CREATE_ENABLED is true in the uploaded main Suitelet",
+    "deployment is production",
+    "POST smoke creates or updates a record",
+    "response omits suitescript_write_path_result",
+    "response returns createdRecords while createEnabled is false",
+    "unauthorized lane validates as create-ready",
+    "missing consultant confirmation validates"
+  ],
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "noLiveWrites": true,
+    "noProductionDeployment": true,
+    "noDrawerDirectWrites": true,
+    "noTransactionWrite": true,
+    "llmAdvisoryOnly": true
+  },
+  "nextBlock": "W24: Customer Plus Proof Item Write Pilot"
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "idb.w86-consultant-operator-scoring-rubric.v1",
+  "scale": "1-5",
+  "passingScore": 4,
+  "categories": [
+    "Consultant intake clarity",
+    "Scenario/lane confirmation clarity",
+    "DCC handoff export discoverability",
+    "Suitelet form parameter parity",
+    "DCC-owned config ownership clarity",
+    "Runner preview clarity",
+    "No-submit/no-write safety clarity",
+    "DCC object-generation ownership clarity",
+    "Operator confidence to proceed later under governed conditions",
+    "Evidence completeness"
+  ],
+  "stopGoCriteria": {
+    "goIf": [
+      "Average score is at least 4.0.",
+      "No category scores below 3.",
+      "No IDB SuiteScript invocation or transaction write occurs.",
+      "Operator can map handoff to DCC Suitelet in under 5 minutes.",
+      "DCC object-generation ownership remains clear."
+    ],
+    "noGoIf": [
+      "Any IDB path submits SuiteScript or creates/queues records.",
+      "Consultant cannot confirm scenario confidently.",
+      "Operator cannot map required params to DCC fields.",
+      "DCC-owned config ownership is unclear.",
+      "Evidence packet is missing handoff JSON or trace JSON."
+    ]
+  }
+}

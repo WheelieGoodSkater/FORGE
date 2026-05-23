@@ -1,0 +1,81 @@
+{
+  "schema": "idb.w89r-graded-real-user-test-results.v1",
+  "status": "graded_partial_real_evidence_no_go",
+  "averageScore": 3,
+  "passingScore": 4,
+  "anyCategoryBelowThree": true,
+  "categories": [
+    {
+      "category": "Consultant intake clarity",
+      "score": 4,
+      "evidence": "Customer, website, notes, SC objective, competitor, and decision criteria are present in trace."
+    },
+    {
+      "category": "Scenario/lane confirmation clarity",
+      "score": 4,
+      "evidence": "Ariat apparel/footwear classification is correct, but trace source wording still mentions guided_intake."
+    },
+    {
+      "category": "DCC handoff export discoverability",
+      "score": 2,
+      "evidence": "Expected idb-dcc-runner-handoff-packet JSON was not present; legacy SuiteScript review packet was exported instead."
+    },
+    {
+      "category": "Suitelet form parameter parity",
+      "score": 2,
+      "evidence": "No operator comparison notes or DCC handoff packet were available to prove form-param parity."
+    },
+    {
+      "category": "DCC-owned config ownership clarity",
+      "score": 3,
+      "evidence": "Trace includes DCC family/scenario/toggles, but the uploaded packet is not the W83/W88 DCC handoff packet."
+    },
+    {
+      "category": "Runner preview clarity",
+      "score": 2,
+      "evidence": "Runner preview cannot be graded without dccRunnerHandoffPacketV1 or operator comparison notes."
+    },
+    {
+      "category": "No-submit/no-write safety clarity",
+      "score": 5,
+      "evidence": "No IDB SuiteScript invocation or transaction write is shown; packet stays blocked and review-only."
+    },
+    {
+      "category": "DCC object-generation ownership clarity",
+      "score": 4,
+      "evidence": "Object list exists and DCC scenario/toggles are present; DCC runner ownership still needs operator proof."
+    },
+    {
+      "category": "Operator confidence to proceed later under governed conditions",
+      "score": 2,
+      "evidence": "No operator comparison notes were provided."
+    },
+    {
+      "category": "Evidence completeness",
+      "score": 2,
+      "evidence": "Trace and legacy SuiteScript packet are present, but W88 screenshots, DCC handoff JSON, consultant notes, and operator notes are missing."
+    }
+  ],
+  "positiveFindings": [
+    "Ariat classified as Apparel & Accessories with high websiteEvidenceV1 confidence.",
+    "Accepted packet records website_evidence_v1 as naming authority.",
+    "SuiteScript review packet preserved create-disabled and consultant-confirmation-required boundaries.",
+    "Transaction write remained blocked."
+  ],
+  "gaps": [
+    "Required W88 DCC runner handoff export was not provided; only the legacy SuiteScript review packet was found.",
+    "No screenshots were provided, so live readability for Plan, Review, DCC handoff, and Trace cannot be graded visually.",
+    "No operator comparison notes were provided, so Suitelet form-param parity and runner preview parity are not proven.",
+    "Trace shows lane_recommended source as guided_intake even though accepted naming authority is website_evidence_v1; this can confuse the website-vs-notes ownership story.",
+    "The legacy review packet still contains mode=create and writePathType=suitescript_direct_write while createAllowed=false, which is technically safe but semantically noisy for pilot users."
+  ],
+  "noRegression": {
+    "noIdbWritesObserved": true,
+    "noSuiteScriptInvocationFromIdbObserved": true,
+    "noTransactionWritesObserved": true,
+    "noDccRunnerRewriteObserved": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  }
+}

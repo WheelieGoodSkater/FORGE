@@ -1,0 +1,167 @@
+{
+  "schema": "idb.w230-forge-post-install-evidence-review-fix-gate-harness.v1",
+  "status": "pass",
+  "passCount": 8,
+  "total": 8,
+  "results": [
+    {
+      "id": "review_outcomes_present",
+      "pass": true,
+      "evidence": "Accept | Accept with visual follow-up | Block install"
+    },
+    {
+      "id": "no_fix_conditions_explicit",
+      "pass": true,
+      "evidence": "All W229 required fields pass. | No block condition present. | Only optional note is supplied."
+    },
+    {
+      "id": "blocked_install_conditions_explicit",
+      "pass": true,
+      "evidence": "Rail button missing. | Drawer does not open. | Header logo missing. | Close button inaccessible. | Old visible header text appears. | Operator summary copy control missing."
+    },
+    {
+      "id": "fix_gate_routing_limited_to_allowed_surface_fixes",
+      "pass": true,
+      "evidence": "Rail label fit polish | Header logo sizing polish | Close-button accessibility fix | Copy-summary placement fix | Old-branding removal fix"
+    },
+    {
+      "id": "normal_review_copy_hides_forbidden_internal_terms",
+      "pass": true,
+      "evidence": "Review the post-install FORGE evidence and choose accept, accept with visual follow-up, or block install.\nOpen a follow-up only when the evidence names a specific rail, header, close-button, copy-summary, or old-branding issue.\nIf all required checks pass, no fix is needed."
+    },
+    {
+      "id": "w229_evidence_intake_packet_remains_unchanged",
+      "pass": true,
+      "evidence": "{\"accepted\":\"accept\",\"visualFollowUp\":\"accept_with_visual_follow_up\",\"blocked\":\"block_install\"}"
+    },
+    {
+      "id": "install_exclusions_remain_explicit",
+      "pass": true,
+      "evidence": "{\"noW144AdapterUpdate\":true,\"noRunnerUpdate\":true,\"noSuiteScriptDeploymentUpdate\":true,\"noImageLookupChange\":true}"
+    },
+    {
+      "id": "w214_to_w229_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"w151ImportGuardPreserved\":true,\"semanticRoleMappingPreserved\":true,\"modeAwareNamingGuardrailsPreserved\":true,\"dynamicRecordDisplayPreserved\":true,\"consultantPartialResultLanguagePreserved\":true,\"operatorReadableSmokePacketPreserved\":true,\"frozenReviewRunWordingPreserved\":true,\"importFailureRecoveryCopyPreserved\":true,\"recoveryUiSurfaceWiringPreserved\":true,\"endToEndOperatorPacketPreserved\":true,\"exportableOperatorSummaryPreserved\":true,\"consultantCopyExportActionPreserved\":true,\"forgeBrandingPreserved\":true,\"targetedLiveHeaderSmokePreserved\":true,\"forgeRailFontFitCorrectionPreserved\":true,\"responsiveForgeHeaderLogoPolishPreserved\":true,\"installCutoverPacketPreserved\":true,\"finalInstallPacketPreserved\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true,\"nllmAdvisoryOnly\":true,\"postInstallAcceptancePacketPreserved\":true,\"postInstallEvidenceIntakePacketPreserved\":true}"
+    }
+  ],
+  "reviewPacket": {
+    "schema": "idb.w230-forge-post-install-evidence-review-fix-gate.v1",
+    "status": "post_install_evidence_review_fix_gate_ready",
+    "expectedInstalledScript": "idb-drawer.user.js",
+    "acceptedEvidenceSource": [
+      "W229 operator evidence intake fields.",
+      "Optional screenshot/reference note."
+    ],
+    "reviewOutcomes": [
+      {
+        "id": "accept",
+        "label": "Accept",
+        "decision": "No fix needed."
+      },
+      {
+        "id": "accept_with_visual_follow_up",
+        "label": "Accept with visual follow-up",
+        "decision": "Open only the targeted visual polish follow-up named by the evidence."
+      },
+      {
+        "id": "block_install",
+        "label": "Block install",
+        "decision": "Open only the targeted blocked-install fix named by the evidence."
+      }
+    ],
+    "fixGateRouting": [
+      {
+        "id": "rail_label_fit_polish",
+        "label": "Rail label fit polish",
+        "allowedScope": "Rail label clipped."
+      },
+      {
+        "id": "header_logo_sizing_polish",
+        "label": "Header logo sizing polish",
+        "allowedScope": "Logo overlaps the close button or needs spacing polish."
+      },
+      {
+        "id": "close_button_accessibility_fix",
+        "label": "Close-button accessibility fix",
+        "allowedScope": "Close button inaccessible."
+      },
+      {
+        "id": "copy_summary_placement_fix",
+        "label": "Copy-summary placement fix",
+        "allowedScope": "Operator summary copy control missing."
+      },
+      {
+        "id": "old_branding_removal_fix",
+        "label": "Old-branding removal fix",
+        "allowedScope": "Old visible header text appears."
+      }
+    ],
+    "noFixConditions": [
+      "All W229 required fields pass.",
+      "No block condition present.",
+      "Only optional note is supplied."
+    ],
+    "blockedInstallConditions": [
+      "Rail button missing.",
+      "Drawer does not open.",
+      "Header logo missing.",
+      "Close button inaccessible.",
+      "Old visible header text appears.",
+      "Operator summary copy control missing."
+    ],
+    "normalReviewCopy": "Review the post-install FORGE evidence and choose accept, accept with visual follow-up, or block install.\nOpen a follow-up only when the evidence names a specific rail, header, close-button, copy-summary, or old-branding issue.\nIf all required checks pass, no fix is needed.",
+    "normalReviewCopyHidesForbiddenTerms": true,
+    "installExclusions": {
+      "noW144AdapterUpdate": true,
+      "noRunnerUpdate": true,
+      "noSuiteScriptDeploymentUpdate": true,
+      "noImageLookupChange": true
+    },
+    "noRegressionBoundarySummary": {
+      "w151ImportGuardPreserved": true,
+      "semanticRoleMappingPreserved": true,
+      "modeAwareNamingGuardrailsPreserved": true,
+      "dynamicRecordDisplayPreserved": true,
+      "consultantPartialResultLanguagePreserved": true,
+      "operatorReadableSmokePacketPreserved": true,
+      "frozenReviewRunWordingPreserved": true,
+      "importFailureRecoveryCopyPreserved": true,
+      "recoveryUiSurfaceWiringPreserved": true,
+      "endToEndOperatorPacketPreserved": true,
+      "exportableOperatorSummaryPreserved": true,
+      "consultantCopyExportActionPreserved": true,
+      "forgeBrandingPreserved": true,
+      "targetedLiveHeaderSmokePreserved": true,
+      "forgeRailFontFitCorrectionPreserved": true,
+      "responsiveForgeHeaderLogoPolishPreserved": true,
+      "installCutoverPacketPreserved": true,
+      "finalInstallPacketPreserved": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerTransactionWrites": true,
+      "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+      "runnerOwnsGeneratedRecords": true,
+      "imageLookupDisabledByDefault": true,
+      "nllmAdvisoryOnly": true,
+      "postInstallAcceptancePacketPreserved": true,
+      "postInstallEvidenceIntakePacketPreserved": true
+    },
+    "preservedFromW229": {
+      "evidencePacketStatus": "post_install_operator_evidence_intake_ready",
+      "evidenceFieldCount": 8,
+      "sampleClassifications": {
+        "accepted": "accept",
+        "visualFollowUp": "accept_with_visual_follow_up",
+        "blocked": "block_install"
+      },
+      "targetedFollowUpRouting": [
+        "rail_label_fit_polish",
+        "header_logo_sizing_polish",
+        "close_button_accessibility_fix",
+        "copy_summary_placement_fix",
+        "old_branding_removal_fix"
+      ]
+    },
+    "visualTestingDecision": "No broad visual testing for W230. Review only supplied W229 evidence and route targeted follow-up if needed."
+  }
+}

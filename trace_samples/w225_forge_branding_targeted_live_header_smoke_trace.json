@@ -1,0 +1,18 @@
+{
+  "schema": "idb.w225-forge-branding-targeted-live-header-smoke-trace.v1",
+  "railText": "FORGE",
+  "railTitle": "Open FORGE. Drag to move the launcher.",
+  "header": {
+    "forgeLogoClassPresent": true,
+    "forgeAltTextPresent": true,
+    "oldBrandingAbsent": true,
+    "closeButtonAccessible": true
+  },
+  "operatorSummary": {
+    "copyControlPresent": true,
+    "successCopy": "Operator summary copied.",
+    "failureCopy": "Copy failed. Use export from admin/debug.",
+    "adminDebugToggleGated": true
+  },
+  "visualTestingDecision": "No broad visual testing for W225; targeted live-rendered shell smoke only."
+}

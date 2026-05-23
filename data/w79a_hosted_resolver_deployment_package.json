@@ -1,0 +1,134 @@
+{
+  "schema": "idb.w79a-hosted-resolver-deployment-package.v1",
+  "status": "deployment_package_ready_hosted_pilot_still_no_go",
+  "objective": "Turn the local no-write websiteResolverServiceV1 prototype into a deployable hosted resolver package before consultant smoke.",
+  "roles": [
+    {
+      "role": "Resolver Service Architect",
+      "owns": "Hosted service wrapper, health/resolve routes, env contract, and local production-mode command."
+    },
+    {
+      "role": "Security Guard",
+      "owns": "Secrets, strict CORS, token validation, cookie/auth rejection, write-payload rejection, and no-secret traces."
+    },
+    {
+      "role": "Website Intelligence Agent",
+      "owns": "Resolver behavior parity with websiteEvidenceV1 and failure-state honesty."
+    },
+    {
+      "role": "DevOps Readiness Agent",
+      "owns": "Dockerfile, env template, deployment checklist, and rollback/runbook shape."
+    },
+    {
+      "role": "Regression Guard Agent",
+      "owns": "Validator gates and no-write/no-SuiteScript/N/LLM-advisory-only boundaries."
+    }
+  ],
+  "deploymentPackage": {
+    "serviceWrapper": "tools/website_resolver_hosted_service.js",
+    "dockerfile": "deploy/hosted-resolver/Dockerfile",
+    "envTemplate": "deploy/hosted-resolver/env.example",
+    "runbook": "deploy/hosted-resolver/README.md",
+    "healthEndpoint": "/health",
+    "resolveEndpoint": "/idb/website-resolver/v1/resolve",
+    "localProductionCommand": "npm run resolver:hosted"
+  },
+  "envContract": [
+    {
+      "name": "IDB_RESOLVER_TOKEN",
+      "required": true,
+      "secret": true,
+      "purpose": "Shared resolver token supplied by secret manager or protected shell."
+    },
+    {
+      "name": "IDB_RESOLVER_ALLOWED_ORIGINS",
+      "required": true,
+      "secret": false,
+      "purpose": "Comma-separated exact NetSuite staging origins allowed by CORS."
+    },
+    {
+      "name": "IDB_RESOLVER_PORT",
+      "required": false,
+      "secret": false,
+      "purpose": "HTTP port for local production-mode or container runtime."
+    },
+    {
+      "name": "IDB_RESOLVER_HOST",
+      "required": false,
+      "secret": false,
+      "purpose": "Bind host. Defaults to 127.0.0.1 for local production-mode."
+    },
+    {
+      "name": "IDB_RESOLVER_RATE_TOKEN_PER_MINUTE",
+      "required": false,
+      "secret": false,
+      "purpose": "Per-token resolver request limit per minute."
+    },
+    {
+      "name": "IDB_RESOLVER_RATE_DOMAIN_PER_MINUTE",
+      "required": false,
+      "secret": false,
+      "purpose": "Per-domain resolver request limit per minute."
+    },
+    {
+      "name": "IDB_RESOLVER_REQUEST_MAX_BYTES",
+      "required": false,
+      "secret": false,
+      "purpose": "Maximum JSON request body size accepted by the hosted wrapper."
+    }
+  ],
+  "securityControls": [
+    "Hosted mode refuses to start without explicit IDB_RESOLVER_TOKEN.",
+    "Hosted mode refuses to start without exact IDB_RESOLVER_ALLOWED_ORIGINS.",
+    "CORS allowlist has no wildcard mode.",
+    "Missing or wrong token returns 401 before fetch.",
+    "NetSuite cookies and Authorization headers are rejected before fetch.",
+    "Write-shaped payload fields are rejected before fetch.",
+    "SSRF, unsafe scheme, private IP, and unsafe redirect controls remain in resolver service.",
+    "Trace output records booleans and hashes only; raw token/cookie/auth/manual-evidence full text is not logged."
+  ],
+  "cacheAdapter": {
+    "current": "memory",
+    "productionExtensionPoint": "replace createMemoryCache with managed cache adapter without changing response shape",
+    "cacheReadyFields": [
+      "cache.key",
+      "cache.ttlSeconds",
+      "cache.contentHashes",
+      "cache.hit"
+    ]
+  },
+  "remoteDeploymentChecklist": [
+    "Provision HTTPS staging endpoint.",
+    "Set IDB_RESOLVER_TOKEN in secret manager only.",
+    "Set exact NetSuite staging origin in IDB_RESOLVER_ALLOWED_ORIGINS.",
+    "Run /health smoke and verify writeAuthority none.",
+    "Run auth/CORS/write-payload rejection smoke.",
+    "Run approved live-site smoke through hosted endpoint.",
+    "Confirm no raw secrets in logs, traces, reports, or screenshots.",
+    "Keep hosted consultant pilot disabled until W76R/W80 remote smoke has remoteSmokeExecuted=true."
+  ],
+  "localProductionSmoke": [
+    "export IDB_RESOLVER_TOKEN='<secret-manager-value>'",
+    "export IDB_RESOLVER_ALLOWED_ORIGINS='https://<approved-netsuite-account>.app.netsuite.com'",
+    "npm run resolver:hosted",
+    "curl -sS http://127.0.0.1:8787/health"
+  ],
+  "pilotDecision": {
+    "hostedResolverPilotEnabled": false,
+    "consultantSmokeEligible": false,
+    "reason": "Deployment package is ready, but no real remote hosted endpoint has executed smoke with remoteSmokeExecuted=true."
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "hostedResolverPilotEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W79B: Provision Hosted Resolver Staging Endpoint",
+    "prompt": "Move through W79B: Provision Hosted Resolver Staging Endpoint. Use the W79A deployment package to provision or identify the real HTTPS staging websiteResolverServiceV1 endpoint, configure secret-managed IDB_RESOLVER_TOKEN, exact NetSuite staging CORS origin, blocked-origin negative test value, rate limits, cache setting, and observability redaction. Do not store secrets in repo files, traces, reports, screenshots, or chat. Keep hosted consultant pilot disabled until remote smoke returns remoteSmokeExecuted=true. Output provisioning evidence, secret-safe env handoff, remote endpoint readiness checklist, W79B report, validator gates, and best next Codex prompt."
+  }
+}

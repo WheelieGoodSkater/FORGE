@@ -1,0 +1,235 @@
+{
+  "schema": "idb.w173-approved-server-adapter-real-sandbox-one-call-packet-trace.v1",
+  "generatedAt": "2026-05-17T21:41:15.654Z",
+  "traceSamples": [
+    {
+      "event": "w173_w172_execution_harness_ready",
+      "gate": "w172_execution_harness_ready",
+      "ready": true,
+      "evidence": "PASS_ONE_CALL_EXECUTION_HARNESS_READY__LIVE_DISABLED_BY_DEFAULT__VISUAL_TESTING_BLOCKED",
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w173_endpoint_ready",
+      "gate": "endpoint_ready",
+      "ready": true,
+      "evidence": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w173_server_flags_true",
+      "gate": "server_flags_true",
+      "ready": true,
+      "evidence": {
+        "CREATE_ENABLED": true,
+        "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+        "QUEUE_SUBMIT_ENABLED": true
+      },
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w173_sandbox_allowlist_ready",
+      "gate": "sandbox_allowlist_ready",
+      "ready": true,
+      "evidence": {
+        "accountAllowlist": [
+          "SANDBOX_ACCOUNT_ID"
+        ],
+        "currentAccountAllowed": true,
+        "sandboxOnly": true
+      },
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w173_operator_phrase_ready",
+      "gate": "operator_phrase_ready",
+      "ready": true,
+      "evidence": {
+        "requiredPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+        "providedPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+        "explicitLiveAuthorization": true,
+        "endpointConfirmed": true,
+        "executeLiveCallRequested": false
+      },
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w173_operator_approval_ready",
+      "gate": "operator_approval_ready",
+      "ready": true,
+      "evidence": {
+        "schema": "idb.operator-queue-gate.v1",
+        "operatorOnly": true,
+        "operator": {
+          "name": "Operator QA",
+          "reviewedAt": "2026-05-16T23:55:00.000Z"
+        },
+        "reviewDecision": "operator_approved_queue_submit",
+        "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+        "confirmedNoSubmit": true,
+        "confirmedDrawerNoWrite": true,
+        "confirmedSandboxAccount": true,
+        "drawerInvocationTokenAccepted": false,
+        "notes": "W173 packet only. Real execution remains disabled until a later explicit live-call authorization block."
+      },
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w173_idempotency_ready",
+      "gate": "idempotency_ready",
+      "ready": true,
+      "evidence": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w173_one_submit_limit_ready",
+      "gate": "one_submit_limit_ready",
+      "ready": true,
+      "evidence": {
+        "maxQueueSubmitAttempts": 1,
+        "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+        "secondSubmitBehavior": "blocked_duplicate_submit"
+      },
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w173_rollback_ready",
+      "gate": "rollback_ready",
+      "ready": true,
+      "evidence": {
+        "owner": "server_deployment_flags",
+        "action": "disable_server_flags_before_any_retry",
+        "flagsToDisable": [
+          "CREATE_ENABLED",
+          "GOVERNED_SANDBOX_WRITE_ENABLED",
+          "QUEUE_SUBMIT_ENABLED"
+        ]
+      },
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w173_w151_import_guard_ready",
+      "gate": "w151_import_guard_ready",
+      "ready": true,
+      "evidence": {
+        "required": true,
+        "acceptsOnlyCompletedRunnerResultJson": true,
+        "rejectsHandoffJson": true,
+        "requiresNumericInternalIds": true,
+        "requiresSupportedNetSuiteUrls": true,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "blockedCaseSamples": {
+    "missingEndpoint": {
+      "status": "real_sandbox_one_call_packet_blocked",
+      "blockedReasons": [
+        "endpoint_ready"
+      ],
+      "liveRequestSent": false
+    },
+    "missingFlags": {
+      "status": "real_sandbox_one_call_packet_blocked",
+      "blockedReasons": [
+        "server_flags_true"
+      ],
+      "liveRequestSent": false
+    },
+    "missingPhrase": {
+      "status": "real_sandbox_one_call_packet_blocked",
+      "blockedReasons": [
+        "operator_phrase_ready"
+      ],
+      "liveRequestSent": false
+    }
+  },
+  "results": [
+    {
+      "name": "w173_starts_from_w172_execution_harness",
+      "pass": true,
+      "detail": "PASS_ONE_CALL_EXECUTION_HARNESS_READY__LIVE_DISABLED_BY_DEFAULT__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w173_packet_hook_ready",
+      "pass": true,
+      "detail": "approvedServerAdapterRealSandboxOneCallExecutionPacketV1"
+    },
+    {
+      "name": "w173_packet_core_ready_execution_disabled",
+      "pass": true,
+      "detail": "real_sandbox_one_call_packet_ready_execution_disabled"
+    },
+    {
+      "name": "w173_endpoint_flags_allowlist_ready",
+      "pass": true,
+      "detail": "{\"method\":\"POST\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\",\"approvedEndpointMode\":\"approved_server_adapter_only\"}"
+    },
+    {
+      "name": "w173_operator_phrase_idempotency_ready",
+      "pass": true,
+      "detail": "{\"requiredPhrase\":\"AUTHORIZE ONE SANDBOX ADAPTER CALL\",\"providedPhrase\":\"AUTHORIZE ONE SANDBOX ADAPTER CALL\",\"endpointConfirmed\":true,\"explicitLiveAuthorization\":true}"
+    },
+    {
+      "name": "w173_one_submit_rollback_expected_outcomes_ready",
+      "pass": true,
+      "detail": "{\"successStatus\":\"queued_pending\",\"successReturns\":[\"runnerTaskId\",\"resultCapture.status=pending_runner_completion\"],\"adapterErrorStatus\":\"adapter_transport_error_drawer_safe\",\"finalGeneratedNamesRemainUnchangedUntilW151Import\":true}"
+    },
+    {
+      "name": "w173_w151_import_guard_ready",
+      "pass": true,
+      "detail": "{\"required\":true,\"acceptsOnlyCompletedRunnerResultJson\":true,\"rejectsHandoffJson\":true,\"requiresNumericInternalIds\":true,\"requiresSupportedNetSuiteUrls\":true,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w173_blocked_cases_do_not_request",
+      "pass": true,
+      "detail": "{\"missingEndpoint\":[\"endpoint_ready\"],\"missingFlags\":[\"server_flags_true\"],\"missingPhrase\":[\"operator_phrase_ready\"]}"
+    },
+    {
+      "name": "w173_no_mutation_or_links",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"activeOpenLinks\":0,\"writesAttemptedFromDrawer\":false}"
+    },
+    {
+      "name": "w173_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"oneSubmitLimit\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noLiveInvocation\":true}"
+    },
+    {
+      "name": "w173_visual_testing_blocked",
+      "pass": true,
+      "detail": "W173 prepares the real sandbox one-call packet only. Visual testing stays blocked until the governed runner returns completed result JSON to IDB."
+    }
+  ]
+}

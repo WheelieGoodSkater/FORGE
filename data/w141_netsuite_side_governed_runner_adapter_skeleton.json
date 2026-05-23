@@ -1,0 +1,302 @@
+{
+  "schema": "idb.w141-netsuite-side-governed-runner-adapter-skeleton.v1",
+  "status": "netsuite_side_adapter_skeleton_ready_dry_run_only",
+  "decision": "PASS_DRY_RUN_ADAPTER_READY__NEXT_ENABLE_OPERATOR_QUEUE_GATES",
+  "adapterSkeleton": {
+    "file": "/path/to/workspace/intelligent demo builder drawer/netsuite/idb_governed_runner_adapter_w141_suitelet.js",
+    "scriptType": "Suitelet",
+    "version": "w141-netSuite-side-governed-runner-adapter-skeleton",
+    "createEnabled": false,
+    "governedSandboxWriteEnabled": false,
+    "drawerAuthority": "none",
+    "legacyDccSuiteletUi": "legacy_reference_only"
+  },
+  "validationGates": [
+    "confirmed IDB build request JSON parses",
+    "schema is idb.confirmed-build-request.v1",
+    "consultant confirmation is true",
+    "state authority and handoff parity are matched",
+    "required record roles are present",
+    "runner script/deploy/runtime config is resolved server-side",
+    "createEnabled is false in W141",
+    "governedSandboxWriteEnabled is false in W141",
+    "queueSubmitted remains false",
+    "dry-run result returns names only and no URLs"
+  ],
+  "dryRunSmoke": {
+    "adapterResult": {
+      "schema": "idb.governed-runner-adapter-result.v1",
+      "adapterVersion": "w141-netSuite-side-governed-runner-adapter-skeleton",
+      "runnerStatus": "validated_not_submitted",
+      "runMode": "write_disabled_dry_run",
+      "createsRecords": false,
+      "queueSubmitted": false,
+      "runnerTaskId": null,
+      "createEnabled": false,
+      "governedSandboxWriteEnabled": false,
+      "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+      "sourceRequestId": "idb-build-ariat-style-ready-001",
+      "runnerRuntimeConfig": {
+        "schema": "idb.governed-runner-runtime-config.v1",
+        "runnerScriptIdPresent": true,
+        "runnerDeployIdPresent": true,
+        "mappingIdPresent": true,
+        "folderIdPresent": true,
+        "subsidiaryIdPresent": true,
+        "locationIdPresent": true,
+        "workCenterSearchIdPresent": false,
+        "createEnabled": false,
+        "governedSandboxWriteEnabled": false
+      },
+      "runnerParamPreview": {
+        "custscript_v3_runner_prospect": "Ariat International",
+        "custscript_v3_runner_website": "https://www.ariat.com/",
+        "custscript_v3_runner_notes": "Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.",
+        "custscript_v3_runner_agenda": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.",
+        "custscript_v3_runner_extid": "IDB_ARIAT_INTERNATIONAL_APPAREL_ACCESSORIES_DRYRUN",
+        "custscript_v3_runner_mapping": "112",
+        "custscript_v3_runner_folder": "345",
+        "custscript_v3_runner_subsidiary": "1",
+        "custscript_v3_runner_location": "7",
+        "custscript_v3_runner_wc_search": "",
+        "custscript_v3_runner_enable_wip": "F",
+        "custscript_v3_runner_enable_mfg": "F",
+        "custscript_v3_runner_create_new_hero": "T",
+        "custscript_v3_runner_hero_item": ""
+      },
+      "noSubmitRollback": {
+        "supported": true,
+        "performed": true,
+        "behavior": "The adapter validated input and runtime config but did not queue the governed runner because writes are disabled."
+      },
+      "finalGeneratedNamesImport": {
+        "schema": "idb.internal-build-engine.real-record-result.v1",
+        "runStatus": "dry_run_validated_not_submitted",
+        "prospect": "Ariat International",
+        "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+        "recordExistenceStatus": "not_created_dry_run",
+        "customer": {
+          "name": "Ariat International Outdoor Retail Account"
+        },
+        "salesOrder": {
+          "name": "Ariat International Demo Order"
+        },
+        "heroItem": {
+          "name": "Ariat International Hero Item"
+        },
+        "matrixItem": {
+          "name": "Ariat International Matrix Proof Item"
+        },
+        "componentItems": [
+          {
+            "name": "Ariat International Component Item"
+          }
+        ],
+        "warnings": [
+          "Dry-run result contains names only. No record ids or URLs are returned until governed sandbox write is enabled."
+        ],
+        "errors": [],
+        "recoverableBlockers": []
+      },
+      "validation": {
+        "valid": true,
+        "requestValid": true,
+        "runtimeConfigValid": true,
+        "errors": []
+      }
+    },
+    "invalidRequestResult": {
+      "schema": "idb.governed-runner-adapter-result.v1",
+      "adapterVersion": "w141-netSuite-side-governed-runner-adapter-skeleton",
+      "runnerStatus": "blocked_validation_failed",
+      "runMode": "write_disabled_dry_run",
+      "createsRecords": false,
+      "queueSubmitted": false,
+      "runnerTaskId": null,
+      "createEnabled": false,
+      "governedSandboxWriteEnabled": false,
+      "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+      "sourceRequestId": "idb-build-ariat-style-ready-001",
+      "runnerRuntimeConfig": {
+        "schema": "idb.governed-runner-runtime-config.v1",
+        "runnerScriptIdPresent": true,
+        "runnerDeployIdPresent": true,
+        "mappingIdPresent": true,
+        "folderIdPresent": true,
+        "subsidiaryIdPresent": true,
+        "locationIdPresent": true,
+        "workCenterSearchIdPresent": false,
+        "createEnabled": false,
+        "governedSandboxWriteEnabled": false
+      },
+      "runnerParamPreview": {},
+      "noSubmitRollback": {
+        "supported": true,
+        "performed": true,
+        "behavior": "The adapter validated input and runtime config but did not queue the governed runner because writes are disabled."
+      },
+      "finalGeneratedNamesImport": {
+        "schema": "idb.internal-build-engine.real-record-result.v1",
+        "runStatus": "dry_run_validated_not_submitted",
+        "prospect": "Ariat International",
+        "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+        "recordExistenceStatus": "not_created_dry_run",
+        "customer": {
+          "name": "Ariat International Outdoor Retail Account"
+        },
+        "salesOrder": {
+          "name": "Ariat International Demo Order"
+        },
+        "heroItem": {
+          "name": "Ariat International Hero Item"
+        },
+        "matrixItem": {
+          "name": "Ariat International Matrix Proof Item"
+        },
+        "componentItems": [
+          {
+            "name": "Ariat International Component Item"
+          }
+        ],
+        "warnings": [
+          "Dry-run result contains names only. No record ids or URLs are returned until governed sandbox write is enabled."
+        ],
+        "errors": [],
+        "recoverableBlockers": []
+      },
+      "validation": {
+        "valid": false,
+        "requestValid": false,
+        "runtimeConfigValid": true,
+        "errors": [
+          "consultant confirmation is required."
+        ]
+      }
+    },
+    "queueAttempt": {
+      "queued": false,
+      "taskId": null,
+      "reason": "governed sandbox writes are disabled in W141"
+    },
+    "drawerImportSmoke": {
+      "navigationStatus": "using_dcc_final_names",
+      "openAnchorCount": 0,
+      "linkPendingCount": 0,
+      "missingUrlCount": 5,
+      "links": [
+        {
+          "label": "Customer",
+          "role": "customer",
+          "name": "Ariat International Outdoor Retail Account",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        },
+        {
+          "label": "Sales Order / demo transaction",
+          "role": "sales_order",
+          "name": "Ariat International Demo Order",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        },
+        {
+          "label": "Hero item",
+          "role": "hero_item",
+          "name": "Ariat International Hero Item",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        },
+        {
+          "label": "Matrix item / proof item",
+          "role": "matrix_or_proof_item",
+          "name": "Ariat International Matrix Proof Item",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        },
+        {
+          "label": "Component item 1",
+          "role": "component_item",
+          "name": "Ariat International Component Item",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        }
+      ]
+    }
+  },
+  "regressionHarnessUpdates": [
+    "Add W141 Suitelet adapter skeleton syntax check.",
+    "Add W141 harness to preflight.",
+    "Validate W141 dry-run result never queues the scheduled runner.",
+    "Validate W141 result imports into drawer with zero active Open links.",
+    "Validate W141 skeleton has no N/record dependency and no record.create or record.submitFields calls.",
+    "Validate drawer write signature count remains zero."
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "internalRunnerOwnershipPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "governedSandboxWritesNotEnabled": true
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterQueueOrWriteEnablement": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W141 is a NetSuite-side skeleton and dry-run harness only. It does not queue or write, so there are no real record links to visually test yet."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W142: Operator Queue Gate And Dry-Run Result Surface",
+    "prompt": "Move through W142: Operator Queue Gate And Dry-Run Result Surface. Use the W141 NetSuite-side governed runner adapter skeleton to add operator-only queue readiness gates and a dry-run result surface that proves the adapter can accept the W139 confirmed IDB request, validate W140 gates, resolve server-side runner config, and remain no-submit until governed sandbox write flags are explicitly enabled. Do not enable writes yet. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, no-submit rollback, internal runner ownership, and no active Open links without real URLs. Output queue-gate contract, dry-run result evidence, trace samples, W142 report, visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w141_starts_from_w140_adapter_boundary_ready",
+      "pass": true,
+      "detail": "PASS_ADAPTER_BOUNDARY_READY__IMPLEMENT_NETSUITE_SIDE_ADAPTER_NEXT"
+    },
+    {
+      "name": "w141_suitelet_adapter_skeleton_present",
+      "pass": true,
+      "detail": "Suitelet skeleton source"
+    },
+    {
+      "name": "w141_validates_confirmed_idb_request",
+      "pass": true,
+      "detail": "{\"valid\":{\"valid\":true,\"requestValid\":true,\"runtimeConfigValid\":true,\"errors\":[]},\"invalid\":{\"valid\":false,\"requestValid\":false,\"runtimeConfigValid\":true,\"errors\":[\"consultant confirmation is required.\"]}}"
+    },
+    {
+      "name": "w141_resolves_runner_runtime_config_server_side",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.governed-runner-runtime-config.v1\",\"runnerScriptIdPresent\":true,\"runnerDeployIdPresent\":true,\"mappingIdPresent\":true,\"folderIdPresent\":true,\"subsidiaryIdPresent\":true,\"locationIdPresent\":true,\"workCenterSearchIdPresent\":false,\"createEnabled\":false,\"governedSandboxWriteEnabled\":false}"
+    },
+    {
+      "name": "w141_dry_run_does_not_queue_or_create",
+      "pass": true,
+      "detail": "{\"result\":{\"schema\":\"idb.governed-runner-adapter-result.v1\",\"adapterVersion\":\"w141-netSuite-side-governed-runner-adapter-skeleton\",\"runnerStatus\":\"validated_not_submitted\",\"runMode\":\"write_disabled_dry_run\",\"createsRecords\":false,\"queueSubmitted\":false,\"runnerTaskId\":null,\"createEnabled\":false,\"governedSandboxWriteEnabled\":false,\"generatedRecordOwner\":\"governed_dcc_runner_internal_build_engine\",\"sourceRequestId\":\"idb-build-ariat-style-ready-001\",\"runnerRuntimeConfig\":{\"schema\":\"idb.governed-runner-runtime-config.v1\",\"runnerScriptIdPresent\":true,\"runnerDeployIdPresent\":true,\"mappingIdPresent\":true,\"folderIdPresent\":true,\"subsidiaryIdPresent\":true,\"locationIdPresent\":true,\"workCenterSearchIdPresent\":false,\"createEnabled\":false,\"governedSandboxWriteEnabled\":false},\"runnerParamPreview\":{\"custscript_v3_runner_prospect\":\"Ariat International\",\"custscript_v3_runner_website\":\"https://www.ariat.com/\",\"custscript_v3_runner_notes\":\"Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\",\"custscript_v3_runner_agenda\":\"Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.\",\"custscript_v3_runner_extid\":\"IDB_ARIAT_INTERNATIONAL_APPAREL_ACCESSORIES_DRYRUN\",\"custscript_v3_runner_mapping\":\"112\",\"custscript_v3_runner_folder\":\"345\",\"custscript_v3_runner_subsidiary\":\"1\",\"custscript_v3_runner_location\":\"7\",\"custscript_v3_runner_wc_search\":\"\",\"custscript_v3_runner_enable_wip\":\"F\",\"custscript_v3_runner_enable_mfg\":\"F\",\"custscript_v3_runner_create_new_hero\":\"T\",\"custscript_v3_runner_hero_item\":\"\"},\"noSubmitRollback\":{\"supported\":true,\"performed\":true,\"behavior\":\"The adapter validated input and runtime config but did not queue the governed runner because writes are disabled.\"},\"finalGeneratedNamesImport\":{\"schema\":\"idb.internal-build-engine.real-record-result.v1\",\"runStatus\":\"dry_run_validated_not_submitted\",\"prospect\":\"Ariat International\",\"generatedRecordOwner\":\"governed_dcc_runner_internal_build_engine\",\"recordExistenceStatus\":\"not_created_dry_run\",\"customer\":{\"name\":\"Ariat International Outdoor Retail Account\"},\"salesOrder\":{\"name\":\"Ariat International Demo Order\"},\"heroItem\":{\"name\":\"Ariat International Hero Item\"},\"matrixItem\":{\"name\":\"Ariat International Matrix Proof Item\"},\"componentItems\":[{\"name\":\"Ariat International Component Item\"}],\"warnings\":[\"Dry-run result contains names only. No record ids or URLs are returned until governed sandbox write is enabled.\"],\"errors\":[],\"recoverableBlockers\":[]},\"validation\":{\"valid\":true,\"requestValid\":true,\"runtimeConfigValid\":true,\"errors\":[]}},\"queueAttempt\":{\"queued\":false,\"taskId\":null,\"reason\":\"governed sandbox writes are disabled in W141\"}}"
+    },
+    {
+      "name": "w141_dry_run_import_has_no_active_open_links",
+      "pass": true,
+      "detail": "{\"navigationStatus\":\"using_dcc_final_names\",\"openAnchorCount\":0,\"linkPendingCount\":0,\"missingUrlCount\":5,\"links\":[{\"label\":\"Customer\",\"role\":\"customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"},{\"label\":\"Sales Order / demo transaction\",\"role\":\"sales_order\",\"name\":\"Ariat International Demo Order\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"},{\"label\":\"Hero item\",\"role\":\"hero_item\",\"name\":\"Ariat International Hero Item\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"},{\"label\":\"Matrix item / proof item\",\"role\":\"matrix_or_proof_item\",\"name\":\"Ariat International Matrix Proof Item\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"},{\"label\":\"Component item 1\",\"role\":\"component_item\",\"name\":\"Ariat International Component Item\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"}]}"
+    },
+    {
+      "name": "w141_no_drawer_write_or_invocation_added",
+      "pass": true,
+      "detail": "no drawer write signatures; adapter skeleton has no record module"
+    },
+    {
+      "name": "w141_task_submit_not_enabled",
+      "pass": true,
+      "detail": "queue skeleton present but submit disabled"
+    }
+  ]
+}

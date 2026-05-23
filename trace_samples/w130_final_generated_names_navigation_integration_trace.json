@@ -1,0 +1,241 @@
+{
+  "schema": "idb.w130-final-generated-names-navigation-integration-trace.v1",
+  "generatedAt": "2026-05-17T21:41:09.350Z",
+  "decision": "PASS",
+  "events": [
+    "w129_final_generated_names_json_loaded",
+    "final_names_imported_into_drawer_state",
+    "build_navigation_verified",
+    "run_navigation_verified",
+    "no_submit_no_write_boundaries_verified"
+  ],
+  "importedFinalNameCount": 5,
+  "buildNavigationObjects": [
+    {
+      "role": "customer",
+      "label": "Customer",
+      "name": "Ariat International Outdoor Retail Account",
+      "id": "preview-customer-123",
+      "url": "/app/common/entity/custjob.nl?id=preview-customer-123",
+      "source": "dcc_final",
+      "linkAuthority": {
+        "schema": "idb.verified-record-link-authority.v1",
+        "status": "preview_placeholder",
+        "openable": false,
+        "displayLabel": "Link pending",
+        "reason": "Preview placeholder ids are not real NetSuite record ids.",
+        "url": "/app/common/entity/custjob.nl?id=preview-customer-123"
+      },
+      "openableUrl": ""
+    },
+    {
+      "role": "sales_order",
+      "label": "Sales Order / demo transaction",
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "id": "preview-salesorder-456",
+      "url": "/app/accounting/transactions/salesord.nl?id=preview-salesorder-456",
+      "source": "dcc_final",
+      "linkAuthority": {
+        "schema": "idb.verified-record-link-authority.v1",
+        "status": "preview_placeholder",
+        "openable": false,
+        "displayLabel": "Link pending",
+        "reason": "Preview placeholder ids are not real NetSuite record ids.",
+        "url": "/app/accounting/transactions/salesord.nl?id=preview-salesorder-456"
+      },
+      "openableUrl": ""
+    },
+    {
+      "role": "hero_item",
+      "label": "Hero item",
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "id": "preview-item-789",
+      "url": "/app/common/item/item.nl?id=preview-item-789",
+      "source": "dcc_final",
+      "linkAuthority": {
+        "schema": "idb.verified-record-link-authority.v1",
+        "status": "preview_placeholder",
+        "openable": false,
+        "displayLabel": "Link pending",
+        "reason": "Preview placeholder ids are not real NetSuite record ids.",
+        "url": "/app/common/item/item.nl?id=preview-item-789"
+      },
+      "openableUrl": ""
+    },
+    {
+      "role": "matrix_or_proof_item",
+      "label": "Matrix item / proof item",
+      "name": "Ariat Core Boot Size Color Matrix",
+      "id": "preview-matrix-790",
+      "url": "/app/common/item/item.nl?id=preview-matrix-790",
+      "source": "dcc_final",
+      "linkAuthority": {
+        "schema": "idb.verified-record-link-authority.v1",
+        "status": "preview_placeholder",
+        "openable": false,
+        "displayLabel": "Link pending",
+        "reason": "Preview placeholder ids are not real NetSuite record ids.",
+        "url": "/app/common/item/item.nl?id=preview-matrix-790"
+      },
+      "openableUrl": ""
+    },
+    {
+      "name": "Ariat Brown Leather Upper Component",
+      "id": "preview-component-791",
+      "url": "/app/common/item/item.nl?id=preview-component-791",
+      "source": "dcc_final",
+      "linkAuthority": {
+        "schema": "idb.verified-record-link-authority.v1",
+        "status": "preview_placeholder",
+        "openable": false,
+        "displayLabel": "Link pending",
+        "reason": "Preview placeholder ids are not real NetSuite record ids.",
+        "url": "/app/common/item/item.nl?id=preview-component-791"
+      },
+      "openableUrl": ""
+    }
+  ],
+  "runNavigationPivots": [
+    {
+      "role": "customer",
+      "label": "Customer",
+      "name": "Ariat International Outdoor Retail Account",
+      "id": "preview-customer-123",
+      "url": "/app/common/entity/custjob.nl?id=preview-customer-123",
+      "source": "dcc_final",
+      "linkAuthority": {
+        "schema": "idb.verified-record-link-authority.v1",
+        "status": "preview_placeholder",
+        "openable": false,
+        "displayLabel": "Link pending",
+        "reason": "Preview placeholder ids are not real NetSuite record ids.",
+        "url": "/app/common/entity/custjob.nl?id=preview-customer-123"
+      },
+      "openableUrl": ""
+    },
+    {
+      "role": "sales_order",
+      "label": "Sales Order / demo transaction",
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "id": "preview-salesorder-456",
+      "url": "/app/accounting/transactions/salesord.nl?id=preview-salesorder-456",
+      "source": "dcc_final",
+      "linkAuthority": {
+        "schema": "idb.verified-record-link-authority.v1",
+        "status": "preview_placeholder",
+        "openable": false,
+        "displayLabel": "Link pending",
+        "reason": "Preview placeholder ids are not real NetSuite record ids.",
+        "url": "/app/accounting/transactions/salesord.nl?id=preview-salesorder-456"
+      },
+      "openableUrl": ""
+    },
+    {
+      "role": "hero_item",
+      "label": "Hero item",
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "id": "preview-item-789",
+      "url": "/app/common/item/item.nl?id=preview-item-789",
+      "source": "dcc_final",
+      "linkAuthority": {
+        "schema": "idb.verified-record-link-authority.v1",
+        "status": "preview_placeholder",
+        "openable": false,
+        "displayLabel": "Link pending",
+        "reason": "Preview placeholder ids are not real NetSuite record ids.",
+        "url": "/app/common/item/item.nl?id=preview-item-789"
+      },
+      "openableUrl": ""
+    },
+    {
+      "role": "matrix_or_proof_item",
+      "label": "Matrix item / proof item",
+      "name": "Ariat Core Boot Size Color Matrix",
+      "id": "preview-matrix-790",
+      "url": "/app/common/item/item.nl?id=preview-matrix-790",
+      "source": "dcc_final",
+      "linkAuthority": {
+        "schema": "idb.verified-record-link-authority.v1",
+        "status": "preview_placeholder",
+        "openable": false,
+        "displayLabel": "Link pending",
+        "reason": "Preview placeholder ids are not real NetSuite record ids.",
+        "url": "/app/common/item/item.nl?id=preview-matrix-790"
+      },
+      "openableUrl": ""
+    }
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true,
+    "importOnly": true
+  },
+  "validatorGates": [
+    {
+      "name": "w130_runtime_contract_present",
+      "pass": true,
+      "detail": "finalGeneratedNamesNavigationIntegrationV1 hook and runtime function"
+    },
+    {
+      "name": "w130_uses_w129_final_generated_names_json",
+      "pass": true,
+      "detail": "{\"w129\":\"sandbox_preview_operator_smoke_ready\",\"source\":\"internal_build_engine_preview_result_json\"}"
+    },
+    {
+      "name": "w130_import_normalizes_final_names",
+      "pass": true,
+      "detail": "{\"status\":\"dcc_final_names_imported\",\"objects\":4,\"components\":1}"
+    },
+    {
+      "name": "w130_navigation_switches_from_provisional_to_final",
+      "pass": true,
+      "detail": "{\"before\":\"using_provisional_preview_names\",\"after\":\"using_dcc_final_names\"}"
+    },
+    {
+      "name": "w130_build_uses_imported_customer_transaction_items_and_links",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"present\":true,\"hasLink\":true,\"openable\":false,\"name\":\"Ariat International Outdoor Retail Account\",\"url\":\"/app/common/entity/custjob.nl?id=preview-customer-123\"},{\"role\":\"sales_order\",\"present\":true,\"hasLink\":true,\"openable\":false,\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"url\":\"/app/accounting/transactions/salesord.nl?id=preview-salesorder-456\"},{\"role\":\"hero_item\",\"present\":true,\"hasLink\":true,\"openable\":false,\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"url\":\"/app/common/item/item.nl?id=preview-item-789\"},{\"role\":\"matrix_or_proof_item\",\"present\":true,\"hasLink\":true,\"openable\":false,\"name\":\"Ariat Core Boot Size Color Matrix\",\"url\":\"/app/common/item/item.nl?id=preview-matrix-790\"}]"
+    },
+    {
+      "name": "w130_run_uses_imported_customer_transaction_items",
+      "pass": true,
+      "detail": "Ariat International Outdoor Retail Account | Ariat Seasonal Footwear Availability Demo Order | Ariat Terrain H2O Work Boot Hero Item | Ariat Core Boot Size Color Matrix"
+    },
+    {
+      "name": "w130_component_name_and_link_preserved_for_navigation_model",
+      "pass": true,
+      "detail": "[{\"name\":\"Ariat Brown Leather Upper Component\",\"id\":\"preview-component-791\",\"url\":\"/app/common/item/item.nl?id=preview-component-791\",\"source\":\"dcc_final\"}]"
+    },
+    {
+      "name": "w130_state_authority_and_handoff_parity_preserved",
+      "pass": true,
+      "detail": "{\"authority\":{\"schema\":\"idb.w92-state-authority.v1\",\"recommendedLaneId\":\"apparel_accessories\",\"recommendedLaneName\":\"Apparel & Accessories\",\"recommendedProofAnchor\":\"Style / SKU Matrix\",\"selectedLaneId\":\"apparel_accessories\",\"selectedLaneName\":\"Apparel & Accessories\",\"selectedProofAnchor\":\"Style / SKU Matrix\",\"confirmedLaneId\":\"apparel_accessories\",\"confirmedLaneName\":\"Apparel & Accessories\",\"exportedLaneId\":\"apparel_accessories\",\"exportedLaneName\":\"Apparel & Accessories\",\"laneSelectionSource\":\"consultant_confirmed\",\"confidenceState\":\"needs_confirmation\",\"confidenceSource\":\"website_evidence_v1\",\"hasRecommendedMismatch\":false,\"hasConfirmedMismatch\":false,\"handoffEligible\":true,\"handoffBlockers\":[],\"noRegression\":{\"websiteEvidenceOwnsIdentity\":true,\"notesRole\":\"story_only\",\"dccOwnsObjectGeneration\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noIdbTransactionWrite\":true}},\"comparison\":{\"prospectMatches\":true,\"familyKeyMatches\":true,\"scenarioMatches\":true,\"stateAuthorityMatches\":true,\"ownershipMatches\":true,\"writeBoundariesMatch\":true,\"readyForFinalNamesImport\":true}}"
+    },
+    {
+      "name": "w130_no_submit_rollback_preserved",
+      "pass": true,
+      "detail": "{\"noSubmitBehavior\":\"If import fails, clear imported names and keep provisional names non-final.\",\"drawerRollbackAction\":\"Clear browser-local imported names only; do not alter NetSuite records.\",\"netSuiteRecordRollbackAction\":\"none_from_drawer\",\"rejectedResultBehavior\":\"Import nothing and keep Build/Run on provisional navigation.\"}"
+    },
+    {
+      "name": "w130_no_write_invocation_or_transaction_from_drawer",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityPreserved\":true,\"handoffParityPreserved\":true,\"noSubmitRollbackPreserved\":true,\"generatedRecordsOwnedByInternalBuildEngine\":true,\"importOnly\":true}"
+    },
+    {
+      "name": "w130_internal_build_engine_ownership_preserved",
+      "pass": true,
+      "detail": "{\"generatedRecordsOwnedBy\":\"internal_build_engine\",\"drawerCreatedRecords\":false,\"drawerInvokedSuiteScript\":false,\"drawerCreatedTransactions\":false}"
+    },
+    {
+      "name": "w130_visual_testing_not_required_for_contract_harness",
+      "pass": true,
+      "detail": "No visible runtime layout change; harness verifies existing Build/Run final-name behavior with W129 result JSON."
+    }
+  ]
+}

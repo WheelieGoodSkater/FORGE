@@ -1,0 +1,49 @@
+{
+  "schema": "idb.partial-failure-rollback-contract.v1",
+  "status": "partial_failure_rollback_ready_create_disabled",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Validation And Release Agent"
+  ],
+  "objective": "Harden failure behavior before enabling more record types or transaction writes.",
+  "partialFailedContract": {
+    "status": "partial_failed",
+    "trigger": "At least one parent write succeeds and a later dependent write fails.",
+    "mustInclude": [
+      "completedBeforeFailure",
+      "blockedDependentWrites",
+      "rollbackLabels",
+      "recordIds",
+      "urls",
+      "recoverableErrors",
+      "recoveryInstruction"
+    ]
+  },
+  "rollbackEvidenceRequiredPerRecord": [
+    "packetId",
+    "sequence",
+    "label",
+    "rollbackLabel",
+    "recordId",
+    "url",
+    "operation",
+    "recoverableErrors",
+    "manualRollbackRequired",
+    "silentRetryAllowed",
+    "silentDeletionAllowed"
+  ],
+  "dependencyRules": {
+    "customerFailureStopsTransaction": true,
+    "customerFailureStopsProof": true,
+    "proofFailureStopsTransaction": true,
+    "proofFailureStopsSupportingProof": true,
+    "stopDependentWritesOnParentFailure": true
+  },
+  "nonRegression": {
+    "creationAllowedInMain": false,
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "noTransactionCreationUntilCustomerAndProofStable": true,
+    "traceResultRequired": true
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "schema": "idb.w88-real-user-test-packet.v1",
+  "status": "ready_for_user_hands_on_test_no_submit",
+  "objective": "Provide exact hands-on test instructions for the next real IDB-to-DCC handoff test.",
+  "fileToLoad": {
+    "label": "Tampermonkey userscript",
+    "absolutePath": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+    "sha256": "30f73ccc903fffc59a6210f064153b7382c6a77b517332f64212a2ff13d3f2ec",
+    "modifiedAt": "2026-05-17T17:48:39.947Z",
+    "loadInstruction": "Open Tampermonkey, replace the current Intelligent Demo Builder userscript with this file contents, then save and refresh NetSuite sandbox."
+  },
+  "exactSalesRequestFields": {
+    "customer": "Summit Trail Supply",
+    "website": "https://www.rei.com/",
+    "conversationNotes": "Outdoor gear retailer expanding seasonal private-label assortment. Buyer needs confidence in style/color availability, replenishment timing, store/channel allocation, and customer promise before summer launch. Current spreadsheet process is slow and inventory availability differs by channel. Decision team wants a concise proof path, not a broad manufacturing demo.",
+    "scObjective": "Prepare a concise proof story showing how NetSuite can support seasonal assortment readiness, inventory availability, replenishment, allocation, and channel promise without forcing the prospect into manufacturing language.",
+    "knownCompetitor": "Current spreadsheets and disconnected inventory tools",
+    "decisionCriteria": "Clear path from customer/prospect context to item assortment readiness, allocation/replenishment, and Sales Order/customer promise impact.",
+    "bantMeddicc": {
+      "budget": "Budget not confirmed; discovery should quantify manual planning and inventory availability pain.",
+      "authority": "VP Operations plus merchandising lead likely influence decision.",
+      "need": "Need is seasonal assortment readiness and channel inventory promise.",
+      "timeline": "Wants directional fit within 30 days before deeper process demo.",
+      "metrics": "Reduce assortment planning effort and avoid missed customer promise during seasonal launch.",
+      "economicBuyer": "VP Operations / CFO not yet confirmed.",
+      "decisionProcess": "Initial SC proof, then stakeholder review.",
+      "decisionCriteria": "Fast evidence that NetSuite can connect item/variant readiness, replenishment, and customer promise.",
+      "paperProcess": "Unknown.",
+      "identifyPain": "Spreadsheet-driven inventory and channel promise disconnects.",
+      "champion": "Operations manager requested the proof."
+    }
+  },
+  "exactTestInstructions": {
+    "schema": "idb.w88-exact-test-instructions.v1",
+    "status": "ready_for_user_hands_on_test",
+    "fileToLoad": {
+      "label": "Tampermonkey userscript",
+      "absolutePath": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+      "sha256": "30f73ccc903fffc59a6210f064153b7382c6a77b517332f64212a2ff13d3f2ec",
+      "modifiedAt": "2026-05-17T17:48:39.947Z",
+      "loadInstruction": "Open Tampermonkey, replace the current Intelligent Demo Builder userscript with this file contents, then save and refresh NetSuite sandbox."
+    },
+    "steps": [
+      "Install or update the Tampermonkey script from the specified idb-drawer.user.js file.",
+      "Open a NetSuite sandbox page and open Intelligent Demo Builder.",
+      "Clear the current IDB session before starting.",
+      "Enter the exact sales request fields from this packet.",
+      "On Plan, verify the objective, classification/confidence, and next action.",
+      "On Review, verify the DCC build packet bridge and DCC handoff export card.",
+      "Confirm the scenario only if lane, proof anchor, scenario pack, and DCC build mode make sense.",
+      "Export the DCC handoff JSON from Review.",
+      "Export trace JSON from Trace.",
+      "Do not submit or queue anything from IDB.",
+      "Operator compares the exported handoff to DCC Suitelet/scheduled runner fields using W85 operator steps.",
+      "Score the rubric and record go/no-go."
+    ],
+    "screenshotsToCapture": [
+      "Plan tab after intake.",
+      "Review tab top summary.",
+      "Review DCC build packet bridge.",
+      "Review DCC handoff export card with form/config/runner sections.",
+      "Trace tab before export.",
+      "DCC Suitelet sandbox comparison screen, if operator opens it for manual review."
+    ],
+    "exportsToAttach": [
+      "idb-dcc-runner-handoff-packet-*.json",
+      "intelligent-demo-builder-trace-*.json"
+    ],
+    "operatorComparisonSteps": [
+      "Open the exported DCC handoff JSON.",
+      "Compare suiteletEntryPayload to DCC Suitelet form fields.",
+      "Confirm DCC-owned config params are present/understood, without recording secrets.",
+      "Compare scheduledRunnerPreview to DCC runner preview expectations.",
+      "Confirm no IDB SuiteScript invocation and no IDB transaction writes.",
+      "Confirm DCC owns item names, assemblies, BOMs, locations, planning, routing/WIP, CSV/Sales Order mechanics, and runner queue behavior."
+    ]
+  },
+  "evidenceIntakeChecklist": {
+    "schema": "idb.w88-evidence-intake-checklist.v1",
+    "requiredFilesFromUser": [
+      "idb-dcc-runner-handoff-packet-*.json",
+      "intelligent-demo-builder-trace-*.json"
+    ],
+    "requiredScreenshots": [
+      "Plan tab after intake.",
+      "Review tab top summary.",
+      "Review DCC build packet bridge.",
+      "Review DCC handoff export card with form/config/runner sections.",
+      "Trace tab before export.",
+      "DCC Suitelet sandbox comparison screen, if operator opens it for manual review."
+    ],
+    "requiredNotes": [
+      "Was the lane/scenario obvious enough to confirm?",
+      "Was the DCC handoff export easy to find?",
+      "Could the operator map fields in under 5 minutes?",
+      "What looked confusing, wrong, generic, or risky?",
+      "Did any IDB path appear to submit/write/queue?"
+    ],
+    "noSecretRules": [
+      "Do not include NetSuite credentials, tokens, or deployment secrets.",
+      "Redact sensitive internal IDs if screenshots leave the sandbox team.",
+      "Record config presence/absence, not secret values."
+    ]
+  },
+  "scoringRubric": {
+    "schema": "idb.w86-consultant-operator-scoring-rubric.v1",
+    "scale": "1-5",
+    "passingScore": 4,
+    "categories": [
+      "Consultant intake clarity",
+      "Scenario/lane confirmation clarity",
+      "DCC handoff export discoverability",
+      "Suitelet form parameter parity",
+      "DCC-owned config ownership clarity",
+      "Runner preview clarity",
+      "No-submit/no-write safety clarity",
+      "DCC object-generation ownership clarity",
+      "Operator confidence to proceed later under governed conditions",
+      "Evidence completeness"
+    ],
+    "stopGoCriteria": {
+      "goIf": [
+        "Average score is at least 4.0.",
+        "No category scores below 3.",
+        "No IDB SuiteScript invocation or transaction write occurs.",
+        "Operator can map handoff to DCC Suitelet in under 5 minutes.",
+        "DCC object-generation ownership remains clear."
+      ],
+      "noGoIf": [
+        "Any IDB path submits SuiteScript or creates/queues records.",
+        "Consultant cannot confirm scenario confidently.",
+        "Operator cannot map required params to DCC fields.",
+        "DCC-owned config ownership is unclear.",
+        "Evidence packet is missing handoff JSON or trace JSON."
+      ]
+    }
+  },
+  "stopGoDecision": {
+    "schema": "idb.w88-real-user-test-stop-go.v1",
+    "scoreBeforeRealRun": 4,
+    "runNowDecision": "go_for_user_hands_on_test_no_submit",
+    "goIf": [
+      "Average score is at least 4.0.",
+      "No category scores below 3.",
+      "No IDB SuiteScript invocation or transaction write occurs.",
+      "Operator can map handoff to DCC Suitelet in under 5 minutes.",
+      "DCC object-generation ownership remains clear."
+    ],
+    "noGoIf": [
+      "Any IDB path submits SuiteScript or creates/queues records.",
+      "Consultant cannot confirm scenario confidently.",
+      "Operator cannot map required params to DCC fields.",
+      "DCC-owned config ownership is unclear.",
+      "Evidence packet is missing handoff JSON or trace JSON.",
+      "Any visible IDB submit/queue action for DCC.",
+      "Any IDB SuiteScript invocation.",
+      "Any IDB transaction write path.",
+      "Any inability to export DCC handoff JSON or trace JSON."
+    ],
+    "afterUserTestDecisionRule": "Proceed to W89 only if evidence exports are attached, no submit/write path appears, average score is at least 4.0, and no category is below 3."
+  },
+  "noRegression": {
+    "noSuiteScriptInvocationFromIdb": true,
+    "noDccRunnerMechanicsRewrite": true,
+    "noIdbTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  }
+}

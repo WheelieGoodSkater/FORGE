@@ -1,0 +1,90 @@
+{
+  "schema": "idb.w45-planning-control-rail.v1",
+  "status": "complete_planning_control_rail_ready",
+  "objective": "Port the DCC planning-control lesson into the governed IDB Proof Item write path before any transaction scope expands.",
+  "goal": "Make item planning behavior explicit, reviewable, and traceable so proof items are demo-stable and no planning field changes happen invisibly.",
+  "roles": [
+    {
+      "name": "Supply Planning Agent",
+      "responsibility": "Define the stable default planning policy and identify which replenishment/planning controls must be visible before write."
+    },
+    {
+      "name": "SuiteScript Item Worker Agent",
+      "responsibility": "Apply planning controls only in the W24 pilot Proof Item writer after Customer ID and URL exist."
+    },
+    {
+      "name": "Consultant UX Director Agent",
+      "responsibility": "Keep planning evidence compact: show policy, whether automation is disabled, and whether replenishment method is configured."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "responsibility": "Prevent hidden planning changes, transaction writes, and any expansion outside Customer + Proof Item."
+    }
+  ],
+  "runtimeParameters": {
+    "optional": [
+      "custscript_idb_planning_policy",
+      "custscript_idb_disable_auto_planning",
+      "custscript_idb_default_replenishment_method"
+    ],
+    "defaultPolicy": "stable_manual_planning",
+    "defaultBehavior": "disable auto planning calculations unless explicitly configured otherwise"
+  },
+  "planningControl": {
+    "schema": "idb.planning-control-rail.v1",
+    "defaultStatus": "planning_control_ready",
+    "defaultPolicy": "stable_manual_planning",
+    "fieldIntentWhenStableManual": [
+      "autoleadtime=false",
+      "autoreorderpoint=false",
+      "autopreferredstocklevel=false",
+      "autosafetystocklevel=false"
+    ],
+    "optionalFieldIntent": [
+      "supplyreplenishmentmethod from custscript_idb_default_replenishment_method"
+    ],
+    "writeBehavior": [
+      "apply_stable_manual_planning_defaults",
+      "leave_planning_automation_available"
+    ]
+  },
+  "writeBehavior": {
+    "customerWrite": "unchanged_customer_first",
+    "proofItemWrite": "apply planning controls after account context and optional vendor context are resolved",
+    "transactionWrite": "disabled",
+    "planningVisibleBeforeWrite": true
+  },
+  "traceContract": {
+    "planningContext": true,
+    "planningControlPlan": true,
+    "requiredFields": [
+      "policy",
+      "values.disableAutoPlanning",
+      "values.replenishmentMethod",
+      "fieldIntent",
+      "writeBehavior"
+    ]
+  },
+  "harnessCoverage": [
+    "Default stable manual planning is visible and applied.",
+    "Configured policy can preserve planning automation and set replenishment method without enabling transaction writes."
+  ],
+  "noRegression": {
+    "mainSuiteletCreateEnabled": false,
+    "mainDrawerAutoWriteEnabled": false,
+    "w24PilotOnly": true,
+    "customerWritesBeforeProofItem": true,
+    "proofItemRequiresCustomerResult": true,
+    "transactionWriteEnabled": false,
+    "noHiddenPlanningChanges": true,
+    "noVendorCreation": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "llmAdvisoryOnly": true
+  },
+  "nextBlock": {
+    "id": "W46",
+    "name": "Proof Item Write V2",
+    "objective": "Combine account context, vendor attach, and planning control into one stronger proof-item writer."
+  }
+}

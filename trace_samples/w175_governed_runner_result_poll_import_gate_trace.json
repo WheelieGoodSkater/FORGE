@@ -1,0 +1,168 @@
+{
+  "schema": "idb.w175-governed-runner-result-poll-import-gate-trace.v1",
+  "generatedAt": "2026-05-17T21:41:16.083Z",
+  "completedTrace": [
+    {
+      "event": "w175_poll_gate_started",
+      "runnerTaskId": "task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+      "adapterErrorFromW174": false,
+      "pollAttempted": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w175_poll_terminal_status",
+      "status": "completed_runner_result_ready_for_w151_import",
+      "stopReason": "completed_runner_result_returned",
+      "resultCaptureStatus": "completed_result_capture_ready",
+      "finalGeneratedNamesJsonReady": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w175_w151_import_gate",
+      "acceptedByW151": true,
+      "importReady": true,
+      "handoffRejected": true,
+      "stateMutationAllowedInThisBlock": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "pendingTrace": [
+    {
+      "event": "w175_poll_gate_started",
+      "runnerTaskId": "task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+      "adapterErrorFromW174": false,
+      "pollAttempted": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w175_poll_terminal_status",
+      "status": "runner_result_poll_pending_or_blocked",
+      "stopReason": "poll_limit_reached_or_pending",
+      "resultCaptureStatus": "polling_pending",
+      "finalGeneratedNamesJsonReady": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w175_w151_import_gate",
+      "acceptedByW151": false,
+      "importReady": false,
+      "handoffRejected": true,
+      "stateMutationAllowedInThisBlock": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "adapterErrorTrace": [
+    {
+      "event": "w175_poll_gate_started",
+      "runnerTaskId": "",
+      "adapterErrorFromW174": true,
+      "pollAttempted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w175_poll_terminal_status",
+      "status": "poll_stopped_adapter_error_operator_evidence_required",
+      "stopReason": "adapter_error_from_w174_requires_operator_evidence",
+      "resultCaptureStatus": "adapter_error_requires_operator_evidence",
+      "finalGeneratedNamesJsonReady": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w175_w151_import_gate",
+      "acceptedByW151": false,
+      "importReady": false,
+      "handoffRejected": true,
+      "stateMutationAllowedInThisBlock": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "missingTaskTrace": [
+    {
+      "event": "w175_poll_gate_started",
+      "runnerTaskId": "",
+      "adapterErrorFromW174": false,
+      "pollAttempted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w175_poll_terminal_status",
+      "status": "runner_result_poll_blocked_missing_runner_task_id",
+      "stopReason": "runner_task_id_missing",
+      "resultCaptureStatus": "not_started_no_submit",
+      "finalGeneratedNamesJsonReady": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w175_w151_import_gate",
+      "acceptedByW151": false,
+      "importReady": false,
+      "handoffRejected": true,
+      "stateMutationAllowedInThisBlock": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "results": [
+    {
+      "name": "w175_starts_from_w174_execution_evidence",
+      "pass": true,
+      "detail": "PASS_EXPLICITLY_AUTHORIZED_SANDBOX_ADAPTER_ONE_CALL_EXECUTION_READY__RUNNER_TASK_OR_ERROR_CAPTURED__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w175_poll_gate_hook_ready",
+      "pass": true,
+      "detail": "governedRunnerResultPollAndImportGateV1"
+    },
+    {
+      "name": "w175_completed_poll_accepted_by_w151",
+      "pass": true,
+      "detail": "{\"completedResultAcceptedByW151\":true,\"completedResultStatus\":\"completed_runner_result_accepted\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"handoffStatus\":\"handoff_packet_rejected\",\"handoffRejected\":true,\"importReady\":true,\"importTarget\":\"state.dccFinalNamingResult\",\"stateMutationAllowedInThisBlock\":false}"
+    },
+    {
+      "name": "w175_pending_does_not_import",
+      "pass": true,
+      "detail": "{\"runnerTaskIdPresent\":true,\"adapterErrorFromW174\":false,\"pollTransportPresent\":true,\"maxPollAttempts\":2,\"attempts\":[{\"attempt\":1,\"status\":\"polling_pending\",\"resultCaptureStatus\":\"polling_pending\",\"runnerTaskId\":\"task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"finalGeneratedNamesJsonReady\":false,\"adapterError\":false,\"activeOpenLinks\":0},{\"attempt\":2,\"status\":\"polling_pending\",\"resultCaptureStatus\":\"polling_pending\",\"runnerTaskId\":\"task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"finalGeneratedNamesJsonReady\":false,\"adapterError\":false,\"activeOpenLinks\":0}],\"stopReason\":\"poll_limit_reached_or_pending\",\"resultCaptureStatus\":\"polling_pending\"}"
+    },
+    {
+      "name": "w175_adapter_error_stops_safely",
+      "pass": true,
+      "detail": "{\"captured\":true,\"stopReason\":\"adapter_error_from_w174_requires_operator_evidence\",\"operatorEvidenceRequired\":true,\"finalGeneratedNamesMutated\":false}"
+    },
+    {
+      "name": "w175_missing_task_blocks",
+      "pass": true,
+      "detail": "{\"runnerTaskIdPresent\":false,\"adapterErrorFromW174\":false,\"pollTransportPresent\":true,\"maxPollAttempts\":2,\"attempts\":[],\"stopReason\":\"runner_task_id_missing\",\"resultCaptureStatus\":\"not_started_no_submit\"}"
+    },
+    {
+      "name": "w175_names_links_and_handoff_guarded",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"finalGeneratedNamesImported\":false,\"activeOpenLinks\":0,\"writesAttemptedFromDrawer\":false}"
+    },
+    {
+      "name": "w175_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w175_poll_gate_started\",\"runnerTaskId\":\"task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"adapterErrorFromW174\":false,\"pollAttempted\":true,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w175_poll_terminal_status\",\"status\":\"completed_runner_result_ready_for_w151_import\",\"stopReason\":\"completed_runner_result_returned\",\"resultCaptureStatus\":\"completed_result_capture_ready\",\"finalGeneratedNamesJsonReady\":true,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w175_w151_import_gate\",\"acceptedByW151\":true,\"importReady\":true,\"handoffRejected\":true,\"stateMutationAllowedInThisBlock\":false,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false}]"
+    },
+    {
+      "name": "w175_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w175_visual_testing_blocked_until_completed_result_import",
+      "pass": true,
+      "detail": "W175 only gates poll/result capture and W151 import readiness. Visual testing remains blocked until completed runner result JSON is imported into IDB."
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "schema": "idb.w167-approved-server-adapter-live-disabled-retry-ui.v1",
+  "status": "approved_server_adapter_retry_ui_status_ready",
+  "decision": "PASS_RETRY_UI_STATUS_READY__VISUAL_TESTING_BLOCKED",
+  "retryUiStatusContract": {
+    "schema": "idb.approved-server-adapter-live-disabled-retry-ui-status.v1",
+    "status": "retry_ui_status_ready",
+    "mode": "build_status_surface_only_live_disabled",
+    "currentBuildStatus": "recoverable_live_disabled_adapter_response",
+    "statusCards": [
+      {
+        "id": "timeout_retry",
+        "label": "Timeout retry",
+        "state": "retry_safe",
+        "copy": "Timeouts keep Build in drawer-safe retry mode and reuse the same idempotency token.",
+        "action": "retry_same_idempotency_token",
+        "operatorEvidence": "Operator reviews adapter availability before retry.",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "id": "duplicate_idempotency_polling",
+        "label": "Duplicate idempotency",
+        "state": "poll_existing_task",
+        "copy": "Duplicate idempotency does not submit again. Build continues polling the existing runner task.",
+        "action": "continue_poll_existing_runner_task",
+        "operatorEvidence": "Operator confirms the existing runner task id before any retry.",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "id": "adapter_error_stop",
+        "label": "Adapter error",
+        "state": "stopped_drawer_safe",
+        "copy": "Adapter errors stop the Build return path and leave final generated names untouched.",
+        "action": "stop_and_surface_drawer_safe_error",
+        "operatorEvidence": "Operator captures the adapter error and disables server flags for rollback if needed.",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "id": "malformed_completed_result_rejection",
+        "label": "Malformed completed result",
+        "state": "w151_rejected",
+        "copy": "Malformed completed results remain blocked by W151 and never become drawer navigation links.",
+        "action": "reject_w151_import_and_keep_previous_names",
+        "operatorEvidence": "Operator requests a corrected completed runner result JSON with numeric ids and supported NetSuite URLs.",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      }
+    ],
+    "operatorEvidenceSurface": {
+      "required": true,
+      "fields": [
+        "operatorName",
+        "adapterResponseKind",
+        "idempotencyToken",
+        "runnerTaskId",
+        "retryDecision",
+        "rollbackFlagState",
+        "notes"
+      ],
+      "copy": "Capture operator evidence before retrying, continuing polling, stopping on adapter error, or requesting a corrected result JSON."
+    },
+    "importGuard": {
+      "owner": "W151 completed runner result import guard",
+      "malformedCompletedRejected": true,
+      "acceptsBuildHandoffJson": false,
+      "activeOpenLinksBeforeImport": 0
+    },
+    "mutationGuard": {
+      "finalGeneratedNamesUnchanged": true,
+      "noActiveOpenLinksCreated": true,
+      "noImportCommitAttempted": true
+    }
+  },
+  "guardedHarness": {
+    "startsFromW166": true,
+    "retryUiHookReady": true,
+    "buildSurfaceCopyReady": true,
+    "timeoutRetrySurfaced": true,
+    "duplicateIdempotencySurfaced": true,
+    "adapterErrorStopSurfaced": true,
+    "malformedCompletedRejectedSurfaced": true,
+    "statusCardsDoNotMutateFinalNames": true,
+    "statusCardsDoNotCreateOpenLinks": true,
+    "operatorEvidenceSurfaceReady": true,
+    "importGuardPreserved": true,
+    "visualTestingBlocked": true
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "visualTestingBlocked": true,
+    "reason": "W167 surfaces live-disabled retry/error statuses only. Real Build invocation remains disabled, so visual NetSuite testing stays blocked."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noLiveInvocation": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W168: Approved Server Adapter Live-Disabled Retry Recovery Harness",
+    "prompt": "Move through W168: Approved Server Adapter Live-Disabled Retry Recovery Harness. Use the W167 retry UI/status surface to model the drawer-safe recovery loop for timeout retry, duplicate idempotency polling, adapter error stop, and malformed completed-result correction while real invocation remains disabled. Prove retry recovery cannot mutate final generated names, cannot create Open links, preserves W151 import guard, preserves state authority and handoff parity, and keeps rollback by disabling server flags. Do not enable writes, do not invoke NetSuite live, and do not request visual testing. Output retry recovery contract, guarded harness, trace samples, W168 report, visual testing decision blocked, and best next Codex prompt."
+  },
+  "validatorGates": [
+    {
+      "name": "w167_starts_from_w166_error_retry_contract",
+      "pass": true,
+      "detail": "PASS_ERROR_RETRY_CONTRACT_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w167_retry_ui_hook_and_build_surface_ready",
+      "pass": true,
+      "detail": "retry_ui_status_ready"
+    },
+    {
+      "name": "w167_timeout_retry_surface_ready",
+      "pass": true,
+      "detail": "[{\"id\":\"timeout_retry\",\"label\":\"Timeout retry\",\"state\":\"retry_safe\",\"copy\":\"Timeouts keep Build in drawer-safe retry mode and reuse the same idempotency token.\",\"action\":\"retry_same_idempotency_token\",\"operatorEvidence\":\"Operator reviews adapter availability before retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"duplicate_idempotency_polling\",\"label\":\"Duplicate idempotency\",\"state\":\"poll_existing_task\",\"copy\":\"Duplicate idempotency does not submit again. Build continues polling the existing runner task.\",\"action\":\"continue_poll_existing_runner_task\",\"operatorEvidence\":\"Operator confirms the existing runner task id before any retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"adapter_error_stop\",\"label\":\"Adapter error\",\"state\":\"stopped_drawer_safe\",\"copy\":\"Adapter errors stop the Build return path and leave final generated names untouched.\",\"action\":\"stop_and_surface_drawer_safe_error\",\"operatorEvidence\":\"Operator captures the adapter error and disables server flags for rollback if needed.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"malformed_completed_result_rejection\",\"label\":\"Malformed completed result\",\"state\":\"w151_rejected\",\"copy\":\"Malformed completed results remain blocked by W151 and never become drawer navigation links.\",\"action\":\"reject_w151_import_and_keep_previous_names\",\"operatorEvidence\":\"Operator requests a corrected completed runner result JSON with numeric ids and supported NetSuite URLs.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false}]"
+    },
+    {
+      "name": "w167_duplicate_idempotency_surface_ready",
+      "pass": true,
+      "detail": "[{\"id\":\"timeout_retry\",\"label\":\"Timeout retry\",\"state\":\"retry_safe\",\"copy\":\"Timeouts keep Build in drawer-safe retry mode and reuse the same idempotency token.\",\"action\":\"retry_same_idempotency_token\",\"operatorEvidence\":\"Operator reviews adapter availability before retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"duplicate_idempotency_polling\",\"label\":\"Duplicate idempotency\",\"state\":\"poll_existing_task\",\"copy\":\"Duplicate idempotency does not submit again. Build continues polling the existing runner task.\",\"action\":\"continue_poll_existing_runner_task\",\"operatorEvidence\":\"Operator confirms the existing runner task id before any retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"adapter_error_stop\",\"label\":\"Adapter error\",\"state\":\"stopped_drawer_safe\",\"copy\":\"Adapter errors stop the Build return path and leave final generated names untouched.\",\"action\":\"stop_and_surface_drawer_safe_error\",\"operatorEvidence\":\"Operator captures the adapter error and disables server flags for rollback if needed.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"malformed_completed_result_rejection\",\"label\":\"Malformed completed result\",\"state\":\"w151_rejected\",\"copy\":\"Malformed completed results remain blocked by W151 and never become drawer navigation links.\",\"action\":\"reject_w151_import_and_keep_previous_names\",\"operatorEvidence\":\"Operator requests a corrected completed runner result JSON with numeric ids and supported NetSuite URLs.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false}]"
+    },
+    {
+      "name": "w167_adapter_error_stop_surface_ready",
+      "pass": true,
+      "detail": "[{\"id\":\"timeout_retry\",\"label\":\"Timeout retry\",\"state\":\"retry_safe\",\"copy\":\"Timeouts keep Build in drawer-safe retry mode and reuse the same idempotency token.\",\"action\":\"retry_same_idempotency_token\",\"operatorEvidence\":\"Operator reviews adapter availability before retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"duplicate_idempotency_polling\",\"label\":\"Duplicate idempotency\",\"state\":\"poll_existing_task\",\"copy\":\"Duplicate idempotency does not submit again. Build continues polling the existing runner task.\",\"action\":\"continue_poll_existing_runner_task\",\"operatorEvidence\":\"Operator confirms the existing runner task id before any retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"adapter_error_stop\",\"label\":\"Adapter error\",\"state\":\"stopped_drawer_safe\",\"copy\":\"Adapter errors stop the Build return path and leave final generated names untouched.\",\"action\":\"stop_and_surface_drawer_safe_error\",\"operatorEvidence\":\"Operator captures the adapter error and disables server flags for rollback if needed.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"malformed_completed_result_rejection\",\"label\":\"Malformed completed result\",\"state\":\"w151_rejected\",\"copy\":\"Malformed completed results remain blocked by W151 and never become drawer navigation links.\",\"action\":\"reject_w151_import_and_keep_previous_names\",\"operatorEvidence\":\"Operator requests a corrected completed runner result JSON with numeric ids and supported NetSuite URLs.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false}]"
+    },
+    {
+      "name": "w167_malformed_completed_rejection_surface_ready",
+      "pass": true,
+      "detail": "[{\"id\":\"timeout_retry\",\"label\":\"Timeout retry\",\"state\":\"retry_safe\",\"copy\":\"Timeouts keep Build in drawer-safe retry mode and reuse the same idempotency token.\",\"action\":\"retry_same_idempotency_token\",\"operatorEvidence\":\"Operator reviews adapter availability before retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"duplicate_idempotency_polling\",\"label\":\"Duplicate idempotency\",\"state\":\"poll_existing_task\",\"copy\":\"Duplicate idempotency does not submit again. Build continues polling the existing runner task.\",\"action\":\"continue_poll_existing_runner_task\",\"operatorEvidence\":\"Operator confirms the existing runner task id before any retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"adapter_error_stop\",\"label\":\"Adapter error\",\"state\":\"stopped_drawer_safe\",\"copy\":\"Adapter errors stop the Build return path and leave final generated names untouched.\",\"action\":\"stop_and_surface_drawer_safe_error\",\"operatorEvidence\":\"Operator captures the adapter error and disables server flags for rollback if needed.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"malformed_completed_result_rejection\",\"label\":\"Malformed completed result\",\"state\":\"w151_rejected\",\"copy\":\"Malformed completed results remain blocked by W151 and never become drawer navigation links.\",\"action\":\"reject_w151_import_and_keep_previous_names\",\"operatorEvidence\":\"Operator requests a corrected completed runner result JSON with numeric ids and supported NetSuite URLs.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false}]"
+    },
+    {
+      "name": "w167_status_cards_do_not_mutate_names_or_links",
+      "pass": true,
+      "detail": "[{\"id\":\"timeout_retry\",\"label\":\"Timeout retry\",\"state\":\"retry_safe\",\"copy\":\"Timeouts keep Build in drawer-safe retry mode and reuse the same idempotency token.\",\"action\":\"retry_same_idempotency_token\",\"operatorEvidence\":\"Operator reviews adapter availability before retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"duplicate_idempotency_polling\",\"label\":\"Duplicate idempotency\",\"state\":\"poll_existing_task\",\"copy\":\"Duplicate idempotency does not submit again. Build continues polling the existing runner task.\",\"action\":\"continue_poll_existing_runner_task\",\"operatorEvidence\":\"Operator confirms the existing runner task id before any retry.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"adapter_error_stop\",\"label\":\"Adapter error\",\"state\":\"stopped_drawer_safe\",\"copy\":\"Adapter errors stop the Build return path and leave final generated names untouched.\",\"action\":\"stop_and_surface_drawer_safe_error\",\"operatorEvidence\":\"Operator captures the adapter error and disables server flags for rollback if needed.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"id\":\"malformed_completed_result_rejection\",\"label\":\"Malformed completed result\",\"state\":\"w151_rejected\",\"copy\":\"Malformed completed results remain blocked by W151 and never become drawer navigation links.\",\"action\":\"reject_w151_import_and_keep_previous_names\",\"operatorEvidence\":\"Operator requests a corrected completed runner result JSON with numeric ids and supported NetSuite URLs.\",\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false}]"
+    },
+    {
+      "name": "w167_operator_evidence_surface_ready",
+      "pass": true,
+      "detail": "{\"required\":true,\"fields\":[\"operatorName\",\"adapterResponseKind\",\"idempotencyToken\",\"runnerTaskId\",\"retryDecision\",\"rollbackFlagState\",\"notes\"],\"copy\":\"Capture operator evidence before retrying, continuing polling, stopping on adapter error, or requesting a corrected result JSON.\"}"
+    },
+    {
+      "name": "w167_import_guard_and_visual_testing_blocked",
+      "pass": true,
+      "detail": "{\"owner\":\"W151 completed runner result import guard\",\"malformedCompletedRejected\":true,\"acceptsBuildHandoffJson\":false,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w167_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"w151CompletedResultImportGuardPreserved\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noLiveInvocation\":true}"
+    }
+  ]
+}

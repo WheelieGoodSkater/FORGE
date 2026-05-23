@@ -1,0 +1,94 @@
+{
+  "schema": "idb.w124-build-results-tab-reset.v1",
+  "status": "build_results_tab_ready",
+  "generatedAt": "2026-05-17T21:41:08.576Z",
+  "userVisualTestRequiredNow": true,
+  "implemented": {
+    "reviewTabRenamedToBuild": true,
+    "preImportBuildHandoffCheckpoint": true,
+    "postImportBuildResults": true,
+    "finalGeneratedRecordsAndNavigationPivots": true,
+    "oneCollapsedInternalSection": true,
+    "provisionalNamesCannotBeMarkedFinal": true,
+    "w123LauncherPreserved": true
+  },
+  "visualSmokeChecklist": [
+    "Open drawer and confirm the second tab says Build.",
+    "Before importing final generated names, confirm Build shows one compact Build Handoff checkpoint.",
+    "Confirm the pre-import Build screen says final generated names are not imported yet.",
+    "Confirm internal preview/config/result details are hidden behind one collapsed Internal build details section.",
+    "Import final generated names JSON and confirm Build becomes Build Results.",
+    "Confirm final generated NetSuite record names appear and provisional labels are not described as final.",
+    "Go to Run and confirm final generated names are used as navigation pivots."
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "websiteSupportsIdentityNaming": true,
+    "notesDriveStoryValue": true,
+    "buildEngineOwnsGeneratedRecords": true,
+    "w92StateAuthorityPreserved": true,
+    "w110HandoffParityPreserved": true,
+    "w116ToW123FinalNameAndLauncherBehaviorPreserved": true,
+    "consultantVisibleCopyNoDccIdbScai": true
+  },
+  "validatorGates": [
+    {
+      "name": "w124_tab_label_reset_to_build",
+      "pass": true,
+      "detail": "Review tab is now consultant-facing Build tab"
+    },
+    {
+      "name": "w124_pre_import_compact_handoff",
+      "pass": true,
+      "detail": "pre-import handoff checkpoint"
+    },
+    {
+      "name": "w124_pre_import_hides_final_record_claims",
+      "pass": true,
+      "detail": "provisional names are not shown as final"
+    },
+    {
+      "name": "w124_post_import_transforms_to_build_results",
+      "pass": true,
+      "detail": "post-import results screen"
+    },
+    {
+      "name": "w124_post_import_shows_real_generated_names",
+      "pass": true,
+      "detail": "sample final names rendered"
+    },
+    {
+      "name": "w124_run_navigation_uses_final_names",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International\",\"internalName\":\"\",\"id\":\"321\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Sales Order CSV import for ARIATSTYLE20260514\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"987\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"}]"
+    },
+    {
+      "name": "w124_one_internal_detail_section_on_review",
+      "pass": true,
+      "detail": "one collapsed internal detail section"
+    },
+    {
+      "name": "w124_no_visible_internal_acronyms_in_review",
+      "pass": true,
+      "detail": "visible Review/Build copy avoids DCC IDB SCAI"
+    },
+    {
+      "name": "w124_no_write_boundaries_preserved",
+      "pass": true,
+      "detail": "no drawer write boundary"
+    },
+    {
+      "name": "w124_w123_launcher_preserved",
+      "pass": true,
+      "detail": "launcher behavior preserved"
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W125: Consultant-Safe Export Language",
+    "visualNetSuiteTestRequiredAfterBlock": false,
+    "prompt": "Move through W125: Consultant-Safe Export Language. Scrub remaining consultant-visible export, import, checklist, and status language so the drawer speaks in Demo path, Build handoff, Build results, Final generated names, Operator review, NetSuite records, Export handoff, Import build results, and Trace export. Preserve internal schema keys, filenames, data attributes, validator IDs, W92/W110 state authority, W116-W124 final-name behavior, W123 launcher behavior, no drawer writes, no SuiteScript invocation from the drawer, no transaction writes, consultant confirmation required, website identity/naming support, notes-driven value story, and build-engine ownership of generated records. Do not require a NetSuite visual retest unless visible layout changes materially. Output copy scrub, validator gates, W125 report, and best next Codex prompt."
+  }
+}

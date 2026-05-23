@@ -1,0 +1,330 @@
+{
+  "schema": "idb.w49-response-sample.v1",
+  "scenario": "validate W49 pilot hardening returns blocked sample before any write",
+  "expectedStatus": "blocked_missing_vendor_context",
+  "actualStatus": "blocked_missing_vendor_context",
+  "createEnabled": true,
+  "packetId": "w40-milk-bone-products-cpg-reviewed-packet",
+  "selectedLaneId": "products_cpg",
+  "createdRecords": [],
+  "blockedDependentWrites": [
+    {
+      "sequence": 2,
+      "label": "Sales Order View",
+      "role": "transaction",
+      "recordType": "salesorder",
+      "reason": "Transaction context write is blocked in W49. Customer and Proof Item evidence may be reviewed, but Sales Order write requires a future dedicated transaction pilot.",
+      "recoverable": true,
+      "requiresBeforeFutureWrite": [
+        "transaction pilot approval",
+        "Customer record ID and URL",
+        "Proof Item record ID and URL",
+        "transaction runtime flag"
+      ],
+      "currentParentState": {
+        "customer": "missing_parent_result",
+        "proofItem": "missing_parent_result"
+      }
+    }
+  ],
+  "errors": [
+    {
+      "sequence": 0,
+      "label": "vendorContext",
+      "message": "Missing required runtime parameter(s): custscript_idb_default_vendor",
+      "recoverable": true
+    }
+  ],
+  "pilotResultSummary": null,
+  "proofItemWriteV2": {
+    "schema": "idb.proof-item-write-v2.v1",
+    "createEnabled": true,
+    "transactionContextEnabled": false,
+    "status": "blocked_missing_vendor_context",
+    "packetId": "w40-milk-bone-products-cpg-reviewed-packet",
+    "laneId": "products_cpg",
+    "approvedLaneIds": [
+      "food_beverage",
+      "products_cpg"
+    ],
+    "proofAnchor": "Sales Order View",
+    "proofItemRecord": {
+      "sequence": 3,
+      "label": "Finished Good",
+      "plannedName": "Milk Bone Original Dog Biscuits Variety Pack",
+      "recordType": "inventoryitem",
+      "operation": "lookup_then_create_or_update_demo_usable_proof_item",
+      "lookupKey": "inventoryitem:itemid:Milk Bone Original Dog Biscuits Variety Pack",
+      "idempotencyKey": "products_cpg:w40:3:finished-good",
+      "rollbackLabel": "Rollback Finished Good",
+      "recordId": null,
+      "url": null,
+      "lookupStatus": null,
+      "recoverableErrors": []
+    },
+    "parentCustomerResult": {
+      "role": "customer",
+      "required": true,
+      "status": "missing_parent_result",
+      "recordId": null,
+      "url": null,
+      "operation": null,
+      "lookupStatus": null,
+      "source": "none"
+    },
+    "readinessGates": [
+      {
+        "key": "customer_result",
+        "status": "blocked",
+        "detail": "Customer result ID and URL are required before Proof Item write."
+      },
+      {
+        "key": "account_context",
+        "status": "ready",
+        "detail": "Subsidiary, tax schedule, and optional account defaults were evaluated."
+      },
+      {
+        "key": "vendor_context",
+        "status": "blocked_missing_vendor_context",
+        "detail": "Required vendor attach is configured."
+      },
+      {
+        "key": "planning_context",
+        "status": "ready",
+        "detail": "Planning policy: stable_manual_planning."
+      },
+      {
+        "key": "transaction_context",
+        "status": "blocked_transaction_context_disabled",
+        "detail": "Sales Order / transaction-context writes remain outside W46."
+      }
+    ],
+    "governedFieldGroups": {
+      "identity": {
+        "itemid": "Milk Bone Original Dog Biscuits Variety Pack",
+        "displayname": "Milk Bone Original Dog Biscuits Variety Pack",
+        "salesdescription": "Prospect is big on inventory visibility and has multiple locations to track.",
+        "source": "reviewed_packet"
+      },
+      "account": {
+        "location": "not_configured",
+        "currency": "not_configured",
+        "department": "not_configured",
+        "class": "not_configured",
+        "source": {
+          "subsidiaryId": "custscript_idb_default_subsidiary",
+          "locationId": "custscript_idb_default_location",
+          "taxScheduleId": "custscript_idb_default_taxschedule",
+          "currencyId": "not_configured",
+          "termsId": "not_configured",
+          "departmentId": "not_configured",
+          "classId": "not_configured"
+        }
+      },
+      "procurement": {
+        "vendorAttachRequired": true,
+        "preferredVendor": "not_configured",
+        "purchasePrice": "not_configured",
+        "writeBehavior": "skip_optional_vendor_attach",
+        "noSilentVendorCreation": true
+      },
+      "planning": {
+        "policy": "stable_manual_planning",
+        "disableAutoPlanning": true,
+        "replenishmentMethod": "not_configured",
+        "fieldIntent": [
+          "autoleadtime=false",
+          "autoreorderpoint=false",
+          "autopreferredstocklevel=false",
+          "autosafetystocklevel=false"
+        ]
+      },
+      "trace": {
+        "packetId": "w40-milk-bone-products-cpg-reviewed-packet",
+        "lane": "products_cpg",
+        "proofAnchor": "Sales Order View",
+        "parentCustomerRecordId": "missing_customer_result"
+      }
+    },
+    "writeBehavior": "lookup_then_update_or_create_demo_usable_proof_item",
+    "resultContract": {
+      "recordId": true,
+      "url": true,
+      "operation": true,
+      "lookupStatus": true,
+      "parentCustomerRecordId": true,
+      "rollbackLabel": true,
+      "recoverableErrors": true,
+      "vendorContextStatus": true,
+      "planningPolicy": true
+    },
+    "consultantMessage": "Proof Item is not complete yet. Resolve the blocked gates before moving toward transaction context.",
+    "noRegression": {
+      "noProofItemWriteWithoutCustomerResult": true,
+      "noTransactionWrite": true,
+      "noAutomaticCreationFromDrawer": true,
+      "noSilentVendorCreation": true,
+      "noHiddenPlanningChanges": true,
+      "noSilentRetry": true,
+      "noSilentDeletion": true
+    }
+  },
+  "w49PilotHardening": {
+    "schema": "idb.w49-governed-customer-proof-item-pilot-hardening.v1",
+    "status": "blocked_missing_vendor_context",
+    "objective": "Customer writes first. Proof Item writes only after Customer ID and URL exist. Transaction write remains blocked.",
+    "approvedWriteScope": {
+      "laneIds": [
+        "food_beverage",
+        "products_cpg"
+      ],
+      "roles": [
+        "customer",
+        "proof anchor"
+      ],
+      "transactionContextEnabled": false
+    },
+    "sequenceGate": {
+      "customerFirst": true,
+      "customerReady": false,
+      "proofItemRequiresCustomerIdAndUrl": true,
+      "proofItemReady": false,
+      "proofItemParentMatchesCustomer": false,
+      "transactionBlocked": true
+    },
+    "postTestPack": {
+      "requiredMethod": "POST",
+      "requiredPacketMode": "reviewed_create_request",
+      "requiredConfirmation": "consultantConfirmed true plus exact type-to-confirm phrase",
+      "requiredRuntimeParameters": [
+        "custscript_idb_enable_pilot_writes",
+        "custscript_idb_allow_customer_pilot",
+        "custscript_idb_allow_proof_item_pilot",
+        "custscript_idb_sandbox_account_only",
+        "custscript_idb_require_type_confirm",
+        "custscript_idb_default_subsidiary",
+        "custscript_idb_default_taxschedule"
+      ],
+      "expectedSuccessStatus": "created",
+      "expectedBlockedStatuses": [
+        "blocked_runtime_toggle",
+        "blocked_missing_account_context",
+        "blocked_missing_vendor_context",
+        "partial_failed"
+      ]
+    },
+    "resultRequirements": {
+      "customerRecordId": true,
+      "customerUrl": true,
+      "proofItemRecordId": true,
+      "proofItemUrl": true,
+      "parentCustomerRecordId": true,
+      "blockedDependentWrites": true,
+      "rollbackLabels": true,
+      "recoverableErrors": true,
+      "proofItemWriteV2": true
+    },
+    "blockedDependentWrites": [
+      {
+        "sequence": 2,
+        "label": "Sales Order View",
+        "role": "transaction",
+        "recordType": "salesorder",
+        "reason": "Transaction context write is blocked in W49. Customer and Proof Item evidence may be reviewed, but Sales Order write requires a future dedicated transaction pilot.",
+        "recoverable": true,
+        "requiresBeforeFutureWrite": [
+          "transaction pilot approval",
+          "Customer record ID and URL",
+          "Proof Item record ID and URL",
+          "transaction runtime flag"
+        ],
+        "currentParentState": {
+          "customer": "missing_parent_result",
+          "proofItem": "missing_parent_result"
+        }
+      }
+    ],
+    "rollbackRecoveryInstructions": [
+      "Do not silently retry a failed Customer or Proof Item write.",
+      "Do not silently delete or roll back records from SuiteScript.",
+      "If Customer is missing, fix the blocker and rerun the same reviewed packet only after confirming no partial record exists.",
+      "If Proof Item is missing after Customer succeeded, keep the Customer link in trace and fix the Proof Item blocker before retry.",
+      "Export the Suitelet response and trace JSON before pilot handoff."
+    ],
+    "noRegression": {
+      "noTransactionWrite": true,
+      "noProofItemWithoutCustomerResult": true,
+      "noSilentRetry": true,
+      "noSilentDeletion": true,
+      "noAutomaticCreationFromDrawer": true
+    }
+  },
+  "rollbackRecoveryInstructions": [
+    "Do not silently retry a failed Customer or Proof Item write.",
+    "Do not silently delete or roll back records from SuiteScript.",
+    "If Customer is missing, fix the blocker and rerun the same reviewed packet only after confirming no partial record exists.",
+    "If Proof Item is missing after Customer succeeded, keep the Customer link in trace and fix the Proof Item blocker before retry.",
+    "Export the Suitelet response and trace JSON before pilot handoff."
+  ],
+  "transactionContextPilotPlan": {
+    "schema": "idb.transaction-context-pilot.v1",
+    "status": "blocked_missing_customer_or_proof_result",
+    "createEnabled": true,
+    "transactionContextEnabled": false,
+    "laneId": "products_cpg",
+    "transactionLookupRule": {
+      "field": "tranid",
+      "value": "Milk Bone - retail pet-treat replenishment Demo Order"
+    },
+    "transactionRecord": {
+      "sequence": 2,
+      "label": "Sales Order View",
+      "recordType": "salesorder",
+      "plannedName": "Milk Bone - retail pet-treat replenishment Demo Order",
+      "operation": "lookup_then_create_or_update_sales_order_context",
+      "lookupKey": "salesorder:tranid:Milk Bone - retail pet-treat replenishment Demo Order",
+      "rollbackLabel": "Rollback Sales Order View"
+    },
+    "requiredParentResults": [
+      {
+        "role": "customer",
+        "required": true,
+        "recordId": null,
+        "url": null,
+        "operation": null,
+        "lookupStatus": null,
+        "status": "missing_parent_result",
+        "source": "none"
+      },
+      {
+        "role": "proof anchor",
+        "required": true,
+        "recordId": null,
+        "url": null,
+        "operation": null,
+        "lookupStatus": null,
+        "status": "missing_parent_result",
+        "source": "none"
+      }
+    ],
+    "blockedReason": "Customer and proof item record IDs/URLs are required before transaction context can write.",
+    "traceResultRequired": {
+      "recordId": true,
+      "url": true,
+      "operation": true,
+      "recoverableErrors": true,
+      "parentCustomerRecordId": true,
+      "parentProofRecordId": true
+    },
+    "nonRegression": {
+      "noTransactionWriteWithoutCustomerAndProofResult": true,
+      "noTransactionCreationInMainPackage": true,
+      "noSilentRetry": true,
+      "noSilentDeletion": true
+    }
+  },
+  "noRegression": {
+    "noTransactionWrite": true,
+    "noAutomaticCreationFromDrawer": true
+  }
+}

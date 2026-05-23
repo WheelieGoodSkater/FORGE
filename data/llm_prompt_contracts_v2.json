@@ -1,0 +1,87 @@
+{
+  "schema": "idb.llm-prompt-contracts.v2",
+  "generated": "2026-05-09",
+  "status": "advisory_prompt_contract_ready_create_disabled",
+  "purpose": "Define N/LLM advisory prompts for website-first classification, product naming, pain/story extraction, auditable ROI, competitive framing, run coaching, and write-path preview without granting creation authority.",
+  "globalRules": {
+    "llmMay": [
+      "classify weak or unknown websites",
+      "summarize website category and product evidence",
+      "enrich product and record names",
+      "extract conversation-note pain and decision criteria",
+      "draft auditable ROI and assumptions",
+      "draft safe competitive workflow framing",
+      "draft run coaching scripts"
+    ],
+    "llmMustNot": [
+      "authorizeCreation",
+      "invokeSuiteScriptDirectWrite",
+      "changeLaneAuthority",
+      "changeProofAnchor",
+      "changeDccToggles",
+      "changePacketOrder",
+      "inventVerifiedCompetitorFacts",
+      "claimMeasuredRoiWithoutBaseline",
+      "hideCreateBlockers"
+    ],
+    "requiredOutputFields": [
+      "agent",
+      "objective",
+      "result",
+      "sourceBasis",
+      "confidence",
+      "fallbackReason",
+      "noRegressionDeclaration"
+    ]
+  },
+  "contracts": [
+    {
+      "id": "website_classification",
+      "agent": "Web Signal Agent",
+      "objective": "Classify weak or unknown website evidence into one authorized lane without overriding strong local website signals.",
+      "inputs": ["customer", "website", "websiteSignal", "authorizedLanes", "conversationNotes"],
+      "outputs": ["recommendedLaneId", "websiteCategory", "productCategory", "evidence", "confidence", "fallbackReason", "noRegressionDeclaration"],
+      "forbidden": ["newLane", "proofAnchorChange", "automaticCreation"]
+    },
+    {
+      "id": "product_naming_v2",
+      "agent": "N/LLM Record Naming Advisor",
+      "objective": "Improve product seed, product family, demand moment, and record names from website evidence first. Use conversation notes only to sharpen pain, demand wording, and story relevance after website-owned package identity is preserved.",
+      "inputs": ["websiteSignal", "websitePackageClassifier", "namingEvidence", "recordNamingAdvisoryRequest", "currentProposedNames", "selectedLane", "proofAnchor", "records", "conversationNotes", "createBlockers"],
+      "outputs": ["productSeed", "productFamily", "demandMoment", "recordNames", "websiteEvidenceSnippets", "reviewFlags", "sourceBasis", "confidence", "fallbackReason", "noRegressionDeclaration"],
+      "forbidden": ["genericFallbackWhenWebsiteSignalExists", "recordCreation", "unsupportedRecordType", "changePacketOrder", "changeDccToggles", "hideCreateBlockers"]
+    },
+    {
+      "id": "story_pain_mapper",
+      "agent": "Story Intelligence Agent",
+      "objective": "Turn conversation notes into pain, objective, exceptions, and decision-to-land language for the live demo.",
+      "inputs": ["conversationNotes", "scObjective", "decisionCriteria", "selectedLane", "proofAnchor", "currentPageContext"],
+      "outputs": ["painSummary", "topThreeMoves", "exceptions", "decisionToLand", "sourceBasis", "confidence", "fallbackReason", "noRegressionDeclaration"],
+      "forbidden": ["newFunctionalPath", "overlongScript", "recordCreation"]
+    },
+    {
+      "id": "roi_audit_v3",
+      "agent": "ROI Audit Agent",
+      "objective": "Generate auditable ROI language with driver, process, metric proxy, assumption, confidence, and proof step.",
+      "inputs": ["painSummary", "selectedLane", "proofAnchor", "websiteSignal", "conversationNotes", "customerBaseline"],
+      "outputs": ["roiThesis", "driver", "affectedProcess", "metricProxy", "assumption", "confidence", "proofStep", "sourceBasis", "fallbackReason", "noRegressionDeclaration"],
+      "forbidden": ["measuredSavingsWithoutBaseline", "financialClaimWithoutAssumption", "creationApproval"]
+    },
+    {
+      "id": "competitive_framing_v3",
+      "agent": "Competitive Strategy Agent",
+      "objective": "Generate workflow-based NetSuite win framing, using named competitor facts only when source basis is supplied.",
+      "inputs": ["selectedLane", "websiteSignal", "competitor", "conversationNotes", "sourceBasis"],
+      "outputs": ["netsuiteWinTheme", "workflowContrast", "objectionResponse", "sourceBasis", "confidence", "fallbackReason", "noRegressionDeclaration"],
+      "forbidden": ["unverifiedCompetitorFact", "disparagingClaim", "newModuleClaim"]
+    },
+    {
+      "id": "write_path_preview_v2",
+      "agent": "Packet Contract Agent",
+      "objective": "Review the SuiteScript packet and explain readiness without enabling or invoking writes.",
+      "inputs": ["creationPacketContract", "suiteScriptReviewPacket", "createReadiness", "adapterCapability"],
+      "outputs": ["readinessSummary", "missingGates", "idempotencyReview", "rollbackReview", "traceRequirements", "sourceBasis", "confidence", "fallbackReason", "noRegressionDeclaration"],
+      "forbidden": ["invokeSuiteScriptDirectWrite", "consultantConfirmation", "createRecords"]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "idb.w224-forge-header-branding-operator-summary-surface-trace.v1",
+  "branding": {
+    "headerUsesForgeImage": true,
+    "oldHeaderTextRemoved": true,
+    "launcherButtonText": "FORGE",
+    "oldLauncherTextRemoved": true,
+    "imageAltText": "FORGE SC Demo Creation Tool",
+    "closeButtonAccessible": true,
+    "compactHeader": true
+  },
+  "operatorSummarySurface": {
+    "buttonLabel": "Copy operator summary",
+    "successCopy": "Operator summary copied.",
+    "failureCopy": "Copy failed. Use export from admin/debug.",
+    "visibleInNormalTraceSurface": true,
+    "diagnosticsToggleVisibleInNormalMode": false,
+    "diagnosticsToggleVisibleInAdminDebugMode": true,
+    "diagnosticsAppendixDefaultOff": true,
+    "diagnosticsAppendixExplicitOn": true
+  },
+  "copyFreeze": {
+    "normalCopyHidesForbiddenTerms": true,
+    "w222ExportRowsPreserved": true,
+    "w218SuccessWordingPreserved": true,
+    "w220RecoveryWordingPreserved": true
+  },
+  "visualTestingDecision": "No broad visual testing for W224; branding and copy/export surfaces are covered by harness assertions."
+}

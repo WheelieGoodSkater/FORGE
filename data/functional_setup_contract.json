@@ -1,0 +1,153 @@
+{
+  "schema": "intelligent-demo-builder-functional-setup.v1",
+  "generated": "2026-05-09",
+  "mode": "draft_only_until_adapter_supported",
+  "nonRegression": {
+    "sevenAuthorizedLanesOnly": true,
+    "apparelAccessoriesLaneAuthorized": true,
+    "noProofAnchorChange": true,
+    "noAutomaticLaneSwitch": true,
+    "noAutomaticRecordCreation": true,
+    "noUnsupportedObjectCreation": true
+  },
+  "setupStages": ["plan", "review", "run", "trace"],
+  "creationPolicy": {
+    "defaultMode": "draft_only",
+    "requiresExplicitConsultantConfirmation": true,
+    "requiresSupportedCreationAdapter": true,
+    "traceCreatedRecordIds": true
+  },
+  "inheritedFromDemoCommandCenterV4": {
+    "sourceFiles": [
+      "production_validation_fixture.schema.json",
+      "production_validation_fixtures_v4_0_0.json",
+      "play_selector.js"
+    ],
+    "fixtureInputs": ["prospect.company", "prospect.website", "notes", "mode", "toggles"],
+    "requiredToggles": ["createNewHeroItem", "enableManufacturing", "enableWip"],
+    "storyContractFields": ["familyKey", "scenario", "surfacePathLabel", "lanePosture", "primaryProof", "runtimeProofAnchor", "proofLabels", "validateLive", "holdBack", "challengeCue", "routeKey", "routeSource"],
+    "baseRecords": ["Customer Record", "Sales Order View"],
+    "creationRule": "Create the same draft customer, sales order, and hero/proof item path used by Demo Command Center V4 before introducing any new object type."
+  },
+  "lanes": {
+    "products_cpg": {
+      "requiredProofAnchor": "Sales Order View",
+      "dccFamilyKey": "cpgProductsManufacturing",
+      "dccScenario": "Promotion-to-Shelf Readiness",
+      "dccMode": "Balanced",
+      "dccToggles": {
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": false
+      },
+      "recordsToPlan": ["Customer Record", "Sales Order View", "Finished Good", "Packaging / Case Pack", "Promotion / Replenishment", "Retail Readiness Setup"],
+      "customerRecord": ["prospect.company", "prospect.website", "promotionRiskNotes"],
+      "transactionRecord": ["Sales Order View", "promotionDemand", "packSizeReadiness", "replenishmentTiming"],
+      "heroRecord": ["Finished Good", "Packaging / Case Pack"],
+      "supportingRecords": ["Promotion / Replenishment", "Retail Readiness Setup"],
+      "unsupportedRecords": []
+    },
+    "food_beverage": {
+      "requiredProofAnchor": "Finished Good",
+      "dccFamilyKey": "foodManufacturing",
+      "dccScenario": "Promotion-Driven Food Manufacturing",
+      "dccMode": "Balanced",
+      "dccToggles": {
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": false
+      },
+      "recordsToPlan": ["Customer Record", "Sales Order View", "Finished Good", "Ingredient / Packaging Structure", "Packaging & Line Details", "Production Setup"],
+      "customerRecord": ["prospect.company", "prospect.website", "foodBeverageContext", "promotionRiskNotes"],
+      "transactionRecord": ["Sales Order View", "customerDemand", "finishedGoodCommitment"],
+      "heroRecord": ["Finished Good", "Ingredient / Packaging Structure"],
+      "supportingRecords": ["Packaging & Line Details", "Production Setup"],
+      "unsupportedRecords": ["advancedScheduling"]
+    },
+    "industrial_equipment": {
+      "requiredProofAnchor": "Assembly",
+      "dccFamilyKey": "industrialManufacturing",
+      "dccScenario": "Order-to-Assembly Readiness",
+      "dccMode": "Balanced",
+      "dccToggles": {
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true
+      },
+      "recordsToPlan": ["Customer Record", "Sales Order View", "Assembly", "Component Structure", "Assembly / Production Lineage", "Machine / Unit", "Controlled Assembly Details"],
+      "customerRecord": ["prospect.company", "prospect.website", "configuredOrderContext", "deliveryRiskNotes"],
+      "transactionRecord": ["Sales Order View", "configuredDemand", "deliveryPromise"],
+      "heroRecord": ["Assembly", "Component Structure"],
+      "supportingRecords": ["Assembly / Production Lineage", "Machine / Unit", "Controlled Assembly Details"],
+      "unsupportedRecords": ["advancedManufacturingScheduling"]
+    },
+    "life_sciences": {
+      "requiredProofAnchor": "Lot / Release",
+      "dccFamilyKey": "lifeSciencesManufacturing",
+      "dccScenario": "Lot-to-Release Execution",
+      "dccMode": "Balanced",
+      "dccToggles": {
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": false
+      },
+      "recordsToPlan": ["Customer Record", "Sales Order View", "Lot / Release", "Validation / Compliance", "Traceability / Serialization", "Regulated Execution Setup"],
+      "customerRecord": ["prospect.company", "prospect.website", "regulatedContext", "validationNotes"],
+      "transactionRecord": ["Sales Order View", "controlledFulfillment"],
+      "heroRecord": ["Lot / Release", "Validation / Compliance"],
+      "supportingRecords": ["Traceability / Serialization", "Regulated Execution Setup"],
+      "unsupportedRecords": ["electronicBatchRecord"]
+    },
+    "industrial_distribution": {
+      "requiredProofAnchor": "Inventory / Fulfillment",
+      "dccFamilyKey": "distribution",
+      "dccScenario": "Branch Availability Control",
+      "dccMode": "Balanced",
+      "dccToggles": {
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false
+      },
+      "recordsToPlan": ["Customer Record", "Sales Order View", "Inventory / Fulfillment", "Branch / Inventory Availability", "Supplier / Replenishment Control", "Inventory Position", "Branch Fulfillment Setup"],
+      "customerRecord": ["prospect.company", "prospect.website", "branchContext", "supplierRiskNotes"],
+      "transactionRecord": ["Sales Order View", "fulfillmentCommitment"],
+      "heroRecord": ["Inventory / Fulfillment", "Branch / Inventory Availability"],
+      "supportingRecords": ["Supplier / Replenishment Control", "Inventory Position", "Branch Fulfillment Setup"],
+      "unsupportedRecords": []
+    },
+    "dealer_hardgoods": {
+      "requiredProofAnchor": "Product / SKU",
+      "dccFamilyKey": "dealerHardgoods",
+      "dccScenario": "Dealer-Ready Fulfillment",
+      "dccMode": "Balanced",
+      "dccToggles": {
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false
+      },
+      "recordsToPlan": ["Customer Record", "Sales Order View", "Product / SKU", "Inventory / Fulfillment", "Product / SKU Availability", "Dealer / Channel Replenishment", "Distribution Setup"],
+      "customerRecord": ["prospect.company", "prospect.website", "dealerChannelContext", "allocationRiskNotes"],
+      "transactionRecord": ["Sales Order View", "dealerAllocation", "channelCommitment"],
+      "heroRecord": ["Product / SKU", "Product / SKU Availability"],
+      "supportingRecords": ["Inventory / Fulfillment", "Dealer / Channel Replenishment", "Distribution Setup"],
+      "unsupportedRecords": []
+    },
+    "apparel_accessories": {
+      "requiredProofAnchor": "Style / SKU Matrix",
+      "dccFamilyKey": "apparelAccessories",
+      "dccScenario": "Style-to-Availability Readiness",
+      "dccMode": "Balanced",
+      "dccToggles": {
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false
+      },
+      "recordsToPlan": ["Customer Record", "Sales Order View", "Style / SKU Matrix", "Size / Color Variants", "Allocation / Replenishment", "Channel / Location Availability", "Collection Launch Setup"],
+      "customerRecord": ["prospect.company", "prospect.website", "apparelContext", "collectionLaunchNotes"],
+      "transactionRecord": ["Sales Order View", "seasonalDemand", "channelCommitment"],
+      "heroRecord": ["Style / SKU Matrix", "Size / Color Variants"],
+      "supportingRecords": ["Allocation / Replenishment", "Channel / Location Availability", "Collection Launch Setup"],
+      "unsupportedRecords": []
+    }
+  }
+}

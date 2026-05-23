@@ -1,0 +1,316 @@
+{
+  "schema": "idb.w68-staging-resolver-endpoint-smoke-pack.v1",
+  "status": "complete_staging_smoke_pack_ready",
+  "objective": "Build the staging smoke package for the hosted no-write websiteResolverServiceV1 endpoint.",
+  "readinessDecision": "staging_smoke_ready_not_hosted_endpoint_go",
+  "roles": [
+    {
+      "name": "Resolver Service Architect",
+      "owns": "Staging endpoint shape, health check, environment variables, cache smoke, and approved live-site smoke command."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "Auth, CORS, cookie/header rejection, blocked origins, no-write proof, and failure-state safety."
+    },
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Approved website smoke inputs, failure-state samples, manual-evidence fallback samples, and evidence trace expectations."
+    },
+    {
+      "name": "Observability And Reliability Agent",
+      "owns": "Trace fields, metrics, health payload, latency/cache expectations, and alert checklist."
+    },
+    {
+      "name": "Pilot Evidence Lead",
+      "owns": "Pilot toggle instructions, consultant-safe staging use, and stop/go evidence capture."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Harness gates proving no writes, no SuiteScript invocation, advisory-only N/LLM, notes story-only, and honest failure states."
+    }
+  ],
+  "environmentVariables": [
+    {
+      "name": "IDB_RESOLVER_STAGING_URL",
+      "required": true,
+      "example": "https://staging-idb-resolver.example.com",
+      "purpose": "Base URL for the hosted staging resolver endpoint."
+    },
+    {
+      "name": "IDB_RESOLVER_STAGING_TOKEN",
+      "required": true,
+      "example": "pilot-short-lived-token",
+      "purpose": "Short-lived resolver API token or signed request secret for staging smoke."
+    },
+    {
+      "name": "IDB_RESOLVER_ALLOWED_ORIGIN",
+      "required": true,
+      "example": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "purpose": "Approved NetSuite origin used for CORS preflight and POST smoke."
+    },
+    {
+      "name": "IDB_RESOLVER_BLOCKED_ORIGIN",
+      "required": true,
+      "example": "https://unapproved.example.com",
+      "purpose": "Known unapproved origin used to prove CORS denial."
+    },
+    {
+      "name": "IDB_APPROVED_LIVE_RESOLVER_SMOKE",
+      "required": true,
+      "example": "1",
+      "purpose": "Explicit live-smoke opt-in switch."
+    },
+    {
+      "name": "IDB_WEBSITE_RESOLVER_ENDPOINT",
+      "required": false,
+      "example": "https://staging-idb-resolver.example.com/idb/website-resolver/v1/resolve",
+      "purpose": "Drawer pilot endpoint toggle."
+    },
+    {
+      "name": "IDB_WEBSITE_RESOLVER_LOCAL_FALLBACK",
+      "required": false,
+      "example": "0",
+      "purpose": "Drawer fallback toggle; keep explicit during staging."
+    }
+  ],
+  "endpointPaths": {
+    "health": {
+      "method": "GET",
+      "path": "/health",
+      "expectedStatus": 200,
+      "expectedFields": [
+        "serviceName",
+        "resolverVersion",
+        "extractionPolicyVersion",
+        "writeAuthority",
+        "suiteScriptInvocation",
+        "nllmAdvisoryOnly",
+        "cacheStatus"
+      ]
+    },
+    "resolve": {
+      "method": "POST",
+      "path": "/idb/website-resolver/v1/resolve",
+      "contentType": "application/json",
+      "expectedResponseSchema": "idb.website-evidence.v1"
+    }
+  },
+  "authCorsTestCases": [
+    {
+      "id": "authorized_preflight",
+      "request": "OPTIONS resolve path with approved NetSuite Origin and Content-Type header",
+      "expectedStatus": 204,
+      "expected": [
+        "Access-Control-Allow-Origin echoes approved origin",
+        "Access-Control-Allow-Methods includes POST",
+        "Access-Control-Allow-Headers includes Content-Type and resolver auth header",
+        "No wildcard production CORS"
+      ]
+    },
+    {
+      "id": "blocked_origin_preflight",
+      "request": "OPTIONS resolve path with unapproved Origin",
+      "expectedStatus": 403,
+      "expected": [
+        "No Access-Control-Allow-Origin for the blocked origin",
+        "No resolver details leaked"
+      ]
+    },
+    {
+      "id": "missing_token",
+      "request": "POST resolve path without resolver token",
+      "expectedStatus": 401,
+      "expected": [
+        "No website fetch attempted",
+        "No cache lookup attempted",
+        "No classification returned"
+      ]
+    },
+    {
+      "id": "bad_token",
+      "request": "POST resolve path with invalid resolver token",
+      "expectedStatus": 401,
+      "expected": [
+        "No website fetch attempted",
+        "No cache lookup attempted",
+        "No classification returned"
+      ]
+    },
+    {
+      "id": "netsuite_cookie_rejected",
+      "request": "POST resolve path with NetSuite session cookie or authorization header",
+      "expectedStatus": 400,
+      "expected": [
+        "Reject cookie/header",
+        "Do not log cookie/header value",
+        "Do not continue to website fetch"
+      ]
+    },
+    {
+      "id": "write_payload_rejected",
+      "request": "POST resolve path with recordId, suiteletUrl, createEnabled, or write token fields",
+      "expectedStatus": 400,
+      "expected": [
+        "Reject write-shaped payload",
+        "Return no_write_boundary_violation",
+        "No SuiteScript invocation"
+      ]
+    }
+  ],
+  "cacheValidation": [
+    {
+      "id": "same_url_second_request_cache_hit",
+      "steps": [
+        "POST approved live URL once",
+        "POST same normalized URL again with same resolverVersion and extractionPolicyVersion"
+      ],
+      "expected": [
+        "First trace cacheHit false or cold",
+        "Second trace cacheHit true",
+        "Evidence payload is equivalent except requestId, generatedAt, latency, and cache metadata"
+      ]
+    },
+    {
+      "id": "versioned_cache_key",
+      "steps": [
+        "Change resolverVersion or extractionPolicyVersion",
+        "POST same normalized URL"
+      ],
+      "expected": [
+        "Cache key changes",
+        "No stale evidence crosses policy version"
+      ]
+    },
+    {
+      "id": "manual_evidence_not_cached_full_text",
+      "steps": [
+        "POST blocked URL with consultant-supplied manual evidence"
+      ],
+      "expected": [
+        "Trace stores excerpt/hash only",
+        "Manual evidence full text is not cached",
+        "Manual evidence remains consultant_supplied"
+      ]
+    }
+  ],
+  "approvedLiveSiteSmokeCommand": {
+    "purpose": "Run only after a real staging endpoint exists and explicit live-smoke opt-in is set.",
+    "command": "IDB_APPROVED_LIVE_RESOLVER_SMOKE=1 IDB_RESOLVER_STAGING_URL=$IDB_RESOLVER_STAGING_URL IDB_RESOLVER_STAGING_TOKEN=$IDB_RESOLVER_STAGING_TOKEN IDB_RESOLVER_ALLOWED_ORIGIN=$IDB_RESOLVER_ALLOWED_ORIGIN node tools/run_approved_live_resolver_smoke_harness.js",
+    "approvedSites": [
+      "https://www.trekbikes.com/us/en_US/",
+      "https://www.patagonia.com/",
+      "https://www.grainger.com/",
+      "https://www.lincolnelectric.com/"
+    ],
+    "requiredOutcomes": [
+      "Zero false-confident-wrong",
+      "Zero unsupported claims",
+      "Trek remains recommended Dealer Hardgoods when evidence is sufficient",
+      "Thin, blocked, unavailable, and timeout cases remain insufficient evidence with no lane guess"
+    ]
+  },
+  "failureStateSamples": [
+    {
+      "id": "blocked_private_network",
+      "inputUrl": "https://127.0.0.1/admin",
+      "expectedFailureState": "blocked",
+      "expectedConfidenceState": "insufficient_evidence",
+      "expectedLaneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "id": "thin_public_page",
+      "inputUrl": "https://example.com/",
+      "expectedFailureState": "thin",
+      "expectedConfidenceState": "insufficient_evidence",
+      "expectedLaneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "id": "unavailable_domain",
+      "inputUrl": "https://unavailable.invalid/",
+      "expectedFailureState": "unavailable",
+      "expectedConfidenceState": "insufficient_evidence",
+      "expectedLaneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "id": "timeout_site",
+      "inputUrl": "https://timeout.example/",
+      "expectedFailureState": "timeout",
+      "expectedConfidenceState": "insufficient_evidence",
+      "expectedLaneCandidates": [],
+      "writeAuthority": "none"
+    }
+  ],
+  "manualEvidenceFallbackSamples": [
+    {
+      "id": "blocked_with_manual_evidence",
+      "fetchState": "blocked",
+      "manualEvidenceSource": "consultant_supplied_homepage_excerpt",
+      "manualEvidenceExcerpt": "Manufacturer of workwear, boots, safety apparel, and seasonal footwear collections.",
+      "expected": [
+        "Fetch state remains blocked",
+        "Manual evidence source is visible",
+        "Confidence may move only to needs_confirmation until website fetch succeeds or consultant confirms",
+        "No write authority"
+      ]
+    },
+    {
+      "id": "thin_with_category_text",
+      "fetchState": "thin",
+      "manualEvidenceSource": "consultant_supplied_category_text",
+      "manualEvidenceExcerpt": "Categories include road bikes, mountain bikes, electric bikes, helmets, apparel, and parts.",
+      "expected": [
+        "Fetch state remains thin",
+        "Manual evidence improves terms but remains consultant-supplied",
+        "Trace stores excerpt/hash",
+        "No confident write preparation from manual evidence alone"
+      ]
+    }
+  ],
+  "observabilityChecklist": [
+    "Every request has requestId, normalizedUrl, domain, resolverVersion, extractionPolicyVersion, fetchStatus, failureState, cacheHit, latencyMs, writeAuthority, and nllmAdvisoryOnly.",
+    "Auth and CORS failures are counted but redact credentials and cookies.",
+    "Metrics include request count, p50/p95 latency, cache hit rate, failure-state rates, confidence-state rates, false-confident-wrong, and unsupported claims.",
+    "Alerts exist for false-confident-wrong greater than zero, unsupported claims greater than zero, timeout rate above threshold, CORS anomaly, and p95 above target.",
+    "Trace exports include source URLs for sufficient evidence and failure reason for insufficient evidence."
+  ],
+  "pilotToggleInstructions": [
+    "Set window.IDB_WEBSITE_RESOLVER_ENDPOINT or localStorage:idb.websiteResolver.endpoint.v1 to the staging resolve URL for pilot browsers only.",
+    "Set localStorage:idb.websiteResolver.localFallback.v1 explicitly to 0 when testing hosted-only behavior.",
+    "Clear the endpoint toggle to roll back to local fallback or manual evidence mode.",
+    "Do not enable any create/write flags as part of resolver smoke.",
+    "Capture trace export after each staging smoke run."
+  ],
+  "validatorGates": [
+    "Environment variables are defined and scoped to staging.",
+    "Health check proves no-write, no SuiteScript invocation, and advisory-only N/LLM.",
+    "Auth/CORS cases cover approved origin, blocked origin, missing token, bad token, cookie rejection, and write-payload rejection.",
+    "Cache validation covers repeated URL, versioned cache key, and manual evidence redaction.",
+    "Failure samples never return confident guesses.",
+    "Manual evidence fallback remains traceable, consultant-supplied, and no-write.",
+    "Pilot toggles and rollback are explicit.",
+    "Best next Codex prompt is present."
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "outputs": {
+    "contract": "data/w68_staging_resolver_endpoint_smoke_pack.json",
+    "harness": "tools/run_staging_resolver_endpoint_smoke_harness.js",
+    "trace": "trace_samples/w68_staging_resolver_endpoint_smoke_trace.json",
+    "report": "reports/w68_staging_resolver_endpoint_smoke_pack.md"
+  },
+  "bestNextCodexPrompt": {
+    "block": "W69: Hosted Resolver Staging Endpoint Implementation",
+    "prompt": "Move through W69: Hosted Resolver Staging Endpoint Implementation. Build the staging no-write websiteResolverServiceV1 endpoint wrapper around the local resolver service: health endpoint, POST resolve endpoint, auth token validation, strict CORS allowlist, cookie/auth-header rejection, write-payload rejection, cache adapter, rate/timeout controls, redacted observability, and local staging server mode. Keep the drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output endpoint implementation, local staging run instructions, harness results, trace samples, W69 report, validator gates, and best next Codex prompt."
+  }
+}

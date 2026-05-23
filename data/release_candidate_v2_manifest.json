@@ -1,0 +1,58 @@
+{
+  "schema": "idb.release-candidate-v2-manifest.v1",
+  "generated": "2026-05-09",
+  "status": "release_candidate_v2_ready_create_disabled",
+  "purpose": "Define the package surface for the next Intelligent Demo Builder drawer release candidate after U13 packet handoff and U14 packaging.",
+  "tampermonkeyEntry": "idb-drawer.user.js",
+  "netsuiteSuiteletEntry": "netsuite/suitescript/idb_suitescript_write_path_suitelet.js",
+  "createEnabledExpected": false,
+  "requiredLocalCommands": [
+    "npm run preflight"
+  ],
+  "requiredGreenEvidence": [
+    "SuiteScript harness PASS",
+    "validation_report.md Decision: PASS",
+    "reports/u12_suitescript_create_contract_alignment.md Decision: COMPLETE / CREATE STILL DISABLED",
+    "reports/u13_u14_packet_handoff_release_candidate.md Decision: COMPLETE / CREATE STILL DISABLED"
+  ],
+  "consultantSmokeFlow": [
+    "Install idb-drawer.user.js in Tampermonkey.",
+    "Open authenticated NetSuite.",
+    "Enter prospect, website, and conversation notes.",
+    "Run IDB and verify lane recommendation.",
+    "Review exact records and transactions.",
+    "Open ROI / Competitive for value story.",
+    "Run the guided story with Open, Prove, Handle objection, and Close value.",
+    "Export trace and SuiteScript review packet.",
+    "Clear all before the next prospect."
+  ],
+  "packetHandoff": {
+    "exportButton": "Export packet",
+    "payloadFunction": "suiteScriptReviewPacket",
+    "consultantConfirmed": false,
+    "serverExpectedStatus": "blocked_until_consultant_confirmation",
+    "requiredContract": "idb.creation-packet.v2"
+  },
+  "repoTransferFiles": [
+    "idb-drawer.user.js",
+    "package.json",
+    "README.md",
+    "REPO_TRANSFER_CHECKLIST.md",
+    "RELEASE_CANDIDATE_CHECKLIST.md",
+    "data/",
+    "netsuite/",
+    "preview/",
+    "reports/",
+    "tools/",
+    "trace_samples/"
+  ],
+  "nonRegression": {
+    "noLiveWritesInMain": true,
+    "noAutomaticCreation": true,
+    "noLaneAuthorityChange": true,
+    "noProofAnchorChange": true,
+    "noDccToggleChange": true,
+    "noPacketOrderChange": true,
+    "llmAdvisoryOnly": true
+  }
+}

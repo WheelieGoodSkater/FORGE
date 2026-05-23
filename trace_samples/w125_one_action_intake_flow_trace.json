@@ -1,0 +1,72 @@
+{
+  "decision": "PASS",
+  "status": "one_action_intake_flow_ready",
+  "eventsRequired": [
+    "sales_request_saved",
+    "brief_prepared",
+    "demo_path_confirmed"
+  ],
+  "stateTransitionStates": {
+    "empty": "enter_sales_request",
+    "ready": "ready_to_prepare",
+    "prepared": "prepared_needs_confirmation",
+    "confirmed": "confirmed_ready"
+  },
+  "onePrimaryBuildDemoPlanVisible": 1,
+  "saveRequestVisible": false,
+  "saveDraftVisible": false,
+  "duplicatePrepareVisible": 0,
+  "visualTestRequiredNow": true,
+  "results": [
+    {
+      "name": "w125_empty_state_prompts_sales_request",
+      "pass": true,
+      "detail": "30-second plan Prospect Enter prospect Prepare the proof path from website and notes. Classification Waiting for brief No lane chosen yet Confidence Not prepared Build demo plan Next action Complete request. Start sales request Demo path Build demo plan Fill in the request, then build the demo plan. Sales request Enter sales request 1 Prospect 2 Proof 3 Request Prospect Website Business pain Requested proof Decision criteria Optional context Timeline / urgency Competitor / incumbent Optional website/category evidence Build demo plan Draft autosaved Change lane manually"
+    },
+    {
+      "name": "w125_ready_state_has_one_primary_build_demo_plan",
+      "pass": true,
+      "detail": "30-second plan Prospect Ariat International Show style/SKU readiness, size/color availability, replenishment timing, and customer promise. Classification Waiting for brief No lane chosen yet Confidence Not prepared Build demo plan Next action Build demo plan. The request is ready. Build the demo plan from the website, request, and proof needs. Demo path Build demo plan One click saves the request, prepares the brief, and confirms the demo path when the evidence is safe. Sales request Request ready 1 Prospect 2 Proof 3 Prepare Prospect Website Business pain Seasonal footwear and apparel launches are risky because style, size, color, replenishment timing, and channel availability are managed across spreadsheets and disconnected order/inventory views. Requested proof Show style/SKU readiness, size/color availability, replenishment timing, and customer promise. Decision criteria Must connect Customer Record, Sales Order View, and Style / SKU Matrix without forcing apparel into generic manufacturing or distribution language. Optional context Timeline / urgency Competitor / incumbent Optional website/category evidence Ariat sells footwear, apparel, workwear, outdoor gear, size/color vari"
+    },
+    {
+      "name": "w125_ready_state_removes_competing_save_and_prepare",
+      "pass": true,
+      "detail": "30-second plan Prospect Ariat International Show style/SKU readiness, size/color availability, replenishment timing, and customer promise. Classification Waiting for brief No lane chosen yet Confidence Not prepared Build demo plan Next action Build demo plan. The request is ready. Build the demo plan from the website, request, and proof needs. Demo path Build demo plan One click saves the request, prepares the brief, and confirms the demo path when the evidence is safe. Sales request Request ready 1 Prospect 2 Proof 3 Prepare Prospect Website Business pain Seasonal footwear and apparel launches are risky because style, size, color, replenishment timing, and channel availability are managed across spreadsheets and disconnected order/inventory views. Requested proof Show style/SKU readiness, size/color availability, replenishment timing, and customer promise. Decision criteria Must connect Customer Record, Sales Order View, and Style / SKU Matrix without forcing apparel into generic manufacturing or distribution language. Optional context Timeline / urgency Competitor / incumbent Optional website/category evidence Ariat sells footwear, apparel, workwear, outdoor gear, size/color vari"
+    },
+    {
+      "name": "w125_prepared_state_shows_confirm_demo_path",
+      "pass": true,
+      "detail": "30-second plan Prospect Ariat International Show style/SKU readiness, size/color availability, replenishment timing, and customer promise. Classification Apparel & Accessories Style / SKU Matrix Confidence Needs confirmation High / Website evidence Next action Confirm demo path. Confirm the website category before ROI, competitive, or write preparation proceeds. Demo path Apparel & Accessories / Style-to-Availability Readiness Confirm the lane before exporting the build handoff. Confirm demo path Behind the scenes: request and evidence Request summary Ariat International www.ariat.com / Apparel & Accessories / Style-to-Availability Readiness Edit Objective Show style/SKU readiness, size/color availability, replenishment timing, and customer promise. Lane Apparel & Accessories Style / SKU Matrix Demo path Apparel & Accessories Style-to-Availability Readiness Request 8 / 8 Internal proof review needed in 2-4 weeks. Brief prepared Needs confirmation Confirm demo path Website read Needs confirmation Website evidence High Confirm before handoff Why this lane Apparel & Accessories Website evidence supports Apparel & Accessories, but the consultant should confirm the category before build"
+    },
+    {
+      "name": "w125_confirmed_state_shows_run_build_value",
+      "pass": true,
+      "detail": "30-second plan Prospect Ariat International Show style/SKU readiness, size/color availability, replenishment timing, and customer promise. Classification Apparel & Accessories Style / SKU Matrix Confidence Needs confirmation High / Website evidence Next action Run demo or export handoff. Confirm the website category before ROI, competitive, or write preparation proceeds. Demo path Apparel & Accessories / Style-to-Availability Readiness Lane, proof path, and demo path are aligned. Run demo Build handoff ROI / Competitive Behind the scenes: request and evidence Request summary Ariat International www.ariat.com / Apparel & Accessories / Style-to-Availability Readiness Edit Objective Show style/SKU readiness, size/color availability, replenishment timing, and customer promise. Lane Apparel & Accessories Style / SKU Matrix Demo path Apparel & Accessories Style-to-Availability Readiness Request 8 / 8 Internal proof review needed in 2-4 weeks. Demo path confirmed Needs confirmation Run demo Build handoff ROI / Competitive Website read Needs confirmation Website evidence High Confirm before handoff Why this lane Apparel & Accessories Website evidence supports Apparel & Accessories, but the"
+    },
+    {
+      "name": "w125_flow_model_has_expected_states",
+      "pass": true,
+      "detail": "{\"empty\":\"enter_sales_request\",\"ready\":\"ready_to_prepare\",\"prepared\":\"prepared_needs_confirmation\",\"confirmed\":\"confirmed_ready\"}"
+    },
+    {
+      "name": "w125_trace_events_present",
+      "pass": true,
+      "detail": "trace events present in runtime"
+    },
+    {
+      "name": "w125_build_behavior_preserved",
+      "pass": true,
+      "detail": "Build Handoff What the consultant requested Ariat International Show style/SKU readiness, size/color availability, replenishment timing, and customer promise. 1. Ready? Ready to export Consultant confirmed the lane and pack. 2. Demo path Apparel & Accessories Style-to-Availability Readiness 3. Boundary Export only The build engine owns generated records. confirmed Build handoff JSON Export lane: Apparel & Accessories Final generated names not imported yet Integrated Build runner return Blocked before server adapter Build runner return remains disabled until confirmed request, operator gate, approved endpoint, server flags, and sandbox allowlist are present. Blocked Before Server Adapter Call Invocation from drawer: no Toggle: disabled by default Source: Drawer Client Boundary Visual testing blocked Build return Blocked before server adapter no call Runner task Not captured no call Result"
+    },
+    {
+      "name": "w125_no_write_boundaries_preserved",
+      "pass": true,
+      "detail": "drawer source has no write invocation"
+    },
+    {
+      "name": "w125_test_hooks_expose_flow_model",
+      "pass": true,
+      "detail": "test hook exported"
+    }
+  ]
+}

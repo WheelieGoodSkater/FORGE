@@ -1,0 +1,89 @@
+{
+  "schema": "idb.w150-governed-runner-result-visual-evidence-intake-go-no-go.v1",
+  "status": "no_go_final_names_not_imported_runner_result_capture_required",
+  "decision": "NO_GO_W149_OPEN_LINK_TEST__FINAL_NAMES_NOT_IMPORTED",
+  "evidenceSummary": {
+    "traceFile": "/path/to/downloads/intelligent-demo-builder-trace-1778943212665.json",
+    "handoffFile": "/path/to/downloads/idb-dcc-runner-handoff-packet-1778943212141.json",
+    "visualObservation": "Build tab shows Build Handoff, Final generated names not imported yet, and no Open links. Run tab uses provisional Customer Record guidance only.",
+    "finalNamingStatus": "not_imported",
+    "finalNamingDisplayStatus": "Final generated names not imported yet",
+    "finalNamesImported": false,
+    "importedObjectCount": 0,
+    "navigationStatus": "using_provisional_preview_names",
+    "linkAuthoritySummary": {
+      "missing_url": 7
+    },
+    "activeOpenLinkCount": 0,
+    "handoffStatus": "ready_for_dcc_suitelet_submission_review",
+    "handoffExecutionMode": "review_only_no_submit",
+    "handoffHasFinalNames": false,
+    "rootCause": "The operator exported a build handoff packet, not a governed runner result-capture JSON. No runner-created record ids or URLs were imported into IDB."
+  },
+  "goNoGo": {
+    "recordExistenceGo": false,
+    "linkVisualGo": false,
+    "reason": "W149 cannot run because there are no imported final generated names or URLs to click.",
+    "requiredBeforeRetest": [
+      "Submit or execute the governed runner through the server-side adapter with queue/write flags enabled in sandbox.",
+      "Capture the completed runner result, not the handoff packet.",
+      "Result capture must include Customer, demo transaction, hero item, matrix/proof item, and component item with numeric internal ids and supported NetSuite URLs.",
+      "Import that result JSON into IDB Trace > Final generated names import.",
+      "Confirm Build changes from Build Handoff to Build Results and shows active Open links."
+    ]
+  },
+  "remediationPlan": {
+    "status": "route_to_runner_result_capture_import",
+    "notAVisualBug": true,
+    "drawerBehaviorCorrect": true,
+    "nextArchitectureNeed": "IDB needs a clearer operator result-import path after governed runner completion, and the runner/adapter needs to return the final generated names JSON as the artifact to import.",
+    "implementationTargets": [
+      "Promote the result-capture JSON import instructions in Build when final names are missing.",
+      "Differentiate Build handoff JSON from Runner result JSON in copy and trace labels.",
+      "Add a W151 harness that rejects handoff packets pasted into final-name import and accepts only runner result JSON with numeric ids and URLs.",
+      "Keep Open links hidden until the accepted runner result JSON is imported."
+    ]
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "internalRunnerOwnershipPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noFakeRecordUrlsReturned": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W151: Runner Result JSON Import Guard And Missing-Result UX",
+    "prompt": "Move through W151: Runner Result JSON Import Guard And Missing-Result UX. Use the W150 evidence showing the operator exported only the build handoff packet and IDB correctly showed no links because final generated names were not imported. Harden the IDB import path and Build/Trace copy so operators clearly distinguish Build handoff JSON from governed runner result JSON. Reject handoff packets pasted into final generated names import, accept only completed runner result JSON with numeric internal ids and supported NetSuite URLs for Customer, demo transaction, hero item, matrix/proof item, and component item, and keep Open links hidden until that import succeeds. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output import guard contract, missing-result UX copy, smoke harness, trace samples, W151 report, visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w150_uploaded_trace_reviewed",
+      "pass": true,
+      "detail": "{\"traceFile\":\"/path/to/downloads/intelligent-demo-builder-trace-1778943212665.json\",\"handoffFile\":\"/path/to/downloads/idb-dcc-runner-handoff-packet-1778943212141.json\",\"visualObservation\":\"Build tab shows Build Handoff, Final generated names not imported yet, and no Open links. Run tab uses provisional Customer Record guidance only.\",\"finalNamingStatus\":\"not_imported\",\"finalNamingDisplayStatus\":\"Final generated names not imported yet\",\"finalNamesImported\":false,\"importedObjectCount\":0,\"navigationStatus\":\"using_provisional_preview_names\",\"linkAuthoritySummary\":{\"missing_url\":7},\"activeOpenLinkCount\":0,\"handoffStatus\":\"ready_for_dcc_suitelet_submission_review\",\"handoffExecutionMode\":\"review_only_no_submit\",\"handoffHasFinalNames\":false,\"rootCause\":\"The operator exported a build handoff packet, not a governed runner result-capture JSON. No runner-created record ids or URLs were imported into IDB.\"}"
+    },
+    {
+      "name": "w150_handoff_packet_is_not_runner_result",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.dcc-runner-handoff-packet.v1\",\"executionMode\":\"review_only_no_submit\",\"handoffHasFinalNames\":false}"
+    },
+    {
+      "name": "w150_no_open_links_is_correct_state",
+      "pass": true,
+      "detail": "{\"missing_url\":7}"
+    },
+    {
+      "name": "w150_w149_blocked_before_clicking",
+      "pass": true,
+      "detail": "{\"recordExistenceGo\":false,\"linkVisualGo\":false,\"reason\":\"W149 cannot run because there are no imported final generated names or URLs to click.\",\"requiredBeforeRetest\":[\"Submit or execute the governed runner through the server-side adapter with queue/write flags enabled in sandbox.\",\"Capture the completed runner result, not the handoff packet.\",\"Result capture must include Customer, demo transaction, hero item, matrix/proof item, and component item with numeric internal ids and supported NetSuite URLs.\",\"Import that result JSON into IDB Trace > Final generated names import.\",\"Confirm Build changes from Build Handoff to Build Results and shows active Open links.\"]}"
+    },
+    {
+      "name": "w150_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityPreserved\":true,\"handoffParityPreserved\":true,\"internalRunnerOwnershipPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noFakeRecordUrlsReturned\":true}"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "idb.w89r-pilot-readiness-decision.v1",
+  "decision": "no_go_broader_consultant_pilot_partial_evidence",
+  "canProceedToBroaderPilot": false,
+  "canProceedToSingleRetest": true,
+  "reason": "The real evidence proves the Ariat classification and write-safety boundaries, but does not prove DCC handoff export, screenshot-based UX clarity, operator mapping, or runner-preview parity.",
+  "unlockCriteria": [
+    "Average W88 rubric score is at least 4.0.",
+    "No category scores below 3.",
+    "idb-dcc-runner-handoff-packet JSON is attached.",
+    "Trace JSON is attached.",
+    "Plan/Review/DCC handoff/Trace screenshots are attached.",
+    "Operator comparison notes prove Suitelet form params, DCC-owned config, and runner preview parity.",
+    "No IDB SuiteScript invocation, queue action, or transaction write occurs."
+  ]
+}

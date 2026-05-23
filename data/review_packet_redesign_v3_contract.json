@@ -1,0 +1,30 @@
+{
+  "schema": "idb.review-packet-redesign-v3-contract.v1",
+  "status": "review_packet_redesign_ready_create_disabled",
+  "ownerAgents": [
+    "UX Director Agent",
+    "Packet Contract Agent"
+  ],
+  "objective": "Make Review a direct implementation checklist with core/supporting grouping, direct will-create-or-update language, source badges, and collapsed adapter details.",
+  "requiredUiElements": [
+    "Packet readiness summary",
+    "Core build",
+    "Supporting proof",
+    "Will create/update",
+    "Source badge",
+    "Collapsed details",
+    "Create disabled badge"
+  ],
+  "reviewRules": {
+    "coreRecords": "Customer, transaction, and proof anchor rows must be grouped first.",
+    "supportingRecords": "Supporting proof rows must follow core build.",
+    "technicalDetails": "Adapter fields, idempotency, rollback, dependencies, and blockers stay collapsed by default.",
+    "readiness": "Review must show readiness, story confidence, ROI confidence, competitive state, and create-disabled state."
+  },
+  "nonRegression": {
+    "creationAllowed": false,
+    "packetOrderPreserved": true,
+    "dccTogglePreserved": true,
+    "proofAnchorPreserved": true
+  }
+}

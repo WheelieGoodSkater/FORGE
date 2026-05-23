@@ -1,0 +1,109 @@
+{
+  "schema": "idb.w24-customer-proof-item-write-pilot.v1",
+  "status": "pilot_branch_ready_for_sandbox_upload",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Release Conductor Agent",
+    "Packet Contract Agent",
+    "Validation And Evidence Agent",
+    "Support Triage Agent"
+  ],
+  "objective": "Enable the first real sandbox write in a separate governed branch only.",
+  "goal": "Create or update Customer first, then create or update Proof Item only after Customer ID and URL exist.",
+  "mainPackage": {
+    "file": "netsuite/suitescript/idb_suitescript_write_path_suitelet.js",
+    "createEnabled": false,
+    "status": "must_remain_create_disabled"
+  },
+  "pilotBranch": {
+    "file": "netsuite/suitescript/idb_suitescript_write_path_suitelet_w24_pilot.js",
+    "createEnabled": true,
+    "transactionContextEnabled": false,
+    "environment": "NetSuite sandbox only",
+    "approvedLaneId": "food_beverage",
+    "approvedRoles": [
+      "customer",
+      "proof anchor"
+    ]
+  },
+  "requiredRuntimeParameters": {
+    "custscript_idb_enable_pilot_writes": true,
+    "custscript_idb_allow_customer_pilot": true,
+    "custscript_idb_allow_proof_item_pilot": true,
+    "custscript_idb_sandbox_account_only": true,
+    "custscript_idb_require_type_confirm": true
+  },
+  "requiredRequestFields": [
+    "consultantConfirmed",
+    "typeToConfirmPhrase",
+    "Creation Packet Contract V2",
+    "customer.name",
+    "customer.website",
+    "trace.packetId",
+    "records[customer]",
+    "records[proof anchor]"
+  ],
+  "executionOrder": [
+    {
+      "step": 1,
+      "role": "customer",
+      "operation": "lookup_then_create_or_update_customer",
+      "resultRequiredBeforeNextStep": [
+        "recordId",
+        "url",
+        "operation",
+        "lookupStatus"
+      ]
+    },
+    {
+      "step": 2,
+      "role": "proof anchor",
+      "operation": "lookup_then_create_or_update_proof_item",
+      "requiresParentResult": "customer",
+      "resultRequired": [
+        "recordId",
+        "url",
+        "operation",
+        "lookupStatus",
+        "parentCustomerRecordId"
+      ]
+    }
+  ],
+  "blockedInW24": [
+    "Sales Order View",
+    "transaction context",
+    "supporting proof records",
+    "non-food_beverage lanes",
+    "production deployment"
+  ],
+  "stopConditions": [
+    "main Suitelet CREATE_ENABLED changes to true",
+    "transaction context creates or updates",
+    "Proof Item writes without Customer record ID and URL",
+    "runtime flags are missing but writes still occur",
+    "type-to-confirm phrase is missing or mismatched but writes still occur",
+    "any production deployment"
+  ],
+  "traceResultContract": {
+    "status": "created or partial_failed or blocked",
+    "createdRecords": true,
+    "customerRecordId": true,
+    "proofItemRecordId": true,
+    "recordUrls": true,
+    "lookupStatus": true,
+    "rollbackLabels": true,
+    "recoverableErrors": true,
+    "transactionContextStatus": "blocked_transaction_context_disabled"
+  },
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "noDrawerDirectWrites": true,
+    "noSalesOrderWriteYet": true,
+    "noTransactionContextWriteYet": true,
+    "noProofItemWithoutCustomerResult": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "llmAdvisoryOnly": true
+  }
+}

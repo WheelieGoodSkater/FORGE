@@ -1,0 +1,69 @@
+{
+  "schema": "intelligent-demo-builder-sandbox-deployment-packet.v1",
+  "status": "deployment_packet_only_create_disabled",
+  "suiteletFile": "netsuite/suitescript/idb_suitescript_write_path_suitelet.js",
+  "createEnabledExpected": false,
+  "allowedEnvironment": "NetSuite sandbox only",
+  "deploymentPurpose": "Connectivity and gate smoke for the create-disabled SuiteScript direct-write scaffold. No records may be created.",
+  "expectedSmokeResponses": [
+    {
+      "scenario": "GET or non-POST",
+      "expectedStatus": "blocked",
+      "expectedCreateEnabled": false,
+      "expectedRecordIds": [],
+      "expectedTraceEvent": "suitescript_write_path_result"
+    },
+    {
+      "scenario": "missing consultant confirmation",
+      "expectedStatus": "blocked",
+      "expectedCreateEnabled": false,
+      "expectedRecordIds": [],
+      "expectedTraceEvent": "suitescript_write_path_result"
+    },
+    {
+      "scenario": "unauthorized lane",
+      "expectedStatus": "blocked",
+      "expectedCreateEnabled": false,
+      "expectedRecordIds": [],
+      "expectedTraceEvent": "suitescript_write_path_result"
+    },
+    {
+      "scenario": "reviewed Food / Beverage packet",
+      "expectedStatus": "validated",
+      "expectedCreateEnabled": false,
+      "expectedRecordIds": [],
+      "expectedTraceEvent": "suitescript_write_path_result",
+      "expectedWritePlan": true
+    }
+  ],
+  "requiredChecks": [
+    "local preflight passes",
+    "CREATE_ENABLED remains false",
+    "SuiteScript harness passes",
+    "deployment is sandbox only",
+    "deployment is restricted to controlled roles",
+    "no record.create calls exist in the scaffold",
+    "no save calls exist in the scaffold",
+    "smoke response is captured for evidence",
+    "no record IDs are returned while create is disabled"
+  ],
+  "stopConditions": [
+    "record created",
+    "create enabled true",
+    "production deployment selected",
+    "non-Food / Beverage pilot lane accepted for creation",
+    "missing consultant confirmation accepted",
+    "trace missing",
+    "record ID returned while create is disabled"
+  ],
+  "nonRegression": {
+    "noLiveWrites": true,
+    "noProductionDeployment": true,
+    "noDrawerDirectWrites": true,
+    "noLlmAuthority": true,
+    "noLaneChanges": true,
+    "noProofAnchorChanges": true,
+    "mainPackageRemainsCreateDisabled": true
+  },
+  "nextBlock": "G15: Sandbox Smoke Evidence Capture"
+}

@@ -1,0 +1,176 @@
+{
+  "schema": "idb.w180-completed-poll-result-import-cta-trace.v1",
+  "generatedAt": "2026-05-17T21:41:16.685Z",
+  "pendingTrace": [
+    {
+      "event": "w180_poll_result_to_import_cta",
+      "pollStatus": "poll_control_pending_or_no_submit",
+      "importCtaVisible": false,
+      "importCtaEnabled": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w180_w151_guard_result",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "",
+      "importReadyRecordCount": 0,
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w180_operator_retest_packet",
+      "doNotVisuallyTestYet": true,
+      "targetedTestingAfterImportOnly": true,
+      "broaderVisualTestingRequired": false
+    }
+  ],
+  "completedTrace": [
+    {
+      "event": "w180_poll_result_to_import_cta",
+      "pollStatus": "poll_control_completed_result_ready_for_w151_import",
+      "importCtaVisible": true,
+      "importCtaEnabled": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w180_w151_guard_result",
+      "completedResultAcceptedByW151": true,
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "importReadyRecordCount": 5,
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w180_operator_retest_packet",
+      "doNotVisuallyTestYet": true,
+      "targetedTestingAfterImportOnly": true,
+      "broaderVisualTestingRequired": false
+    }
+  ],
+  "malformedCompletedTrace": [
+    {
+      "event": "w180_poll_result_to_import_cta",
+      "pollStatus": "poll_control_completed_result_rejected_by_w151",
+      "importCtaVisible": false,
+      "importCtaEnabled": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w180_w151_guard_result",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "importReadyRecordCount": 0,
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w180_operator_retest_packet",
+      "doNotVisuallyTestYet": true,
+      "targetedTestingAfterImportOnly": true,
+      "broaderVisualTestingRequired": false
+    }
+  ],
+  "adapterErrorTrace": [
+    {
+      "event": "w180_poll_result_to_import_cta",
+      "pollStatus": "poll_control_adapter_error_stopped",
+      "importCtaVisible": false,
+      "importCtaEnabled": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w180_w151_guard_result",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "",
+      "importReadyRecordCount": 0,
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w180_operator_retest_packet",
+      "doNotVisuallyTestYet": true,
+      "targetedTestingAfterImportOnly": true,
+      "broaderVisualTestingRequired": false
+    }
+  ],
+  "noTaskTrace": [
+    {
+      "event": "w180_poll_result_to_import_cta",
+      "pollStatus": "poll_control_hidden_no_runner_task",
+      "importCtaVisible": false,
+      "importCtaEnabled": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w180_w151_guard_result",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "",
+      "importReadyRecordCount": 0,
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w180_operator_retest_packet",
+      "doNotVisuallyTestYet": true,
+      "targetedTestingAfterImportOnly": true,
+      "broaderVisualTestingRequired": false
+    }
+  ],
+  "results": [
+    {
+      "name": "w180_pending_does_not_enable_import",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import waits for completed result\",\"visible\":false,\"enabled\":false,\"action\":\"none\",\"targetView\":\"\",\"guardOwner\":\"W151 completed runner result import guard\",\"payloadSource\":\"none\",\"blockedReason\":\"runner_result_still_pending\"}"
+    },
+    {
+      "name": "w180_adapter_error_does_not_enable_import",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import waits for completed result\",\"visible\":false,\"enabled\":false,\"action\":\"none\",\"targetView\":\"\",\"guardOwner\":\"W151 completed runner result import guard\",\"payloadSource\":\"none\",\"blockedReason\":\"adapter_error_requires_operator_evidence\"}"
+    },
+    {
+      "name": "w180_malformed_completed_rejected",
+      "pass": true,
+      "detail": "{\"completedResultPresent\":true,\"completedResultAcceptedByW151\":false,\"completedResultStatus\":\"completed_runner_result_required\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"importReadyRecordCount\":0,\"stateMutationAllowedBeforeOperatorImport\":false}"
+    },
+    {
+      "name": "w180_no_task_does_not_enable_import",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import waits for completed result\",\"visible\":false,\"enabled\":false,\"action\":\"none\",\"targetView\":\"\",\"guardOwner\":\"W151 completed runner result import guard\",\"payloadSource\":\"none\",\"blockedReason\":\"runner_task_id_missing\"}"
+    },
+    {
+      "name": "w180_completed_enables_import_cta_only",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import completed runner result\",\"visible\":true,\"enabled\":true,\"action\":\"w151_guarded_completed_runner_result_import\",\"targetView\":\"trace\",\"guardOwner\":\"W151 completed runner result import guard\",\"payloadSource\":\"approved_server_adapter_completed_poll_response\",\"blockedReason\":\"\"}"
+    },
+    {
+      "name": "w180_commit_preview_ready_but_not_applied",
+      "pass": true,
+      "detail": "{\"commitAllowedAfterOperatorImport\":true,\"statePatchAvailableAfterOperatorImport\":true,\"openableAfterCommit\":9,\"supportedOpenLinksAfterCommit\":9,\"importedUrlsReadyForTargetedVisualAfterImport\":true,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w180_operator_retest_packet_ready",
+      "pass": true,
+      "detail": "{\"title\":\"W180 Completed Poll Result Import CTA Operator Retest\",\"visualNetSuiteTestingNow\":false,\"prerequisite\":\"Use only after Build has runnerTaskId and Check runner result is visible.\",\"exactSteps\":[\"Open IDB Build tab.\",\"Confirm Check runner result is visible only after runnerTaskId exists.\",\"Click Check runner result.\",\"For pending result: verify Import completed runner result is not enabled and Open links remain hidden.\",\"For adapter error: verify the drawer stops safely and asks for operator evidence.\",\"For malformed completed result: verify W151 rejects it and Open links remain hidden.\",\"For completed W151-valid result: verify Import completed runner result appears.\",\"Do not click or screenshot NetSuite record Open links until after the completed result is imported.\"],\"screenshotsToSendBack\":[\"Build tab with runnerTaskId captured and Check runner result visible.\",\"Build tab after completed poll with Import completed runner result visible.\",\"Any error or malformed-result message if the poll does not complete cleanly.\"],\"notNeededYet\":[\"Customer record page screenshot\",\"Sales Order page screenshot\",\"Item record page screenshots\",\"Broad visual regression sweep\"]}"
+    },
+    {
+      "name": "w180_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w180_poll_result_to_import_cta\",\"pollStatus\":\"poll_control_completed_result_ready_for_w151_import\",\"importCtaVisible\":true,\"importCtaEnabled\":true,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w180_w151_guard_result\",\"completedResultAcceptedByW151\":true,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"importReadyRecordCount\":5,\"activeOpenLinksBeforeImport\":0},{\"event\":\"w180_operator_retest_packet\",\"doNotVisuallyTestYet\":true,\"targetedTestingAfterImportOnly\":true,\"broaderVisualTestingRequired\":false}]"
+    },
+    {
+      "name": "w180_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"w151CompletedResultImportGuardPreserved\":true}"
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlockedUntilCompletedResultImported": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W180 only enables the guarded import CTA. Targeted Open-link screenshots wait for the import commit."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W181: Completed Runner Result Import Commit Operator Flow",
+    "prompt": "Move through W181: Completed Runner Result Import Commit Operator Flow. Use the W180 completed poll result import CTA to commit final generated names into IDB only after the operator chooses the W151-validated completed runner result import. Keep pending, adapter-error, malformed completed, and handoff JSON non-mutating; after commit, Build and Run may show imported names and verified Open links. Do not create records from the drawer and do not invoke SuiteScript outside the approved server adapter path. Output import commit operator flow, guarded harness, trace samples, W181 report, visual testing decision targeted-only after imported URLs exist, and best next Codex prompt."
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "idb.w149-targeted-final-url-open-link-visual-verification-trace.v1",
+  "decision": "PASS_VERIFICATION_PACKET_READY__LIVE_RECORD_PROOF_AWAITING_OPERATOR_EVIDENCE",
+  "recordExistenceProven": false,
+  "requiredClicks": [
+    {
+      "role": "customer",
+      "id": "91201",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201"
+    },
+    {
+      "role": "demoTransaction",
+      "id": "91202",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202"
+    },
+    {
+      "role": "heroItem",
+      "id": "91203",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203"
+    },
+    {
+      "role": "matrixProofItem",
+      "id": "91204",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204"
+    },
+    {
+      "role": "componentItem",
+      "id": "91205",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205"
+    }
+  ],
+  "noticeErrorRejected": true,
+  "acceptedEvidenceShapePasses": true,
+  "broaderVisualTestingRequired": false,
+  "bestNextCodexPrompt": {
+    "block": "W150: Governed Runner Result Visual Evidence Intake And Go/No-Go",
+    "prompt": "Move through W150: Governed Runner Result Visual Evidence Intake And Go/No-Go. Use the W149 targeted checklist and the operator-provided screenshots or notes from clicking Customer, demo transaction, hero item, matrix/proof item, and component item Open links. Mark each link as actual_record_page_verified only if the landed NetSuite page is not Notice/Error/Invalid number and shows the matching record name or numeric internal id. If all five pass, promote the governed runner result as visually verified for consultant use; if any fail, keep the drawer import but block record-existence readiness and route remediation to runner result capture. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output W150 go/no-go report, evidence summary, trace samples, broader visual testing decision, and best next Codex prompt."
+  }
+}

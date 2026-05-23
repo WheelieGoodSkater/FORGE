@@ -1,0 +1,35 @@
+{
+  "schema": "idb.create-confirmation-ux-blueprint.v1",
+  "status": "disabled_in_main_package",
+  "ownerAgents": [
+    "UX Director Agent",
+    "SuiteScript Write Agent",
+    "Validation And Release Agent"
+  ],
+  "objective": "Define the explicit confirmation gate required before any future SuiteScript write can execute.",
+  "confirmationGate": {
+    "environmentIndicatorRequired": true,
+    "recordListConfirmationRequired": true,
+    "typeToConfirmPhraseRequired": true,
+    "consultantConfirmationRequired": true,
+    "createButtonDisabledInMainPackage": true
+  },
+  "typeToConfirmPattern": "CREATE {CUSTOMER} {LANE_ID}",
+  "modalFields": [
+    "environmentIndicator",
+    "customer",
+    "selectedLane",
+    "proofAnchor",
+    "recordList",
+    "typeToConfirmPhrase",
+    "adapterState",
+    "rollbackPlan",
+    "traceRequired"
+  ],
+  "nonRegression": {
+    "mainPackageCreateEnabled": false,
+    "noAutomaticCreation": true,
+    "noHiddenWrites": true,
+    "noLlmApprovalAuthority": true
+  }
+}

@@ -1,0 +1,226 @@
+{
+  "schema": "idb.w232-build-ready-records-return.v1",
+  "status": "PASS_W232_BUILD_READY_RECORDS_RETURN",
+  "sourceTrace": "/path/to/downloads/intelligent-demo-builder-trace-1779235571802.json",
+  "rootCause": "Active W144 adapter lacked pending sidecar transaction-resolution promotion, so FORGE could see build completion without a W151-valid completed result JSON to import.",
+  "fixContract": {
+    "consultantClickPath": [
+      "Consultant clicks Build demo records.",
+      "FORGE waits while the governed runner builds records.",
+      "When the runner sidecar exists but Sales Order import is still resolving, FORGE keeps links pending.",
+      "When the CSV-created Sales Order resolves, active W144 promotes the sidecar to completed runner JSON.",
+      "Bring back records imports the W151-valid completed result into FORGE.",
+      "Build and Run show plain record names and real Open links."
+    ],
+    "uploadFiles": [
+      "idb-drawer.user.js",
+      "netsuite/idb_governed_runner_adapter_w144_suitelet.js"
+    ],
+    "noRegression": {
+      "drawerCreatesRecords": false,
+      "drawerTransactionWrites": false,
+      "directDrawerSuiteScriptOutsideApprovedAdapterPath": false,
+      "runnerOwnsGeneratedRecords": true,
+      "openLinksOnlyAfterRealUrls": true
+    }
+  },
+  "adapterPoll": {
+    "schema": "idb.approved-server-adapter-result-envelope.v1",
+    "adapterVersion": "w144-governed-sandbox-queue-submit-pilot-behind-server-flags",
+    "status": "completed_runner_result_ready",
+    "queueSubmitted": true,
+    "runnerTaskId": "SCHEDSCRIPT_REDACTED",
+    "idempotencyToken": "IDB-idb-build-liquid-death-food-beverage-foodmanufacturing-LIQUID_DEATH-FOOD_BEVERAGE",
+    "resultCapture": {
+      "schema": "idb.runner-result-capture.v1",
+      "status": "completed_result_capture_ready",
+      "runnerTaskId": "SCHEDSCRIPT_REDACTED",
+      "idempotencyToken": "IDB-idb-build-liquid-death-food-beverage-foodmanufacturing-LIQUID_DEATH-FOOD_BEVERAGE",
+      "resultCaptureCursor": "file:991",
+      "sourceFileId": "991",
+      "sourceFileName": "idb_runner_sidecar_pending_IDB_liquid_death.json",
+      "lookupStatus": "resolved_by_csv_import",
+      "finalGeneratedNamesReady": true,
+      "finalGeneratedNamesJson": {
+        "schema": "idb.completed-runner-result-json.v1",
+        "status": "completed",
+        "runStatus": "completed",
+        "generatedRecordOwner": "governed_runner_internal_build_engine",
+        "records": {
+          "customer": {
+            "type": "customer",
+            "name": "Liquid Death Customer Account",
+            "internalId": "81001",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=81001"
+          },
+          "demoTransaction": {
+            "type": "salesorder",
+            "name": "Sales Order LD-81002",
+            "internalId": "81002",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=81002"
+          },
+          "heroItem": {
+            "type": "inventoryitem",
+            "name": "Liquid Death Sparkling Water Variety 12-Pack",
+            "internalId": "81003",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81003"
+          },
+          "matrixProofItem": {
+            "type": "inventoryitem",
+            "name": "Liquid Death Canned Beverage Availability Flow",
+            "internalId": "81004",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81004"
+          },
+          "componentItem": {
+            "type": "inventoryitem",
+            "name": "Liquid Death Packaging Component Item",
+            "internalId": "81005",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81005"
+          }
+        },
+        "demoTransaction": {
+          "type": "salesorder",
+          "name": "Sales Order LD-81002",
+          "internalId": "81002",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=81002"
+        },
+        "heroItem": {
+          "type": "inventoryitem",
+          "name": "Liquid Death Sparkling Water Variety 12-Pack",
+          "internalId": "81003",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81003"
+        },
+        "matrixItem": {
+          "type": "inventoryitem",
+          "name": "Liquid Death Canned Beverage Availability Flow",
+          "internalId": "81004",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81004"
+        },
+        "componentItems": [
+          {
+            "type": "inventoryitem",
+            "name": "Liquid Death Packaging Component Item",
+            "internalId": "81005",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81005"
+          }
+        ]
+      },
+      "transactionResolution": {
+        "status": "resolved_by_csv_import",
+        "authority": "legacy_runner_csv_import_path",
+        "matchedExternalId": "IDB-idb-build-liquid-death-food-beverage-foodmanufacturing-LIQUID_DEATH-FOOD_BEVERAGE"
+      }
+    },
+    "finalGeneratedNamesJson": {
+      "schema": "idb.completed-runner-result-json.v1",
+      "status": "completed",
+      "runStatus": "completed",
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "records": {
+        "customer": {
+          "type": "customer",
+          "name": "Liquid Death Customer Account",
+          "internalId": "81001",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=81001"
+        },
+        "demoTransaction": {
+          "type": "salesorder",
+          "name": "Sales Order LD-81002",
+          "internalId": "81002",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=81002"
+        },
+        "heroItem": {
+          "type": "inventoryitem",
+          "name": "Liquid Death Sparkling Water Variety 12-Pack",
+          "internalId": "81003",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81003"
+        },
+        "matrixProofItem": {
+          "type": "inventoryitem",
+          "name": "Liquid Death Canned Beverage Availability Flow",
+          "internalId": "81004",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81004"
+        },
+        "componentItem": {
+          "type": "inventoryitem",
+          "name": "Liquid Death Packaging Component Item",
+          "internalId": "81005",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81005"
+        }
+      },
+      "demoTransaction": {
+        "type": "salesorder",
+        "name": "Sales Order LD-81002",
+        "internalId": "81002",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=81002"
+      },
+      "heroItem": {
+        "type": "inventoryitem",
+        "name": "Liquid Death Sparkling Water Variety 12-Pack",
+        "internalId": "81003",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81003"
+      },
+      "matrixItem": {
+        "type": "inventoryitem",
+        "name": "Liquid Death Canned Beverage Availability Flow",
+        "internalId": "81004",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81004"
+      },
+      "componentItems": [
+        {
+          "type": "inventoryitem",
+          "name": "Liquid Death Packaging Component Item",
+          "internalId": "81005",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81005"
+        }
+      ]
+    },
+    "finalGeneratedNamesJsonReady": true,
+    "activeOpenLinks": 0,
+    "generatedRecordOwner": "governed_runner_internal_build_engine"
+  },
+  "importGuard": {
+    "valid": true,
+    "status": "completed_runner_result_accepted"
+  },
+  "committedOpenLinks": {
+    "verified_openable": 5
+  },
+  "results": [
+    {
+      "id": "active_w144_promotes_pending_sidecar_after_sales_order_resolution",
+      "pass": true,
+      "evidence": "{\"status\":\"completed_runner_result_ready\",\"tx\":{\"status\":\"resolved_by_csv_import\",\"authority\":\"legacy_runner_csv_import_path\",\"matchedExternalId\":\"IDB-idb-build-liquid-death-food-beverage-foodmanufacturing-LIQUID_DEATH-FOOD_BEVERAGE\"}}"
+    },
+    {
+      "id": "completed_json_has_all_required_real_links",
+      "pass": true,
+      "evidence": "{\"customer\":{\"type\":\"customer\",\"name\":\"Liquid Death Customer Account\",\"internalId\":\"81001\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=81001\"},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Sales Order LD-81002\",\"internalId\":\"81002\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=81002\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Liquid Death Sparkling Water Variety 12-Pack\",\"internalId\":\"81003\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81003\"},\"matrixProofItem\":{\"type\":\"inventoryitem\",\"name\":\"Liquid Death Canned Beverage Availability Flow\",\"internalId\":\"81004\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81004\"},\"componentItem\":{\"type\":\"inventoryitem\",\"name\":\"Liquid Death Packaging Component Item\",\"internalId\":\"81005\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81005\"}}"
+    },
+    {
+      "id": "w151_guard_accepts_adapter_completed_json",
+      "pass": true,
+      "evidence": "completed_runner_result_accepted"
+    },
+    {
+      "id": "bring_back_records_commit_creates_forge_final_names",
+      "pass": true,
+      "evidence": "{\"commitAllowed\":true,\"openLinks\":9}"
+    },
+    {
+      "id": "build_and_run_show_plain_record_names_and_open_links",
+      "pass": true,
+      "evidence": "{\"verified_openable\":5}"
+    },
+    {
+      "id": "normal_ui_stays_consultant_safe",
+      "pass": true,
+      "evidence": "Build/Run rendered without forbidden internal terms."
+    },
+    {
+      "id": "no_drawer_write_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "idb.w154-integrated-build-button-status-dry-run-wiring-trace.v1",
+  "decision": "PASS_BUILD_STATUS_DRY_RUN_WIRING_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "drawerInvocationAttempted": false,
+  "statuses": [
+    {
+      "status": "blocked_before_server_adapter_call",
+      "label": "Blocked before server adapter",
+      "runnerTaskId": null,
+      "resultCaptureStatus": "not_started",
+      "activeOpenLinks": 0,
+      "visualTestingBlocked": true
+    },
+    {
+      "status": "ready_for_server_adapter",
+      "label": "Ready for server adapter",
+      "runnerTaskId": null,
+      "resultCaptureStatus": "not_started",
+      "activeOpenLinks": 0,
+      "visualTestingBlocked": true
+    },
+    {
+      "status": "false_flag_no_submit",
+      "label": "False-flag no-submit",
+      "runnerTaskId": null,
+      "resultCaptureStatus": "not_started_no_submit",
+      "activeOpenLinks": 0,
+      "visualTestingBlocked": true
+    },
+    {
+      "status": "queued_pending_fixture",
+      "label": "Queued / pending fixture",
+      "runnerTaskId": "fixture_w153_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+      "resultCaptureStatus": "pending_runner_completion",
+      "activeOpenLinks": 0,
+      "visualTestingBlocked": true
+    },
+    {
+      "status": "completed_result_awaiting_w151_import",
+      "label": "Completed result awaiting import",
+      "runnerTaskId": "fixture_w153_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+      "resultCaptureStatus": "completed_result_available",
+      "activeOpenLinks": 0,
+      "visualTestingBlocked": true
+    }
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerSuiteScriptInvocation": true,
+    "noDrawerTransactionWrites": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "events": [
+    {
+      "name": "w154_starts_from_w153_skeleton_ready",
+      "pass": true,
+      "detail": "PASS_INTEGRATED_BUILD_RETURN_ADAPTER_SKELETON_READY__NO_VISUAL_TESTING"
+    },
+    {
+      "name": "w154_status_model_covers_all_required_states",
+      "pass": true,
+      "detail": "blocked_before_server_adapter_call, ready_for_server_adapter, false_flag_no_submit, queued_pending_fixture, completed_result_awaiting_w151_import"
+    },
+    {
+      "name": "w154_build_surface_renders_status_card_without_invocation",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-s"
+    },
+    {
+      "name": "w154_false_flag_no_submit_keeps_result_capture_not_started",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-runner-return-status.v1\",\"status\":\"false_flag_no_submit\",\"label\":\"False-flag no-submit\",\"message\":\"Server adapter returned no-submit. Build remains dry-run and rollback is available by keeping server flags disabled.\",\"tone\":\"partial\",\"runnerTaskId\":null,\"resultCaptureStatus\":\"not_started_no_submit\",\"canInvokeServerAdapter\":true,\"invocationAttempted\":false,\"queueSubmitted\":false,\"finalGeneratedNamesJsonReady\":false,\"finalNamesImported\":false,\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"source\":\"controlled_harness_response_only\",\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerSuiteScriptInvocation\":true,\"noDrawerTransactionWrites\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}"
+    },
+    {
+      "name": "w154_queued_pending_fixture_has_task_but_no_final_names_or_links",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-runner-return-status.v1\",\"status\":\"queued_pending_fixture\",\"label\":\"Queued / pending fixture\",\"message\":\"Controlled harness response shows a runnerTaskId and pending result capture only. No final names or Open links are available yet.\",\"tone\":\"open\",\"runnerTaskId\":\"fixture_w153_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"resultCaptureStatus\":\"pending_runner_completion\",\"canInvokeServerAdapter\":true,\"invocationAttempted\":false,\"queueSubmitted\":true,\"finalGeneratedNamesJsonReady\":false,\"finalNamesImported\":false,\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"source\":\"controlled_harness_response_only\",\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerSuiteScriptInvocation\":true,\"noDrawerTransactionWrites\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}"
+    },
+    {
+      "name": "w154_completed_result_waits_for_w151_import_before_links",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-runner-return-status.v1\",\"status\":\"completed_result_awaiting_w151_import\",\"label\":\"Completed result awaiting import\",\"message\":\"Completed runner result JSON is available, but W151 import guard must validate numeric ids and supported NetSuite URLs before the drawer shows Open links.\",\"tone\":\"ready\",\"runnerTaskId\":\"fixture_w153_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"resultCaptureStatus\":\"completed_result_available\",\"canInvokeServerAdapter\":true,\"invocationAttempted\":false,\"queueSubmitted\":true,\"finalGeneratedNamesJsonReady\":true,\"finalNamesImported\":false,\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"source\":\"controlled_harness_response_only\",\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerSuiteScriptInvocation\":true,\"noDrawerTransactionWrites\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}"
+    },
+    {
+      "name": "w154_no_drawer_network_or_writes_added",
+      "pass": true,
+      "detail": "W154 drawer status model remains local; later W189 W144 helper is separately gated"
+    },
+    {
+      "name": "w154_visual_testing_blocked_and_no_regression",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerSuiteScriptInvocation\":true,\"noDrawerTransactionWrites\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

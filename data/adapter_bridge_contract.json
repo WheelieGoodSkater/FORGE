@@ -1,0 +1,103 @@
+{
+  "schema": "intelligent-demo-builder-adapter-bridge.v1",
+  "generated": "2026-05-09",
+  "status": "bridge_ready_create_blocked",
+  "source": "named dry-run packet",
+  "defaultMode": "dry_run",
+  "createModeAllowedByDefault": false,
+  "requiredBeforeCreate": [
+    "adapterCapabilityState.available",
+    "reviewedDryRunPacket",
+    "explicitConsultantConfirmation",
+    "traceableAdapterResult"
+  ],
+  "bridgeRequestShape": {
+    "source": "Intelligent Demo Builder",
+    "mode": "dry_run | create",
+    "adapterType": "suitescript_direct_write | suitelet | restlet | ui_navigation",
+    "selectedLaneId": "string",
+    "dccFamilyKey": "string",
+    "dccScenario": "string",
+    "dccToggles": {
+      "createNewHeroItem": "boolean",
+      "enableManufacturing": "boolean",
+      "enableWip": "boolean"
+    },
+    "customer": {
+      "name": "string",
+      "website": "string",
+      "notes": "string"
+    },
+    "records": [
+      {
+        "sequence": "number",
+        "label": "string",
+        "plannedName": "string",
+        "enrichedPreview": {
+          "proposedName": "string",
+          "recordType": "string",
+          "createOrder": "number",
+          "intendedUpdate": "string",
+          "fieldAssumptions": [
+            "string"
+          ],
+          "intendedFields": [
+            {
+              "field": "string",
+              "value": "string",
+              "source": "string"
+            }
+          ],
+          "dependencies": [
+            "string"
+          ],
+          "toggleImpact": [
+            "string"
+          ],
+          "createBlockers": [
+            "string"
+          ],
+          "sourceConfidence": "high | medium | low",
+          "fallbackReason": "string",
+          "demoUse": "string",
+          "advisoryOnly": "boolean"
+        },
+        "role": "customer | transaction | proof anchor | supporting proof",
+        "status": "draft"
+      }
+    ],
+    "advisoryEnrichment": {
+      "status": "draft_enrichment | review_needed | rejected",
+      "creationAllowed": false,
+      "recordEnrichment": [
+        "review-only enriched preview records"
+      ]
+    },
+    "confirmation": {
+      "consultantConfirmed": "boolean",
+      "confirmedAt": "ISO timestamp",
+      "adapterCapabilityState": "not_connected | available | unsupported | failed"
+    }
+  },
+  "bridgeResponseShape": {
+    "status": "blocked | dry_run_ready | create_ready | created | failed",
+    "blockedReason": "string",
+    "createdRecords": [
+      {
+        "label": "string",
+        "plannedName": "string",
+        "recordType": "string",
+        "recordId": "string",
+        "url": "string"
+      }
+    ],
+    "traceEvent": "adapter_bridge_result"
+  },
+  "nonRegression": {
+    "noCreateWhenAdapterUnavailable": true,
+    "noCreateWithoutReviewedPacket": true,
+    "noCreateWithoutConsultantConfirmation": true,
+    "noProofAnchorChange": true,
+    "noUnsupportedObjectCreation": true
+  }
+}

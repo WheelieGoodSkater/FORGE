@@ -1,0 +1,27 @@
+{
+  "schema": "idb.w108-operator-preview-scoring-rubric.v1",
+  "scale": "1-5",
+  "passingAverage": 4,
+  "noCategoryBelow": 3,
+  "categories": [
+    "One active drawer / no duplicate button",
+    "Intake and Plan are understandable in under 30 seconds",
+    "Lane, confirmed lane, DCC pack, and exported handoff agree",
+    "Review makes DCC handoff export primary and unmistakable",
+    "ROI / Competitive is useful without audit overload",
+    "Run selector chips update live script clearly",
+    "Trace evidence checklist is clear",
+    "Operator can compare Suitelet params, DCC config, and runner preview without confusion",
+    "Operator evidence can be pasted back into IDB and approved/rejected",
+    "No-submit/no-write safety is obvious"
+  ],
+  "automaticNoGoIf": [
+    "Two IDB launchers or duplicate drawers appear after refresh.",
+    "Plan/Review/exported handoff disagree on lane, pack, or scenario.",
+    "DCC handoff JSON is missing.",
+    "Trace JSON is missing.",
+    "Operator evidence is not captured in IDB.",
+    "Any IDB path appears to submit, queue, invoke SuiteScript, or write a transaction.",
+    "Operator cannot complete preview comparison without guessing."
+  ]
+}

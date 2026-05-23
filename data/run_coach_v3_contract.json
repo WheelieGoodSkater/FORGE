@@ -1,0 +1,21 @@
+{
+  "schema": "idb.run-coach-v3-contract.v1",
+  "status": "run_coach_v3_ready_create_disabled",
+  "ownerAgents": [
+    "Story Intelligence Agent",
+    "UX Director Agent"
+  ],
+  "objective": "Make Run context-aware from website, conversation notes, current NetSuite page, proof anchor, and selected live action.",
+  "requiredFields": [
+    "currentPageCue",
+    "websiteProofPhrase",
+    "painSpecificException",
+    "closeOnValueCue",
+    "actionTracePayload"
+  ],
+  "nonRegression": {
+    "noGenericLaneOnlyCopyWhenWebsiteAndNotesExist": true,
+    "creationAllowed": false,
+    "llmAdvisoryOnly": true
+  }
+}

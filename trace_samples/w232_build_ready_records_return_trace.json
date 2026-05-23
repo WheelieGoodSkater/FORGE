@@ -1,0 +1,45 @@
+{
+  "schema": "idb.w232-build-ready-records-return-trace.v1",
+  "adapterStatus": "completed_runner_result_ready",
+  "transactionResolution": {
+    "status": "resolved_by_csv_import",
+    "authority": "legacy_runner_csv_import_path",
+    "matchedExternalId": "IDB-idb-build-liquid-death-food-beverage-foodmanufacturing-LIQUID_DEATH-FOOD_BEVERAGE"
+  },
+  "importedRecords": {
+    "customer": {
+      "type": "customer",
+      "name": "Liquid Death Customer Account",
+      "internalId": "81001",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=81001"
+    },
+    "demoTransaction": {
+      "type": "salesorder",
+      "name": "Sales Order LD-81002",
+      "internalId": "81002",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=81002"
+    },
+    "heroItem": {
+      "type": "inventoryitem",
+      "name": "Liquid Death Sparkling Water Variety 12-Pack",
+      "internalId": "81003",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81003"
+    },
+    "matrixProofItem": {
+      "type": "inventoryitem",
+      "name": "Liquid Death Canned Beverage Availability Flow",
+      "internalId": "81004",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81004"
+    },
+    "componentItem": {
+      "type": "inventoryitem",
+      "name": "Liquid Death Packaging Component Item",
+      "internalId": "81005",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=81005"
+    }
+  },
+  "commitStatus": "completed_runner_result_import_operator_commit_ready",
+  "verifiedOpenLinks": {
+    "verified_openable": 5
+  }
+}

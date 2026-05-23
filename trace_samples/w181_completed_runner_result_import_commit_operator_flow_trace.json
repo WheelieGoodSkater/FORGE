@@ -1,0 +1,234 @@
+{
+  "schema": "idb.w181-completed-runner-result-import-commit-operator-flow-trace.v1",
+  "generatedAt": "2026-05-17T21:41:16.811Z",
+  "noChoiceTrace": [
+    {
+      "event": "w181_operator_import_choice_gate",
+      "operatorChoseImport": false,
+      "ctaReady": true,
+      "commitAllowed": false,
+      "blockedReason": "operator_import_choice_required",
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w181_w151_completed_result_guard",
+      "completedResultAcceptedByW151": true,
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "handoffJsonRejected": true,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w181_build_run_after_import_commit",
+      "buildMayShowImportedNames": false,
+      "runMayShowImportedNames": false,
+      "verifiedOpenLinkCount": 0,
+      "targetedOpenLinkTestingReady": false
+    }
+  ],
+  "pendingTrace": [
+    {
+      "event": "w181_operator_import_choice_gate",
+      "operatorChoseImport": true,
+      "ctaReady": false,
+      "commitAllowed": false,
+      "blockedReason": "runner_result_still_pending",
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w181_w151_completed_result_guard",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "",
+      "handoffJsonRejected": true,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w181_build_run_after_import_commit",
+      "buildMayShowImportedNames": false,
+      "runMayShowImportedNames": false,
+      "verifiedOpenLinkCount": 0,
+      "targetedOpenLinkTestingReady": false
+    }
+  ],
+  "adapterErrorTrace": [
+    {
+      "event": "w181_operator_import_choice_gate",
+      "operatorChoseImport": true,
+      "ctaReady": false,
+      "commitAllowed": false,
+      "blockedReason": "adapter_error_requires_operator_evidence",
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w181_w151_completed_result_guard",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "",
+      "handoffJsonRejected": true,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w181_build_run_after_import_commit",
+      "buildMayShowImportedNames": false,
+      "runMayShowImportedNames": false,
+      "verifiedOpenLinkCount": 0,
+      "targetedOpenLinkTestingReady": false
+    }
+  ],
+  "malformedTrace": [
+    {
+      "event": "w181_operator_import_choice_gate",
+      "operatorChoseImport": true,
+      "ctaReady": false,
+      "commitAllowed": false,
+      "blockedReason": "completed_result_rejected_by_w151",
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w181_w151_completed_result_guard",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "handoffJsonRejected": true,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w181_build_run_after_import_commit",
+      "buildMayShowImportedNames": false,
+      "runMayShowImportedNames": false,
+      "verifiedOpenLinkCount": 0,
+      "targetedOpenLinkTestingReady": false
+    }
+  ],
+  "handoffTrace": [
+    {
+      "event": "w181_operator_import_choice_gate",
+      "operatorChoseImport": true,
+      "ctaReady": false,
+      "commitAllowed": false,
+      "blockedReason": "completed_result_missing_w151_acceptance",
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w181_w151_completed_result_guard",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "",
+      "handoffJsonRejected": true,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w181_build_run_after_import_commit",
+      "buildMayShowImportedNames": false,
+      "runMayShowImportedNames": false,
+      "verifiedOpenLinkCount": 0,
+      "targetedOpenLinkTestingReady": false
+    }
+  ],
+  "completedTrace": [
+    {
+      "event": "w181_operator_import_choice_gate",
+      "operatorChoseImport": true,
+      "ctaReady": true,
+      "commitAllowed": true,
+      "blockedReason": "",
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w181_w151_completed_result_guard",
+      "completedResultAcceptedByW151": true,
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "handoffJsonRejected": true,
+      "mutatesFinalGeneratedNames": true
+    },
+    {
+      "event": "w181_build_run_after_import_commit",
+      "buildMayShowImportedNames": true,
+      "runMayShowImportedNames": true,
+      "verifiedOpenLinkCount": 9,
+      "targetedOpenLinkTestingReady": true
+    }
+  ],
+  "targetedTrace": [
+    {
+      "event": "w177_packet_from_w176_import_commit",
+      "targetedReady": true,
+      "recordCount": 5,
+      "activeOpenLinksBeforeImport": 0,
+      "supportedOpenLinksAfterCommit": 9
+    },
+    {
+      "event": "w177_targeted_roles_ready",
+      "roles": [
+        "customer",
+        "sales_order",
+        "hero_item",
+        "matrix_or_proof_item",
+        "component_item"
+      ],
+      "allNumericIds": true,
+      "allSupportedUrls": true,
+      "allOpenable": true
+    },
+    {
+      "event": "w177_visual_scope_decision",
+      "targetedOnly": true,
+      "broaderVisualTestingBlocked": true,
+      "drawerCreatesRecords": false,
+      "drawerInvokesSuiteScript": false
+    }
+  ],
+  "results": [
+    {
+      "name": "w181_no_operator_choice_blocks_commit",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.completed-runner-result-import-commit-operator-flow.v1\",\"status\":\"completed_runner_result_import_operator_commit_blocked\",\"mode\":\"operator_chosen_drawer_local_completed_result_import_only\",\"commitAllowed\":false,\"blockedReason\":\"operator_import_choice_required\",\"statePatch\":{},\"importCommitOperatorFlow\":{\"requiresOperatorImportChoice\":true,\"operatorChoseImport\":false,\"sourceImportCtaStatus\":\"completed_poll_result_import_cta_ready\",\"importCtaEnabled\":true,\"w151CompletedResultAccepted\":true,\"handoffJsonRejected\":true,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"commitSurfaceSchema\":\"idb.completed-runner-result-import-commit-build-return-surface.v1\",\"commitTarget\":\"state.dccFinalNamingResult\",\"drawerCreatesRecords\":false,\"drawerInvokesSuiteScriptOutsideApprovedAdapter\":false},\"importGuards\":{\"pendingAdapterErrorMalformedAndHandoffNonMutating\":true,\"handoffJsonStatus\":\"invalid_json_payload\",\"completedResultStatus\":\"completed_runner_result_accepted\",\"completedResultAcceptedByW151\":true,\"activeOpenLinksBeforeImport\":0,\"openLinksAvailableOnlyAfterCommit\":false},\"mutationGuard\":{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesMutatedOnlyByOperatorImport\":false,\"pendingFinalNamesMutated\":false,\"adapterErrorFinalNamesMutated\":false,\"malformedCompletedFinalNamesMutated\":false,\"handoffJsonFinalNamesMutated\":false,\"drawerWritesAttempted\":false,\"drawerTransactionWritesAttempted\":false},\"buildRunAfterCommit\":{\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false,\"customer\":\"Ariat International\",\"demoTransaction\":\"\",\"heroItem\":\"\",\"matrixProofItem\":\"\",\"componentItem\":\"\"},\"linkAuthority\":{\"activeOpenLinksBeforeImport\":0,\"supportedOpenLinksAfterCommit\":0,\"noActiveOpenLinksWithoutRealUrls\":true},\"rollbackPlan\":{\"drawerRollback\":\"clear imported final generated names state only\",\"serverRollback\":\"disable approved server adapter flags\",\"netSuiteRecordRollbackFromDrawer\":\"none\"},\"traceSamples\":[{\"event\":\"w181_operator_import_choice_gate\",\"operatorChoseImport\":false,\"ctaReady\":true,\"commitAllowed\":false,\"blockedReason\":\"operator_import_choice_required\",\"activeOpenLinksBeforeImport\":0},{\"event\":\"w181_w151_completed_result_guard\",\"completedResultAcceptedByW151\":true,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"handoffJsonRejected\":true,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w181_build_run_after_import_commit\",\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false}],\"visualTestingDecision\":{\"targetedOnlyAfterImportedUrlsExist\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"decision\":\"blocked_until_completed_result_import_commit\",\"reason\":\"No targeted visual testing until the operator commits W151-valid completed runner result JSON.\"},\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}"
+    },
+    {
+      "name": "w181_pending_does_not_mutate",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.completed-runner-result-import-commit-operator-flow.v1\",\"status\":\"completed_runner_result_import_operator_commit_blocked\",\"mode\":\"operator_chosen_drawer_local_completed_result_import_only\",\"commitAllowed\":false,\"blockedReason\":\"runner_result_still_pending\",\"statePatch\":{},\"importCommitOperatorFlow\":{\"requiresOperatorImportChoice\":true,\"operatorChoseImport\":true,\"sourceImportCtaStatus\":\"completed_poll_result_import_cta_blocked\",\"importCtaEnabled\":false,\"w151CompletedResultAccepted\":false,\"handoffJsonRejected\":true,\"generatedRecordOwner\":\"\",\"internalRunnerOwnerValid\":false,\"commitSurfaceSchema\":\"idb.completed-runner-result-import-commit-build-return-surface.v1\",\"commitTarget\":\"state.dccFinalNamingResult\",\"drawerCreatesRecords\":false,\"drawerInvokesSuiteScriptOutsideApprovedAdapter\":false},\"importGuards\":{\"pendingAdapterErrorMalformedAndHandoffNonMutating\":true,\"handoffJsonStatus\":\"invalid_json_payload\",\"completedResultStatus\":\"invalid_json_payload\",\"completedResultAcceptedByW151\":false,\"activeOpenLinksBeforeImport\":0,\"openLinksAvailableOnlyAfterCommit\":false},\"mutationGuard\":{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesMutatedOnlyByOperatorImport\":false,\"pendingFinalNamesMutated\":false,\"adapterErrorFinalNamesMutated\":false,\"malformedCompletedFinalNamesMutated\":false,\"handoffJsonFinalNamesMutated\":false,\"drawerWritesAttempted\":false,\"drawerTransactionWritesAttempted\":false},\"buildRunAfterCommit\":{\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false,\"customer\":\"Ariat International\",\"demoTransaction\":\"\",\"heroItem\":\"\",\"matrixProofItem\":\"\",\"componentItem\":\"\"},\"linkAuthority\":{\"activeOpenLinksBeforeImport\":0,\"supportedOpenLinksAfterCommit\":0,\"noActiveOpenLinksWithoutRealUrls\":true},\"rollbackPlan\":{\"drawerRollback\":\"clear imported final generated names state only\",\"serverRollback\":\"disable approved server adapter flags\",\"netSuiteRecordRollbackFromDrawer\":\"none\"},\"traceSamples\":[{\"event\":\"w181_operator_import_choice_gate\",\"operatorChoseImport\":true,\"ctaReady\":false,\"commitAllowed\":false,\"blockedReason\":\"runner_result_still_pending\",\"activeOpenLinksBeforeImport\":0},{\"event\":\"w181_w151_completed_result_guard\",\"completedResultAcceptedByW151\":false,\"generatedRecordOwner\":\"\",\"handoffJsonRejected\":true,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w181_build_run_after_import_commit\",\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false}],\"visualTestingDecision\":{\"targetedOnlyAfterImportedUrlsExist\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"decision\":\"blocked_until_completed_result_import_commit\",\"reason\":\"No targeted visual testing until the operator commits W151-valid completed runner result JSON.\"},\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}"
+    },
+    {
+      "name": "w181_adapter_error_does_not_mutate",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.completed-runner-result-import-commit-operator-flow.v1\",\"status\":\"completed_runner_result_import_operator_commit_blocked\",\"mode\":\"operator_chosen_drawer_local_completed_result_import_only\",\"commitAllowed\":false,\"blockedReason\":\"adapter_error_requires_operator_evidence\",\"statePatch\":{},\"importCommitOperatorFlow\":{\"requiresOperatorImportChoice\":true,\"operatorChoseImport\":true,\"sourceImportCtaStatus\":\"completed_poll_result_import_cta_blocked\",\"importCtaEnabled\":false,\"w151CompletedResultAccepted\":false,\"handoffJsonRejected\":true,\"generatedRecordOwner\":\"\",\"internalRunnerOwnerValid\":false,\"commitSurfaceSchema\":\"idb.completed-runner-result-import-commit-build-return-surface.v1\",\"commitTarget\":\"state.dccFinalNamingResult\",\"drawerCreatesRecords\":false,\"drawerInvokesSuiteScriptOutsideApprovedAdapter\":false},\"importGuards\":{\"pendingAdapterErrorMalformedAndHandoffNonMutating\":true,\"handoffJsonStatus\":\"invalid_json_payload\",\"completedResultStatus\":\"invalid_json_payload\",\"completedResultAcceptedByW151\":false,\"activeOpenLinksBeforeImport\":0,\"openLinksAvailableOnlyAfterCommit\":false},\"mutationGuard\":{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesMutatedOnlyByOperatorImport\":false,\"pendingFinalNamesMutated\":false,\"adapterErrorFinalNamesMutated\":false,\"malformedCompletedFinalNamesMutated\":false,\"handoffJsonFinalNamesMutated\":false,\"drawerWritesAttempted\":false,\"drawerTransactionWritesAttempted\":false},\"buildRunAfterCommit\":{\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false,\"customer\":\"Ariat International\",\"demoTransaction\":\"\",\"heroItem\":\"\",\"matrixProofItem\":\"\",\"componentItem\":\"\"},\"linkAuthority\":{\"activeOpenLinksBeforeImport\":0,\"supportedOpenLinksAfterCommit\":0,\"noActiveOpenLinksWithoutRealUrls\":true},\"rollbackPlan\":{\"drawerRollback\":\"clear imported final generated names state only\",\"serverRollback\":\"disable approved server adapter flags\",\"netSuiteRecordRollbackFromDrawer\":\"none\"},\"traceSamples\":[{\"event\":\"w181_operator_import_choice_gate\",\"operatorChoseImport\":true,\"ctaReady\":false,\"commitAllowed\":false,\"blockedReason\":\"adapter_error_requires_operator_evidence\",\"activeOpenLinksBeforeImport\":0},{\"event\":\"w181_w151_completed_result_guard\",\"completedResultAcceptedByW151\":false,\"generatedRecordOwner\":\"\",\"handoffJsonRejected\":true,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w181_build_run_after_import_commit\",\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false}],\"visualTestingDecision\":{\"targetedOnlyAfterImportedUrlsExist\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"decision\":\"blocked_until_completed_result_import_commit\",\"reason\":\"No targeted visual testing until the operator commits W151-valid completed runner result JSON.\"},\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}"
+    },
+    {
+      "name": "w181_malformed_completed_does_not_mutate",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.completed-runner-result-import-commit-operator-flow.v1\",\"status\":\"completed_runner_result_import_operator_commit_blocked\",\"mode\":\"operator_chosen_drawer_local_completed_result_import_only\",\"commitAllowed\":false,\"blockedReason\":\"completed_result_rejected_by_w151\",\"statePatch\":{},\"importCommitOperatorFlow\":{\"requiresOperatorImportChoice\":true,\"operatorChoseImport\":true,\"sourceImportCtaStatus\":\"completed_poll_result_import_cta_blocked\",\"importCtaEnabled\":false,\"w151CompletedResultAccepted\":false,\"handoffJsonRejected\":true,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"commitSurfaceSchema\":\"idb.completed-runner-result-import-commit-build-return-surface.v1\",\"commitTarget\":\"state.dccFinalNamingResult\",\"drawerCreatesRecords\":false,\"drawerInvokesSuiteScriptOutsideApprovedAdapter\":false},\"importGuards\":{\"pendingAdapterErrorMalformedAndHandoffNonMutating\":true,\"handoffJsonStatus\":\"invalid_json_payload\",\"completedResultStatus\":\"completed_runner_result_required\",\"completedResultAcceptedByW151\":false,\"activeOpenLinksBeforeImport\":0,\"openLinksAvailableOnlyAfterCommit\":false},\"mutationGuard\":{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesMutatedOnlyByOperatorImport\":false,\"pendingFinalNamesMutated\":false,\"adapterErrorFinalNamesMutated\":false,\"malformedCompletedFinalNamesMutated\":false,\"handoffJsonFinalNamesMutated\":false,\"drawerWritesAttempted\":false,\"drawerTransactionWritesAttempted\":false},\"buildRunAfterCommit\":{\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false,\"customer\":\"Ariat International\",\"demoTransaction\":\"\",\"heroItem\":\"\",\"matrixProofItem\":\"\",\"componentItem\":\"\"},\"linkAuthority\":{\"activeOpenLinksBeforeImport\":0,\"supportedOpenLinksAfterCommit\":0,\"noActiveOpenLinksWithoutRealUrls\":true},\"rollbackPlan\":{\"drawerRollback\":\"clear imported final generated names state only\",\"serverRollback\":\"disable approved server adapter flags\",\"netSuiteRecordRollbackFromDrawer\":\"none\"},\"traceSamples\":[{\"event\":\"w181_operator_import_choice_gate\",\"operatorChoseImport\":true,\"ctaReady\":false,\"commitAllowed\":false,\"blockedReason\":\"completed_result_rejected_by_w151\",\"activeOpenLinksBeforeImport\":0},{\"event\":\"w181_w151_completed_result_guard\",\"completedResultAcceptedByW151\":false,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"handoffJsonRejected\":true,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w181_build_run_after_import_commit\",\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false}],\"visualTestingDecision\":{\"targetedOnlyAfterImportedUrlsExist\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"decision\":\"blocked_until_completed_result_import_commit\",\"reason\":\"No targeted visual testing until the operator commits W151-valid completed runner result JSON.\"},\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}"
+    },
+    {
+      "name": "w181_handoff_json_rejected_non_mutating",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.completed-runner-result-import-commit-operator-flow.v1\",\"status\":\"completed_runner_result_import_operator_commit_blocked\",\"mode\":\"operator_chosen_drawer_local_completed_result_import_only\",\"commitAllowed\":false,\"blockedReason\":\"completed_result_missing_w151_acceptance\",\"statePatch\":{},\"importCommitOperatorFlow\":{\"requiresOperatorImportChoice\":true,\"operatorChoseImport\":true,\"sourceImportCtaStatus\":\"completed_poll_result_import_cta_blocked\",\"importCtaEnabled\":false,\"w151CompletedResultAccepted\":false,\"handoffJsonRejected\":true,\"generatedRecordOwner\":\"\",\"internalRunnerOwnerValid\":false,\"commitSurfaceSchema\":\"idb.completed-runner-result-import-commit-build-return-surface.v1\",\"commitTarget\":\"state.dccFinalNamingResult\",\"drawerCreatesRecords\":false,\"drawerInvokesSuiteScriptOutsideApprovedAdapter\":false},\"importGuards\":{\"pendingAdapterErrorMalformedAndHandoffNonMutating\":true,\"handoffJsonStatus\":\"completed_runner_result_required\",\"completedResultStatus\":\"completed_runner_result_required\",\"completedResultAcceptedByW151\":false,\"activeOpenLinksBeforeImport\":0,\"openLinksAvailableOnlyAfterCommit\":false},\"mutationGuard\":{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesMutatedOnlyByOperatorImport\":false,\"pendingFinalNamesMutated\":false,\"adapterErrorFinalNamesMutated\":false,\"malformedCompletedFinalNamesMutated\":false,\"handoffJsonFinalNamesMutated\":false,\"drawerWritesAttempted\":false,\"drawerTransactionWritesAttempted\":false},\"buildRunAfterCommit\":{\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false,\"customer\":\"Ariat International\",\"demoTransaction\":\"\",\"heroItem\":\"\",\"matrixProofItem\":\"\",\"componentItem\":\"\"},\"linkAuthority\":{\"activeOpenLinksBeforeImport\":0,\"supportedOpenLinksAfterCommit\":0,\"noActiveOpenLinksWithoutRealUrls\":true},\"rollbackPlan\":{\"drawerRollback\":\"clear imported final generated names state only\",\"serverRollback\":\"disable approved server adapter flags\",\"netSuiteRecordRollbackFromDrawer\":\"none\"},\"traceSamples\":[{\"event\":\"w181_operator_import_choice_gate\",\"operatorChoseImport\":true,\"ctaReady\":false,\"commitAllowed\":false,\"blockedReason\":\"completed_result_missing_w151_acceptance\",\"activeOpenLinksBeforeImport\":0},{\"event\":\"w181_w151_completed_result_guard\",\"completedResultAcceptedByW151\":false,\"generatedRecordOwner\":\"\",\"handoffJsonRejected\":true,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w181_build_run_after_import_commit\",\"buildMayShowImportedNames\":false,\"runMayShowImportedNames\":false,\"verifiedOpenLinkCount\":0,\"targetedOpenLinkTestingReady\":false}],\"visualTestingDecision\":{\"targetedOnlyAfterImportedUrlsExist\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"decision\":\"blocked_until_completed_result_import_commit\",\"reason\":\"No targeted visual testing until the operator commits W151-valid completed runner result JSON.\"},\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}"
+    },
+    {
+      "name": "w181_completed_operator_import_commits_state_patch",
+      "pass": true,
+      "detail": "{\"dccFinalNamingResult\":{\"schema\":\"idb.dcc-final-naming-result.v1\",\"status\":\"dcc_final_names_imported\",\"displayStatus\":\"Final generated names imported\",\"importedAt\":\"2026-05-17T21:41:16.810Z\",\"source\":\"dcc_result_import_only\",\"finalNamesImported\":true,\"runStatus\":\"completed\",\"prospect\":\"Ariat International Outdoor Retail Account\",\"scenario\":\"Style / SKU Matrix\",\"familyKey\":\"apparel_accessories\",\"generated\":{\"extId\":\"\",\"agenda\":\"\"},\"displayObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalName\":\"\",\"id\":\"501234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234\",\"source\":\"dcc_final\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalName\":\"\",\"id\":\"601234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234\",\"source\":\"dcc_final\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalName\":\"\",\"id\":\"701234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234\",\"source\":\"dcc_final\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalName\":\"\",\"id\":\"701235\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235\",\"source\":\"dcc_final\"}],\"componentItems\":[{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalName\":\"\",\"id\":\"701236\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236\",\"source\":\"dcc_final\"}],\"locationPlanningRecords\":[],\"csvSalesOrderArtifacts\":[],\"warnings\":[],\"errors\":[],\"recoverableBlockers\":[],\"traceCoverage\":{\"includedInTraceExport\":true,\"secretsRedacted\":true,\"importedOnly\":true},\"noRegression\":{\"importOnly\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true,\"provisionalNamesCannotBeMarkedFinal\":true,\"w92StateAuthorityPreserved\":true,\"w110HandoffParityPreserved\":true}}}"
+    },
+    {
+      "name": "w181_build_and_run_use_imported_names_after_commit",
+      "pass": true,
+      "detail": "Ariat International Outdoor Retail Account  -> Ariat Seasonal Footwear Availability Demo Order  -> Ariat Terrain H2O Work Boot Hero Item  -> Ariat Core Boot Size Color Matrix "
+    },
+    {
+      "name": "w181_verified_open_links_ready_after_commit",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"id\":\"501234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234\",\"expectedPath\":\"/app/common/entity/custjob.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForTargetedClick\":true,\"evidenceRequired\":[\"landed URL contains the same numeric id\",\"landed URL path matches the expected NetSuite record type\",\"page is not Notice, Error, Invalid number, or record-does-not-exist\",\"record name or numeric internal id is visible on the landed page\",\"operator screenshot captures URL bar and record page identity\"]},{\"role\":\"sales_order\",\"label\":\"Demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"id\":\"601234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234\",\"expectedPath\":\"/app/accounting/transactions/salesord.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForTargetedClick\":true,\"evidenceRequired\":[\"landed URL contains the same numeric id\",\"landed URL path matches the expected NetSuite record type\",\"page is not Notice, Error, Invalid number, or record-does-not-exist\",\"record name or numeric internal id is visible on the landed page\",\"operator screenshot captures URL bar and record page identity\"]},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"id\":\"701234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234\",\"expectedPath\":\"/app/common/item/item.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForTargetedClick\":true,\"evidenceRequired\":[\"landed URL contains the same numeric id\",\"landed URL path matches the expected NetSuite record type\",\"page is not Notice, Error, Invalid number, or record-does-not-exist\",\"record name or numeric internal id is visible on the landed page\",\"operator screenshot captures URL bar and record page identity\"]},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix/proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"id\":\"701235\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235\",\"expectedPath\":\"/app/common/item/item.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForTargetedClick\":true,\"evidenceRequired\":[\"landed URL contains the same numeric id\",\"landed URL path matches the expected NetSuite record type\",\"page is not Notice, Error, Invalid number, or record-does-not-exist\",\"record name or numeric internal id is visible on the landed page\",\"operator screenshot captures URL bar and record page identity\"]},{\"role\":\"component_item\",\"label\":\"Component item\",\"name\":\"Ariat Brown Leather Upper Component\",\"id\":\"701236\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236\",\"expectedPath\":\"/app/common/item/item.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForTargetedClick\":true,\"evidenceRequired\":[\"landed URL contains the same numeric id\",\"landed URL path matches the expected NetSuite record type\",\"page is not Notice, Error, Invalid number, or record-does-not-exist\",\"record name or numeric internal id is visible on the landed page\",\"operator screenshot captures URL bar and record page identity\"]}]"
+    },
+    {
+      "name": "w181_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ],
+  "visualTestingDecision": {
+    "targetedOnlyAfterImportedUrlsExist": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "decision": "targeted_only_after_imported_urls_exist",
+    "reason": "W181 commits W151-valid URLs into IDB; the next test should only click the five imported Open links."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W182: Targeted Imported URL Open-Link Operator Test Packet",
+    "prompt": "Move through W182: Targeted Imported URL Open-Link Operator Test Packet. Use the W181 completed runner result import commit flow to provide the exact targeted-only operator test for Customer, demo transaction, hero item, matrix/proof item, and component item Open links. Require imported W151-valid numeric ids and supported NetSuite URLs, do not create records from the drawer, do not invoke SuiteScript from the drawer outside the approved server adapter path, and do not broaden visual testing. Output exact test steps, screenshots needed, trace samples, W182 report, broader visual testing decision blocked, and best next Codex prompt."
+  }
+}

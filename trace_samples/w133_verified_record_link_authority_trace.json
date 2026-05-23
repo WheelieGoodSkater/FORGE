@@ -1,0 +1,92 @@
+{
+  "schema": "idb.w133-verified-record-link-authority-trace.v1",
+  "decision": "PASS",
+  "previewStatuses": [
+    {
+      "label": "Customer",
+      "name": "Ariat International Outdoor Retail Account",
+      "url": "/app/common/entity/custjob.nl?id=preview-customer-123",
+      "status": "preview_placeholder",
+      "openable": false
+    },
+    {
+      "label": "Sales Order / demo transaction",
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "url": "/app/accounting/transactions/salesord.nl?id=preview-salesorder-456",
+      "status": "preview_placeholder",
+      "openable": false
+    },
+    {
+      "label": "Hero item",
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "url": "/app/common/item/item.nl?id=preview-item-789",
+      "status": "preview_placeholder",
+      "openable": false
+    },
+    {
+      "label": "Matrix item / proof item",
+      "name": "Ariat Core Boot Size Color Matrix",
+      "url": "/app/common/item/item.nl?id=preview-matrix-790",
+      "status": "preview_placeholder",
+      "openable": false
+    },
+    {
+      "label": "Component item 1",
+      "name": "Ariat Brown Leather Upper Component",
+      "url": "/app/common/item/item.nl?id=preview-component-791",
+      "status": "preview_placeholder",
+      "openable": false
+    }
+  ],
+  "realStatuses": [
+    {
+      "label": "Customer",
+      "name": "Ariat International Outdoor Retail Account",
+      "url": "/app/common/entity/custjob.nl?id=12345",
+      "status": "verified_openable",
+      "openable": true
+    },
+    {
+      "label": "Sales Order / demo transaction",
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "url": "/app/accounting/transactions/salesord.nl?id=23456",
+      "status": "verified_openable",
+      "openable": true
+    },
+    {
+      "label": "Hero item",
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "url": "/app/common/item/item.nl?id=34567",
+      "status": "verified_openable",
+      "openable": true
+    },
+    {
+      "label": "Matrix item / proof item",
+      "name": "Ariat Core Boot Size Color Matrix",
+      "url": "/app/common/item/item.nl?id=45678",
+      "status": "verified_openable",
+      "openable": true
+    },
+    {
+      "label": "Component item 1",
+      "name": "Ariat Brown Leather Upper Component",
+      "url": "/app/common/item/item.nl?id=56789",
+      "status": "verified_openable",
+      "openable": true
+    }
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W134: Real Build Result URL Contract And Live Link Retest",
+    "prompt": "Move through W134: Real Build Result URL Contract And Live Link Retest. Use the W133 verified record link authority model to define and test the internal build engine result contract for real NetSuite record URLs after preview/run. Require customer, demo transaction, hero item, matrix/proof item, and component records to return real internal ids and supported NetSuite record URLs before the drawer renders active Open links. Run a visual NetSuite retest proving preview placeholder links show Link pending, real build-engine URLs show Open, and Build/Run remain consultant-usable. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership of generated records. Output real URL result contract, live link retest evidence, trace samples, W134 report, whether broader visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

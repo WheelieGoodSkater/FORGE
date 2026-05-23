@@ -1,0 +1,91 @@
+{
+  "schema": "idb.w222-live-operator-packet-export-copy-freeze-trace.v1",
+  "summaryTitle": "IDB Import Operator Summary",
+  "caseCount": 7,
+  "counts": {
+    "success": 2,
+    "partial": 1,
+    "recovery": 4
+  },
+  "rows": [
+    {
+      "scenarioLabel": "Complete Non-Manufacturing Import",
+      "status": "Ready",
+      "mode": "retail_availability",
+      "consultantHeadline": "Build results are ready.",
+      "nextAction": "Open Customer / Open Sales Order / Open Item",
+      "visibleLabels": "Customer, Sales Order, Product SKU, Availability Flow, Channel Context",
+      "adminDebugAvailability": "Hidden",
+      "openLinkReadiness": "Ready",
+      "normalCopy": "Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability Flow, Channel Context | Hidden"
+    },
+    {
+      "scenarioLabel": "Complete Manufacturing Import",
+      "status": "Ready",
+      "mode": "discrete_manufacturing",
+      "consultantHeadline": "Build results are ready.",
+      "nextAction": "Open Customer / Open Sales Order / Open Item",
+      "visibleLabels": "Customer, Sales Order, Finished/Assembly Item, BOM or Assembly Structure, Component Item",
+      "adminDebugAvailability": "Hidden",
+      "openLinkReadiness": "Ready",
+      "normalCopy": "Complete Manufacturing Import | Ready | discrete_manufacturing | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Finished/Assembly Item, BOM or Assembly Structure, Component Item | Hidden"
+    },
+    {
+      "scenarioLabel": "Partial Food Batch WIP Import",
+      "status": "Partial",
+      "mode": "food_batch_manufacturing",
+      "consultantHeadline": "Food batch records are ready. WIP detail was not returned.",
+      "nextAction": "Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned",
+      "visibleLabels": "Customer, Sales Order, Finished Food/Batch Item, Formula or Batch Structure, Ingredient Item, Lot Context",
+      "adminDebugAvailability": "Hidden",
+      "openLinkReadiness": "Ready",
+      "normalCopy": "Partial Food Batch WIP Import | Partial | food_batch_manufacturing | Food batch records are ready. WIP detail was not returned. | Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned | Customer, Sales Order, Finished Food/Batch Item, Formula or Batch Structure, Ingredient Item, Lot Context | Hidden"
+    },
+    {
+      "scenarioLabel": "Blank Import Recovery",
+      "status": "Recovery",
+      "mode": "retail_availability",
+      "consultantHeadline": "Paste the completed build result.",
+      "nextAction": "Use the latest completed runner result.",
+      "visibleLabels": "No Open links yet",
+      "adminDebugAvailability": "Hidden",
+      "openLinkReadiness": "No Open links yet",
+      "normalCopy": "Blank Import Recovery | Recovery | retail_availability | Paste the completed build result. | Use the latest completed runner result. | No Open links yet | Hidden"
+    },
+    {
+      "scenarioLabel": "Handoff JSON Recovery",
+      "status": "Recovery",
+      "mode": "retail_availability",
+      "consultantHeadline": "Paste the completed build result.",
+      "nextAction": "Use the latest completed runner result.",
+      "visibleLabels": "No Open links yet",
+      "adminDebugAvailability": "Hidden",
+      "openLinkReadiness": "No Open links yet",
+      "normalCopy": "Handoff JSON Recovery | Recovery | retail_availability | Paste the completed build result. | Use the latest completed runner result. | No Open links yet | Hidden"
+    },
+    {
+      "scenarioLabel": "Invalid Role/Name Recovery",
+      "status": "Recovery",
+      "mode": "distribution_replenishment",
+      "consultantHeadline": "This result does not match the selected operating mode.",
+      "nextAction": "Use the latest completed runner result.",
+      "visibleLabels": "No Open links yet",
+      "adminDebugAvailability": "Hidden",
+      "openLinkReadiness": "No Open links yet",
+      "normalCopy": "Invalid Role/Name Recovery | Recovery | distribution_replenishment | This result does not match the selected operating mode. | Use the latest completed runner result. | No Open links yet | Hidden"
+    },
+    {
+      "scenarioLabel": "Missing ID / Unsupported URL Recovery",
+      "status": "Recovery",
+      "mode": "retail_availability",
+      "consultantHeadline": "Ask the runner to return real NetSuite links.",
+      "nextAction": "Use available records only after import succeeds.",
+      "visibleLabels": "No Open links yet",
+      "adminDebugAvailability": "Available",
+      "openLinkReadiness": "No Open links yet",
+      "normalCopy": "Missing ID / Unsupported URL Recovery | Recovery | retail_availability | Ask the runner to return real NetSuite links. | Use available records only after import succeeds. | No Open links yet | Available"
+    }
+  ],
+  "diagnosticsAppendixIncluded": false,
+  "adminDiagnosticsAppendixIncluded": true
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "idb.w14-write-branch-runtime-strategy.v1",
+  "status": "runtime_strategy_ready_main_create_disabled",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "Release Conductor Agent",
+    "SuiteScript Write Agent",
+    "Validation And Evidence Agent"
+  ],
+  "objective": "Isolate future write execution behind pilot branch flags while the main package remains create-disabled.",
+  "mainPackage": {
+    "createEnabled": false,
+    "allowedBehavior": [
+      "validate reviewed packets",
+      "return write plans",
+      "return customer pilot plan",
+      "return trace contracts",
+      "return blocked create-disabled status"
+    ],
+    "forbiddenBehavior": [
+      "create records automatically",
+      "write transaction context",
+      "execute writes from the Tampermonkey drawer",
+      "allow LLM to approve writes"
+    ]
+  },
+  "pilotBranch": {
+    "branchName": "codex/idb-sandbox-customer-write-pilot",
+    "sandboxOnly": true,
+    "approvedLaneId": "food_beverage",
+    "firstApprovedRole": "customer",
+    "runtimeParameters": [
+      "custscript_idb_enable_pilot_writes",
+      "custscript_idb_allow_customer_pilot",
+      "custscript_idb_sandbox_account_only",
+      "custscript_idb_require_type_confirm"
+    ],
+    "requiresBeforeAnyWrite": [
+      "valid Creation Packet Contract V2",
+      "consultantConfirmed true",
+      "type-to-confirm phrase",
+      "sandbox runtime parameter",
+      "trace result capture",
+      "lookup-first customer plan"
+    ]
+  },
+  "transactionGate": {
+    "status": "post_parent_result_gated",
+    "requiresCustomerResult": true,
+    "requiresProofResult": true,
+    "noTransactionWriteWithoutParentIds": true
+  },
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "llmAdvisoryOnly": true,
+    "noAutomaticCreation": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true
+  }
+}

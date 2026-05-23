@@ -1,0 +1,185 @@
+{
+  "schema": "idb.w76-hosted-resolver-configured-remote-execution-trace.v1",
+  "generated": "2026-05-17T21:41:03.244Z",
+  "decision": "PASS",
+  "pilotDecision": "no_go_remote_config_missing",
+  "remoteConfigPresent": false,
+  "remoteSmokeExecuted": false,
+  "hostedResolverPilotEnabled": false,
+  "consultantSmokeEligible": false,
+  "blockedReason": "w75_remote_env_not_applied_or_w73r_not_remote_executed",
+  "inheritedW75": {
+    "decision": "PASS",
+    "pilotDecision": "no_go_until_w75_remediation_applied_and_w76_remote_execution_passes",
+    "hostedResolverPilotEnabled": false
+  },
+  "observedEnvironment": {
+    "remoteSmokeOptIn": false,
+    "baseUrlConfigured": false,
+    "tokenConfigured": false,
+    "allowedOriginConfigured": false,
+    "blockedOriginConfigured": false,
+    "rawSecretsIncluded": false
+  },
+  "w73rRun": {
+    "status": 0,
+    "signal": null,
+    "stdoutSummary": [
+      "> intelligent-demo-builder-drawer@0.1.1 harness:execute-remote-hosted-resolver-smoke",
+      "> node tools/run_execute_remote_hosted_resolver_smoke_with_config_harness.js",
+      "W73R remote hosted resolver smoke with config harness: PASS remote_smoke_executed=false pilot_decision=no_go_remote_config_missing"
+    ],
+    "stderrSummary": []
+  },
+  "w73rObserved": {
+    "decision": "PASS",
+    "remoteSmokeExecuted": false,
+    "pilotDecision": "no_go_remote_config_missing",
+    "blockedReason": "missing_or_invalid_remote_endpoint_config",
+    "rawSecretsIncluded": false
+  },
+  "executedRemoteResults": {
+    "health": "not_executed_missing_config",
+    "authCors": "not_executed_missing_config",
+    "writePayloadRejection": "not_executed_missing_config",
+    "cacheHit": "not_executed_missing_config",
+    "approvedLiveSiteSmoke": "not_executed_missing_config",
+    "noSecretTraceChecks": "passed_for_blocked_state",
+    "fullPreflightAfterRemoteExecution": "not_applicable_remote_not_executed"
+  },
+  "pilotUnlockCriteriaEvaluation": [
+    {
+      "criterion": "W73R trace shows remoteSmokeExecuted true.",
+      "status": "fail",
+      "evidence": "remoteSmokeExecuted false"
+    },
+    {
+      "criterion": "Remote /health confirms writeAuthority none, suiteScriptInvocation false, and nllmAdvisoryOnly true.",
+      "status": "not_run",
+      "evidence": "Remote endpoint config missing."
+    },
+    {
+      "criterion": "Approved CORS passes with exact allowed origin.",
+      "status": "not_run",
+      "evidence": "Allowed origin config missing."
+    },
+    {
+      "criterion": "Blocked CORS fails with no blocked-origin echo.",
+      "status": "not_run",
+      "evidence": "Blocked origin config missing."
+    },
+    {
+      "criterion": "Missing token returns 401 before fetch.",
+      "status": "not_run",
+      "evidence": "Remote endpoint config missing."
+    },
+    {
+      "criterion": "Write-shaped payload returns 400 before fetch.",
+      "status": "not_run",
+      "evidence": "Remote endpoint config missing."
+    },
+    {
+      "criterion": "Second eligible resolve returns cacheHit true.",
+      "status": "not_run",
+      "evidence": "Remote endpoint config missing."
+    },
+    {
+      "criterion": "Approved live-site smoke passes with zero false-confident-wrong.",
+      "status": "not_run",
+      "evidence": "Hosted live smoke did not execute."
+    },
+    {
+      "criterion": "Approved live-site smoke passes with zero unsupported claims.",
+      "status": "not_run",
+      "evidence": "Hosted live smoke did not execute."
+    },
+    {
+      "criterion": "Blocked/thin/unavailable/timeout sites return insufficient evidence with no confident lane guesses.",
+      "status": "guarded_by_existing_harnesses",
+      "evidence": "Existing local/staging harnesses still enforce the rule; hosted proof remains pending."
+    },
+    {
+      "criterion": "Full preflight passes after W73R remote execution.",
+      "status": "not_applicable",
+      "evidence": "Remote execution did not occur."
+    },
+    {
+      "criterion": "W74 can be rerun and returns hosted resolver consultant smoke eligible.",
+      "status": "fail",
+      "evidence": "W74 remains no-go until W73R remoteSmokeExecuted true."
+    }
+  ],
+  "noSecretTraceChecks": [
+    "Only boolean env presence is recorded.",
+    "No raw token value is stored.",
+    "No Authorization, cookie, or X-IDB-Resolver-Token value is stored.",
+    "rawSecretsIncluded remains false."
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "hostedResolverPilotEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W76R: Apply Hosted Resolver Env And Rerun Remote Execution",
+    "prompt": "Move through W76R: Apply Hosted Resolver Env And Rerun Remote Execution. Configure the real remote staging websiteResolverServiceV1 environment required by W75, then rerun W76 so W73R executes with remoteSmokeExecuted true. Execute health, auth/CORS, write-payload rejection, cache-hit, approved live-site smoke, no-secret trace checks, full preflight, and pilot unlock criteria. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output executed remote results, pilot unlock or no-go decision, trace samples, updated W76 report, validator gates, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w76_contract_schema_present",
+      "pass": true,
+      "detail": "idb.w76-hosted-resolver-configured-remote-execution.v1"
+    },
+    {
+      "name": "w76_inherits_w75_no_go_until_remote",
+      "pass": true,
+      "detail": "{\"decision\":\"PASS\",\"pilotDecision\":\"no_go_until_w75_remediation_applied_and_w76_remote_execution_passes\",\"enabled\":false}"
+    },
+    {
+      "name": "w76_w73r_executed_as_gate",
+      "pass": true,
+      "detail": "{\"run\":{\"status\":0,\"signal\":null,\"stdoutSummary\":[\"> intelligent-demo-builder-drawer@0.1.1 harness:execute-remote-hosted-resolver-smoke\",\"> node tools/run_execute_remote_hosted_resolver_smoke_with_config_harness.js\",\"W73R remote hosted resolver smoke with config harness: PASS remote_smoke_executed=false pilot_decision=no_go_remote_config_missing\"],\"stderrSummary\":[]},\"w73rDecision\":\"PASS\"}"
+    },
+    {
+      "name": "w76_remote_env_absence_blocks_unlock",
+      "pass": true,
+      "detail": "{\"observedEnv\":{\"remoteSmokeOptIn\":false,\"baseUrlConfigured\":false,\"tokenConfigured\":false,\"allowedOriginConfigured\":false,\"blockedOriginConfigured\":false,\"rawSecretsIncluded\":false},\"w73rRemoteSmokeExecuted\":false,\"w73rPilotDecision\":\"no_go_remote_config_missing\"}"
+    },
+    {
+      "name": "w76_executed_remote_results_honest",
+      "pass": true,
+      "detail": "{\"health\":\"not_executed_missing_config\",\"authCors\":\"not_executed_missing_config\",\"writePayloadRejection\":\"not_executed_missing_config\",\"cacheHit\":\"not_executed_missing_config\",\"approvedLiveSiteSmoke\":\"not_executed_missing_config\",\"noSecretTraceChecks\":\"passed_for_blocked_state\",\"fullPreflightAfterRemoteExecution\":\"not_applicable_remote_not_executed\"}"
+    },
+    {
+      "name": "w76_unlock_criteria_evaluated",
+      "pass": true,
+      "detail": "[{\"criterion\":\"W73R trace shows remoteSmokeExecuted true.\",\"status\":\"fail\",\"evidence\":\"remoteSmokeExecuted false\"},{\"criterion\":\"Remote /health confirms writeAuthority none, suiteScriptInvocation false, and nllmAdvisoryOnly true.\",\"status\":\"not_run\",\"evidence\":\"Remote endpoint config missing.\"},{\"criterion\":\"Approved CORS passes with exact allowed origin.\",\"status\":\"not_run\",\"evidence\":\"Allowed origin config missing.\"},{\"criterion\":\"Blocked CORS fails with no blocked-origin echo.\",\"status\":\"not_run\",\"evidence\":\"Blocked origin config missing.\"},{\"criterion\":\"Missing token returns 401 before fetch.\",\"status\":\"not_run\",\"evidence\":\"Remote endpoint config missing.\"},{\"criterion\":\"Write-shaped payload returns 400 before fetch.\",\"status\":\"not_run\",\"evidence\":\"Remote endpoint config missing.\"},{\"criterion\":\"Second eligible resolve returns cacheHit true.\",\"status\":\"not_run\",\"evidence\":\"Remote endpoint config missing.\"},{\"criterion\":\"Approved live-site smoke passes with zero false-confident-wrong.\",\"status\":\"not_run\",\"evidence\":\"Hosted live smoke did not execute.\"},{\"criterion\":\"Approved live-site smoke passes with zero unsupported claims.\",\"status\":\"not_run\",\"evidence\":\"Hosted live smoke did not execute.\"},{\"criterion\":\"Blocked/thin/unavailable/timeout sites return insufficient evidence with no confident lane guesses.\",\"status\":\"guarded_by_existing_harnesses\",\"evidence\":\"Existing local/staging harnesses still enforce the rule; hosted proof remains pending.\"},{\"criterion\":\"Full preflight passes after W73R remote execution.\",\"status\":\"not_applicable\",\"evidence\":\"Remote execution did not occur.\"},{\"criterion\":\"W74 can be rerun and returns hosted resolver consultant smoke eligible.\",\"status\":\"fail\",\"evidence\":\"W74 remains no-go until W73R remoteSmokeExecuted true.\"}]"
+    },
+    {
+      "name": "w76_pilot_decision_no_go",
+      "pass": true,
+      "detail": "{\"decision\":\"no_go_remote_config_missing\",\"hostedResolverPilotEnabled\":false,\"consultantSmokeEligible\":false,\"nextRequiredAction\":\"Apply W75 remediation by configuring the real remote endpoint environment, then rerun W76.\"}"
+    },
+    {
+      "name": "w76_no_secret_trace_checks_present",
+      "pass": true,
+      "detail": "{\"rules\":[\"Only boolean env presence is recorded.\",\"No raw token value is stored.\",\"No Authorization, cookie, or X-IDB-Resolver-Token value is stored.\",\"rawSecretsIncluded remains false.\"],\"observedEnv\":{\"remoteSmokeOptIn\":false,\"baseUrlConfigured\":false,\"tokenConfigured\":false,\"allowedOriginConfigured\":false,\"blockedOriginConfigured\":false,\"rawSecretsIncluded\":false}}"
+    },
+    {
+      "name": "w76_no_regression_boundaries_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesCannotOwnIdentification\":true,\"blockedThinUnavailableTimeoutDoNotGuess\":true,\"transactionWriteEnabled\":false,\"mainDrawerCreateEnabled\":false,\"mainSuiteletCreateEnabled\":false,\"hostedResolverPilotEnabled\":false}"
+    },
+    {
+      "name": "w76_best_next_prompt_present",
+      "pass": true,
+      "detail": "Move through W76R: Apply Hosted Resolver Env And Rerun Remote Execution. Configure the real remote staging websiteResolverServiceV1 environment required by W75, then rerun W76 so W73R executes with remoteSmokeExecuted true. Execute health, auth/CORS, write-payload rejection, cache-hit, approved live-site smoke, no-secret trace checks, full preflight, and pilot unlock criteria. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output executed remote results, pilot unlock or no-go decision, trace samples, updated W76 report, validator gates, and best next Codex prompt."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "intelligent-demo-builder-controlled-enablement-checklist.v1",
+  "generated": "2026-05-09",
+  "status": "checklist_only_create_disabled",
+  "targetBlock": "G11",
+  "writePathType": "suitescript_direct_write",
+  "pilotLaneId": "food_beverage",
+  "createEnabledAllowedNow": false,
+  "requiredBeforeEnablement": [
+    "authenticatedNetSuiteSmokePass",
+    "foodBeveragePilotPacketReviewed",
+    "suiteletHarnessPass",
+    "rollbackRunbookReviewed",
+    "consultantConfirmationUxApproved",
+    "traceCreatedRecordIdsVerified",
+    "oneLanePilotBranchPrepared"
+  ],
+  "enablementStopConditions": [
+    "CREATE_ENABLED changed in main package",
+    "non-pilot lane allowed",
+    "consultant confirmation can be bypassed",
+    "trace result cannot capture record ids and urls",
+    "partial failure does not stop dependent writes",
+    "rollback owner is not assigned"
+  ],
+  "requiredHarnessScenarios": [
+    "reject non-POST",
+    "reject missing consultant confirmation",
+    "reject unauthorized lane",
+    "validate Food / Beverage reviewed packet while create remains disabled"
+  ],
+  "nonRegression": {
+    "drawerDoesNotWrite": true,
+    "suiteletCreateDisabled": true,
+    "llmCannotEnable": true,
+    "foodBeverageOnlyForFirstPilot": true
+  }
+}

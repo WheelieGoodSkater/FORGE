@@ -1,0 +1,944 @@
+{
+  "schema": "idb.w214-trace-samples.v1",
+  "samples": [
+    {
+      "event": "w214.northstar.operating_mode_resolved",
+      "customer": "Northstar Trail Outfitters",
+      "website": "https://www.rei.com",
+      "resolvedOperatingMode": "retail_availability",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "hero_sku",
+        "availability_or_replenishment_flow"
+      ],
+      "invalidRecordRoles": [
+        "bom",
+        "assembly_structure",
+        "work_order",
+        "routing",
+        "wip_object"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "operating_mode_record_contract_passed",
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_ready",
+        "normalConsultantRecordCount": 4,
+        "canShowMoreThanFiveRecords": false,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Northstar Trail Outfitters Customer Account",
+            "internalName": "",
+            "id": "1701",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1701",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1701"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1701"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Northstar Trail Outfitters SO214",
+            "internalName": "",
+            "id": "80001",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80001",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80001"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80001"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Northstar Trail Outfitters Product Availability SKU",
+            "internalName": "",
+            "id": "1801",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1801",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1801"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1801"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Northstar Trail Outfitters Retail Replenishment Flow",
+            "internalName": "",
+            "id": "2501",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2501",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2501"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2501"
+          }
+        ],
+        "adminDebugWarnings": [],
+        "openLinksAllowed": true
+      },
+      "rejectedBadResult": {
+        "status": "toggle_vocabulary_guardrail_failed",
+        "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Northstar Trail Outfitters Finished Good, Matrix item / proof item: Northstar Trail Outfitters Assembly. Mode contract blocked: Hero item: finished good is not compatible with retail_availability., Matrix item / proof item: assembly is not compatible with retail_availability., Component item 1: component a is not compatible with retail_availability., Component item 1: Generic component naming is manufacturing vocabulary when Manufacturing=false.."
+      }
+    },
+    {
+      "event": "w214.harbor.operating_mode_resolved",
+      "customer": "Harbor & Ridge Apparel",
+      "website": "https://www.patagonia.com",
+      "resolvedOperatingMode": "apparel_style_matrix",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "apparel_accessories"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "style_sku",
+        "style_matrix_or_availability_flow"
+      ],
+      "invalidRecordRoles": [
+        "finished_good",
+        "assembly",
+        "bom",
+        "work_order",
+        "routing"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "operating_mode_record_contract_passed",
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_ready",
+        "normalConsultantRecordCount": 5,
+        "canShowMoreThanFiveRecords": false,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Harbor & Ridge Apparel Customer Account",
+            "internalName": "",
+            "id": "1702",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1702",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1702"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1702"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Harbor & Ridge Apparel SO214",
+            "internalName": "",
+            "id": "80002",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80002",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80002"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80002"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Harbor & Ridge Apparel Style SKU",
+            "internalName": "",
+            "id": "1802",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1802",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1802"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1802"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Harbor & Ridge Apparel Omnichannel Availability Flow",
+            "internalName": "",
+            "id": "2502",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2502",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2502"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2502"
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Harbor & Ridge Apparel Style Matrix Color SKU",
+            "internalName": "",
+            "id": "2602",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2602",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2602"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2602"
+          }
+        ],
+        "adminDebugWarnings": [],
+        "openLinksAllowed": true
+      },
+      "rejectedBadResult": {
+        "status": "toggle_vocabulary_guardrail_failed",
+        "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Harbor & Ridge Apparel Ingredient Blend, Matrix item / proof item: Harbor & Ridge Apparel Work Order, Component item 1: Harbor & Ridge Apparel Routing. Mode contract blocked: Hero item: ingredient is not compatible with apparel_style_matrix., Hero item: ingredient blend is not compatible with apparel_style_matrix., Matrix item / proof item: work order is not compatible with apparel_style_matrix., Component item 1: routing is not compatible with apparel_style_matrix.."
+      }
+    },
+    {
+      "event": "w214.metroline.operating_mode_resolved",
+      "customer": "Metroline Parts Supply",
+      "website": "https://www.grainger.com",
+      "resolvedOperatingMode": "distribution_replenishment",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "industrial_distribution"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "branch_or_product_sku",
+        "replenishment_or_availability_flow"
+      ],
+      "invalidRecordRoles": [
+        "finished_good",
+        "assembly",
+        "ingredient",
+        "batch",
+        "work_order",
+        "routing",
+        "wip"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "operating_mode_record_contract_passed",
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_ready",
+        "normalConsultantRecordCount": 4,
+        "canShowMoreThanFiveRecords": false,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Metroline Parts Supply Customer Account",
+            "internalName": "",
+            "id": "1703",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1703",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1703"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1703"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Metroline Parts Supply SO214",
+            "internalName": "",
+            "id": "80003",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80003",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80003"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80003"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Metroline Parts Supply Branch Product SKU",
+            "internalName": "",
+            "id": "1803",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1803",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1803"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1803"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Metroline Parts Supply Replenishment Flow",
+            "internalName": "",
+            "id": "2503",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2503",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2503"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2503"
+          }
+        ],
+        "adminDebugWarnings": [],
+        "openLinksAllowed": true
+      },
+      "rejectedBadResult": {
+        "status": "toggle_vocabulary_guardrail_failed",
+        "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Metroline Parts Supply Finished Good, Matrix item / proof item: Metroline Parts Supply Controlled Assembly Execution. Mode contract blocked: Hero item: finished good is not compatible with distribution_replenishment., Matrix item / proof item: assembly is not compatible with distribution_replenishment., Matrix item / proof item: controlled assembly execution is not compatible with distribution_replenishment., Component item 1: frame welding is not compatible with distribution_replenishment.."
+      }
+    },
+    {
+      "event": "w214.evergreen.operating_mode_resolved",
+      "customer": "Evergreen Equipment Works",
+      "website": "https://www.ariens.com",
+      "resolvedOperatingMode": "discrete_manufacturing",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": false,
+        "selectedLaneId": "industrial_equipment"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_or_assembly_item",
+        "component_item"
+      ],
+      "invalidRecordRoles": [
+        "food_ingredient_batch_terms_without_food_mode"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "mode_record_contract_partial",
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_partial",
+        "normalConsultantRecordCount": 5,
+        "canShowMoreThanFiveRecords": true,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Evergreen Equipment Works Customer Account",
+            "internalName": "",
+            "id": "1704",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1704",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1704"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1704"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Evergreen Equipment Works SO214",
+            "internalName": "",
+            "id": "80004",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80004",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80004"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80004"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Evergreen Equipment Works Finished Good",
+            "internalName": "",
+            "id": "1804",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1804",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1804"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1804"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Evergreen Equipment Works Production Planning Flow",
+            "internalName": "",
+            "id": "2504",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2504",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2504"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2504"
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Evergreen Equipment Works Component Item",
+            "internalName": "",
+            "id": "2604",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2604",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2604"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2604"
+          }
+        ],
+        "adminDebugWarnings": [
+          "Manufacturing records missing or fallback naming returned."
+        ],
+        "openLinksAllowed": true
+      },
+      "rejectedBadResult": {
+        "status": "mode_record_contract_partial",
+        "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Mode contract blocked: Hero item: style sku is not compatible with discrete_manufacturing., Matrix item / proof item: omnichannel availability flow is not compatible with discrete_manufacturing., Manufacturing result: Manufacturing=true requires manufacturing-compatible returned records before import is treated as complete.."
+      }
+    },
+    {
+      "event": "w214.canyon.operating_mode_resolved",
+      "customer": "Canyon Ridge Components",
+      "website": "https://www.trekbikes.com",
+      "resolvedOperatingMode": "wip_manufacturing",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_or_assembly_item",
+        "component_item"
+      ],
+      "invalidRecordRoles": [],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "operating_mode_record_contract_passed",
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_ready",
+        "normalConsultantRecordCount": 8,
+        "canShowMoreThanFiveRecords": true,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Canyon Ridge Components Customer Account",
+            "internalName": "",
+            "id": "1705",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1705",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1705"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1705"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Canyon Ridge Components SO214",
+            "internalName": "",
+            "id": "80005",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80005",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80005"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80005"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Canyon Ridge Components Finished Good",
+            "internalName": "",
+            "id": "1805",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1805",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1805"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1805"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Canyon Ridge Components WIP Routing Flow",
+            "internalName": "",
+            "id": "2505",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2505",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2505"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2505"
+          },
+          {
+            "role": "work_order",
+            "label": "Work Order",
+            "name": "Canyon Ridge Components Work Order",
+            "internalName": "",
+            "id": "2905",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/workord.nl?id=2905",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "unsupported_path",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The URL is not a supported NetSuite record path for drawer navigation.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/workord.nl?id=2905"
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "routing",
+            "label": "Routing",
+            "name": "Canyon Ridge Components Routing",
+            "internalName": "",
+            "id": "3005",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/manufacturing/routing.nl?id=3005",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "unsupported_path",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The URL is not a supported NetSuite record path for drawer navigation.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/manufacturing/routing.nl?id=3005"
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "work_center",
+            "label": "Work Center",
+            "name": "Canyon Ridge Components Work Center",
+            "internalName": "",
+            "id": "3105",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/manufacturing/workcenter.nl?id=3105",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "unsupported_path",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The URL is not a supported NetSuite record path for drawer navigation.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/manufacturing/workcenter.nl?id=3105"
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Canyon Ridge Components Component Item",
+            "internalName": "",
+            "id": "2605",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2605",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2605"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2605"
+          }
+        ],
+        "adminDebugWarnings": [],
+        "openLinksAllowed": true
+      },
+      "rejectedBadResult": {
+        "status": "mode_record_contract_partial",
+        "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Mode contract blocked: WIP result: WIP=true requires a work order, routing, work center, WIP object, or explicit partial-result state.."
+      }
+    },
+    {
+      "event": "w214.mccormick.operating_mode_resolved",
+      "customer": "McCormick",
+      "website": "https://www.mccormick.com",
+      "resolvedOperatingMode": "food_batch_manufacturing",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true,
+        "selectedLaneId": "food_beverage"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_food_or_batch_item",
+        "ingredient_or_component_item"
+      ],
+      "invalidRecordRoles": [
+        "apparel_style_matrix_without_apparel_evidence"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "mode_record_contract_partial",
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_partial",
+        "normalConsultantRecordCount": 5,
+        "canShowMoreThanFiveRecords": true,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "McCormick Customer Account",
+            "internalName": "",
+            "id": "1706",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1706",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1706"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1706"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "McCormick SO214",
+            "internalName": "",
+            "id": "80006",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80006",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80006"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80006"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "McCormick Finished Food Batch Item",
+            "internalName": "",
+            "id": "1806",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1806",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1806"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1806"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "McCormick Formula Batch Structure",
+            "internalName": "",
+            "id": "2506",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2506",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2506"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2506"
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "McCormick Ingredient Item",
+            "internalName": "",
+            "id": "2606",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2606",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2606"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2606"
+          }
+        ],
+        "adminDebugWarnings": [
+          "WIP detail not returned."
+        ],
+        "openLinksAllowed": true
+      },
+      "rejectedBadResult": {
+        "status": "mode_record_contract_partial",
+        "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Mode contract blocked: Hero item: style sku is not compatible with food_batch_manufacturing., Matrix item / proof item: omnichannel availability flow is not compatible with food_batch_manufacturing., Component item 1: core style is not compatible with food_batch_manufacturing., WIP result: WIP=true requires a work order, routing, work center, WIP object, or explicit partial-result state.."
+      }
+    },
+    {
+      "event": "w214.yerbaMadre.operating_mode_resolved",
+      "customer": "Yerba Madre",
+      "website": "https://yerbamadre.com",
+      "resolvedOperatingMode": "food_batch_manufacturing",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true,
+        "selectedLaneId": "food_beverage"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_food_or_batch_item",
+        "ingredient_or_component_item"
+      ],
+      "invalidRecordRoles": [
+        "apparel_style_matrix_without_apparel_evidence"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "mode_record_contract_partial",
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_partial",
+        "normalConsultantRecordCount": 5,
+        "canShowMoreThanFiveRecords": true,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Yerba Madre Customer Account",
+            "internalName": "",
+            "id": "1707",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1707",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1707"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1707"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Yerba Madre SO214",
+            "internalName": "",
+            "id": "80007",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80007",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80007"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80007"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Yerba Madre Finished Food Batch Item",
+            "internalName": "",
+            "id": "1807",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1807",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1807"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1807"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Yerba Madre Beverage Formula Batch Structure",
+            "internalName": "",
+            "id": "2507",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2507",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2507"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2507"
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Yerba Madre Organic Yerba Mate Ingredient Item",
+            "internalName": "",
+            "id": "2607",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2607",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2607"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2607"
+          }
+        ],
+        "adminDebugWarnings": [
+          "WIP detail not returned."
+        ],
+        "openLinksAllowed": true
+      },
+      "rejectedBadResult": {
+        "status": "mode_record_contract_partial",
+        "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Mode contract blocked: Hero item: style sku is not compatible with food_batch_manufacturing., Matrix item / proof item: omnichannel availability flow is not compatible with food_batch_manufacturing., WIP result: WIP=true requires a work order, routing, work center, WIP object, or explicit partial-result state.."
+      }
+    }
+  ]
+}

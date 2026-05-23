@@ -1,0 +1,46 @@
+{
+  "traceEvent": "w118_dcc_final_result_export_bridge",
+  "decision": "PASS",
+  "exportedSchema": "idb.dcc-result-export-shape.v1",
+  "finalNamesImported": true,
+  "runNavigationStatus": "using_dcc_final_names",
+  "sampleExportIncluded": true,
+  "noSecrets": true,
+  "validatorGates": [
+    {
+      "name": "w118_dcc_helper_outputs_w117_shape",
+      "pass": true,
+      "detail": "idb.dcc-result-export-shape.v1"
+    },
+    {
+      "name": "w118_uses_real_differentiated_consultant_facing_names",
+      "pass": true,
+      "detail": "{\"hero\":\"Ariat Core Boot and Apparel Style Matrix\",\"assembly\":\"Ariat Seasonal Style Availability Flow\",\"components\":3}"
+    },
+    {
+      "name": "w118_sales_order_csv_artifact_returned",
+      "pass": true,
+      "detail": "[{\"label\":\"Sales Order CSV\",\"name\":\"scai_so_ARIATSTYLE20260514.csv\",\"id\":\"file-42\",\"url\":\"\",\"status\":\"csv_import_submitted\"}]"
+    },
+    {
+      "name": "w118_secret_redaction",
+      "pass": true,
+      "detail": "{\"generatedAt\":\"2026-05-17T21:41:07.717Z\",\"noSecrets\":true,\"idbImportOnly\":true,\"dccOwnsObjectGeneration\":true,\"namingMechanicsChanged\":false,\"enableManufacturing\":true,\"enableWip\":false}"
+    },
+    {
+      "name": "w118_idb_import_switches_review_and_run_to_final_names",
+      "pass": true,
+      "detail": "{\"before\":\"using_provisional_preview_names\",\"imported\":\"dcc_final_names_imported\",\"after\":\"using_dcc_final_names\"}"
+    },
+    {
+      "name": "w118_dcc_runner_patch_present_without_naming_mechanics_change",
+      "pass": true,
+      "detail": "DCC runner bridge helper present"
+    },
+    {
+      "name": "w118_no_idb_invocation_or_write_boundary",
+      "pass": true,
+      "detail": "{\"importOnly\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true,\"provisionalNamesCannotBeMarkedFinal\":true,\"w92StateAuthorityPreserved\":true,\"w110HandoffParityPreserved\":true}"
+    }
+  ]
+}

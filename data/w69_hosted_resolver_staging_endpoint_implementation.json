@@ -1,0 +1,160 @@
+{
+  "schema": "idb.w69-hosted-resolver-staging-endpoint-implementation.v1",
+  "status": "complete_local_staging_endpoint_ready",
+  "objective": "Build the staging no-write websiteResolverServiceV1 endpoint wrapper around the local resolver service.",
+  "readinessDecision": "local_staging_endpoint_ready_not_external_hosted",
+  "roles": [
+    {
+      "name": "Resolver Service Architect",
+      "owns": "Endpoint wrapper, health endpoint, POST resolve endpoint, local staging server mode, and resolver integration."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "Auth token validation, strict CORS allowlist, cookie/auth-header rejection, write-payload rejection, rate limits, and redaction."
+    },
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Resolver evidence preservation, failure-state honesty, manual-evidence fallback, and source trace integrity."
+    },
+    {
+      "name": "Observability And Reliability Agent",
+      "owns": "Request traces, cache metadata, latency measurement, health payload, and local staging smoke outputs."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Validator gates proving no writes, no SuiteScript invocation, N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout no-guess behavior."
+    }
+  ],
+  "implementation": {
+    "module": "tools/website_resolver_staging_endpoint.js",
+    "exports": [
+      "createStagingResolverEndpoint",
+      "createStagingResolverHttpServer",
+      "createMemoryCache",
+      "createRateTracker",
+      "safeManualEvidence"
+    ],
+    "healthEndpoint": {
+      "method": "GET",
+      "path": "/health",
+      "returns": [
+        "serviceName",
+        "resolverVersion",
+        "extractionPolicyVersion",
+        "writeAuthority",
+        "suiteScriptInvocation",
+        "nllmAdvisoryOnly",
+        "cacheStatus"
+      ]
+    },
+    "resolveEndpoint": {
+      "method": "POST",
+      "path": "/idb/website-resolver/v1/resolve",
+      "returns": "idb.website-evidence.v1 inside a no-write staging envelope"
+    },
+    "localServerMode": {
+      "command": "IDB_RESOLVER_STAGING_TOKEN=local-staging-token IDB_RESOLVER_ALLOWED_ORIGIN=https://YOUR_ACCOUNT_ID.app.netsuite.com IDB_RESOLVER_STAGING_PORT=8787 node tools/website_resolver_staging_endpoint.js",
+      "baseUrl": "http://127.0.0.1:8787",
+      "healthUrl": "http://127.0.0.1:8787/health",
+      "resolveUrl": "http://127.0.0.1:8787/idb/website-resolver/v1/resolve"
+    }
+  },
+  "securityControls": {
+    "auth": [
+      "Require x-idb-resolver-token for POST resolve.",
+      "Reject missing or invalid resolver token before fetch and before cache lookup.",
+      "Token is hashed in traces and never logged raw."
+    ],
+    "cors": [
+      "Allow only configured NetSuite staging origins.",
+      "Approved preflight returns 204 with explicit methods and headers.",
+      "Blocked preflight returns 403 without wildcard production CORS."
+    ],
+    "requestRejection": [
+      "Reject NetSuite cookies.",
+      "Reject Authorization headers.",
+      "Reject recordType, recordId, suiteletUrl, scriptId, deployId, writeToken, createEnabled, customerId, proofItemId, transactionId, nlAuth, cookie, and authorization payload fields.",
+      "Rejected auth/CORS/write-shaped requests do not fetch websites and do not invoke resolver classification."
+    ],
+    "rateLimits": {
+      "perTokenPerMinute": 12,
+      "perDomainPerMinute": 6
+    },
+    "redaction": [
+      "Cookies are never logged.",
+      "Authorization headers are never logged.",
+      "Manual evidence full text is never logged.",
+      "Manual evidence is stored as excerpt preview and sha256 hash only."
+    ]
+  },
+  "cacheAdapter": {
+    "type": "in_memory_staging_cache",
+    "key": "sha256(normalizedUrl + resolverVersion + extractionPolicyVersion)",
+    "rules": [
+      "Only cache non-manual evidence responses.",
+      "Do not cache blocked, unavailable, or timeout responses.",
+      "Do not cache manual evidence full text.",
+      "Return cacheHit true on repeated eligible request."
+    ]
+  },
+  "observability": {
+    "traceFields": [
+      "requestId",
+      "outcome",
+      "path",
+      "method",
+      "origin",
+      "hasCookie",
+      "hasAuthorization",
+      "cacheHit",
+      "normalizedUrl",
+      "domain",
+      "failureState",
+      "confidenceState",
+      "sourceUrlCount",
+      "latencyMs",
+      "writeAuthority",
+      "suiteScriptInvocation",
+      "nllmAdvisoryOnly",
+      "redaction"
+    ],
+    "requiredOutcomes": [
+      "health_ok",
+      "cors_preflight_ok",
+      "cors_origin_denied",
+      "resolver_token_rejected",
+      "netsuite_cookie_or_auth_rejected",
+      "no_write_boundary_violation",
+      "resolved_from_fetch",
+      "resolved_from_cache"
+    ]
+  },
+  "localStagingRunInstructions": [
+    "Run npm run harness:hosted-resolver-staging-endpoint for deterministic in-process smoke.",
+    "Start the local staging server with IDB_RESOLVER_STAGING_TOKEN=local-staging-token IDB_RESOLVER_ALLOWED_ORIGIN=https://YOUR_ACCOUNT_ID.app.netsuite.com IDB_RESOLVER_STAGING_PORT=8787 node tools/website_resolver_staging_endpoint.js.",
+    "Point the drawer pilot toggle to http://127.0.0.1:8787/idb/website-resolver/v1/resolve only for local staging.",
+    "Keep localStorage:idb.websiteResolver.localFallback.v1 explicit while testing.",
+    "Clear the endpoint toggle to roll back."
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "outputs": {
+    "implementation": "tools/website_resolver_staging_endpoint.js",
+    "contract": "data/w69_hosted_resolver_staging_endpoint_implementation.json",
+    "harness": "tools/run_hosted_resolver_staging_endpoint_harness.js",
+    "trace": "trace_samples/w69_hosted_resolver_staging_endpoint_trace.json",
+    "report": "reports/w69_hosted_resolver_staging_endpoint_implementation.md"
+  },
+  "bestNextCodexPrompt": {
+    "block": "W70: Drawer Hosted Resolver Endpoint Toggle Smoke",
+    "prompt": "Move through W70: Drawer Hosted Resolver Endpoint Toggle Smoke. Wire and prove the drawer pilot toggle path against the local staging websiteResolverServiceV1 endpoint: endpoint URL setting, token/header strategy placeholder, hosted-only mode, local fallback rollback, Plan/Review resolver status display, failure-state UX, trace export coverage, and no-write/no-SuiteScript/N/LLM-advisory-only gates. Keep notes story-only and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output drawer toggle smoke artifacts, trace samples, W70 report, validator gates, and best next Codex prompt."
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "idb.w65-approved-live-resolver-smoke-drift-gate.v1",
+  "status": "complete_live_smoke_gate_ready",
+  "objective": "Run the no-write websiteResolverServiceV1 path against an approved small set of live public websites, compare live resolver output to W58/W59 snapshot expectations, and produce a drift report.",
+  "roles": [
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Live evidence extraction quality, source URL coverage, extraction gaps, and website-owned identity assessment."
+    },
+    {
+      "name": "Classifier Calibration Agent",
+      "owns": "Recommended, needs confirmation, insufficient evidence calibration, false-confident-wrong limits, and drift downgrade rules."
+    },
+    {
+      "name": "Pilot Evidence Lead",
+      "owns": "Approved public-site list, expected W58/W59 outcomes, and pilot-readiness interpretation."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "No-write live fetch, SSRF/scheme/redirect safety, timeout handling, and no SuiteScript invocation."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Validator gates, trace coverage, unsupported-claim blockers, and no-regression proof."
+    }
+  ],
+  "approvedLiveSites": [
+    {
+      "id": "w65_live_trek",
+      "baselineCaseId": "w58_real_product_brand_trek",
+      "website": "https://www.trekbikes.com/",
+      "expectedLaneId": "dealer_hardgoods",
+      "expectedState": "recommended",
+      "acceptedAlternateLaneIds": []
+    },
+    {
+      "id": "w65_live_patagonia",
+      "baselineCaseId": "w58_real_apparel_accessories_patagonia",
+      "website": "https://www.patagonia.com/",
+      "expectedLaneId": "apparel_accessories",
+      "expectedState": "recommended",
+      "acceptedAlternateLaneIds": []
+    },
+    {
+      "id": "w65_live_grainger",
+      "baselineCaseId": "w58_real_distributor_dealer_grainger",
+      "website": "https://www.grainger.com/",
+      "expectedLaneId": "industrial_distribution",
+      "expectedState": "needs_confirmation",
+      "acceptedAlternateLaneIds": []
+    },
+    {
+      "id": "w65_live_lincoln_electric",
+      "baselineCaseId": "w58_real_manufacturing_heavy_lincoln_electric",
+      "website": "https://www.lincolnelectric.com/",
+      "expectedLaneId": "industrial_equipment",
+      "expectedState": "recommended",
+      "acceptedAlternateLaneIds": []
+    }
+  ],
+  "calibrationPolicy": {
+    "recommendedMinimumScore": 0.82,
+    "recommendedMinimumSourceUrls": 2,
+    "ambiguousMarginMaximum": 0.25,
+    "falseConfidentWrongMaximum": 0,
+    "unsupportedClaimsMaximum": 0,
+    "correctOrHonestMinimum": 0.85,
+    "honestFailureStates": [
+      "blocked",
+      "thin",
+      "unavailable",
+      "timeout"
+    ],
+    "downgradeToNeedsConfirmationWhen": [
+      "sourceUrlCountBelowTwo",
+      "secondCandidateWithinAmbiguousMargin",
+      "snapshotExpectedRecommendedButLiveConfidenceBelowRecommendedMinimum",
+      "liveSourceLimited"
+    ],
+    "insufficientEvidenceWhen": [
+      "blocked",
+      "thin",
+      "unavailable",
+      "timeout",
+      "noLaneCandidates"
+    ]
+  },
+  "executionModes": {
+    "deterministic": "Uses the latest checked-in live trace when available, otherwise approved W59 live-observation shapes. This mode is used by preflight.",
+    "approvedLive": "Set IDB_APPROVED_LIVE_RESOLVER_SMOKE=1 to fetch the approved public websites with the no-write resolver."
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "outputs": {
+    "contract": "data/w65_approved_live_resolver_smoke_drift_gate.json",
+    "harness": "tools/run_approved_live_resolver_smoke_harness.js",
+    "trace": "trace_samples/w65_approved_live_resolver_smoke_trace.json",
+    "report": "reports/w65_approved_live_resolver_smoke_drift_gate.md"
+  },
+  "bestNextCodexPrompt": {
+    "block": "W66: Live Extraction Gap Closure And Resolver Tuning",
+    "prompt": "Move through W66: Live Extraction Gap Closure And Resolver Tuning. Use the W65 live smoke findings to close resolver extraction gaps for approved public websites without overfitting to static fixtures. Tune product/category vocab, page discovery, confidence calibration, and failure-state UX only where W65 evidence proves a gap. Preserve no writes, no SuiteScript invocation, N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output resolver tuning changes, updated live/snapshot harness results, extraction gap report, validator gates, W66 report, and best next Codex prompt."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "idb.w147-governed-sandbox-queue-submit-runner-task-trace.v1",
+  "decision": "PASS_RUNNER_TASK_ID_CAPTURED__RESULT_CAPTURE_PENDING",
+  "scriptId": "customscript_idb_governed_runner_adapter",
+  "deploymentId": "customdeploy_idb_governed_runner_adapter_sb",
+  "enabledFlags": {
+    "custscript_idb_create_enabled": true,
+    "custscript_idb_governed_sandbox_write_enabled": true,
+    "custscript_idb_queue_submit_enabled": true
+  },
+  "queueSubmitted": true,
+  "runnerTaskId": "task_w147_real_sandbox_001",
+  "resultCaptureStatus": "pending_runner_completion",
+  "finalGeneratedNamesReady": false,
+  "activeOpenLinks": 0,
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterResultCaptureUrls": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W147 captures the governed runner task id and pending result-capture status only. Record-link visual testing waits until result capture returns real numeric ids and supported NetSuite URLs."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W148: Governed Runner Result Capture And Final URL Import",
+    "prompt": "Move through W148: Governed Runner Result Capture And Final URL Import. Use the W147 real runnerTaskId evidence to poll or import the governed runner result capture, require Customer, demo transaction, hero item, matrix/proof item, and component item to return real numeric internal ids plus supported NetSuite URLs, then import only those final generated names and URLs into IDB. Do not create records from the drawer and do not return fake record URLs. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output result-capture contract, final generated names JSON, import evidence, trace samples, W148 report, visual testing decision, and best next Codex prompt."
+  }
+}

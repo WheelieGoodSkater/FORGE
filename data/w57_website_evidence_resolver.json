@@ -1,0 +1,81 @@
+{
+  "schema": "idb.w57-website-evidence-resolver.v1",
+  "status": "complete_live_adapter_ready_no_write",
+  "objective": "Make real website identification possible by moving from contract-only website evidence to a no-write URL-in, structured-evidence-out resolver adapter.",
+  "goal": "Accept a consultant-entered URL, normalize it, fetch the homepage and discovered secondary pages, extract website evidence, and return idb.website-evidence.v1 with honest failure states.",
+  "roles": [
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Extraction logic for title, meta description, H1/H2, navigation, product terms, industry language, service/location clues, and commerce/manufacturing/distribution signals."
+    },
+    {
+      "name": "Resolver Service Architect",
+      "owns": "No-write endpoint/service shape, POST request/response contract, and adapter boundary."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "URL scheme rejection, tracking query cleanup, blocked status handling, timeout handling, no write authority, and no SuiteScript invocation."
+    },
+    {
+      "name": "Validation And Evidence Agent",
+      "owns": "Resolver harness, live-adapter samples, failure-state samples, trace sample, and validator gates."
+    }
+  ],
+  "liveAdapter": {
+    "module": "tools/website_evidence_live_adapter.js",
+    "schemaReturned": "idb.website-evidence.v1",
+    "resolverVersion": "w57.website-evidence-live-adapter.v1",
+    "endpointShape": {
+      "method": "POST",
+      "requestBody": {
+        "url": "string"
+      },
+      "responseBody": "websiteEvidenceV1"
+    },
+    "fetchStrategy": [
+      "Normalize URL and reject unsupported schemes.",
+      "Fetch homepage as required page.",
+      "Discover up to three same-site secondary product/category/service pages from navigation anchors.",
+      "Extract structured evidence from fetched HTML.",
+      "Return confidence and failureState without invoking writes."
+    ]
+  },
+  "extractedEvidenceFields": [
+    "pageTitle",
+    "metaDescription",
+    "h1Text",
+    "h2Text",
+    "navigationLabels",
+    "productCategoryTerms",
+    "industryLanguage",
+    "locationServiceClues",
+    "ecommerceSignals",
+    "manufacturingSignals",
+    "distributionSignals",
+    "sourceUrls"
+  ],
+  "failureStates": [
+    "blocked",
+    "thin",
+    "unavailable",
+    "ambiguous",
+    "timeout"
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmWriteAbility": false,
+    "hiddenLaneOverride": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false
+  },
+  "outputs": {
+    "adapter": "tools/website_evidence_live_adapter.js",
+    "harness": "tools/run_website_evidence_live_adapter_harness.js",
+    "traceSample": "trace_samples/w57_website_evidence_live_adapter_trace.json",
+    "failureSamples": "trace_samples/w57_failure_samples.json",
+    "report": "reports/w57_website_evidence_resolver.md"
+  },
+  "nextBlock": "W58: Real Unknown-Site Corpus"
+}

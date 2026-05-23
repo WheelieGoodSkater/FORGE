@@ -1,0 +1,31 @@
+{
+  "schema": "idb.w98-intake-to-review-compression-trace.v1",
+  "status": "pass",
+  "sampleProspect": "Ariat International",
+  "compressedRequestSummary": {
+    "prospect": "Ariat International",
+    "website": "https://www.ariat.com/",
+    "lane": "Apparel & Accessories",
+    "proofAnchor": "Style / SKU Matrix",
+    "selectedPack": "apparelAccessories",
+    "selectedScenario": "Style-to-Availability Readiness",
+    "primaryAction": "confirm_lane_and_review_or_review_dcc_handoff",
+    "fullGuidedIntakeCollapsed": true
+  },
+  "traceCoverage": {
+    "intakeToReviewCompressionExported": true,
+    "stateAuthorityExported": true,
+    "dccRunnerHandoffPacketExported": true,
+    "notesStoryOnlyPreserved": true
+  },
+  "noRegression": {
+    "stateAuthorityPreserved": true,
+    "w96CompressedValueGuidancePreserved": true,
+    "w97RunSelectorChipsPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  }
+}

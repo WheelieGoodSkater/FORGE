@@ -1,0 +1,191 @@
+{
+  "schema": "idb.w142-operator-queue-gate-dry-run-surface.v1",
+  "status": "operator_queue_gate_dry_run_surface_ready",
+  "decision": "PASS_QUEUE_GATE_READY__NEXT_ENABLE_GOVERNED_SANDBOX_QUEUE_DRY_RUN_ONLY",
+  "sourceBlocks": {
+    "w139ConfirmedRequest": "idb.confirmed-build-request.v1",
+    "w140AdapterBoundary": "PASS_ADAPTER_BOUNDARY_READY__IMPLEMENT_NETSUITE_SIDE_ADAPTER_NEXT",
+    "w141NetSuiteSideAdapter": "PASS_DRY_RUN_ADAPTER_READY__NEXT_ENABLE_OPERATOR_QUEUE_GATES"
+  },
+  "adapterSkeleton": {
+    "file": "/path/to/workspace/intelligent demo builder drawer/netsuite/idb_governed_runner_adapter_w142_suitelet.js",
+    "scriptType": "Suitelet",
+    "version": "w142-operator-queue-gate-dry-run-result-surface",
+    "createEnabled": false,
+    "governedSandboxWriteEnabled": false,
+    "queueSubmitEnabled": false,
+    "drawerAuthority": "none",
+    "legacyDccSuiteletUi": "legacy_reference_only"
+  },
+  "queueGateContract": {
+    "schema": "idb.operator-queue-gate.v1",
+    "purpose": "Operator-only dry-run readiness gate before governed runner queue submit is allowed.",
+    "acceptedOnlyServerSide": true,
+    "drawerMaySubmit": false,
+    "requiredFields": [
+      "operatorOnly=true",
+      "operator.name",
+      "reviewDecision=dry_run_reviewed_no_submit",
+      "confirmedNoSubmit=true",
+      "confirmedDrawerNoWrite=true",
+      "confirmedSandboxAccount=true",
+      "drawerInvocationTokenAccepted=false"
+    ],
+    "queueEnablementRule": "Even a valid operator queue gate cannot submit until CREATE_ENABLED and GOVERNED_SANDBOX_WRITE_ENABLED are both explicitly true server-side."
+  },
+  "dryRunResultEvidence": {
+    "validGate": {
+      "runnerStatus": "validated_not_submitted",
+      "queueReadinessStatus": "blocked_write_flags_disabled_or_gate_failed",
+      "canQueue": false,
+      "queueSubmitted": false,
+      "createsRecords": false,
+      "runnerTaskId": null,
+      "surfaceStatus": "validated_no_submit",
+      "surfacePrimaryMessage": "The adapter accepted the confirmed IDB request and operator gate, resolved server-side runner config, and stopped before queue submit because write flags are disabled.",
+      "activeOpenLinks": 0
+    },
+    "badOperatorGate": {
+      "runnerStatus": "blocked_validation_failed",
+      "queueSubmitted": false,
+      "errors": [
+        "reviewDecision must be dry_run_reviewed_no_submit in W142.",
+        "confirmedNoSubmit must be true."
+      ]
+    },
+    "missingConfigGate": {
+      "runnerStatus": "blocked_validation_failed",
+      "queueSubmitted": false,
+      "errors": [
+        "runnerScriptId runtime config is required."
+      ]
+    },
+    "drawerImportSmoke": {
+      "navigationStatus": "using_dcc_final_names",
+      "openAnchorCount": 0,
+      "linkPendingCount": 0,
+      "missingUrlCount": 5,
+      "links": [
+        {
+          "label": "Customer",
+          "role": "customer",
+          "name": "Ariat International Outdoor Retail Account",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        },
+        {
+          "label": "Sales Order / demo transaction",
+          "role": "sales_order",
+          "name": "Ariat International Demo Order",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        },
+        {
+          "label": "Hero item",
+          "role": "hero_item",
+          "name": "Ariat International Hero Item",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        },
+        {
+          "label": "Matrix item / proof item",
+          "role": "matrix_or_proof_item",
+          "name": "Ariat International Matrix Proof Item",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        },
+        {
+          "label": "Component item 1",
+          "role": "component_item",
+          "name": "Ariat International Component Item",
+          "status": "missing_url",
+          "openable": false,
+          "url": ""
+        }
+      ]
+    }
+  },
+  "regressionHarnessUpdates": [
+    "Add W142 Suitelet adapter syntax check.",
+    "Add W142 harness to preflight after W141.",
+    "Validate operator queue gate schema and no-submit decision.",
+    "Validate missing runtime config blocks before queue submit.",
+    "Validate valid operator gate remains non-queueable while write flags are false.",
+    "Validate dry-run result surface returns names only and no active Open links.",
+    "Validate drawer write and SuiteScript invocation signatures remain absent."
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "internalRunnerOwnershipPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "governedSandboxWritesNotEnabled": true,
+    "queueSubmitNotEnabled": true
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterGovernedQueueSubmit": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W142 validates operator-only queue readiness and dry-run surfaces only. It does not submit the runner, create records, or return real record URLs."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W143: Governed Sandbox Queue Enablement Design Without Write Activation",
+    "prompt": "Move through W143: Governed Sandbox Queue Enablement Design Without Write Activation. Use the W142 operator queue gate and dry-run result surface to design the exact server-side queue enablement switch for the governed runner, including required deployment parameters, sandbox account allowlist, operator evidence, idempotency token, scheduled runner parameter handoff, and result-capture placeholder. Do not enable writes yet and do not submit the runner. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, no-submit rollback, internal runner ownership, and no active Open links without real URLs. Output queue enablement design, server-side parameter contract, dry-run harness updates, trace samples, W143 report, visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w142_starts_from_w141_dry_run_adapter_ready",
+      "pass": true,
+      "detail": "PASS_DRY_RUN_ADAPTER_READY__NEXT_ENABLE_OPERATOR_QUEUE_GATES"
+    },
+    {
+      "name": "w142_suitelet_adapter_gate_surface_present",
+      "pass": true,
+      "detail": "W142 Suitelet queue gate and dry-run surface source"
+    },
+    {
+      "name": "w142_accepts_w139_request_and_w140_runtime_gate",
+      "pass": true,
+      "detail": "{\"valid\":true,\"requestValid\":true,\"runtimeConfigValid\":true,\"operatorGateValid\":true,\"errors\":[]}"
+    },
+    {
+      "name": "w142_operator_gate_required_and_blocks_bad_gate",
+      "pass": true,
+      "detail": "{\"valid\":false,\"requestValid\":true,\"runtimeConfigValid\":true,\"operatorGateValid\":false,\"errors\":[\"reviewDecision must be dry_run_reviewed_no_submit in W142.\",\"confirmedNoSubmit must be true.\"]}"
+    },
+    {
+      "name": "w142_runtime_config_missing_blocks_before_queue",
+      "pass": true,
+      "detail": "{\"valid\":false,\"requestValid\":true,\"runtimeConfigValid\":false,\"operatorGateValid\":true,\"errors\":[\"runnerScriptId runtime config is required.\"]}"
+    },
+    {
+      "name": "w142_valid_gate_still_no_submit_until_write_flags_enabled",
+      "pass": true,
+      "detail": "{\"operatorQueueGate\":{\"schema\":\"idb.operator-queue-readiness-gate.v1\",\"operatorOnly\":true,\"reviewDecision\":\"dry_run_reviewed_no_submit\",\"queueReadinessStatus\":\"blocked_write_flags_disabled_or_gate_failed\",\"canQueue\":false,\"requiredBeforeQueue\":[\"confirmed IDB build request\",\"consultant confirmation\",\"matched state authority and handoff parity\",\"server-side runner runtime config\",\"operator-only review decision\",\"sandbox account confirmation\",\"CREATE_ENABLED true\",\"GOVERNED_SANDBOX_WRITE_ENABLED true\"],\"gates\":[{\"name\":\"confirmed_build_request_valid\",\"pass\":true},{\"name\":\"consultant_confirmation_present\",\"pass\":true},{\"name\":\"state_authority_and_handoff_parity_matched\",\"pass\":true},{\"name\":\"runtime_config_resolved_server_side\",\"pass\":true},{\"name\":\"operator_only_review_present\",\"pass\":true},{\"name\":\"sandbox_account_confirmed\",\"pass\":true},{\"name\":\"drawer_invocation_token_rejected\",\"pass\":true},{\"name\":\"create_enabled_flag_true\",\"pass\":false},{\"name\":\"governed_sandbox_write_enabled_flag_true\",\"pass\":false}]},\"queueAttempt\":{\"queued\":false,\"taskId\":null,\"reason\":\"governed sandbox writes are disabled in W142\"}}"
+    },
+    {
+      "name": "w142_dry_run_result_surface_ready",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.dry-run-result-surface.v1\",\"title\":\"Governed runner dry-run review\",\"status\":\"validated_no_submit\",\"primaryMessage\":\"The adapter accepted the confirmed IDB request and operator gate, resolved server-side runner config, and stopped before queue submit because write flags are disabled.\",\"statusChips\":[{\"label\":\"Dry run only\",\"state\":\"info\"},{\"label\":\"No queue submit\",\"state\":\"blocked\"},{\"label\":\"No drawer writes\",\"state\":\"confirmed\"},{\"label\":\"No active links\",\"state\":\"confirmed\"}],\"operatorRows\":[{\"label\":\"Prospect\",\"value\":\"Ariat International\"},{\"label\":\"Demo path\",\"value\":\"Style-to-Availability Readiness\"},{\"label\":\"Runner script config\",\"value\":\"present\"},{\"label\":\"Queue status\",\"value\":\"blocked_write_flags_disabled_or_gate_failed\"},{\"label\":\"External id preview\",\"value\":\"IDB_ARIAT_INTERNATIONAL_APPAREL_ACCESSORIES_DRYRUN\"}],\"recordsPreview\":{\"customer\":\"Ariat International Outdoor Retail Account\",\"demoTransaction\":\"Ariat International Demo Order\",\"heroItem\":\"Ariat International Hero Item\",\"matrixProofItem\":\"Ariat International Matrix Proof Item\",\"componentItem\":\"Ariat International Component Item\"},\"linkPolicy\":{\"activeOpenLinks\":0,\"reason\":\"Dry-run surface has names only. Real Open links require numeric internal ids and supported NetSuite URLs returned by the governed runner after writes are explicitly enabled.\"}}"
+    },
+    {
+      "name": "w142_dry_run_import_keeps_links_pending_or_missing",
+      "pass": true,
+      "detail": "{\"navigationStatus\":\"using_dcc_final_names\",\"openAnchorCount\":0,\"linkPendingCount\":0,\"missingUrlCount\":5,\"links\":[{\"label\":\"Customer\",\"role\":\"customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"},{\"label\":\"Sales Order / demo transaction\",\"role\":\"sales_order\",\"name\":\"Ariat International Demo Order\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"},{\"label\":\"Hero item\",\"role\":\"hero_item\",\"name\":\"Ariat International Hero Item\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"},{\"label\":\"Matrix item / proof item\",\"role\":\"matrix_or_proof_item\",\"name\":\"Ariat International Matrix Proof Item\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"},{\"label\":\"Component item 1\",\"role\":\"component_item\",\"name\":\"Ariat International Component Item\",\"status\":\"missing_url\",\"openable\":false,\"url\":\"\"}]}"
+    },
+    {
+      "name": "w142_no_drawer_write_or_invocation_added",
+      "pass": true,
+      "detail": "no drawer write signatures; adapter has no N/record and no submit call"
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "decision": "PASS",
+  "status": "governed_build_invocation_contract_ready",
+  "events": [
+    "confirmed_build_handoff_ready",
+    "operator_review_ready",
+    "sandbox_preview_params_prepared",
+    "no_submit_rollback_defined",
+    "final_generated_names_import_handoff_ready"
+  ],
+  "readinessGates": {
+    "sales_request_complete": true,
+    "demo_path_confirmed": true,
+    "handoff_exported": true,
+    "operator_review_ready": true,
+    "no_state_mismatch": true
+  },
+  "previewRun": {
+    "mode": "sandbox_preview_no_submit",
+    "submitAllowed": false,
+    "drawerWritesAllowed": false,
+    "suiteScriptInvocationFromDrawerAllowed": false,
+    "transactionWritesFromDrawerAllowed": false,
+    "generatedRecordOwner": "internal_build_engine"
+  },
+  "resultJsonStatus": "preview_complete",
+  "finalGeneratedNamesImport": {
+    "importOnly": true,
+    "recordsCreatedByDrawer": false
+  },
+  "visualNetSuiteTestingRequiredNow": false,
+  "results": [
+    {
+      "name": "w128_invocation_contract_ready",
+      "pass": true,
+      "detail": "idb.w128-governed-build-invocation-contract.v1"
+    },
+    {
+      "name": "w128_required_readiness_gates_present",
+      "pass": true,
+      "detail": "[\"sales_request_complete\",\"demo_path_confirmed\",\"handoff_exported\",\"operator_review_ready\",\"no_state_mismatch\"]"
+    },
+    {
+      "name": "w128_sandbox_preview_run_params_shape_ready",
+      "pass": true,
+      "detail": "{\"submitAllowed\":false,\"recordWritesAllowed\":false,\"transactionWritesAllowed\":false,\"suiteScriptInvocationFromDrawerAllowed\":false,\"operatorReviewRequired\":true,\"noSubmitRollbackRequired\":true}"
+    },
+    {
+      "name": "w128_no_submit_rollback_defined",
+      "pass": true,
+      "detail": "{\"previewCancel\":\"Close the sandbox preview/run without submitting; keep the drawer session and exported handoff unchanged.\",\"operatorReject\":\"Mark operator review as rejected, preserve the handoff and trace files, and return to Build without importing final names.\",\"stateMismatch\":\"Block preview/run, correct the drawer state authority mismatch, re-confirm the demo path, and export a new handoff.\",\"partialEngineFailure\":\"Internal build engine returns preview_failed with no created record ownership claim and no final generated names import.\",\"drawerRollback\":\"Drawer clears only imported result state when the consultant chooses Clear final generated names; it never deletes or rolls back NetSuite records.\"}"
+    },
+    {
+      "name": "w128_result_json_shape_ready",
+      "pass": true,
+      "detail": "[\"schema\",\"status\",\"runId\",\"runMode\",\"sourceHandoffId\",\"prospect\",\"familyKey\",\"scenario\",\"generated\",\"displayObjects\",\"warnings\",\"errors\",\"ownership\",\"rollback\",\"importHandoff\"]"
+    },
+    {
+      "name": "w128_final_generated_names_import_handoff_ready",
+      "pass": true,
+      "detail": "{\"source\":\"internal_build_engine_result_json\",\"targetDrawerStateKey\":\"dccFinalNamingResult\",\"acceptedImportSchema\":\"idb.dcc-final-naming-result.v1\",\"importOnly\":true,\"drawerCanMarkRecordsCreated\":false,\"drawerCanSubmitFollowupWrites\":false,\"requiredImportChecks\":[\"status is preview_complete\",\"prospect matches confirmed handoff\",\"familyKey and scenario match confirmed handoff\",\"displayObjects include customer and at least one proof object\",\"ownership.generatedRecordsOwnedBy is internal_build_engine\",\"ownership.drawerCreatedRecords is false\"]}"
+    },
+    {
+      "name": "w128_no_drawer_writes",
+      "pass": true,
+      "detail": "drawer source has no direct write or post invocation"
+    },
+    {
+      "name": "w128_no_suitescript_invocation_from_drawer",
+      "pass": true,
+      "detail": "{\"contractName\":\"confirmedBuildHandoffToInternalBuildEnginePreviewRunV1\",\"sourceSurface\":\"drawer_exported_build_handoff\",\"executorSurface\":\"internal_build_engine\",\"defaultMode\":\"sandbox_preview_no_submit\",\"drawerMayInvokeSuiteScript\":false,\"drawerMayWriteRecords\":false,\"drawerMayCreateTransactions\":false,\"consultantConfirmationRequired\":true,\"generatedRecordOwner\":\"internal_build_engine\",\"importBackToDrawer\":\"final_generated_names_import_only\"}"
+    },
+    {
+      "name": "w128_no_transaction_writes_from_drawer",
+      "pass": true,
+      "detail": "{\"submitAllowed\":false,\"recordWritesAllowed\":false,\"transactionWritesAllowed\":false,\"suiteScriptInvocationFromDrawerAllowed\":false,\"operatorReviewRequired\":true,\"noSubmitRollbackRequired\":true}"
+    },
+    {
+      "name": "w128_consultant_confirmation_required",
+      "pass": true,
+      "detail": "{\"contractName\":\"confirmedBuildHandoffToInternalBuildEnginePreviewRunV1\",\"sourceSurface\":\"drawer_exported_build_handoff\",\"executorSurface\":\"internal_build_engine\",\"defaultMode\":\"sandbox_preview_no_submit\",\"drawerMayInvokeSuiteScript\":false,\"drawerMayWriteRecords\":false,\"drawerMayCreateTransactions\":false,\"consultantConfirmationRequired\":true,\"generatedRecordOwner\":\"internal_build_engine\",\"importBackToDrawer\":\"final_generated_names_import_only\"}"
+    },
+    {
+      "name": "w128_state_authority_and_handoff_parity_preserved",
+      "pass": true,
+      "detail": "{\"recommendedLaneId\":\"apparel_accessories\",\"selectedLaneId\":\"apparel_accessories\",\"confirmedLaneId\":\"apparel_accessories\",\"exportedLaneId\":\"apparel_accessories\",\"hasRecommendedMismatch\":false,\"hasConfirmedMismatch\":false}"
+    },
+    {
+      "name": "w128_internal_build_engine_owns_generated_records",
+      "pass": true,
+      "detail": "{\"generatedRecordsOwnedBy\":\"internal_build_engine\",\"drawerCreatedRecords\":false,\"drawerInvokedSuiteScript\":false,\"drawerCreatedTransactions\":false}"
+    },
+    {
+      "name": "w128_operator_runbook_ready",
+      "pass": true,
+      "detail": "[\"Confirm the sales request is complete in Plan.\",\"Confirm the demo path is consultant-confirmed and not merely recommended.\",\"Export the Build handoff JSON from the drawer.\",\"Export the Trace JSON from the drawer.\",\"Compare recommended, selected, confirmed, and exported lane/proof values.\",\"Prepare sandbox preview/run params using the W128 parameter shape.\",\"Run preview through the internal build engine only; do not submit from the drawer.\",\"If any mismatch appears, stop and re-export after consultant confirmation.\",\"If preview completes, return the result JSON for final generated names import.\",\"Import final generated names into the drawer as result JSON only.\"]"
+    },
+    {
+      "name": "w128_visual_testing_not_required",
+      "pass": true,
+      "detail": "false"
+    }
+  ]
+}

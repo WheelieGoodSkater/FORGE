@@ -1,0 +1,298 @@
+{
+  "schema": "idb.w218-operator-smoke-packet-live-wording-freeze-harness.v1",
+  "status": "pass",
+  "passCount": 10,
+  "total": 10,
+  "results": [
+    {
+      "id": "freeze_contract_ready",
+      "pass": true,
+      "evidence": "operator_smoke_wording_frozen"
+    },
+    {
+      "id": "exact_review_headlines_frozen",
+      "pass": true,
+      "evidence": "Build results are ready. | Build results are ready. | Food batch records are ready. WIP detail was not returned."
+    },
+    {
+      "id": "exact_run_actions_frozen",
+      "pass": true,
+      "evidence": "Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned"
+    },
+    {
+      "id": "exact_mode_aware_labels_frozen",
+      "pass": true,
+      "evidence": "Customer, Sales Order, Finished Food/Batch Item, Formula or Batch Structure, Ingredient Item, Lot Context"
+    },
+    {
+      "id": "partial_food_wip_does_not_claim_wip_support",
+      "pass": true,
+      "evidence": "Food batch records are ready. WIP detail was not returned. Use the returned food batch, ingredient, formula, and lot records. Do not claim WIP detail unless those records are returned. Use available records Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned Customer: McCormick Customer Account -> Sales Order: McCormick SO218 -> Finished Food/Batch Item: McCormick Finished Food Batch Item -> Formula or Batch Structure: McCormick Formula Batch Structure"
+    },
+    {
+      "id": "complete_manufacturing_only_mentions_returned_bom_or_assembly",
+      "pass": true,
+      "evidence": "Build results are ready. Use the returned records with real Open links. Build results are ready. Open Customer / Open Sales Order / Open Item Customer: Evergreen Equipment Works Customer Account -> Sales Order: Evergreen Equipment Works SO218 -> Finished/Assembly Item: Evergreen Equipment Works Finished Good -> BOM or Assembly Structure: Evergreen Equipment Works Assembly Structure"
+    },
+    {
+      "id": "normal_copy_hides_internal_terms",
+      "pass": true,
+      "evidence": "Build results are ready. Use the returned records with real Open links. Build results are ready. Open Customer / Open Sales Order / Open Item Customer: Northstar Trail Outfitters Customer Account -> Sales Order: Northstar Trail Outfitters SO218 -> Product SKU: Northstar Trail Outfitters Product Availability SKU -> Availability Flow: Northstar Trail Outfitters Dealer Replenishment Flow | Build results are ready. Use the returned records with real Open links. Build results are ready. Open Customer / Open Sales Order / Open Item Customer: Evergreen Equipment Works Customer Account -> Sales Order: Evergreen Equipment Works SO218 -> Finished/Assembly Item: Evergreen Equipment Works Finished Good -> BOM or Assembly Structure: Evergreen Equipment Works Assembly Structure | Food batch records are ready. WIP detail was not returned. Use the returned food batch, ingredient, formula, and lot records. Do not claim WIP detail unless those records are returned. Use available records Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned Customer: McCormick Customer Account -> Sales Order: McCormick SO218 -> Finished Food/Batch Item: McCormick Finished Food Batch Item -> Formula or Batch Structure: McCormick Formula Batch Structure"
+    },
+    {
+      "id": "admin_debug_diagnostics_remain_gated",
+      "pass": true,
+      "evidence": "complete_non_manufacturing:false, complete_manufacturing:false, partial_food_batch_wip:true"
+    },
+    {
+      "id": "open_links_remain_real_only",
+      "pass": true,
+      "evidence": "complete_non_manufacturing:true, complete_manufacturing:true, partial_food_batch_wip:true"
+    },
+    {
+      "id": "w214_to_w217_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"w151ImportGuardPreserved\":true,\"semanticRoleMappingPreserved\":true,\"modeAwareNamingGuardrailsPreserved\":true,\"dynamicRecordDisplayPreserved\":true,\"consultantPartialResultLanguagePreserved\":true,\"operatorReadableSmokePacketPreserved\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true,\"nllmAdvisoryOnly\":true}"
+    }
+  ],
+  "freeze": {
+    "schema": "idb.w218-operator-smoke-packet-live-wording-freeze.v1",
+    "status": "operator_smoke_wording_frozen",
+    "frozenWordingMatrix": {
+      "complete_non_manufacturing": {
+        "reviewHeadline": "Build results are ready.",
+        "runActions": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item"
+        ],
+        "labels": [
+          "Customer",
+          "Sales Order",
+          "Product SKU",
+          "Availability Flow",
+          "Channel Context"
+        ],
+        "forbiddenClaims": [
+          "Manufacturing detail not returned",
+          "WIP detail not returned",
+          "Open Work Order",
+          "Open Routing",
+          "Open Work Center"
+        ]
+      },
+      "complete_manufacturing": {
+        "reviewHeadline": "Build results are ready.",
+        "runActions": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item"
+        ],
+        "labels": [
+          "Customer",
+          "Sales Order",
+          "Finished/Assembly Item",
+          "BOM or Assembly Structure",
+          "Component Item"
+        ],
+        "allowedWhenReturned": [
+          "BOM or Assembly Structure"
+        ],
+        "forbiddenClaims": [
+          "WIP detail not returned",
+          "Open Work Order",
+          "Open Routing",
+          "Open Work Center"
+        ]
+      },
+      "partial_food_batch_wip": {
+        "reviewHeadline": "Food batch records are ready. WIP detail was not returned.",
+        "runActions": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item",
+          "Use available records",
+          "WIP detail not returned"
+        ],
+        "labels": [
+          "Customer",
+          "Sales Order",
+          "Finished Food/Batch Item",
+          "Formula or Batch Structure",
+          "Ingredient Item",
+          "Lot Context"
+        ],
+        "forbiddenClaims": [
+          "Open Work Order",
+          "Open Routing",
+          "Open Work Center",
+          "Show WIP",
+          "Prove WIP"
+        ]
+      }
+    },
+    "frozenCases": [
+      {
+        "label": "Complete Non-Manufacturing Retail Availability",
+        "caseType": "complete_non_manufacturing",
+        "resolvedOperatingMode": "retail_availability",
+        "reviewHeadline": "Build results are ready.",
+        "expectedReviewHeadline": "Build results are ready.",
+        "runActions": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item"
+        ],
+        "expectedRunActions": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item"
+        ],
+        "visibleRecordLabels": [
+          "Customer",
+          "Sales Order",
+          "Product SKU",
+          "Availability Flow",
+          "Channel Context"
+        ],
+        "expectedVisibleRecordLabels": [
+          "Customer",
+          "Sales Order",
+          "Product SKU",
+          "Availability Flow",
+          "Channel Context"
+        ],
+        "normalConsultantCopy": "Build results are ready. Use the returned records with real Open links. Build results are ready. Open Customer / Open Sales Order / Open Item Customer: Northstar Trail Outfitters Customer Account -> Sales Order: Northstar Trail Outfitters SO218 -> Product SKU: Northstar Trail Outfitters Product Availability SKU -> Availability Flow: Northstar Trail Outfitters Dealer Replenishment Flow",
+        "adminDebugVisible": false,
+        "adminDebugDiagnostics": {},
+        "exactReviewHeadlineMatch": true,
+        "exactRunActionsMatch": true,
+        "exactLabelsMatch": true,
+        "normalCopyHidesInternalTerms": true,
+        "noUnsupportedManufacturingOrWipClaims": true,
+        "openLinksAreRealOnly": true
+      },
+      {
+        "label": "Complete Discrete Manufacturing",
+        "caseType": "complete_manufacturing",
+        "resolvedOperatingMode": "discrete_manufacturing",
+        "reviewHeadline": "Build results are ready.",
+        "expectedReviewHeadline": "Build results are ready.",
+        "runActions": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item"
+        ],
+        "expectedRunActions": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item"
+        ],
+        "visibleRecordLabels": [
+          "Customer",
+          "Sales Order",
+          "Finished/Assembly Item",
+          "BOM or Assembly Structure",
+          "Component Item"
+        ],
+        "expectedVisibleRecordLabels": [
+          "Customer",
+          "Sales Order",
+          "Finished/Assembly Item",
+          "BOM or Assembly Structure",
+          "Component Item"
+        ],
+        "normalConsultantCopy": "Build results are ready. Use the returned records with real Open links. Build results are ready. Open Customer / Open Sales Order / Open Item Customer: Evergreen Equipment Works Customer Account -> Sales Order: Evergreen Equipment Works SO218 -> Finished/Assembly Item: Evergreen Equipment Works Finished Good -> BOM or Assembly Structure: Evergreen Equipment Works Assembly Structure",
+        "adminDebugVisible": false,
+        "adminDebugDiagnostics": {},
+        "exactReviewHeadlineMatch": true,
+        "exactRunActionsMatch": true,
+        "exactLabelsMatch": true,
+        "normalCopyHidesInternalTerms": true,
+        "noUnsupportedManufacturingOrWipClaims": true,
+        "openLinksAreRealOnly": true
+      },
+      {
+        "label": "Partial Food Batch WIP",
+        "caseType": "partial_food_batch_wip",
+        "resolvedOperatingMode": "food_batch_manufacturing",
+        "reviewHeadline": "Food batch records are ready. WIP detail was not returned.",
+        "expectedReviewHeadline": "Food batch records are ready. WIP detail was not returned.",
+        "runActions": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item",
+          "Use available records",
+          "WIP detail not returned"
+        ],
+        "expectedRunActions": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item",
+          "Use available records",
+          "WIP detail not returned"
+        ],
+        "visibleRecordLabels": [
+          "Customer",
+          "Sales Order",
+          "Finished Food/Batch Item",
+          "Formula or Batch Structure",
+          "Ingredient Item",
+          "Lot Context"
+        ],
+        "expectedVisibleRecordLabels": [
+          "Customer",
+          "Sales Order",
+          "Finished Food/Batch Item",
+          "Formula or Batch Structure",
+          "Ingredient Item",
+          "Lot Context"
+        ],
+        "normalConsultantCopy": "Food batch records are ready. WIP detail was not returned. Use the returned food batch, ingredient, formula, and lot records. Do not claim WIP detail unless those records are returned. Use available records Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned Customer: McCormick Customer Account -> Sales Order: McCormick SO218 -> Finished Food/Batch Item: McCormick Finished Food Batch Item -> Formula or Batch Structure: McCormick Formula Batch Structure",
+        "adminDebugVisible": true,
+        "adminDebugDiagnostics": {
+          "missingBomOrAssemblyStructure": true,
+          "missingWorkOrderOrWipObject": true,
+          "missingRouting": true,
+          "missingWorkCenter": true,
+          "mappedRoles": [
+            "customer",
+            "sales_order",
+            "finished_food_or_batch_item",
+            "formula_or_batch_structure",
+            "ingredient_or_component_item",
+            "lot_or_availability_context"
+          ],
+          "resolvedOperatingMode": "food_batch_manufacturing",
+          "modeConfidence": "high"
+        },
+        "exactReviewHeadlineMatch": true,
+        "exactRunActionsMatch": true,
+        "exactLabelsMatch": true,
+        "normalCopyHidesInternalTerms": true,
+        "noUnsupportedManufacturingOrWipClaims": true,
+        "openLinksAreRealOnly": true
+      }
+    ],
+    "adminDebugSeparation": {
+      "normalConsultantUiMustHideDiagnostics": true,
+      "adminDebugMayShowMissingManufacturingOrWipDetails": true,
+      "partialFoodBatchWipExpectedAdminDebug": true
+    },
+    "noRegression": {
+      "w151ImportGuardPreserved": true,
+      "semanticRoleMappingPreserved": true,
+      "modeAwareNamingGuardrailsPreserved": true,
+      "dynamicRecordDisplayPreserved": true,
+      "consultantPartialResultLanguagePreserved": true,
+      "operatorReadableSmokePacketPreserved": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerTransactionWrites": true,
+      "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+      "runnerOwnsGeneratedRecords": true,
+      "imageLookupDisabledByDefault": true,
+      "nllmAdvisoryOnly": true
+    },
+    "visualTestingDecision": "No broad visual testing for W218; exact wording is frozen by harness contract."
+  }
+}

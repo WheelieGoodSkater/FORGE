@@ -1,0 +1,222 @@
+{
+  "schema": "idb.w148-governed-runner-result-capture-final-url-import.v1",
+  "status": "final_urls_imported_after_result_capture_validation",
+  "decision": "PASS_RESULT_CAPTURE_VALIDATED__FINAL_URLS_IMPORTED",
+  "resultCaptureContract": {
+    "schema": "idb.w148-result-capture-contract.v1",
+    "sourceRunnerTaskId": "task_w147_real_sandbox_001",
+    "acceptedStatus": "completed",
+    "requiredRecords": [
+      "customer",
+      "demoTransaction",
+      "heroItem",
+      "matrixProofItem",
+      "componentItem"
+    ],
+    "requiredPerRecord": [
+      "name",
+      "numeric internalId",
+      "supported NetSuite URL",
+      "createdOrResolvedBy governed runner"
+    ],
+    "recordExistenceProof": "not_claimed_until_targeted_visual_record_page_landing",
+    "rejectWhen": [
+      "runner task is pending",
+      "any required record is missing",
+      "any internal id is non-numeric",
+      "any URL path is unsupported",
+      "any URL id does not match the internal id",
+      "any URL contains preview or replacement tokens"
+    ],
+    "importTarget": "state.dccFinalNamingResult",
+    "importAuthority": "names_and_urls_only",
+    "drawerWriteAuthority": "none"
+  },
+  "governedRunnerResultCapture": {
+    "schema": "idb.governed-runner-result-capture.v1",
+    "sourceRunnerTaskId": "task_w147_real_sandbox_001",
+    "idempotencyToken": "IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+    "status": "completed",
+    "prospect": "Ariat International",
+    "records": {
+      "customer": {
+        "recordType": "customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "internalId": "91201",
+        "url": "/app/common/entity/custjob.nl?id=91201",
+        "createdOrResolvedBy": "governed_internal_runner"
+      },
+      "demoTransaction": {
+        "recordType": "salesorder",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "internalId": "91202",
+        "url": "/app/accounting/transactions/salesord.nl?id=91202",
+        "createdOrResolvedBy": "governed_internal_runner"
+      },
+      "heroItem": {
+        "recordType": "inventoryitem",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "internalId": "91203",
+        "url": "/app/common/item/item.nl?id=91203",
+        "createdOrResolvedBy": "governed_internal_runner"
+      },
+      "matrixProofItem": {
+        "recordType": "matrixitem",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "internalId": "91204",
+        "url": "/app/common/item/item.nl?id=91204",
+        "createdOrResolvedBy": "governed_internal_runner"
+      },
+      "componentItems": [
+        {
+          "recordType": "inventoryitem",
+          "name": "Ariat Brown Leather Upper Component",
+          "internalId": "91205",
+          "url": "/app/common/item/item.nl?id=91205",
+          "createdOrResolvedBy": "governed_internal_runner"
+        }
+      ]
+    }
+  },
+  "rejectedCaptureEvidence": {
+    "pending": {
+      "valid": false,
+      "errors": [
+        "customer is missing numeric id or supported URL.",
+        "demoTransaction is missing numeric id or supported URL.",
+        "heroItem is missing numeric id or supported URL.",
+        "matrixProofItem is missing numeric id or supported URL."
+      ]
+    },
+    "malformed": {
+      "valid": false,
+      "errors": [
+        "customer is missing numeric id or supported URL."
+      ]
+    }
+  },
+  "finalGeneratedNamesJson": {
+    "schema": "idb.internal-build-engine.real-record-result.v1",
+    "runStatus": "run_complete",
+    "prospect": "Ariat International",
+    "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+    "recordExistenceStatus": "runner_created_or_resolved_targeted_visual_required",
+    "customer": {
+      "name": "Ariat International Outdoor Retail Account",
+      "id": "91201",
+      "url": "/app/common/entity/custjob.nl?id=91201"
+    },
+    "salesOrder": {
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "id": "91202",
+      "url": "/app/accounting/transactions/salesord.nl?id=91202"
+    },
+    "heroItem": {
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "id": "91203",
+      "url": "/app/common/item/item.nl?id=91203"
+    },
+    "matrixItem": {
+      "name": "Ariat Core Boot Size Color Matrix",
+      "id": "91204",
+      "url": "/app/common/item/item.nl?id=91204"
+    },
+    "componentItems": [
+      {
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "91205",
+        "url": "/app/common/item/item.nl?id=91205"
+      }
+    ],
+    "warnings": [],
+    "errors": [],
+    "recoverableBlockers": []
+  },
+  "importEvidence": {
+    "schema": "idb.w148-final-url-import-evidence.v1",
+    "normalizedPendingValid": false,
+    "normalizedMalformedValid": false,
+    "normalizedCompleteValid": true,
+    "allCapturedRecordsOpenable": true,
+    "finalNamesImported": true,
+    "navigationStatus": "using_dcc_final_names",
+    "buildUsesImportedNames": true,
+    "runUsesImportedNames": true,
+    "linkAuthoritySummary": {
+      "verified_openable": 5
+    },
+    "openAnchorCount": 9,
+    "linkPendingCount": 0
+  },
+  "traceSamples": {
+    "dataPath": "/path/to/workspace/intelligent demo builder drawer/data/w148_governed_runner_result_capture_final_url_import.json",
+    "tracePath": "/path/to/workspace/intelligent demo builder drawer/trace_samples/w148_governed_runner_result_capture_final_url_import_trace.json",
+    "reportPath": "/path/to/workspace/intelligent demo builder drawer/reports/w148_governed_runner_result_capture_final_url_import.md"
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredForRecordPageLanding": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W148 validates and imports numeric ids plus supported URLs into IDB. A narrow visual open-link test is the next proof that those URLs land on actual NetSuite record pages rather than Notice/Error pages."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnershipPreserved": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noFakeRecordUrlsReturned": true,
+    "liveRecordExistenceNotClaimedBeforeVisualProof": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W149: Targeted Final URL Open-Link Visual Verification",
+    "prompt": "Move through W149: Targeted Final URL Open-Link Visual Verification. Use the W148 final generated names JSON imported from governed runner result capture to perform only the narrow visual NetSuite test needed now: click Customer, demo transaction, hero item, matrix/proof item, and component item Open links and prove each lands on an actual record page, not a Notice/Error/placeholder page. Do not create records from the drawer, do not invoke SuiteScript from the drawer, and do not create transactions from the drawer. Preserve consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output targeted visual evidence, record page landing checklist, trace samples, W149 report, broader visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w148_starts_from_w147_runner_task_pending_capture",
+      "pass": true,
+      "detail": "PASS_RUNNER_TASK_ID_CAPTURED__RESULT_CAPTURE_PENDING"
+    },
+    {
+      "name": "w148_result_capture_contract_requires_all_records",
+      "pass": true,
+      "detail": "[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"]"
+    },
+    {
+      "name": "w148_pending_and_malformed_captures_rejected",
+      "pass": true,
+      "detail": "{\"pending\":{\"valid\":false,\"errors\":[\"customer is missing numeric id or supported URL.\",\"demoTransaction is missing numeric id or supported URL.\",\"heroItem is missing numeric id or supported URL.\",\"matrixProofItem is missing numeric id or supported URL.\"]},\"malformed\":{\"valid\":false,\"errors\":[\"customer is missing numeric id or supported URL.\"]}}"
+    },
+    {
+      "name": "w148_completed_capture_has_numeric_ids_and_supported_urls",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.internal-build-engine.real-record-result.v1\",\"runStatus\":\"run_complete\",\"prospect\":\"Ariat International\",\"generatedRecordOwner\":\"governed_dcc_runner_internal_build_engine\",\"recordExistenceStatus\":\"runner_created_or_resolved_targeted_visual_required\",\"customer\":{\"name\":\"Ariat International Outdoor Retail Account\",\"id\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\"},\"salesOrder\":{\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"id\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},\"heroItem\":{\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"id\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},\"matrixItem\":{\"name\":\"Ariat Core Boot Size Color Matrix\",\"id\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},\"componentItems\":[{\"name\":\"Ariat Brown Leather Upper Component\",\"id\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}],\"warnings\":[],\"errors\":[],\"recoverableBlockers\":[]}"
+    },
+    {
+      "name": "w148_imports_only_final_names_and_urls_into_idb",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w148-final-url-import-evidence.v1\",\"normalizedPendingValid\":false,\"normalizedMalformedValid\":false,\"normalizedCompleteValid\":true,\"allCapturedRecordsOpenable\":true,\"finalNamesImported\":true,\"navigationStatus\":\"using_dcc_final_names\",\"buildUsesImportedNames\":true,\"runUsesImportedNames\":true,\"linkAuthoritySummary\":{\"verified_openable\":5},\"openAnchorCount\":9,\"linkPendingCount\":0}"
+    },
+    {
+      "name": "w148_active_open_links_only_after_verified_urls",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w148-final-url-import-evidence.v1\",\"normalizedPendingValid\":false,\"normalizedMalformedValid\":false,\"normalizedCompleteValid\":true,\"allCapturedRecordsOpenable\":true,\"finalNamesImported\":true,\"navigationStatus\":\"using_dcc_final_names\",\"buildUsesImportedNames\":true,\"runUsesImportedNames\":true,\"linkAuthoritySummary\":{\"verified_openable\":5},\"openAnchorCount\":9,\"linkPendingCount\":0}"
+    },
+    {
+      "name": "w148_no_drawer_write_or_invocation_added",
+      "pass": true,
+      "detail": "drawer source has no write/invocation signatures"
+    },
+    {
+      "name": "w148_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityPreserved\":true,\"handoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnershipPreserved\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noFakeRecordUrlsReturned\":true,\"liveRecordExistenceNotClaimedBeforeVisualProof\":true}"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "idb.w156-approved-server-adapter-transport-boundary-trace.v1",
+  "decision": "PASS_APPROVED_TRANSPORT_BOUNDARY_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "requestConstructedDefault": false,
+  "requestConstructedApproved": true,
+  "transportCallCount": 1,
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "events": [
+    {
+      "name": "w156_starts_from_w155_toggle_ready",
+      "pass": true,
+      "detail": "PASS_INVOCATION_TOGGLE_AND_POLLING_STUB_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w156_default_and_disabled_do_not_construct_request",
+      "pass": true,
+      "detail": "{\"defaultBoundary\":{\"schema\":\"idb.integrated-build-approved-server-adapter-transport-boundary.v1\",\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"method\":\"\",\"endpointUrl\":\"\",\"endpointAllowed\":false,\"headers\":{},\"body\":null,\"bodyJson\":\"\",\"invocationAttempted\":false,\"activeOpenLinks\":0,\"disabledByDefault\":true,\"approvedEndpointMode\":false,\"gates\":{\"invocationEnabled\":false,\"approvedEndpointMode\":false,\"endpointAllowed\":false,\"canCallApprovedAdapter\":false,\"idempotencyTokenPresent\":true,\"operatorApproved\":false,\"createEnabled\":false,\"governedSandboxWriteEnabled\":false,\"queueSubmitEnabled\":false,\"sandboxAllowlistPresent\":false},\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"suiteScriptInvocationOnlyThroughApprovedServerAdapterPath\":true,\"rollbackByDisablingServerFlags\":true}},\"readyButDisabledBoundary\":{\"schema\":\"idb.integrated-build-approved-server-adapter-transport-boundary.v1\",\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"method\":\"\",\"endpointUrl\":\"\",\"endpointAllowed\":true,\"headers\":{},\"body\":null,\"bodyJson\":\"\",\"invocationAttempted\":false,\"activeOpenLinks\":0,\"disabledByDefault\":true,\"approvedEndpointMode\":true,\"gates\":{\"invocationEnabled\":false,\"approvedEndpointMode\":true,\"endpointAllowed\":true,\"canCallApprovedAdapter\":false,\"idempotencyTokenPresent\":true,\"operatorApproved\":true,\"createEnabled\":true,\"governedSandboxWriteEnabled\":true,\"queueSubmitEnabled\":true,\"sandboxAllowlistPresent\":true},\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"suiteScriptInvocationOnlyThroughApprovedServerAdapterPath\":true,\"rollbackByDisablingServerFlags\":true}}}"
+    },
+    {
+      "name": "w156_bad_endpoint_blocked_before_request",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-approved-server-adapter-transport-boundary.v1\",\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"method\":\"\",\"endpointUrl\":\"\",\"endpointAllowed\":false,\"headers\":{},\"body\":null,\"bodyJson\":\"\",\"invocationAttempted\":false,\"activeOpenLinks\":0,\"disabledByDefault\":false,\"approvedEndpointMode\":true,\"gates\":{\"invocationEnabled\":true,\"approvedEndpointMode\":true,\"endpointAllowed\":false,\"canCallApprovedAdapter\":true,\"idempotencyTokenPresent\":true,\"operatorApproved\":true,\"createEnabled\":true,\"governedSandboxWriteEnabled\":true,\"queueSubmitEnabled\":true,\"sandboxAllowlistPresent\":true},\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"suiteScriptInvocationOnlyThroughApprovedServerAdapterPath\":true,\"rollbackByDisablingServerFlags\":true}}"
+    },
+    {
+      "name": "w156_approved_boundary_constructs_post_request_only_after_all_gates",
+      "pass": true,
+      "detail": "{\"invocationEnabled\":true,\"approvedEndpointMode\":true,\"endpointAllowed\":true,\"canCallApprovedAdapter\":true,\"idempotencyTokenPresent\":true,\"operatorApproved\":true,\"createEnabled\":true,\"governedSandboxWriteEnabled\":true,\"queueSubmitEnabled\":true,\"sandboxAllowlistPresent\":true}"
+    },
+    {
+      "name": "w156_transport_executor_harness_only",
+      "pass": true,
+      "detail": "{\"defaultTransport\":{\"status\":\"transport_not_executed_no_submit\",\"invocationAttempted\":false,\"queueSubmitted\":false},\"approvedTransport\":{\"status\":\"queued_pending_transport_fixture\",\"invocationAttempted\":true,\"queueSubmitted\":true,\"runnerTaskId\":\"fixture_w156_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\"},\"transportCallCount\":1,\"pendingPoll\":{\"status\":\"polling_stub_pending\",\"activeOpenLinks\":0}}"
+    },
+    {
+      "name": "w156_polling_stub_pending_no_links",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-runner-polling-stub.v1\",\"status\":\"polling_stub_pending\",\"runnerTaskId\":\"fixture_w156_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"resultCaptureStatus\":\"pending_runner_completion\",\"pollAttempted\":true,\"finalGeneratedNamesJsonReady\":false,\"importGuard\":\"W151 completed runner result JSON guard required before final names become drawer state.\",\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"internalRunnerOwnership\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}"
+    },
+    {
+      "name": "w156_build_surface_mentions_transport_boundary",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-strong\">Ariat International</div>\n          <div class=\"idb-copy\">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div>\n        </div>\n        <div class=\"idb-status-strip\">\n          <div class=\"idb-"
+    },
+    {
+      "name": "w156_no_raw_network_in_transport_boundary",
+      "pass": true,
+      "detail": "W156 transport boundary constructs envelope only; later W189 W144 helper is separately gated"
+    },
+    {
+      "name": "w156_visual_testing_blocked_and_no_regression",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

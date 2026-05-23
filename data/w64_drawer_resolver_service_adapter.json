@@ -1,0 +1,112 @@
+{
+  "schema": "idb.w64-drawer-resolver-service-adapter.v1",
+  "status": "complete_drawer_adapter_ready",
+  "objective": "Wire the drawer runtime to call the no-write websiteResolverServiceV1 adapter/service instead of relying on local domain hints alone, with local fallback feature-flagged and explicit.",
+  "roles": [
+    {
+      "name": "Resolver Service Architect",
+      "owns": "Drawer-to-service adapter, request keying, endpoint configuration, response envelope normalization, and nonblocking async refresh."
+    },
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Service evidence as lane, product seed, product family, proof anchor, and demand moment authority before notes shape story."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "No forbidden write/auth fields in drawer requests, no SuiteScript invocation, no write authority, and failure-state handling."
+    },
+    {
+      "name": "Consultant UX Director",
+      "owns": "Plan/Review failure-state visibility and answer-first evidence display."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Validator gates proving notes do not own identity and blocked/thin/unavailable/timeout never guess."
+    }
+  ],
+  "adapter": {
+    "configSources": [
+      "window.IDB_WEBSITE_RESOLVER_ENDPOINT",
+      "localStorage:idb.websiteResolver.endpoint.v1",
+      "globalThis.__IDB_MOCK_WEBSITE_RESOLVER__ for harness only"
+    ],
+    "localFallbackFlag": "localStorage:idb.websiteResolver.localFallback.v1 or window.IDB_WEBSITE_RESOLVER_LOCAL_FALLBACK; false disables fallback",
+    "requestShape": {
+      "url": "prospect website",
+      "requestId": "drawer generated",
+      "maxPages": 4,
+      "timeoutMs": 12000,
+      "manualEvidence": "consultant supplied fallback text",
+      "drawerRequestKey": "service + website + manual evidence"
+    },
+    "forbiddenRequestFieldsNotSent": [
+      "recordType",
+      "recordId",
+      "suiteletUrl",
+      "scriptId",
+      "deployId",
+      "writeToken",
+      "cookie",
+      "authorization",
+      "suiteScriptInvocation"
+    ],
+    "runtimeModes": [
+      "not_requested",
+      "local_fallback_only",
+      "service_pending",
+      "service_pending_local_fallback",
+      "service",
+      "service_rejected",
+      "service_rejected_local_fallback",
+      "service_error",
+      "service_error_local_fallback"
+    ]
+  },
+  "ui": {
+    "planReviewEvidencePanel": "What IDB saw now includes resolver mode/status and failure state.",
+    "failureStatesVisible": [
+      "blocked",
+      "thin",
+      "unavailable",
+      "timeout",
+      "ambiguous"
+    ],
+    "traceCoverage": [
+      "websiteEvidenceV1",
+      "websiteResolverRuntime",
+      "websiteEvidenceUx",
+      "resolverAdapter"
+    ]
+  },
+  "validatorGates": [
+    "w64_contract_present",
+    "w64_userscript_adapter_present",
+    "w64_nonblocking_service_request_present",
+    "w64_forbidden_write_fields_not_sent",
+    "w64_harness_registered",
+    "w64_trace_passed",
+    "w64_failure_ux_samples_present",
+    "w64_report_and_next_prompt_present"
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "outputs": {
+    "contract": "data/w64_drawer_resolver_service_adapter.json",
+    "harness": "tools/run_drawer_resolver_service_adapter_harness.js",
+    "traceSample": "trace_samples/w64_drawer_resolver_service_adapter_trace.json",
+    "failureUxSamples": "trace_samples/w64_failure_ux_samples.json",
+    "report": "reports/w64_drawer_resolver_service_adapter.md"
+  },
+  "bestNextCodexPrompt": {
+    "block": "W65: Approved Live Resolver Smoke And Drift Gate",
+    "prompt": "Move through W65: Approved Live Resolver Smoke And Drift Gate. Run the no-write websiteResolverServiceV1 path against an approved small set of live public websites, compare live resolver output to W58/W59 snapshot expectations, and produce a drift report with pass/fail, confidence calibration, failure-state honesty, evidence coverage, and any extraction gaps. Keep the drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, keep notes story-only, and require blocked/thin/unavailable/timeout to remain insufficient evidence with no lane guesses. Output live smoke harness, approved-site results, drift findings, validator gates, W65 report, and best next Codex prompt."
+  }
+}

@@ -1,0 +1,431 @@
+{
+  "schema": "idb.w149-targeted-final-url-open-link-visual-verification.v1",
+  "status": "targeted_visual_verification_ready_operator_evidence_required",
+  "decision": "PASS_VERIFICATION_PACKET_READY__LIVE_RECORD_PROOF_AWAITING_OPERATOR_EVIDENCE",
+  "source": {
+    "w148Data": "/path/to/workspace/intelligent demo builder drawer/data/w148_governed_runner_result_capture_final_url_import.json",
+    "runnerTaskId": "task_w147_real_sandbox_001",
+    "finalGeneratedNamesImported": true,
+    "activeOpenAnchors": 9
+  },
+  "finalGeneratedNamesJson": {
+    "schema": "idb.internal-build-engine.real-record-result.v1",
+    "runStatus": "run_complete",
+    "prospect": "Ariat International",
+    "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+    "recordExistenceStatus": "runner_created_or_resolved_targeted_visual_required",
+    "customer": {
+      "name": "Ariat International Outdoor Retail Account",
+      "id": "91201",
+      "url": "/app/common/entity/custjob.nl?id=91201"
+    },
+    "salesOrder": {
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "id": "91202",
+      "url": "/app/accounting/transactions/salesord.nl?id=91202"
+    },
+    "heroItem": {
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "id": "91203",
+      "url": "/app/common/item/item.nl?id=91203"
+    },
+    "matrixItem": {
+      "name": "Ariat Core Boot Size Color Matrix",
+      "id": "91204",
+      "url": "/app/common/item/item.nl?id=91204"
+    },
+    "componentItems": [
+      {
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "91205",
+        "url": "/app/common/item/item.nl?id=91205"
+      }
+    ],
+    "warnings": [],
+    "errors": [],
+    "recoverableBlockers": []
+  },
+  "targetedVisualEvidence": [
+    {
+      "role": "customer",
+      "label": "Customer",
+      "name": "Ariat International Outdoor Retail Account",
+      "id": "91201",
+      "url": "/app/common/entity/custjob.nl?id=91201",
+      "expectedClickTarget": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201",
+      "visualStatus": "awaiting_operator_click",
+      "requiredEvidence": [
+        "loaded URL contains the same numeric id",
+        "page is not a NetSuite Notice page",
+        "page is not a NetSuite Error page",
+        "record name or internal id is visible on the landed page",
+        "screenshot or operator note confirms actual record page"
+      ]
+    },
+    {
+      "role": "demoTransaction",
+      "label": "Demo transaction",
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "id": "91202",
+      "url": "/app/accounting/transactions/salesord.nl?id=91202",
+      "expectedClickTarget": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202",
+      "visualStatus": "awaiting_operator_click",
+      "requiredEvidence": [
+        "loaded URL contains the same numeric id",
+        "page is not a NetSuite Notice page",
+        "page is not a NetSuite Error page",
+        "record name or internal id is visible on the landed page",
+        "screenshot or operator note confirms actual record page"
+      ]
+    },
+    {
+      "role": "heroItem",
+      "label": "Hero item",
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "id": "91203",
+      "url": "/app/common/item/item.nl?id=91203",
+      "expectedClickTarget": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203",
+      "visualStatus": "awaiting_operator_click",
+      "requiredEvidence": [
+        "loaded URL contains the same numeric id",
+        "page is not a NetSuite Notice page",
+        "page is not a NetSuite Error page",
+        "record name or internal id is visible on the landed page",
+        "screenshot or operator note confirms actual record page"
+      ]
+    },
+    {
+      "role": "matrixProofItem",
+      "label": "Matrix/proof item",
+      "name": "Ariat Core Boot Size Color Matrix",
+      "id": "91204",
+      "url": "/app/common/item/item.nl?id=91204",
+      "expectedClickTarget": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204",
+      "visualStatus": "awaiting_operator_click",
+      "requiredEvidence": [
+        "loaded URL contains the same numeric id",
+        "page is not a NetSuite Notice page",
+        "page is not a NetSuite Error page",
+        "record name or internal id is visible on the landed page",
+        "screenshot or operator note confirms actual record page"
+      ]
+    },
+    {
+      "role": "componentItem",
+      "label": "Component item",
+      "name": "Ariat Brown Leather Upper Component",
+      "id": "91205",
+      "url": "/app/common/item/item.nl?id=91205",
+      "expectedClickTarget": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205",
+      "visualStatus": "awaiting_operator_click",
+      "requiredEvidence": [
+        "loaded URL contains the same numeric id",
+        "page is not a NetSuite Notice page",
+        "page is not a NetSuite Error page",
+        "record name or internal id is visible on the landed page",
+        "screenshot or operator note confirms actual record page"
+      ]
+    }
+  ],
+  "recordPageLandingChecklist": [
+    {
+      "role": "customer",
+      "label": "Customer",
+      "name": "Ariat International Outdoor Retail Account",
+      "id": "91201",
+      "clickUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201",
+      "passWhen": [
+        "URL path contains /app/common/entity/custjob.nl",
+        "URL id query param is 91201",
+        "NetSuite record form or record view is visible",
+        "record name or internal id is visible",
+        "page is not Notice, Error, Invalid number, or record does not exist"
+      ],
+      "failWhen": [
+        "Notice: That record does not exist",
+        "Invalid number",
+        "An unexpected error has occurred",
+        "placeholder or REPLACE_REAL token appears",
+        "loaded page path does not match the expected record type"
+      ]
+    },
+    {
+      "role": "demoTransaction",
+      "label": "Demo transaction",
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "id": "91202",
+      "clickUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202",
+      "passWhen": [
+        "URL path contains /app/accounting/transactions/salesord.nl",
+        "URL id query param is 91202",
+        "NetSuite record form or record view is visible",
+        "record name or internal id is visible",
+        "page is not Notice, Error, Invalid number, or record does not exist"
+      ],
+      "failWhen": [
+        "Notice: That record does not exist",
+        "Invalid number",
+        "An unexpected error has occurred",
+        "placeholder or REPLACE_REAL token appears",
+        "loaded page path does not match the expected record type"
+      ]
+    },
+    {
+      "role": "heroItem",
+      "label": "Hero item",
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "id": "91203",
+      "clickUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203",
+      "passWhen": [
+        "URL path contains /app/common/item/item.nl",
+        "URL id query param is 91203",
+        "NetSuite record form or record view is visible",
+        "record name or internal id is visible",
+        "page is not Notice, Error, Invalid number, or record does not exist"
+      ],
+      "failWhen": [
+        "Notice: That record does not exist",
+        "Invalid number",
+        "An unexpected error has occurred",
+        "placeholder or REPLACE_REAL token appears",
+        "loaded page path does not match the expected record type"
+      ]
+    },
+    {
+      "role": "matrixProofItem",
+      "label": "Matrix/proof item",
+      "name": "Ariat Core Boot Size Color Matrix",
+      "id": "91204",
+      "clickUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204",
+      "passWhen": [
+        "URL path contains /app/common/item/item.nl",
+        "URL id query param is 91204",
+        "NetSuite record form or record view is visible",
+        "record name or internal id is visible",
+        "page is not Notice, Error, Invalid number, or record does not exist"
+      ],
+      "failWhen": [
+        "Notice: That record does not exist",
+        "Invalid number",
+        "An unexpected error has occurred",
+        "placeholder or REPLACE_REAL token appears",
+        "loaded page path does not match the expected record type"
+      ]
+    },
+    {
+      "role": "componentItem",
+      "label": "Component item",
+      "name": "Ariat Brown Leather Upper Component",
+      "id": "91205",
+      "clickUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205",
+      "passWhen": [
+        "URL path contains /app/common/item/item.nl",
+        "URL id query param is 91205",
+        "NetSuite record form or record view is visible",
+        "record name or internal id is visible",
+        "page is not Notice, Error, Invalid number, or record does not exist"
+      ],
+      "failWhen": [
+        "Notice: That record does not exist",
+        "Invalid number",
+        "An unexpected error has occurred",
+        "placeholder or REPLACE_REAL token appears",
+        "loaded page path does not match the expected record type"
+      ]
+    }
+  ],
+  "evaluatorSmoke": {
+    "noticeErrorRejected": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201",
+        "urlMatches": true,
+        "hasRecordIdentity": false,
+        "noticeOrError": true,
+        "realRecordSignals": [],
+        "pass": false,
+        "status": "not_verified"
+      },
+      {
+        "role": "demoTransaction",
+        "label": "Demo transaction",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202",
+        "urlMatches": true,
+        "hasRecordIdentity": false,
+        "noticeOrError": true,
+        "realRecordSignals": [],
+        "pass": false,
+        "status": "not_verified"
+      },
+      {
+        "role": "heroItem",
+        "label": "Hero item",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203",
+        "urlMatches": true,
+        "hasRecordIdentity": false,
+        "noticeOrError": true,
+        "realRecordSignals": [],
+        "pass": false,
+        "status": "not_verified"
+      },
+      {
+        "role": "matrixProofItem",
+        "label": "Matrix/proof item",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204",
+        "urlMatches": true,
+        "hasRecordIdentity": false,
+        "noticeOrError": true,
+        "realRecordSignals": [],
+        "pass": false,
+        "status": "not_verified"
+      },
+      {
+        "role": "componentItem",
+        "label": "Component item",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205",
+        "urlMatches": true,
+        "hasRecordIdentity": false,
+        "noticeOrError": true,
+        "realRecordSignals": [],
+        "pass": false,
+        "status": "not_verified"
+      }
+    ],
+    "acceptedRecordPageEvidenceShape": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201",
+        "urlMatches": true,
+        "hasRecordIdentity": true,
+        "noticeOrError": false,
+        "realRecordSignals": [
+          "record name visible"
+        ],
+        "pass": true,
+        "status": "actual_record_page_verified"
+      },
+      {
+        "role": "demoTransaction",
+        "label": "Demo transaction",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202",
+        "urlMatches": true,
+        "hasRecordIdentity": true,
+        "noticeOrError": false,
+        "realRecordSignals": [
+          "record name visible"
+        ],
+        "pass": true,
+        "status": "actual_record_page_verified"
+      },
+      {
+        "role": "heroItem",
+        "label": "Hero item",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203",
+        "urlMatches": true,
+        "hasRecordIdentity": true,
+        "noticeOrError": false,
+        "realRecordSignals": [
+          "record name visible"
+        ],
+        "pass": true,
+        "status": "actual_record_page_verified"
+      },
+      {
+        "role": "matrixProofItem",
+        "label": "Matrix/proof item",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204",
+        "urlMatches": true,
+        "hasRecordIdentity": true,
+        "noticeOrError": false,
+        "realRecordSignals": [
+          "record name visible"
+        ],
+        "pass": true,
+        "status": "actual_record_page_verified"
+      },
+      {
+        "role": "componentItem",
+        "label": "Component item",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205",
+        "loadedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205",
+        "urlMatches": true,
+        "hasRecordIdentity": true,
+        "noticeOrError": false,
+        "realRecordSignals": [
+          "record name visible"
+        ],
+        "pass": true,
+        "status": "actual_record_page_verified"
+      }
+    ]
+  },
+  "visualProofStatus": {
+    "recordExistenceProven": false,
+    "reason": "No authenticated NetSuite click evidence or screenshots were provided in the workspace for W149. The harness validates the exact evidence shape and rejects Notice/Error pages, but does not fabricate record-page proof.",
+    "targetedVisualEvidenceRequired": true,
+    "broaderVisualTestingRequired": false
+  },
+  "broaderVisualTestingDecision": {
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "Only the five final generated record URLs need targeted landing proof. No broader NetSuite UI sweep is required for W149."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnershipPreserved": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W150: Governed Runner Result Visual Evidence Intake And Go/No-Go",
+    "prompt": "Move through W150: Governed Runner Result Visual Evidence Intake And Go/No-Go. Use the W149 targeted checklist and the operator-provided screenshots or notes from clicking Customer, demo transaction, hero item, matrix/proof item, and component item Open links. Mark each link as actual_record_page_verified only if the landed NetSuite page is not Notice/Error/Invalid number and shows the matching record name or numeric internal id. If all five pass, promote the governed runner result as visually verified for consultant use; if any fail, keep the drawer import but block record-existence readiness and route remediation to runner result capture. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output W150 go/no-go report, evidence summary, trace samples, broader visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w149_uses_w148_final_generated_names_json",
+      "pass": true,
+      "detail": "idb.internal-build-engine.real-record-result.v1"
+    },
+    {
+      "name": "w149_checklist_covers_all_required_records",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"id\":\"91201\",\"clickUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"passWhen\":[\"URL path contains /app/common/entity/custjob.nl\",\"URL id query param is 91201\",\"NetSuite record form or record view is visible\",\"record name or internal id is visible\",\"page is not Notice, Error, Invalid number, or record does not exist\"],\"failWhen\":[\"Notice: That record does not exist\",\"Invalid number\",\"An unexpected error has occurred\",\"placeholder or REPLACE_REAL token appears\",\"loaded page path does not match the expected record type\"]},{\"role\":\"demoTransaction\",\"label\":\"Demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"id\":\"91202\",\"clickUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"passWhen\":[\"URL path contains /app/accounting/transactions/salesord.nl\",\"URL id query param is 91202\",\"NetSuite record form or record view is visible\",\"record name or internal id is visible\",\"page is not Notice, Error, Invalid number, or record does not exist\"],\"failWhen\":[\"Notice: That record does not exist\",\"Invalid number\",\"An unexpected error has occurred\",\"placeholder or REPLACE_REAL token appears\",\"loaded page path does not match the expected record type\"]},{\"role\":\"heroItem\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"id\":\"91203\",\"clickUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"passWhen\":[\"URL path contains /app/common/item/item.nl\",\"URL id query param is 91203\",\"NetSuite record form or record view is visible\",\"record name or internal id is visible\",\"page is not Notice, Error, Invalid number, or record does not exist\"],\"failWhen\":[\"Notice: That record does not exist\",\"Invalid number\",\"An unexpected error has occurred\",\"placeholder or REPLACE_REAL token appears\",\"loaded page path does not match the expected record type\"]},{\"role\":\"matrixProofItem\",\"label\":\"Matrix/proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"id\":\"91204\",\"clickUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"passWhen\":[\"URL path contains /app/common/item/item.nl\",\"URL id query param is 91204\",\"NetSuite record form or record view is visible\",\"record name or internal id is visible\",\"page is not Notice, Error, Invalid number, or record does not exist\"],\"failWhen\":[\"Notice: That record does not exist\",\"Invalid number\",\"An unexpected error has occurred\",\"placeholder or REPLACE_REAL token appears\",\"loaded page path does not match the expected record type\"]},{\"role\":\"componentItem\",\"label\":\"Component item\",\"name\":\"Ariat Brown Leather Upper Component\",\"id\":\"91205\",\"clickUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\",\"passWhen\":[\"URL path contains /app/common/item/item.nl\",\"URL id query param is 91205\",\"NetSuite record form or record view is visible\",\"record name or internal id is visible\",\"page is not Notice, Error, Invalid number, or record does not exist\"],\"failWhen\":[\"Notice: That record does not exist\",\"Invalid number\",\"An unexpected error has occurred\",\"placeholder or REPLACE_REAL token appears\",\"loaded page path does not match the expected record type\"]}]"
+    },
+    {
+      "name": "w149_notice_error_pages_are_rejected",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"label\":\"Customer\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"urlMatches\":true,\"hasRecordIdentity\":false,\"noticeOrError\":true,\"realRecordSignals\":[],\"pass\":false,\"status\":\"not_verified\"},{\"role\":\"demoTransaction\",\"label\":\"Demo transaction\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"urlMatches\":true,\"hasRecordIdentity\":false,\"noticeOrError\":true,\"realRecordSignals\":[],\"pass\":false,\"status\":\"not_verified\"},{\"role\":\"heroItem\",\"label\":\"Hero item\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"urlMatches\":true,\"hasRecordIdentity\":false,\"noticeOrError\":true,\"realRecordSignals\":[],\"pass\":false,\"status\":\"not_verified\"},{\"role\":\"matrixProofItem\",\"label\":\"Matrix/proof item\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"urlMatches\":true,\"hasRecordIdentity\":false,\"noticeOrError\":true,\"realRecordSignals\":[],\"pass\":false,\"status\":\"not_verified\"},{\"role\":\"componentItem\",\"label\":\"Component item\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\",\"urlMatches\":true,\"hasRecordIdentity\":false,\"noticeOrError\":true,\"realRecordSignals\":[],\"pass\":false,\"status\":\"not_verified\"}]"
+    },
+    {
+      "name": "w149_valid_record_page_evidence_shape_is_accepted",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"label\":\"Customer\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"urlMatches\":true,\"hasRecordIdentity\":true,\"noticeOrError\":false,\"realRecordSignals\":[\"record name visible\"],\"pass\":true,\"status\":\"actual_record_page_verified\"},{\"role\":\"demoTransaction\",\"label\":\"Demo transaction\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"urlMatches\":true,\"hasRecordIdentity\":true,\"noticeOrError\":false,\"realRecordSignals\":[\"record name visible\"],\"pass\":true,\"status\":\"actual_record_page_verified\"},{\"role\":\"heroItem\",\"label\":\"Hero item\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"urlMatches\":true,\"hasRecordIdentity\":true,\"noticeOrError\":false,\"realRecordSignals\":[\"record name visible\"],\"pass\":true,\"status\":\"actual_record_page_verified\"},{\"role\":\"matrixProofItem\",\"label\":\"Matrix/proof item\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"urlMatches\":true,\"hasRecordIdentity\":true,\"noticeOrError\":false,\"realRecordSignals\":[\"record name visible\"],\"pass\":true,\"status\":\"actual_record_page_verified\"},{\"role\":\"componentItem\",\"label\":\"Component item\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\",\"loadedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\",\"urlMatches\":true,\"hasRecordIdentity\":true,\"noticeOrError\":false,\"realRecordSignals\":[\"record name visible\"],\"pass\":true,\"status\":\"actual_record_page_verified\"}]"
+    },
+    {
+      "name": "w149_live_record_existence_not_fabricated",
+      "pass": true,
+      "detail": "{\"recordExistenceProven\":false,\"reason\":\"No authenticated NetSuite click evidence or screenshots were provided in the workspace for W149. The harness validates the exact evidence shape and rejects Notice/Error pages, but does not fabricate record-page proof.\",\"targetedVisualEvidenceRequired\":true,\"broaderVisualTestingRequired\":false}"
+    },
+    {
+      "name": "w149_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityPreserved\":true,\"handoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnershipPreserved\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

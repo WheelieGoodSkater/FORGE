@@ -1,0 +1,311 @@
+{
+  "schema": "idb.w152-integrated-build-runner-return-adapter-design.v1",
+  "status": "integrated_build_return_adapter_design_ready",
+  "decision": "PASS_INTEGRATED_BUILD_RETURN_DESIGN_READY__VISUAL_TESTING_BLOCKED",
+  "integratedBuildReturnArchitecture": {
+    "schema": "idb.w152-integrated-build-return-architecture.v1",
+    "status": "designed_not_implemented",
+    "productRole": "IDB remains the primary consultant-facing product.",
+    "legacyRole": "Old DCC UI remains legacy; governed runner/internal build logic remains the record creation engine.",
+    "sequence": [
+      "Consultant confirms lane and Build handoff readiness inside the drawer.",
+      "Build action creates a confirmed build request JSON and idempotency token.",
+      "Drawer calls only the approved server-side Build adapter endpoint when the adapter exists and is enabled.",
+      "Server-side adapter validates flags, sandbox allowlist, operator approval, consultant confirmation, state authority, handoff parity, and idempotency.",
+      "Server-side adapter invokes or queues the governed runner/internal build engine.",
+      "Adapter returns runnerTaskId and resultCapture=pending without fake record URLs.",
+      "Drawer polls or requests result capture through the adapter until completed, failed, timed out, or no-submit.",
+      "Completed runner result JSON is validated with the W151 import guard and imported as final generated names.",
+      "Open links render only after completed runner result JSON includes numeric internal ids and supported NetSuite URLs."
+    ],
+    "ownership": {
+      "drawer": [
+        "collect consultant-confirmed request",
+        "display status",
+        "import completed runner result names and URLs"
+      ],
+      "serverAdapter": [
+        "validate flags",
+        "own SuiteScript invocation path",
+        "queue governed runner",
+        "capture result"
+      ],
+      "governedRunner": [
+        "create or resolve records",
+        "own generated record authority"
+      ]
+    }
+  },
+  "serverAdapterApiContract": {
+    "schema": "idb.w152-server-adapter-api-contract.v1",
+    "endpointPurpose": "Integrated Build return adapter for governed runner execution and result capture.",
+    "method": "POST",
+    "routeAlias": "/app/site/hosting/scriptlet.nl?script=<idb_adapter>&deploy=<sandbox_deploy>",
+    "request": {
+      "schema": "idb.integrated-build-runner-request.v1",
+      "action": "submit_or_poll_build_return",
+      "confirmedBuildRequestJson": "idb.confirmed-build-request.v1",
+      "operatorGate": {
+        "reviewDecision": "operator_approved_queue_submit",
+        "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER"
+      },
+      "idempotencyToken": "required stable token from handoff parity lock",
+      "clientTraceRef": "trace export id or in-drawer trace id",
+      "poll": {
+        "runnerTaskId": "optional after queue submit",
+        "resultCaptureCursor": "optional server-side result capture reference"
+      }
+    },
+    "requiredServerFlags": {
+      "CREATE_ENABLED": true,
+      "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+      "QUEUE_SUBMIT_ENABLED": true,
+      "SANDBOX_ACCOUNT_ALLOWLIST": [
+        "SANDBOX_ACCOUNT_ID"
+      ]
+    },
+    "falseFlagResponse": {
+      "queueSubmitted": false,
+      "runnerTaskId": null,
+      "resultCapture": "not_started_no_submit",
+      "finalGeneratedNamesJson": null,
+      "activeOpenLinks": 0
+    },
+    "queuedResponse": {
+      "queueSubmitted": true,
+      "runnerTaskId": "task_w152_example_001",
+      "resultCapture": "pending_runner_completion",
+      "finalGeneratedNamesJson": null,
+      "activeOpenLinks": 0
+    },
+    "completedResponse": {
+      "queueSubmitted": true,
+      "runnerTaskId": "task_w147_real_sandbox_001",
+      "resultCapture": "completed",
+      "finalGeneratedNamesJson": {
+        "schema": "idb.internal-build-engine.real-record-result.v1",
+        "runStatus": "run_complete",
+        "prospect": "Ariat International",
+        "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+        "recordExistenceStatus": "runner_created_or_resolved_targeted_visual_required",
+        "customer": {
+          "name": "Ariat International Outdoor Retail Account",
+          "id": "91201",
+          "url": "/app/common/entity/custjob.nl?id=91201"
+        },
+        "salesOrder": {
+          "name": "Ariat Seasonal Footwear Availability Demo Order",
+          "id": "91202",
+          "url": "/app/accounting/transactions/salesord.nl?id=91202"
+        },
+        "heroItem": {
+          "name": "Ariat Terrain H2O Work Boot Hero Item",
+          "id": "91203",
+          "url": "/app/common/item/item.nl?id=91203"
+        },
+        "matrixItem": {
+          "name": "Ariat Core Boot Size Color Matrix",
+          "id": "91204",
+          "url": "/app/common/item/item.nl?id=91204"
+        },
+        "componentItems": [
+          {
+            "name": "Ariat Brown Leather Upper Component",
+            "id": "91205",
+            "url": "/app/common/item/item.nl?id=91205"
+          }
+        ],
+        "warnings": [],
+        "errors": [],
+        "recoverableBlockers": []
+      }
+    },
+    "forbiddenResponseBehavior": [
+      "Do not return placeholder ids.",
+      "Do not return fake record URLs.",
+      "Do not mark result capture completed without required records.",
+      "Do not expose Open links before W151 import guard accepts completed runner result JSON."
+    ]
+  },
+  "pollingResultCaptureStateMachine": {
+    "schema": "idb.w152-polling-result-capture-state-machine.v1",
+    "states": [
+      {
+        "state": "not_started",
+        "drawerOpenLinks": 0,
+        "visualTesting": "blocked"
+      },
+      {
+        "state": "blocked_by_flags_false",
+        "drawerOpenLinks": 0,
+        "visualTesting": "blocked"
+      },
+      {
+        "state": "ready_to_submit",
+        "drawerOpenLinks": 0,
+        "visualTesting": "blocked"
+      },
+      {
+        "state": "queued",
+        "runnerTaskIdRequired": true,
+        "resultCapture": "pending_runner_completion",
+        "drawerOpenLinks": 0,
+        "visualTesting": "blocked"
+      },
+      {
+        "state": "polling",
+        "runnerTaskIdRequired": true,
+        "resultCapture": "pending_runner_completion",
+        "drawerOpenLinks": 0,
+        "visualTesting": "blocked"
+      },
+      {
+        "state": "completed_result_available",
+        "requiredImportGuard": "W151",
+        "drawerOpenLinks": "after accepted import only",
+        "visualTesting": "targeted_visual_can_start_after_import"
+      },
+      {
+        "state": "failed_or_timeout",
+        "drawerOpenLinks": 0,
+        "visualTesting": "blocked"
+      },
+      {
+        "state": "rolled_back_flags_disabled",
+        "drawerOpenLinks": 0,
+        "visualTesting": "blocked"
+      }
+    ],
+    "terminalSuccessCondition": "completed runner result JSON accepted by W151 import guard with numeric ids and supported URLs.",
+    "retryPolicy": {
+      "maxPolls": 12,
+      "backoff": "server-guided",
+      "duplicateSubmitHandling": "idempotency token returns existing runnerTaskId or completed capture"
+    }
+  },
+  "smokeHarness": {
+    "schema": "idb.w152-smoke-harness.v1",
+    "cases": {
+      "flagsFalseNoSubmit": {
+        "input": "confirmed build request plus operator gate, all queue/write flags false",
+        "expected": {
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "resultCapture": "not_started_no_submit",
+          "finalGeneratedNamesJson": null,
+          "activeOpenLinks": 0
+        }
+      },
+      "flagsTrueQueuedPending": {
+        "input": "confirmed build request plus operator gate, flags true, no result yet",
+        "expected": {
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w152_example_001",
+          "resultCapture": "pending_runner_completion",
+          "finalGeneratedNamesJson": null,
+          "activeOpenLinks": 0
+        }
+      },
+      "completedCaptureImport": {
+        "input": "completed result capture from governed runner",
+        "expected": {
+          "importGuard": "completed_runner_result_accepted",
+          "requiredRecords": [
+            "customer",
+            "salesOrder",
+            "heroItem",
+            "matrixItem",
+            "componentItem"
+          ],
+          "activeOpenLinksAfterImportOnly": true
+        }
+      }
+    }
+  },
+  "traceSamples": {
+    "falseFlagNoSubmit": {
+      "queueSubmitted": false,
+      "runnerTaskId": null,
+      "resultCapture": "not_started_no_submit",
+      "finalGeneratedNamesJson": null,
+      "activeOpenLinks": 0
+    },
+    "queuedPending": {
+      "queueSubmitted": true,
+      "runnerTaskId": "task_w152_example_001",
+      "resultCapture": "pending_runner_completion",
+      "finalGeneratedNamesJson": null,
+      "activeOpenLinks": 0
+    },
+    "completedCapture": {
+      "runnerTaskId": "task_w147_real_sandbox_001",
+      "resultCapture": "completed",
+      "finalGeneratedNameIds": {
+        "customer": "91201",
+        "demoTransaction": "91202",
+        "heroItem": "91203",
+        "matrixProofItem": "91204",
+        "componentItem": "91205"
+      }
+    }
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "visualTestingBlocked": true,
+    "reason": "W152 is an integration design. Do not request visual testing until Build is implemented to call the server adapter and receive completed runner result JSON.",
+    "firstVisualGateAfterImplementation": "Targeted Open-link record landing test after completed runner result import."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerSuiteScriptInvocation": true,
+    "noDrawerTransactionWrites": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W153: Integrated Build Runner Return Adapter Skeleton",
+    "prompt": "Move through W153: Integrated Build Runner Return Adapter Skeleton. Implement the non-writing drawer-side adapter client boundary and NetSuite-side server adapter skeleton for the W152 integrated Build runner return path. Build should prepare the confirmed build request, idempotency token, and operator gate payload, but keep invocation disabled unless the approved server adapter endpoint and server flags are present. The server adapter skeleton should return false-flag no-submit and queued/pending fixture responses only; do not enable writes yet. Do not request visual testing. Preserve no drawer writes, no drawer SuiteScript invocation, no drawer transaction writes, consultant confirmation, state authority and handoff parity, internal runner ownership, rollback by disabling server flags, W151 completed-result import guard, and no active Open links without real URLs. Output adapter skeleton changes, dry-run smoke harness, trace samples, W153 report, visual testing decision blocked, and best next Codex prompt."
+  },
+  "validatorGates": [
+    {
+      "name": "w152_uses_w151_as_entry_condition",
+      "pass": true,
+      "detail": "{\"visualNetSuiteTestingRequiredNow\":false,\"visualTestingBlocked\":true,\"blockedUntil\":\"Build triggers governed runner execution and completed runner result returns to IDB.\",\"broaderVisualTestingRequired\":false}"
+    },
+    {
+      "name": "w152_api_contract_requires_server_flags_and_operator_gate",
+      "pass": true,
+      "detail": "{\"CREATE_ENABLED\":true,\"GOVERNED_SANDBOX_WRITE_ENABLED\":true,\"QUEUE_SUBMIT_ENABLED\":true,\"SANDBOX_ACCOUNT_ALLOWLIST\":[\"SANDBOX_ACCOUNT_ID\"]}"
+    },
+    {
+      "name": "w152_state_machine_blocks_visual_until_completed_import",
+      "pass": true,
+      "detail": "[{\"state\":\"not_started\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"blocked_by_flags_false\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"ready_to_submit\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"queued\",\"runnerTaskIdRequired\":true,\"resultCapture\":\"pending_runner_completion\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"polling\",\"runnerTaskIdRequired\":true,\"resultCapture\":\"pending_runner_completion\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"completed_result_available\",\"requiredImportGuard\":\"W151\",\"drawerOpenLinks\":\"after accepted import only\",\"visualTesting\":\"targeted_visual_can_start_after_import\"},{\"state\":\"failed_or_timeout\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"rolled_back_flags_disabled\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"}]"
+    },
+    {
+      "name": "w152_false_flag_and_queued_states_return_no_open_links",
+      "pass": true,
+      "detail": "{\"falseFlag\":{\"queueSubmitted\":false,\"runnerTaskId\":null,\"resultCapture\":\"not_started_no_submit\",\"finalGeneratedNamesJson\":null,\"activeOpenLinks\":0},\"queued\":{\"queueSubmitted\":true,\"runnerTaskId\":\"task_w152_example_001\",\"resultCapture\":\"pending_runner_completion\",\"finalGeneratedNamesJson\":null,\"activeOpenLinks\":0}}"
+    },
+    {
+      "name": "w152_completed_result_shape_uses_numeric_ids_and_supported_urls",
+      "pass": true,
+      "detail": "[{\"id\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\"},{\"id\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},{\"id\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},{\"id\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},{\"id\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}]"
+    },
+    {
+      "name": "w152_reuses_prior_runner_contracts_without_visual_request",
+      "pass": true,
+      "detail": "{\"w139\":\"idb_governed_runner_integration_contract_ready\",\"w144\":\"queue_submit_pilot_ready_behind_server_flags\",\"runnerTaskId\":\"task_w147_real_sandbox_001\"}"
+    },
+    {
+      "name": "w152_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerSuiteScriptInvocation\":true,\"noDrawerTransactionWrites\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityPreserved\":true,\"handoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

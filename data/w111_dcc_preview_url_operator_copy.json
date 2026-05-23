@@ -1,0 +1,127 @@
+{
+  "schema": "idb.w111-dcc-preview-url-operator-copy.v1",
+  "status": "preview_url_operator_copy_ready",
+  "objective": "Give operators copy-safe DCC Suitelet preview URL/query parameters without IDB navigation, SuiteScript invocation, submit, queue, or write.",
+  "readyExample": {
+    "schema": "idb.w111-dcc-preview-url-operator-copy.v1",
+    "status": "ready_preview_copy_only",
+    "mode": "copy_only_no_navigation_no_submit",
+    "canNavigateFromIdb": false,
+    "canOpenSuiteletFromIdb": false,
+    "canSubmit": false,
+    "canInvokeSuiteScriptFromIdb": false,
+    "suiteletBaseUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_dcc_preview&deploy=customdeploy_dcc_preview",
+    "previewUrlText": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_dcc_preview&deploy=customdeploy_dcc_preview&custpage_prospect=Ariat%20International&custpage_website=https%3A%2F%2Fwww.ariat.com%2F&custpage_notes=Ariat%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.&custpage_newhero=T&custpage_enablemfg=F&custpage_enablewip=F&custpage_evalmode=review_only&custpage_actionmode=previewbrief",
+    "queryParamText": "custpage_prospect=Ariat%20International&custpage_website=https%3A%2F%2Fwww.ariat.com%2F&custpage_notes=Ariat%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.&custpage_newhero=T&custpage_enablemfg=F&custpage_enablewip=F&custpage_evalmode=review_only&custpage_actionmode=previewbrief",
+    "copySafeParameterText": "custpage_prospect=Ariat International\ncustpage_website=https://www.ariat.com/\ncustpage_notes=Ariat needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\ncustpage_newhero=T\ncustpage_enablemfg=F\ncustpage_enablewip=F\ncustpage_evalmode=review_only\ncustpage_actionmode=previewbrief",
+    "operatorInstructions": [
+      "Export the handoff JSON first.",
+      "Copy the preview URL text or parameter text from the drawer.",
+      "Open the build preview manually in the sandbox.",
+      "Paste or compare preview-only params against the build preview fields.",
+      "Do not submit, queue, invoke SuiteScript, or write from the drawer.",
+      "Paste operator comparison notes back into the evidence intake."
+    ],
+    "blockedExample": {
+      "status": "blocked_preview_copy_only",
+      "reasons": [],
+      "action": "Resolve state authority, parity, and consultant confirmation before operator preview copy is considered ready."
+    },
+    "confirmedExample": {
+      "status": "ready_preview_copy_only",
+      "action": "Operator may manually compare the preview params in sandbox. The drawer still does not navigate, submit, queue, invoke SuiteScript, or write."
+    },
+    "traceCoverage": {
+      "traceExportIncludesPreviewUrlCopy": true,
+      "dccHandoffExportTraceIncludesPreviewUrlCopy": true,
+      "noSecretValues": true
+    },
+    "noRegression": {
+      "w110ParityLockPreserved": true,
+      "w92StateAuthorityPreserved": true,
+      "w105W107PreviewOnlyApprovalPreserved": true,
+      "noIdbWrites": true,
+      "noSuiteScriptInvocationFromIdb": true,
+      "noTransactionWrites": true,
+      "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+      "notesStoryOnly": true,
+      "consultantConfirmationRequired": true,
+      "dccOwnsObjectGeneration": true
+    }
+  },
+  "blockedExample": {
+    "schema": "idb.w111-dcc-preview-url-operator-copy.v1",
+    "status": "blocked_preview_copy_only",
+    "mode": "copy_only_no_navigation_no_submit",
+    "canNavigateFromIdb": false,
+    "canOpenSuiteletFromIdb": false,
+    "canSubmit": false,
+    "canInvokeSuiteScriptFromIdb": false,
+    "suiteletBaseUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_dcc_preview&deploy=customdeploy_dcc_preview",
+    "previewUrlText": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_dcc_preview&deploy=customdeploy_dcc_preview&custpage_prospect=Ariat%20International&custpage_website=https%3A%2F%2Fwww.ariat.com%2F&custpage_notes=Ariat%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.&custpage_newhero=T&custpage_enablemfg=F&custpage_enablewip=F&custpage_evalmode=review_only&custpage_actionmode=previewbrief",
+    "queryParamText": "custpage_prospect=Ariat%20International&custpage_website=https%3A%2F%2Fwww.ariat.com%2F&custpage_notes=Ariat%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.&custpage_newhero=T&custpage_enablemfg=F&custpage_enablewip=F&custpage_evalmode=review_only&custpage_actionmode=previewbrief",
+    "copySafeParameterText": "custpage_prospect=Ariat International\ncustpage_website=https://www.ariat.com/\ncustpage_notes=Ariat needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\ncustpage_newhero=T\ncustpage_enablemfg=F\ncustpage_enablewip=F\ncustpage_evalmode=review_only\ncustpage_actionmode=previewbrief",
+    "operatorInstructions": [
+      "Export the handoff JSON first.",
+      "Copy the preview URL text or parameter text from the drawer.",
+      "Open the build preview manually in the sandbox.",
+      "Paste or compare preview-only params against the build preview fields.",
+      "Do not submit, queue, invoke SuiteScript, or write from the drawer.",
+      "Paste operator comparison notes back into the evidence intake."
+    ],
+    "blockedExample": {
+      "status": "blocked_preview_copy_only",
+      "reasons": [
+        "Consultant has not confirmed the working lane, scenario pack, product naming, and build mode.",
+        "confirmed_lane_matches_selected_lane",
+        "exported_lane_matches_confirmed_lane",
+        "blocked_until_confirmed_handoff"
+      ],
+      "action": "Resolve state authority, parity, and consultant confirmation before operator preview copy is considered ready."
+    },
+    "confirmedExample": {
+      "status": "ready_preview_copy_only",
+      "action": "Operator may manually compare the preview params in sandbox. The drawer still does not navigate, submit, queue, invoke SuiteScript, or write."
+    },
+    "traceCoverage": {
+      "traceExportIncludesPreviewUrlCopy": true,
+      "dccHandoffExportTraceIncludesPreviewUrlCopy": true,
+      "noSecretValues": true
+    },
+    "noRegression": {
+      "w110ParityLockPreserved": true,
+      "w92StateAuthorityPreserved": true,
+      "w105W107PreviewOnlyApprovalPreserved": true,
+      "noIdbWrites": true,
+      "noSuiteScriptInvocationFromIdb": true,
+      "noTransactionWrites": true,
+      "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+      "notesStoryOnly": true,
+      "consultantConfirmationRequired": true,
+      "dccOwnsObjectGeneration": true
+    }
+  },
+  "reviewUiSummary": {
+    "includesPreviewUrlText": true,
+    "includesQueryParams": true,
+    "includesCopySafeParameterText": true,
+    "noOpenButton": true,
+    "noSubmitButton": true
+  },
+  "noRegression": {
+    "w110ParityLockPreserved": true,
+    "w92StateAuthorityPreserved": true,
+    "w105W107PreviewOnlyApprovalPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W112: Operator Preview Retest After Copy Helper",
+    "prompt": "Move through W112: Operator Preview Retest After Copy Helper. Produce the exact hands-on operator retest for the latest IDB drawer using W111 preview URL/operator copy: file to upload, sales request fields, expected Review copy-helper screenshot, DCC handoff JSON, trace JSON, manual DCC Suitelet preview comparison steps, operator evidence fields to paste back into IDB, scoring rubric, and stop/go criteria. Preserve W110 parity lock, W92 state authority, W105-W107 preview-only approval behavior, no IDB writes, no SuiteScript invocation from IDB, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output test packet, validator gates, W112 report, and best next Codex prompt."
+  }
+}

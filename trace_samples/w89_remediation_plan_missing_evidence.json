@@ -1,0 +1,28 @@
+{
+  "schema": "idb.w89-remediation-plan-missing-evidence.v1",
+  "immediateActions": [
+    "Run the W88 real user test using the specified idb-drawer.user.js file.",
+    "Attach Plan, Review, DCC handoff card, Trace, and optional DCC Suitelet comparison screenshots.",
+    "Attach idb-dcc-runner-handoff-packet-*.json.",
+    "Attach intelligent-demo-builder-trace-*.json.",
+    "Add consultant notes about what felt unclear, wrong, useful, or risky.",
+    "Add operator notes marking Suitelet form params, DCC-owned config, and runner preview as match/missing/unclear."
+  ],
+  "exactFilesNeeded": [
+    "idb-dcc-runner-handoff-packet-*.json",
+    "intelligent-demo-builder-trace-*.json"
+  ],
+  "exactScreenshotsNeeded": [
+    "Plan tab after intake.",
+    "Review tab top summary.",
+    "Review DCC build packet bridge.",
+    "Review DCC handoff export card with form/config/runner sections.",
+    "Trace tab before export.",
+    "DCC Suitelet sandbox comparison screen, if operator opens it for manual review."
+  ],
+  "noSecretRules": [
+    "Do not include NetSuite credentials, tokens, or deployment secrets.",
+    "Redact sensitive internal IDs if screenshots leave the sandbox team.",
+    "Record config presence/absence, not secret values."
+  ]
+}

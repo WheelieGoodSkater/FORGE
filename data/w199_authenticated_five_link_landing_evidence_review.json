@@ -1,0 +1,200 @@
+{
+  "schema": "idb.w199-authenticated-five-link-landing-evidence-review.v1",
+  "status": "BLOCKED_W199_AUTHENTICATED_LINK_EVIDENCE_REQUIRED",
+  "evidenceReview": {
+    "source": "no_authenticated_screenshot_evidence_uploaded",
+    "w198ImportReady": true,
+    "authenticatedEvidenceProvided": false,
+    "allFiveRecordLandingsPassed": false,
+    "missingOrFailedRoles": [
+      "customer",
+      "sales_order",
+      "hero_item",
+      "matrix_or_proof_item",
+      "component_item"
+    ]
+  },
+  "passFailTable": [
+    {
+      "role": "customer",
+      "label": "Customer",
+      "expectedName": "Ariat International Outdoor Retail Account",
+      "expectedInternalId": "501234",
+      "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234",
+      "screenshotProvided": false,
+      "landedUrl": "",
+      "observedInternalId": "",
+      "observedRecordName": "",
+      "blockedPageDetected": false,
+      "pass": false,
+      "result": "blocked_missing_or_failed_authenticated_landing_evidence",
+      "missingOrFailedEvidence": [
+        "authenticated screenshot",
+        "NetSuite landed URL",
+        "URL id 501234",
+        "URL path /app/common/entity/custjob.nl",
+        "record identity Ariat International Outdoor Retail Account"
+      ]
+    },
+    {
+      "role": "sales_order",
+      "label": "Demo transaction",
+      "expectedName": "Ariat Seasonal Footwear Availability Demo Order",
+      "expectedInternalId": "601234",
+      "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234",
+      "screenshotProvided": false,
+      "landedUrl": "",
+      "observedInternalId": "",
+      "observedRecordName": "",
+      "blockedPageDetected": false,
+      "pass": false,
+      "result": "blocked_missing_or_failed_authenticated_landing_evidence",
+      "missingOrFailedEvidence": [
+        "authenticated screenshot",
+        "NetSuite landed URL",
+        "URL id 601234",
+        "URL path /app/accounting/transactions/salesord.nl",
+        "record identity Ariat Seasonal Footwear Availability Demo Order"
+      ]
+    },
+    {
+      "role": "hero_item",
+      "label": "Hero item",
+      "expectedName": "Ariat Terrain H2O Work Boot Hero Item",
+      "expectedInternalId": "701234",
+      "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234",
+      "screenshotProvided": false,
+      "landedUrl": "",
+      "observedInternalId": "",
+      "observedRecordName": "",
+      "blockedPageDetected": false,
+      "pass": false,
+      "result": "blocked_missing_or_failed_authenticated_landing_evidence",
+      "missingOrFailedEvidence": [
+        "authenticated screenshot",
+        "NetSuite landed URL",
+        "URL id 701234",
+        "URL path /app/common/item/item.nl",
+        "record identity Ariat Terrain H2O Work Boot Hero Item"
+      ]
+    },
+    {
+      "role": "matrix_or_proof_item",
+      "label": "Matrix/proof item",
+      "expectedName": "Ariat Core Boot Size Color Matrix",
+      "expectedInternalId": "701235",
+      "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235",
+      "screenshotProvided": false,
+      "landedUrl": "",
+      "observedInternalId": "",
+      "observedRecordName": "",
+      "blockedPageDetected": false,
+      "pass": false,
+      "result": "blocked_missing_or_failed_authenticated_landing_evidence",
+      "missingOrFailedEvidence": [
+        "authenticated screenshot",
+        "NetSuite landed URL",
+        "URL id 701235",
+        "URL path /app/common/item/item.nl",
+        "record identity Ariat Core Boot Size Color Matrix"
+      ]
+    },
+    {
+      "role": "component_item",
+      "label": "Component item",
+      "expectedName": "Ariat Brown Leather Upper Component",
+      "expectedInternalId": "701236",
+      "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236",
+      "screenshotProvided": false,
+      "landedUrl": "",
+      "observedInternalId": "",
+      "observedRecordName": "",
+      "blockedPageDetected": false,
+      "pass": false,
+      "result": "blocked_missing_or_failed_authenticated_landing_evidence",
+      "missingOrFailedEvidence": [
+        "authenticated screenshot",
+        "NetSuite landed URL",
+        "URL id 701236",
+        "URL path /app/common/item/item.nl",
+        "record identity Ariat Brown Leather Upper Component"
+      ]
+    }
+  ],
+  "productionReadinessDecision": {
+    "decision": "not_production_ready_missing_authenticated_landing_evidence",
+    "productionReady": false,
+    "reason": "Production readiness is blocked until all five imported Open links have authenticated screenshots proving actual NetSuite record pages.",
+    "noBroaderVisualTesting": true
+  },
+  "traceSamples": [
+    {
+      "event": "w199_w198_import_evidence_loaded",
+      "openLinks": 5,
+      "importedFinalNamesReady": true,
+      "expectedRecordCount": 5
+    },
+    {
+      "event": "w199_authenticated_landing_evidence_review",
+      "evidenceSource": "missing",
+      "authenticatedEvidenceProvided": false,
+      "allFiveRecordLandingsPassed": false,
+      "missingOrFailedRoles": [
+        "customer",
+        "sales_order",
+        "hero_item",
+        "matrix_or_proof_item",
+        "component_item"
+      ]
+    },
+    {
+      "event": "w199_production_readiness_decision",
+      "decision": "not_production_ready_missing_authenticated_landing_evidence",
+      "productionReady": false,
+      "broaderVisualTesting": "blocked"
+    }
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerCreatedRecords": true,
+    "noDirectSuiteScriptOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noBroaderVisualTesting": true
+  },
+  "nextPrompt": {
+    "block": "W199R: Authenticated Five-Link Screenshot Intake Retest",
+    "prompt": "Move through W199R: Authenticated Five-Link Screenshot Intake Retest. Use the operator-uploaded authenticated NetSuite screenshots for Customer, demo transaction/Sales Order, hero item, matrix/proof item, and component item Open links. Pass only if each screenshot shows an actual record page with matching numeric id and record identity, and reject Notice/Error/placeholder/record-does-not-exist pages. Preserve no drawer writes, no drawer transaction writes, no drawer-created records, no direct SuiteScript outside the approved server adapter path, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no broader visual testing. Output evidence review, pass/fail table, W199R report, production readiness decision, and next prompt."
+  },
+  "results": [
+    {
+      "name": "w199_w198_import_ready",
+      "pass": true,
+      "detail": "{\"status\":\"PASS_W198_IMPORT_COMMITTED_TARGETED_LINK_TEST_READY_AUTHENTICATED_LANDING_EVIDENCE_REQUIRED\",\"openLinks\":5}"
+    },
+    {
+      "name": "w199_five_expected_records_present",
+      "pass": true,
+      "detail": "[\"customer\",\"sales_order\",\"hero_item\",\"matrix_or_proof_item\",\"component_item\"]"
+    },
+    {
+      "name": "w199_production_pass_requires_all_five_authenticated_landings",
+      "pass": true,
+      "detail": "{\"allFivePass\":false,\"missingRoles\":[\"customer\",\"sales_order\",\"hero_item\",\"matrix_or_proof_item\",\"component_item\"]}"
+    },
+    {
+      "name": "w199_no_notice_error_placeholder_allowed",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"label\":\"Customer\",\"expectedName\":\"Ariat International Outdoor Retail Account\",\"expectedInternalId\":\"501234\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234\",\"screenshotProvided\":false,\"landedUrl\":\"\",\"observedInternalId\":\"\",\"observedRecordName\":\"\",\"blockedPageDetected\":false,\"pass\":false,\"result\":\"blocked_missing_or_failed_authenticated_landing_evidence\",\"missingOrFailedEvidence\":[\"authenticated screenshot\",\"NetSuite landed URL\",\"URL id 501234\",\"URL path /app/common/entity/custjob.nl\",\"record identity Ariat International Outdoor Retail Account\"]},{\"role\":\"sales_order\",\"label\":\"Demo transaction\",\"expectedName\":\"Ariat Seasonal Footwear Availability Demo Order\",\"expectedInternalId\":\"601234\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234\",\"screenshotProvided\":false,\"landedUrl\":\"\",\"observedInternalId\":\"\",\"observedRecordName\":\"\",\"blockedPageDetected\":false,\"pass\":false,\"result\":\"blocked_missing_or_failed_authenticated_landing_evidence\",\"missingOrFailedEvidence\":[\"authenticated screenshot\",\"NetSuite landed URL\",\"URL id 601234\",\"URL path /app/accounting/transactions/salesord.nl\",\"record identity Ariat Seasonal Footwear Availability Demo Order\"]},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"expectedName\":\"Ariat Terrain H2O Work Boot Hero Item\",\"expectedInternalId\":\"701234\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234\",\"screenshotProvided\":false,\"landedUrl\":\"\",\"observedInternalId\":\"\",\"observedRecordName\":\"\",\"blockedPageDetected\":false,\"pass\":false,\"result\":\"blocked_missing_or_failed_authenticated_landing_evidence\",\"missingOrFailedEvidence\":[\"authenticated screenshot\",\"NetSuite landed URL\",\"URL id 701234\",\"URL path /app/common/item/item.nl\",\"record identity Ariat Terrain H2O Work Boot Hero Item\"]},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix/proof item\",\"expectedName\":\"Ariat Core Boot Size Color Matrix\",\"expectedInternalId\":\"701235\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235\",\"screenshotProvided\":false,\"landedUrl\":\"\",\"observedInternalId\":\"\",\"observedRecordName\":\"\",\"blockedPageDetected\":false,\"pass\":false,\"result\":\"blocked_missing_or_failed_authenticated_landing_evidence\",\"missingOrFailedEvidence\":[\"authenticated screenshot\",\"NetSuite landed URL\",\"URL id 701235\",\"URL path /app/common/item/item.nl\",\"record identity Ariat Core Boot Size Color Matrix\"]},{\"role\":\"component_item\",\"label\":\"Component item\",\"expectedName\":\"Ariat Brown Leather Upper Component\",\"expectedInternalId\":\"701236\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236\",\"screenshotProvided\":false,\"landedUrl\":\"\",\"observedInternalId\":\"\",\"observedRecordName\":\"\",\"blockedPageDetected\":false,\"pass\":false,\"result\":\"blocked_missing_or_failed_authenticated_landing_evidence\",\"missingOrFailedEvidence\":[\"authenticated screenshot\",\"NetSuite landed URL\",\"URL id 701236\",\"URL path /app/common/item/item.nl\",\"record identity Ariat Brown Leather Upper Component\"]}]"
+    },
+    {
+      "name": "w199_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDirectDrawerSuiteScriptInvocationOutsideApprovedAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "idb.w142-operator-queue-gate-dry-run-surface-trace.v1",
+  "decision": "PASS_QUEUE_GATE_READY__NEXT_ENABLE_GOVERNED_SANDBOX_QUEUE_DRY_RUN_ONLY",
+  "adapterFile": "/path/to/workspace/intelligent demo builder drawer/netsuite/idb_governed_runner_adapter_w142_suitelet.js",
+  "queueGate": {
+    "validOperatorGate": true,
+    "queueReadinessStatus": "blocked_write_flags_disabled_or_gate_failed",
+    "canQueue": false,
+    "queueSubmitted": false
+  },
+  "dryRunSurface": {
+    "status": "validated_no_submit",
+    "activeOpenLinks": 0,
+    "primaryMessage": "The adapter accepted the confirmed IDB request and operator gate, resolved server-side runner config, and stopped before queue submit because write flags are disabled."
+  },
+  "drawerImportSmoke": {
+    "openAnchorCount": 0,
+    "linkPendingCount": 0,
+    "missingUrlCount": 5
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterGovernedQueueSubmit": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W142 validates operator-only queue readiness and dry-run surfaces only. It does not submit the runner, create records, or return real record URLs."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W143: Governed Sandbox Queue Enablement Design Without Write Activation",
+    "prompt": "Move through W143: Governed Sandbox Queue Enablement Design Without Write Activation. Use the W142 operator queue gate and dry-run result surface to design the exact server-side queue enablement switch for the governed runner, including required deployment parameters, sandbox account allowlist, operator evidence, idempotency token, scheduled runner parameter handoff, and result-capture placeholder. Do not enable writes yet and do not submit the runner. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, no-submit rollback, internal runner ownership, and no active Open links without real URLs. Output queue enablement design, server-side parameter contract, dry-run harness updates, trace samples, W143 report, visual testing decision, and best next Codex prompt."
+  }
+}

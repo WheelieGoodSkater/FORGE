@@ -1,0 +1,144 @@
+{
+  "schema": "idb.w226-forge-header-install-cutover-harness.v1",
+  "status": "pass",
+  "passCount": 11,
+  "total": 11,
+  "results": [
+    {
+      "id": "responsive_logo_css_uses_more_toolbar_width_than_w224",
+      "pass": true,
+      "evidence": "width: min(420px, calc(100% - 72px))"
+    },
+    {
+      "id": "logo_has_constraints_and_cannot_overlap_close_button",
+      "pass": true,
+      "evidence": "{\"largerThanW224WidthPx\":420,\"previousW224WidthPx\":286,\"usesMoreToolbarWidth\":true,\"responsiveWidthRule\":\"width: min(420px, calc(100% - 72px))\",\"closeButtonReservedSpacePx\":72,\"objectFit\":\"contain\",\"maxHeightPx\":158,\"altText\":\"FORGE SC Demo Creation Tool\"}"
+    },
+    {
+      "id": "close_button_remains_accessible",
+      "pass": true,
+      "evidence": "close button retained"
+    },
+    {
+      "id": "cutover_packet_names_correct_script",
+      "pass": true,
+      "evidence": "idb-drawer.user.js"
+    },
+    {
+      "id": "expected_visible_changes_match_w225_plus_larger_logo",
+      "pass": true,
+      "evidence": "[\"Header shows larger responsive FORGE image.\",\"Rail button says FORGE.\",\"FORGE rail label is not clipped.\",\"Old visible header text is gone.\",\"Close button remains available.\"]"
+    },
+    {
+      "id": "forge_rail_font_fit_correction_included",
+      "pass": true,
+      "evidence": "rail font locked at 10px"
+    },
+    {
+      "id": "quick_operator_confirmation_steps_compact_and_complete",
+      "pass": true,
+      "evidence": "Open a NetSuite page. | Confirm the FORGE rail button appears. | Confirm the FORGE rail label is not clipped. | Open the drawer. | Confirm the larger FORGE header logo appears. | Narrow the window and confirm the logo scales without overlapping the close button. | Confirm the close button works. | Confirm Copy operator summary is available in the Trace/import-status surface."
+    },
+    {
+      "id": "install_guidance_is_tampermonkey_only",
+      "pass": true,
+      "evidence": "{\"updateTampermonkeyDrawerScriptOnly\":true,\"noW144AdapterUpdate\":true,\"noRunnerUpdate\":true,\"noSuiteScriptDeploymentUpdate\":true,\"noImageLookupChange\":true}"
+    },
+    {
+      "id": "normal_cutover_note_hides_forbidden_internal_terms",
+      "pass": true,
+      "evidence": "Install idb-drawer.user.js in Tampermonkey.\nExpected change: FORGE appears on the rail button and in the drawer header.\nThe FORGE rail label should fit inside the circular launcher.\nThe header logo should scale without overlapping the close button.\nCopy operator summary remains available for operator status sharing.\nOperator summary copied.\nCopy failed. Use export from admin/debug.\nGenerated records and Open links continue to appear only after a valid completed import."
+    },
+    {
+      "id": "prior_w218_to_w225_contracts_remain_unchanged",
+      "pass": true,
+      "evidence": "W218/W220/W222/W223/W224/W225 contracts preserved"
+    },
+    {
+      "id": "w214_to_w225_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"w151ImportGuardPreserved\":true,\"semanticRoleMappingPreserved\":true,\"modeAwareNamingGuardrailsPreserved\":true,\"dynamicRecordDisplayPreserved\":true,\"consultantPartialResultLanguagePreserved\":true,\"operatorReadableSmokePacketPreserved\":true,\"frozenReviewRunWordingPreserved\":true,\"importFailureRecoveryCopyPreserved\":true,\"recoveryUiSurfaceWiringPreserved\":true,\"endToEndOperatorPacketPreserved\":true,\"exportableOperatorSummaryPreserved\":true,\"consultantCopyExportActionPreserved\":true,\"forgeBrandingPreserved\":true,\"targetedLiveHeaderSmokePreserved\":true,\"forgeRailFontFitCorrectionPreserved\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true,\"nllmAdvisoryOnly\":true}"
+    }
+  ],
+  "cutover": {
+    "schema": "idb.w226-forge-header-install-cutover-packet.v1",
+    "status": "forge_install_cutover_packet_ready",
+    "scriptToInstallOrUpdate": "idb-drawer.user.js",
+    "expectedVisibleChanges": [
+      "Header shows larger responsive FORGE image.",
+      "Rail button says FORGE.",
+      "FORGE rail label is not clipped.",
+      "Old visible header text is gone.",
+      "Close button remains available."
+    ],
+    "quickOperatorConfirmationSteps": [
+      "Open a NetSuite page.",
+      "Confirm the FORGE rail button appears.",
+      "Confirm the FORGE rail label is not clipped.",
+      "Open the drawer.",
+      "Confirm the larger FORGE header logo appears.",
+      "Narrow the window and confirm the logo scales without overlapping the close button.",
+      "Confirm the close button works.",
+      "Confirm Copy operator summary is available in the Trace/import-status surface."
+    ],
+    "normalCopyExpectations": [
+      "Operator summary copied.",
+      "Copy failed. Use export from admin/debug."
+    ],
+    "adminDebugExpectations": [
+      "Diagnostics appendix toggle hidden in normal mode.",
+      "Diagnostics appendix toggle visible only in admin/debug mode.",
+      "Diagnostics appendix default off."
+    ],
+    "installGuidance": {
+      "updateTampermonkeyDrawerScriptOnly": true,
+      "noW144AdapterUpdate": true,
+      "noRunnerUpdate": true,
+      "noSuiteScriptDeploymentUpdate": true,
+      "noImageLookupChange": true
+    },
+    "responsiveLogoPolish": {
+      "largerThanW224WidthPx": 420,
+      "previousW224WidthPx": 286,
+      "usesMoreToolbarWidth": true,
+      "responsiveWidthRule": "width: min(420px, calc(100% - 72px))",
+      "closeButtonReservedSpacePx": 72,
+      "objectFit": "contain",
+      "maxHeightPx": 158,
+      "altText": "FORGE SC Demo Creation Tool"
+    },
+    "smokeSummary": {
+      "railText": "FORGE",
+      "headerUsesForgeLogo": true,
+      "oldHeaderBrandingAbsent": true,
+      "closeButtonAccessible": true,
+      "copyOperatorSummaryPresent": true
+    },
+    "normalCutoverNote": "Install idb-drawer.user.js in Tampermonkey.\nExpected change: FORGE appears on the rail button and in the drawer header.\nThe FORGE rail label should fit inside the circular launcher.\nThe header logo should scale without overlapping the close button.\nCopy operator summary remains available for operator status sharing.\nOperator summary copied.\nCopy failed. Use export from admin/debug.\nGenerated records and Open links continue to appear only after a valid completed import.",
+    "normalCutoverNoteHidesForbiddenTerms": true,
+    "noRegressionBoundarySummary": {
+      "w151ImportGuardPreserved": true,
+      "semanticRoleMappingPreserved": true,
+      "modeAwareNamingGuardrailsPreserved": true,
+      "dynamicRecordDisplayPreserved": true,
+      "consultantPartialResultLanguagePreserved": true,
+      "operatorReadableSmokePacketPreserved": true,
+      "frozenReviewRunWordingPreserved": true,
+      "importFailureRecoveryCopyPreserved": true,
+      "recoveryUiSurfaceWiringPreserved": true,
+      "endToEndOperatorPacketPreserved": true,
+      "exportableOperatorSummaryPreserved": true,
+      "consultantCopyExportActionPreserved": true,
+      "forgeBrandingPreserved": true,
+      "targetedLiveHeaderSmokePreserved": true,
+      "forgeRailFontFitCorrectionPreserved": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerTransactionWrites": true,
+      "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+      "runnerOwnsGeneratedRecords": true,
+      "imageLookupDisabledByDefault": true,
+      "nllmAdvisoryOnly": true
+    },
+    "visualTestingDecision": "No broad visual testing for W226; responsive header polish and install cutover are covered by targeted harness assertions."
+  }
+}

@@ -1,0 +1,283 @@
+{
+  "schema": "idb.w129-sandbox-preview-operator-smoke.v1",
+  "status": "sandbox_preview_operator_smoke_ready",
+  "generatedAt": "2026-05-15T22:00:00.000Z",
+  "visualNetSuiteTestingRequiredNow": false,
+  "objective": "Execute the W128 governed preview/run smoke as an operator-only sandbox preview path using the confirmed handoff and W128 parameter shape.",
+  "sourceContract": {
+    "block": "W128",
+    "schema": "idb.w128-governed-build-invocation-contract.v1",
+    "requiredStatus": "governed_build_invocation_contract_ready",
+    "previewParamSchema": "idb.internal-build-engine.preview-run-params.v1",
+    "resultSchema": "idb.internal-build-engine.result.v1"
+  },
+  "operatorOnlySmoke": {
+    "mode": "sandbox_preview_no_submit",
+    "executor": "operator_internal_build_engine_preview",
+    "drawerWritesEnabled": false,
+    "drawerSuiteScriptInvocationEnabled": false,
+    "drawerTransactionWritesEnabled": false,
+    "submitAllowed": false,
+    "operatorEvidenceRequired": true,
+    "confirmedHandoffRequired": true,
+    "stateParityRequired": true
+  },
+  "operatorEvidence": {
+    "operatorName": "W129 local smoke operator",
+    "reviewedAt": "2026-05-15T22:00:00.000Z",
+    "sourceHandoffId": "handoff-ariat-style-availability-001",
+    "handoffFilename": "idb-build-handoff-ariat-international.json",
+    "traceFilename": "idb-trace-ariat-international.json",
+    "previewParamsReviewed": true,
+    "resultComparedToHandoff": true,
+    "noSubmitObserved": true,
+    "noDrawerWriteObserved": true,
+    "notes": "Local harness smoke only. No browser, SuiteScript, queue, submit, or NetSuite write path was invoked."
+  },
+  "previewParameterComparison": {
+    "prospect": {
+      "handoff": "Ariat International",
+      "preview": "Ariat International",
+      "match": true
+    },
+    "website": {
+      "handoff": "https://www.ariat.com/",
+      "preview": "https://www.ariat.com/",
+      "match": true
+    },
+    "familyKey": {
+      "handoff": "apparelAccessories",
+      "preview": "apparelAccessories",
+      "match": true
+    },
+    "laneId": {
+      "handoff": "apparel_accessories",
+      "preview": "apparel_accessories",
+      "match": true
+    },
+    "scenario": {
+      "handoff": "Style-to-Availability Readiness",
+      "preview": "Style-to-Availability Readiness",
+      "match": true
+    },
+    "proofAnchor": {
+      "handoff": "Style / SKU Matrix",
+      "preview": "Style / SKU Matrix",
+      "match": true
+    },
+    "submitAllowed": {
+      "handoff": false,
+      "preview": false,
+      "match": true
+    },
+    "recordWritesAllowed": {
+      "handoff": false,
+      "preview": false,
+      "match": true
+    },
+    "transactionWritesAllowed": {
+      "handoff": false,
+      "preview": false,
+      "match": true
+    }
+  },
+  "internalBuildEnginePreviewResult": {
+    "schema": "idb.internal-build-engine.result.v1",
+    "status": "preview_complete",
+    "runId": "build-preview-ariat-2026-05-15-001",
+    "runMode": "sandbox_preview_no_submit",
+    "sourceHandoffId": "handoff-ariat-style-availability-001",
+    "prospect": "Ariat International",
+    "familyKey": "apparelAccessories",
+    "scenario": "Style-to-Availability Readiness",
+    "generated": {
+      "extId": "IDB-ARIAT-STYLE-READY-001",
+      "agenda": "Ariat seasonal style readiness proof",
+      "customer": {
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "preview-customer-123",
+        "url": "/app/common/entity/custjob.nl?id=preview-customer-123"
+      },
+      "salesOrder": {
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "preview-salesorder-456",
+        "url": "/app/accounting/transactions/salesord.nl?id=preview-salesorder-456"
+      },
+      "heroItem": {
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "preview-item-789",
+        "url": "/app/common/item/item.nl?id=preview-item-789"
+      },
+      "matrixItem": {
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "preview-matrix-790",
+        "url": "/app/common/item/item.nl?id=preview-matrix-790"
+      },
+      "componentItems": [
+        {
+          "name": "Ariat Brown Leather Upper Component",
+          "id": "preview-component-791",
+          "url": "/app/common/item/item.nl?id=preview-component-791"
+        }
+      ],
+      "planningRecords": [],
+      "csvSalesOrderArtifacts": []
+    },
+    "displayObjects": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "preview-customer-123",
+        "url": "/app/common/entity/custjob.nl?id=preview-customer-123",
+        "source": "internal_build_engine_preview"
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "preview-salesorder-456",
+        "url": "/app/accounting/transactions/salesord.nl?id=preview-salesorder-456",
+        "source": "internal_build_engine_preview"
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "preview-item-789",
+        "url": "/app/common/item/item.nl?id=preview-item-789",
+        "source": "internal_build_engine_preview"
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "preview-matrix-790",
+        "url": "/app/common/item/item.nl?id=preview-matrix-790",
+        "source": "internal_build_engine_preview"
+      }
+    ],
+    "warnings": [],
+    "errors": [],
+    "ownership": {
+      "generatedRecordsOwnedBy": "internal_build_engine",
+      "drawerCreatedRecords": false,
+      "drawerInvokedSuiteScript": false,
+      "drawerCreatedTransactions": false
+    },
+    "rollback": {
+      "submitOccurred": false,
+      "rollbackRequired": false,
+      "rollbackInstruction": "No submit occurred. Do not delete or alter NetSuite records from the drawer."
+    },
+    "importHandoff": {
+      "target": "drawer_final_generated_names_import",
+      "importAllowed": true,
+      "importMode": "result_json_only",
+      "provisionalNamesRemainNonFinalUntilImport": true
+    }
+  },
+  "finalGeneratedNamesJson": {
+    "schema": "idb.dcc-final-naming-result.v1",
+    "status": "dcc_final_names_imported",
+    "source": "internal_build_engine_preview_result_json",
+    "finalNamesImported": true,
+    "runStatus": "preview_complete",
+    "prospect": "Ariat International",
+    "familyKey": "apparelAccessories",
+    "scenario": "Style-to-Availability Readiness",
+    "generated": {
+      "extId": "IDB-ARIAT-STYLE-READY-001",
+      "agenda": "Ariat seasonal style readiness proof"
+    },
+    "displayObjects": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "preview-customer-123",
+        "url": "/app/common/entity/custjob.nl?id=preview-customer-123",
+        "source": "dcc_final"
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "preview-salesorder-456",
+        "url": "/app/accounting/transactions/salesord.nl?id=preview-salesorder-456",
+        "source": "dcc_final"
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "preview-item-789",
+        "url": "/app/common/item/item.nl?id=preview-item-789",
+        "source": "dcc_final"
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "preview-matrix-790",
+        "url": "/app/common/item/item.nl?id=preview-matrix-790",
+        "source": "dcc_final"
+      }
+    ],
+    "componentItems": [
+      {
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "preview-component-791",
+        "url": "/app/common/item/item.nl?id=preview-component-791",
+        "source": "dcc_final"
+      }
+    ],
+    "locationPlanningRecords": [],
+    "warnings": [],
+    "errors": [],
+    "recoverableBlockers": []
+  },
+  "handoffComparison": {
+    "prospectMatches": true,
+    "familyKeyMatches": true,
+    "scenarioMatches": true,
+    "stateAuthorityMatches": true,
+    "ownershipMatches": true,
+    "writeBoundariesMatch": true,
+    "readyForFinalNamesImport": true
+  },
+  "noSubmitRollbackProof": {
+    "submitOccurred": false,
+    "rollbackRequired": false,
+    "drawerRollbackAction": "clear_imported_final_names_only",
+    "netSuiteRecordRollbackAction": "none_from_drawer",
+    "operatorRejectedBehavior": "preserve handoff and trace, return to Build, import nothing",
+    "stateMismatchBehavior": "block preview/run and require re-confirmed handoff export"
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawerYet": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true,
+    "finalGeneratedNamesImportOnly": true,
+    "provisionalNamesCannotBeMarkedFinalByDrawer": true
+  },
+  "validatorGates": [
+    "w129_inherits_w128_contract",
+    "w129_preview_params_match_confirmed_handoff",
+    "w129_internal_build_engine_preview_result_ready",
+    "w129_final_generated_names_json_ready",
+    "w129_no_submit_rollback_proven",
+    "w129_no_drawer_writes",
+    "w129_no_suitescript_invocation_from_drawer",
+    "w129_no_transaction_writes_from_drawer",
+    "w129_state_authority_and_handoff_parity_preserved",
+    "w129_visual_testing_not_required"
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W130: Final Generated Names Navigation Integration",
+    "prompt": "Move through W130: Final Generated Names Navigation Integration. Use the W129 operator-only sandbox preview result JSON to import final generated names into the drawer navigation model and verify Build and Run use the imported customer, demo transaction, hero item, matrix/proof item, and component names/links. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback behavior, and internal build engine ownership of generated records. Output navigation integration contract, import smoke harness, trace samples, W130 report, whether visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

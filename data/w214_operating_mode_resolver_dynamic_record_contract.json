@@ -1,0 +1,309 @@
+{
+  "schema": "idb.w214-operating-mode-resolver-dynamic-record-contract-harness.v1",
+  "status": "pass",
+  "passCount": 14,
+  "total": 14,
+  "results": [
+    {
+      "id": "northstar_resolves_retail_or_dealer_non_mfg",
+      "pass": true,
+      "evidence": "retail_availability"
+    },
+    {
+      "id": "northstar_rejects_manufacturing_names",
+      "pass": true,
+      "evidence": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Northstar Trail Outfitters Finished Good, Matrix item / proof item: Northstar Trail Outfitters Assembly. Mode contract blocked: Hero item: finished good is not compatible with retail_availability., Matrix item / proof item: assembly is not compatible with retail_availability., Component item 1: component a is not compatible with retail_availability., Component item 1: Generic component naming is manufacturing vocabulary when Manufacturing=false.."
+    },
+    {
+      "id": "harbor_resolves_apparel_and_accepts_style_matrix",
+      "pass": true,
+      "evidence": "apparel_style_matrix; completed_runner_result_accepted"
+    },
+    {
+      "id": "metroline_resolves_distribution_or_dealer_and_rejects_assembly_language",
+      "pass": true,
+      "evidence": "distribution_replenishment; Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Metroline Parts Supply Finished Good, Matrix item / proof item: Metroline Parts Supply Controlled Assembly Execution. Mode contract blocked: Hero item: finished good is not compatible with distribution_replenishment., Matrix item / proof item: assembly is not compatible with distribution_replenishment., Matrix item / proof item: controlled assembly execution is not compatible with distribution_replenishment., Component item 1: frame welding is not compatible with distribution_replenishment.."
+    },
+    {
+      "id": "evergreen_resolves_discrete_and_marks_missing_manufacturing_records_partial",
+      "pass": true,
+      "evidence": "discrete_manufacturing; mode_record_contract_partial"
+    },
+    {
+      "id": "evergreen_rejects_apparel_style_only_names_when_manufacturing_selected",
+      "pass": true,
+      "evidence": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Mode contract blocked: Hero item: style sku is not compatible with discrete_manufacturing., Matrix item / proof item: omnichannel availability flow is not compatible with discrete_manufacturing., Manufacturing result: Manufacturing=true requires manufacturing-compatible returned records before import is treated as complete.."
+    },
+    {
+      "id": "canyon_resolves_wip_and_requires_wip_detail",
+      "pass": true,
+      "evidence": "wip_manufacturing; good=completed_runner_result_accepted; bad=mode_record_contract_partial"
+    },
+    {
+      "id": "mccormick_resolves_food_batch_and_rejects_apparel_fallback",
+      "pass": true,
+      "evidence": "food_batch_manufacturing; Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Mode contract blocked: Hero item: style sku is not compatible with food_batch_manufacturing., Matrix item / proof item: omnichannel availability flow is not compatible with food_batch_manufacturing., Component item 1: core style is not compatible with food_batch_manufacturing., WIP result: WIP=true requires a work order, routing, work center, WIP object, or explicit partial-result state.."
+    },
+    {
+      "id": "yerba_madre_resolves_food_batch_from_website_and_rejects_hardgoods_fallback",
+      "pass": true,
+      "evidence": "food_batch_manufacturing; Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Mode contract blocked: Hero item: style sku is not compatible with food_batch_manufacturing., Matrix item / proof item: omnichannel availability flow is not compatible with food_batch_manufacturing., WIP result: WIP=true requires a work order, routing, work center, WIP object, or explicit partial-result state.."
+    },
+    {
+      "id": "confirmed_build_request_contains_w214_contract_fields",
+      "pass": true,
+      "evidence": "{\"resolvedOperatingMode\":\"food_batch_manufacturing\",\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"finished_food_or_batch_item\",\"ingredient_or_component_item\"]}"
+    },
+    {
+      "id": "notes_shape_story_not_naming_authority",
+      "pass": true,
+      "evidence": "{\"websiteControlsIndustryCategoryAndProductNouns\":true,\"togglesControlOperatingModelVocabulary\":true,\"notesControlPainStoryRoiObjectionsOnly\":true,\"nllmAdvisoryOnly\":true,\"domain\":\"grainger.com\",\"evidence\":[\"known domain grainger.com -> distribution_replenishment\",\"known domain controls non-manufacturing operating mode\"]}"
+    },
+    {
+      "id": "nllm_remains_advisory_only",
+      "pass": true,
+      "evidence": "{\"oneClickBuildPreserved\":true,\"savedW144AdminConfigPreserved\":true,\"resultPollingPreserved\":true,\"w151ImportGuardPreserved\":true,\"noDrawerWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"noOpenLinksBeforeValidImport\":true,\"imageLookupDisabledByDefault\":true}"
+    },
+    {
+      "id": "normal_consultant_ui_remains_simple",
+      "pass": true,
+      "evidence": "consultantWorkflow hides W144 endpoint, runnerTaskId, raw JSON, W151 language, and admin diagnostics"
+    },
+    {
+      "id": "production_path_boundaries_preserved",
+      "pass": true,
+      "evidence": "one-click Build, W144 config, polling, W151, runner ownership, and image lookup boundary remain intact"
+    }
+  ],
+  "fixtures": {
+    "northstar": {
+      "customer": "Northstar Trail Outfitters",
+      "website": "https://www.rei.com",
+      "expectedMode": "retail_availability",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "hero_sku",
+        "availability_or_replenishment_flow"
+      ],
+      "optionalRecordRoles": [
+        "supporting_sku",
+        "location_or_channel_context"
+      ],
+      "invalidRecordRoles": [
+        "bom",
+        "assembly_structure",
+        "work_order",
+        "routing",
+        "wip_object"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "operating_mode_record_contract_passed",
+      "badGuardStatus": "toggle_vocabulary_guardrail_failed",
+      "adminDebugWarnings": []
+    },
+    "harbor": {
+      "customer": "Harbor & Ridge Apparel",
+      "website": "https://www.patagonia.com",
+      "expectedMode": "apparel_style_matrix",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "apparel_accessories"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "style_sku",
+        "style_matrix_or_availability_flow"
+      ],
+      "optionalRecordRoles": [
+        "supporting_style_or_color_sku"
+      ],
+      "invalidRecordRoles": [
+        "finished_good",
+        "assembly",
+        "bom",
+        "work_order",
+        "routing"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "operating_mode_record_contract_passed",
+      "badGuardStatus": "toggle_vocabulary_guardrail_failed",
+      "adminDebugWarnings": []
+    },
+    "metroline": {
+      "customer": "Metroline Parts Supply",
+      "website": "https://www.grainger.com",
+      "expectedMode": "distribution_replenishment",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "industrial_distribution"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "branch_or_product_sku",
+        "replenishment_or_availability_flow"
+      ],
+      "optionalRecordRoles": [
+        "supporting_sku",
+        "location_planning_context"
+      ],
+      "invalidRecordRoles": [
+        "finished_good",
+        "assembly",
+        "ingredient",
+        "batch",
+        "work_order",
+        "routing",
+        "wip"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "operating_mode_record_contract_passed",
+      "badGuardStatus": "toggle_vocabulary_guardrail_failed",
+      "adminDebugWarnings": []
+    },
+    "evergreen": {
+      "customer": "Evergreen Equipment Works",
+      "website": "https://www.ariens.com",
+      "expectedMode": "discrete_manufacturing",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": false,
+        "selectedLaneId": "industrial_equipment"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_or_assembly_item",
+        "component_item"
+      ],
+      "optionalRecordRoles": [
+        "bom_or_assembly_structure",
+        "production_planning_context"
+      ],
+      "invalidRecordRoles": [
+        "food_ingredient_batch_terms_without_food_mode"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "mode_record_contract_partial",
+      "badGuardStatus": "mode_record_contract_partial",
+      "adminDebugWarnings": [
+        "Manufacturing records missing or fallback naming returned."
+      ]
+    },
+    "canyon": {
+      "customer": "Canyon Ridge Components",
+      "website": "https://www.trekbikes.com",
+      "expectedMode": "wip_manufacturing",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_or_assembly_item",
+        "component_item"
+      ],
+      "optionalRecordRoles": [
+        "routing",
+        "work_center"
+      ],
+      "invalidRecordRoles": [],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "operating_mode_record_contract_passed",
+      "badGuardStatus": "mode_record_contract_partial",
+      "adminDebugWarnings": []
+    },
+    "mccormick": {
+      "customer": "McCormick",
+      "website": "https://www.mccormick.com",
+      "expectedMode": "food_batch_manufacturing",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true,
+        "selectedLaneId": "food_beverage"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_food_or_batch_item",
+        "ingredient_or_component_item"
+      ],
+      "optionalRecordRoles": [
+        "formula_or_batch_structure",
+        "lot_or_availability_context",
+        "work_order_or_wip_object"
+      ],
+      "invalidRecordRoles": [
+        "apparel_style_matrix_without_apparel_evidence"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "mode_record_contract_partial",
+      "badGuardStatus": "mode_record_contract_partial",
+      "adminDebugWarnings": [
+        "WIP detail not returned."
+      ]
+    },
+    "yerbaMadre": {
+      "customer": "Yerba Madre",
+      "website": "https://yerbamadre.com",
+      "expectedMode": "food_batch_manufacturing",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true,
+        "selectedLaneId": "food_beverage"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_food_or_batch_item",
+        "ingredient_or_component_item"
+      ],
+      "optionalRecordRoles": [
+        "formula_or_batch_structure",
+        "lot_or_availability_context",
+        "work_order_or_wip_object"
+      ],
+      "invalidRecordRoles": [
+        "apparel_style_matrix_without_apparel_evidence"
+      ],
+      "goodGuardStatus": "completed_runner_result_accepted",
+      "semanticStatus": "mode_record_contract_partial",
+      "badGuardStatus": "mode_record_contract_partial",
+      "adminDebugWarnings": [
+        "WIP detail not returned."
+      ]
+    }
+  }
+}

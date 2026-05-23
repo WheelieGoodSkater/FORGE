@@ -1,0 +1,164 @@
+{
+  "schema": "idb.w220-import-recovery-ui-surface-trace.v1",
+  "cases": [
+    {
+      "key": "blankImport",
+      "surfaceStatus": "import_recovery_surface_ready",
+      "visible": true,
+      "consultant": {
+        "headline": "Paste the completed build result.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "Paste the completed build result.",
+          "Use the latest completed runner result."
+        ],
+        "visibleRecords": [],
+        "noFakeOpenLinks": true
+      },
+      "adminDebugVisible": false,
+      "reviewContainsRecovery": true,
+      "buildContainsRecovery": true
+    },
+    {
+      "key": "parseError",
+      "surfaceStatus": "import_recovery_surface_ready",
+      "visible": true,
+      "consultant": {
+        "headline": "Paste the completed build result.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "Paste the completed build result.",
+          "Use the latest completed runner result."
+        ],
+        "visibleRecords": [],
+        "noFakeOpenLinks": true
+      },
+      "adminDebugVisible": false,
+      "reviewContainsRecovery": true,
+      "buildContainsRecovery": true
+    },
+    {
+      "key": "handoffJson",
+      "surfaceStatus": "import_recovery_surface_ready",
+      "visible": true,
+      "consultant": {
+        "headline": "Paste the completed build result.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "Paste the completed build result.",
+          "Use the latest completed runner result."
+        ],
+        "visibleRecords": [],
+        "noFakeOpenLinks": true
+      },
+      "adminDebugVisible": false,
+      "reviewContainsRecovery": true,
+      "buildContainsRecovery": true
+    },
+    {
+      "key": "invalidNames",
+      "surfaceStatus": "import_recovery_surface_ready",
+      "visible": true,
+      "consultant": {
+        "headline": "This result does not match the selected operating mode.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "This result does not match the selected operating mode.",
+          "Use the latest completed runner result."
+        ],
+        "visibleRecords": [],
+        "noFakeOpenLinks": true
+      },
+      "adminDebugVisible": false,
+      "reviewContainsRecovery": true,
+      "buildContainsRecovery": true
+    },
+    {
+      "key": "missingIds",
+      "surfaceStatus": "import_recovery_surface_ready",
+      "visible": true,
+      "consultant": {
+        "headline": "Ask the runner to return real NetSuite links.",
+        "nextAction": "Use available records only after import succeeds.",
+        "recoveryActions": [
+          "Ask the runner to return real NetSuite links.",
+          "Use available records only after import succeeds."
+        ],
+        "visibleRecords": [],
+        "noFakeOpenLinks": true
+      },
+      "adminDebugVisible": false,
+      "reviewContainsRecovery": true,
+      "buildContainsRecovery": true
+    },
+    {
+      "key": "unsupportedUrls",
+      "surfaceStatus": "import_recovery_surface_ready",
+      "visible": true,
+      "consultant": {
+        "headline": "Ask the runner to return real NetSuite links.",
+        "nextAction": "Use available records only after import succeeds.",
+        "recoveryActions": [
+          "Ask the runner to return real NetSuite links.",
+          "Use available records only after import succeeds."
+        ],
+        "visibleRecords": [],
+        "noFakeOpenLinks": true
+      },
+      "adminDebugVisible": false,
+      "reviewContainsRecovery": true,
+      "buildContainsRecovery": true
+    },
+    {
+      "key": "nonOpenable",
+      "surfaceStatus": "import_recovery_surface_ready",
+      "visible": true,
+      "consultant": {
+        "headline": "Ask the runner to return real NetSuite links.",
+        "nextAction": "Use available records only after import succeeds.",
+        "recoveryActions": [
+          "Ask the runner to return real NetSuite links.",
+          "Use available records only after import succeeds."
+        ],
+        "visibleRecords": [],
+        "noFakeOpenLinks": true
+      },
+      "adminDebugVisible": false,
+      "reviewContainsRecovery": true,
+      "buildContainsRecovery": true
+    },
+    {
+      "key": "adminInvalidNames",
+      "surfaceStatus": "import_recovery_surface_ready",
+      "visible": true,
+      "consultant": {
+        "headline": "This result does not match the selected operating mode.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "This result does not match the selected operating mode.",
+          "Use the latest completed runner result."
+        ],
+        "visibleRecords": [],
+        "noFakeOpenLinks": true
+      },
+      "adminDebugVisible": true,
+      "reviewContainsRecovery": true,
+      "buildContainsRecovery": true
+    },
+    {
+      "key": "successFoodPartial",
+      "surfaceStatus": "import_recovery_surface_not_needed",
+      "visible": false,
+      "consultant": {
+        "headline": "Paste the completed build result.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [],
+        "visibleRecords": [],
+        "noFakeOpenLinks": true
+      },
+      "adminDebugVisible": false,
+      "reviewContainsRecovery": false,
+      "buildContainsRecovery": false
+    }
+  ]
+}

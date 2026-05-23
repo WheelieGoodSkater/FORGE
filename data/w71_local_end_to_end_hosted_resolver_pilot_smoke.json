@@ -1,0 +1,108 @@
+{
+  "schema": "idb.w71-local-end-to-end-hosted-resolver-pilot-smoke.v1",
+  "status": "complete_local_e2e_pilot_smoke_ready",
+  "objective": "Run the local staging websiteResolverServiceV1 server and drawer hosted-toggle path together in an end-to-end pilot-shaped smoke.",
+  "readinessDecision": "local_e2e_hosted_resolver_smoke_pass_required_before_remote_hosting",
+  "roles": [
+    {
+      "name": "Resolver Service Architect",
+      "owns": "Local HTTP server startup, endpoint URL wiring, health/resolve request path, and cache-hit proof."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "Token header, origin header, no write fields, no SuiteScript invocation, and failure-state no-guess behavior."
+    },
+    {
+      "name": "Consultant UX Director",
+      "owns": "Plan/Review resolver status, failure-state display, hosted-only messaging, and rollback clarity."
+    },
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Recommended, blocked, thin, unavailable, timeout, and cache-hit evidence behavior."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "End-to-end harness, trace samples, validator gates, and no-regression proof."
+    }
+  ],
+  "localEndToEndShape": {
+    "server": "tools/website_resolver_staging_endpoint.js via createStagingResolverHttpServer",
+    "port": "ephemeral localhost port selected by harness",
+    "drawerEndpointToggle": "localStorage:idb.websiteResolver.endpoint.v1",
+    "drawerTokenToggle": "localStorage:idb.websiteResolver.token.v1",
+    "drawerFallbackToggle": "localStorage:idb.websiteResolver.localFallback.v1 = 0",
+    "requestPath": "/idb/website-resolver/v1/resolve",
+    "healthPath": "/health"
+  },
+  "pilotCases": [
+    {
+      "id": "recommended",
+      "website": "https://trek.example/",
+      "expected": "recommended Dealer Hardgoods / Bicycle SKU from website evidence"
+    },
+    {
+      "id": "blocked",
+      "website": "https://127.0.0.1/admin",
+      "expected": "insufficient evidence, blocked, no lane candidates"
+    },
+    {
+      "id": "thin",
+      "website": "https://thin.example/",
+      "expected": "insufficient evidence, thin, no lane candidates"
+    },
+    {
+      "id": "unavailable",
+      "website": "https://down.example/",
+      "expected": "insufficient evidence, unavailable, no lane candidates"
+    },
+    {
+      "id": "timeout",
+      "website": "https://slow.example/",
+      "expected": "insufficient evidence, timeout, no lane candidates"
+    },
+    {
+      "id": "cache_hit",
+      "website": "https://trek.example/",
+      "expected": "second identical eligible request returns cacheHit true"
+    },
+    {
+      "id": "rollback",
+      "website": "https://trek.example/",
+      "expected": "clearing endpoint/token/fallback toggles returns drawer to local_fallback_only"
+    }
+  ],
+  "traceCoverage": [
+    "localServerHealth",
+    "gmHttpRequests",
+    "recommendedSample",
+    "failureSamples",
+    "cacheHitSample",
+    "rollbackSample",
+    "websiteEvidenceV1",
+    "websiteResolverRuntime",
+    "websiteEvidenceUx",
+    "resolverAdapter",
+    "serverTraceOutcomes",
+    "noRegression"
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "outputs": {
+    "contract": "data/w71_local_end_to_end_hosted_resolver_pilot_smoke.json",
+    "harness": "tools/run_local_e2e_hosted_resolver_pilot_smoke_harness.js",
+    "trace": "trace_samples/w71_local_e2e_hosted_resolver_pilot_smoke_trace.json",
+    "report": "reports/w71_local_end_to_end_hosted_resolver_pilot_smoke.md"
+  },
+  "bestNextCodexPrompt": {
+    "block": "W72: Hosted Resolver Remote Deployment Readiness Gate",
+    "prompt": "Move through W72: Hosted Resolver Remote Deployment Readiness Gate. Convert the local end-to-end hosted resolver smoke into a remote staging deployment readiness gate: environment config, secret handling, CORS origin list, deployment target checklist, remote health smoke, remote auth/CORS smoke, approved live-site smoke through the hosted endpoint, cache/observability verification, rollback switch, and pilot go/no-go. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output remote deployment readiness plan, runnable gate harness or command pack, W72 report, validator gates, and best next Codex prompt."
+  }
+}

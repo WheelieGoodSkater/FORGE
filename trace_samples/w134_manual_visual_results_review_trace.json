@@ -1,0 +1,12 @@
+{
+  "schema": "idb.w134-manual-visual-results-review-trace.v1",
+  "decision": "PASS_DRAWER_LINK_AUTHORITY__REQUIRES_REAL_RECORD_EXISTENCE_PILOT",
+  "allVerifiedOpenable": true,
+  "allRealUrlShape": true,
+  "recordExistenceProven": false,
+  "linkCount": 5,
+  "next": {
+    "block": "W135: Internal Build Engine Real Record Existence Pilot",
+    "prompt": "Move through W135: Internal Build Engine Real Record Existence Pilot. Use the W134 manual visual evidence showing Open links route correctly but sample ids do not exist in NetSuite. Run an operator-only sandbox build-engine pilot that creates or resolves actual Customer, demo transaction, hero item, matrix/proof item, and component records, then returns their real internal ids and supported NetSuite record URLs in the final generated names JSON. Import that real result into the drawer and visually verify Build Results and Run show active Open links that open actual records, not the NetSuite “That record does not exist” notice. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership of generated records. Output real record existence evidence, imported result JSON, visual link screenshots, trace samples, W135 report, whether broader visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

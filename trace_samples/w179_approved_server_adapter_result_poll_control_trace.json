@@ -1,0 +1,218 @@
+{
+  "schema": "idb.w179-approved-server-adapter-result-poll-control-trace.v1",
+  "generatedAt": "2026-05-17T21:41:16.573Z",
+  "noTaskTrace": [
+    {
+      "event": "w179_poll_control_visibility",
+      "runnerTaskIdPresent": false,
+      "checkRunnerResultVisible": false,
+      "requestSent": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_request_gate",
+      "requestConstructed": false,
+      "prerequisiteFailures": [
+        "runnerTaskIdPresent"
+      ],
+      "approvedEndpointModeReady": true,
+      "idempotencyTokenPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_response_normalized",
+      "status": "false_flag_no_submit",
+      "resultCaptureStatus": "not_started_no_submit",
+      "completedResultAcceptedByW151": false,
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "missingPrereqTrace": [
+    {
+      "event": "w179_poll_control_visibility",
+      "runnerTaskIdPresent": true,
+      "checkRunnerResultVisible": true,
+      "requestSent": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_request_gate",
+      "requestConstructed": false,
+      "prerequisiteFailures": [
+        "serverFlagsReady",
+        "sandboxAllowlistReady",
+        "operatorApprovalReady",
+        "approvedEndpointModeReady"
+      ],
+      "approvedEndpointModeReady": false,
+      "idempotencyTokenPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_response_normalized",
+      "status": "queued_pending",
+      "resultCaptureStatus": "pending_prerequisites_missing",
+      "completedResultAcceptedByW151": false,
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "pendingTrace": [
+    {
+      "event": "w179_poll_control_visibility",
+      "runnerTaskIdPresent": true,
+      "checkRunnerResultVisible": true,
+      "requestSent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_request_gate",
+      "requestConstructed": true,
+      "prerequisiteFailures": [],
+      "approvedEndpointModeReady": true,
+      "idempotencyTokenPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_response_normalized",
+      "status": "polling_pending",
+      "resultCaptureStatus": "pending_runner_completion",
+      "completedResultAcceptedByW151": false,
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "completedTrace": [
+    {
+      "event": "w179_poll_control_visibility",
+      "runnerTaskIdPresent": true,
+      "checkRunnerResultVisible": true,
+      "requestSent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_request_gate",
+      "requestConstructed": true,
+      "prerequisiteFailures": [],
+      "approvedEndpointModeReady": true,
+      "idempotencyTokenPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_response_normalized",
+      "status": "completed_result_awaiting_w151_import",
+      "resultCaptureStatus": "completed",
+      "completedResultAcceptedByW151": true,
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "malformedCompletedTrace": [
+    {
+      "event": "w179_poll_control_visibility",
+      "runnerTaskIdPresent": true,
+      "checkRunnerResultVisible": true,
+      "requestSent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_request_gate",
+      "requestConstructed": true,
+      "prerequisiteFailures": [],
+      "approvedEndpointModeReady": true,
+      "idempotencyTokenPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_response_normalized",
+      "status": "completed_result_awaiting_w151_import",
+      "resultCaptureStatus": "completed",
+      "completedResultAcceptedByW151": false,
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "adapterErrorTrace": [
+    {
+      "event": "w179_poll_control_visibility",
+      "runnerTaskIdPresent": true,
+      "checkRunnerResultVisible": true,
+      "requestSent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_request_gate",
+      "requestConstructed": true,
+      "prerequisiteFailures": [],
+      "approvedEndpointModeReady": true,
+      "idempotencyTokenPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w179_poll_response_normalized",
+      "status": "adapter_transport_error_drawer_safe",
+      "resultCaptureStatus": "adapter_error",
+      "completedResultAcceptedByW151": false,
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "results": [
+    {
+      "name": "w179_no_task_hidden_no_request",
+      "pass": true,
+      "detail": "{\"currentStage\":\"no_server_adapter_call_made\",\"checkRunnerResultVisible\":false,\"checkRunnerResultEnabled\":false,\"visibleControls\":[],\"enabledControls\":[]}"
+    },
+    {
+      "name": "w179_missing_prerequisites_block_request",
+      "pass": true,
+      "detail": "[\"serverFlagsReady\",\"sandboxAllowlistReady\",\"operatorApprovalReady\",\"approvedEndpointModeReady\"]"
+    },
+    {
+      "name": "w179_pending_poll_normalized_no_mutation",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-approved-server-adapter-response-normalization.v1\",\"status\":\"polling_pending\",\"label\":\"Polling: result pending\",\"message\":\"Polling is still waiting for governed runner result capture.\",\"rawStatus\":\"poll_response_pending\",\"queueSubmitted\":true,\"runnerTaskId\":\"task_w179_operator_001\",\"resultCaptureStatus\":\"pending_runner_completion\",\"pollAttempted\":true,\"finalGeneratedNamesJsonReady\":false,\"finalGeneratedNamesJson\":null,\"importGuard\":\"W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.\",\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true}}"
+    },
+    {
+      "name": "w179_completed_poll_w151_ready_no_mutation",
+      "pass": true,
+      "detail": "{\"completedResultPresent\":true,\"completedResultAcceptedByW151\":true,\"completedResultStatus\":\"completed_runner_result_accepted\",\"importReady\":true,\"stateMutationAllowedInThisBlock\":false,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w179_malformed_completed_rejected_by_w151",
+      "pass": true,
+      "detail": "{\"completedResultPresent\":true,\"completedResultAcceptedByW151\":false,\"completedResultStatus\":\"completed_runner_result_required\",\"importReady\":false,\"stateMutationAllowedInThisBlock\":false,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w179_adapter_error_stops_safely",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-approved-server-adapter-response-normalization.v1\",\"status\":\"adapter_transport_error_drawer_safe\",\"label\":\"Adapter response error\",\"message\":\"The adapter response reported an error. The drawer keeps generated names and Open links unchanged.\",\"rawStatus\":\"adapter_error\",\"queueSubmitted\":false,\"runnerTaskId\":\"task_w179_operator_001\",\"resultCaptureStatus\":\"adapter_error\",\"pollAttempted\":true,\"finalGeneratedNamesJsonReady\":false,\"finalGeneratedNamesJson\":null,\"importGuard\":\"W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.\",\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true}}"
+    },
+    {
+      "name": "w179_render_uses_build_return_action_boundary",
+      "pass": true,
+      "detail": "idb-w178-poll-refresh-control\">\n          <div class=\"idb-status-key\">Build return controls</div>\n          <div class=\"idb-strong\">Runner Task Captured</div>\n          <div class=\"idb-copy\">Runner task id is captured. The drawer may now show a Check runner result control.</div>\n          <div class=\"idb-copy\">Build handoff JSON is a request package for the runner. It is not completed runner result JSON and cannot create Open links.</div>\n          <div class=\"idb-actions\">\n            \n              <button class=\"idb-secondary\" data-idb-build-return-action=\"check_runner_result\" >Check runner result</button>\n            \n          </div>\n          <div class=\"idb-chip-row\">\n            <span class=\"idb-mini-chip\">Runner task captured</span>\n            <span class=\"idb-mini-chip\">No W151-valid result</span>\n            <span class=\"idb-mini-chip\">Visual testing blocked</span>\n          "
+    },
+    {
+      "name": "w179_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w179_poll_control_visibility\",\"runnerTaskIdPresent\":true,\"checkRunnerResultVisible\":true,\"requestSent\":true,\"activeOpenLinks\":0},{\"event\":\"w179_poll_request_gate\",\"requestConstructed\":true,\"prerequisiteFailures\":[],\"approvedEndpointModeReady\":true,\"idempotencyTokenPresent\":true,\"activeOpenLinks\":0},{\"event\":\"w179_poll_response_normalized\",\"status\":\"completed_result_awaiting_w151_import\",\"resultCaptureStatus\":\"completed\",\"completedResultAcceptedByW151\":true,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0}]"
+    },
+    {
+      "name": "w179_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlockedUntilCompletedResultImported": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W179 only polls result capture. A completed response is import-ready only after W151 and still does not expose Open links until import commit."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W180: Completed Poll Result Import CTA Wiring And Operator Retest Packet",
+    "prompt": "Move through W180: Completed Poll Result Import CTA Wiring And Operator Retest Packet. Use the W179 approved server adapter result poll control to connect completed poll responses to the W151 guarded import CTA without mutating final generated names until the completed runner result is imported. Keep pending, adapter-error, and malformed completed responses non-mutating, keep Open links hidden before import, and do not request visual testing until imported URLs exist. Output import CTA wiring contract, guarded harness, operator retest packet, trace samples, W180 report, visual testing decision blocked until import, and best next Codex prompt."
+  }
+}

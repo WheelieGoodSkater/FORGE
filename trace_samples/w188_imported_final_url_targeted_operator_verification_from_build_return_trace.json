@@ -1,0 +1,170 @@
+{
+  "schema": "idb.w188-imported-final-url-targeted-operator-verification-from-build-return-trace.v1",
+  "readyTrace": [
+    {
+      "event": "w188_w187_import_commit_verified",
+      "commitAllowed": true,
+      "w151CompletedResultAccepted": true,
+      "finalNamesImported": true
+    },
+    {
+      "event": "w188_targeted_open_link_packet_ready",
+      "packetReady": true,
+      "roles": [
+        "customer",
+        "sales_order",
+        "hero_item",
+        "matrix_or_proof_item",
+        "component_item"
+      ],
+      "allNumericIds": true,
+      "allSupportedUrls": true,
+      "allOpenable": true
+    },
+    {
+      "event": "w188_visual_scope_decision",
+      "targetedOnly": true,
+      "broaderVisualTestingBlocked": true,
+      "drawerCreatesRecords": false,
+      "drawerInvokesSuiteScriptOutsideApprovedPath": false
+    }
+  ],
+  "blockedTrace": [
+    {
+      "event": "w188_w187_import_commit_verified",
+      "commitAllowed": false,
+      "w151CompletedResultAccepted": false,
+      "finalNamesImported": false
+    },
+    {
+      "event": "w188_targeted_open_link_packet_ready",
+      "packetReady": false,
+      "roles": [
+        "customer",
+        "sales_order",
+        "hero_item",
+        "matrix_or_proof_item",
+        "component_item"
+      ],
+      "allNumericIds": false,
+      "allSupportedUrls": false,
+      "allOpenable": false
+    },
+    {
+      "event": "w188_visual_scope_decision",
+      "targetedOnly": true,
+      "broaderVisualTestingBlocked": true,
+      "drawerCreatesRecords": false,
+      "drawerInvokesSuiteScriptOutsideApprovedPath": false
+    }
+  ],
+  "targetedRecords": [
+    {
+      "role": "customer",
+      "label": "Customer",
+      "name": "Ariat International Outdoor Retail Account",
+      "internalId": "501234",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234",
+      "expectedPath": "/app/common/entity/custjob.nl",
+      "openable": true,
+      "numericId": true,
+      "supportedUrl": true,
+      "readyForOperatorClick": true
+    },
+    {
+      "role": "sales_order",
+      "label": "Demo transaction",
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "internalId": "601234",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234",
+      "expectedPath": "/app/accounting/transactions/salesord.nl",
+      "openable": true,
+      "numericId": true,
+      "supportedUrl": true,
+      "readyForOperatorClick": true
+    },
+    {
+      "role": "hero_item",
+      "label": "Hero item",
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "internalId": "701234",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234",
+      "expectedPath": "/app/common/item/item.nl",
+      "openable": true,
+      "numericId": true,
+      "supportedUrl": true,
+      "readyForOperatorClick": true
+    },
+    {
+      "role": "matrix_or_proof_item",
+      "label": "Matrix/proof item",
+      "name": "Ariat Core Boot Size Color Matrix",
+      "internalId": "701235",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235",
+      "expectedPath": "/app/common/item/item.nl",
+      "openable": true,
+      "numericId": true,
+      "supportedUrl": true,
+      "readyForOperatorClick": true
+    },
+    {
+      "role": "component_item",
+      "label": "Component item",
+      "name": "Ariat Brown Leather Upper Component",
+      "internalId": "701236",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236",
+      "expectedPath": "/app/common/item/item.nl",
+      "openable": true,
+      "numericId": true,
+      "supportedUrl": true,
+      "readyForOperatorClick": true
+    }
+  ],
+  "results": [
+    {
+      "name": "w188_packet_ready_after_w187_commit",
+      "pass": true,
+      "detail": "imported_final_url_targeted_operator_verification_packet_ready"
+    },
+    {
+      "name": "w188_requires_w151_valid_imported_urls",
+      "pass": true,
+      "detail": "{\"fromW187ImportCommit\":true,\"commitAllowed\":true,\"w151CompletedResultAccepted\":true,\"finalNamesImported\":true}"
+    },
+    {
+      "name": "w188_covers_five_targeted_records",
+      "pass": true,
+      "detail": "[\"customer\",\"sales_order\",\"hero_item\",\"matrix_or_proof_item\",\"component_item\"]"
+    },
+    {
+      "name": "w188_exact_operator_steps_ready",
+      "pass": true,
+      "detail": "[{\"step\":1,\"action\":\"Open IDB Build after the completed runner result import.\",\"passCriteria\":[\"Build shows final generated names imported\",\"The final generated NetSuite records card shows Customer, demo transaction, hero item, matrix/proof item, and component item\",\"Each row shows Open, not Link pending\"],\"screenshotRequired\":true},{\"step\":2,\"role\":\"customer\",\"action\":\"Click Customer Open.\",\"expectedName\":\"Ariat International Outdoor Retail Account\",\"expectedInternalId\":\"501234\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234\",\"passCriteria\":[\"URL path includes /app/common/entity/custjob.nl\",\"URL id equals 501234\",\"The page is an actual NetSuite record page for Ariat International Outdoor Retail Account\",\"The page is not Notice, Error, Invalid number, or record-does-not-exist\"],\"screenshotRequired\":true},{\"step\":3,\"role\":\"sales_order\",\"action\":\"Click Demo transaction Open.\",\"expectedName\":\"Ariat Seasonal Footwear Availability Demo Order\",\"expectedInternalId\":\"601234\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234\",\"passCriteria\":[\"URL path includes /app/accounting/transactions/salesord.nl\",\"URL id equals 601234\",\"The page is an actual NetSuite record page for Ariat Seasonal Footwear Availability Demo Order\",\"The page is not Notice, Error, Invalid number, or record-does-not-exist\"],\"screenshotRequired\":true},{\"step\":4,\"role\":\"hero_item\",\"action\":\"Click Hero item Open.\",\"expectedName\":\"Ariat Terrain H2O Work Boot Hero Item\",\"expectedInternalId\":\"701234\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234\",\"passCriteria\":[\"URL path includes /app/common/item/item.nl\",\"URL id equals 701234\",\"The page is an actual NetSuite record page for Ariat Terrain H2O Work Boot Hero Item\",\"The page is not Notice, Error, Invalid number, or record-does-not-exist\"],\"screenshotRequired\":true},{\"step\":5,\"role\":\"matrix_or_proof_item\",\"action\":\"Click Matrix/proof item Open.\",\"expectedName\":\"Ariat Core Boot Size Color Matrix\",\"expectedInternalId\":\"701235\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235\",\"passCriteria\":[\"URL path includes /app/common/item/item.nl\",\"URL id equals 701235\",\"The page is an actual NetSuite record page for Ariat Core Boot Size Color Matrix\",\"The page is not Notice, Error, Invalid number, or record-does-not-exist\"],\"screenshotRequired\":true},{\"step\":6,\"role\":\"component_item\",\"action\":\"Click Component item Open.\",\"expectedName\":\"Ariat Brown Leather Upper Component\",\"expectedInternalId\":\"701236\",\"expectedUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236\",\"passCriteria\":[\"URL path includes /app/common/item/item.nl\",\"URL id equals 701236\",\"The page is an actual NetSuite record page for Ariat Brown Leather Upper Component\",\"The page is not Notice, Error, Invalid number, or record-does-not-exist\"],\"screenshotRequired\":true}]"
+    },
+    {
+      "name": "w188_screenshot_packet_ready",
+      "pass": true,
+      "detail": "[{\"label\":\"IDB Build imported records card\",\"mustShow\":[\"Build tab\",\"Final generated names imported\",\"All five imported records\",\"Open visible for each record\"]},{\"role\":\"customer\",\"label\":\"Customer record landing page\",\"filenameHint\":\"w188-customer-501234.png\",\"mustShow\":[\"NetSuite URL bar\",\"URL id 501234\",\"Ariat International Outdoor Retail Account\",\"No Notice or Error page\"]},{\"role\":\"sales_order\",\"label\":\"Demo transaction record landing page\",\"filenameHint\":\"w188-sales_order-601234.png\",\"mustShow\":[\"NetSuite URL bar\",\"URL id 601234\",\"Ariat Seasonal Footwear Availability Demo Order\",\"No Notice or Error page\"]},{\"role\":\"hero_item\",\"label\":\"Hero item record landing page\",\"filenameHint\":\"w188-hero_item-701234.png\",\"mustShow\":[\"NetSuite URL bar\",\"URL id 701234\",\"Ariat Terrain H2O Work Boot Hero Item\",\"No Notice or Error page\"]},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix/proof item record landing page\",\"filenameHint\":\"w188-matrix_or_proof_item-701235.png\",\"mustShow\":[\"NetSuite URL bar\",\"URL id 701235\",\"Ariat Core Boot Size Color Matrix\",\"No Notice or Error page\"]},{\"role\":\"component_item\",\"label\":\"Component item record landing page\",\"filenameHint\":\"w188-component_item-701236.png\",\"mustShow\":[\"NetSuite URL bar\",\"URL id 701236\",\"Ariat Brown Leather Upper Component\",\"No Notice or Error page\"]},{\"label\":\"IDB Run imported navigation pivots\",\"optional\":true,\"mustShow\":[\"Run tab\",\"Imported final names used in the script or navigation pivots\"]}]"
+    },
+    {
+      "name": "w188_fail_criteria_ready",
+      "pass": true,
+      "detail": "[\"Any Open link is missing or still says Link pending\",\"Any URL contains a placeholder token or nonnumeric id\",\"Any landed page is Notice, Error, Invalid number, or record-does-not-exist\",\"Any URL path does not match the expected NetSuite record type\",\"Any URL id differs from the imported numeric internal id\",\"Any drawer action attempts to create records, create transactions, or invoke SuiteScript outside the approved server adapter path\"]"
+    },
+    {
+      "name": "w188_blocked_without_w187_import",
+      "pass": true,
+      "detail": "{\"fromW187ImportCommit\":true,\"commitAllowed\":false,\"w151CompletedResultAccepted\":false,\"finalNamesImported\":false}"
+    },
+    {
+      "name": "w188_broader_visual_blocked_targeted_only",
+      "pass": true,
+      "detail": "{\"targetedOpenLinkVerificationRequired\":true,\"targetedOnly\":true,\"broaderVisualNetSuiteTestingRequired\":false,\"decision\":\"targeted_only_operator_verification_ready\",\"reason\":\"W187 imported W151-valid real URLs. Verify only the five Open links land on actual NetSuite records.\"}"
+    },
+    {
+      "name": "w188_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

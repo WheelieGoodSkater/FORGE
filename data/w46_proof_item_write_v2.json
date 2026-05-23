@@ -1,0 +1,80 @@
+{
+  "schema": "idb.w46-proof-item-write-v2.v1",
+  "status": "complete_proof_item_write_v2_ready",
+  "objective": "Combine account context, vendor attach, and planning control into a stronger Proof Item writer without expanding transaction writes.",
+  "goal": "Return one governed Proof Item V2 contract that tells the drawer and tester whether the proof item is demo-usable, what governed fields were considered, what parent Customer result was used, and what is still blocked.",
+  "roles": [
+    {
+      "name": "SuiteScript Write Agent",
+      "responsibility": "Own the W24 pilot Suitelet response contract and keep Customer first, Proof Item second."
+    },
+    {
+      "name": "Item Setup Agent",
+      "responsibility": "Consolidate identity, account, procurement, planning, and trace field groups for the proof item."
+    },
+    {
+      "name": "Validation And Evidence Agent",
+      "responsibility": "Prove the contract in harness and validator without allowing transaction writes."
+    }
+  ],
+  "proofItemWriteV2": {
+    "responseKey": "proofItemWriteV2",
+    "schema": "idb.proof-item-write-v2.v1",
+    "statuses": [
+      "proof_item_v2_ready",
+      "ready_for_proof_item_write",
+      "blocked_missing_proof_record",
+      "blocked_missing_account_context",
+      "blocked_missing_vendor_context",
+      "blocked_ambiguous_vendor_context",
+      "blocked_missing_customer_result",
+      "blocked_create_disabled"
+    ],
+    "readinessGates": [
+      "customer_result",
+      "account_context",
+      "vendor_context",
+      "planning_context",
+      "transaction_context"
+    ],
+    "governedFieldGroups": [
+      "identity",
+      "account",
+      "procurement",
+      "planning",
+      "trace"
+    ],
+    "writeBehavior": "lookup_then_update_or_create_demo_usable_proof_item",
+    "resultContract": [
+      "recordId",
+      "url",
+      "operation",
+      "lookupStatus",
+      "parentCustomerRecordId",
+      "rollbackLabel",
+      "recoverableErrors",
+      "vendorContextStatus",
+      "planningPolicy"
+    ]
+  },
+  "includedInResponses": [
+    "create_disabled",
+    "runtime_toggle_blocked",
+    "account_context_blocked",
+    "vendor_context_blocked",
+    "created_or_partial_failed"
+  ],
+  "noRegression": {
+    "mainSuiteletCreateEnabled": false,
+    "customerFirst": true,
+    "proofItemRequiresCustomerResult": true,
+    "transactionWriteEnabled": false,
+    "noAutomaticCreationFromDrawer": true,
+    "noSilentVendorCreation": true,
+    "noHiddenPlanningChanges": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "llmAdvisoryOnly": true
+  },
+  "nextBlock": "W47: Drawer Write Result UX V2"
+}

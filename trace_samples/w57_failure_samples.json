@@ -1,0 +1,160 @@
+{
+  "schema": "idb.w57-failure-samples.v1",
+  "resolverVersion": "w57.website-evidence-live-adapter.v1",
+  "generated": "2026-05-12T15:08:00.000Z",
+  "samples": [
+    {
+      "id": "ambiguous_apparel_service_distribution",
+      "inputUrl": "https://trailthread.example",
+      "normalizedUrl": "https://trailthread.example/",
+      "fetchStatus": "fetched",
+      "failureState": "ambiguous",
+      "confidence": {
+        "state": "needs_confirmation",
+        "score": 0.95,
+        "requiresConfirmation": true
+      },
+      "fetchErrors": [
+        {
+          "type": "dns_or_network_error",
+          "message": "No sample page registered."
+        },
+        {
+          "type": "dns_or_network_error",
+          "message": "No sample page registered."
+        },
+        {
+          "type": "dns_or_network_error",
+          "message": "No sample page registered."
+        }
+      ],
+      "laneCandidates": [
+        {
+          "laneId": "apparel_accessories",
+          "score": 0.95,
+          "evidence": [
+            "apparel",
+            "accessories",
+            "footwear",
+            "sizes",
+            "style"
+          ]
+        },
+        {
+          "laneId": "industrial_distribution",
+          "score": 0.71,
+          "evidence": [
+            "distribution",
+            "wholesale",
+            "replenishment"
+          ]
+        },
+        {
+          "laneId": "dealer_hardgoods",
+          "score": 0.59,
+          "evidence": [
+            "equipment",
+            "dealer",
+            "Dealers"
+          ]
+        }
+      ],
+      "writeAuthority": "none"
+    },
+    {
+      "id": "thin_site",
+      "inputUrl": "https://thin.example",
+      "normalizedUrl": "https://thin.example/",
+      "fetchStatus": "fetched",
+      "failureState": "thin",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0.12,
+        "requiresConfirmation": true
+      },
+      "fetchErrors": [],
+      "laneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "id": "blocked_site",
+      "inputUrl": "https://blocked.example",
+      "normalizedUrl": "https://blocked.example/",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "fetchErrors": [
+        {
+          "type": "access_blocked",
+          "message": "HTTP 403 prevented readable HTML."
+        }
+      ],
+      "laneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "id": "unavailable_site",
+      "inputUrl": "https://unavailable.example",
+      "normalizedUrl": "https://unavailable.example/",
+      "fetchStatus": "unavailable",
+      "failureState": "unavailable",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "fetchErrors": [
+        {
+          "type": "dns_or_network_error",
+          "message": "Resolver could not reach host."
+        }
+      ],
+      "laneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "id": "timeout_site",
+      "inputUrl": "https://timeout.example",
+      "normalizedUrl": "https://timeout.example/",
+      "fetchStatus": "timeout",
+      "failureState": "timeout",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "fetchErrors": [
+        {
+          "type": "timeout",
+          "message": "Fetch timed out."
+        }
+      ],
+      "laneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "id": "invalid_scheme",
+      "inputUrl": "file:///etc/passwd",
+      "normalizedUrl": "",
+      "fetchStatus": "unavailable",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "fetchErrors": [
+        {
+          "type": "unsupported_scheme",
+          "message": "file: URLs are not allowed."
+        }
+      ],
+      "laneCandidates": [],
+      "writeAuthority": "none"
+    }
+  ]
+}

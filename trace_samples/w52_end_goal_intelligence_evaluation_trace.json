@@ -1,0 +1,143 @@
+{
+  "schema": "idb.w52-end-goal-intelligence-evaluation-trace.v1",
+  "generated": "2026-05-17T21:41:19.039Z",
+  "decision": "PASS",
+  "corpusSchema": "idb.w52-unknown-site-corpus-contract.v1",
+  "classifierTraceSchema": "idb.website-classifier-v1-trace-sample.v1",
+  "thresholds": {
+    "correctOrHonestPassRateMinimum": 0.8,
+    "falseConfidentWrongRateMaximum": 0.05,
+    "unsupportedClaimsMaximum": 0,
+    "traceEvidenceCoverageMinimum": 0.95,
+    "confidenceStates": [
+      "recommended",
+      "needs_confirmation",
+      "insufficient_evidence"
+    ],
+    "correctOrHonestDefinition": [
+      "recommended with matching human-labeled lane and supported citations",
+      "needs_confirmation when human label allows multiple plausible lanes or marks ambiguous",
+      "insufficient_evidence when human label expects blocked thin unavailable or timeout behavior"
+    ],
+    "falseConfidentWrongDefinition": "classificationState is recommended and laneRecommendation does not match the human-labeled expected lane or accepted alternates",
+    "unsupportedClaimDefinition": "recommended lane/proof/product/demand output without a source URL citation or without allowed insufficient/confirmation state"
+  },
+  "metrics": {
+    "totalCases": 6,
+    "correctOrHonestCount": 6,
+    "correctOrHonestPassRate": 1,
+    "falseConfidentWrongCount": 0,
+    "falseConfidentWrongRate": 0,
+    "unsupportedClaimCount": 0,
+    "traceEvidenceCoverageScore": 1
+  },
+  "requiredSiteMix": [
+    "real_product_brand",
+    "synthetic_ambiguous_multi_category",
+    "synthetic_weak_thin_website",
+    "synthetic_blocked",
+    "synthetic_unavailable",
+    "synthetic_timeout"
+  ],
+  "mixCovered": true,
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "evaluationMustPreferHonestUncertaintyOverGuessing": true
+  },
+  "findings": [
+    {
+      "id": "w52_real_product_brand_trek",
+      "sourceTraceCase": "w51_recommended_trek",
+      "siteKind": "real_product_brand",
+      "expectedClassificationState": "recommended",
+      "actualClassificationState": "recommended",
+      "expectedLaneId": "dealer_hardgoods",
+      "actualLaneId": "dealer_hardgoods",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaims": [],
+      "evidenceCovered": true,
+      "status": "PASS",
+      "notes": []
+    },
+    {
+      "id": "w52_synthetic_ambiguous_industrial_apparel",
+      "sourceTraceCase": "w51_ambiguous_industrial_apparel",
+      "siteKind": "synthetic_ambiguous_multi_category",
+      "expectedClassificationState": "needs_confirmation",
+      "actualClassificationState": "needs_confirmation",
+      "expectedLaneId": "apparel_accessories",
+      "actualLaneId": "apparel_accessories",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaims": [],
+      "evidenceCovered": true,
+      "status": "PASS",
+      "notes": []
+    },
+    {
+      "id": "w52_synthetic_blocked_site",
+      "sourceTraceCase": "w51_blocked_site",
+      "siteKind": "synthetic_blocked",
+      "expectedClassificationState": "insufficient_evidence",
+      "actualClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "actualLaneId": "",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaims": [],
+      "evidenceCovered": true,
+      "status": "PASS",
+      "notes": []
+    },
+    {
+      "id": "w52_synthetic_thin_site",
+      "sourceTraceCase": "w51_thin_site",
+      "siteKind": "synthetic_weak_thin_website",
+      "expectedClassificationState": "insufficient_evidence",
+      "actualClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "actualLaneId": "",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaims": [],
+      "evidenceCovered": true,
+      "status": "PASS",
+      "notes": []
+    },
+    {
+      "id": "w52_synthetic_unavailable_site",
+      "sourceTraceCase": "w51_unavailable_site",
+      "siteKind": "synthetic_unavailable",
+      "expectedClassificationState": "insufficient_evidence",
+      "actualClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "actualLaneId": "",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaims": [],
+      "evidenceCovered": true,
+      "status": "PASS",
+      "notes": []
+    },
+    {
+      "id": "w52_synthetic_timeout_site",
+      "sourceTraceCase": "w51_timeout_site",
+      "siteKind": "synthetic_timeout",
+      "expectedClassificationState": "insufficient_evidence",
+      "actualClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "actualLaneId": "",
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaims": [],
+      "evidenceCovered": true,
+      "status": "PASS",
+      "notes": []
+    }
+  ]
+}

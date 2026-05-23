@@ -1,0 +1,177 @@
+{
+  "schema": "idb.w99-one-run-pilot-retest-packet-after-compression.v1",
+  "status": "one_run_retest_packet_ready_user_feedback_required",
+  "objective": "Use W96, W97, and W98 to run one hands-on consultant-to-operator retest focused on compressed live readability, DCC handoff clarity, trace evidence, and no-write safety.",
+  "whyUserTestingIsRequiredNow": [
+    "W96 compressed ROI / Competitive into one live value answer, one NetSuite answer, and one caution; only the live NetSuite drawer can confirm it reads in under 30 seconds.",
+    "W97 moved Run controls into selector chips; only a live click-through confirms the script changes quickly enough for a consultant.",
+    "W98 collapses intake after the request is ready; only a hands-on run confirms the consultant sees the right summary and next action.",
+    "The DCC handoff remains the primary execution artifact and must be exported and compared manually before broader pilot unlock."
+  ],
+  "fileToUpload": {
+    "label": "Tampermonkey userscript",
+    "absolutePath": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+    "sha256": "b42aa7db892d4c6ba56ebb491f6e4b4f6568b5762d3d292ca5647c50a0e50210",
+    "modifiedAt": "2026-05-14T09:17:19-0400",
+    "tampermonkeyName": "Intelligent Demo Builder Drawer",
+    "loadInstruction": "Open Tampermonkey, edit Intelligent Demo Builder Drawer, replace the full script with this file, save, refresh NetSuite, and confirm only one IDB launcher appears."
+  },
+  "realisticSalesRequestFields": {
+    "customer": "Ariat International",
+    "website": "https://www.ariat.com/",
+    "conversationNotes": "Buyer says style, size, color, replenishment timing, and channel availability are hard to keep aligned for seasonal boot and apparel launches. The team uses spreadsheets and disconnected inventory views, which makes customer promise risky when demand shifts close to launch.",
+    "websiteEvidence": "Ariat sells footwear, apparel, workwear, outdoor gear, size/color variants, and retail/ecommerce categories.",
+    "scObjective": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise for a seasonal boot and apparel launch.",
+    "knownCompetitor": "Spreadsheets, disconnected inventory reports, and existing order tools. They are also comparing broader ERP options.",
+    "decisionCriteria": "Show a clear path from customer/prospect context to item style/SKU readiness, channel availability, replenishment timing, and customer promise.",
+    "bantMeddicc": {
+      "budget": "Budget is not finalized; the team needs value proof before committing to scope.",
+      "authority": "VP Operations and merchandising operations influence; finance signs off after value story is clear.",
+      "need": "Reduce launch risk and avoid inventory/customer promise surprises across apparel and footwear variants.",
+      "timeline": "Wants a credible proof path within the current evaluation cycle, ideally ready for internal review in 2-4 weeks.",
+      "metrics": "Fewer spreadsheet handoffs, faster launch readiness review, clearer available-to-promise confidence by style, size, color, and channel.",
+      "economicBuyer": "Operations leadership with finance review.",
+      "decisionProcess": "SC proof, operator build review, internal stakeholder readout, then sandbox/pilot decision.",
+      "decisionCriteria": "Demonstrate style/SKU readiness, size/color availability, replenishment timing, and customer promise without generic manufacturing or CPG language.",
+      "identifyPain": "Seasonal launches expose variant availability gaps and replenishment uncertainty.",
+      "champion": "Merchandising operations lead pushing for cleaner launch readiness."
+    }
+  },
+  "testSteps": [
+    "Update Tampermonkey with the exact idb-drawer.user.js file listed above.",
+    "Disable any older duplicate Intelligent Demo Builder userscripts.",
+    "Refresh NetSuite and confirm only one IDB launcher is visible.",
+    "Open IDB, go to Trace, clear the current session, then return to Plan.",
+    "Enter the sales request fields exactly as listed in this packet.",
+    "Do not paste secrets, NetSuite credentials, or deployment tokens anywhere.",
+    "Confirm the lane only if the visible lane, DCC pack, and scenario agree.",
+    "Capture first-viewport screenshots for Plan, Review, ROI / Competitive, Run, and Trace.",
+    "On Review, export the DCC handoff JSON before exporting anything else.",
+    "On Trace, export the trace JSON.",
+    "Operator compares the DCC handoff JSON to the Demo Command Center Suitelet fields and runner preview without submitting, queueing, or writing anything.",
+    "Return screenshots, DCC handoff JSON, trace JSON, consultant notes, and operator comparison notes."
+  ],
+  "expectedFirstViewportScreenshots": {
+    "plan": [
+      "Only one IDB drawer and one IDB launcher are visible.",
+      "Prospect is Ariat International.",
+      "Classification is Apparel & Accessories, not Products CPG.",
+      "Confidence is recommended/high or an honest confirmation state.",
+      "DCC pack is apparelAccessories / Style-to-Availability Readiness.",
+      "Guided Intake has collapsed into the W98 Request summary after setup is ready.",
+      "Primary action is confirm/review, not a long story bar or audit stack."
+    ],
+    "review": [
+      "DCC handoff/export area is the primary execution card.",
+      "Confirmed lane, visible lane, exported lane, and DCC pack agree.",
+      "Selected pack/scenario and DCC-owned object preparation are visible.",
+      "Blockers are explicit if consultant confirmation is missing.",
+      "Export DCC handoff is visible and clearly review-only/export-only."
+    ],
+    "roiCompetitive": [
+      "Live value answer is first.",
+      "One ROI answer is visible.",
+      "One NetSuite answer is visible.",
+      "One blocker/caution is visible.",
+      "Why this ROI, competitive detail, and unsupported-claim audit are collapsed by default."
+    ],
+    "run": [
+      "Open / Prove / Handle objection / Close value selector chips are at the top.",
+      "Changing a chip updates Say / Show / Close without leaving the tab.",
+      "Live script appears before audit detail.",
+      "The script stays in the apparel/style/SKU path."
+    ],
+    "trace": [
+      "Trace actions only is visible.",
+      "Export DCC handoff and Export JSON are visible.",
+      "Pilot evidence checklist is visible.",
+      "Reset controls are visible.",
+      "Pilot result import does not crowd the normal evidence workflow."
+    ]
+  },
+  "requiredExports": [
+    "idb-dcc-runner-handoff-packet-*.json",
+    "intelligent-demo-builder-trace-*.json"
+  ],
+  "operatorComparisonChecklist": {
+    "schema": "idb.w99-operator-comparison-checklist.v1",
+    "status": "ready_for_no_submit_operator_review",
+    "compare": [
+      "suiteletEntryPayload customer/prospect equals Ariat International.",
+      "suiteletEntryPayload website equals https://www.ariat.com/.",
+      "Selected lane is apparel_accessories.",
+      "Selected pack is apparelAccessories.",
+      "Selected scenario is Style-to-Availability Readiness.",
+      "Family/proof path maps to style/SKU matrix or the DCC apparel/accessories path.",
+      "Write mode is review-only/export-only from IDB.",
+      "DCC-owned config params are present or clearly marked for operator review.",
+      "Scheduled runner preview params are present enough for DCC manual review.",
+      "DCC remains owner of item names, assemblies, BOMs, locations, planning, routing/WIP, CSV, and Sales Order mechanics.",
+      "No IDB button submits, queues, invokes SuiteScript, or writes a transaction."
+    ],
+    "markEachItemAs": [
+      "match",
+      "missing",
+      "unclear"
+    ]
+  },
+  "scoringRubric": {
+    "schema": "idb.w99-one-run-pilot-rubric.v1",
+    "scale": "1-5",
+    "passingAverage": 4,
+    "noCategoryBelow": 3,
+    "categories": [
+      "One active drawer / no duplicate button",
+      "Plan request summary clarity",
+      "State authority consistency across Plan, Review, export, and trace",
+      "Review DCC handoff export clarity",
+      "ROI / Competitive live value clarity",
+      "Run selector chip usefulness",
+      "Trace evidence checklist clarity",
+      "Operator field mapping clarity",
+      "No-submit/no-write safety clarity"
+    ],
+    "automaticNoGoIf": [
+      "Two IDB buttons or two drawers appear after refresh.",
+      "Plan shows Apparel & Accessories while export shows Products CPG, or any other lane/pack mismatch.",
+      "DCC handoff JSON is not exported.",
+      "Trace JSON is not exported.",
+      "Any IDB control appears to submit, queue, invoke SuiteScript, or write a transaction.",
+      "ROI / Competitive opens with audit-heavy detail instead of answer-first guidance.",
+      "Run selector chips do not update the live script.",
+      "Operator cannot map selected pack/scenario to DCC in under 5 minutes."
+    ]
+  },
+  "stopGoCriteria": {
+    "goForW100EvidenceReviewIf": [
+      "All five first-viewport screenshots are provided.",
+      "DCC handoff JSON is attached.",
+      "Trace JSON is attached.",
+      "Operator comparison notes are provided.",
+      "No write/submit/queue behavior is observed.",
+      "Average score is at least 4.0 with no category below 3."
+    ],
+    "noGoBeforeW100If": [
+      "Any required screenshot or JSON export is missing.",
+      "Any state authority mismatch appears between visible lane, confirmed lane, exported lane, or DCC pack.",
+      "Any IDB path appears to invoke SuiteScript, write records, queue DCC, or write a transaction.",
+      "The compressed UI still requires hunting through audit text for the next action."
+    ]
+  },
+  "noRegression": {
+    "w92StateAuthorityPreserved": true,
+    "w96CompressedValueGuidancePreserved": true,
+    "w97RunSelectorChipsPreserved": true,
+    "w98IntakeToReviewCompressionPreserved": true,
+    "dccHandoffBoundariesPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesRole": "story_only",
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true,
+    "nllmAdvisoryOnly": true
+  },
+  "bestNextPrompt": "Move through W100: Grade One-Run Pilot Retest Evidence After Compression. Use the user-provided W99 Plan/Review/ROI/Run/Trace first-viewport screenshots, idb-dcc-runner-handoff-packet JSON, intelligent-demo-builder trace JSON, consultant notes, operator comparison notes, and scoring rubric to grade the compressed one-run retest. Verify W92 state authority, W96 value compression, W97 Run selector chips, W98 intake-to-review compression, DCC handoff boundaries, no IDB writes, no SuiteScript invocation, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output scored results, UX remediation, operator mapping remediation, pilot unlock/no-go decision, W100 report, validator gates, and best next Codex prompt."
+}

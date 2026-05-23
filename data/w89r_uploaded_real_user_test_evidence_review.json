@@ -1,0 +1,221 @@
+{
+  "schema": "idb.w89r-uploaded-real-user-test-evidence-review.v1",
+  "status": "graded_partial_real_evidence_no_go",
+  "evidenceIntake": {
+    "schema": "idb.w89r-uploaded-evidence-intake.v1",
+    "evidenceObserved": [
+      {
+        "type": "trace_json",
+        "expected": "intelligent-demo-builder-trace-*.json",
+        "provided": true,
+        "path": "/path/to/downloads/intelligent-demo-builder-trace-1778611737634.json"
+      },
+      {
+        "type": "dcc_runner_handoff_json",
+        "expected": "idb-dcc-runner-handoff-packet-*.json",
+        "provided": false,
+        "path": null
+      },
+      {
+        "type": "legacy_suitescript_review_packet_json",
+        "expected": "idb-suitescript-review-packet-*.json",
+        "provided": true,
+        "path": "/path/to/downloads/idb-suitescript-review-packet-1778611740134.json"
+      }
+    ],
+    "screenshotsProvided": false,
+    "consultantNotesProvided": false,
+    "operatorComparisonNotesProvided": false,
+    "missingRequiredScreenshots": [
+      "Plan tab after intake.",
+      "Review tab top summary.",
+      "Review DCC build packet bridge.",
+      "Review DCC handoff export card with form/config/runner sections.",
+      "Trace tab before export.",
+      "DCC Suitelet sandbox comparison screen, if operator opens it for manual review."
+    ],
+    "missingRequiredNotes": [
+      "Was the lane/scenario obvious enough to confirm?",
+      "Was the DCC handoff export easy to find?",
+      "Could the operator map fields in under 5 minutes?",
+      "What looked confusing, wrong, generic, or risky?",
+      "Did any IDB path appear to submit/write/queue?"
+    ]
+  },
+  "gradedResults": {
+    "schema": "idb.w89r-graded-real-user-test-results.v1",
+    "status": "graded_partial_real_evidence_no_go",
+    "averageScore": 3,
+    "passingScore": 4,
+    "anyCategoryBelowThree": true,
+    "categories": [
+      {
+        "category": "Consultant intake clarity",
+        "score": 4,
+        "evidence": "Customer, website, notes, SC objective, competitor, and decision criteria are present in trace."
+      },
+      {
+        "category": "Scenario/lane confirmation clarity",
+        "score": 4,
+        "evidence": "Ariat apparel/footwear classification is correct, but trace source wording still mentions guided_intake."
+      },
+      {
+        "category": "DCC handoff export discoverability",
+        "score": 2,
+        "evidence": "Expected idb-dcc-runner-handoff-packet JSON was not present; legacy SuiteScript review packet was exported instead."
+      },
+      {
+        "category": "Suitelet form parameter parity",
+        "score": 2,
+        "evidence": "No operator comparison notes or DCC handoff packet were available to prove form-param parity."
+      },
+      {
+        "category": "DCC-owned config ownership clarity",
+        "score": 3,
+        "evidence": "Trace includes DCC family/scenario/toggles, but the uploaded packet is not the W83/W88 DCC handoff packet."
+      },
+      {
+        "category": "Runner preview clarity",
+        "score": 2,
+        "evidence": "Runner preview cannot be graded without dccRunnerHandoffPacketV1 or operator comparison notes."
+      },
+      {
+        "category": "No-submit/no-write safety clarity",
+        "score": 5,
+        "evidence": "No IDB SuiteScript invocation or transaction write is shown; packet stays blocked and review-only."
+      },
+      {
+        "category": "DCC object-generation ownership clarity",
+        "score": 4,
+        "evidence": "Object list exists and DCC scenario/toggles are present; DCC runner ownership still needs operator proof."
+      },
+      {
+        "category": "Operator confidence to proceed later under governed conditions",
+        "score": 2,
+        "evidence": "No operator comparison notes were provided."
+      },
+      {
+        "category": "Evidence completeness",
+        "score": 2,
+        "evidence": "Trace and legacy SuiteScript packet are present, but W88 screenshots, DCC handoff JSON, consultant notes, and operator notes are missing."
+      }
+    ],
+    "positiveFindings": [
+      "Ariat classified as Apparel & Accessories with high websiteEvidenceV1 confidence.",
+      "Accepted packet records website_evidence_v1 as naming authority.",
+      "SuiteScript review packet preserved create-disabled and consultant-confirmation-required boundaries.",
+      "Transaction write remained blocked."
+    ],
+    "gaps": [
+      "Required W88 DCC runner handoff export was not provided; only the legacy SuiteScript review packet was found.",
+      "No screenshots were provided, so live readability for Plan, Review, DCC handoff, and Trace cannot be graded visually.",
+      "No operator comparison notes were provided, so Suitelet form-param parity and runner preview parity are not proven.",
+      "Trace shows lane_recommended source as guided_intake even though accepted naming authority is website_evidence_v1; this can confuse the website-vs-notes ownership story.",
+      "The legacy review packet still contains mode=create and writePathType=suitescript_direct_write while createAllowed=false, which is technically safe but semantically noisy for pilot users."
+    ],
+    "noRegression": {
+      "noIdbWritesObserved": true,
+      "noSuiteScriptInvocationFromIdbObserved": true,
+      "noTransactionWritesObserved": true,
+      "noDccRunnerRewriteObserved": true,
+      "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+      "consultantConfirmationRequired": true,
+      "dccOwnsObjectGeneration": true
+    }
+  },
+  "remediationPlan": {
+    "schema": "idb.w89r-remediation-plan.v1",
+    "priority": [
+      {
+        "ownerRole": "Consultant UX Director",
+        "issue": "DCC handoff export was not the artifact submitted for review.",
+        "fix": "Make Review and Trace explicitly distinguish Export DCC handoff from legacy SuiteScript review packet; require dccRunnerHandoffPacketV1 for pilot evidence."
+      },
+      {
+        "ownerRole": "DCC Pattern Translator Agent",
+        "issue": "Operator mapping was not proven.",
+        "fix": "Add a one-page operator comparison checklist that marks suitelet form params, DCC-owned config params, and runner preview params as match/missing/unclear."
+      },
+      {
+        "ownerRole": "Evidence UX Designer",
+        "issue": "Screenshots were missing.",
+        "fix": "Add a Trace evidence checklist showing Plan, Review, DCC handoff, Trace, DCC handoff JSON, trace JSON, and operator notes before pilot-ready status."
+      },
+      {
+        "ownerRole": "Website Intelligence Agent",
+        "issue": "Trace contains mixed ownership language: guided_intake source and website_evidence_v1 authority.",
+        "fix": "Normalize trace language so website evidence owns identity and notes/guided intake own story only."
+      },
+      {
+        "ownerRole": "Code Review Sentinel",
+        "issue": "Review packet says mode=create while creationAllowed=false.",
+        "fix": "Rename pilot evidence mode to review_only / export_only wherever the path cannot submit or queue records."
+      }
+    ],
+    "retestRequiredEvidence": [
+      "idb-dcc-runner-handoff-packet-*.json",
+      "intelligent-demo-builder-trace-*.json",
+      "Plan screenshot",
+      "Review DCC handoff screenshot",
+      "Trace evidence checklist screenshot",
+      "Operator mapping notes"
+    ]
+  },
+  "pilotDecision": {
+    "schema": "idb.w89r-pilot-readiness-decision.v1",
+    "decision": "no_go_broader_consultant_pilot_partial_evidence",
+    "canProceedToBroaderPilot": false,
+    "canProceedToSingleRetest": true,
+    "reason": "The real evidence proves the Ariat classification and write-safety boundaries, but does not prove DCC handoff export, screenshot-based UX clarity, operator mapping, or runner-preview parity.",
+    "unlockCriteria": [
+      "Average W88 rubric score is at least 4.0.",
+      "No category scores below 3.",
+      "idb-dcc-runner-handoff-packet JSON is attached.",
+      "Trace JSON is attached.",
+      "Plan/Review/DCC handoff/Trace screenshots are attached.",
+      "Operator comparison notes prove Suitelet form params, DCC-owned config, and runner preview parity.",
+      "No IDB SuiteScript invocation, queue action, or transaction write occurs."
+    ]
+  },
+  "validatorResults": [
+    {
+      "name": "w89r_trace_json_available",
+      "pass": true,
+      "detail": "/path/to/downloads/intelligent-demo-builder-trace-1778611737634.json"
+    },
+    {
+      "name": "w89r_legacy_suitescript_packet_available",
+      "pass": true,
+      "detail": "/path/to/downloads/idb-suitescript-review-packet-1778611740134.json"
+    },
+    {
+      "name": "w89r_dcc_handoff_missing_recorded",
+      "pass": true,
+      "detail": "/path/to/downloads/idb-dcc-runner-handoff-packet-1778611740134.json"
+    },
+    {
+      "name": "w89r_ariat_classification_correct",
+      "pass": true,
+      "detail": "{\"lane\":\"apparel_accessories\",\"confidence\":{\"state\":\"recommended\",\"score\":0.9,\"requiresConfirmation\":false}}"
+    },
+    {
+      "name": "w89r_no_write_boundaries_hold",
+      "pass": true,
+      "detail": "{\"noIdbWritesObserved\":true,\"noSuiteScriptInvocationFromIdbObserved\":true,\"noTransactionWritesObserved\":true,\"noDccRunnerRewriteObserved\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"consultantConfirmationRequired\":true,\"dccOwnsObjectGeneration\":true}"
+    },
+    {
+      "name": "w89r_scores_force_no_go",
+      "pass": true,
+      "detail": "{\"averageScore\":3,\"anyBelowThree\":true,\"decision\":\"no_go_broader_consultant_pilot_partial_evidence\"}"
+    },
+    {
+      "name": "w89r_remediation_targets_exact_gaps",
+      "pass": true,
+      "detail": "[{\"ownerRole\":\"Consultant UX Director\",\"issue\":\"DCC handoff export was not the artifact submitted for review.\",\"fix\":\"Make Review and Trace explicitly distinguish Export DCC handoff from legacy SuiteScript review packet; require dccRunnerHandoffPacketV1 for pilot evidence.\"},{\"ownerRole\":\"DCC Pattern Translator Agent\",\"issue\":\"Operator mapping was not proven.\",\"fix\":\"Add a one-page operator comparison checklist that marks suitelet form params, DCC-owned config params, and runner preview params as match/missing/unclear.\"},{\"ownerRole\":\"Evidence UX Designer\",\"issue\":\"Screenshots were missing.\",\"fix\":\"Add a Trace evidence checklist showing Plan, Review, DCC handoff, Trace, DCC handoff JSON, trace JSON, and operator notes before pilot-ready status.\"},{\"ownerRole\":\"Website Intelligence Agent\",\"issue\":\"Trace contains mixed ownership language: guided_intake source and website_evidence_v1 authority.\",\"fix\":\"Normalize trace language so website evidence owns identity and notes/guided intake own story only.\"},{\"ownerRole\":\"Code Review Sentinel\",\"issue\":\"Review packet says mode=create while creationAllowed=false.\",\"fix\":\"Rename pilot evidence mode to review_only / export_only wherever the path cannot submit or queue records.\"}]"
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W90: Pilot Evidence Remediation And Retest Pack",
+    "prompt": "Move through W90: Pilot Evidence Remediation And Retest Pack. Use the W89R findings to fix the evidence flow before a broader consultant pilot: make the DCC handoff export primary and unmistakable, add a Trace evidence checklist for screenshots/JSON/operator notes, rename non-submitting create-mode language to review-only/export-only where appropriate, normalize trace ownership so website evidence owns identity while notes own story, and produce a one-run retest packet. Preserve no IDB writes, no DCC runner rewrite, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, consultant confirmation required, and DCC ownership of object generation. Output UI/trace remediation, updated validator gates, W90 report, and best next Codex prompt."
+  }
+}

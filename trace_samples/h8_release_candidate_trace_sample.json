@@ -1,0 +1,73 @@
+{
+  "product": {
+    "name": "Intelligent Demo Builder",
+    "mode": "controlled_pilot_release_candidate"
+  },
+  "exportedAt": "2026-05-09T00:00:00.000Z",
+  "selectedLane": {
+    "id": "food_beverage_cpg",
+    "name": "Food / Beverage CPG Manufacturing",
+    "proofAnchor": "Finished Good"
+  },
+  "state": {
+    "intake": {
+      "customer": "Liquid Death",
+      "website": "https://www.liquiddeath.com",
+      "notes": "Mostly focusing on getting ingredients from multiple vendors into different locations, lot traceability, and retail beverage replenishment.",
+      "scObjective": "Prove beverage replenishment readiness from ingredient and lot context through finished-good availability.",
+      "competitor": "incumbent planning spreadsheets",
+      "decisionCriteria": "Confidence that ingredient readiness, lot traceability, and finished-good availability are visible before retail demand is missed."
+    },
+    "activeView": "trace"
+  },
+  "dryRunObjectPacket": {
+    "packetMode": "dry_run_only",
+    "adapterStatus": "not_connected",
+    "creationAllowed": false,
+    "consultantConfirmationRequired": true,
+    "customer": "Liquid Death",
+    "selectedLane": "Food / Beverage CPG Manufacturing",
+    "proofAnchor": "Finished Good",
+    "records": [
+      {
+        "sequence": 1,
+        "label": "Customer Record",
+        "buildStatement": "Customer will be Liquid Death",
+        "status": "review_ready"
+      },
+      {
+        "sequence": 2,
+        "label": "Sales Order View",
+        "buildStatement": "Sales Order will be Liquid Death - retail beverage replenishment Demo Order",
+        "status": "review_ready"
+      },
+      {
+        "sequence": 3,
+        "label": "Finished Good",
+        "buildStatement": "Finished Good will be Liquid Death Sparkling Water Variety 12-Pack",
+        "status": "review_ready"
+      }
+    ]
+  },
+  "roiCompetitiveReview": {
+    "roiThesis": "Liquid Death can reduce demo-risk around retail beverage replenishment by proving Finished Good readiness before the business moment is at risk.",
+    "competitorContext": "Known competitive context: incumbent planning spreadsheets. Keep the contrast workflow-based unless verified facts are provided.",
+    "decisionCriteria": "Confidence that ingredient readiness, lot traceability, and finished-good availability are visible before retail demand is missed."
+  },
+  "adapterBridgeRequest": {
+    "mode": "dry_run",
+    "createAllowed": false,
+    "blockedReason": "No supported creation adapter is connected."
+  },
+  "events": [
+    {
+      "eventType": "setup_saved"
+    },
+    {
+      "eventType": "drawer_view_changed"
+    },
+    {
+      "eventType": "trace_exported"
+    }
+  ]
+}

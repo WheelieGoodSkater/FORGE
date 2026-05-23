@@ -1,0 +1,47 @@
+{
+  "schema": "idb.w60-website-evidence-runtime-integration.v1",
+  "status": "complete_runtime_integration_ready",
+  "objective": "Make the actual drawer consume resolver evidence, not just URL/domain and notes.",
+  "goal": "Wire websiteEvidenceV1 into drawer state so website evidence owns lane, product seed, product family, proof anchor, and demand moment before notes shape story.",
+  "roles": [
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Runtime evidence quality and Ariat-style website-owned apparel/footwear identity."
+    },
+    {
+      "name": "Resolver Service Architect",
+      "owns": "Drawer-state websiteEvidenceV1 contract and resolver-to-drawer handoff."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "No-write, no-SuiteScript, N/LLM advisory-only runtime evidence boundaries."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Tests proving notes do not own website identity."
+    }
+  ],
+  "implemented": {
+    "drawerStateField": "websiteEvidenceV1",
+    "runtimeResolver": "ensureWebsiteEvidenceRuntime",
+    "localAdapter": "localWebsiteEvidenceV1FromState",
+    "primaryConsumer": "websiteSignalProfile",
+    "planReviewEvidenceConsumer": "websiteEvidenceUxModel",
+    "traceExportsRuntimeEvidence": true,
+    "ariatWebsiteOwned": true
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "transactionWriteEnabled": false
+  },
+  "outputs": {
+    "contract": "data/w60_website_evidence_runtime_integration.json",
+    "harness": "tools/run_website_runtime_integration_harness.js",
+    "trace": "trace_samples/w60_website_runtime_integration_trace.json",
+    "report": "reports/w60_website_evidence_runtime_integration.md"
+  },
+  "nextBlock": "W61: Evidence Extraction Upgrade"
+}

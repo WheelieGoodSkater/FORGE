@@ -1,0 +1,163 @@
+{
+  "schema": "idb.w50-website-evidence-v1-contract.v1",
+  "status": "complete_true_website_intelligence_foundation_ready",
+  "objective": "Make website identification the center of the product before expanding ROI, competitive, or broader write behavior.",
+  "architecture": {
+    "recommendedRuntime": "no_write_website_evidence_resolver_endpoint",
+    "drawerRole": "send_normalized_url_and_receive_structured_evidence_json",
+    "tampermonkeyBoundary": "Tampermonkey may display and submit URL/evidence, but production website fetching should not rely on Tampermonkey alone.",
+    "writeAuthority": "none",
+    "nllmAuthority": "advisory_only",
+    "classifierAuthority": "traceable_recommendation_with_confirmation_gates"
+  },
+  "websiteEvidenceV1": {
+    "schema": "idb.website-evidence.v1",
+    "requiredFields": [
+      "inputUrl",
+      "normalizedUrl",
+      "domain",
+      "fetchStatus",
+      "fetchErrors",
+      "pagesSampled",
+      "extractedEvidence",
+      "signals",
+      "confidence",
+      "failureState",
+      "sourceUrls",
+      "capturedAt"
+    ],
+    "urlNormalization": {
+      "rules": [
+        "trim whitespace",
+        "default missing scheme to https",
+        "lowercase hostname",
+        "remove hash fragments",
+        "preserve meaningful path",
+        "strip obvious tracking query parameters",
+        "reject unsupported schemes"
+      ],
+      "unsupportedSchemes": [
+        "javascript:",
+        "data:",
+        "file:",
+        "mailto:",
+        "tel:"
+      ]
+    },
+    "homepagePageFetchStrategy": {
+      "pages": [
+        {
+          "role": "homepage",
+          "required": true,
+          "maxBytes": 350000
+        },
+        {
+          "role": "navigation_discovered_category_or_products_page",
+          "required": false,
+          "maxPages": 3,
+          "selectionBasis": [
+            "products",
+            "shop",
+            "catalog",
+            "industries",
+            "solutions",
+            "services",
+            "collections"
+          ]
+        }
+      ],
+      "timeoutsMs": {
+        "connect": 6000,
+        "overall": 12000
+      },
+      "redirectPolicy": "follow_same_site_and_capture_final_url",
+      "contentTypes": [
+        "text/html"
+      ]
+    },
+    "extractedEvidenceFields": [
+      "pageTitle",
+      "metaDescription",
+      "h1Text",
+      "h2Text",
+      "navigationLabels",
+      "productCategoryTerms",
+      "industryLanguage",
+      "locationServiceClues",
+      "ecommerceSignals",
+      "manufacturingSignals",
+      "distributionSignals",
+      "sourceUrls"
+    ],
+    "confidenceStates": [
+      "recommended",
+      "needs_confirmation",
+      "insufficient_evidence"
+    ],
+    "failureStates": [
+      {
+        "id": "blocked",
+        "meaning": "The site prevented retrieval or returned an access/robot/security block.",
+        "expectedBehavior": "Ask the consultant for pasted website evidence and keep lane uncommitted unless other strong evidence exists."
+      },
+      {
+        "id": "thin",
+        "meaning": "The fetched content has too little category/product language to support confident classification.",
+        "expectedBehavior": "Show insufficient evidence or needs confirmation with specific missing evidence guidance."
+      },
+      {
+        "id": "unavailable",
+        "meaning": "DNS, network, TLS, 4xx, 5xx, or empty response prevented useful evidence capture.",
+        "expectedBehavior": "Do not guess from brand name alone; request manual evidence or retry later."
+      },
+      {
+        "id": "ambiguous",
+        "meaning": "Evidence supports multiple lanes or product families without a clear winner.",
+        "expectedBehavior": "Show the competing interpretations and require consultant confirmation."
+      },
+      {
+        "id": "timeout",
+        "meaning": "The resolver exceeded the allowed fetch window.",
+        "expectedBehavior": "Return a timeout state with no write authority and a retry/manual-evidence recovery cue."
+      }
+    ]
+  },
+  "traceRequirements": {
+    "mustInclude": [
+      "normalizedUrl",
+      "domain",
+      "fetchStatus",
+      "fetchErrors",
+      "sourceUrls",
+      "extractedEvidence",
+      "signals",
+      "confidence",
+      "failureState",
+      "resolverVersion",
+      "nllmAdvisoryOnly",
+      "writeAuthority"
+    ],
+    "mustNotInclude": [
+      "recordWriteToken",
+      "suiteScriptInvocation",
+      "hiddenCreatePermission",
+      "unsupportedClaimsWithoutSource"
+    ]
+  },
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "websiteEvidenceOwnsIdentification": true,
+    "conversationNotesDriveStoryOnly": true,
+    "nllmAdvisoryOnly": true,
+    "classifierMustExposeSourceUrls": true
+  },
+  "outputs": {
+    "contract": "data/w50_website_evidence_v1_contract.json",
+    "traceSample": "trace_samples/w50_website_evidence_resolver_trace_sample.json",
+    "report": "reports/w50_true_website_intelligence_foundation.md",
+    "harness": "tools/run_website_evidence_resolver_contract_harness.js"
+  },
+  "nextBlock": "W51: Intelligence Classifier V1"
+}

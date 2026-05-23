@@ -1,0 +1,37 @@
+# W92 State Authority And Handoff Consistency
+
+Generated: 2026-05-17T21:41:05.259Z
+
+Decision: PASS / STATE AUTHORITY READY
+
+## What Changed
+
+- Added `stateAuthorityModel` for recommended, selected, confirmed, and exported lane state.
+- Added `reconcileStateAuthority` so high-confidence website evidence can move the working lane away from stale defaults before Review/export.
+- Added handoff blockers for unconfirmed or mismatched lane authority.
+- DCC handoff packet now carries state authority and blocks mismatch eligibility.
+- Trace export now includes state authority.
+
+## Ariat Regression
+
+- Recommended lane: Apparel & Accessories
+- Selected/exported lane after reconcile: Apparel & Accessories
+- Blocked handoff pack before confirmation: apparelAccessories / Style-to-Availability Readiness
+- Confirmed handoff status: ready_for_dcc_suitelet_submission_review
+- Manual mismatch status: blocked_until_confirmed_handoff
+
+## Validator Gates
+
+| Status | Rule | Detail |
+| --- | --- | --- |
+| PASS | w92_hooks_exposed | required test hooks |
+| PASS | w92_state_reconciles_ariat_to_apparel | {"before":{"schema":"idb.w92-state-authority.v1","recommendedLaneId":"apparel_accessories","recommendedLaneName":"Apparel & Accessories","recommendedProofAnchor":"Style / SKU Matrix","selectedLaneId":"products_cpg","selectedLaneName":"Products CPG","selectedProofAnchor":"Sales Order View","confirmedLaneId":"","confirmedLaneName":"","exportedLaneId":"products_cpg","exportedLaneName":"Products CPG","laneSelectionSource":"default","confidenceState":"recommended","confidenceSource":"website_evidence_v1","hasRecommendedMismatch":true,"hasConfirmedMismatch":false,"handoffEligible":false,"handoffBlockers":["Website evidence recommends Apparel & Accessories, but working lane is Products CPG.","Consultant has not confirmed the working lane, scenario pack, product naming, and build mode."],"noRegression":{"websiteEvidenceOwnsIdentity":true,"notesRole":"story_only","dccOwnsObjectGeneration":true,"noSuiteScriptInvocationFromIdb":true,"noIdbTransactionWrite":true}},"after":{"schema":"idb.w92-state-authority.v1","recommendedLaneId":"apparel_accessories","recommendedLaneName":"Apparel & Accessories","recommendedProofAnchor":"Style / SKU Matrix","selectedLaneId":"apparel_accessories","selectedLaneName":"Apparel & Accessories","selectedProofAnchor":"Style / SKU Matrix","confirmedLaneId":"","confirmedLaneName":"","exportedLaneId":"apparel_accessories","exportedLaneName":"Apparel & Accessories","laneSelectionSource":"website_evidence_auto","confidenceState":"recommended","confidenceSource":"website_evidence_v1","hasRecommendedMismatch":false,"hasConfirmedMismatch":false,"handoffEligible":false,"handoffBlockers":["Consultant has not confirmed the working lane, scenario pack, product naming, and build mode."],"noRegression":{"websiteEvidenceOwnsIdentity":true,"notesRole":"story_only","dccOwnsObjectGeneration":true,"noSuiteScriptInvocationFromIdb":true,"noIdbTransactionWrite":true}}} |
+| PASS | w92_ariat_blocked_packet_uses_apparel_not_cpg | {"pack":"apparelAccessories","scenario":"Style-to-Availability Readiness","authority":{"schema":"idb.w92-state-authority.v1","recommendedLaneId":"apparel_accessories","recommendedLaneName":"Apparel & Accessories","recommendedProofAnchor":"Style / SKU Matrix","selectedLaneId":"apparel_accessories","selectedLaneName":"Apparel & Accessories","selectedProofAnchor":"Style / SKU Matrix","confirmedLaneId":"","confirmedLaneName":"","exportedLaneId":"apparel_accessories","exportedLaneName":"Apparel & Accessories","laneSelectionSource":"website_evidence_auto","confidenceState":"recommended","confidenceSource":"website_evidence_v1","hasRecommendedMismatch":false,"hasConfirmedMismatch":false,"handoffEligible":false,"handoffBlockers":["Consultant has not confirmed the working lane, scenario pack, product naming, and build mode."],"noRegression":{"websiteEvidenceOwnsIdentity":true,"notesRole":"story_only","dccOwnsObjectGeneration":true,"noSuiteScriptInvocationFromIdb":true,"noIdbTransactionWrite":true}}} |
+| PASS | w92_unconfirmed_handoff_blocks_without_mismatch | {"status":"blocked_until_confirmed_handoff","missing":["consultant confirmation","handoff parity mismatch"],"parityBlockers":["confirmed_lane_matches_selected_lane","exported_lane_matches_confirmed_lane"],"action":"Resolve lane/confirmation/parity mismatch before handoff export is eligible."} |
+| PASS | w92_confirmed_handoff_ready_and_consistent | {"authority":{"schema":"idb.w92-state-authority.v1","recommendedLaneId":"apparel_accessories","recommendedLaneName":"Apparel & Accessories","recommendedProofAnchor":"Style / SKU Matrix","selectedLaneId":"apparel_accessories","selectedLaneName":"Apparel & Accessories","selectedProofAnchor":"Style / SKU Matrix","confirmedLaneId":"apparel_accessories","confirmedLaneName":"Apparel & Accessories","exportedLaneId":"apparel_accessories","exportedLaneName":"Apparel & Accessories","laneSelectionSource":"consultant_confirmed","confidenceState":"recommended","confidenceSource":"website_evidence_v1","hasRecommendedMismatch":false,"hasConfirmedMismatch":false,"handoffEligible":true,"handoffBlockers":[],"noRegression":{"websiteEvidenceOwnsIdentity":true,"notesRole":"story_only","dccOwnsObjectGeneration":true,"noSuiteScriptInvocationFromIdb":true,"noIdbTransactionWrite":true}},"handoff":"ready_for_dcc_suitelet_submission_review"} |
+| PASS | w92_manual_mismatch_blocks_export_eligibility | {"authority":{"schema":"idb.w92-state-authority.v1","recommendedLaneId":"apparel_accessories","recommendedLaneName":"Apparel & Accessories","recommendedProofAnchor":"Style / SKU Matrix","selectedLaneId":"products_cpg","selectedLaneName":"Products CPG","selectedProofAnchor":"Sales Order View","confirmedLaneId":"","confirmedLaneName":"","exportedLaneId":"products_cpg","exportedLaneName":"Products CPG","laneSelectionSource":"manual","confidenceState":"recommended","confidenceSource":"website_evidence_v1","hasRecommendedMismatch":true,"hasConfirmedMismatch":false,"handoffEligible":false,"handoffBlockers":["Website evidence recommends Apparel & Accessories, but working lane is Products CPG.","Consultant has not confirmed the working lane, scenario pack, product naming, and build mode."],"noRegression":{"websiteEvidenceOwnsIdentity":true,"notesRole":"story_only","dccOwnsObjectGeneration":true,"noSuiteScriptInvocationFromIdb":true,"noIdbTransactionWrite":true}},"missing":["consultant confirmation","lane recommendation mismatch","handoff parity mismatch"]} |
+| PASS | w92_no_regression_guards_present | no write / notes story-only / DCC ownership |
+
+## Best Next Codex Prompt
+
+Move through W93: Consultant UX Compression And Evidence-First Review. Compress the Plan, Review, Run, and Trace tabs so consultants see answer-first guidance in under 30 seconds: Plan shows prospect, website classification, confidence, DCC pack, and one primary action; Review shows DCC handoff status, selected pack/scenario, objects DCC will prepare, blockers, and export; Run shows live script first; Trace shows export/checklist/reset only. Preserve W92 state authority so visible lane, confirmed lane, exported lane, and DCC pack cannot disagree. Preserve no IDB writes, no SuiteScript invocation, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output compressed UI changes, visual regression checklist, validator gates, W93 report, and best next Codex prompt.

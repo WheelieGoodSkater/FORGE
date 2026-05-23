@@ -1,0 +1,62 @@
+{
+  "schema": "idb.w218-operator-smoke-packet-live-wording-freeze-trace.v1",
+  "frozenCases": [
+    {
+      "caseType": "complete_non_manufacturing",
+      "resolvedOperatingMode": "retail_availability",
+      "reviewHeadline": "Build results are ready.",
+      "runActions": [
+        "Open Customer",
+        "Open Sales Order",
+        "Open Item"
+      ],
+      "visibleRecordLabels": [
+        "Customer",
+        "Sales Order",
+        "Product SKU",
+        "Availability Flow",
+        "Channel Context"
+      ],
+      "adminDebugVisible": false
+    },
+    {
+      "caseType": "complete_manufacturing",
+      "resolvedOperatingMode": "discrete_manufacturing",
+      "reviewHeadline": "Build results are ready.",
+      "runActions": [
+        "Open Customer",
+        "Open Sales Order",
+        "Open Item"
+      ],
+      "visibleRecordLabels": [
+        "Customer",
+        "Sales Order",
+        "Finished/Assembly Item",
+        "BOM or Assembly Structure",
+        "Component Item"
+      ],
+      "adminDebugVisible": false
+    },
+    {
+      "caseType": "partial_food_batch_wip",
+      "resolvedOperatingMode": "food_batch_manufacturing",
+      "reviewHeadline": "Food batch records are ready. WIP detail was not returned.",
+      "runActions": [
+        "Open Customer",
+        "Open Sales Order",
+        "Open Item",
+        "Use available records",
+        "WIP detail not returned"
+      ],
+      "visibleRecordLabels": [
+        "Customer",
+        "Sales Order",
+        "Finished Food/Batch Item",
+        "Formula or Batch Structure",
+        "Ingredient Item",
+        "Lot Context"
+      ],
+      "adminDebugVisible": true
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "idb.w100-consultant-intake-cleanup-prepare-brief.v1",
+  "status": "complete_prepare_brief_intake_ready",
+  "objective": "Make Plan intake surgical and consultant-facing by waiting for an explicit Prepare brief action before recommendations populate.",
+  "roles": [
+    "Consultant UX Director",
+    "State Authority Architect",
+    "Evidence UX Designer",
+    "Regression Guard"
+  ],
+  "implemented": {
+    "prepareBriefGate": true,
+    "prematureRecommendationsHidden": true,
+    "consultantLabelsForInternalKeys": true,
+    "reducedChips": true,
+    "saveDraftPreserved": true,
+    "manualLaneOverridePreserved": true
+  },
+  "labelMapExamples": {
+    "cpgProductsManufacturing": "CPG Products Manufacturing",
+    "blocked_or_source_limited": "Use caution",
+    "website_evidence_v1": "Website evidence",
+    "missing_required_pilot_evidence": "Evidence missing",
+    "review_only_dcc_owned_generation": "Review only"
+  },
+  "noRegression": {
+    "stateAuthorityPreserved": true,
+    "dccHandoffBoundariesPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextPrompt": "Move through W101: Source Authority Refactor. Separate identity authority from value authority: website evidence owns lane/category/naming hints, consultant notes and SC context own ROI/competitive/story guidance, and consultant confirmation owns final lane and DCC pack readiness. Fix any contradiction where handoff status is blocked while state authority says confirmed or eligible. Preserve no IDB writes, no SuiteScript invocation, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, consultant confirmation required, and DCC ownership of object generation. Output source authority model, state consistency fixes, validator gates, W101 report, and best next Codex prompt."
+}

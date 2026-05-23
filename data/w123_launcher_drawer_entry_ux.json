@@ -1,0 +1,195 @@
+{
+  "schema": "idb.w123-launcher-drawer-entry-ux.v1",
+  "status": "launcher_entry_ux_ready",
+  "generatedAt": "2026-05-17T21:41:08.419Z",
+  "userVisualTestRequiredNow": false,
+  "implemented": {
+    "movableRightEdgeLauncher": true,
+    "snapPositions": [
+      "top_right",
+      "middle_right",
+      "bottom_right"
+    ],
+    "persistedPosition": true,
+    "resetToDefault": true,
+    "keyboardAccessible": true,
+    "duplicateRootGuardPreserved": true,
+    "drawerOpenBehaviorUnchanged": true
+  },
+  "visualQaChecklist": [
+    "Open NetSuite and confirm only one Demo launcher is visible.",
+    "Drag launcher near the top right and confirm it snaps to top right.",
+    "Drag launcher near the middle right and confirm it snaps to middle right.",
+    "Drag launcher near the bottom right and confirm it snaps to bottom right.",
+    "Refresh NetSuite and confirm the selected position persists.",
+    "Press ArrowUp, ArrowDown, and Home while launcher is focused to verify keyboard movement/reset.",
+    "Click launcher and confirm drawer opens exactly as before.",
+    "Right-click launcher to reset to the default middle-right position."
+  ],
+  "visualTestPolicy": {
+    "default": "harness_first",
+    "requireVisualNetSuiteTestOnlyWhen": [
+      "launcher/drawer entry changes are introduced",
+      "Plan, Build/Results, ROI/Competitive, Run, or Trace first viewport materially changes",
+      "final generated names import changes visible behavior",
+      "governed sandbox invocation is exposed",
+      "real generated NetSuite names or links are used for live navigation"
+    ],
+    "skipVisualTestWhen": [
+      "contract-only changes",
+      "trace-only changes",
+      "internal schema or validator changes",
+      "no visible consultant copy/layout changes"
+    ]
+  },
+  "surgicalArchitecturePlan": [
+    {
+      "block": "W124",
+      "name": "Build Results Tab Reset",
+      "goal": "Make Review earn its place by becoming Build Handoff before generated names and Build Results after import.",
+      "visualTestRequired": true,
+      "reason": "Visible consultant workflow materially changes."
+    },
+    {
+      "block": "W125",
+      "name": "Consultant-Safe Export Language",
+      "goal": "Shield visible export labels from internal implementation language while preserving schema compatibility.",
+      "visualTestRequired": false,
+      "reason": "Harness can prove labels and export contracts unless visible layout changes."
+    },
+    {
+      "block": "W126",
+      "name": "Value Coach Intelligence Upgrade",
+      "goal": "Reduce repetition and add competitor/FUD prep using named competitor or clearly labeled inferred alternatives.",
+      "visualTestRequired": true,
+      "reason": "ROI / Competitive first viewport changes and needs consultant readability feedback."
+    },
+    {
+      "block": "W127",
+      "name": "Run Story Engine V2",
+      "goal": "Replace similar chips with differentiated story stages tied to pain, proof, metric, objection, and next decision.",
+      "visualTestRequired": true,
+      "reason": "Live demo coaching changes materially."
+    },
+    {
+      "block": "W128",
+      "name": "Final Names Navigation Layer",
+      "goal": "Use imported final generated NetSuite record names and links throughout Build Results and Run pivots.",
+      "visualTestRequired": true,
+      "reason": "Post-build navigation is a core live consultant workflow."
+    },
+    {
+      "block": "W129",
+      "name": "Governed Invocation Readiness",
+      "goal": "Define exact safety gates before any future build-engine invocation from the drawer.",
+      "visualTestRequired": false,
+      "reason": "Contract and trace gate only; no visible write action enabled."
+    },
+    {
+      "block": "W130",
+      "name": "Preview-Only Invocation Bridge",
+      "goal": "Prepare preview-only invocation artifacts without submit, queue, script invocation, or write.",
+      "visualTestRequired": false,
+      "reason": "Operator/harness smoke before consultant UI exposure."
+    },
+    {
+      "block": "W131",
+      "name": "Sandbox Build Invocation With Type-To-Confirm",
+      "goal": "Enable first governed sandbox build invocation behind confirmation and operator approval.",
+      "visualTestRequired": true,
+      "reason": "This is the first visible step toward real system writes."
+    },
+    {
+      "block": "W132",
+      "name": "Real Build Result Import",
+      "goal": "Import real generated names from a completed sandbox build and prove the drawer uses them.",
+      "visualTestRequired": true,
+      "reason": "Consultant must confirm final names and navigation are useful."
+    },
+    {
+      "block": "W133",
+      "name": "First Write Pilot Scorecard",
+      "goal": "Grade safety, usability, rollback, trace, and generated-name reliability before broader pilot.",
+      "visualTestRequired": false,
+      "reason": "Evidence review and go/no-go scorecard."
+    }
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "websiteSupportsIdentityNaming": true,
+    "notesDriveStoryValue": true,
+    "buildEngineOwnsGeneratedRecords": true,
+    "finalGeneratedNamesImportPreserved": true,
+    "consultantVisibleCopyNoDccIdbScai": true
+  },
+  "validatorGates": [
+    {
+      "name": "w123_launcher_positions_defined",
+      "pass": true,
+      "detail": "[\"top_right\",\"middle_right\",\"bottom_right\"]"
+    },
+    {
+      "name": "w123_launcher_snap_math",
+      "pass": true,
+      "detail": "[\"top_right\",\"middle_right\",\"bottom_right\"]"
+    },
+    {
+      "name": "w123_invalid_position_defaults_safely",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w123-launcher-position.v1\",\"position\":\"middle_right\",\"label\":\"Middle right\",\"snapPositions\":[\"top_right\",\"middle_right\",\"bottom_right\"],\"defaultPosition\":\"middle_right\",\"persistentStorageKey\":\"idb.drawer.launcher.position.v1\",\"noRegression\":{\"drawerOpenBehaviorUnchanged\":true,\"duplicateRootGuardPreserved\":true,\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true}}"
+    },
+    {
+      "name": "w123_apply_launcher_position_sets_accessible_attrs",
+      "pass": true,
+      "detail": "{\"data-launcher-position\":\"bottom_right\",\"data-launcher-label\":\"Bottom right\",\"aria-label\":\"Open Intelligent Demo Builder. Launcher position Bottom right. Drag to move.\"}"
+    },
+    {
+      "name": "w123_css_has_right_edge_snap_positions",
+      "pass": true,
+      "detail": "snap CSS"
+    },
+    {
+      "name": "w123_position_persistence_and_reset_present",
+      "pass": true,
+      "detail": "storage and reset controls"
+    },
+    {
+      "name": "w123_keyboard_focus_accessibility_present",
+      "pass": true,
+      "detail": "keyboard snap and reset"
+    },
+    {
+      "name": "w123_duplicate_root_guard_preserved",
+      "pass": true,
+      "detail": "W94 duplicate guard"
+    },
+    {
+      "name": "w123_drawer_open_behavior_preserved",
+      "pass": true,
+      "detail": "click still opens drawer"
+    },
+    {
+      "name": "w123_no_forbidden_visible_acronyms_in_launcher_labels",
+      "pass": true,
+      "detail": "{\"title\":\"Open Intelligent Demo Builder. Launcher: Bottom right. Drag to move.\",\"aria\":\"Open Intelligent Demo Builder. Launcher position Bottom right. Drag to move.\"}"
+    },
+    {
+      "name": "w123_visual_test_policy_is_surgical",
+      "pass": true,
+      "detail": "{\"default\":\"harness_first\",\"requireVisualNetSuiteTestOnlyWhen\":[\"launcher/drawer entry changes are introduced\",\"Plan, Build/Results, ROI/Competitive, Run, or Trace first viewport materially changes\",\"final generated names import changes visible behavior\",\"governed sandbox invocation is exposed\",\"real generated NetSuite names or links are used for live navigation\"],\"skipVisualTestWhen\":[\"contract-only changes\",\"trace-only changes\",\"internal schema or validator changes\",\"no visible consultant copy/layout changes\"]}"
+    },
+    {
+      "name": "w123_no_write_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"drawerOpenBehaviorUnchanged\":true,\"duplicateRootGuardPreserved\":true,\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true}"
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W124: Build Results Tab Reset",
+    "visualNetSuiteTestRequiredAfterBlock": true,
+    "prompt": "Move through W124: Build Results Tab Reset. Rename and reframe Review into Build/Results so it earns consultant attention: before final generated names are imported, show only a compact Build Handoff checkpoint with what the consultant requested, selected demo path, export handoff action, operator verification, and what is waiting; after final generated names are imported, transform the tab into Build Results showing final generated NetSuite records, names, links, warnings, and navigation pivots. Hide internal parameter/config/runner detail behind one collapsed internal section. Preserve W92/W110 state authority, W116-W123 final-name and launcher behavior, no drawer writes, no SuiteScript invocation from the drawer, no transaction writes, consultant confirmation required, website identity/naming support, notes-driven value story, and build-engine ownership of generated records. Output compressed Build/Results UI, final-name behavior, validator gates, W124 report, and best next Codex prompt."
+  }
+}

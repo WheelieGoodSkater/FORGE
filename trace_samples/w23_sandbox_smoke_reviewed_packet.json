@@ -1,0 +1,96 @@
+{
+  "idbReviewedPacket": {
+    "source": "Intelligent Demo Builder",
+    "packetMode": "reviewed_create_request",
+    "mode": "create",
+    "writePathType": "suitescript_direct_write",
+    "consultantConfirmed": true,
+    "selectedLaneId": "food_beverage",
+    "proofAnchor": "Finished Good",
+    "customer": {
+      "name": "Georgetown Foods",
+      "website": "https://georgetownfoods.example",
+      "notes": "Ingredient readiness, packaging timing, finished-good availability, and promotion replenishment risk."
+    },
+    "trace": {
+      "packetId": "w23-sandbox-smoke-reviewed-packet"
+    },
+    "records": [
+      {
+        "sequence": 1,
+        "label": "Customer Record",
+        "plannedName": "Georgetown Foods Customer Record",
+        "role": "customer"
+      },
+      {
+        "sequence": 2,
+        "label": "Sales Order View",
+        "plannedName": "Georgetown Foods Sales Order View",
+        "role": "transaction"
+      },
+      {
+        "sequence": 3,
+        "label": "Finished Good",
+        "plannedName": "Georgetown Foods Finished Good",
+        "role": "proof anchor"
+      }
+    ],
+    "creationPacketContract": {
+      "schema": "idb.creation-packet.v2",
+      "creationAllowed": false,
+      "writePathType": "suitescript_direct_write",
+      "records": [
+        {
+          "sequence": 1,
+          "label": "Customer Record",
+          "recordType": "customer",
+          "proposedName": "Georgetown Foods Customer Record",
+          "createIntent": "create_or_update_customer",
+          "idempotencyKey": "food_beverage:w23:1:customer-record",
+          "existingRecordLookup": {
+            "field": "companyname",
+            "value": "Georgetown Foods"
+          },
+          "dependencies": [],
+          "rollbackLabel": "Rollback Customer Record",
+          "traceResultRequired": true
+        },
+        {
+          "sequence": 2,
+          "label": "Sales Order View",
+          "recordType": "transaction",
+          "proposedName": "Georgetown Foods Sales Order View",
+          "createIntent": "create_sales_order_context",
+          "idempotencyKey": "food_beverage:w23:2:sales-order-view",
+          "existingRecordLookup": {
+            "field": "tranid",
+            "value": "Georgetown Foods Sales Order View"
+          },
+          "dependencies": [
+            "Customer Record",
+            "Finished Good"
+          ],
+          "rollbackLabel": "Rollback Sales Order View",
+          "traceResultRequired": true
+        },
+        {
+          "sequence": 3,
+          "label": "Finished Good",
+          "recordType": "proof anchor",
+          "proposedName": "Georgetown Foods Finished Good",
+          "createIntent": "create_or_update_proof_item",
+          "idempotencyKey": "food_beverage:w23:3:finished-good",
+          "existingRecordLookup": {
+            "field": "itemid",
+            "value": "Georgetown Foods Finished Good"
+          },
+          "dependencies": [
+            "Customer Record"
+          ],
+          "rollbackLabel": "Rollback Finished Good",
+          "traceResultRequired": true
+        }
+      ]
+    }
+  }
+}

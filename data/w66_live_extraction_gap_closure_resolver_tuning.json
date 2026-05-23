@@ -1,0 +1,114 @@
+{
+  "schema": "idb.w66-live-extraction-gap-closure-resolver-tuning.v1",
+  "status": "complete_tuning_ready_for_next_live_gate",
+  "objective": "Use W65 live smoke findings to close resolver extraction gaps for approved public websites without overfitting to static fixtures.",
+  "roles": [
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Evidence terms, page discovery labels, lane signal weighting, and extraction gap interpretation."
+    },
+    {
+      "name": "Classifier Calibration Agent",
+      "owns": "Confidence calibration and false-confident-wrong protection after resolver tuning."
+    },
+    {
+      "name": "Pilot Evidence Lead",
+      "owns": "Before/after live-smoke interpretation and pilot-readiness recommendation."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Harness and validator gates proving no regression in no-write, notes authority, and failure-state honesty."
+    }
+  ],
+  "w65FindingsUsed": [
+    {
+      "id": "w65_live_trek",
+      "finding": "Readable Trek pages were sampled but bicycle and cycling terms were under-weighted, causing apparel to lead and the result to downgrade to ambiguous.",
+      "tuning": "Add bicycle/cycling/equipment/helmet/road/mountain/electric bike terms and weight them toward dealer_hardgoods."
+    },
+    {
+      "id": "w65_live_patagonia",
+      "finding": "Live page returned a routing/checkout shell with too little public product evidence.",
+      "tuning": "Keep insufficient_evidence; do not add domain-only confident guesses."
+    },
+    {
+      "id": "w65_live_grainger",
+      "finding": "Live page returned a thin not-found shell with no public product/category terms.",
+      "tuning": "Keep insufficient_evidence; do not infer distribution from domain alone."
+    },
+    {
+      "id": "w65_live_lincoln_electric",
+      "finding": "Live page returned HTTP 403.",
+      "tuning": "Keep blocked and no lane candidates."
+    }
+  ],
+  "implementedTuning": {
+    "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+    "extractionPolicyVersion": "w66.extraction-policy.v1",
+    "productTermsAdded": [
+      "bike",
+      "bikes",
+      "bicycle",
+      "cycling",
+      "electric bikes",
+      "equipment",
+      "gear",
+      "gravel",
+      "helmets",
+      "mountain bikes",
+      "parts",
+      "road bikes"
+    ],
+    "discoveryLabelsAdded": [
+      "bike",
+      "bikes",
+      "cycling",
+      "equipment",
+      "helmet",
+      "helmets"
+    ],
+    "laneWeightingChanged": [
+      "dealer_hardgoods now scores bicycle/cycling/equipment/helmet/parts/dealer/retailer/store/catalog signals.",
+      "dealer_hardgoods product seed and family now align with W58 Trek expectations: Bicycle SKU / Bicycle Dealer Hardgoods."
+    ],
+    "notChanged": [
+      "No domain-only confident guesses for thin public pages.",
+      "No bypass for 403 blocked pages.",
+      "No notes-owned identity.",
+      "No write or SuiteScript authority."
+    ]
+  },
+  "beforeAfterExpectations": {
+    "beforeW66FromW65": {
+      "trek": "needs_confirmation / apparel_accessories leading / ambiguous",
+      "recommendedCount": 0,
+      "evidenceCoverageScore": 0.5
+    },
+    "afterW66Expected": {
+      "trek": "recommended / dealer_hardgoods / stable",
+      "falseConfidentWrongCount": 0,
+      "unsupportedClaimCount": 0,
+      "patagoniaGraingerLincolnRemainHonest": true
+    }
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "outputs": {
+    "contract": "data/w66_live_extraction_gap_closure_resolver_tuning.json",
+    "harness": "tools/run_live_extraction_gap_closure_harness.js",
+    "trace": "trace_samples/w66_live_extraction_gap_closure_trace.json",
+    "report": "reports/w66_live_extraction_gap_closure_resolver_tuning.md"
+  },
+  "bestNextCodexPrompt": {
+    "block": "W67: Resolver Production Readiness And Hosted Endpoint Plan",
+    "prompt": "Move through W67: Resolver Production Readiness And Hosted Endpoint Plan. Turn the local websiteResolverServiceV1 prototype and W64 drawer adapter into a production deployment plan: hosting shape, endpoint auth/CORS, cache strategy, rate limits, observability, retry policy, safe manual-evidence fallback, domain allow/block policy, and pilot rollout toggles. Use W65/W66 live findings as readiness evidence and keep the objective honest: no writes, no SuiteScript invocation, N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout remain insufficient evidence with no confident guesses. Output production endpoint plan, deployment checklist, rollback plan, validator gates, W67 report, and best next Codex prompt."
+  }
+}

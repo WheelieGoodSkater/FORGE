@@ -1,0 +1,15 @@
+{
+  "schema": "idb.w89-pilot-readiness-decision.v1",
+  "decision": "no_go_broader_consultant_pilot_missing_real_user_evidence",
+  "canProceedToBroaderPilot": false,
+  "canProceedToEvidenceReviewAfterUserUploads": true,
+  "reason": "W88 real user evidence is required before grading UX, field mapping, website/intake behavior, DCC handoff risk, and pilot readiness.",
+  "preservedBoundaries": {
+    "noSuiteScriptInvocationFromIdb": true,
+    "noDccRunnerMechanicsRewrite": true,
+    "noIdbTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  }
+}

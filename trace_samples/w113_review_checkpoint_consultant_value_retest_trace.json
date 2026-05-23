@@ -1,0 +1,24 @@
+{
+  "schema": "idb.w113-review-checkpoint-consultant-value-retest-trace.v1",
+  "decision": "PASS",
+  "pass": true,
+  "averageScore": 4,
+  "broaderConsultantPilot": "no_go_yet",
+  "oneRunRetest": "go_after_upload",
+  "prepareBriefButtonBound": true,
+  "stateAligned": true,
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesDriveStoryValue": true,
+    "websiteSupportsIdentityNaming": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W114: Review Handoff Story Compression",
+    "prompt": "Move through W114: Review Handoff Story Compression. Make Review impossible to skip by turning it into a one-screen Demo Build Handoff checkpoint: what the consultant requested, what DCC will build, what to export, what the operator must compare, and what is blocked. Hide operator technical details by default, preserve W92/W110 state authority and DCC handoff parity, keep no IDB writes, no SuiteScript invocation from IDB, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only/value-first, consultant confirmation required, and DCC ownership of object generation. Output compressed Review UI, validator gates, W114 report, and best next Codex prompt."
+  }
+}

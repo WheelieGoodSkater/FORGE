@@ -1,0 +1,40 @@
+{
+  "schema": "idb.w226-forge-header-install-cutover-trace.v1",
+  "responsiveLogoPolish": {
+    "largerThanW224WidthPx": 420,
+    "previousW224WidthPx": 286,
+    "usesMoreToolbarWidth": true,
+    "responsiveWidthRule": "width: min(420px, calc(100% - 72px))",
+    "closeButtonReservedSpacePx": 72,
+    "objectFit": "contain",
+    "maxHeightPx": 158,
+    "altText": "FORGE SC Demo Creation Tool"
+  },
+  "scriptToInstallOrUpdate": "idb-drawer.user.js",
+  "expectedVisibleChanges": [
+    "Header shows larger responsive FORGE image.",
+    "Rail button says FORGE.",
+    "FORGE rail label is not clipped.",
+    "Old visible header text is gone.",
+    "Close button remains available."
+  ],
+  "quickOperatorConfirmationSteps": [
+    "Open a NetSuite page.",
+    "Confirm the FORGE rail button appears.",
+    "Confirm the FORGE rail label is not clipped.",
+    "Open the drawer.",
+    "Confirm the larger FORGE header logo appears.",
+    "Narrow the window and confirm the logo scales without overlapping the close button.",
+    "Confirm the close button works.",
+    "Confirm Copy operator summary is available in the Trace/import-status surface."
+  ],
+  "installGuidance": {
+    "updateTampermonkeyDrawerScriptOnly": true,
+    "noW144AdapterUpdate": true,
+    "noRunnerUpdate": true,
+    "noSuiteScriptDeploymentUpdate": true,
+    "noImageLookupChange": true
+  },
+  "normalCutoverNoteHidesForbiddenTerms": true,
+  "visualTestingDecision": "No broad visual testing for W226; responsive header polish and install cutover are covered by targeted harness assertions."
+}

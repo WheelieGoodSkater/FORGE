@@ -1,0 +1,84 @@
+{
+  "schema": "idb.w95-exact-test-instructions.v1",
+  "status": "ready_for_user_hands_on_retest",
+  "fileToUpload": {
+    "absolutePath": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+    "sha256": "30f73ccc903fffc59a6210f064153b7382c6a77b517332f64212a2ff13d3f2ec",
+    "modifiedAt": "2026-05-17T17:48:39.947Z",
+    "tampermonkeyName": "Intelligent Demo Builder Drawer",
+    "installInstruction": "Open Tampermonkey, edit Intelligent Demo Builder Drawer, replace the full script with this file, save, refresh NetSuite, and confirm only one IDB launcher appears."
+  },
+  "salesRequest": {
+    "prospect": "Ariat International",
+    "website": "https://www.ariat.com/",
+    "conversationNotes": "Buyer says style, size, color, replenishment timing, and channel availability are hard to keep aligned for seasonal boot and apparel launches. The team uses spreadsheets and disconnected inventory views, which makes customer promise risky when demand shifts close to launch.",
+    "scObjective": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise for a seasonal boot and apparel launch.",
+    "knownCompetitorOrIncumbent": "Spreadsheets, disconnected inventory reports, and existing order tools. They are also comparing broader ERP options.",
+    "decisionCriteria": "Must show a clear path from customer record to order/proof context; must connect style/SKU matrix, size/color availability, channel availability, replenishment timing, and customer promise.",
+    "bantMeddicc": {
+      "budget": "Budget is not finalized; team needs value proof before committing to scope.",
+      "authority": "VP Operations and merchandising operations influence; finance signs off after value story is clear.",
+      "need": "Reduce launch risk and avoid inventory/customer promise surprises across apparel and footwear variants.",
+      "timeline": "Wants a credible proof path within the current evaluation cycle, ideally ready for internal review in 2-4 weeks.",
+      "metrics": "Fewer spreadsheet handoffs, faster launch readiness review, clearer available-to-promise confidence by style/size/color/channel.",
+      "economicBuyer": "Operations leadership with finance review.",
+      "decisionProcess": "SC demo proof, operator build review, internal stakeholder readout, then sandbox/pilot decision.",
+      "identifyPain": "Seasonal launches expose variant availability gaps and replenishment uncertainty.",
+      "champion": "Merchandising operations lead pushing for cleaner launch readiness."
+    }
+  },
+  "steps": [
+    "Update Tampermonkey with the exact file listed in fileToUpload.",
+    "Disable any old duplicate Intelligent Demo Builder scripts in Tampermonkey if more than one is enabled.",
+    "Refresh NetSuite and confirm only one IDB launcher button is visible before opening the drawer.",
+    "Open IDB and clear the current session.",
+    "Enter the sales request fields exactly as provided.",
+    "On Plan, capture the first viewport screenshot before expanding any audit detail.",
+    "Confirm the lane only if Apparel & Accessories / Style-to-Availability Readiness is visible and reasonable.",
+    "Go to Review and capture the first viewport screenshot showing DCC handoff export.",
+    "Export the DCC handoff JSON from Review.",
+    "Go to Run and capture the first viewport screenshot showing Say/Show/Close.",
+    "Go to Trace and capture the first viewport screenshot showing export/checklist/reset.",
+    "Export the trace JSON from Trace.",
+    "Have the operator compare the DCC handoff JSON to DCC Suitelet form params and runner preview without submitting anything.",
+    "Return screenshots, both JSON exports, consultant feedback, and operator comparison notes."
+  ],
+  "screenshotsRequired": [
+    "Plan first viewport",
+    "Review first viewport with DCC handoff export",
+    "Run first viewport with Say/Show/Close",
+    "Trace first viewport with export/checklist/reset"
+  ],
+  "jsonExportsRequired": [
+    "idb-dcc-runner-handoff-packet-*.json",
+    "intelligent-demo-builder-trace-*.json"
+  ],
+  "expectedFirstViewport": {
+    "plan": [
+      "Only one IDB drawer and one IDB button are visible.",
+      "Plan shows Ariat International as the prospect.",
+      "Classification should be Apparel & Accessories.",
+      "Confidence should be recommended/high or a clear confirmation state, not Products CPG.",
+      "DCC pack should align to apparelAccessories / Style-to-Availability Readiness.",
+      "Primary action should be confirm/review packet, not a long story bar."
+    ],
+    "review": [
+      "DCC handoff export is the first major card.",
+      "Status is blocked until consultant confirmation or confirmed for operator review after confirmation.",
+      "Selected pack/scenario match the visible lane.",
+      "DCC will prepare object list is visible without scrolling through audit detail.",
+      "Export DCC handoff button is visible."
+    ],
+    "run": [
+      "Live script first is visible.",
+      "Say, Show, and Close appear before controls, guardrails, or audit detail.",
+      "The script stays in the apparel/style/SKU path."
+    ],
+    "trace": [
+      "Trace actions only is visible.",
+      "Export DCC handoff and Export JSON are visible.",
+      "Pilot evidence checklist is visible.",
+      "Pilot result import is not part of the normal first viewport."
+    ]
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "schema": "intelligent-demo-builder-suitescript-write-path.v1",
+  "generated": "2026-05-09",
+  "status": "mapped_create_disabled",
+  "writePathType": "suitescript_direct_write",
+  "purpose": "Map reviewed IDB dry-run packets into the same governed SuiteScript direct-write record creation pattern used by the prior Demo Command Center.",
+  "createEnabledByDefault": false,
+  "requiresBeforeCreate": [
+    "authenticatedNetSuiteSession",
+    "reviewedDryRunPacket",
+    "supportedSuiteScriptWritePath",
+    "explicitConsultantConfirmation",
+    "traceableCreationResult"
+  ],
+  "inputPacket": {
+    "source": "Intelligent Demo Builder",
+    "packetMode": "dry_run_only",
+    "selectedLaneId": "string",
+    "dccFamilyKey": "string",
+    "dccScenario": "string",
+    "dccToggles": {
+      "createNewHeroItem": "boolean",
+      "enableManufacturing": "boolean",
+      "enableWip": "boolean"
+    },
+    "customer": "string",
+    "website": "string",
+    "conversationNotes": "string",
+    "records": "ordered reviewed record preview list"
+  },
+  "entryPoint": {
+    "scriptType": "Suitelet or SuiteScript module hosted in NetSuite",
+    "handler": "onRequest(context)",
+    "acceptedMethods": ["POST"],
+    "expectedMode": "create",
+    "requestBodyKey": "idbReviewedPacket",
+    "mustRejectWhen": [
+      "mode is not create",
+      "consultantConfirmed is not true",
+      "packetMode is not reviewed_create_request",
+      "writePathType is not suitescript_direct_write",
+      "selected lane is not authorized",
+      "proof anchor does not match lane contract"
+    ]
+  },
+  "laneRecordTypeMap": {
+    "products_cpg": {
+      "customer": "customer",
+      "transaction": "salesorder",
+      "proofAnchor": "inventoryitem",
+      "supportingProof": "customrecord_idb_cpg_readiness"
+    },
+    "food_beverage": {
+      "customer": "customer",
+      "transaction": "salesorder",
+      "proofAnchor": "inventoryitem",
+      "supportingProof": "customrecord_idb_food_readiness"
+    },
+    "industrial_equipment": {
+      "customer": "customer",
+      "transaction": "salesorder",
+      "proofAnchor": "assemblyitem",
+      "supportingProof": "customrecord_idb_assembly_readiness"
+    },
+    "life_sciences": {
+      "customer": "customer",
+      "transaction": "salesorder",
+      "proofAnchor": "lotnumberedinventoryitem",
+      "supportingProof": "customrecord_idb_lot_release"
+    },
+    "industrial_distribution": {
+      "customer": "customer",
+      "transaction": "salesorder",
+      "proofAnchor": "inventoryitem",
+      "supportingProof": "customrecord_idb_branch_availability"
+    },
+    "dealer_hardgoods": {
+      "customer": "customer",
+      "transaction": "salesorder",
+      "proofAnchor": "inventoryitem",
+      "supportingProof": "customrecord_idb_dealer_readiness"
+    },
+    "apparel_accessories": {
+      "customer": "customer",
+      "transaction": "salesorder",
+      "proofAnchor": "matrixitem",
+      "supportingProof": "customrecord_idb_style_availability"
+    }
+  },
+  "fieldMapping": {
+    "customer": {
+      "entityid": "customer",
+      "companyname": "customer",
+      "url": "website",
+      "comments": "conversationNotes",
+      "custentity_idb_lane": "selectedLaneId",
+      "custentity_idb_proof_anchor": "proofAnchor"
+    },
+    "transaction": {
+      "entity": "created.customer.recordId",
+      "memo": "dccScenario + selectedLaneId + proofAnchor",
+      "otherrefnum": "records.transaction.preview.proposedName",
+      "custbody_idb_lane": "selectedLaneId",
+      "custbody_idb_proof_anchor": "proofAnchor",
+      "custbody_idb_source_packet": "trace.packetId"
+    },
+    "proofAnchor": {
+      "itemid": "records.proofAnchor.preview.proposedName",
+      "displayname": "records.proofAnchor.preview.proposedName",
+      "salesdescription": "records.proofAnchor.preview.intendedUpdate",
+      "custitem_idb_lane": "selectedLaneId",
+      "custitem_idb_proof_anchor": "proofAnchor"
+    },
+    "supportingProof": {
+      "name": "records.supportingProof.preview.proposedName",
+      "custrecord_idb_customer": "created.customer.recordId",
+      "custrecord_idb_proof_item": "created.proofAnchor.recordId",
+      "custrecord_idb_lane": "selectedLaneId",
+      "custrecord_idb_packet_id": "trace.packetId",
+      "custrecord_idb_notes": "records.supportingProof.preview.intendedUpdate"
+    }
+  },
+  "createUpdateRules": [
+    "Customer may be create-or-update by company name and website.",
+    "Sales order context should be created for the demo packet unless an explicit reviewed transaction id is supplied.",
+    "Proof anchor should create a new item only when createNewHeroItem is true; otherwise link to reviewed existing item context.",
+    "Manufacturing/supporting records should only be created when the lane supports them and enableManufacturing is true.",
+    "WIP records should only be created when the lane supports them and enableWip is true.",
+    "Unsupported records must return blocked or skipped with a recoverable message."
+  ],
+  "creationSequence": [
+    {
+      "sequence": 1,
+      "role": "customer",
+      "operation": "create_or_update_customer",
+      "dependsOn": []
+    },
+    {
+      "sequence": 2,
+      "role": "transaction",
+      "operation": "create_sales_order_context_or_view",
+      "dependsOn": ["customer"]
+    },
+    {
+      "sequence": 3,
+      "role": "proof anchor",
+      "operation": "create_or_update_lane_proof_anchor",
+      "dependsOn": ["customer", "dccToggles.createNewHeroItem"]
+    },
+    {
+      "sequence": 4,
+      "role": "supporting proof",
+      "operation": "create_or_update_supporting_proof_records",
+      "dependsOn": ["customer", "proof anchor", "dccToggles.enableManufacturing", "dccToggles.enableWip"]
+    }
+  ],
+  "responseShape": {
+    "status": "blocked | validated | created | partial_failed | failed",
+    "createdRecords": [
+      {
+        "sequence": "number",
+        "label": "string",
+        "recordType": "string",
+        "recordId": "string",
+        "url": "string",
+        "operation": "string"
+      }
+    ],
+    "errors": [
+      {
+        "sequence": "number",
+        "label": "string",
+        "message": "string",
+        "recoverable": "boolean"
+      }
+    ],
+    "traceEvent": "suitescript_write_path_result"
+  },
+  "partialFailurePolicy": {
+    "status": "partial_failed",
+    "rule": "Return partial_failed when at least one record is created and a later dependent write fails.",
+    "mustInclude": [
+      "createdRecords completed before failure",
+      "failing record sequence",
+      "recoverable error message",
+      "recommended consultant next action"
+    ],
+    "mustNot": [
+      "silently delete records",
+      "silently retry writes",
+      "continue dependent writes after a required parent failed"
+    ]
+  },
+  "rollbackExpectations": [
+    "Capture created record IDs in trace before proceeding to the next write.",
+    "Return partial_failed when a later supporting record fails after customer or proof creation.",
+    "Expose recoverable error messages to the consultant.",
+    "Do not silently retry writes without recording the retry in trace."
+  ],
+  "creationPacketContractV2": {
+    "schema": "idb.creation-packet.v2",
+    "creationAllowed": false,
+    "requiredPerRecord": [
+      "sequence",
+      "label",
+      "recordType",
+      "proposedName",
+      "createIntent",
+      "idempotencyKey",
+      "existingRecordLookup",
+      "dependencies",
+      "rollbackLabel",
+      "traceResultRequired"
+    ],
+    "serverValidation": [
+      "reject missing Creation Packet Contract V2",
+      "reject duplicate idempotencyKey values",
+      "reject missing rollbackLabel",
+      "reject missing traceResultRequired",
+      "return validated with createEnabled false when the reviewed contract passes"
+    ]
+  },
+  "nonRegression": {
+    "noHiddenWrites": true,
+    "noCreateWithoutConsultantConfirmation": true,
+    "noCreateWithoutReviewedPacket": true,
+    "noLaneAuthorityChange": true,
+    "noProofAnchorChange": true,
+    "noUnsupportedObjectCreation": true,
+    "llmCannotInvokeWritePath": true
+  }
+}

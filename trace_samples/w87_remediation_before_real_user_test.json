@@ -1,0 +1,31 @@
+{
+  "schema": "idb.w87-remediation-before-real-user-test.v1",
+  "priority": [
+    {
+      "issue": "Real screenshots are not captured yet.",
+      "remediation": "Run the W86 test manually in the drawer and capture Plan, Review, DCC handoff card, exported handoff JSON, and trace JSON.",
+      "owner": "Consultant tester"
+    },
+    {
+      "issue": "Scenario confirmation clarity is not proven by a human yet.",
+      "remediation": "During the real test, note whether the consultant can confidently confirm or block within 30 seconds.",
+      "owner": "Consultant UX reviewer"
+    },
+    {
+      "issue": "Operator field mapping has not been compared against a live DCC sandbox screen.",
+      "remediation": "Operator should follow W85 and mark each Suitelet/runner param as match, missing, or unclear.",
+      "owner": "DCC operator"
+    },
+    {
+      "issue": "DCC config readiness still depends on sandbox deployment setup.",
+      "remediation": "Operator should record config presence only, with secrets and internal sensitive values redacted.",
+      "owner": "DCC operator"
+    }
+  ],
+  "mustFixBeforeRealConsultantPilot": [
+    "Any visible IDB submit/queue action for DCC.",
+    "Any IDB SuiteScript invocation.",
+    "Any IDB transaction write path.",
+    "Any inability to export DCC handoff JSON or trace JSON."
+  ]
+}

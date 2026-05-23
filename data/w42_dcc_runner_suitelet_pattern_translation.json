@@ -1,0 +1,144 @@
+{
+  "schema": "idb.w42-dcc-runner-suitelet-pattern-translation.v1",
+  "status": "complete_dcc_patterns_translated_no_new_writes",
+  "decision": "Translate proven DCC Runner and Suitelet mechanics into IDB write-path requirements before expanding record scope.",
+  "sourceFilesReviewed": [
+    "/path/to/downloads/scai_sl_demo_reset_v4_0_0sandbox_mccormick_cpg_auth_lock_2026_05_06_d.js",
+    "/path/to/downloads/scai_ss_so_csv_runner_v4_0_0_runner_sandbox (1).js",
+    "netsuite/suitescript/idb_suitescript_write_path_suitelet_w24_pilot.js"
+  ],
+  "currentIdbTruth": {
+    "customerWrite": "proven",
+    "proofItemWrite": "proven_after_customer_result",
+    "transactionWrite": "disabled",
+    "mainSuiteletCreateEnabled": false,
+    "pilotSuiteletScope": [
+      "customer",
+      "proof anchor"
+    ]
+  },
+  "dccMechanicsToPort": [
+    {
+      "mechanic": "account_context_first",
+      "dccEvidence": [
+        "custscript_v3_runner_subsidiary is required before runner execution",
+        "location is read with subsidiary and reused across item, routing, planning, and transaction context",
+        "writes apply subsidiary before dependent list fields"
+      ],
+      "idbState": "w39 partially ported: subsidiary, location, tax schedule resolve before Customer and Proof Item writes",
+      "nextBlock": "W43",
+      "requirement": "Account Context V2 must resolve subsidiary, location, tax schedule, currency, terms, department, class, and lane-required defaults before any expanded write."
+    },
+    {
+      "mechanic": "vendor_attach_lookup_first",
+      "dccEvidence": [
+        "mustFindByExternalId('vendor', ANCHORS.vendor)",
+        "ensurePreferredVendorOnItem scans itemvendor/vendors/vendor sublists",
+        "vendor is set preferred and validated before planning is trusted"
+      ],
+      "idbState": "not ported",
+      "nextBlock": "W44",
+      "requirement": "IDB must lookup vendor from packet/account configuration, attach preferred vendor when safe, and block on missing or ambiguous vendor rather than silently creating one."
+    },
+    {
+      "mechanic": "planning_control_explicit",
+      "dccEvidence": [
+        "forcePlanningAutoCalcOffForItems",
+        "hardenItemProcurementPlanning",
+        "seedItemLocationPlanningDetail",
+        "forceLocationSublistAutoCalcOff",
+        "forceItemLocationConfigAutoCalcOff"
+      ],
+      "idbState": "not ported",
+      "nextBlock": "W45",
+      "requirement": "IDB must show planning behavior in Review before write, default pilot proof items to stable planning behavior, and return trace evidence for changed planning fields."
+    },
+    {
+      "mechanic": "fresh_or_anchor_hero_mode",
+      "dccEvidence": [
+        "createNewHeroItem controls fresh versus anchor mode",
+        "fresh hero requires explicit or inferred hero item",
+        "fresh hero reuses anchor planning/vendor persistence path"
+      ],
+      "idbState": "drawer has New item toggle, but write path treats proof item as simple create/update",
+      "nextBlock": "W46",
+      "requirement": "Proof Item V2 must preserve New item semantics and avoid splitting logic between new and reused proof records."
+    },
+    {
+      "mechanic": "runner_sequencing",
+      "dccEvidence": [
+        "runner starts from validated runtime parameters",
+        "parents and item setup complete before downstream transaction CSV/import handoff",
+        "work order and routing are gated behind manufacturing/WIP flags"
+      ],
+      "idbState": "Customer then Proof Item sequencing is proven; transaction remains blocked",
+      "nextBlock": "W48",
+      "requirement": "Transaction context readiness must require stable Customer and Proof Item IDs/URLs plus explicit transaction-context enablement."
+    },
+    {
+      "mechanic": "transaction_context_handoff",
+      "dccEvidence": [
+        "buildSoCsv produces header and line context from customerId, itemInternalId, location, memo, and dates",
+        "submitCsvImport is a separate task handoff, not mixed into the item create step"
+      ],
+      "idbState": "transaction plan exists but create remains disabled",
+      "nextBlock": "W49",
+      "requirement": "Sales Order context write must be a separate governed pilot after W48, with parent IDs, location, memo, and line item explicitly traceable."
+    },
+    {
+      "mechanic": "reset_and_refresh_evidence",
+      "dccEvidence": [
+        "Suitelet preserves extId, notes file, runner task id, refresh URL, and runner status",
+        "refresh/status actions do not rerun unsafe work silently"
+      ],
+      "idbState": "Trace export and clear session exist; write result import exists",
+      "nextBlock": "W47",
+      "requirement": "Drawer Write Result UX V2 must show created/updated links, blocked dependents, reset guidance, and evidence export without repeating long gate text."
+    }
+  ],
+  "requiredPromptRoles": [
+    {
+      "role": "DCC Pattern Translator Agent",
+      "goal": "Keep only DCC mechanics that protect write correctness, demo usability, or rollback evidence."
+    },
+    {
+      "role": "SuiteScript Write Agent",
+      "goal": "Port account context, vendor, planning, and transaction sequencing into explicit governed SuiteScript phases."
+    },
+    {
+      "role": "Code Review Sentinel Agent",
+      "goal": "Prevent broad record expansion, silent writes, or hidden field changes."
+    },
+    {
+      "role": "Consultant UX Director Agent",
+      "goal": "Turn write mechanics into one compact consultant-facing summary instead of exposing implementation noise."
+    }
+  ],
+  "noRegression": {
+    "mainSuiteletCreateEnabled": false,
+    "mainDrawerAutoWrites": false,
+    "pilotTransactionWritesEnabled": false,
+    "noSilentVendorCreation": true,
+    "noHiddenPlanningChanges": true,
+    "noProofItemWithoutCustomerResult": true,
+    "noTransactionWithoutParentIdsAndUrls": true,
+    "nllmAdvisoryOnly": true
+  },
+  "recommendedSequence": [
+    "W43 Account Context Admin Resolver V2",
+    "W44 Vendor Attach And Procurement Defaults",
+    "W45 Planning Control Rail",
+    "W46 Proof Item Write V2",
+    "W47 Drawer Write Result UX V2",
+    "W50 Website Intelligence Release Candidate",
+    "W48 Transaction Context Readiness Pilot",
+    "W49 Sales Order Context Write Pilot",
+    "W51 Five-Consultant Test Pack",
+    "W52 Release Candidate And Completion Gate"
+  ],
+  "blockerSummary": [
+    "Do not enable Sales Order writes until Customer and Proof Item write evidence is stable after vendor/planning hardening.",
+    "Do not let the item writer remain simple; DCC proved vendor and planning persistence matter for demo credibility.",
+    "Do not expose DCC mechanics as consultant noise; expose only what will be created or updated, why it matters, and what evidence came back."
+  ]
+}

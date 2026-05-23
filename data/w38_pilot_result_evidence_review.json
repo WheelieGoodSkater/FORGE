@@ -1,0 +1,75 @@
+{
+  "schema": "idb.w38-pilot-result-evidence-review.v1",
+  "status": "local_contract_ready_awaiting_live_pilot_response",
+  "objective": "Use the W34 import surface and W24 approved-environment pilot response contract to prove Customer + Proof Item evidence can be reviewed without enabling transaction writes.",
+  "bluntStatus": "No fresh live create/update response with record IDs was provided in this block, so W38 is locally hardened and ready for live evidence, not claimed as live-write complete.",
+  "roles": [
+    {
+      "agent": "SuiteScript Result Import Agent",
+      "goal": "Validate and normalize W24 pilot responses with Customer and Proof Item IDs, URLs, operations, lookup status, rollback labels, and recoverable errors."
+    },
+    {
+      "agent": "Pilot Operations Agent",
+      "goal": "Run the W24 approved pilot deployment, capture the raw response, and provide before/after evidence."
+    },
+    {
+      "agent": "Transaction Context Sentinel",
+      "goal": "Mark Sales Order / transaction context review-ready only after Customer and Proof Item result IDs and URLs exist; keep transaction writes disabled."
+    },
+    {
+      "agent": "Support Triage Agent",
+      "goal": "Classify created, blocked, failed, and partial_failed responses with recovery instructions and rollback labels."
+    },
+    {
+      "agent": "No-Regression Sentinel",
+      "goal": "Prevent main drawer writes, main Suitelet writes, transaction writes, automatic creation, silent retry, and silent deletion."
+    }
+  ],
+  "requiredLiveEvidence": [
+    "raw W24 pilot Suitelet POST response",
+    "Customer recordId and URL if Customer write succeeds",
+    "Proof Item recordId and URL if Proof Item write succeeds",
+    "parentCustomerRecordId on Proof Item result",
+    "blocked Sales Order / transaction context dependent",
+    "rollback labels",
+    "recoverable errors if any",
+    "Trace export after import",
+    "Clear session confirmation after test"
+  ],
+  "representativeLocalEvidence": {
+    "sample": "trace_samples/w38_pilot_result_evidence_review_sample.json",
+    "status": "representative_shape_only_not_live_sandbox_evidence",
+    "purpose": "Prove the drawer import/display contract and validator before a fresh authenticated NetSuite response is supplied."
+  },
+  "transactionContextRule": {
+    "transactionWriteEnabled": false,
+    "reviewReadyWhen": [
+      "Customer recordId exists",
+      "Customer URL exists",
+      "Proof Item recordId exists",
+      "Proof Item URL exists",
+      "Proof Item parentCustomerRecordId matches Customer recordId"
+    ],
+    "stillBlockedUntil": "A later dedicated transaction-context pilot block enables its own runtime flags, type-to-confirm, idempotency, rollback, and trace gates."
+  },
+  "nextIfLiveEvidencePasses": {
+    "id": "W39",
+    "name": "Food/Beverage Pilot Smoke Runbook",
+    "goal": "Make the Customer + Proof Item approved demo-account write repeatable for five consultants."
+  },
+  "pivotIfLiveEvidenceFails": {
+    "id": "W38R",
+    "name": "Pilot Result Recovery Patch",
+    "goal": "Fix the W24 pilot response or import contract before adding any broader write scope."
+  },
+  "nonRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "noDrawerSuiteScriptInvocation": true,
+    "noAutomaticCreation": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "llmAdvisoryOnly": true
+  }
+}

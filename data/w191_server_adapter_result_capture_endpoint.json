@@ -1,0 +1,446 @@
+{
+  "schema": "idb.w191-server-adapter-result-capture-endpoint.v1",
+  "status": "server_adapter_result_capture_endpoint_ready",
+  "decision": "PASS_SERVER_ADAPTER_RESULT_CAPTURE_ENDPOINT_READY__COMPLETED_JSON_RETURN",
+  "sourceBlocks": {
+    "w190PollRequestAction": "poll_runner_result_capture",
+    "confirmedRequestSchema": "idb.confirmed-build-request.v1",
+    "adapterFile": "/path/to/workspace/intelligent demo builder drawer/netsuite/idb_governed_runner_adapter_w144_suitelet.js"
+  },
+  "serverEndpointChanges": {
+    "actionParam": "custpage_idb_action",
+    "pollAction": "poll_runner_result_capture",
+    "pollInputs": [
+      "custpage_idb_runner_task_id",
+      "custpage_idb_idempotency_token",
+      "custpage_idb_result_capture_cursor",
+      "custpage_idb_expected_result_schema",
+      "custpage_idb_confirmed_build_request_json",
+      "custpage_idb_operator_queue_gate_json"
+    ],
+    "resultCaptureStore": "File Cabinet folder from custscript_idb_result_capture_folder_id",
+    "lookupKeys": [
+      "runnerTaskId",
+      "idempotencyToken"
+    ],
+    "completedResultSchemaReturned": "idb.completed-runner-result-json.v1",
+    "readsOnly": true,
+    "writesRecords": false
+  },
+  "completedResultEnvelopeShape": {
+    "schema": "idb.approved-server-adapter-result-envelope.v1",
+    "status": "completed_runner_result_ready",
+    "runnerTaskId": "task_w191_ariat_001",
+    "resultCapture": {
+      "status": "completed_result_capture_ready",
+      "finalGeneratedNamesReady": true,
+      "finalGeneratedNamesJson": "idb.completed-runner-result-json.v1"
+    },
+    "finalGeneratedNamesJson": {
+      "schema": "idb.completed-runner-result-json.v1",
+      "status": "completed",
+      "runStatus": "completed",
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "records": {
+        "customer": {
+          "type": "customer",
+          "name": "Ariat International Outdoor Retail Account",
+          "internalId": "91201",
+          "url": "/app/common/entity/custjob.nl?id=91201"
+        },
+        "demoTransaction": {
+          "type": "salesorder",
+          "name": "Ariat Seasonal Footwear Availability Demo Order",
+          "internalId": "91202",
+          "url": "/app/accounting/transactions/salesord.nl?id=91202"
+        },
+        "heroItem": {
+          "type": "inventoryitem",
+          "name": "Ariat Terrain H2O Work Boot Hero Item",
+          "internalId": "91203",
+          "url": "/app/common/item/item.nl?id=91203"
+        },
+        "matrixProofItem": {
+          "type": "matrixitem",
+          "name": "Ariat Core Boot Size Color Matrix",
+          "internalId": "91204",
+          "url": "/app/common/item/item.nl?id=91204"
+        },
+        "componentItem": {
+          "type": "inventoryitem",
+          "name": "Ariat Brown Leather Upper Component",
+          "internalId": "91205",
+          "url": "/app/common/item/item.nl?id=91205"
+        }
+      },
+      "demoTransaction": {
+        "type": "salesorder",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "internalId": "91202",
+        "url": "/app/accounting/transactions/salesord.nl?id=91202"
+      },
+      "heroItem": {
+        "type": "inventoryitem",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "internalId": "91203",
+        "url": "/app/common/item/item.nl?id=91203"
+      },
+      "matrixItem": {
+        "type": "matrixitem",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "internalId": "91204",
+        "url": "/app/common/item/item.nl?id=91204"
+      },
+      "componentItems": [
+        {
+          "type": "inventoryitem",
+          "name": "Ariat Brown Leather Upper Component",
+          "internalId": "91205",
+          "url": "/app/common/item/item.nl?id=91205"
+        }
+      ]
+    },
+    "activeOpenLinks": 0
+  },
+  "guardedHarness": {
+    "pendingReturnsPollingPending": true,
+    "completedReturnsW151ValidJson": true,
+    "malformedReturnsAdapterError": true,
+    "nonJsonReturnsAdapterError": true,
+    "missingIdentityBlocksSafe": true,
+    "noRecordWritesFromAdapterEndpoint": true
+  },
+  "samples": {
+    "pending": {
+      "schema": "idb.approved-server-adapter-result-envelope.v1",
+      "adapterVersion": "w144-governed-sandbox-queue-submit-pilot-behind-server-flags",
+      "status": "polling_pending",
+      "queueSubmitted": true,
+      "runnerTaskId": "task_w191_pending_001",
+      "idempotencyToken": "IDB-pending",
+      "resultCapture": {
+        "schema": "idb.runner-result-capture.v1",
+        "status": "pending_runner_completion",
+        "runnerTaskId": "task_w191_pending_001",
+        "idempotencyToken": "IDB-pending",
+        "resultCaptureCursor": "cursor_w190_initial",
+        "finalGeneratedNamesReady": false,
+        "finalGeneratedNamesJson": null,
+        "lookupStatus": "result capture file not found"
+      },
+      "finalGeneratedNamesJson": null,
+      "activeOpenLinks": 0,
+      "generatedRecordOwner": "governed_dcc_runner_internal_build_engine"
+    },
+    "completed": {
+      "schema": "idb.approved-server-adapter-result-envelope.v1",
+      "adapterVersion": "w144-governed-sandbox-queue-submit-pilot-behind-server-flags",
+      "status": "completed_runner_result_ready",
+      "queueSubmitted": true,
+      "runnerTaskId": "task_w191_ariat_001",
+      "idempotencyToken": "IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+      "resultCapture": {
+        "schema": "idb.runner-result-capture.v1",
+        "status": "completed_result_capture_ready",
+        "runnerTaskId": "task_w191_ariat_001",
+        "idempotencyToken": "IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+        "resultCaptureCursor": "file:991",
+        "sourceFileId": "991",
+        "sourceFileName": "idb-result-task_w191_ariat_001-IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES.json",
+        "finalGeneratedNamesReady": true,
+        "finalGeneratedNamesJson": {
+          "schema": "idb.completed-runner-result-json.v1",
+          "status": "completed",
+          "runStatus": "completed",
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "records": {
+            "customer": {
+              "type": "customer",
+              "name": "Ariat International Outdoor Retail Account",
+              "internalId": "91201",
+              "url": "/app/common/entity/custjob.nl?id=91201"
+            },
+            "demoTransaction": {
+              "type": "salesorder",
+              "name": "Ariat Seasonal Footwear Availability Demo Order",
+              "internalId": "91202",
+              "url": "/app/accounting/transactions/salesord.nl?id=91202"
+            },
+            "heroItem": {
+              "type": "inventoryitem",
+              "name": "Ariat Terrain H2O Work Boot Hero Item",
+              "internalId": "91203",
+              "url": "/app/common/item/item.nl?id=91203"
+            },
+            "matrixProofItem": {
+              "type": "matrixitem",
+              "name": "Ariat Core Boot Size Color Matrix",
+              "internalId": "91204",
+              "url": "/app/common/item/item.nl?id=91204"
+            },
+            "componentItem": {
+              "type": "inventoryitem",
+              "name": "Ariat Brown Leather Upper Component",
+              "internalId": "91205",
+              "url": "/app/common/item/item.nl?id=91205"
+            }
+          },
+          "demoTransaction": {
+            "type": "salesorder",
+            "name": "Ariat Seasonal Footwear Availability Demo Order",
+            "internalId": "91202",
+            "url": "/app/accounting/transactions/salesord.nl?id=91202"
+          },
+          "heroItem": {
+            "type": "inventoryitem",
+            "name": "Ariat Terrain H2O Work Boot Hero Item",
+            "internalId": "91203",
+            "url": "/app/common/item/item.nl?id=91203"
+          },
+          "matrixItem": {
+            "type": "matrixitem",
+            "name": "Ariat Core Boot Size Color Matrix",
+            "internalId": "91204",
+            "url": "/app/common/item/item.nl?id=91204"
+          },
+          "componentItems": [
+            {
+              "type": "inventoryitem",
+              "name": "Ariat Brown Leather Upper Component",
+              "internalId": "91205",
+              "url": "/app/common/item/item.nl?id=91205"
+            }
+          ]
+        }
+      },
+      "finalGeneratedNamesJson": {
+        "schema": "idb.completed-runner-result-json.v1",
+        "status": "completed",
+        "runStatus": "completed",
+        "generatedRecordOwner": "governed_runner_internal_build_engine",
+        "records": {
+          "customer": {
+            "type": "customer",
+            "name": "Ariat International Outdoor Retail Account",
+            "internalId": "91201",
+            "url": "/app/common/entity/custjob.nl?id=91201"
+          },
+          "demoTransaction": {
+            "type": "salesorder",
+            "name": "Ariat Seasonal Footwear Availability Demo Order",
+            "internalId": "91202",
+            "url": "/app/accounting/transactions/salesord.nl?id=91202"
+          },
+          "heroItem": {
+            "type": "inventoryitem",
+            "name": "Ariat Terrain H2O Work Boot Hero Item",
+            "internalId": "91203",
+            "url": "/app/common/item/item.nl?id=91203"
+          },
+          "matrixProofItem": {
+            "type": "matrixitem",
+            "name": "Ariat Core Boot Size Color Matrix",
+            "internalId": "91204",
+            "url": "/app/common/item/item.nl?id=91204"
+          },
+          "componentItem": {
+            "type": "inventoryitem",
+            "name": "Ariat Brown Leather Upper Component",
+            "internalId": "91205",
+            "url": "/app/common/item/item.nl?id=91205"
+          }
+        },
+        "demoTransaction": {
+          "type": "salesorder",
+          "name": "Ariat Seasonal Footwear Availability Demo Order",
+          "internalId": "91202",
+          "url": "/app/accounting/transactions/salesord.nl?id=91202"
+        },
+        "heroItem": {
+          "type": "inventoryitem",
+          "name": "Ariat Terrain H2O Work Boot Hero Item",
+          "internalId": "91203",
+          "url": "/app/common/item/item.nl?id=91203"
+        },
+        "matrixItem": {
+          "type": "matrixitem",
+          "name": "Ariat Core Boot Size Color Matrix",
+          "internalId": "91204",
+          "url": "/app/common/item/item.nl?id=91204"
+        },
+        "componentItems": [
+          {
+            "type": "inventoryitem",
+            "name": "Ariat Brown Leather Upper Component",
+            "internalId": "91205",
+            "url": "/app/common/item/item.nl?id=91205"
+          }
+        ]
+      },
+      "finalGeneratedNamesJsonReady": true,
+      "activeOpenLinks": 0,
+      "generatedRecordOwner": "governed_runner_internal_build_engine"
+    },
+    "malformed": {
+      "schema": "idb.approved-server-adapter-result-envelope.v1",
+      "adapterVersion": "w144-governed-sandbox-queue-submit-pilot-behind-server-flags",
+      "status": "adapter_error",
+      "error": true,
+      "errorMessage": "Ariat International Outdoor Retail Account requires numeric internalId. Ariat International Outdoor Retail Account requires supported NetSuite record URL. salesorder name is required. salesorder requires numeric internalId. salesorder requires supported NetSuite record URL. inventoryitem name is required. inventoryitem requires numeric internalId. inventoryitem requires supported NetSuite record URL. matrixitem name is required. matrixitem requires numeric internalId. matrixitem requires supported NetSuite record URL. inventoryitem name is required. inventoryitem requires numeric internalId. inventoryitem requires supported NetSuite record URL.",
+      "queueSubmitted": false,
+      "runnerTaskId": "task_w191_bad_001",
+      "idempotencyToken": "IDB-bad",
+      "resultCapture": {
+        "schema": "idb.runner-result-capture.v1",
+        "status": "adapter_error",
+        "error": true,
+        "runnerTaskId": "task_w191_bad_001",
+        "idempotencyToken": "IDB-bad",
+        "resultCaptureCursor": "cursor_w190_initial",
+        "sourceFileId": "992",
+        "sourceFileName": "idb-result-task_w191_bad_001-IDB-bad.json",
+        "finalGeneratedNamesReady": false,
+        "finalGeneratedNamesJson": null
+      },
+      "finalGeneratedNamesJson": null,
+      "activeOpenLinks": 0,
+      "generatedRecordOwner": "governed_dcc_runner_internal_build_engine"
+    },
+    "nonJson": {
+      "schema": "idb.approved-server-adapter-result-envelope.v1",
+      "adapterVersion": "w144-governed-sandbox-queue-submit-pilot-behind-server-flags",
+      "status": "adapter_error",
+      "error": true,
+      "errorMessage": "result capture file is not valid JSON.",
+      "queueSubmitted": false,
+      "runnerTaskId": "task_w191_nonjson_001",
+      "idempotencyToken": "IDB-nonjson",
+      "resultCapture": {
+        "schema": "idb.runner-result-capture.v1",
+        "status": "adapter_error",
+        "error": true,
+        "runnerTaskId": "task_w191_nonjson_001",
+        "idempotencyToken": "IDB-nonjson",
+        "resultCaptureCursor": "cursor_w190_initial",
+        "sourceFileId": "993",
+        "sourceFileName": "idb-result-task_w191_nonjson_001-IDB-nonjson.json",
+        "finalGeneratedNamesReady": false,
+        "finalGeneratedNamesJson": null
+      },
+      "finalGeneratedNamesJson": null,
+      "activeOpenLinks": 0,
+      "generatedRecordOwner": "governed_dcc_runner_internal_build_engine"
+    },
+    "missingGate": {
+      "schema": "idb.approved-server-adapter-result-envelope.v1",
+      "adapterVersion": "w144-governed-sandbox-queue-submit-pilot-behind-server-flags",
+      "status": "adapter_error",
+      "error": true,
+      "errorMessage": "runnerTaskId is required for result-capture polling. idempotencyToken is required for result-capture polling.",
+      "queueSubmitted": false,
+      "runnerTaskId": null,
+      "idempotencyToken": null,
+      "resultCapture": {
+        "schema": "idb.runner-result-capture.v1",
+        "status": "adapter_error",
+        "error": true,
+        "runnerTaskId": null,
+        "idempotencyToken": null,
+        "resultCaptureCursor": "cursor_w190_initial",
+        "sourceFileId": null,
+        "sourceFileName": null,
+        "finalGeneratedNamesReady": false,
+        "finalGeneratedNamesJson": null
+      },
+      "finalGeneratedNamesJson": null,
+      "activeOpenLinks": 0,
+      "generatedRecordOwner": "governed_dcc_runner_internal_build_engine"
+    }
+  },
+  "traceSamples": [
+    {
+      "event": "w191_result_capture_poll_pending",
+      "runnerTaskId": "task_w191_pending_001",
+      "status": "polling_pending",
+      "resultCaptureStatus": "pending_runner_completion",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w191_result_capture_completed_json_returned",
+      "runnerTaskId": "task_w191_ariat_001",
+      "status": "completed_runner_result_ready",
+      "completedResultSchema": "idb.completed-runner-result-json.v1",
+      "customerInternalId": "91201",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w191_result_capture_adapter_error",
+      "runnerTaskId": "task_w191_bad_001",
+      "status": "adapter_error",
+      "errorMessage": "Ariat International Outdoor Retail Account requires numeric internalId. Ariat International Outdoor Retail Account requires supported NetSuite record URL. salesorder name is required. salesorder requires numeric internalId. salesorder requires supported NetSuite record URL. inventoryitem name is required. inventoryitem requires numeric internalId. inventoryitem requires supported NetSuite record URL. matrixitem name is required. matrixitem requires numeric internalId. matrixitem requires supported NetSuite record URL. inventoryitem name is required. inventoryitem requires numeric internalId. inventoryitem requires supported NetSuite record URL.",
+      "activeOpenLinks": 0
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlockedUntilImportedIntoIdb": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W191 makes the server adapter able to return completed JSON. Visual testing waits until IDB polls the deployed endpoint and imports W151-valid URLs."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptOutsideApprovedAdapterPath": true,
+    "pendingAndAdapterErrorNonMutating": true,
+    "internalRunnerOwnershipRequired": true,
+    "noActiveOpenLinksBeforeImport": true,
+    "rollbackByDisablingServerFlags": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W192: Governed Runner Result Capture Writer Contract And File Output",
+    "prompt": "Move through W192: Governed Runner Result Capture Writer Contract And File Output. Use W191 server adapter polling support to define and implement the governed runner result-capture writer that, after the internal runner creates or resolves Customer, demo transaction, hero item, matrix/proof item, and component item records, writes a completed result JSON file into the configured result-capture folder named with runnerTaskId/idempotency token. Preserve internal runner ownership, numeric internal ids, supported NetSuite URLs, no drawer writes, no drawer-created records, rollback by disabling server flags, and no active Open links until W151 import. Output runner result writer contract, file naming convention, guarded harness, trace samples, W192 report, visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w191_w144_has_poll_action_branch",
+      "pass": true,
+      "detail": "Suitelet action branch and request params present"
+    },
+    {
+      "name": "w191_pending_returns_polling_pending_non_mutating",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.approved-server-adapter-result-envelope.v1\",\"adapterVersion\":\"w144-governed-sandbox-queue-submit-pilot-behind-server-flags\",\"status\":\"polling_pending\",\"queueSubmitted\":true,\"runnerTaskId\":\"task_w191_pending_001\",\"idempotencyToken\":\"IDB-pending\",\"resultCapture\":{\"schema\":\"idb.runner-result-capture.v1\",\"status\":\"pending_runner_completion\",\"runnerTaskId\":\"task_w191_pending_001\",\"idempotencyToken\":\"IDB-pending\",\"resultCaptureCursor\":\"cursor_w190_initial\",\"finalGeneratedNamesReady\":false,\"finalGeneratedNamesJson\":null,\"lookupStatus\":\"result capture file not found\"},\"finalGeneratedNamesJson\":null,\"activeOpenLinks\":0,\"generatedRecordOwner\":\"governed_dcc_runner_internal_build_engine\"}"
+    },
+    {
+      "name": "w191_completed_returns_w151_valid_json",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.completed-runner-result-json.v1\",\"status\":\"completed\",\"runStatus\":\"completed\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"records\":{\"customer\":{\"type\":\"customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalId\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\"},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},\"matrixProofItem\":{\"type\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},\"componentItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},\"matrixItem\":{\"type\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},\"componentItems\":[{\"type\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}]}"
+    },
+    {
+      "name": "w191_malformed_result_returns_adapter_error",
+      "pass": true,
+      "detail": "Ariat International Outdoor Retail Account requires numeric internalId. Ariat International Outdoor Retail Account requires supported NetSuite record URL. salesorder name is required. salesorder requires numeric internalId. salesorder requires supported NetSuite record URL. inventoryitem name is required. inventoryitem requires numeric internalId. inventoryitem requires supported NetSuite record URL. matrixitem name is required. matrixitem requires numeric internalId. matrixitem requires supported NetSuite record URL. inventoryitem name is required. inventoryitem requires numeric internalId. inventoryitem requires supported NetSuite record URL."
+    },
+    {
+      "name": "w191_non_json_result_returns_adapter_error",
+      "pass": true,
+      "detail": "result capture file is not valid JSON."
+    },
+    {
+      "name": "w191_missing_poll_identity_blocks_adapter_safe",
+      "pass": true,
+      "detail": "runnerTaskId is required for result-capture polling. idempotencyToken is required for result-capture polling."
+    },
+    {
+      "name": "w191_normalization_accepts_governed_capture_shape",
+      "pass": true,
+      "detail": "{\"valid\":true,\"completed\":{\"schema\":\"idb.completed-runner-result-json.v1\",\"status\":\"completed\",\"runStatus\":\"completed\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"records\":{\"customer\":{\"type\":\"customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalId\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\"},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},\"matrixProofItem\":{\"type\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},\"componentItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},\"matrixItem\":{\"type\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},\"componentItems\":[{\"type\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}]},\"errors\":[]}"
+    },
+    {
+      "name": "w191_no_n_record_or_drawer_write_path",
+      "pass": true,
+      "detail": "result capture endpoint reads files only"
+    }
+  ]
+}

@@ -1,0 +1,438 @@
+{
+  "schema": "idb.w63-local-resolver-service-prototype-trace.v1",
+  "generated": "2026-05-17T21:41:01.419Z",
+  "decision": "PASS",
+  "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+  "approvedLiveFetchHarness": {
+    "mode": "registered_not_executed_by_default",
+    "reason": "Network fetches are approval-gated; synthetic harness proves service behavior deterministically."
+  },
+  "exemplarResolvedEvidence": {
+    "requestId": "ariat_apparel_resolved",
+    "normalizedUrl": "https://ariat.example/",
+    "domain": "ariat.example",
+    "fetchStatus": "fetched",
+    "pagesSampled": [
+      {
+        "role": "homepage",
+        "url": "https://ariat.example/",
+        "status": 200,
+        "contentHash": "74710ac4668a8bb924ba33572bc98479f73a383d81bb877c5f1a2cc7bcea6941",
+        "pageBytes": 446,
+        "redirects": []
+      },
+      {
+        "role": "navigation_discovered_category_or_products_page",
+        "url": "https://ariat.example/c/footwear",
+        "status": 200,
+        "contentHash": "384b96cc5c8d9aa34b6af7b21dc0600da68d4f4c92f1c30c2bddf89992efddd3",
+        "pageBytes": 231,
+        "redirects": []
+      },
+      {
+        "role": "navigation_discovered_category_or_products_page",
+        "url": "https://ariat.example/c/apparel",
+        "status": 200,
+        "contentHash": "5eebc58c9dbcc4db9e304f6494428a884a81440754b32d6ba24a87b9498392cb",
+        "pageBytes": 224,
+        "redirects": []
+      },
+      {
+        "role": "navigation_discovered_category_or_products_page",
+        "url": "https://ariat.example/stores",
+        "status": 200,
+        "contentHash": "98b710b686f4799a0a573e6fc79e2b7031da762928e92809a002f5a73b9546a9",
+        "pageBytes": 179,
+        "redirects": []
+      }
+    ],
+    "extractedEvidence": {
+      "pageTitle": "Ariat Workwear, Boots, Apparel and Footwear",
+      "metaDescription": "Boots, workwear, apparel, footwear, style, size, and SKU variant availability.",
+      "h1Text": [
+        "Performance boots and apparel",
+        "Boots and shoes",
+        "Apparel and accessories",
+        "Find a store"
+      ],
+      "h2Text": [
+        "Style, size, SKU variants, channel inventory and replenishment",
+        "Size, style, and channel availability",
+        "Style color size variants"
+      ],
+      "navigationLabels": [
+        "Footwear",
+        "Apparel",
+        "Find a store"
+      ],
+      "productCategoryTerms": [
+        "apparel",
+        "boots",
+        "channel",
+        "footwear",
+        "inventory",
+        "replenishment",
+        "size",
+        "sku",
+        "style",
+        "variants",
+        "workwear",
+        "shoes",
+        "accessories"
+      ],
+      "industryLanguage": [
+        "ecommerce",
+        "retail",
+        "dealer",
+        "service"
+      ],
+      "locationServiceClues": [
+        "find a store",
+        "dealer locator",
+        "service",
+        "store locator"
+      ],
+      "ecommerceSignals": [
+        "add to cart",
+        "cart",
+        "shop"
+      ],
+      "manufacturingSignals": [],
+      "distributionSignals": [
+        "replenishment",
+        "dealer"
+      ],
+      "sourceUrls": [
+        "https://ariat.example/",
+        "https://ariat.example/c/footwear",
+        "https://ariat.example/c/apparel",
+        "https://ariat.example/stores"
+      ]
+    },
+    "signals": {
+      "laneCandidates": [
+        {
+          "laneId": "apparel_accessories",
+          "score": 0.95,
+          "evidence": [
+            "apparel",
+            "boots",
+            "footwear",
+            "size",
+            "sku",
+            "style"
+          ]
+        },
+        {
+          "laneId": "dealer_hardgoods",
+          "score": 0.55,
+          "evidence": [
+            "find a store",
+            "dealer locator",
+            "store locator",
+            "Find a store"
+          ]
+        },
+        {
+          "laneId": "industrial_distribution",
+          "score": 0.45,
+          "evidence": [
+            "replenishment"
+          ]
+        }
+      ],
+      "productSeed": "Core Boot and Apparel Style Matrix",
+      "productFamily": "Apparel and Footwear Style",
+      "demandMoment": "style, size, and channel availability"
+    },
+    "confidence": {
+      "state": "recommended",
+      "score": 0.95,
+      "requiresConfirmation": false
+    },
+    "cache": {
+      "key": "6d9ca1125ec8842b3f3a20c6a1e0bbd292d2b77c16dc47ec0e56efdcb95f056f",
+      "ttlSeconds": 86400,
+      "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+      "extractionPolicyVersion": "w66.extraction-policy.v1",
+      "contentHashes": [
+        {
+          "url": "https://ariat.example/",
+          "contentHash": "74710ac4668a8bb924ba33572bc98479f73a383d81bb877c5f1a2cc7bcea6941"
+        },
+        {
+          "url": "https://ariat.example/c/footwear",
+          "contentHash": "384b96cc5c8d9aa34b6af7b21dc0600da68d4f4c92f1c30c2bddf89992efddd3"
+        },
+        {
+          "url": "https://ariat.example/c/apparel",
+          "contentHash": "5eebc58c9dbcc4db9e304f6494428a884a81440754b32d6ba24a87b9498392cb"
+        },
+        {
+          "url": "https://ariat.example/stores",
+          "contentHash": "98b710b686f4799a0a573e6fc79e2b7031da762928e92809a002f5a73b9546a9"
+        }
+      ]
+    },
+    "writeAuthority": "none",
+    "nllmAdvisoryOnly": true
+  },
+  "failureSamples": [
+    {
+      "requestId": "blocked_scheme",
+      "normalizedUrl": "",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "blocked_localhost",
+      "normalizedUrl": "https://localhost/",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "blocked_private_dns",
+      "normalizedUrl": "https://private-target.example/",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "blocked_redirect",
+      "normalizedUrl": "https://redirect.example/",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "blocked_403",
+      "normalizedUrl": "https://blocked.example/",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "thin_site",
+      "normalizedUrl": "https://thin.example/",
+      "fetchStatus": "thin",
+      "failureState": "thin",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0.12,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "unavailable_site",
+      "normalizedUrl": "https://down.example/",
+      "fetchStatus": "unavailable",
+      "failureState": "unavailable",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "timeout_site",
+      "normalizedUrl": "https://slow.example/",
+      "fetchStatus": "timeout",
+      "failureState": "timeout",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "unsupported_content_type",
+      "normalizedUrl": "https://pdf.example/",
+      "fetchStatus": "unavailable",
+      "failureState": "unavailable",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "ambiguous_site",
+      "normalizedUrl": "https://mixed.example/",
+      "fetchStatus": "ambiguous",
+      "failureState": "ambiguous",
+      "confidence": {
+        "state": "needs_confirmation",
+        "score": 0.85,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [
+        {
+          "laneId": "apparel_accessories",
+          "score": 0.85,
+          "evidence": [
+            "apparel",
+            "size",
+            "sku",
+            "style",
+            "variants"
+          ]
+        },
+        {
+          "laneId": "dealer_hardgoods",
+          "score": 0.75,
+          "evidence": [
+            "catalog",
+            "equipment",
+            "parts"
+          ]
+        },
+        {
+          "laneId": "industrial_distribution",
+          "score": 0.75,
+          "evidence": [
+            "distribution",
+            "wholesale",
+            "replenishment",
+            "warehouse"
+          ]
+        },
+        {
+          "laneId": "industrial_equipment",
+          "score": 0.55,
+          "evidence": [
+            "manufacturing",
+            "assembly"
+          ]
+        }
+      ],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    }
+  ],
+  "results": [
+    {
+      "name": "w63_url_normalization_https_tracking_hash",
+      "pass": true,
+      "detail": "{\"ok\":true,\"inputUrl\":\"ARIAT.example/?utm_source=test#top\",\"normalizedUrl\":\"https://ariat.example/\",\"domain\":\"ariat.example\"}"
+    },
+    {
+      "name": "w63_apparel_site_resolves_from_website_evidence",
+      "pass": true,
+      "detail": "{\"laneCandidates\":[{\"laneId\":\"apparel_accessories\",\"score\":0.95,\"evidence\":[\"apparel\",\"boots\",\"footwear\",\"size\",\"sku\",\"style\"]},{\"laneId\":\"dealer_hardgoods\",\"score\":0.55,\"evidence\":[\"find a store\",\"dealer locator\",\"store locator\",\"Find a store\"]},{\"laneId\":\"industrial_distribution\",\"score\":0.45,\"evidence\":[\"replenishment\"]}],\"productSeed\":\"Core Boot and Apparel Style Matrix\",\"productFamily\":\"Apparel and Footwear Style\",\"demandMoment\":\"style, size, and channel availability\"}"
+    },
+    {
+      "name": "w63_secondary_discovery_samples_category_pages",
+      "pass": true,
+      "detail": "https://ariat.example/, https://ariat.example/c/footwear, https://ariat.example/c/apparel, https://ariat.example/stores"
+    },
+    {
+      "name": "w63_cache_ready_response_fields_present",
+      "pass": true,
+      "detail": "{\"key\":\"6d9ca1125ec8842b3f3a20c6a1e0bbd292d2b77c16dc47ec0e56efdcb95f056f\",\"ttlSeconds\":86400,\"resolverVersion\":\"websiteResolverServiceV1.local-prototype.w66\",\"extractionPolicyVersion\":\"w66.extraction-policy.v1\",\"contentHashes\":[{\"url\":\"https://ariat.example/\",\"contentHash\":\"74710ac4668a8bb924ba33572bc98479f73a383d81bb877c5f1a2cc7bcea6941\"},{\"url\":\"https://ariat.example/c/footwear\",\"contentHash\":\"384b96cc5c8d9aa34b6af7b21dc0600da68d4f4c92f1c30c2bddf89992efddd3\"},{\"url\":\"https://ariat.example/c/apparel\",\"contentHash\":\"5eebc58c9dbcc4db9e304f6494428a884a81440754b32d6ba24a87b9498392cb\"},{\"url\":\"https://ariat.example/stores\",\"contentHash\":\"98b710b686f4799a0a573e6fc79e2b7031da762928e92809a002f5a73b9546a9\"}]}"
+    },
+    {
+      "name": "w63_trace_fields_include_no_write_boundaries",
+      "pass": true,
+      "detail": "{\"noSuiteScriptInvocation\":true,\"noWriteAuthority\":true,\"noHiddenLaneOverride\":true,\"notesCannotOwnIdentification\":true,\"transactionWriteEnabled\":false}"
+    },
+    {
+      "name": "w63_blocks_unsafe_scheme_localhost_private_redirect_and_403",
+      "pass": true,
+      "detail": "blocked, blocked, blocked, blocked, blocked"
+    },
+    {
+      "name": "w63_thin_site_does_not_guess",
+      "pass": true,
+      "detail": "{\"state\":\"insufficient_evidence\",\"score\":0.12,\"requiresConfirmation\":true}"
+    },
+    {
+      "name": "w63_unavailable_timeout_content_failures_are_insufficient",
+      "pass": true,
+      "detail": "unavailable, timeout, unavailable"
+    },
+    {
+      "name": "w63_ambiguous_site_requires_confirmation",
+      "pass": true,
+      "detail": "[{\"laneId\":\"apparel_accessories\",\"score\":0.85,\"evidence\":[\"apparel\",\"size\",\"sku\",\"style\",\"variants\"]},{\"laneId\":\"dealer_hardgoods\",\"score\":0.75,\"evidence\":[\"catalog\",\"equipment\",\"parts\"]},{\"laneId\":\"industrial_distribution\",\"score\":0.75,\"evidence\":[\"distribution\",\"wholesale\",\"replenishment\",\"warehouse\"]},{\"laneId\":\"industrial_equipment\",\"score\":0.55,\"evidence\":[\"manufacturing\",\"assembly\"]}]"
+    },
+    {
+      "name": "w63_endpoint_rejects_forbidden_write_fields",
+      "pass": true,
+      "detail": "{\"status\":400,\"body\":{\"error\":\"forbidden_request_fields\",\"fields\":[\"recordType\"],\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false}}"
+    },
+    {
+      "name": "w63_endpoint_returns_status_and_evidence_body",
+      "pass": true,
+      "detail": "\"resolved\""
+    },
+    {
+      "name": "w63_page_limit_honored",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "name": "w63_failure_samples_cover_required_states",
+      "pass": true,
+      "detail": "[\"blocked\",\"blocked\",\"blocked\",\"blocked\",\"blocked\",\"thin\",\"unavailable\",\"timeout\",\"unavailable\",\"ambiguous\"]"
+    },
+    {
+      "name": "w63_blocked_thin_unavailable_timeout_never_guess",
+      "pass": true,
+      "detail": "[{\"requestId\":\"blocked_scheme\",\"normalizedUrl\":\"\",\"fetchStatus\":\"blocked\",\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"requestId\":\"blocked_localhost\",\"normalizedUrl\":\"https://localhost/\",\"fetchStatus\":\"blocked\",\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"requestId\":\"blocked_private_dns\",\"normalizedUrl\":\"https://private-target.example/\",\"fetchStatus\":\"blocked\",\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"requestId\":\"blocked_redirect\",\"normalizedUrl\":\"https://redirect.example/\",\"fetchStatus\":\"blocked\",\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"requestId\":\"blocked_403\",\"normalizedUrl\":\"https://blocked.example/\",\"fetchStatus\":\"blocked\",\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"requestId\":\"thin_site\",\"normalizedUrl\":\"https://thin.example/\",\"fetchStatus\":\"thin\",\"failureState\":\"thin\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0.12,\"requiresConfirmation\":true},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"requestId\":\"unavailable_site\",\"normalizedUrl\":\"https://down.example/\",\"fetchStatus\":\"unavailable\",\"failureState\":\"unavailable\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"requestId\":\"timeout_site\",\"normalizedUrl\":\"https://slow.example/\",\"fetchStatus\":\"timeout\",\"failureState\":\"timeout\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"requestId\":\"unsupported_content_type\",\"normalizedUrl\":\"https://pdf.example/\",\"fetchStatus\":\"unavailable\",\"failureState\":\"unavailable\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"requestId\":\"ambiguous_site\",\"normalizedUrl\":\"https://mixed.example/\",\"fetchStatus\":\"ambiguous\",\"failureState\":\"ambiguous\",\"confidence\":{\"state\":\"needs_confirmation\",\"score\":0.85,\"requiresConfirmation\":true},\"laneCandidates\":[{\"laneId\":\"apparel_accessories\",\"score\":0.85,\"evidence\":[\"apparel\",\"size\",\"sku\",\"style\",\"variants\"]},{\"laneId\":\"dealer_hardgoods\",\"score\":0.75,\"evidence\":[\"catalog\",\"equipment\",\"parts\"]},{\"laneId\":\"industrial_distribution\",\"score\":0.75,\"evidence\":[\"distribution\",\"wholesale\",\"replenishment\",\"warehouse\"]},{\"laneId\":\"industrial_equipment\",\"score\":0.55,\"evidence\":[\"manufacturing\",\"assembly\"]}],\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true}]"
+    },
+    {
+      "name": "w63_data_contract_has_best_next_prompt",
+      "pass": true,
+      "detail": "idb.w63-local-resolver-service-prototype.v1"
+    }
+  ]
+}

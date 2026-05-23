@@ -1,0 +1,199 @@
+{
+  "schema": "idb.w82-dcc-runner-handoff-parameter-map.v1",
+  "status": "dcc_runner_handoff_parameter_map_ready_review_only",
+  "objective": "Map buildPacketV1 to the exact Demo Command Center Suitelet and scheduled runner parameters without rewriting DCC mechanics or enabling IDB writes.",
+  "parameterMap": {
+    "schema": "idb.w82-dcc-runner-parameter-map.v1",
+    "source": "recent Demo Command Center Suitelet and scheduled runner parameter contract",
+    "suiteletEntryParams": [
+      {
+        "idbField": "identity.prospect",
+        "dccParam": "custpage_prospect",
+        "required": true
+      },
+      {
+        "idbField": "identity.website",
+        "dccParam": "custpage_website",
+        "required": false
+      },
+      {
+        "idbField": "consultantInputs.conversationNotes",
+        "dccParam": "custpage_notes",
+        "required": true
+      },
+      {
+        "idbField": "dccRunnerInputs.createNewHeroItem",
+        "dccParam": "custpage_newhero",
+        "required": true
+      },
+      {
+        "idbField": "dccRunnerInputs.enableManufacturing",
+        "dccParam": "custpage_enablemfg",
+        "required": true
+      },
+      {
+        "idbField": "dccRunnerInputs.enableWip",
+        "dccParam": "custpage_enablewip",
+        "required": true
+      },
+      {
+        "idbField": "writeMode",
+        "dccParam": "custpage_evalmode",
+        "required": false
+      },
+      {
+        "idbField": "dccGenerated.extId",
+        "dccParam": "custpage_extid",
+        "required": false
+      },
+      {
+        "idbField": "dccGenerated.agenda",
+        "dccParam": "custpage_agenda",
+        "required": false
+      },
+      {
+        "idbField": "dccGenerated.runnerTaskId",
+        "dccParam": "custpage_runnertaskid",
+        "required": false
+      },
+      {
+        "idbField": "dccGenerated.notesFileId",
+        "dccParam": "custpage_notesfileid",
+        "required": false
+      },
+      {
+        "idbField": "handoffAction",
+        "dccParam": "custpage_actionmode",
+        "required": false
+      }
+    ],
+    "suiteletConfigParamsOwnedByDcc": [
+      "custscriptv3_reset_subsidiary",
+      "custscript_v3_reset_location",
+      "custscript_v3_runner_script_id",
+      "custscript_v3_runner_deploy_id",
+      "custscript_csv_mapping_id",
+      "custscript_csv_folder_id",
+      "custscript_so_savedsearch_id",
+      "custscript_wo_savedsearch_id"
+    ],
+    "scheduledRunnerParams": [
+      {
+        "idbField": "identity.prospect",
+        "dccParam": "custscript_v3_runner_prospect"
+      },
+      {
+        "idbField": "identity.website",
+        "dccParam": "custscript_v3_runner_website"
+      },
+      {
+        "idbField": "dccRunnerInputs.signalText",
+        "dccParam": "custscript_v3_runner_notes"
+      },
+      {
+        "idbField": "dccGenerated.agenda",
+        "dccParam": "custscript_v3_runner_agenda"
+      },
+      {
+        "idbField": "dccGenerated.extId",
+        "dccParam": "custscript_v3_runner_extid"
+      },
+      {
+        "idbField": "dccConfig.soMappingId",
+        "dccParam": "custscript_v3_runner_mapping"
+      },
+      {
+        "idbField": "dccConfig.soFolderId",
+        "dccParam": "custscript_v3_runner_folder"
+      },
+      {
+        "idbField": "dccConfig.subsidiaryId",
+        "dccParam": "custscript_v3_runner_subsidiary"
+      },
+      {
+        "idbField": "dccConfig.locationId",
+        "dccParam": "custscript_v3_runner_location"
+      },
+      {
+        "idbField": "dccRunnerInputs.enableWip",
+        "dccParam": "custscript_v3_runner_enable_wip"
+      },
+      {
+        "idbField": "dccRunnerInputs.enableManufacturing",
+        "dccParam": "custscript_v3_runner_enable_mfg"
+      },
+      {
+        "idbField": "dccRunnerInputs.createNewHeroItem",
+        "dccParam": "custscript_v3_runner_create_new_hero"
+      },
+      {
+        "idbField": "dccGenerated.heroItemId",
+        "dccParam": "custscript_v3_runner_hero_item"
+      },
+      {
+        "idbField": "dccConfig.woSavedSearchId",
+        "dccParam": "custscript_v3_runner_wc_search"
+      }
+    ]
+  },
+  "blockedExample": {
+    "schema": "idb.dcc-runner-handoff-packet.v1",
+    "status": "blocked_until_confirmed_handoff",
+    "reason": "Consultant has not confirmed lane, scenario pack, product naming, and build mode.",
+    "suiteletEntryPayload": {
+      "custpage_prospect": "Ariat International",
+      "custpage_website": "https://www.ariat.com/",
+      "custpage_notes": "Buyer needs style, size, and channel availability readiness before a seasonal launch.",
+      "custpage_newhero": "T",
+      "custpage_enablemfg": "F",
+      "custpage_enablewip": "F",
+      "custpage_evalmode": "review_only",
+      "custpage_actionmode": "previewbrief"
+    },
+    "suiteScriptInvocationFromIdb": false
+  },
+  "confirmedExample": {
+    "schema": "idb.dcc-runner-handoff-packet.v1",
+    "status": "ready_for_dcc_suitelet_submission_review",
+    "reason": "Consultant confirmed IDB buildPacketV1; DCC Suitelet config remains required before queueing the runner.",
+    "suiteletEntryPayload": {
+      "custpage_prospect": "Ariat International",
+      "custpage_website": "https://www.ariat.com/",
+      "custpage_notes": "Buyer needs style, size, and channel availability readiness before a seasonal launch.",
+      "custpage_newhero": "T",
+      "custpage_enablemfg": "F",
+      "custpage_enablewip": "F",
+      "custpage_evalmode": "review_only",
+      "custpage_actionmode": ""
+    },
+    "scheduledRunnerPreview": {
+      "custscript_v3_runner_prospect": "Ariat International",
+      "custscript_v3_runner_website": "https://www.ariat.com/",
+      "custscript_v3_runner_notes": "style size channel availability seasonal launch",
+      "custscript_v3_runner_agenda": "generated_by_dcc_suitelet",
+      "custscript_v3_runner_extid": "generated_by_dcc_suitelet",
+      "custscript_v3_runner_mapping": "dcc_config_required",
+      "custscript_v3_runner_folder": "dcc_config_required",
+      "custscript_v3_runner_subsidiary": "dcc_config_required",
+      "custscript_v3_runner_location": "dcc_config_optional",
+      "custscript_v3_runner_enable_wip": "F",
+      "custscript_v3_runner_enable_mfg": "F",
+      "custscript_v3_runner_create_new_hero": "T",
+      "custscript_v3_runner_hero_item": "generated_by_dcc_suitelet_fresh_hero",
+      "custscript_v3_runner_wc_search": "dcc_config_optional"
+    },
+    "suiteScriptInvocationFromIdb": false
+  },
+  "noRegression": {
+    "dccOwnsItemAssemblyBomLocationPlanningRoutingAndCsv": true,
+    "noDccRunnerRewrite": true,
+    "noIdbTransactionWrite": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "suiteScriptInvocationFromIdb": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W83: DCC Handoff Export And Operator Review UX",
+    "prompt": "Move through W83: DCC Handoff Export And Operator Review UX. Add a review-only DCC handoff export from the drawer using dccRunnerHandoffPacketV1, with a compact Review card showing blocked/confirmed status, exact Suitelet form params, DCC-owned config params, scheduled runner preview params, and operator checklist. Do not invoke SuiteScript, do not rewrite DCC runner mechanics, do not enable IDB transaction writes, keep hosted resolver optional until remoteSmokeExecuted=true, and require consultant confirmation before any handoff is eligible. Output export payload, UI summary, blocked/confirmed trace samples, W83 report, validator gates, and best next Codex prompt."
+  }
+}

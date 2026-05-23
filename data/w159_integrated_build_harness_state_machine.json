@@ -1,0 +1,102 @@
+{
+  "schema": "idb.w159-integrated-build-harness-state-machine.v1",
+  "status": "integrated_build_harness_state_machine_ready",
+  "decision": "PASS_BUILD_STATE_MACHINE_READY__VISUAL_TESTING_BLOCKED",
+  "buildStateMachineContract": {
+    "schema": "idb.integrated-build-harness-state-machine-contract.v1",
+    "cycleMode": "harness_only_no_submit",
+    "requiredStateOrder": [
+      "blocked",
+      "no_submit",
+      "queued",
+      "polling",
+      "completed_awaiting_w151_import",
+      "imported",
+      "error_recoverable"
+    ],
+    "actualStateOrder": [
+      "blocked",
+      "no_submit",
+      "queued",
+      "polling",
+      "completed_awaiting_w151_import",
+      "imported",
+      "error_recoverable"
+    ],
+    "importGuardStatus": "completed_runner_result_accepted",
+    "importedActiveOpenLinks": 5,
+    "importedRecordCount": 5,
+    "completedImportOwner": "W151 completed runner result import guard"
+  },
+  "guardedHarness": {
+    "boundaryStatus": "transport_request_constructed_for_approved_adapter",
+    "completedStateAwaitingImport": true,
+    "importedStateAcceptedByW151": true,
+    "importedLinksOnlyRealUrls": true,
+    "errorRecoveryDrawerSafe": true,
+    "drawerNamesNotMutatedUntilImport": true,
+    "renderedBuildMentionsStateMachine": true
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "visualTestingBlocked": true,
+    "reason": "W159 models the integrated Build state machine with fixture data only. Visual NetSuite testing remains blocked until real integrated Build runner return is enabled."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W160: Integrated Build State Machine UI Status And Import CTA",
+    "prompt": "Move through W160: Integrated Build State Machine UI Status And Import CTA. Use the W159 Build state-machine contract to render the consultant-safe Build status path and a clearly gated completed-result import CTA for harness-only states. Keep real invocation disabled by default, do not enable real writes, do not create records from the drawer, do not invoke SuiteScript from the drawer outside the approved server adapter path, and do not request visual testing. Preserve W151 completed-result import guard, consultant confirmation, state authority and handoff parity, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output Build status UI contract, guarded harness, trace samples, W160 report, visual testing decision blocked, and best next Codex prompt."
+  },
+  "validatorGates": [
+    {
+      "name": "w159_starts_from_w158_poll_cycle_ready",
+      "pass": true,
+      "detail": "PASS_DRY_RUN_POLL_CYCLE_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w159_state_machine_hook_and_ui_ready",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-strong\">Ariat International</div>\n          <div class=\"idb-copy\">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div>\n        </div>\n        <div class=\"idb-status-strip\">\n          <div class=\"idb-"
+    },
+    {
+      "name": "w159_state_order_covers_required_build_states",
+      "pass": true,
+      "detail": "[\"blocked\",\"no_submit\",\"queued\",\"polling\",\"completed_awaiting_w151_import\",\"imported\",\"error_recoverable\"]"
+    },
+    {
+      "name": "w159_completed_state_waits_for_w151_import",
+      "pass": true,
+      "detail": "{\"state\":\"completed_awaiting_w151_import\",\"sourceStatus\":\"completed_result_awaiting_w151_import\",\"finalGeneratedNamesJsonReady\":true,\"activeOpenLinks\":0,\"next\":\"imported\",\"importOwner\":\"W151 completed runner result import guard\",\"visualTesting\":\"blocked_until_real_integrated_build_return\"}"
+    },
+    {
+      "name": "w159_imported_state_requires_w151_guard_and_real_urls",
+      "pass": true,
+      "detail": "{\"state\":\"imported\",\"sourceStatus\":\"completed_runner_result_accepted\",\"importAccepted\":true,\"importedRecordCount\":5,\"activeOpenLinks\":5,\"next\":\"visual_verification_after_real_integrated_build_return\",\"visualTesting\":\"blocked_harness_only\",\"allOpenLinksHaveRealUrls\":true}"
+    },
+    {
+      "name": "w159_error_recoverable_state_safe",
+      "pass": true,
+      "detail": "{\"state\":\"error_recoverable\",\"sourceStatus\":\"adapter_transport_error_drawer_safe\",\"activeOpenLinks\":0,\"next\":\"rollback_or_retry_after_flags_review\",\"visualTesting\":\"blocked_harness_only\"}"
+    },
+    {
+      "name": "w159_no_drawer_state_mutation_before_import_handoff",
+      "pass": true,
+      "detail": "{\"dccFinalNamingResult\":null}"
+    },
+    {
+      "name": "w159_visual_testing_blocked_and_no_regression",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

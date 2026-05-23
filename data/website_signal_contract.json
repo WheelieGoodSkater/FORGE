@@ -1,0 +1,147 @@
+{
+  "schema": "idb.website-signal-contract.v1",
+  "generated": "2026-05-09",
+  "status": "website_first_ready_create_disabled",
+  "purpose": "Make the prospect website the primary authority for lane selection and record naming, while conversation notes shape story, ROI, competitive framing, and run coaching.",
+  "authorityOrder": [
+    "known domain and official website product/category signal",
+    "website URL/domain pattern",
+    "customer/prospect brand term",
+    "conversation notes and SC request context",
+    "industry fallback"
+  ],
+  "signals": [
+    {
+      "laneId": "dealer_hardgoods",
+      "domains": ["yeti.com"],
+      "category": "outdoor drinkware coolers bags dealer hardgoods",
+      "productSeed": "Outdoor Drinkware and Cooler SKU",
+      "productFamily": "Outdoor Gear Hardgoods",
+      "demandMoment": "multi-location retail availability",
+      "proofAnchor": "Product / SKU"
+    },
+    {
+      "laneId": "products_cpg",
+      "domains": ["milkbone.com"],
+      "category": "pet treats and packaged consumer goods",
+      "productSeed": "Original Dog Biscuits Variety Pack",
+      "productFamily": "Pet Treats",
+      "demandMoment": "retail pet-treat replenishment",
+      "proofAnchor": "Sales Order View"
+    },
+    {
+      "laneId": "food_beverage",
+      "domains": ["keebler.com"],
+      "category": "cookies crackers snacks packaged food",
+      "productSeed": "Cookie Variety Pack",
+      "productFamily": "Packaged Snacks",
+      "demandMoment": "promotion shelf readiness",
+      "proofAnchor": "Finished Good"
+    },
+    {
+      "laneId": "food_beverage",
+      "domains": ["liquiddeath.com"],
+      "category": "canned beverage water finished goods",
+      "productSeed": "Sparkling Water Variety 12-Pack",
+      "productFamily": "Canned Beverage",
+      "demandMoment": "retail beverage replenishment",
+      "proofAnchor": "Finished Good"
+    },
+    {
+      "laneId": "apparel_accessories",
+      "domains": ["vans.com"],
+      "category": "footwear apparel accessories style matrix",
+      "productSeed": "Core Skate Shoe Style Matrix",
+      "productFamily": "Footwear Style",
+      "demandMoment": "style and size availability",
+      "proofAnchor": "Style / SKU Matrix"
+    },
+    {
+      "laneId": "dealer_hardgoods",
+      "domains": ["gordonandsmith.com"],
+      "category": "surf skate dealer hardgoods",
+      "productSeed": "Custom Surfboard and Skateboard SKU",
+      "productFamily": "Surf and Skate Hardgoods",
+      "demandMoment": "dealer hardgoods fulfillment",
+      "proofAnchor": "Product / SKU"
+    },
+    {
+      "laneId": "dealer_hardgoods",
+      "domains": ["trekbikes.com"],
+      "category": "bicycle cycling dealer hardgoods",
+      "productSeed": "Bicycle SKU",
+      "productFamily": "Bicycle Dealer Hardgoods",
+      "demandMoment": "dealer bicycle availability",
+      "proofAnchor": "Product / SKU"
+    }
+  ],
+  "conversationNotesRole": [
+    "pain summary",
+    "ROI thesis",
+    "competitive framing",
+    "exception set",
+    "run coaching",
+    "secondary lane evidence only when website signal is weak"
+  ],
+  "scoringModel": {
+    "version": "v4",
+    "segments": [
+      "websiteScore",
+      "notesScore",
+      "fallbackScore"
+    ],
+    "rules": [
+      "Known website/product-family signals are scored separately from conversation notes.",
+      "Conversation notes shape story, ROI, competitive framing, exception handling, and run coaching after the lane is selected.",
+      "Fallback account and brand terms can support a recommendation but cannot masquerade as website authority.",
+      "Weak recommendations must expose low confidence or needs-context language instead of silently accepting a lane."
+    ]
+  },
+  "websitePackageClassifierV2": {
+    "status": "ready_create_disabled",
+    "orderedPasses": [
+      "known_domain_website_primary",
+      "website_category_classifier",
+      "conversation_note_product_cue",
+      "industry_fallback",
+      "nllm_advisory_enrichment"
+    ],
+    "categories": [
+      "apparel_footwear_accessories",
+      "bicycle_cycling_hardgoods",
+      "surf_skate_hardgoods",
+      "dealer_durable_hardgoods",
+      "packaged_food_beverage",
+      "pet_packaged_cpg",
+      "retail_packaged_cpg",
+      "branch_industrial_distribution"
+    ]
+  },
+  "nllmAdvisoryUse": [
+    "classify weak or unknown websites",
+    "summarize product/category evidence",
+    "generate customer-specific record names",
+    "generate story, ROI, competitive, and run script copy",
+    "explain confidence and fallback reason",
+    "repair product package and record names when a new website is directionally correct but generic"
+  ],
+  "websitePackageRules": [
+    "Website product/category evidence owns the lane package, productSeed, productFamily, and demandMoment before conversation notes are applied.",
+    "Conversation notes may shape pain, ROI, competitive framing, exceptions, and live run coaching, but must not pull food/beverage object names into dealer hardgoods or apparel lanes.",
+    "When a new website is not in known-domain hints, derive package from explicit website/domain/category tokens before using generic lane proof anchors.",
+    "If productSeed is equal to the lane proof anchor or contains only Finished Good/Product SKU fallback text, mark N/LLM recommended and expose the fallback reason."
+  ],
+  "antiLeakRules": [
+    "Dealer Hardgoods packages must not use ingredient and lot readiness unless the website itself proves food, beverage, ingredient, or lot-controlled goods.",
+    "Apparel and Accessories packages must not collapse into industrial distribution when the website shows footwear, apparel, style, size, or color signals.",
+    "Food/Beverage terms like finished-good readiness can be used only when the website/category supports packaged food, beverage, ingredient, packaging, or CPG signals."
+  ],
+  "nonRegression": {
+    "noAutomaticCreation": true,
+    "noLaneExpansion": true,
+    "noProofAnchorChange": true,
+    "noDccToggleChange": true,
+    "llmAdvisoryOnly": true,
+    "websiteBeatsGenericNotes": true
+  }
+}

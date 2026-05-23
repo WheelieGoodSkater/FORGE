@@ -1,0 +1,1378 @@
+{
+  "schema": "idb.w211-toggle-aware-naming-guardrails-harness.v1",
+  "status": "pass",
+  "passCount": 7,
+  "total": 7,
+  "results": [
+    {
+      "id": "summit_forbidden_terms_rejected",
+      "pass": true,
+      "evidence": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Summit Outdoor Supply Finished Good, Matrix item / proof item: Summit Outdoor Supply Production Line, Component item 1: Summit Outdoor Supply Ingredient Blend. Mode contract blocked: Hero item: finished good is not compatible with dealer_hardgoods_replenishment., Matrix item / proof item: production line is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient blend is not compatible with dealer_hardgoods_replenishment.."
+    },
+    {
+      "id": "summit_allowed_terms_accepted",
+      "pass": true,
+      "evidence": "Completed runner result JSON accepted. Final names and verified URLs can be imported."
+    },
+    {
+      "id": "w151_still_requires_numeric_ids_and_urls",
+      "pass": true,
+      "evidence": "completed_runner_result_accepted"
+    },
+    {
+      "id": "runner_guardrail_function_present",
+      "pass": true,
+      "evidence": "runner contains applyToggleAwareNamingGuardrails"
+    },
+    {
+      "id": "runner_no_missing_opts_manufacturing_default",
+      "pass": true,
+      "evidence": "missing opts no longer imply manufacturing enabled"
+    },
+    {
+      "id": "runner_logs_guardrail_rewrites",
+      "pass": true,
+      "evidence": "runner logs mode-aware rewrites"
+    },
+    {
+      "id": "w211_contract_exposed",
+      "pass": true,
+      "evidence": "mode_aware_completed_result_accepted"
+    }
+  ],
+  "badGuard": {
+    "schema": "idb.runner-result-import-guard.v1",
+    "valid": false,
+    "status": "toggle_vocabulary_guardrail_failed",
+    "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Summit Outdoor Supply Finished Good, Matrix item / proof item: Summit Outdoor Supply Production Line, Component item 1: Summit Outdoor Supply Ingredient Blend. Mode contract blocked: Hero item: finished good is not compatible with dealer_hardgoods_replenishment., Matrix item / proof item: production line is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient blend is not compatible with dealer_hardgoods_replenishment..",
+    "finalNaming": {
+      "schema": "idb.dcc-final-naming-result.v1",
+      "status": "dcc_final_names_imported",
+      "displayStatus": "Final generated names imported",
+      "importedAt": "2026-05-20T14:35:35.123Z",
+      "source": "dcc_result_import_only",
+      "finalNamesImported": true,
+      "runStatus": "completed",
+      "prospect": "Summit Outdoor Supply Customer Account",
+      "scenario": "Product / SKU",
+      "familyKey": "dealer_hardgoods",
+      "generated": {
+        "extId": "",
+        "agenda": ""
+      },
+      "displayObjects": [
+        {
+          "role": "customer",
+          "label": "Customer",
+          "name": "Summit Outdoor Supply Customer Account",
+          "internalName": "",
+          "id": "1722",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722",
+          "source": "dcc_final"
+        },
+        {
+          "role": "sales_order",
+          "label": "Sales Order / demo transaction",
+          "name": "SO2679",
+          "internalName": "",
+          "id": "80828",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+          "source": "dcc_final"
+        },
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "Summit Outdoor Supply Finished Good",
+          "internalName": "",
+          "id": "1865",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865",
+          "source": "dcc_final"
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "Summit Outdoor Supply Production Line",
+          "internalName": "",
+          "id": "2545",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545",
+          "source": "dcc_final"
+        }
+      ],
+      "componentItems": [
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Ingredient Blend",
+          "internalName": "",
+          "id": "2546",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546",
+          "source": "dcc_final"
+        }
+      ],
+      "locationPlanningRecords": [],
+      "csvSalesOrderArtifacts": [],
+      "warnings": [],
+      "errors": [],
+      "recoverableBlockers": [],
+      "traceCoverage": {
+        "includedInTraceExport": true,
+        "secretsRedacted": true,
+        "importedOnly": true
+      },
+      "noRegression": {
+        "importOnly": true,
+        "noIdbWrites": true,
+        "noSuiteScriptInvocationFromIdb": true,
+        "noTransactionWritesFromIdb": true,
+        "dccOwnsObjectGeneration": true,
+        "provisionalNamesCannotBeMarkedFinal": true,
+        "w92StateAuthorityPreserved": true,
+        "w110HandoffParityPreserved": true
+      }
+    },
+    "namingGuard": {
+      "schema": "idb.toggle-aware-naming-import-guard.w211.v1",
+      "valid": false,
+      "status": "toggle_vocabulary_guardrail_failed",
+      "selectedToggles": {
+        "schema": "idb.toggle-aware-naming-selected-toggles.w211.v1",
+        "selectedLaneId": "dealer_hardgoods",
+        "enableManufacturing": false,
+        "enableWip": false,
+        "manufacturingExplicit": true,
+        "wipExplicit": true
+      },
+      "violations": [
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "Summit Outdoor Supply Finished Good",
+          "reason": "Manufacturing, WIP, assembly, BOM, work order, routing, production, or ingredient vocabulary is not allowed when Manufacturing=false and WIP=false."
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "Summit Outdoor Supply Production Line",
+          "reason": "Manufacturing, WIP, assembly, BOM, work order, routing, production, or ingredient vocabulary is not allowed when Manufacturing=false and WIP=false."
+        },
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Ingredient Blend",
+          "reason": "Manufacturing, WIP, assembly, BOM, work order, routing, production, or ingredient vocabulary is not allowed when Manufacturing=false and WIP=false."
+        }
+      ],
+      "contract": {
+        "schema": "idb.toggle-aware-naming-vocabulary-contract.w211.v1",
+        "authorityOrder": [
+          "website/category evidence",
+          "consultant build toggles",
+          "conversation notes for story only"
+        ],
+        "forbiddenWhenManufacturingFalseAndWipFalse": [
+          "Finished Good",
+          "Ingredient",
+          "Ingredient Blend",
+          "Production Line",
+          "BOM",
+          "Assembly",
+          "Work Order",
+          "Routing",
+          "WIP",
+          "Manufacturing Line"
+        ],
+        "vocabularyByMode": {
+          "distributionReplenishment": [
+            "Product Availability SKU",
+            "Channel Availability SKU",
+            "Fulfillment Support SKU",
+            "Replenishment Flow"
+          ],
+          "dealerHardgoods": [
+            "Channel Availability SKU",
+            "Dealer Replenishment Flow",
+            "Allocation Support SKU",
+            "Fulfillment Support SKU",
+            "Product Availability SKU"
+          ],
+          "apparelStyleMatrix": [
+            "Style SKU",
+            "Size / Color Variant",
+            "Omnichannel Availability Flow",
+            "Channel Allocation Pack"
+          ],
+          "manufacturing": [
+            "Finished Good",
+            "Assembly",
+            "BOM",
+            "Production Line"
+          ],
+          "wipManufacturing": [
+            "Work Order",
+            "Routing",
+            "WIP",
+            "Manufacturing Line"
+          ],
+          "foodIngredientManufacturing": [
+            "Ingredient Blend",
+            "Recipe",
+            "Formula",
+            "Finished Case Pack"
+          ]
+        }
+      }
+    },
+    "semanticGuard": {
+      "schema": "idb.w214-semantic-runner-result-import-guard.v1",
+      "valid": false,
+      "status": "operating_mode_record_contract_failed",
+      "resolvedOperatingMode": "dealer_hardgoods_replenishment",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "product_sku",
+        "dealer_availability_or_replenishment_flow"
+      ],
+      "expectedRecordRoles": [],
+      "optionalRecordRoles": [
+        "allocation_support_sku",
+        "channel_context"
+      ],
+      "invalidRecordRoles": [
+        "ingredient",
+        "batch",
+        "bom",
+        "assembly",
+        "work_order",
+        "routing",
+        "wip"
+      ],
+      "violations": [
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "Summit Outdoor Supply Finished Good",
+          "term": "finished good",
+          "reason": "finished good is not compatible with dealer_hardgoods_replenishment."
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "Summit Outdoor Supply Production Line",
+          "term": "production line",
+          "reason": "production line is not compatible with dealer_hardgoods_replenishment."
+        },
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Ingredient Blend",
+          "term": "ingredient",
+          "reason": "ingredient is not compatible with dealer_hardgoods_replenishment."
+        },
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Ingredient Blend",
+          "term": "ingredient blend",
+          "reason": "ingredient blend is not compatible with dealer_hardgoods_replenishment."
+        }
+      ],
+      "warnings": [],
+      "explicitPartialResult": false,
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_blocked_or_partial",
+        "normalConsultantRecordCount": 5,
+        "canShowMoreThanFiveRecords": false,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Summit Outdoor Supply Customer Account",
+            "internalName": "",
+            "id": "1722",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "SO2679",
+            "internalName": "",
+            "id": "80828",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Summit Outdoor Supply Finished Good",
+            "internalName": "",
+            "id": "1865",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Summit Outdoor Supply Production Line",
+            "internalName": "",
+            "id": "2545",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545"
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Summit Outdoor Supply Ingredient Blend",
+            "internalName": "",
+            "id": "2546",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546"
+          }
+        ],
+        "adminDebugWarnings": [],
+        "openLinksAllowed": false
+      },
+      "resolver": {
+        "schema": "idb.w214-operating-mode-resolver.v1",
+        "resolvedOperatingMode": "dealer_hardgoods_replenishment",
+        "modeConfidence": "high",
+        "selectedToggles": {
+          "schema": "idb.w214-selected-build-toggles.v1",
+          "createNewHeroItem": true,
+          "enableManufacturing": false,
+          "enableWip": false,
+          "selectedLaneId": "dealer_hardgoods"
+        },
+        "namingAuthority": {
+          "websiteControlsIndustryCategoryAndProductNouns": true,
+          "togglesControlOperatingModelVocabulary": true,
+          "notesControlPainStoryRoiObjectionsOnly": true,
+          "nllmAdvisoryOnly": true,
+          "domain": "summitoutdoorsupply.com",
+          "evidence": [
+            "dealer hardgoods evidence"
+          ]
+        },
+        "requiredRecordRoles": [
+          "customer",
+          "sales_order",
+          "product_sku",
+          "dealer_availability_or_replenishment_flow"
+        ],
+        "expectedRecordRoles": [],
+        "optionalRecordRoles": [
+          "allocation_support_sku",
+          "channel_context"
+        ],
+        "invalidRecordRoles": [
+          "ingredient",
+          "batch",
+          "bom",
+          "assembly",
+          "work_order",
+          "routing",
+          "wip"
+        ],
+        "storyInputs": {
+          "buyerPainFromNotes": "Regional outdoor gear distributor is struggling to keep seasonal inventory aligned across retail, ecommerce, and wholesale channels. Buyers need better visibility into item availability, replenishment timing, and channel demand before committing to large seasonal orders.",
+          "website": "https://www.summitoutdoorsupply.com",
+          "pageContext": ""
+        },
+        "resultValidationExpectations": {
+          "recordContract": {
+            "label": "Dealer Hardgoods Replenishment",
+            "requiredRecordRoles": [
+              "customer",
+              "sales_order",
+              "product_sku",
+              "dealer_availability_or_replenishment_flow"
+            ],
+            "optionalRecordRoles": [
+              "allocation_support_sku",
+              "channel_context"
+            ],
+            "invalidRecordRoles": [
+              "ingredient",
+              "batch",
+              "bom",
+              "assembly",
+              "work_order",
+              "routing",
+              "wip"
+            ],
+            "allowedNouns": [
+              "channel availability sku",
+              "dealer replenishment flow",
+              "allocation support sku",
+              "fulfillment support sku",
+              "product availability sku"
+            ],
+            "invalidTerms": [
+              "finished good",
+              "ingredient",
+              "ingredient blend",
+              "production line",
+              "bom",
+              "assembly",
+              "work order",
+              "routing",
+              "wip",
+              "controlled assembly execution",
+              "frame welding",
+              "component a"
+            ]
+          },
+          "manufacturingFalseBlocksManufacturingSemantics": true,
+          "wipTrueRequiresWipDetailOrPartialResult": false,
+          "foodVocabularyRequiresFoodEvidenceAndManufacturing": false,
+          "openLinksBlockedUntilValidImport": true
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerCreatedRecords": true,
+          "noDrawerTransactionWrites": true,
+          "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+          "runnerOwnsGeneratedRecords": true,
+          "imageLookupDisabledByDefault": true
+        }
+      }
+    }
+  },
+  "goodGuard": {
+    "schema": "idb.runner-result-import-guard.v1",
+    "valid": true,
+    "status": "completed_runner_result_accepted",
+    "message": "Completed runner result JSON accepted. Final names and verified URLs can be imported.",
+    "finalNaming": {
+      "schema": "idb.dcc-final-naming-result.v1",
+      "status": "dcc_final_names_imported",
+      "displayStatus": "Final generated names imported",
+      "importedAt": "2026-05-20T14:35:35.125Z",
+      "source": "dcc_result_import_only",
+      "finalNamesImported": true,
+      "runStatus": "completed",
+      "prospect": "Summit Outdoor Supply Customer Account",
+      "scenario": "Product / SKU",
+      "familyKey": "dealer_hardgoods",
+      "generated": {
+        "extId": "",
+        "agenda": ""
+      },
+      "displayObjects": [
+        {
+          "role": "customer",
+          "label": "Customer",
+          "name": "Summit Outdoor Supply Customer Account",
+          "internalName": "",
+          "id": "1722",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722",
+          "source": "dcc_final"
+        },
+        {
+          "role": "sales_order",
+          "label": "Sales Order / demo transaction",
+          "name": "SO2679",
+          "internalName": "",
+          "id": "80828",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+          "source": "dcc_final"
+        },
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "Summit Outdoor Supply Channel Availability SKU",
+          "internalName": "",
+          "id": "1865",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865",
+          "source": "dcc_final"
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "Summit Outdoor Supply Dealer Replenishment Flow",
+          "internalName": "",
+          "id": "2545",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545",
+          "source": "dcc_final"
+        }
+      ],
+      "componentItems": [
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Allocation Support SKU",
+          "internalName": "",
+          "id": "2546",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546",
+          "source": "dcc_final"
+        }
+      ],
+      "locationPlanningRecords": [],
+      "csvSalesOrderArtifacts": [],
+      "warnings": [],
+      "errors": [],
+      "recoverableBlockers": [],
+      "traceCoverage": {
+        "includedInTraceExport": true,
+        "secretsRedacted": true,
+        "importedOnly": true
+      },
+      "noRegression": {
+        "importOnly": true,
+        "noIdbWrites": true,
+        "noSuiteScriptInvocationFromIdb": true,
+        "noTransactionWritesFromIdb": true,
+        "dccOwnsObjectGeneration": true,
+        "provisionalNamesCannotBeMarkedFinal": true,
+        "w92StateAuthorityPreserved": true,
+        "w110HandoffParityPreserved": true
+      }
+    },
+    "namingGuard": {
+      "schema": "idb.toggle-aware-naming-import-guard.w211.v1",
+      "valid": true,
+      "status": "toggle_vocabulary_guardrail_passed",
+      "selectedToggles": {
+        "schema": "idb.toggle-aware-naming-selected-toggles.w211.v1",
+        "selectedLaneId": "dealer_hardgoods",
+        "enableManufacturing": false,
+        "enableWip": false,
+        "manufacturingExplicit": true,
+        "wipExplicit": true
+      },
+      "violations": [],
+      "contract": {
+        "schema": "idb.toggle-aware-naming-vocabulary-contract.w211.v1",
+        "authorityOrder": [
+          "website/category evidence",
+          "consultant build toggles",
+          "conversation notes for story only"
+        ],
+        "forbiddenWhenManufacturingFalseAndWipFalse": [
+          "Finished Good",
+          "Ingredient",
+          "Ingredient Blend",
+          "Production Line",
+          "BOM",
+          "Assembly",
+          "Work Order",
+          "Routing",
+          "WIP",
+          "Manufacturing Line"
+        ],
+        "vocabularyByMode": {
+          "distributionReplenishment": [
+            "Product Availability SKU",
+            "Channel Availability SKU",
+            "Fulfillment Support SKU",
+            "Replenishment Flow"
+          ],
+          "dealerHardgoods": [
+            "Channel Availability SKU",
+            "Dealer Replenishment Flow",
+            "Allocation Support SKU",
+            "Fulfillment Support SKU",
+            "Product Availability SKU"
+          ],
+          "apparelStyleMatrix": [
+            "Style SKU",
+            "Size / Color Variant",
+            "Omnichannel Availability Flow",
+            "Channel Allocation Pack"
+          ],
+          "manufacturing": [
+            "Finished Good",
+            "Assembly",
+            "BOM",
+            "Production Line"
+          ],
+          "wipManufacturing": [
+            "Work Order",
+            "Routing",
+            "WIP",
+            "Manufacturing Line"
+          ],
+          "foodIngredientManufacturing": [
+            "Ingredient Blend",
+            "Recipe",
+            "Formula",
+            "Finished Case Pack"
+          ]
+        }
+      }
+    },
+    "semanticGuard": {
+      "schema": "idb.w214-semantic-runner-result-import-guard.v1",
+      "valid": true,
+      "status": "operating_mode_record_contract_passed",
+      "resolvedOperatingMode": "dealer_hardgoods_replenishment",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "product_sku",
+        "dealer_availability_or_replenishment_flow"
+      ],
+      "expectedRecordRoles": [],
+      "optionalRecordRoles": [
+        "allocation_support_sku",
+        "channel_context"
+      ],
+      "invalidRecordRoles": [
+        "ingredient",
+        "batch",
+        "bom",
+        "assembly",
+        "work_order",
+        "routing",
+        "wip"
+      ],
+      "violations": [],
+      "warnings": [],
+      "explicitPartialResult": false,
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_ready",
+        "normalConsultantRecordCount": 5,
+        "canShowMoreThanFiveRecords": false,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Summit Outdoor Supply Customer Account",
+            "internalName": "",
+            "id": "1722",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "SO2679",
+            "internalName": "",
+            "id": "80828",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Summit Outdoor Supply Channel Availability SKU",
+            "internalName": "",
+            "id": "1865",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Summit Outdoor Supply Dealer Replenishment Flow",
+            "internalName": "",
+            "id": "2545",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545"
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Summit Outdoor Supply Allocation Support SKU",
+            "internalName": "",
+            "id": "2546",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546"
+          }
+        ],
+        "adminDebugWarnings": [],
+        "openLinksAllowed": true
+      },
+      "resolver": {
+        "schema": "idb.w214-operating-mode-resolver.v1",
+        "resolvedOperatingMode": "dealer_hardgoods_replenishment",
+        "modeConfidence": "high",
+        "selectedToggles": {
+          "schema": "idb.w214-selected-build-toggles.v1",
+          "createNewHeroItem": true,
+          "enableManufacturing": false,
+          "enableWip": false,
+          "selectedLaneId": "dealer_hardgoods"
+        },
+        "namingAuthority": {
+          "websiteControlsIndustryCategoryAndProductNouns": true,
+          "togglesControlOperatingModelVocabulary": true,
+          "notesControlPainStoryRoiObjectionsOnly": true,
+          "nllmAdvisoryOnly": true,
+          "domain": "summitoutdoorsupply.com",
+          "evidence": [
+            "dealer hardgoods evidence"
+          ]
+        },
+        "requiredRecordRoles": [
+          "customer",
+          "sales_order",
+          "product_sku",
+          "dealer_availability_or_replenishment_flow"
+        ],
+        "expectedRecordRoles": [],
+        "optionalRecordRoles": [
+          "allocation_support_sku",
+          "channel_context"
+        ],
+        "invalidRecordRoles": [
+          "ingredient",
+          "batch",
+          "bom",
+          "assembly",
+          "work_order",
+          "routing",
+          "wip"
+        ],
+        "storyInputs": {
+          "buyerPainFromNotes": "Regional outdoor gear distributor is struggling to keep seasonal inventory aligned across retail, ecommerce, and wholesale channels. Buyers need better visibility into item availability, replenishment timing, and channel demand before committing to large seasonal orders.",
+          "website": "https://www.summitoutdoorsupply.com",
+          "pageContext": ""
+        },
+        "resultValidationExpectations": {
+          "recordContract": {
+            "label": "Dealer Hardgoods Replenishment",
+            "requiredRecordRoles": [
+              "customer",
+              "sales_order",
+              "product_sku",
+              "dealer_availability_or_replenishment_flow"
+            ],
+            "optionalRecordRoles": [
+              "allocation_support_sku",
+              "channel_context"
+            ],
+            "invalidRecordRoles": [
+              "ingredient",
+              "batch",
+              "bom",
+              "assembly",
+              "work_order",
+              "routing",
+              "wip"
+            ],
+            "allowedNouns": [
+              "channel availability sku",
+              "dealer replenishment flow",
+              "allocation support sku",
+              "fulfillment support sku",
+              "product availability sku"
+            ],
+            "invalidTerms": [
+              "finished good",
+              "ingredient",
+              "ingredient blend",
+              "production line",
+              "bom",
+              "assembly",
+              "work order",
+              "routing",
+              "wip",
+              "controlled assembly execution",
+              "frame welding",
+              "component a"
+            ]
+          },
+          "manufacturingFalseBlocksManufacturingSemantics": true,
+          "wipTrueRequiresWipDetailOrPartialResult": false,
+          "foodVocabularyRequiresFoodEvidenceAndManufacturing": false,
+          "openLinksBlockedUntilValidImport": true
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerCreatedRecords": true,
+          "noDrawerTransactionWrites": true,
+          "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+          "runnerOwnsGeneratedRecords": true,
+          "imageLookupDisabledByDefault": true
+        }
+      }
+    }
+  },
+  "w211Model": {
+    "schema": "idb.w211-toggle-aware-naming-guardrails.v1",
+    "status": "mode_aware_completed_result_accepted",
+    "contract": {
+      "schema": "idb.toggle-aware-naming-vocabulary-contract.w211.v1",
+      "authorityOrder": [
+        "website/category evidence",
+        "consultant build toggles",
+        "conversation notes for story only"
+      ],
+      "forbiddenWhenManufacturingFalseAndWipFalse": [
+        "Finished Good",
+        "Ingredient",
+        "Ingredient Blend",
+        "Production Line",
+        "BOM",
+        "Assembly",
+        "Work Order",
+        "Routing",
+        "WIP",
+        "Manufacturing Line"
+      ],
+      "vocabularyByMode": {
+        "distributionReplenishment": [
+          "Product Availability SKU",
+          "Channel Availability SKU",
+          "Fulfillment Support SKU",
+          "Replenishment Flow"
+        ],
+        "dealerHardgoods": [
+          "Channel Availability SKU",
+          "Dealer Replenishment Flow",
+          "Allocation Support SKU",
+          "Fulfillment Support SKU",
+          "Product Availability SKU"
+        ],
+        "apparelStyleMatrix": [
+          "Style SKU",
+          "Size / Color Variant",
+          "Omnichannel Availability Flow",
+          "Channel Allocation Pack"
+        ],
+        "manufacturing": [
+          "Finished Good",
+          "Assembly",
+          "BOM",
+          "Production Line"
+        ],
+        "wipManufacturing": [
+          "Work Order",
+          "Routing",
+          "WIP",
+          "Manufacturing Line"
+        ],
+        "foodIngredientManufacturing": [
+          "Ingredient Blend",
+          "Recipe",
+          "Formula",
+          "Finished Case Pack"
+        ]
+      }
+    },
+    "completedGuard": {
+      "schema": "idb.runner-result-import-guard.v1",
+      "valid": true,
+      "status": "completed_runner_result_accepted",
+      "message": "Completed runner result JSON accepted. Final names and verified URLs can be imported.",
+      "finalNaming": {
+        "schema": "idb.dcc-final-naming-result.v1",
+        "status": "dcc_final_names_imported",
+        "displayStatus": "Final generated names imported",
+        "importedAt": "2026-05-20T14:35:35.125Z",
+        "source": "dcc_result_import_only",
+        "finalNamesImported": true,
+        "runStatus": "completed",
+        "prospect": "Summit Outdoor Supply Customer Account",
+        "scenario": "Product / SKU",
+        "familyKey": "dealer_hardgoods",
+        "generated": {
+          "extId": "",
+          "agenda": ""
+        },
+        "displayObjects": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Summit Outdoor Supply Customer Account",
+            "internalName": "",
+            "id": "1722",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722",
+            "source": "dcc_final"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "SO2679",
+            "internalName": "",
+            "id": "80828",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+            "source": "dcc_final"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Summit Outdoor Supply Channel Availability SKU",
+            "internalName": "",
+            "id": "1865",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865",
+            "source": "dcc_final"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Summit Outdoor Supply Dealer Replenishment Flow",
+            "internalName": "",
+            "id": "2545",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545",
+            "source": "dcc_final"
+          }
+        ],
+        "componentItems": [
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Summit Outdoor Supply Allocation Support SKU",
+            "internalName": "",
+            "id": "2546",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546",
+            "source": "dcc_final"
+          }
+        ],
+        "locationPlanningRecords": [],
+        "csvSalesOrderArtifacts": [],
+        "warnings": [],
+        "errors": [],
+        "recoverableBlockers": [],
+        "traceCoverage": {
+          "includedInTraceExport": true,
+          "secretsRedacted": true,
+          "importedOnly": true
+        },
+        "noRegression": {
+          "importOnly": true,
+          "noIdbWrites": true,
+          "noSuiteScriptInvocationFromIdb": true,
+          "noTransactionWritesFromIdb": true,
+          "dccOwnsObjectGeneration": true,
+          "provisionalNamesCannotBeMarkedFinal": true,
+          "w92StateAuthorityPreserved": true,
+          "w110HandoffParityPreserved": true
+        }
+      },
+      "namingGuard": {
+        "schema": "idb.toggle-aware-naming-import-guard.w211.v1",
+        "valid": true,
+        "status": "toggle_vocabulary_guardrail_passed",
+        "selectedToggles": {
+          "schema": "idb.toggle-aware-naming-selected-toggles.w211.v1",
+          "selectedLaneId": "dealer_hardgoods",
+          "enableManufacturing": false,
+          "enableWip": false,
+          "manufacturingExplicit": true,
+          "wipExplicit": true
+        },
+        "violations": [],
+        "contract": {
+          "schema": "idb.toggle-aware-naming-vocabulary-contract.w211.v1",
+          "authorityOrder": [
+            "website/category evidence",
+            "consultant build toggles",
+            "conversation notes for story only"
+          ],
+          "forbiddenWhenManufacturingFalseAndWipFalse": [
+            "Finished Good",
+            "Ingredient",
+            "Ingredient Blend",
+            "Production Line",
+            "BOM",
+            "Assembly",
+            "Work Order",
+            "Routing",
+            "WIP",
+            "Manufacturing Line"
+          ],
+          "vocabularyByMode": {
+            "distributionReplenishment": [
+              "Product Availability SKU",
+              "Channel Availability SKU",
+              "Fulfillment Support SKU",
+              "Replenishment Flow"
+            ],
+            "dealerHardgoods": [
+              "Channel Availability SKU",
+              "Dealer Replenishment Flow",
+              "Allocation Support SKU",
+              "Fulfillment Support SKU",
+              "Product Availability SKU"
+            ],
+            "apparelStyleMatrix": [
+              "Style SKU",
+              "Size / Color Variant",
+              "Omnichannel Availability Flow",
+              "Channel Allocation Pack"
+            ],
+            "manufacturing": [
+              "Finished Good",
+              "Assembly",
+              "BOM",
+              "Production Line"
+            ],
+            "wipManufacturing": [
+              "Work Order",
+              "Routing",
+              "WIP",
+              "Manufacturing Line"
+            ],
+            "foodIngredientManufacturing": [
+              "Ingredient Blend",
+              "Recipe",
+              "Formula",
+              "Finished Case Pack"
+            ]
+          }
+        }
+      },
+      "semanticGuard": {
+        "schema": "idb.w214-semantic-runner-result-import-guard.v1",
+        "valid": true,
+        "status": "operating_mode_record_contract_passed",
+        "resolvedOperatingMode": "dealer_hardgoods_replenishment",
+        "modeConfidence": "high",
+        "selectedToggles": {
+          "schema": "idb.w214-selected-build-toggles.v1",
+          "createNewHeroItem": true,
+          "enableManufacturing": false,
+          "enableWip": false,
+          "selectedLaneId": "dealer_hardgoods"
+        },
+        "requiredRecordRoles": [
+          "customer",
+          "sales_order",
+          "product_sku",
+          "dealer_availability_or_replenishment_flow"
+        ],
+        "expectedRecordRoles": [],
+        "optionalRecordRoles": [
+          "allocation_support_sku",
+          "channel_context"
+        ],
+        "invalidRecordRoles": [
+          "ingredient",
+          "batch",
+          "bom",
+          "assembly",
+          "work_order",
+          "routing",
+          "wip"
+        ],
+        "violations": [],
+        "warnings": [],
+        "explicitPartialResult": false,
+        "dynamicRecordDisplayModel": {
+          "schema": "idb.w214-dynamic-record-display-model.v1",
+          "status": "semantic_display_ready",
+          "normalConsultantRecordCount": 5,
+          "canShowMoreThanFiveRecords": false,
+          "visibleRecords": [
+            {
+              "role": "customer",
+              "label": "Customer",
+              "name": "Summit Outdoor Supply Customer Account",
+              "internalName": "",
+              "id": "1722",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722",
+              "source": "dcc_final",
+              "linkAuthority": {
+                "schema": "idb.verified-record-link-authority.v1",
+                "status": "verified_openable",
+                "openable": true,
+                "displayLabel": "Open",
+                "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722"
+              },
+              "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722"
+            },
+            {
+              "role": "sales_order",
+              "label": "Sales Order / demo transaction",
+              "name": "SO2679",
+              "internalName": "",
+              "id": "80828",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+              "source": "dcc_final",
+              "linkAuthority": {
+                "schema": "idb.verified-record-link-authority.v1",
+                "status": "verified_openable",
+                "openable": true,
+                "displayLabel": "Open",
+                "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+              },
+              "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+            },
+            {
+              "role": "hero_item",
+              "label": "Hero item",
+              "name": "Summit Outdoor Supply Channel Availability SKU",
+              "internalName": "",
+              "id": "1865",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865",
+              "source": "dcc_final",
+              "linkAuthority": {
+                "schema": "idb.verified-record-link-authority.v1",
+                "status": "verified_openable",
+                "openable": true,
+                "displayLabel": "Open",
+                "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865"
+              },
+              "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865"
+            },
+            {
+              "role": "matrix_or_proof_item",
+              "label": "Matrix item / proof item",
+              "name": "Summit Outdoor Supply Dealer Replenishment Flow",
+              "internalName": "",
+              "id": "2545",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545",
+              "source": "dcc_final",
+              "linkAuthority": {
+                "schema": "idb.verified-record-link-authority.v1",
+                "status": "verified_openable",
+                "openable": true,
+                "displayLabel": "Open",
+                "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545"
+              },
+              "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545"
+            },
+            {
+              "role": "component_item",
+              "label": "Component item 1",
+              "name": "Summit Outdoor Supply Allocation Support SKU",
+              "internalName": "",
+              "id": "2546",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546",
+              "source": "dcc_final",
+              "linkAuthority": {
+                "schema": "idb.verified-record-link-authority.v1",
+                "status": "verified_openable",
+                "openable": true,
+                "displayLabel": "Open",
+                "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546"
+              },
+              "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546"
+            }
+          ],
+          "adminDebugWarnings": [],
+          "openLinksAllowed": true
+        },
+        "resolver": {
+          "schema": "idb.w214-operating-mode-resolver.v1",
+          "resolvedOperatingMode": "dealer_hardgoods_replenishment",
+          "modeConfidence": "high",
+          "selectedToggles": {
+            "schema": "idb.w214-selected-build-toggles.v1",
+            "createNewHeroItem": true,
+            "enableManufacturing": false,
+            "enableWip": false,
+            "selectedLaneId": "dealer_hardgoods"
+          },
+          "namingAuthority": {
+            "websiteControlsIndustryCategoryAndProductNouns": true,
+            "togglesControlOperatingModelVocabulary": true,
+            "notesControlPainStoryRoiObjectionsOnly": true,
+            "nllmAdvisoryOnly": true,
+            "domain": "summitoutdoorsupply.com",
+            "evidence": [
+              "dealer hardgoods evidence"
+            ]
+          },
+          "requiredRecordRoles": [
+            "customer",
+            "sales_order",
+            "product_sku",
+            "dealer_availability_or_replenishment_flow"
+          ],
+          "expectedRecordRoles": [],
+          "optionalRecordRoles": [
+            "allocation_support_sku",
+            "channel_context"
+          ],
+          "invalidRecordRoles": [
+            "ingredient",
+            "batch",
+            "bom",
+            "assembly",
+            "work_order",
+            "routing",
+            "wip"
+          ],
+          "storyInputs": {
+            "buyerPainFromNotes": "Regional outdoor gear distributor is struggling to keep seasonal inventory aligned across retail, ecommerce, and wholesale channels. Buyers need better visibility into item availability, replenishment timing, and channel demand before committing to large seasonal orders.",
+            "website": "https://www.summitoutdoorsupply.com",
+            "pageContext": ""
+          },
+          "resultValidationExpectations": {
+            "recordContract": {
+              "label": "Dealer Hardgoods Replenishment",
+              "requiredRecordRoles": [
+                "customer",
+                "sales_order",
+                "product_sku",
+                "dealer_availability_or_replenishment_flow"
+              ],
+              "optionalRecordRoles": [
+                "allocation_support_sku",
+                "channel_context"
+              ],
+              "invalidRecordRoles": [
+                "ingredient",
+                "batch",
+                "bom",
+                "assembly",
+                "work_order",
+                "routing",
+                "wip"
+              ],
+              "allowedNouns": [
+                "channel availability sku",
+                "dealer replenishment flow",
+                "allocation support sku",
+                "fulfillment support sku",
+                "product availability sku"
+              ],
+              "invalidTerms": [
+                "finished good",
+                "ingredient",
+                "ingredient blend",
+                "production line",
+                "bom",
+                "assembly",
+                "work order",
+                "routing",
+                "wip",
+                "controlled assembly execution",
+                "frame welding",
+                "component a"
+              ]
+            },
+            "manufacturingFalseBlocksManufacturingSemantics": true,
+            "wipTrueRequiresWipDetailOrPartialResult": false,
+            "foodVocabularyRequiresFoodEvidenceAndManufacturing": false,
+            "openLinksBlockedUntilValidImport": true
+          },
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerCreatedRecords": true,
+            "noDrawerTransactionWrites": true,
+            "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+            "runnerOwnsGeneratedRecords": true,
+            "imageLookupDisabledByDefault": true
+          }
+        }
+      }
+    },
+    "noRegression": {
+      "noDrawerWrites": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerTransactionWrites": true,
+      "noDirectDrawerSuiteScriptOutsideApprovedAdapterPath": true,
+      "runnerOwnsGeneratedRecords": true,
+      "w151ImportGuardPreserved": true,
+      "openLinksOnlyAfterValidCompletedImport": true
+    }
+  }
+}

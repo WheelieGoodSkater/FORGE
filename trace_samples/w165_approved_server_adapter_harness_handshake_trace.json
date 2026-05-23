@@ -1,0 +1,105 @@
+{
+  "schema": "idb.w165-approved-server-adapter-harness-handshake-trace.v1",
+  "decision": "PASS_HARNESS_HANDSHAKE_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "requestFacts": {
+    "confirmedBuildRequest": true,
+    "operatorGate": true,
+    "idempotencyToken": true,
+    "sandboxAllowlistEvidence": true,
+    "pollCursor": true,
+    "approvedEndpoint": true
+  },
+  "requestSummary": {
+    "requestSchema": "idb.approved-server-adapter-disabled-live-transport-request.v1",
+    "action": "submit_or_poll_build_return",
+    "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+    "method": "POST",
+    "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+    "confirmedRequestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+    "operatorDecision": "operator_approved_queue_submit",
+    "poll": {
+      "runnerTaskId": "",
+      "resultCaptureCursor": ""
+    },
+    "invocationAttempted": false,
+    "activeOpenLinks": 0
+  },
+  "normalizedStatuses": {
+    "queued": "queued_pending",
+    "polling": "polling_pending",
+    "completed": "completed_result_awaiting_w151_import",
+    "error": "adapter_transport_error_drawer_safe"
+  },
+  "completedImportGuard": {
+    "status": "completed_runner_result_accepted",
+    "acceptedByW151": true,
+    "handoffStatus": "handoff_packet_rejected",
+    "handoffRejected": true,
+    "activeOpenLinksBeforeImport": 0
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noLiveInvocation": true
+  },
+  "events": [
+    {
+      "name": "w165_starts_from_w164_readiness",
+      "pass": true,
+      "detail": "PASS_DISABLED_LIVE_TRANSPORT_READINESS_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w165_handshake_hook_ready",
+      "pass": true,
+      "detail": "approved_server_adapter_harness_handshake_ready"
+    },
+    {
+      "name": "w165_mock_endpoint_receives_constructed_request",
+      "pass": true,
+      "detail": "{\"requestSchema\":\"idb.approved-server-adapter-disabled-live-transport-request.v1\",\"action\":\"submit_or_poll_build_return\",\"endpointUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\",\"method\":\"POST\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"confirmedRequestId\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"operatorDecision\":\"operator_approved_queue_submit\",\"poll\":{\"runnerTaskId\":\"\",\"resultCaptureCursor\":\"\"},\"invocationAttempted\":false,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w165_request_carries_required_facts",
+      "pass": true,
+      "detail": "{\"confirmedBuildRequest\":true,\"operatorGate\":true,\"idempotencyToken\":true,\"sandboxAllowlistEvidence\":true,\"pollCursor\":true,\"approvedEndpoint\":true}"
+    },
+    {
+      "name": "w165_responses_normalize_through_w157_w162",
+      "pass": true,
+      "detail": "{\"queued\":\"queued_pending\",\"polling\":\"polling_pending\",\"completed\":\"completed_result_awaiting_w151_import\",\"error\":\"adapter_transport_error_drawer_safe\"}"
+    },
+    {
+      "name": "w165_completed_result_awaits_w151_import",
+      "pass": true,
+      "detail": "{\"status\":\"completed_runner_result_accepted\",\"acceptedByW151\":true,\"handoffStatus\":\"handoff_packet_rejected\",\"handoffRejected\":true,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w165_handoff_still_rejected",
+      "pass": true,
+      "detail": "{\"status\":\"completed_runner_result_accepted\",\"acceptedByW151\":true,\"handoffStatus\":\"handoff_packet_rejected\",\"handoffRejected\":true,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w165_blocked_handshake_stays_no_submit",
+      "pass": true,
+      "detail": "{\"idempotencyToken\":\"\",\"confirmedRequestId\":\"\",\"operatorDecision\":\"\",\"poll\":{},\"invocationAttempted\":false,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w165_no_live_invocation_and_no_links",
+      "pass": true,
+      "detail": "{\"requestSchema\":\"idb.approved-server-adapter-disabled-live-transport-request.v1\",\"action\":\"submit_or_poll_build_return\",\"endpointUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\",\"method\":\"POST\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"confirmedRequestId\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"operatorDecision\":\"operator_approved_queue_submit\",\"poll\":{\"runnerTaskId\":\"\",\"resultCaptureCursor\":\"\"},\"invocationAttempted\":false,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w165_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noLiveInvocation\":true}"
+    }
+  ]
+}

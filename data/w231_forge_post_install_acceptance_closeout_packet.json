@@ -1,0 +1,157 @@
+{
+  "schema": "idb.w231-forge-post-install-acceptance-closeout-harness.v1",
+  "status": "pass",
+  "passCount": 8,
+  "total": 8,
+  "results": [
+    {
+      "id": "closeout_dispositions_present",
+      "pass": true,
+      "evidence": "Install accepted | Install accepted with visual follow-up | Install blocked"
+    },
+    {
+      "id": "closeout_next_actions_exact_and_compact",
+      "pass": true,
+      "evidence": "Install accepted: Keep current Tampermonkey drawer script installed. / No further action required. | Install accepted with visual follow-up: Keep current Tampermonkey drawer script installed. / Open only the named visual follow-up. | Install blocked: Do not treat install as accepted. / Open only the named blocked-install fix."
+    },
+    {
+      "id": "blocked_install_fix_categories_limited_to_w230_blocked_conditions",
+      "pass": true,
+      "evidence": "Rail button missing. | Drawer does not open. | Header logo missing. | Close button inaccessible. | Old visible header text appears. | Operator summary copy control missing."
+    },
+    {
+      "id": "visual_follow_up_categories_limited_to_rail_and_header",
+      "pass": true,
+      "evidence": "Rail label fit polish. | Header logo sizing polish."
+    },
+    {
+      "id": "closeout_copy_hides_forbidden_internal_terms",
+      "pass": true,
+      "evidence": "Record the final FORGE install disposition after reviewing the evidence.\nIf accepted, keep the current Tampermonkey drawer script installed.\nIf accepted with visual follow-up or blocked, open only the named follow-up or fix."
+    },
+    {
+      "id": "w230_review_packet_remains_unchanged",
+      "pass": true,
+      "evidence": "post_install_evidence_review_fix_gate_ready"
+    },
+    {
+      "id": "install_exclusions_remain_explicit",
+      "pass": true,
+      "evidence": "{\"noW144AdapterUpdate\":true,\"noRunnerUpdate\":true,\"noSuiteScriptDeploymentUpdate\":true,\"noImageLookupChange\":true}"
+    },
+    {
+      "id": "w214_to_w230_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"w151ImportGuardPreserved\":true,\"semanticRoleMappingPreserved\":true,\"modeAwareNamingGuardrailsPreserved\":true,\"dynamicRecordDisplayPreserved\":true,\"consultantPartialResultLanguagePreserved\":true,\"operatorReadableSmokePacketPreserved\":true,\"frozenReviewRunWordingPreserved\":true,\"importFailureRecoveryCopyPreserved\":true,\"recoveryUiSurfaceWiringPreserved\":true,\"endToEndOperatorPacketPreserved\":true,\"exportableOperatorSummaryPreserved\":true,\"consultantCopyExportActionPreserved\":true,\"forgeBrandingPreserved\":true,\"targetedLiveHeaderSmokePreserved\":true,\"forgeRailFontFitCorrectionPreserved\":true,\"responsiveForgeHeaderLogoPolishPreserved\":true,\"installCutoverPacketPreserved\":true,\"finalInstallPacketPreserved\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true,\"nllmAdvisoryOnly\":true,\"postInstallAcceptancePacketPreserved\":true,\"postInstallEvidenceIntakePacketPreserved\":true,\"evidenceReviewAndTargetedFixGatePreserved\":true}"
+    }
+  ],
+  "closeoutPacket": {
+    "schema": "idb.w231-forge-post-install-acceptance-closeout.v1",
+    "status": "post_install_acceptance_closeout_ready",
+    "expectedInstalledScript": "idb-drawer.user.js",
+    "acceptedEvidenceSource": [
+      "W230 evidence review outcome.",
+      "W229 operator evidence intake fields.",
+      "Optional screenshot/reference note."
+    ],
+    "closeoutDispositions": [
+      {
+        "id": "install_accepted",
+        "label": "Install accepted",
+        "nextActions": [
+          "Keep current Tampermonkey drawer script installed.",
+          "No further action required."
+        ]
+      },
+      {
+        "id": "install_accepted_with_visual_follow_up",
+        "label": "Install accepted with visual follow-up",
+        "nextActions": [
+          "Keep current Tampermonkey drawer script installed.",
+          "Open only the named visual follow-up."
+        ]
+      },
+      {
+        "id": "install_blocked",
+        "label": "Install blocked",
+        "nextActions": [
+          "Do not treat install as accepted.",
+          "Open only the named blocked-install fix."
+        ]
+      }
+    ],
+    "blockedInstallFixCategories": [
+      "Rail button missing.",
+      "Drawer does not open.",
+      "Header logo missing.",
+      "Close button inaccessible.",
+      "Old visible header text appears.",
+      "Operator summary copy control missing."
+    ],
+    "visualFollowUpCategories": [
+      "Rail label fit polish.",
+      "Header logo sizing polish."
+    ],
+    "normalCloseoutCopy": "Record the final FORGE install disposition after reviewing the evidence.\nIf accepted, keep the current Tampermonkey drawer script installed.\nIf accepted with visual follow-up or blocked, open only the named follow-up or fix.",
+    "normalCloseoutCopyHidesForbiddenTerms": true,
+    "installExclusions": {
+      "noW144AdapterUpdate": true,
+      "noRunnerUpdate": true,
+      "noSuiteScriptDeploymentUpdate": true,
+      "noImageLookupChange": true
+    },
+    "noRegressionBoundarySummary": {
+      "w151ImportGuardPreserved": true,
+      "semanticRoleMappingPreserved": true,
+      "modeAwareNamingGuardrailsPreserved": true,
+      "dynamicRecordDisplayPreserved": true,
+      "consultantPartialResultLanguagePreserved": true,
+      "operatorReadableSmokePacketPreserved": true,
+      "frozenReviewRunWordingPreserved": true,
+      "importFailureRecoveryCopyPreserved": true,
+      "recoveryUiSurfaceWiringPreserved": true,
+      "endToEndOperatorPacketPreserved": true,
+      "exportableOperatorSummaryPreserved": true,
+      "consultantCopyExportActionPreserved": true,
+      "forgeBrandingPreserved": true,
+      "targetedLiveHeaderSmokePreserved": true,
+      "forgeRailFontFitCorrectionPreserved": true,
+      "responsiveForgeHeaderLogoPolishPreserved": true,
+      "installCutoverPacketPreserved": true,
+      "finalInstallPacketPreserved": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerTransactionWrites": true,
+      "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+      "runnerOwnsGeneratedRecords": true,
+      "imageLookupDisabledByDefault": true,
+      "nllmAdvisoryOnly": true,
+      "postInstallAcceptancePacketPreserved": true,
+      "postInstallEvidenceIntakePacketPreserved": true,
+      "evidenceReviewAndTargetedFixGatePreserved": true
+    },
+    "preservedFromW230": {
+      "reviewPacketStatus": "post_install_evidence_review_fix_gate_ready",
+      "reviewOutcomes": [
+        "accept",
+        "accept_with_visual_follow_up",
+        "block_install"
+      ],
+      "blockedInstallConditions": [
+        "Rail button missing.",
+        "Drawer does not open.",
+        "Header logo missing.",
+        "Close button inaccessible.",
+        "Old visible header text appears.",
+        "Operator summary copy control missing."
+      ],
+      "fixGateRouting": [
+        "rail_label_fit_polish",
+        "header_logo_sizing_polish",
+        "close_button_accessibility_fix",
+        "copy_summary_placement_fix",
+        "old_branding_removal_fix"
+      ]
+    },
+    "visualTestingDecision": "No broad visual testing for W231. Closeout records the final disposition from W230 evidence review only."
+  }
+}

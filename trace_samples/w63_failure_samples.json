@@ -1,0 +1,185 @@
+{
+  "schema": "idb.w63-failure-samples.v1",
+  "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+  "samples": [
+    {
+      "requestId": "blocked_scheme",
+      "normalizedUrl": "",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "blocked_localhost",
+      "normalizedUrl": "https://localhost/",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "blocked_private_dns",
+      "normalizedUrl": "https://private-target.example/",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "blocked_redirect",
+      "normalizedUrl": "https://redirect.example/",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "blocked_403",
+      "normalizedUrl": "https://blocked.example/",
+      "fetchStatus": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "thin_site",
+      "normalizedUrl": "https://thin.example/",
+      "fetchStatus": "thin",
+      "failureState": "thin",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0.12,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "unavailable_site",
+      "normalizedUrl": "https://down.example/",
+      "fetchStatus": "unavailable",
+      "failureState": "unavailable",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "timeout_site",
+      "normalizedUrl": "https://slow.example/",
+      "fetchStatus": "timeout",
+      "failureState": "timeout",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "unsupported_content_type",
+      "normalizedUrl": "https://pdf.example/",
+      "fetchStatus": "unavailable",
+      "failureState": "unavailable",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "requestId": "ambiguous_site",
+      "normalizedUrl": "https://mixed.example/",
+      "fetchStatus": "ambiguous",
+      "failureState": "ambiguous",
+      "confidence": {
+        "state": "needs_confirmation",
+        "score": 0.85,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [
+        {
+          "laneId": "apparel_accessories",
+          "score": 0.85,
+          "evidence": [
+            "apparel",
+            "size",
+            "sku",
+            "style",
+            "variants"
+          ]
+        },
+        {
+          "laneId": "dealer_hardgoods",
+          "score": 0.75,
+          "evidence": [
+            "catalog",
+            "equipment",
+            "parts"
+          ]
+        },
+        {
+          "laneId": "industrial_distribution",
+          "score": 0.75,
+          "evidence": [
+            "distribution",
+            "wholesale",
+            "replenishment",
+            "warehouse"
+          ]
+        },
+        {
+          "laneId": "industrial_equipment",
+          "score": 0.55,
+          "evidence": [
+            "manufacturing",
+            "assembly"
+          ]
+        }
+      ],
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "idb.w235-completed-runner-return-import-regression.trace.v1",
+  "generatedAt": "2026-05-20T15:02:01.975Z",
+  "reviewedTrace": "/path/to/downloads/intelligent-demo-builder-trace-1779280924087.json",
+  "conclusion": "Runner submit completed, but FORGE collapsed a non-importable poll response into completed UI state while retaining the old empty placeholder resultCapture.",
+  "passCount": 6,
+  "resultCount": 6,
+  "results": [
+    {
+      "id": "w235_normalization_preserves_raw_result_capture",
+      "pass": true,
+      "evidence": "normalizeApprovedServerAdapterTransportResponseV1 now carries the adapter resultCapture forward instead of dropping it."
+    },
+    {
+      "id": "w235_ready_detection_requires_actual_completed_payload",
+      "pass": true,
+      "evidence": "FORGE no longer treats finalGeneratedNamesJsonReady text/status flags as record-link evidence."
+    },
+    {
+      "id": "w235_state_patch_preserves_invalid_payload_for_admin_debug",
+      "pass": true,
+      "evidence": "A completed-but-rejected poll response is retained with W151 diagnostics while top-level Open-link import stays blocked."
+    },
+    {
+      "id": "w235_check_status_import_uses_poll_normalized_payload",
+      "pass": true,
+      "evidence": "Check status now keeps the poll payload and traces the exact import status."
+    },
+    {
+      "id": "w235_rejected_completed_payload_routes_to_admin_safe_failure_copy",
+      "pass": true,
+      "evidence": "Completed payloads that fail the import guard stop the normal consultant loop instead of asking for repeated Bring back records clicks."
+    },
+    {
+      "id": "w235_no_open_links_before_valid_import_preserved",
+      "pass": true,
+      "evidence": "Top-level finalGeneratedNamesJson is committed only after W151-valid IDs, URLs, and runner owner."
+    }
+  ],
+  "visualTestingDecision": "No broad visual testing. This harness covers the completed-runner return/import regression path and keeps live visual checks out of scope."
+}

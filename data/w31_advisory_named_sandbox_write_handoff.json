@@ -1,0 +1,48 @@
+{
+  "schema": "idb.w31-advisory-named-sandbox-write-handoff.v1",
+  "generated": "2026-05-11",
+  "status": "complete_main_create_disabled",
+  "objective": "Prepare the governed sandbox handoff for advisory-named Customer and Proof Item writes.",
+  "goal": "Only the approved sandbox pilot branch can write Customer first and Proof Item second, using reviewed names and explicit confirmation.",
+  "roles": [
+    "SuiteScript Write Agent",
+    "Packet Contract Agent",
+    "N/LLM Record Naming Advisor",
+    "Release Conductor Agent",
+    "Validation And Evidence Agent"
+  ],
+  "approvedScope": {
+    "branchFile": "netsuite/suitescript/idb_suitescript_write_path_suitelet_w24_pilot.js",
+    "mainSuiteletCreateEnabled": false,
+    "pilotBranchCreateEnabled": "branch_runtime_only",
+    "approvedLaneId": "food_beverage",
+    "approvedRoles": [
+      "customer",
+      "proof anchor"
+    ],
+    "blockedRoles": [
+      "transaction",
+      "supporting proof"
+    ]
+  },
+  "requiredBeforeWrite": [
+    "reviewed Creation Packet Contract V2",
+    "recordNamingAdvisoryRequest exported",
+    "consultantConfirmed true",
+    "type-to-confirm phrase matches packet",
+    "sandbox runtime flags enabled",
+    "Customer result ID and URL before Proof Item write"
+  ],
+  "nonRegression": {
+    "noDrawerDirectWrite": true,
+    "mainSuiteletCreateDisabled": true,
+    "noSalesOrderWrite": true,
+    "noSupportingProofWrite": true,
+    "noProofItemWithoutCustomerResult": true,
+    "llmAdvisoryOnly": true
+  },
+  "futureNotes": [
+    "Current approved write pilot is Food / Beverage only. Other lanes remain review-only until a lane-specific write scope is added.",
+    "Transaction context remains after Customer and Proof Item result IDs and URLs are stable."
+  ]
+}

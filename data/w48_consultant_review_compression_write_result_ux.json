@@ -1,0 +1,60 @@
+{
+  "schema": "idb.w48-consultant-review-compression-write-result-ux.v1",
+  "status": "complete_review_compressed_write_result_visible",
+  "objective": "Make Review readable live by showing what IDB will prepare, what can write now, what is blocked, and what to verify next.",
+  "roles": [
+    {
+      "name": "Consultant UX Director Agent",
+      "responsibility": "Keep the first Review surface compact enough for live demo use."
+    },
+    {
+      "name": "Pilot Evidence Lead",
+      "responsibility": "Surface Customer, Proof Item, transaction status, imported result evidence, and trace expectations."
+    },
+    {
+      "name": "Accessibility Guard Agent",
+      "responsibility": "Use text labels, status rows, and non-color state descriptions."
+    },
+    {
+      "name": "Code Review Sentinel Agent",
+      "responsibility": "Keep the drawer display/import-only and preserve Customer before Proof Item sequencing."
+    }
+  ],
+  "implemented": {
+    "compactReviewSummary": true,
+    "customerProofTransactionStatusRow": true,
+    "proofItemWriteV2Card": true,
+    "recoveryResetGuidance": true,
+    "reviewOnlyNoWrite": true
+  },
+  "reviewSurface": {
+    "summaryQuestion": "What will IDB prepare?",
+    "statusRow": [
+      "Customer",
+      "Proof Item",
+      "Transaction"
+    ],
+    "resultCardSource": "proofItemWriteV2",
+    "verifyNext": [
+      "Customer context and website match the prospect",
+      "Customer result ID and URL exist before Proof Item",
+      "Proof Item result uses proofItemWriteV2 and references the Customer",
+      "Transaction remains blocked"
+    ],
+    "recovery": [
+      "Clear pilot result before retry",
+      "Clear session when prospect context is wrong",
+      "Export trace and reviewed packet before handoff",
+      "Inspect NetSuite record links before continuing"
+    ]
+  },
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "noAutomaticCreationFromDrawer": true,
+    "customerBeforeProofItem": true,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true
+  },
+  "nextBlock": "W49: Governed Customer + Proof Item Pilot Hardening"
+}

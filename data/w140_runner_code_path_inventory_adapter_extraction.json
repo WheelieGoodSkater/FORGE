@@ -1,0 +1,360 @@
+{
+  "schema": "idb.w140-runner-code-path-inventory-adapter-extraction.v1",
+  "status": "runner_code_path_inventory_adapter_boundary_ready",
+  "decision": "PASS_ADAPTER_BOUNDARY_READY__IMPLEMENT_NETSUITE_SIDE_ADAPTER_NEXT",
+  "codePathInventory": {
+    "schema": "idb.w140-runner-code-path-inventory.v1",
+    "sourceFiles": {
+      "primaryRunner": "/path/to/workspace/Demo Command Center V4 Master/suitelet_runtime_package_current/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+      "legacySuiteletUiReference": "/path/to/workspace/Demo Command Center V4 Master/suitelet_runtime_package_current/scai_sl_demo_reset_v4_0_0sandbox_mccormick_cpg_auth_lock_2026_05_06_d.js",
+      "idbDrawer": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+      "extractedAdapter": "/path/to/workspace/intelligent demo builder drawer/tools/idb_governed_runner_adapter_v1.js"
+    },
+    "runnerEntry": {
+      "scriptType": "ScheduledScript",
+      "entryFunction": "execute",
+      "present": true,
+      "readsRunnerParams": true
+    },
+    "existingRunnerCapabilities": [
+      {
+        "capability": "read scheduled runner params",
+        "functions": [
+          "readRunnerParams",
+          "execute"
+        ],
+        "evidence": [
+          "custscript_v3_runner_prospect",
+          "custscript_v3_runner_extid",
+          "custscript_v3_runner_mapping",
+          "custscript_v3_runner_folder"
+        ]
+      },
+      {
+        "capability": "resolve anchor customer for sales order import",
+        "functions": [
+          "mustFindByExternalId",
+          "buildSoCsv"
+        ],
+        "evidence": [
+          "mustFindByExternalId(customer, ANCHORS.customer)",
+          "Customer Internal ID (Header)"
+        ]
+      },
+      {
+        "capability": "create or adopt fresh hero inventory item",
+        "functions": [
+          "getOrCreateFreshHeroItem",
+          "createFreshHeroItem",
+          "adoptFreshHeroItem"
+        ],
+        "evidence": [
+          "record.copy inventoryitem",
+          "record.create inventoryitem",
+          "externalId SCAI_HERO_*"
+        ]
+      },
+      {
+        "capability": "create or resolve component inventory items and manufacturing records",
+        "functions": [
+          "ensureManufacturingAnchors",
+          "ensureInventoryItemByExternalId",
+          "ensureAssemblyItemByExternalId",
+          "ensureBomByExternalId",
+          "ensureBomRevisionByExternalId"
+        ],
+        "evidence": [
+          "record.create inventoryitem",
+          "record.create assemblyitem",
+          "record.create bom",
+          "record.create bomrevision"
+        ]
+      },
+      {
+        "capability": "create demo transaction through CSV import task",
+        "functions": [
+          "buildSoCsv",
+          "saveCsvToFileCabinet",
+          "submitCsvImport"
+        ],
+        "evidence": [
+          "task.TaskType.CSV_IMPORT",
+          "sales order CSV external id"
+        ]
+      },
+      {
+        "capability": "apply generated names to runner-owned anchors",
+        "functions": [
+          "applyNamingToAnchors"
+        ],
+        "evidence": [
+          "record.submitFields inventoryitem",
+          "component_names"
+        ]
+      }
+    ],
+    "currentGapsForW139ResultContract": [
+      "Customer-specific create/resolve is not a clean exported runner boundary yet; current runner resolves the anchor customer for CSV import.",
+      "Demo transaction internal id is not synchronously returned by the CSV import submit path; current runner returns/imports a CSV task id, then record existence must be resolved after import completion.",
+      "Matrix/proof item is represented by hero or manufacturing item anchors; a W139 role-level result adapter must map the chosen proof item explicitly.",
+      "The legacy Suitelet starts and previews runner configuration, but it should remain legacy/reference-only for IDB.",
+      "The final generated names JSON must be assembled by an adapter/result-capture layer after runner execution, not by the drawer."
+    ],
+    "writeSignaturesRemainOutsideDrawer": {
+      "runnerRecordCreateCount": 10,
+      "runnerSubmitFieldsCount": 11,
+      "runnerCsvImportSubmitPresent": true,
+      "drawerWriteSignatureCount": 0
+    }
+  },
+  "adapterDesign": {
+    "schema": "idb.w140-governed-runner-adapter-design.v1",
+    "adapterModule": "tools/idb_governed_runner_adapter_v1.js",
+    "responsibilities": [
+      "Validate the W139 confirmed IDB build request before any runner handoff.",
+      "Map confirmed IDB request fields to existing scheduled runner script parameters.",
+      "Keep write-disabled dry-run behavior as a no-submit adapter mode.",
+      "Normalize governed runner result records into the IDB final generated names import JSON.",
+      "Reject active Open-link imports unless every required role has a numeric internal id and supported NetSuite URL."
+    ],
+    "nonResponsibilities": [
+      "The adapter does not run inside the drawer.",
+      "The adapter does not call SuiteScript from the drawer.",
+      "The adapter does not create records itself outside NetSuite runner execution.",
+      "The adapter does not replace the governed runner write logic."
+    ],
+    "parameterMap": {
+      "prospect": "custscript_v3_runner_prospect",
+      "website": "custscript_v3_runner_website",
+      "notes": "custscript_v3_runner_notes",
+      "agenda": "custscript_v3_runner_agenda",
+      "extId": "custscript_v3_runner_extid",
+      "mappingId": "custscript_v3_runner_mapping",
+      "folderId": "custscript_v3_runner_folder",
+      "subsidiaryId": "custscript_v3_runner_subsidiary",
+      "locationId": "custscript_v3_runner_location",
+      "workCenterSearchId": "custscript_v3_runner_wc_search",
+      "enableWip": "custscript_v3_runner_enable_wip",
+      "enableManufacturing": "custscript_v3_runner_enable_mfg",
+      "createNewHero": "custscript_v3_runner_create_new_hero",
+      "heroItem": "custscript_v3_runner_hero_item"
+    }
+  },
+  "adapterSmoke": {
+    "adapterInput": {
+      "schema": "idb.governed-runner-adapter-input.v1",
+      "sourceRequestId": "idb-build-ariat-style-ready-001",
+      "runMode": "write_disabled_dry_run",
+      "writeAuthority": "governed_internal_runner_only",
+      "drawerAuthority": "none",
+      "extId": "IDB_ARIAT_INTERNATIONAL_APPAREL_ACCESSORIES_001",
+      "runnerParams": {
+        "custscript_v3_runner_prospect": "Ariat International",
+        "custscript_v3_runner_website": "https://www.ariat.com/",
+        "custscript_v3_runner_notes": "Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.",
+        "custscript_v3_runner_agenda": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.",
+        "custscript_v3_runner_extid": "IDB_ARIAT_INTERNATIONAL_APPAREL_ACCESSORIES_001",
+        "custscript_v3_runner_mapping": "112",
+        "custscript_v3_runner_folder": "345",
+        "custscript_v3_runner_subsidiary": "1",
+        "custscript_v3_runner_location": "7",
+        "custscript_v3_runner_wc_search": "",
+        "custscript_v3_runner_enable_wip": "F",
+        "custscript_v3_runner_enable_mfg": "F",
+        "custscript_v3_runner_create_new_hero": "T",
+        "custscript_v3_runner_hero_item": "91203"
+      },
+      "requiredResultRoles": [
+        "customer",
+        "demoTransaction",
+        "heroItem",
+        "matrixProofItem",
+        "componentItem"
+      ],
+      "noSubmitRollback": {
+        "enabled": true,
+        "dryRunCreatesRecords": false,
+        "preSubmitFailureBehavior": "return blocked result and do not promote imported names"
+      },
+      "validation": {
+        "valid": true,
+        "errors": []
+      }
+    },
+    "normalizedResult": {
+      "schema": "idb.governed-runner-result-normalized.v1",
+      "runnerStatus": "complete",
+      "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+      "records": {
+        "customer": {
+          "role": "customer",
+          "recordType": "customer",
+          "name": "Ariat International Outdoor Retail Account",
+          "internalId": "91201",
+          "url": "/app/common/entity/custjob.nl?id=91201",
+          "createdOrResolvedBy": "governed_internal_runner",
+          "openable": true
+        },
+        "demoTransaction": {
+          "role": "demoTransaction",
+          "recordType": "salesorder",
+          "name": "Ariat Seasonal Footwear Availability Demo Order",
+          "internalId": "91202",
+          "url": "/app/accounting/transactions/salesord.nl?id=91202",
+          "createdOrResolvedBy": "governed_internal_runner",
+          "openable": true
+        },
+        "heroItem": {
+          "role": "heroItem",
+          "recordType": "inventoryitem",
+          "name": "Ariat Terrain H2O Work Boot Hero Item",
+          "internalId": "91203",
+          "url": "/app/common/item/item.nl?id=91203",
+          "createdOrResolvedBy": "governed_internal_runner",
+          "openable": true
+        },
+        "matrixProofItem": {
+          "role": "matrixProofItem",
+          "recordType": "matrixitem",
+          "name": "Ariat Core Boot Size Color Matrix",
+          "internalId": "91204",
+          "url": "/app/common/item/item.nl?id=91204",
+          "createdOrResolvedBy": "governed_internal_runner",
+          "openable": true
+        },
+        "componentItems": [
+          {
+            "role": "componentItem",
+            "recordType": "inventoryitem",
+            "name": "Ariat Brown Leather Upper Component",
+            "internalId": "91205",
+            "url": "/app/common/item/item.nl?id=91205",
+            "createdOrResolvedBy": "governed_internal_runner",
+            "openable": true
+          }
+        ]
+      },
+      "finalGeneratedNamesImport": {
+        "schema": "idb.internal-build-engine.real-record-result.v1",
+        "runStatus": "run_complete",
+        "prospect": "Ariat International",
+        "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+        "recordExistenceStatus": "runner_created_or_resolved_targeted_visual_required",
+        "customer": {
+          "name": "Ariat International Outdoor Retail Account",
+          "id": "91201",
+          "url": "/app/common/entity/custjob.nl?id=91201"
+        },
+        "salesOrder": {
+          "name": "Ariat Seasonal Footwear Availability Demo Order",
+          "id": "91202",
+          "url": "/app/accounting/transactions/salesord.nl?id=91202"
+        },
+        "heroItem": {
+          "name": "Ariat Terrain H2O Work Boot Hero Item",
+          "id": "91203",
+          "url": "/app/common/item/item.nl?id=91203"
+        },
+        "matrixItem": {
+          "name": "Ariat Core Boot Size Color Matrix",
+          "id": "91204",
+          "url": "/app/common/item/item.nl?id=91204"
+        },
+        "componentItems": [
+          {
+            "name": "Ariat Brown Leather Upper Component",
+            "id": "91205",
+            "url": "/app/common/item/item.nl?id=91205"
+          }
+        ],
+        "warnings": [],
+        "errors": [],
+        "recoverableBlockers": []
+      },
+      "validation": {
+        "valid": true,
+        "errors": []
+      }
+    }
+  },
+  "implementationSteps": [
+    "Keep the IDB drawer as request/export/import only.",
+    "Create a NetSuite-side adapter entry point that accepts the W139 confirmed IDB build request and resolves runtime config server-side.",
+    "Call the existing scheduled runner logic through governed NetSuite execution, not from the drawer.",
+    "Add customer-specific create/resolve to the runner boundary or pre-run adapter because the current runner only resolves the anchor customer.",
+    "Resolve the completed Sales Order internal id after CSV import completion before returning the IDB final generated names JSON.",
+    "Map hero/proof/component role outputs explicitly and reject missing numeric ids or unsupported URLs.",
+    "Import final generated names into IDB only after the governed result JSON passes link authority validation."
+  ],
+  "regressionHarnessUpdates": [
+    "Add adapter module syntax check.",
+    "Add W140 harness to preflight.",
+    "Validate runner source inventory still finds execute, ensureDemoRecords, item creation, CSV import submit, and search-by-external-id paths.",
+    "Validate adapter rejects invalid W139 requests and unsupported URLs.",
+    "Validate drawer write signature count remains zero.",
+    "Validate W140 report keeps visual testing deferred until actual governed write execution."
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "internalRunnerOwnershipPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterNetSuiteSideAdapterWrite": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W140 inventories and extracts the adapter boundary only. Visual NetSuite testing is required after the NetSuite-side adapter actually writes or resolves records and returns real URLs."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W141: NetSuite-Side Governed Runner Adapter Skeleton",
+    "prompt": "Move through W141: NetSuite-Side Governed Runner Adapter Skeleton. Treat IDB as the primary consultant-facing product and the old DCC Suitelet UI as legacy. Build the NetSuite-side governed runner adapter skeleton that accepts the W139 confirmed IDB build request JSON, validates the W140 gates, resolves runner runtime config server-side, calls or queues the existing governed runner/internal build logic, and returns write-disabled dry-run results without drawer writes. Do not enable governed sandbox writes yet. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, no-submit rollback, internal runner ownership, and no active Open links without real URLs. Output adapter skeleton, validation gates, dry-run smoke, trace samples, W141 report, visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w140_starts_from_w139_contract_ready",
+      "pass": true,
+      "detail": "PASS_CONTRACT_READY__IMPLEMENT_RUNNER_ADAPTER_NEXT"
+    },
+    {
+      "name": "w140_runner_entry_and_param_reading_found",
+      "pass": true,
+      "detail": "{\"scriptType\":\"ScheduledScript\",\"entryFunction\":\"execute\",\"present\":true,\"readsRunnerParams\":true}"
+    },
+    {
+      "name": "w140_runner_creation_functions_inventoried",
+      "pass": true,
+      "detail": "runner creation functions"
+    },
+    {
+      "name": "w140_customer_specific_gap_captured",
+      "pass": true,
+      "detail": "[\"Customer-specific create/resolve is not a clean exported runner boundary yet; current runner resolves the anchor customer for CSV import.\",\"Demo transaction internal id is not synchronously returned by the CSV import submit path; current runner returns/imports a CSV task id, then record existence must be resolved after import completion.\",\"Matrix/proof item is represented by hero or manufacturing item anchors; a W139 role-level result adapter must map the chosen proof item explicitly.\",\"The legacy Suitelet starts and previews runner configuration, but it should remain legacy/reference-only for IDB.\",\"The final generated names JSON must be assembled by an adapter/result-capture layer after runner execution, not by the drawer.\"]"
+    },
+    {
+      "name": "w140_adapter_maps_w139_request_to_runner_params",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.governed-runner-adapter-input.v1\",\"sourceRequestId\":\"idb-build-ariat-style-ready-001\",\"runMode\":\"write_disabled_dry_run\",\"writeAuthority\":\"governed_internal_runner_only\",\"drawerAuthority\":\"none\",\"extId\":\"IDB_ARIAT_INTERNATIONAL_APPAREL_ACCESSORIES_001\",\"runnerParams\":{\"custscript_v3_runner_prospect\":\"Ariat International\",\"custscript_v3_runner_website\":\"https://www.ariat.com/\",\"custscript_v3_runner_notes\":\"Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\",\"custscript_v3_runner_agenda\":\"Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.\",\"custscript_v3_runner_extid\":\"IDB_ARIAT_INTERNATIONAL_APPAREL_ACCESSORIES_001\",\"custscript_v3_runner_mapping\":\"112\",\"custscript_v3_runner_folder\":\"345\",\"custscript_v3_runner_subsidiary\":\"1\",\"custscript_v3_runner_location\":\"7\",\"custscript_v3_runner_wc_search\":\"\",\"custscript_v3_runner_enable_wip\":\"F\",\"custscript_v3_runner_enable_mfg\":\"F\",\"custscript_v3_runner_create_new_hero\":\"T\",\"custscript_v3_runner_hero_item\":\"91203\"},\"requiredResultRoles\":[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"],\"noSubmitRollback\":{\"enabled\":true,\"dryRunCreatesRecords\":false,\"preSubmitFailureBehavior\":\"return blocked result and do not promote imported names\"},\"validation\":{\"valid\":true,\"errors\":[]}}"
+    },
+    {
+      "name": "w140_adapter_normalizes_real_result_json",
+      "pass": true,
+      "detail": "{\"valid\":true,\"errors\":[]}"
+    },
+    {
+      "name": "w140_no_drawer_write_or_invocation_added",
+      "pass": true,
+      "detail": "{\"runnerRecordCreateCount\":10,\"runnerSubmitFieldsCount\":11,\"runnerCsvImportSubmitPresent\":true,\"drawerWriteSignatureCount\":0}"
+    },
+    {
+      "name": "w140_legacy_suitelet_ui_reference_only",
+      "pass": true,
+      "detail": "suitelet remains legacy reference"
+    }
+  ]
+}

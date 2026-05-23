@@ -1,0 +1,59 @@
+{
+  "schema": "idb.w33-plan-flow-result-readiness-corrective.v1",
+  "generated": "2026-05-11",
+  "status": "complete_create_still_disabled",
+  "objective": "Correct Plan flow, unknown-website lane commitment, YETI-style website routing, review navigation, and visible terminology before pilot result import work continues.",
+  "goals": [
+    "Plan opens with the Live Question before Guided Intake.",
+    "Unknown websites cannot auto-commit a lane from notes alone.",
+    "YETI routes from website evidence to Dealer Hardgoods / Product SKU language.",
+    "Run IDB can navigate to Review without a runtime error.",
+    "Plan actions trace lightweight summaries instead of heavy packet payloads."
+  ],
+  "roles": [
+    "Consultant UX Director Agent",
+    "Website Evidence Sentinel",
+    "Code Review Sentinel",
+    "Performance Sentinel",
+    "Validation And Evidence Agent"
+  ],
+  "findings": [
+    "Plan previously rendered Guided Intake before the Live Question because the Plan branch placed activePanel before guidedStep.",
+    "Run IDB could fail before Review because buildAcceptedPacketContext referenced an undefined packet.",
+    "Unknown websites could over-commit based on notes when local website evidence was weak.",
+    "YETI needs website-owned outdoor gear hardgoods classification, not industrial distribution or food/ingredient language.",
+    "Plan click traces were too heavy and could add perceived lag."
+  ],
+  "fixes": [
+    "Plan branch now renders guidedStep before activePanel.",
+    "Added websiteSignalNeedsReview gate for unknown local website evidence.",
+    "Added YETI website primary signal and outdoor hardgoods classifier terms.",
+    "Removed undefined packet reference from buildAcceptedPacketContext.",
+    "Changed Plan action tracing to compact tracePlanSummary payloads."
+  ],
+  "futureBlocks": [
+    {
+      "block": "W34",
+      "objective": "Pilot result import and transaction context readiness.",
+      "note": "Consume real sandbox Customer and Proof Item response; do not enable transaction writes."
+    },
+    {
+      "block": "W35",
+      "objective": "Performance pass for live demo interaction.",
+      "note": "Debounce input persistence and avoid full redraws for low-risk field changes if lag persists."
+    },
+    {
+      "block": "W36",
+      "objective": "Website intelligence expansion.",
+      "note": "Add a governed way to load N/LLM website classifications when local rules are unknown."
+    }
+  ],
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "noAutomaticCreation": true,
+    "unknownWebsiteNeedsReview": true,
+    "websiteBeforeNotes": true,
+    "noLaneAuthorityFromNotesAlone": true,
+    "llmAdvisoryOnly": true
+  }
+}

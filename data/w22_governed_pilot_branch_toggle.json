@@ -1,0 +1,73 @@
+{
+  "schema": "idb.w22-governed-pilot-branch-toggle.v1",
+  "status": "toggle_path_ready_main_create_disabled",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Release Conductor Agent",
+    "NetSuite Compatibility Sentinel Agent",
+    "Validation And Evidence Agent"
+  ],
+  "objective": "Create the exact branch/runtime toggle path for enabling Customer and Proof Item writes in sandbox only.",
+  "goal": "Main package stays create-disabled while a separate governed pilot branch can only proceed after compile flag, sandbox runtime flags, reviewed packet, consultant confirmation, and type-to-confirm all pass.",
+  "mainPackage": {
+    "createEnabled": false,
+    "allowedWrites": [],
+    "status": "blocked_main_create_disabled"
+  },
+  "pilotBranchTogglePath": [
+    "Create a separate pilot branch from the validated main package.",
+    "In that branch only, deliberately change CREATE_ENABLED to true.",
+    "Deploy to NetSuite sandbox only.",
+    "Set custscript_idb_enable_pilot_writes to true.",
+    "Set custscript_idb_allow_customer_pilot to true.",
+    "Set custscript_idb_allow_proof_item_pilot to true.",
+    "Set custscript_idb_sandbox_account_only to true.",
+    "Set custscript_idb_require_type_confirm to true.",
+    "Submit a reviewed Creation Packet Contract V2 with consultantConfirmed true.",
+    "Submit the exact type-to-confirm phrase returned by the SuiteScript runtime toggle."
+  ],
+  "approvedRuntimeParameters": {
+    "custscript_idb_enable_pilot_writes": true,
+    "custscript_idb_allow_customer_pilot": true,
+    "custscript_idb_allow_proof_item_pilot": true,
+    "custscript_idb_sandbox_account_only": true,
+    "custscript_idb_require_type_confirm": true
+  },
+  "approvedScope": {
+    "laneId": "food_beverage",
+    "roles": [
+      "customer",
+      "proof anchor"
+    ],
+    "transactionContext": "blocked_until_customer_and_proof_result_ids_and_urls_exist"
+  },
+  "hardStops": [
+    "CREATE_ENABLED false",
+    "missing pilot write runtime flag",
+    "missing customer pilot runtime flag",
+    "missing proof item pilot runtime flag",
+    "non-sandbox runtime",
+    "missing type-to-confirm runtime flag",
+    "type-to-confirm phrase mismatch"
+  ],
+  "traceResultContract": {
+    "event": "suitescript_write_path_result",
+    "runtimeToggleStatus": true,
+    "recordIds": true,
+    "urls": true,
+    "operations": true,
+    "lookupStatus": true,
+    "rollbackLabels": true,
+    "recoverableErrors": true
+  },
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "noWritesFromMainDrawer": true,
+    "sandboxOnly": true,
+    "noTransactionWriteInW22": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "llmAdvisoryOnly": true
+  }
+}

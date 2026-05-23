@@ -1,0 +1,40 @@
+{
+  "schema": "idb.w103-review-build-control-center.v1",
+  "status": "complete_review_build_control_center_ready",
+  "objective": "Make Review the operational build control center for DCC handoff instead of an audit-heavy packet surface.",
+  "roles": [
+    "Consultant UX Director",
+    "DCC Pattern Translator",
+    "Operator Evidence Lead",
+    "Regression Guard"
+  ],
+  "implemented": {
+    "reviewFirstViewportBuildControlCenter": true,
+    "dccPackHumanLabels": true,
+    "objectsDccWillPrepareVisible": true,
+    "blockersVisible": true,
+    "operatorChecklistPreserved": true,
+    "auditDetailsCollapsed": true
+  },
+  "controlCenterFields": [
+    "handoff status",
+    "selected DCC pack",
+    "selected scenario",
+    "execution mode",
+    "export lane",
+    "value story readiness",
+    "DCC will prepare",
+    "blocker",
+    "export DCC handoff"
+  ],
+  "noRegression": {
+    "stateAuthorityPreserved": true,
+    "dccHandoffBoundariesPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextPrompt": "Move through W104: DCC Invocation Readiness. Define the governed path for IDB to invoke the Demo Command Center only after consultant confirmation, type-to-confirm, and review-only preview. Preserve DCC runner mechanics, keep transaction writes blocked, and keep DCC ownership of item names, assemblies, BOMs, locations, planning, routing/WIP, CSV, and Sales Order mechanics. Output invocation contract, safety gates, rollback plan, validator gates, W104 report, and best next Codex prompt."
+}

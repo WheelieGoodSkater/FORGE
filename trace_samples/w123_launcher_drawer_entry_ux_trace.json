@@ -1,0 +1,89 @@
+{
+  "traceEvent": "w123_launcher_drawer_entry_ux",
+  "decision": "PASS",
+  "generatedAt": "2026-05-17T21:41:08.419Z",
+  "noSecrets": true,
+  "launcherPositionModel": {
+    "schema": "idb.w123-launcher-position.v1",
+    "position": "bottom_right",
+    "label": "Bottom right",
+    "snapPositions": [
+      "top_right",
+      "middle_right",
+      "bottom_right"
+    ],
+    "defaultPosition": "middle_right",
+    "persistentStorageKey": "idb.drawer.launcher.position.v1",
+    "noRegression": {
+      "drawerOpenBehaviorUnchanged": true,
+      "duplicateRootGuardPreserved": true,
+      "noDrawerWrites": true,
+      "noSuiteScriptInvocationFromDrawer": true,
+      "noTransactionWritesFromDrawer": true
+    }
+  },
+  "visualTestRequiredNow": false,
+  "nextVisualTestAfter": "W124",
+  "validatorGates": [
+    {
+      "name": "w123_launcher_positions_defined",
+      "pass": true,
+      "detail": "[\"top_right\",\"middle_right\",\"bottom_right\"]"
+    },
+    {
+      "name": "w123_launcher_snap_math",
+      "pass": true,
+      "detail": "[\"top_right\",\"middle_right\",\"bottom_right\"]"
+    },
+    {
+      "name": "w123_invalid_position_defaults_safely",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w123-launcher-position.v1\",\"position\":\"middle_right\",\"label\":\"Middle right\",\"snapPositions\":[\"top_right\",\"middle_right\",\"bottom_right\"],\"defaultPosition\":\"middle_right\",\"persistentStorageKey\":\"idb.drawer.launcher.position.v1\",\"noRegression\":{\"drawerOpenBehaviorUnchanged\":true,\"duplicateRootGuardPreserved\":true,\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true}}"
+    },
+    {
+      "name": "w123_apply_launcher_position_sets_accessible_attrs",
+      "pass": true,
+      "detail": "{\"data-launcher-position\":\"bottom_right\",\"data-launcher-label\":\"Bottom right\",\"aria-label\":\"Open Intelligent Demo Builder. Launcher position Bottom right. Drag to move.\"}"
+    },
+    {
+      "name": "w123_css_has_right_edge_snap_positions",
+      "pass": true,
+      "detail": "snap CSS"
+    },
+    {
+      "name": "w123_position_persistence_and_reset_present",
+      "pass": true,
+      "detail": "storage and reset controls"
+    },
+    {
+      "name": "w123_keyboard_focus_accessibility_present",
+      "pass": true,
+      "detail": "keyboard snap and reset"
+    },
+    {
+      "name": "w123_duplicate_root_guard_preserved",
+      "pass": true,
+      "detail": "W94 duplicate guard"
+    },
+    {
+      "name": "w123_drawer_open_behavior_preserved",
+      "pass": true,
+      "detail": "click still opens drawer"
+    },
+    {
+      "name": "w123_no_forbidden_visible_acronyms_in_launcher_labels",
+      "pass": true,
+      "detail": "{\"title\":\"Open Intelligent Demo Builder. Launcher: Bottom right. Drag to move.\",\"aria\":\"Open Intelligent Demo Builder. Launcher position Bottom right. Drag to move.\"}"
+    },
+    {
+      "name": "w123_visual_test_policy_is_surgical",
+      "pass": true,
+      "detail": "{\"default\":\"harness_first\",\"requireVisualNetSuiteTestOnlyWhen\":[\"launcher/drawer entry changes are introduced\",\"Plan, Build/Results, ROI/Competitive, Run, or Trace first viewport materially changes\",\"final generated names import changes visible behavior\",\"governed sandbox invocation is exposed\",\"real generated NetSuite names or links are used for live navigation\"],\"skipVisualTestWhen\":[\"contract-only changes\",\"trace-only changes\",\"internal schema or validator changes\",\"no visible consultant copy/layout changes\"]}"
+    },
+    {
+      "name": "w123_no_write_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"drawerOpenBehaviorUnchanged\":true,\"duplicateRootGuardPreserved\":true,\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true}"
+    }
+  ]
+}

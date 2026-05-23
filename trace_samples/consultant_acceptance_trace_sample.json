@@ -1,0 +1,50 @@
+{
+  "product": {
+    "name": "Intelligent Demo Builder",
+    "surface": "Right-side NetSuite assistant drawer",
+    "version": "0.1.1"
+  },
+  "exportedAt": "2026-05-23T15:20:28.523Z",
+  "scenarios": [
+    {
+      "name": "Ready lane",
+      "laneId": "products_cpg",
+      "pageType": "Sales Order View",
+      "expectedMove": "Sales Order View",
+      "events": [
+        "page_context_captured",
+        "setup_saved",
+        "move_recommended",
+        "story_action_selected",
+        "trace_exported"
+      ]
+    },
+    {
+      "name": "Guarded lane",
+      "laneId": "food_beverage",
+      "pageType": "Item / Inventory",
+      "expectedMove": "Finished Good",
+      "events": [
+        "page_context_captured",
+        "setup_saved",
+        "setup_lane_applied",
+        "guardrail_viewed",
+        "story_action_selected",
+        "trace_exported"
+      ]
+    },
+    {
+      "name": "Ambiguous intake",
+      "laneId": "industrial_distribution",
+      "pageType": "NetSuite page",
+      "expectedMove": "Customer Record",
+      "events": [
+        "page_context_captured",
+        "setup_saved",
+        "move_recommended",
+        "story_action_selected",
+        "trace_exported"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "idb.w160-integrated-build-state-machine-ui-status.v1",
+  "status": "build_state_machine_ui_status_ready",
+  "decision": "PASS_BUILD_STATUS_UI_AND_IMPORT_CTA_READY__VISUAL_TESTING_BLOCKED",
+  "buildStatusUiContract": {
+    "schema": "idb.w160-build-status-ui-contract.v1",
+    "sourceStateMachine": [
+      "blocked",
+      "no_submit",
+      "queued",
+      "polling",
+      "completed_awaiting_w151_import",
+      "imported",
+      "error_recoverable"
+    ],
+    "renderedStatePath": [
+      "blocked",
+      "no_submit",
+      "queued",
+      "polling",
+      "completed_awaiting_w151_import",
+      "imported",
+      "error_recoverable"
+    ],
+    "currentState": "completed_awaiting_w151_import",
+    "importCta": {
+      "label": "Open guarded result import",
+      "enabled": true,
+      "action": "open_trace_completed_runner_result_import",
+      "targetView": "trace",
+      "guardOwner": "W151 completed runner result import guard",
+      "requiresCompletedRunnerResultJson": true,
+      "acceptsBuildHandoffJson": false,
+      "activeOpenLinksBeforeImport": 0,
+      "copy": "Completed runner result JSON is available. Import remains guarded by W151 numeric id and NetSuite URL validation."
+    },
+    "importedImportCta": {
+      "label": "Runner result imported",
+      "enabled": false,
+      "action": "none",
+      "targetView": "",
+      "guardOwner": "W151 completed runner result import guard",
+      "requiresCompletedRunnerResultJson": true,
+      "acceptsBuildHandoffJson": false,
+      "activeOpenLinksBeforeImport": 0,
+      "copy": "The completed runner result has already been imported. Open links remain URL-authority gated."
+    },
+    "copy": {
+      "statusHeading": "Build status path",
+      "importHeading": "Completed result import",
+      "blockedMessage": "Visual testing and Open links stay blocked until the integrated Build runner result is returned and imported."
+    }
+  },
+  "guardedHarness": {
+    "startsFromW159StateMachine": true,
+    "uiHookReady": true,
+    "allStatesRendered": true,
+    "completedResultCtaEnabledOnlyForAwaitingImport": true,
+    "importCtaUsesW151Guard": true,
+    "importedStateDisablesImportCta": true,
+    "renderedBuildShowsPathAndCta": true,
+    "noOpenLinksBeforeImportCta": true,
+    "visualTestingBlocked": true
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "visualTestingBlocked": true,
+    "reason": "W160 renders harness-only Build status and a guarded import CTA. Visual testing stays blocked until the approved server adapter returns real governed runner results."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W161: Integrated Build Result Import CTA Harness To Server Result Fixture",
+    "prompt": "Move through W161: Integrated Build Result Import CTA Harness To Server Result Fixture. Use the W160 Build status UI and import CTA to connect the completed-result awaiting state to a controlled server-result fixture handoff, while keeping real invocation disabled by default. Prove the CTA accepts only W151 completed runner result JSON with numeric ids and supported NetSuite URLs, rejects handoff JSON, preserves no drawer writes, no drawer transaction writes, no drawer SuiteScript invocation outside the approved server adapter path, consultant confirmation, state authority and handoff parity, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Do not request visual testing. Output fixture handoff contract, guarded harness, trace samples, W161 report, visual testing decision blocked, and best next Codex prompt."
+  },
+  "validatorGates": [
+    {
+      "name": "w160_starts_from_w159_state_machine",
+      "pass": true,
+      "detail": "PASS_BUILD_STATE_MACHINE_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w160_ui_hook_and_render_ready",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-strong\">Ariat International</div>\n          <div class=\"idb-copy\">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div>\n        </div>\n        <div class=\"idb-status-strip\">\n          <div class=\"idb-status-cell\">\n            <div class=\"idb-status-key\">1. Ready?</div>\n            <div class=\"idb-status-value\">Ready to export</div>\n            <div class=\"idb-copy\">Consultant confirmed the lane an"
+    },
+    {
+      "name": "w160_renders_all_required_states",
+      "pass": true,
+      "detail": "[\"blocked\",\"no_submit\",\"queued\",\"polling\",\"completed_awaiting_w151_import\",\"imported\",\"error_recoverable\"]"
+    },
+    {
+      "name": "w160_import_cta_gated_to_completed_awaiting_w151_import",
+      "pass": true,
+      "detail": "{\"label\":\"Open guarded result import\",\"enabled\":true,\"action\":\"open_trace_completed_runner_result_import\",\"targetView\":\"trace\",\"guardOwner\":\"W151 completed runner result import guard\",\"requiresCompletedRunnerResultJson\":true,\"acceptsBuildHandoffJson\":false,\"activeOpenLinksBeforeImport\":0,\"copy\":\"Completed runner result JSON is available. Import remains guarded by W151 numeric id and NetSuite URL validation.\"}"
+    },
+    {
+      "name": "w160_imported_state_disables_cta_after_guarded_import",
+      "pass": true,
+      "detail": "{\"label\":\"Runner result imported\",\"enabled\":false,\"action\":\"none\",\"targetView\":\"\",\"guardOwner\":\"W151 completed runner result import guard\",\"requiresCompletedRunnerResultJson\":true,\"acceptsBuildHandoffJson\":false,\"activeOpenLinksBeforeImport\":0,\"copy\":\"The completed runner result has already been imported. Open links remain URL-authority gated.\"}"
+    },
+    {
+      "name": "w160_no_open_links_before_import_and_visual_blocked",
+      "pass": true,
+      "detail": "{\"activeOpenLinksBeforeImport\":0,\"visualTestingBlocked\":true}"
+    },
+    {
+      "name": "w160_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

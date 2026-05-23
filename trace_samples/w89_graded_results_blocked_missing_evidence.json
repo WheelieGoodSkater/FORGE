@@ -1,0 +1,69 @@
+{
+  "schema": "idb.w89-graded-real-user-test-results.v1",
+  "status": "blocked_missing_real_user_evidence",
+  "score": null,
+  "categories": [
+    {
+      "category": "Consultant intake clarity",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    },
+    {
+      "category": "Scenario/lane confirmation clarity",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    },
+    {
+      "category": "DCC handoff export discoverability",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    },
+    {
+      "category": "Suitelet form parameter parity",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    },
+    {
+      "category": "DCC-owned config ownership clarity",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    },
+    {
+      "category": "Runner preview clarity",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    },
+    {
+      "category": "No-submit/no-write safety clarity",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    },
+    {
+      "category": "DCC object-generation ownership clarity",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    },
+    {
+      "category": "Operator confidence to proceed later under governed conditions",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    },
+    {
+      "category": "Evidence completeness",
+      "score": null,
+      "status": "not_gradeable_without_w88_evidence"
+    }
+  ],
+  "findings": [
+    {
+      "area": "evidence",
+      "severity": "blocker",
+      "finding": "Real user test evidence was not provided, so pilot readiness cannot be graded honestly."
+    },
+    {
+      "area": "no-regression",
+      "severity": "pass_from_artifacts_only",
+      "finding": "Local artifacts still preserve no IDB write, no SuiteScript invocation, and no DCC runner rewrite boundaries."
+    }
+  ]
+}

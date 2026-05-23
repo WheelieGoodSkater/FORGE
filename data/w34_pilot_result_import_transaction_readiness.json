@@ -1,0 +1,114 @@
+{
+  "schema": "idb.w34-pilot-result-import-transaction-readiness.v1",
+  "status": "complete_create_still_disabled",
+  "objective": "Import a sandbox SuiteScript Customer + Proof Item result into the drawer as evidence, then show transaction-context readiness without enabling transaction writes.",
+  "roles": [
+    {
+      "name": "SuiteScript Result Import Agent",
+      "goal": "Normalize pasted suitescript_write_path_result JSON and expose Customer and Proof Item IDs, URLs, lookup status, rollback labels, and recoverable errors."
+    },
+    {
+      "name": "Transaction Context Sentinel",
+      "goal": "Mark transaction context ready for review only when Customer and Proof Item IDs and URLs exist; keep transaction writing disabled."
+    },
+    {
+      "name": "Website Intelligence Architect",
+      "goal": "Carry the W34 finding forward: website evidence must own lane package and object naming before notes shape story, ROI, and competition."
+    },
+    {
+      "name": "No-Regression Sentinel",
+      "goal": "Block automatic creation, hidden SuiteScript calls, non-Food/Beverage pilot writes, and transaction creation in W34."
+    }
+  ],
+  "uiContract": {
+    "traceTab": [
+      "manual SuiteScript result JSON import",
+      "compact imported evidence summary",
+      "Customer result ID and URL",
+      "Proof Item result ID and URL",
+      "blocked dependents and recoverable errors",
+      "transaction-context readiness status"
+    ],
+    "reviewTab": [
+      "compact Pilot result import summary",
+      "Customer / Proof Item / Transaction readiness chips"
+    ]
+  },
+  "resultContract": {
+    "requiredTraceEvent": "suitescript_write_path_result",
+    "createdRecordRolesAllowed": [
+      "customer",
+      "proof anchor"
+    ],
+    "transactionCreatedRecordAllowed": false,
+    "customerRequires": [
+      "recordId",
+      "url"
+    ],
+    "proofItemRequires": [
+      "recordId",
+      "url",
+      "parentCustomerRecordId when supplied must match Customer recordId"
+    ],
+    "recoverableErrorsCaptured": true,
+    "blockedDependentsCaptured": true
+  },
+  "next24HourArchitecture": [
+    {
+      "block": "W35",
+      "name": "Website Resolver Source Consolidation",
+      "objective": "Move website lane, package, product seed, product family, and demand moment into one governed resolver contract.",
+      "goal": "A new website should be classified from website evidence first, not from conversation notes.",
+      "owner": "Website Intelligence Architect",
+      "noRegression": "No new write authority and no lane/proof/toggle changes."
+    },
+    {
+      "block": "W36",
+      "name": "Executable Website Scenario Harness",
+      "objective": "Run scenario assertions for every website expectation and conflict case.",
+      "goal": "Prove Yeti, Vans, Gordon and Smith, Trek, Milk-Bone, and unknown websites route correctly.",
+      "owner": "QA Harness Agent",
+      "noRegression": "Do not rely on presence-only validator checks for classifier outcomes."
+    },
+    {
+      "block": "W37",
+      "name": "Notes Boundary Hardening",
+      "objective": "Restrict conversation notes to ROI, competition, objections, story, and run coaching.",
+      "goal": "Notes can explain why the story matters without owning product/package identity.",
+      "owner": "Context Boundary Sentinel",
+      "noRegression": "Notes cannot override high-confidence website package or product naming."
+    },
+    {
+      "block": "W38",
+      "name": "Pilot Result Evidence Review",
+      "objective": "Import real W24 Customer + Proof Item sandbox result and verify transaction-context readiness.",
+      "goal": "Show record IDs/URLs and blocked dependents clearly enough for a consultant and builder to trust the next write step.",
+      "owner": "SuiteScript Result Import Agent",
+      "noRegression": "Transaction write remains disabled."
+    },
+    {
+      "block": "W39",
+      "name": "Food/Beverage Pilot Smoke Runbook",
+      "objective": "Document and validate the exact sandbox-only Customer + Proof Item run path.",
+      "goal": "Five-consultant pilot can execute one controlled write path with evidence capture.",
+      "owner": "Pilot Operations Agent",
+      "noRegression": "Main Suitelet and drawer stay create-disabled."
+    },
+    {
+      "block": "W40",
+      "name": "Transaction Context Write Design",
+      "objective": "Design the next separate runtime flag for transaction context after parent IDs/URLs exist.",
+      "goal": "Prepare Sales Order View write without enabling it.",
+      "owner": "Transaction Context Sentinel",
+      "noRegression": "No Sales Order write until W40 gates pass."
+    }
+  ],
+  "nonRegression": {
+    "mainDrawerCreatesNothing": true,
+    "mainSuiteletCreateEnabled": false,
+    "pilotBranchOnly": true,
+    "transactionWriteEnabled": false,
+    "llmAdvisoryOnly": true,
+    "websiteOwnsNamingBeforeNotes": true
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "idb.w237-food-batch-completed-result-import-guard.trace.v1",
+  "generatedAt": "2026-05-23T15:20:28.312Z",
+  "reviewedTrace": "/path/to/downloads/intelligent-demo-builder-trace-1779288967945.json",
+  "conclusion": "The runner completed and returned valid record IDs and URLs; FORGE rejected import because W211 forgot selected toggles when validating the completed result. The guard now reads the saved confirmed build request JSON before applying vocabulary rules and repairs stale rejected completed-result state on load.",
+  "acceptedStatus": "completed_runner_result_accepted",
+  "acceptedMode": "food_batch_manufacturing",
+  "acceptedRecordNames": [
+    "Liquid Death Customer Account",
+    "SO2688",
+    "SCAI - Liquid Death Finished Good",
+    "Liquid Death Production Line",
+    "Liquid Death Ingredient Blend"
+  ],
+  "blockedStatus": "toggle_vocabulary_guardrail_failed",
+  "liveTraceRepair": {
+    "repaired": true,
+    "status": "saved_completed_result_import_repaired",
+    "completedResultStatus": "completed_runner_result_accepted",
+    "importedRecordCount": 4,
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptInvocation": true
+  },
+  "passCount": 6,
+  "resultCount": 6,
+  "results": [
+    {
+      "id": "w237_liquid_death_food_batch_completed_result_imports",
+      "pass": true,
+      "evidence": "Liquid Death completed runner result with Finished Good, Production Line, and Ingredient Blend imports when the confirmed request resolved food batch manufacturing with Manufacturing=true."
+    },
+    {
+      "id": "w237_food_manufacturing_names_still_block_when_manufacturing_false",
+      "pass": true,
+      "evidence": "The same manufacturing vocabulary remains rejected when the confirmed request says Manufacturing=false."
+    },
+    {
+      "id": "w237_distribution_fallback_names_remain_rejected",
+      "pass": true,
+      "evidence": "Distribution/non-manufacturing paths still reject Finished Good, Production Line, and Ingredient Blend naming."
+    },
+    {
+      "id": "w237_confirmed_request_toggles_feed_w211_guard",
+      "pass": true,
+      "evidence": "W211 naming guard now reads the saved confirmed build request JSON used to submit the runner."
+    },
+    {
+      "id": "w237_saved_rejected_trace_revalidates_and_imports_after_fix",
+      "pass": true,
+      "evidence": "The latest exported FORGE state with a stale rejected completed result is repaired into imported final records by the current guard."
+    },
+    {
+      "id": "w237_draw_repair_hook_registered",
+      "pass": true,
+      "evidence": "Draw/load path revalidates a saved completed result so old rejected UI state can recover after the fixed userscript is installed."
+    }
+  ],
+  "visualTestingDecision": "No broad visual testing. This harness validates the completed result import guard and record-link acceptance path only."
+}

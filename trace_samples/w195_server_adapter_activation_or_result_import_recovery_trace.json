@@ -1,0 +1,139 @@
+{
+  "schema": "idb.w195-server-adapter-activation-or-result-import-recovery-trace.v1",
+  "traceSamples": [
+    {
+      "event": "w195_current_run_blocked_before_server_adapter",
+      "blockedReasons": [
+        "approved_w144_endpoint",
+        "server_flags_true",
+        "sandbox_allowlist",
+        "operator_approval",
+        "one_call_authorization_phrase"
+      ],
+      "runnerTaskIdCaptured": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w195_ready_no_submit_request_constructed",
+      "requestConstructed": true,
+      "readyForOneCall": true,
+      "requestSent": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w195_one_call_runner_taskid_captured",
+      "executionAllowed": true,
+      "runnerTaskId": "task_w195_ariat_approved_server_adapter_001",
+      "resultCaptureStatus": "pending_runner_completion",
+      "finalNamesImported": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w195_recovery_import_completed_result",
+      "completedResultAcceptedByW151": true,
+      "importCommitted": true,
+      "verifiedOpenLinkCount": 5
+    }
+  ],
+  "currentRunFinding": {
+    "fromW194": {
+      "source": "operator_screenshot_current_run_state",
+      "observedBuildStatus": "blocked_before_server_adapter",
+      "noServerAdapterCallMade": true,
+      "runnerTaskIdCaptured": false,
+      "resultCaptureStarted": false,
+      "completedRunnerResultImported": false,
+      "activeOpenLinksVisible": false,
+      "targetedVerificationRunnableNow": false,
+      "decision": "blocked_no_imported_urls_to_click",
+      "reason": "The current screenshot shows Build is still before server adapter execution, so there are no imported Open links available for W194 clicking."
+    },
+    "currentBlockedStatus": "w144_one_call_blocked",
+    "blockedReasons": [
+      "approved_w144_endpoint",
+      "server_flags_true",
+      "sandbox_allowlist",
+      "operator_approval",
+      "one_call_authorization_phrase"
+    ],
+    "nextAction": "activate_adapter_or_import_completed_result"
+  },
+  "exactOperatorInputs": {
+    "approvedEndpointUrl": {
+      "label": "Approved W144 Suitelet endpoint URL",
+      "valueForHarness": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+      "instruction": "Paste the deployed W144 governed runner adapter Suitelet URL, not the legacy DCC UI URL."
+    },
+    "serverFlags": {
+      "CREATE_ENABLED": true,
+      "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+      "QUEUE_SUBMIT_ENABLED": true,
+      "instruction": "Enable only on the sandbox W144 adapter deployment. Roll back by setting these false."
+    },
+    "sandboxAllowlist": {
+      "value": "TD3021666",
+      "currentSandboxAccount": "TD3021666",
+      "instruction": "The current account must be in the allowlist before the one-call button is eligible."
+    },
+    "operatorGate": {
+      "operatorName": "Operator",
+      "reviewDecision": "operator_approved_queue_submit",
+      "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+      "oneCallAuthorizationPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+      "endpointConfirmed": true
+    },
+    "expectedFirstResponse": {
+      "allowed": [
+        "runnerTaskId plus pending result capture",
+        "adapter_error"
+      ],
+      "disallowed": [
+        "record URLs",
+        "fake IDs",
+        "completed JSON before result capture"
+      ]
+    },
+    "recoveryImport": {
+      "acceptedPayload": "completed runner result JSON from W191/W192 only",
+      "rejectedPayload": "Build handoff JSON",
+      "requiredSchema": "idb.completed-runner-result-json.v1"
+    }
+  },
+  "results": [
+    {
+      "name": "w195_current_state_matches_w194_blocked",
+      "pass": true,
+      "detail": "[\"approved_w144_endpoint\",\"server_flags_true\",\"sandbox_allowlist\",\"operator_approval\",\"one_call_authorization_phrase\"]"
+    },
+    {
+      "name": "w195_ready_no_submit_constructs_request",
+      "pass": true,
+      "detail": "\"w144_one_call_ready_not_submitted\""
+    },
+    {
+      "name": "w195_one_call_captures_runner_task_only",
+      "pass": true,
+      "detail": "{\"submitted\":true,\"queueSubmitted\":true,\"runnerTaskIdCaptured\":true,\"runnerTaskId\":\"task_w195_ariat_approved_server_adapter_001\",\"resultCaptureStatus\":\"pending_runner_completion\",\"firstResponsePolicy\":\"runnerTaskId_or_adapter_error_not_record_urls\",\"statePatch\":{\"integratedBuildRunnerResult\":{\"schema\":\"idb.governed-runner-adapter-result.v1\",\"status\":\"queued_result_capture_pending\",\"queueSubmitted\":true,\"runnerTaskId\":\"task_w195_ariat_approved_server_adapter_001\",\"resultCapture\":{\"status\":\"pending_runner_completion\",\"runnerTaskId\":\"task_w195_ariat_approved_server_adapter_001\"},\"finalGeneratedNamesJson\":null,\"activeOpenLinks\":0}}}"
+    },
+    {
+      "name": "w195_recovery_import_commits_w193_completed_json",
+      "pass": true,
+      "detail": "{\"buildShowsImportedNames\":true,\"runShowsImportedNames\":true,\"verifiedOpenLinkCount\":5,\"requiredRecordsReady\":true,\"navigationStatus\":\"using_dcc_final_names\",\"reviewObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalName\":\"\",\"id\":\"91201\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalName\":\"\",\"id\":\"91202\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalName\":\"\",\"id\":\"91203\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalName\":\"\",\"id\":\"91204\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\"},{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalName\":\"\",\"id\":\"91205\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\"}],\"runPivots\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalName\":\"\",\"id\":\"91201\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalName\":\"\",\"id\":\"91202\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalName\":\"\",\"id\":\"91203\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalName\":\"\",\"id\":\"91204\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\"}]}"
+    },
+    {
+      "name": "w195_exact_operator_inputs_ready",
+      "pass": true,
+      "detail": "{\"operatorName\":\"Operator\",\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"oneCallAuthorizationPhrase\":\"AUTHORIZE ONE SANDBOX ADAPTER CALL\",\"endpointConfirmed\":true}"
+    },
+    {
+      "name": "w195_no_visual_until_imported_links",
+      "pass": true,
+      "detail": "{\"oneCall\":{\"visualTestingBlockedUntilCompletedResultImport\":true,\"targetedOpenLinkTestingReady\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"reason\":\"W189 captures runnerTaskId and pending result capture only. Real Open-link testing starts after W151 imports completed result JSON with numeric ids and URLs.\"},\"recovery\":{\"targetedOpenLinkTestingReady\":true,\"broaderVisualNetSuiteTestingRequired\":false,\"reason\":\"W193 imported W151-valid real URLs. The next test is targeted Open-link verification only.\"}}"
+    },
+    {
+      "name": "w195_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDirectDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

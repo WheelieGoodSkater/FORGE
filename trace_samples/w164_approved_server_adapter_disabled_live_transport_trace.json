@@ -1,0 +1,132 @@
+{
+  "schema": "idb.w164-approved-server-adapter-disabled-live-transport-trace.v1",
+  "decision": "PASS_DISABLED_LIVE_TRANSPORT_READINESS_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "requestConstructed": true,
+  "strictGates": {
+    "confirmedBuildRequest": true,
+    "createEnabled": true,
+    "governedSandboxWriteEnabled": true,
+    "queueSubmitEnabled": true,
+    "sandboxAllowlistPresent": true,
+    "operatorApproval": true,
+    "idempotencyToken": true,
+    "approvedEndpointMode": true,
+    "approvedNetSuiteEndpoint": true,
+    "invocationToggle": true
+  },
+  "noSubmitCases": {
+    "missingIdempotencyToken": {
+      "status": "transport_request_not_constructed_no_submit",
+      "requestConstructed": false,
+      "invocationAttempted": false,
+      "activeOpenLinks": 0
+    },
+    "defaultDisabled": {
+      "status": "transport_request_not_constructed_no_submit",
+      "requestConstructed": false,
+      "invocationAttempted": false,
+      "activeOpenLinks": 0
+    },
+    "missingServerFlags": {
+      "status": "transport_request_not_constructed_no_submit",
+      "requestConstructed": false,
+      "invocationAttempted": false,
+      "activeOpenLinks": 0
+    },
+    "missingSandboxAllowlist": {
+      "status": "transport_request_not_constructed_no_submit",
+      "requestConstructed": false,
+      "invocationAttempted": false,
+      "activeOpenLinks": 0
+    },
+    "missingOperatorApproval": {
+      "status": "transport_request_not_constructed_no_submit",
+      "requestConstructed": false,
+      "invocationAttempted": false,
+      "activeOpenLinks": 0
+    },
+    "missingApprovedEndpointMode": {
+      "status": "transport_request_not_constructed_no_submit",
+      "requestConstructed": false,
+      "invocationAttempted": false,
+      "activeOpenLinks": 0
+    },
+    "unsupportedEndpoint": {
+      "status": "transport_request_not_constructed_no_submit",
+      "requestConstructed": false,
+      "invocationAttempted": false,
+      "activeOpenLinks": 0
+    }
+  },
+  "normalizedResponsePath": {
+    "queued": "queued_pending",
+    "polling": "polling_pending",
+    "completed": "completed_result_awaiting_w151_import",
+    "error": "adapter_transport_error_drawer_safe"
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noLiveInvocation": true
+  },
+  "events": [
+    {
+      "name": "w164_starts_from_w163_alignment",
+      "pass": true,
+      "detail": "PASS_SERVER_ADAPTER_RESULT_ALIGNMENT_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w164_readiness_hook_ready",
+      "pass": true,
+      "detail": "disabled_live_transport_request_ready_construct_only"
+    },
+    {
+      "name": "w164_all_gates_construct_request_only",
+      "pass": true,
+      "detail": "{\"status\":\"transport_request_constructed_for_approved_adapter\",\"requestConstructed\":true,\"method\":\"POST\",\"endpointUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\",\"invocationAttempted\":false,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w164_default_disabled_no_submit",
+      "pass": true,
+      "detail": "{\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"invocationAttempted\":false,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w164_missing_confirmed_request_no_submit",
+      "pass": true,
+      "detail": "{\"confirmedBuildRequest\":false,\"createEnabled\":true,\"governedSandboxWriteEnabled\":true,\"queueSubmitEnabled\":true,\"sandboxAllowlistPresent\":true,\"operatorApproval\":true,\"idempotencyToken\":true,\"approvedEndpointMode\":true,\"approvedNetSuiteEndpoint\":true,\"invocationToggle\":true}"
+    },
+    {
+      "name": "w164_missing_gate_cases_no_submit",
+      "pass": true,
+      "detail": "{\"missingIdempotencyToken\":{\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"invocationAttempted\":false,\"activeOpenLinks\":0},\"defaultDisabled\":{\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"invocationAttempted\":false,\"activeOpenLinks\":0},\"missingServerFlags\":{\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"invocationAttempted\":false,\"activeOpenLinks\":0},\"missingSandboxAllowlist\":{\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"invocationAttempted\":false,\"activeOpenLinks\":0},\"missingOperatorApproval\":{\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"invocationAttempted\":false,\"activeOpenLinks\":0},\"missingApprovedEndpointMode\":{\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"invocationAttempted\":false,\"activeOpenLinks\":0},\"unsupportedEndpoint\":{\"status\":\"transport_request_not_constructed_no_submit\",\"requestConstructed\":false,\"invocationAttempted\":false,\"activeOpenLinks\":0}}"
+    },
+    {
+      "name": "w164_strict_gate_set_complete",
+      "pass": true,
+      "detail": "{\"confirmedBuildRequest\":true,\"createEnabled\":true,\"governedSandboxWriteEnabled\":true,\"queueSubmitEnabled\":true,\"sandboxAllowlistPresent\":true,\"operatorApproval\":true,\"idempotencyToken\":true,\"approvedEndpointMode\":true,\"approvedNetSuiteEndpoint\":true,\"invocationToggle\":true}"
+    },
+    {
+      "name": "w164_response_normalization_preserved",
+      "pass": true,
+      "detail": "{\"queued\":\"queued_pending\",\"polling\":\"polling_pending\",\"completed\":\"completed_result_awaiting_w151_import\",\"error\":\"adapter_transport_error_drawer_safe\"}"
+    },
+    {
+      "name": "w164_no_live_invocation_and_no_links",
+      "pass": true,
+      "detail": "{\"readyBoundary\":{\"status\":\"transport_request_constructed_for_approved_adapter\",\"requestConstructed\":true,\"method\":\"POST\",\"endpointUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\",\"invocationAttempted\":false,\"activeOpenLinks\":0},\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w164_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noLiveInvocation\":true}"
+    }
+  ]
+}

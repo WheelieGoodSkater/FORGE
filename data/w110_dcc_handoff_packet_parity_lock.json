@@ -1,0 +1,563 @@
+{
+  "schema": "idb.w110-dcc-handoff-packet-parity-lock.v1",
+  "status": "dcc_handoff_parity_locked",
+  "objective": "Prove DCC handoff export eligibility only when confirmed lane, selected pack, exported lane, scenario, family key, manufacturing/WIP flags, location/planning intent, and review-only mode agree.",
+  "parityMatrix": [
+    {
+      "caseId": "apparel",
+      "laneId": "apparel_accessories",
+      "selectedPack": "apparelAccessories",
+      "selectedScenario": "Style-to-Availability Readiness",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    },
+    {
+      "caseId": "cpg",
+      "laneId": "products_cpg",
+      "selectedPack": "cpgProductsManufacturing",
+      "selectedScenario": "Promotion-to-Shelf Readiness",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    },
+    {
+      "caseId": "dealer_hardgoods",
+      "laneId": "dealer_hardgoods",
+      "selectedPack": "dealerHardgoods",
+      "selectedScenario": "Dealer-Ready Fulfillment",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    },
+    {
+      "caseId": "manufacturing_heavy",
+      "laneId": "industrial_equipment",
+      "selectedPack": "industrialManufacturing",
+      "selectedScenario": "Order-to-Assembly Readiness",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    },
+    {
+      "caseId": "ambiguous_confirmed",
+      "laneId": "industrial_distribution",
+      "selectedPack": "distribution",
+      "selectedScenario": "Branch Availability Control",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    }
+  ],
+  "blockedSamples": {
+    "unconfirmedAmbiguous": {
+      "status": "blocked_until_confirmed_handoff",
+      "selectedPack": "distribution",
+      "selectedScenario": "Branch Availability Control",
+      "missing": [
+        "consultant confirmation",
+        "handoff parity mismatch"
+      ],
+      "parityLock": {
+        "schema": "idb.w110-dcc-handoff-parity-lock.v1",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "selectedLaneId": "industrial_distribution",
+        "confirmedLaneId": "",
+        "exportedLaneId": "industrial_distribution",
+        "selectedPack": "distribution",
+        "familyKey": "distribution",
+        "selectedScenario": "Branch Availability Control",
+        "scenario": "Branch Availability Control",
+        "locationPlanningIntent": "The build engine owns location, inventory positioning, replenishment, and Sales Order CSV context decisions.",
+        "checks": [
+          {
+            "key": "confirmed_lane_matches_selected_lane",
+            "pass": false,
+            "expected": "industrial_distribution",
+            "actual": ""
+          },
+          {
+            "key": "exported_lane_matches_confirmed_lane",
+            "pass": false,
+            "expected": "",
+            "actual": "industrial_distribution"
+          },
+          {
+            "key": "selected_pack_matches_family_key",
+            "pass": true,
+            "expected": "distribution",
+            "actual": "distribution"
+          },
+          {
+            "key": "selected_scenario_matches_runner_input",
+            "pass": true,
+            "expected": "Branch Availability Control",
+            "actual": "Branch Availability Control"
+          },
+          {
+            "key": "suitelet_new_hero_matches_runner_input",
+            "pass": true,
+            "expected": "T",
+            "actual": "T"
+          },
+          {
+            "key": "suitelet_manufacturing_matches_runner_input",
+            "pass": true,
+            "expected": "F",
+            "actual": "F"
+          },
+          {
+            "key": "suitelet_wip_matches_runner_input",
+            "pass": true,
+            "expected": "F",
+            "actual": "F"
+          },
+          {
+            "key": "runner_manufacturing_matches_runner_input",
+            "pass": true,
+            "expected": "F",
+            "actual": "F"
+          },
+          {
+            "key": "runner_wip_matches_runner_input",
+            "pass": true,
+            "expected": "F",
+            "actual": "F"
+          },
+          {
+            "key": "runner_create_hero_matches_runner_input",
+            "pass": true,
+            "expected": "T",
+            "actual": "T"
+          },
+          {
+            "key": "location_planning_intent_matches_manufacturing_flag",
+            "pass": true,
+            "expected": "inventory or Sales Order planning intent",
+            "actual": "The build engine owns location, inventory positioning, replenishment, and Sales Order CSV context decisions."
+          },
+          {
+            "key": "suitelet_eval_mode_review_only",
+            "pass": true,
+            "expected": "review_only",
+            "actual": "review_only"
+          },
+          {
+            "key": "execution_mode_review_only_no_submit",
+            "pass": true,
+            "expected": "review_only_no_submit",
+            "actual": "review_only_no_submit"
+          }
+        ],
+        "blockers": [
+          "confirmed_lane_matches_selected_lane",
+          "exported_lane_matches_confirmed_lane"
+        ],
+        "noRegression": {
+          "noIdbWrites": true,
+          "noSuiteScriptInvocationFromIdb": true,
+          "noTransactionWrites": true,
+          "reviewOnlyModeRequired": true,
+          "dccOwnsObjectGeneration": true
+        }
+      }
+    },
+    "mutationChecks": [
+      {
+        "name": "confirmed_lane_disagrees",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "blockers": [
+          "confirmed_lane_matches_selected_lane",
+          "exported_lane_matches_confirmed_lane"
+        ]
+      },
+      {
+        "name": "exported_lane_disagrees",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "blockers": [
+          "exported_lane_matches_confirmed_lane"
+        ]
+      },
+      {
+        "name": "selected_pack_disagrees",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "blockers": [
+          "selected_pack_matches_family_key"
+        ]
+      },
+      {
+        "name": "scenario_disagrees",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "blockers": [
+          "selected_scenario_matches_runner_input"
+        ]
+      },
+      {
+        "name": "family_key_disagrees",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "blockers": [
+          "selected_pack_matches_family_key"
+        ]
+      },
+      {
+        "name": "manufacturing_flag_disagrees",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "blockers": [
+          "suitelet_manufacturing_matches_runner_input",
+          "runner_manufacturing_matches_runner_input"
+        ]
+      },
+      {
+        "name": "wip_flag_disagrees",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "blockers": [
+          "suitelet_wip_matches_runner_input",
+          "runner_wip_matches_runner_input"
+        ]
+      },
+      {
+        "name": "location_planning_intent_disagrees",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "blockers": [
+          "location_planning_intent_matches_manufacturing_flag"
+        ]
+      },
+      {
+        "name": "review_only_mode_disagrees",
+        "status": "blocked_parity_mismatch",
+        "exportEligible": false,
+        "blockers": [
+          "suitelet_eval_mode_review_only",
+          "execution_mode_review_only_no_submit"
+        ]
+      }
+    ]
+  },
+  "confirmedSamples": [
+    {
+      "id": "apparel",
+      "laneId": "apparel_accessories",
+      "selectedPack": "apparelAccessories",
+      "selectedScenario": "Style-to-Availability Readiness",
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked",
+      "parityBlockers": [],
+      "suiteletEntryPayload": {
+        "custpage_prospect": "Ariat International",
+        "custpage_website": "https://www.ariat.com/",
+        "custpage_notes": "Seasonal footwear and apparel launch needs style, size, color, replenishment timing, and channel availability connected.",
+        "custpage_newhero": "T",
+        "custpage_enablemfg": "F",
+        "custpage_enablewip": "F",
+        "custpage_evalmode": "review_only",
+        "custpage_actionmode": ""
+      },
+      "scheduledRunnerPreview": {
+        "custscript_v3_runner_prospect": "Ariat International",
+        "custscript_v3_runner_website": "https://www.ariat.com/",
+        "custscript_v3_runner_notes": "Seasonal footwear and apparel launch needs style, size, color, replenishment timing, and channel availability connected. Prove style/SKU matrix and customer promise readiness. Fetch status: resolved / Source URLs: 1 / Signals: Prove style/SKU matrix and customer promise readiness., Show size/color availability, style matrix fit, replenishment timing, and customer-to-order impact.",
+        "custscript_v3_runner_agenda": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_extid": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_mapping": "dcc_config_required",
+        "custscript_v3_runner_folder": "dcc_config_required",
+        "custscript_v3_runner_subsidiary": "dcc_config_required",
+        "custscript_v3_runner_location": "dcc_config_optional",
+        "custscript_v3_runner_enable_wip": "F",
+        "custscript_v3_runner_enable_mfg": "F",
+        "custscript_v3_runner_create_new_hero": "T",
+        "custscript_v3_runner_hero_item": "generated_by_dcc_suitelet_fresh_hero",
+        "custscript_v3_runner_wc_search": "dcc_config_optional"
+      }
+    },
+    {
+      "id": "cpg",
+      "laneId": "products_cpg",
+      "selectedPack": "cpgProductsManufacturing",
+      "selectedScenario": "Promotion-to-Shelf Readiness",
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked",
+      "parityBlockers": [],
+      "suiteletEntryPayload": {
+        "custpage_prospect": "Summit Snack Co.",
+        "custpage_website": "https://example-cpg.test/",
+        "custpage_notes": "Promotion launch readiness is weak because finished goods, packaging, case packs, and retail replenishment are disconnected.",
+        "custpage_newhero": "T",
+        "custpage_enablemfg": "T",
+        "custpage_enablewip": "F",
+        "custpage_evalmode": "review_only",
+        "custpage_actionmode": ""
+      },
+      "scheduledRunnerPreview": {
+        "custscript_v3_runner_prospect": "Summit Snack Co.",
+        "custscript_v3_runner_website": "https://example-cpg.test/",
+        "custscript_v3_runner_notes": "Promotion launch readiness is weak because finished goods, packaging, case packs, and retail replenishment are disconnected. Prove promotion-to-shelf readiness. Fetch status: resolved / Source URLs: 1 / Signals: Prove promotion-to-shelf readiness., Show customer order, finished good, packaging/case pack, and promotion replenishment in one path.",
+        "custscript_v3_runner_agenda": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_extid": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_mapping": "dcc_config_required",
+        "custscript_v3_runner_folder": "dcc_config_required",
+        "custscript_v3_runner_subsidiary": "dcc_config_required",
+        "custscript_v3_runner_location": "dcc_config_optional",
+        "custscript_v3_runner_enable_wip": "F",
+        "custscript_v3_runner_enable_mfg": "T",
+        "custscript_v3_runner_create_new_hero": "T",
+        "custscript_v3_runner_hero_item": "generated_by_dcc_suitelet_fresh_hero",
+        "custscript_v3_runner_wc_search": "dcc_config_optional"
+      }
+    },
+    {
+      "id": "dealer_hardgoods",
+      "laneId": "dealer_hardgoods",
+      "selectedPack": "dealerHardgoods",
+      "selectedScenario": "Dealer-Ready Fulfillment",
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked",
+      "parityBlockers": [],
+      "suiteletEntryPayload": {
+        "custpage_prospect": "Trailside Outdoor Supply",
+        "custpage_website": "https://example-dealer.test/",
+        "custpage_notes": "Dealer channel demand is hard to promise because product, branch availability, and replenishment are split.",
+        "custpage_newhero": "T",
+        "custpage_enablemfg": "F",
+        "custpage_enablewip": "F",
+        "custpage_evalmode": "review_only",
+        "custpage_actionmode": ""
+      },
+      "scheduledRunnerPreview": {
+        "custscript_v3_runner_prospect": "Trailside Outdoor Supply",
+        "custscript_v3_runner_website": "https://example-dealer.test/",
+        "custscript_v3_runner_notes": "Dealer channel demand is hard to promise because product, branch availability, and replenishment are split. Prove dealer-ready fulfillment. Fetch status: resolved / Source URLs: 1 / Signals: Prove dealer-ready fulfillment., Show product/SKU availability, dealer channel replenishment, inventory, and fulfillment setup.",
+        "custscript_v3_runner_agenda": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_extid": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_mapping": "dcc_config_required",
+        "custscript_v3_runner_folder": "dcc_config_required",
+        "custscript_v3_runner_subsidiary": "dcc_config_required",
+        "custscript_v3_runner_location": "dcc_config_optional",
+        "custscript_v3_runner_enable_wip": "F",
+        "custscript_v3_runner_enable_mfg": "F",
+        "custscript_v3_runner_create_new_hero": "T",
+        "custscript_v3_runner_hero_item": "generated_by_dcc_suitelet_fresh_hero",
+        "custscript_v3_runner_wc_search": "dcc_config_optional"
+      }
+    },
+    {
+      "id": "manufacturing_heavy",
+      "laneId": "industrial_equipment",
+      "selectedPack": "industrialManufacturing",
+      "selectedScenario": "Order-to-Assembly Readiness",
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked",
+      "parityBlockers": [],
+      "suiteletEntryPayload": {
+        "custpage_prospect": "Northline Equipment",
+        "custpage_website": "https://example-industrial.test/",
+        "custpage_notes": "Engineer-to-order assemblies need component structure, production lineage, and WIP visibility before quote commitment.",
+        "custpage_newhero": "T",
+        "custpage_enablemfg": "T",
+        "custpage_enablewip": "T",
+        "custpage_evalmode": "review_only",
+        "custpage_actionmode": ""
+      },
+      "scheduledRunnerPreview": {
+        "custscript_v3_runner_prospect": "Northline Equipment",
+        "custscript_v3_runner_website": "https://example-industrial.test/",
+        "custscript_v3_runner_notes": "Engineer-to-order assemblies need component structure, production lineage, and WIP visibility before quote commitment. Prove order-to-assembly readiness. Fetch status: resolved / Source URLs: 1 / Signals: Prove order-to-assembly readiness., Show assembly, BOM/component structure, routing/WIP readiness, and sales order context.",
+        "custscript_v3_runner_agenda": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_extid": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_mapping": "dcc_config_required",
+        "custscript_v3_runner_folder": "dcc_config_required",
+        "custscript_v3_runner_subsidiary": "dcc_config_required",
+        "custscript_v3_runner_location": "dcc_config_optional",
+        "custscript_v3_runner_enable_wip": "T",
+        "custscript_v3_runner_enable_mfg": "T",
+        "custscript_v3_runner_create_new_hero": "T",
+        "custscript_v3_runner_hero_item": "generated_by_dcc_suitelet_fresh_hero",
+        "custscript_v3_runner_wc_search": "dcc_config_optional"
+      }
+    },
+    {
+      "id": "ambiguous_confirmed",
+      "laneId": "industrial_distribution",
+      "selectedPack": "distribution",
+      "selectedScenario": "Branch Availability Control",
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked",
+      "parityBlockers": [],
+      "suiteletEntryPayload": {
+        "custpage_prospect": "Harbor Supply Group",
+        "custpage_website": "https://example-ambiguous.test/",
+        "custpage_notes": "The site is broad, but the consultant confirmed the request is branch inventory availability and replenishment control.",
+        "custpage_newhero": "T",
+        "custpage_enablemfg": "F",
+        "custpage_enablewip": "F",
+        "custpage_evalmode": "review_only",
+        "custpage_actionmode": ""
+      },
+      "scheduledRunnerPreview": {
+        "custscript_v3_runner_prospect": "Harbor Supply Group",
+        "custscript_v3_runner_website": "https://example-ambiguous.test/",
+        "custscript_v3_runner_notes": "The site is broad, but the consultant confirmed the request is branch inventory availability and replenishment control. Prove branch availability control. Fetch status: resolved / Source URLs: 1 / Signals: Prove branch availability control., Show inventory position, branch fulfillment, supplier replenishment, and Sales Order view.",
+        "custscript_v3_runner_agenda": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_extid": "generated_by_dcc_suitelet",
+        "custscript_v3_runner_mapping": "dcc_config_required",
+        "custscript_v3_runner_folder": "dcc_config_required",
+        "custscript_v3_runner_subsidiary": "dcc_config_required",
+        "custscript_v3_runner_location": "dcc_config_optional",
+        "custscript_v3_runner_enable_wip": "F",
+        "custscript_v3_runner_enable_mfg": "F",
+        "custscript_v3_runner_create_new_hero": "T",
+        "custscript_v3_runner_hero_item": "generated_by_dcc_suitelet_fresh_hero",
+        "custscript_v3_runner_wc_search": "dcc_config_optional"
+      }
+    }
+  ],
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "w92StateAuthorityPreserved": true,
+    "w105W107PreviewOnlyApprovalPreserved": true,
+    "dccOwnsObjectGeneration": true,
+    "noDccRunnerRewrite": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W111: DCC Preview URL Builder And Operator Copy",
+    "prompt": "Move through W111: DCC Preview URL Builder And Operator Copy. Add a review-only operator helper that formats the DCC Suitelet preview URL/query parameters from dccRunnerHandoffPacketV1 without navigating, invoking SuiteScript, submitting, queueing, or writing. Include copy-safe parameter text, operator comparison instructions, blocked/confirmed examples, and trace coverage. Preserve W110 parity lock, W92 state authority, W105-W107 preview-only approval behavior, no IDB writes, no SuiteScript invocation from IDB, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output preview URL helper contract, Review UI copy, validator gates, W111 report, and best next Codex prompt."
+  }
+}

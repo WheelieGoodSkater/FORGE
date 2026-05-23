@@ -1,0 +1,116 @@
+{
+  "schema": "idb.w60-website-runtime-integration-trace.v1",
+  "generated": "2026-05-17T21:41:01.207Z",
+  "decision": "PASS",
+  "totalCases": 5,
+  "passedCases": 5,
+  "failedCases": 0,
+  "noRegression": {
+    "noWriteAuthority": true,
+    "noSuiteScriptInvocation": true,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true
+  },
+  "results": [
+    {
+      "id": "ariat_website_owned_apparel",
+      "website": "https://www.ariat.com/",
+      "expectedLaneId": "apparel_accessories",
+      "actualLaneId": "apparel_accessories",
+      "expectedProductSeed": "Core Boot and Apparel Style Matrix",
+      "actualProductSeed": "Core Boot and Apparel Style Matrix",
+      "productFamily": "Apparel and Footwear Style",
+      "demandMoment": "style, size, and channel availability",
+      "authority": "website_evidence_v1",
+      "resolverVersion": "w60.drawer-runtime-local.v1",
+      "confidenceState": "recommended",
+      "confidenceSource": "website_evidence_v1",
+      "sourceUrls": [
+        "https://www.ariat.com/"
+      ],
+      "notesDidOwnIdentity": false,
+      "failures": [],
+      "status": "PASS"
+    },
+    {
+      "id": "uline_website_owned_distribution",
+      "website": "https://www.uline.com/",
+      "expectedLaneId": "industrial_distribution",
+      "actualLaneId": "industrial_distribution",
+      "expectedProductSeed": "Distributor SKU",
+      "actualProductSeed": "Distributor SKU",
+      "productFamily": "Industrial Distribution SKU",
+      "demandMoment": "stock, replenishment, and fulfillment readiness",
+      "authority": "website_evidence_v1",
+      "resolverVersion": "w60.drawer-runtime-local.v1",
+      "confidenceState": "recommended",
+      "confidenceSource": "website_evidence_v1",
+      "sourceUrls": [
+        "https://www.uline.com/"
+      ],
+      "notesDidOwnIdentity": false,
+      "failures": [],
+      "status": "PASS"
+    },
+    {
+      "id": "mcmaster_website_owned_distribution",
+      "website": "https://www.mcmaster.com/",
+      "expectedLaneId": "industrial_distribution",
+      "actualLaneId": "industrial_distribution",
+      "expectedProductSeed": "Distributor SKU",
+      "actualProductSeed": "Distributor SKU",
+      "productFamily": "Industrial Distribution SKU",
+      "demandMoment": "stock, replenishment, and fulfillment readiness",
+      "authority": "website_evidence_v1",
+      "resolverVersion": "w60.drawer-runtime-local.v1",
+      "confidenceState": "recommended",
+      "confidenceSource": "website_evidence_v1",
+      "sourceUrls": [
+        "https://www.mcmaster.com/"
+      ],
+      "notesDidOwnIdentity": false,
+      "failures": [],
+      "status": "PASS"
+    },
+    {
+      "id": "homedepot_website_owned_hardgoods",
+      "website": "https://www.homedepot.com/",
+      "expectedLaneId": "dealer_hardgoods",
+      "actualLaneId": "dealer_hardgoods",
+      "expectedProductSeed": "Tool and Hardgoods SKU",
+      "actualProductSeed": "Tool and Hardgoods SKU",
+      "productFamily": "Tool and Hardgoods Retail SKU",
+      "demandMoment": "retail product availability",
+      "authority": "website_evidence_v1",
+      "resolverVersion": "w60.drawer-runtime-local.v1",
+      "confidenceState": "recommended",
+      "confidenceSource": "website_evidence_v1",
+      "sourceUrls": [
+        "https://www.homedepot.com/"
+      ],
+      "notesDidOwnIdentity": false,
+      "failures": [],
+      "status": "PASS"
+    },
+    {
+      "id": "thermofisher_website_owned_life_sciences",
+      "website": "https://www.thermofisher.com/",
+      "expectedLaneId": "life_sciences",
+      "actualLaneId": "life_sciences",
+      "expectedProductSeed": "Lab Instrument and Reagent Lot",
+      "actualProductSeed": "Lab Instrument and Reagent Lot",
+      "productFamily": "Life Sciences Lot / Release",
+      "demandMoment": "regulated fulfillment and release readiness",
+      "authority": "website_evidence_v1",
+      "resolverVersion": "w60.drawer-runtime-local.v1",
+      "confidenceState": "recommended",
+      "confidenceSource": "website_evidence_v1",
+      "sourceUrls": [
+        "https://www.thermofisher.com/"
+      ],
+      "notesDidOwnIdentity": false,
+      "failures": [],
+      "status": "PASS"
+    }
+  ]
+}

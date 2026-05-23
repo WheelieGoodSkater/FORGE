@@ -1,0 +1,177 @@
+{
+  "schema": "idb.w178-build-return-poll-refresh-control-trace.v1",
+  "generatedAt": "2026-05-17T21:41:16.438Z",
+  "noResultTrace": [
+    {
+      "event": "w178_no_result_operator_evidence",
+      "runnerTaskCaptured": false,
+      "completedRunnerResultPresent": false,
+      "finalNamesImported": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w178_poll_refresh_control_rules",
+      "checkRunnerResultVisible": false,
+      "importCompletedResultEnabled": false,
+      "targetedOpenLinkTestingEnabled": false
+    },
+    {
+      "event": "w178_visual_testing_decision",
+      "broaderVisualTestingBlocked": true,
+      "targetedVisualBlockedUntilCompletedResultImport": true,
+      "drawerCreatesRecords": false,
+      "drawerInvokesSuiteScript": false
+    }
+  ],
+  "runnerTaskTrace": [
+    {
+      "event": "w178_no_result_operator_evidence",
+      "runnerTaskCaptured": true,
+      "completedRunnerResultPresent": false,
+      "finalNamesImported": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w178_poll_refresh_control_rules",
+      "checkRunnerResultVisible": true,
+      "importCompletedResultEnabled": false,
+      "targetedOpenLinkTestingEnabled": false
+    },
+    {
+      "event": "w178_visual_testing_decision",
+      "broaderVisualTestingBlocked": true,
+      "targetedVisualBlockedUntilCompletedResultImport": true,
+      "drawerCreatesRecords": false,
+      "drawerInvokesSuiteScript": false
+    }
+  ],
+  "completedTrace": [
+    {
+      "event": "w178_no_result_operator_evidence",
+      "runnerTaskCaptured": true,
+      "completedRunnerResultPresent": true,
+      "finalNamesImported": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w178_poll_refresh_control_rules",
+      "checkRunnerResultVisible": false,
+      "importCompletedResultEnabled": true,
+      "targetedOpenLinkTestingEnabled": false
+    },
+    {
+      "event": "w178_visual_testing_decision",
+      "broaderVisualTestingBlocked": true,
+      "targetedVisualBlockedUntilCompletedResultImport": true,
+      "drawerCreatesRecords": false,
+      "drawerInvokesSuiteScript": false
+    }
+  ],
+  "importedTrace": [
+    {
+      "event": "w178_no_result_operator_evidence",
+      "runnerTaskCaptured": true,
+      "completedRunnerResultPresent": true,
+      "finalNamesImported": true,
+      "activeOpenLinks": "url_authority_gated"
+    },
+    {
+      "event": "w178_poll_refresh_control_rules",
+      "checkRunnerResultVisible": false,
+      "importCompletedResultEnabled": false,
+      "targetedOpenLinkTestingEnabled": true
+    },
+    {
+      "event": "w178_visual_testing_decision",
+      "broaderVisualTestingBlocked": true,
+      "targetedVisualBlockedUntilCompletedResultImport": false,
+      "drawerCreatesRecords": false,
+      "drawerInvokesSuiteScript": false
+    }
+  ],
+  "adapterErrorTrace": [
+    {
+      "event": "w178_no_result_operator_evidence",
+      "runnerTaskCaptured": false,
+      "completedRunnerResultPresent": false,
+      "finalNamesImported": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w178_poll_refresh_control_rules",
+      "checkRunnerResultVisible": false,
+      "importCompletedResultEnabled": false,
+      "targetedOpenLinkTestingEnabled": false
+    },
+    {
+      "event": "w178_visual_testing_decision",
+      "broaderVisualTestingBlocked": true,
+      "targetedVisualBlockedUntilCompletedResultImport": true,
+      "drawerCreatesRecords": false,
+      "drawerInvokesSuiteScript": false
+    }
+  ],
+  "results": [
+    {
+      "name": "w178_no_result_evidence_shows_handoff_only",
+      "pass": true,
+      "detail": "{\"operatorTracePath\":\"/path/to/downloads/intelligent-demo-builder-trace-1779017541100.json\",\"operatorHandoffPath\":\"/path/to/downloads/idb-dcc-runner-handoff-packet-1779017540246.json\",\"traceAvailable\":true,\"handoffAvailable\":true,\"traceFinalNamingStatus\":\"not_imported\",\"traceNavigationStatus\":\"using_provisional_preview_names\",\"traceStateFinalNamingResult\":null,\"handoffSchema\":\"idb.dcc-runner-handoff-packet.v1\",\"handoffStatus\":\"ready_for_dcc_suitelet_submission_review\",\"handoffExecutionMode\":\"review_only_no_submit\",\"finding\":\"handoff_only_no_runner_task_no_completed_result_no_links\"}"
+    },
+    {
+      "name": "w178_no_poll_control_before_runner_task",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "w178_server_ready_and_authorization_are_separate",
+      "pass": true,
+      "detail": "{\"serverReady\":[],\"authorized\":[\"start_approved_adapter_call\"]}"
+    },
+    {
+      "name": "w178_check_runner_visible_only_after_runner_task",
+      "pass": true,
+      "detail": "[{\"id\":\"start_approved_adapter_call\",\"label\":\"Start approved adapter call\",\"visible\":false,\"enabled\":false,\"action\":\"server_adapter_one_call_submit_owned_by_approved_adapter\",\"reason\":\"Requires explicit one-call authorization before submit.\"},{\"id\":\"check_runner_result\",\"label\":\"Check runner result\",\"visible\":true,\"enabled\":true,\"action\":\"poll_result_capture_for_runner_task\",\"runnerTaskId\":\"task_w178_operator_001\",\"reason\":\"Runner task exists; checking result capture is now meaningful.\"},{\"id\":\"import_completed_runner_result\",\"label\":\"Import completed runner result\",\"visible\":false,\"enabled\":false,\"action\":\"open_w151_completed_runner_result_import\",\"reason\":\"Disabled until completed runner result JSON passes W151.\"},{\"id\":\"targeted_open_link_test\",\"label\":\"Targeted Open-link test\",\"visible\":false,\"enabled\":false,\"action\":\"start_targeted_only_open_link_verification\",\"reason\":\"Hidden until completed result is imported.\"},{\"id\":\"collect_adapter_error_evidence\",\"label\":\"Collect adapter error evidence\",\"visible\":false,\"enabled\":false,\"action\":\"stop_and_collect_operator_evidence\",\"reason\":\"Adapter errors stop the drawer safely without mutating final names.\"}]"
+    },
+    {
+      "name": "w178_import_blocked_until_w151_completed_result",
+      "pass": true,
+      "detail": "[{\"id\":\"start_approved_adapter_call\",\"label\":\"Start approved adapter call\",\"visible\":false,\"enabled\":false,\"action\":\"server_adapter_one_call_submit_owned_by_approved_adapter\",\"reason\":\"Requires explicit one-call authorization before submit.\"},{\"id\":\"check_runner_result\",\"label\":\"Check runner result\",\"visible\":false,\"enabled\":false,\"action\":\"poll_result_capture_for_runner_task\",\"runnerTaskId\":\"task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"reason\":\"Runner task exists; checking result capture is now meaningful.\"},{\"id\":\"import_completed_runner_result\",\"label\":\"Import completed runner result\",\"visible\":true,\"enabled\":true,\"action\":\"open_w151_completed_runner_result_import\",\"reason\":\"Completed runner result passed W151 numeric id and URL validation.\"},{\"id\":\"targeted_open_link_test\",\"label\":\"Targeted Open-link test\",\"visible\":false,\"enabled\":false,\"action\":\"start_targeted_only_open_link_verification\",\"reason\":\"Hidden until completed result is imported.\"},{\"id\":\"collect_adapter_error_evidence\",\"label\":\"Collect adapter error evidence\",\"visible\":false,\"enabled\":false,\"action\":\"stop_and_collect_operator_evidence\",\"reason\":\"Adapter errors stop the drawer safely without mutating final names.\"}]"
+    },
+    {
+      "name": "w178_targeted_links_only_after_import",
+      "pass": true,
+      "detail": "[{\"id\":\"start_approved_adapter_call\",\"label\":\"Start approved adapter call\",\"visible\":false,\"enabled\":false,\"action\":\"server_adapter_one_call_submit_owned_by_approved_adapter\",\"reason\":\"Requires explicit one-call authorization before submit.\"},{\"id\":\"check_runner_result\",\"label\":\"Check runner result\",\"visible\":false,\"enabled\":false,\"action\":\"poll_result_capture_for_runner_task\",\"runnerTaskId\":\"task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"reason\":\"Runner task exists; checking result capture is now meaningful.\"},{\"id\":\"import_completed_runner_result\",\"label\":\"Import completed runner result\",\"visible\":false,\"enabled\":false,\"action\":\"open_w151_completed_runner_result_import\",\"reason\":\"Completed runner result passed W151 numeric id and URL validation.\"},{\"id\":\"targeted_open_link_test\",\"label\":\"Targeted Open-link test\",\"visible\":true,\"enabled\":true,\"action\":\"start_targeted_only_open_link_verification\",\"reason\":\"Imported URLs are present; broader visual testing remains blocked.\"},{\"id\":\"collect_adapter_error_evidence\",\"label\":\"Collect adapter error evidence\",\"visible\":false,\"enabled\":false,\"action\":\"stop_and_collect_operator_evidence\",\"reason\":\"Adapter errors stop the drawer safely without mutating final names.\"}]"
+    },
+    {
+      "name": "w178_adapter_error_stops_safely",
+      "pass": true,
+      "detail": "[{\"id\":\"start_approved_adapter_call\",\"label\":\"Start approved adapter call\",\"visible\":false,\"enabled\":false,\"action\":\"server_adapter_one_call_submit_owned_by_approved_adapter\",\"reason\":\"Requires explicit one-call authorization before submit.\"},{\"id\":\"check_runner_result\",\"label\":\"Check runner result\",\"visible\":false,\"enabled\":false,\"action\":\"poll_result_capture_for_runner_task\",\"runnerTaskId\":null,\"reason\":\"Hidden until runnerTaskId exists.\"},{\"id\":\"import_completed_runner_result\",\"label\":\"Import completed runner result\",\"visible\":false,\"enabled\":false,\"action\":\"open_w151_completed_runner_result_import\",\"reason\":\"Disabled until completed runner result JSON passes W151.\"},{\"id\":\"targeted_open_link_test\",\"label\":\"Targeted Open-link test\",\"visible\":false,\"enabled\":false,\"action\":\"start_targeted_only_open_link_verification\",\"reason\":\"Hidden until completed result is imported.\"},{\"id\":\"collect_adapter_error_evidence\",\"label\":\"Collect adapter error evidence\",\"visible\":true,\"enabled\":true,\"action\":\"stop_and_collect_operator_evidence\",\"reason\":\"Adapter errors stop the drawer safely without mutating final names.\"}]"
+    },
+    {
+      "name": "w178_render_surface_includes_controls",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-strong\">Ariat International</div>\n          <div class=\"idb-copy\">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div>\n        </div>\n        <div class=\"idb-status-strip\">\n          <div class=\"idb-status-cell\">\n            <div class=\"idb-status-key\">1. Ready?</div>\n            <div class=\"idb-status-value\">Ready to export</div>\n            <div class=\"idb-copy\">Consultant confirmed the lane and pack.</div>\n          </div>\n          <div class=\"idb-status-cell\">\n            <div class=\"idb-status-key\">2. Demo path</div>\n            <div class=\"idb-status-value\">Apparel &amp; Accessories</div>\n            <div class=\"idb-copy\">Style-to-Availability Readiness</div>\n          </div>\n       "
+    },
+    {
+      "name": "w178_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w178_no_result_operator_evidence\",\"runnerTaskCaptured\":false,\"completedRunnerResultPresent\":false,\"finalNamesImported\":false,\"activeOpenLinks\":0},{\"event\":\"w178_poll_refresh_control_rules\",\"checkRunnerResultVisible\":false,\"importCompletedResultEnabled\":false,\"targetedOpenLinkTestingEnabled\":false},{\"event\":\"w178_visual_testing_decision\",\"broaderVisualTestingBlocked\":true,\"targetedVisualBlockedUntilCompletedResultImport\":true,\"drawerCreatesRecords\":false,\"drawerInvokesSuiteScript\":false}]"
+    },
+    {
+      "name": "w178_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlockedUntilCompletedResultImported": true,
+    "targetedOpenLinkTestingReadyInNoResultState": false,
+    "targetedOpenLinkTestingReadyAfterImport": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W178 blocks targeted visual testing while no runnerTask/result capture exists; after import, only targeted Open-link verification may resume."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W179: Approved Server Adapter Result Poll Control Implementation",
+    "prompt": "Move through W179: Approved Server Adapter Result Poll Control Implementation. Use the W178 Build-return poll/refresh control contract to wire the visible Check runner result control to the approved server adapter polling path, still behind server flags, sandbox allowlist, operator approval, idempotency, and approved endpoint mode. Keep the drawer from creating records or invoking SuiteScript outside the approved server adapter path. If no runnerTaskId exists, the control remains hidden. If runnerTaskId exists, the control polls result capture and normalizes pending, completed, and adapter-error responses. Completed results must remain blocked from final-name mutation until W151 validates numeric ids and supported NetSuite URLs. Preserve no drawer writes, no drawer transaction writes, consultant confirmation, state authority and handoff parity, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output poll-control implementation contract, guarded harness, trace samples, W179 report, visual testing decision blocked until completed result import, and best next Codex prompt."
+  }
+}

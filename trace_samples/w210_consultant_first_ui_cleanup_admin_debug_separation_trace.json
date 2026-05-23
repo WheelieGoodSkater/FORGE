@@ -1,0 +1,43 @@
+[
+  {
+    "event": "w210_consultant_build_surface_rendered",
+    "visibleSurfaces": [
+      "Customer / Prospect Name",
+      "Website",
+      "Conversation Notes",
+      "Create new item",
+      "Manufacturing",
+      "WIP",
+      "Build demo records",
+      "Check status after build starts",
+      "Finish build after records are ready",
+      "Run demo",
+      "Open links after records exist"
+    ],
+    "adminDebugHidden": true,
+    "simpleStatus": "Ready to build"
+  },
+  {
+    "event": "w210_admin_debug_surface_available",
+    "setupEditModeOnly": true,
+    "hiddenNormalSurfaces": [
+      "W144 endpoint",
+      "server flags",
+      "sandbox allowlist",
+      "operator phrases",
+      "idempotency token",
+      "runnerTaskId",
+      "raw adapter status",
+      "result-capture plumbing",
+      "retry diagnostics",
+      "manual result JSON import",
+      "debug handoff export",
+      "Pilot evidence checklist"
+    ]
+  },
+  {
+    "event": "w210_completed_links_rendered",
+    "finalNamesImported": false,
+    "openLinksOnlyAfterImport": true
+  }
+]

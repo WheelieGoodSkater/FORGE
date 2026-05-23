@@ -1,0 +1,102 @@
+{
+  "schema": "idb.w227-forge-final-install-packet-harness.v1",
+  "status": "pass",
+  "passCount": 7,
+  "total": 7,
+  "results": [
+    {
+      "id": "final_install_packet_includes_expected_w226_artifacts",
+      "pass": true,
+      "evidence": "idb-drawer.user.js:3000183, W226_UPLOAD_MANIFEST.md:3515, reports/w226_forge_header_install_cutover_packet.md:4745, trace_samples/w226_forge_header_install_cutover_packet_trace.json:1561, data/w226_forge_header_install_cutover_packet.json:7661"
+    },
+    {
+      "id": "operator_install_note_compact_and_complete",
+      "pass": true,
+      "evidence": "Update Tampermonkey drawer script only.\nRefresh the NetSuite page.\nConfirm the FORGE rail button appears.\nConfirm the FORGE rail label is not clipped.\nOpen the drawer.\nConfirm the larger FORGE header logo appears.\nNarrow or resize the window and confirm the logo does not overlap the close button.\nConfirm the close button works.\nConfirm Copy operator summary appears in the Trace/import-status surface."
+    },
+    {
+      "id": "normal_operator_note_hides_forbidden_internal_terms",
+      "pass": true,
+      "evidence": "Update Tampermonkey drawer script only.\nRefresh the NetSuite page.\nConfirm the FORGE rail button appears.\nConfirm the FORGE rail label is not clipped.\nOpen the drawer.\nConfirm the larger FORGE header logo appears.\nNarrow or resize the window and confirm the logo does not overlap the close button.\nConfirm the close button works.\nConfirm Copy operator summary appears in the Trace/import-status surface."
+    },
+    {
+      "id": "install_exclusions_remain_explicit",
+      "pass": true,
+      "evidence": "{\"noW144AdapterUpdate\":true,\"noRunnerUpdate\":true,\"noSuiteScriptDeploymentUpdate\":true,\"noImageLookupChange\":true}"
+    },
+    {
+      "id": "w226_responsive_logo_and_rail_font_fit_unchanged",
+      "pass": true,
+      "evidence": "width: min(420px, calc(100% - 72px))"
+    },
+    {
+      "id": "optional_visual_check_is_targeted_only",
+      "pass": true,
+      "evidence": "{\"runOnlyIfOperatorWantsLiveVisualConfirmationAfterInstall\":true,\"noBroadVisualTesting\":true,\"noNetSuiteRecordOpenLinkTesting\":true,\"noRunnerInvocation\":true,\"noSuiteScriptInvocation\":true}"
+    },
+    {
+      "id": "w214_to_w226_boundaries_remain_in_cutover_data",
+      "pass": true,
+      "evidence": "{\"w151ImportGuardPreserved\":true,\"semanticRoleMappingPreserved\":true,\"modeAwareNamingGuardrailsPreserved\":true,\"dynamicRecordDisplayPreserved\":true,\"consultantPartialResultLanguagePreserved\":true,\"operatorReadableSmokePacketPreserved\":true,\"frozenReviewRunWordingPreserved\":true,\"importFailureRecoveryCopyPreserved\":true,\"recoveryUiSurfaceWiringPreserved\":true,\"endToEndOperatorPacketPreserved\":true,\"exportableOperatorSummaryPreserved\":true,\"consultantCopyExportActionPreserved\":true,\"forgeBrandingPreserved\":true,\"targetedLiveHeaderSmokePreserved\":true,\"forgeRailFontFitCorrectionPreserved\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true,\"nllmAdvisoryOnly\":true}"
+    }
+  ],
+  "finalInstallPacket": {
+    "schema": "idb.w227-forge-final-install-packet.v1",
+    "status": "forge_final_install_packet_ready",
+    "artifacts": [
+      {
+        "path": "idb-drawer.user.js",
+        "bytes": 3000183,
+        "present": true
+      },
+      {
+        "path": "W226_UPLOAD_MANIFEST.md",
+        "bytes": 3515,
+        "present": true
+      },
+      {
+        "path": "reports/w226_forge_header_install_cutover_packet.md",
+        "bytes": 4745,
+        "present": true
+      },
+      {
+        "path": "trace_samples/w226_forge_header_install_cutover_packet_trace.json",
+        "bytes": 1561,
+        "present": true
+      },
+      {
+        "path": "data/w226_forge_header_install_cutover_packet.json",
+        "bytes": 7661,
+        "present": true
+      }
+    ],
+    "operatorInstallNote": "Update Tampermonkey drawer script only.\nRefresh the NetSuite page.\nConfirm the FORGE rail button appears.\nConfirm the FORGE rail label is not clipped.\nOpen the drawer.\nConfirm the larger FORGE header logo appears.\nNarrow or resize the window and confirm the logo does not overlap the close button.\nConfirm the close button works.\nConfirm Copy operator summary appears in the Trace/import-status surface.",
+    "installExclusions": {
+      "noW144AdapterUpdate": true,
+      "noRunnerUpdate": true,
+      "noSuiteScriptDeploymentUpdate": true,
+      "noImageLookupChange": true
+    },
+    "optionalTargetedVisualCheck": {
+      "runOnlyIfOperatorWantsLiveVisualConfirmationAfterInstall": true,
+      "noBroadVisualTesting": true,
+      "noNetSuiteRecordOpenLinkTesting": true,
+      "noRunnerInvocation": true,
+      "noSuiteScriptInvocation": true
+    },
+    "preservedFromW226": {
+      "responsiveLogoWidthRule": "width: min(420px, calc(100% - 72px))",
+      "railFontFitCorrection": true,
+      "scriptToInstallOrUpdate": "idb-drawer.user.js",
+      "installGuidance": {
+        "updateTampermonkeyDrawerScriptOnly": true,
+        "noW144AdapterUpdate": true,
+        "noRunnerUpdate": true,
+        "noSuiteScriptDeploymentUpdate": true,
+        "noImageLookupChange": true
+      }
+    },
+    "normalOperatorNoteHidesForbiddenTerms": true,
+    "visualTestingDecision": "No broad visual testing for W227. Optional targeted operator visual check may confirm FORGE logo sizing and rail fit after install only."
+  }
+}

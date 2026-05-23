@@ -1,0 +1,53 @@
+{
+  "schema": "idb.w19-governed-write-execution-pilot-branch.v1",
+  "status": "pilot_branch_ready_create_disabled",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Release Conductor Agent",
+    "Validation And Evidence Agent",
+    "NetSuite Compatibility Sentinel Agent"
+  ],
+  "objective": "Move from create-disabled scaffolding to a controlled sandbox write branch without enabling writes in the main drawer.",
+  "goal": "Enable Customer and Proof Item writes only in a separate governed pilot branch with runtime flags, type-to-confirm, trace result capture, and rollback evidence.",
+  "pilotScope": {
+    "approvedLaneId": "food_beverage",
+    "approvedRoles": [
+      "customer",
+      "proof anchor"
+    ],
+    "transactionContext": "blocked_until_w20_parent_results",
+    "mainPackageCreateEnabled": false
+  },
+  "requiredRuntimeFlags": [
+    "custscript_idb_enable_pilot_writes",
+    "custscript_idb_allow_customer_pilot",
+    "custscript_idb_sandbox_account_only",
+    "custscript_idb_require_type_confirm"
+  ],
+  "requiredBeforeWrite": [
+    "Creation Packet Contract V2 validates",
+    "consultantConfirmed is true",
+    "type-to-confirm phrase matches the reviewed packet",
+    "sandbox runtime flags are enabled in the pilot branch",
+    "trace result capture is available"
+  ],
+  "traceResultContract": {
+    "event": "suitescript_write_path_result",
+    "recordIds": true,
+    "urls": true,
+    "operations": true,
+    "lookupStatus": true,
+    "rollbackLabels": true,
+    "recoverableErrors": true,
+    "blockedDependents": true
+  },
+  "nonRegression": {
+    "noWritesFromMainDrawer": true,
+    "noAutomaticCreation": true,
+    "noTransactionContextUntilParentsStable": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "llmAdvisoryOnly": true
+  }
+}

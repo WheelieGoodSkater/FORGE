@@ -1,0 +1,22 @@
+[
+  {
+    "event": "w206_production_build_ready",
+    "status": "production_build_ready_to_submit",
+    "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+    "submitReady": true,
+    "noDrawerWrites": true
+  },
+  {
+    "event": "w206_runner_task_poll_ready",
+    "status": "production_build_waiting_for_result_capture",
+    "runnerTaskCaptured": true,
+    "pollingReady": true,
+    "noActiveOpenLinks": true
+  },
+  {
+    "event": "w206_completed_result_imported",
+    "status": "production_build_completed_imported",
+    "verifiedOpenLinks": 5,
+    "w151Accepted": true
+  }
+]

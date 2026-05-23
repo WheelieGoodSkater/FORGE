@@ -1,0 +1,126 @@
+{
+  "schema": "idb.w176-completed-runner-result-import-commit-trace.v1",
+  "generatedAt": "2026-05-17T21:41:16.196Z",
+  "commitTrace": [
+    {
+      "event": "w176_import_commit_gate",
+      "commitAllowed": true,
+      "completedResultAcceptedByW151": true,
+      "w175ImportReady": true,
+      "activeOpenLinksBeforeImport": 0,
+      "mutatesFinalGeneratedNames": true
+    },
+    {
+      "event": "w176_pending_and_adapter_error_no_mutation",
+      "pendingImportReady": false,
+      "adapterErrorRequiresOperatorEvidence": true,
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w176_build_run_return_surface",
+      "buildStatus": "build_return_imported_final_names",
+      "runStatus": "run_surface_uses_imported_final_names",
+      "openableAfterCommit": 9,
+      "supportedOpenLinksAfterCommit": 9,
+      "importedUrlsReadyForTargetedVisual": true
+    }
+  ],
+  "pendingNoCommitTrace": [
+    {
+      "event": "w176_import_commit_gate",
+      "commitAllowed": false,
+      "completedResultAcceptedByW151": false,
+      "w175ImportReady": false,
+      "activeOpenLinksBeforeImport": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w176_pending_and_adapter_error_no_mutation",
+      "pendingImportReady": false,
+      "adapterErrorRequiresOperatorEvidence": true,
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w176_build_run_return_surface",
+      "buildStatus": "build_return_not_imported",
+      "runStatus": "run_surface_pending_import",
+      "openableAfterCommit": 0,
+      "supportedOpenLinksAfterCommit": 0,
+      "importedUrlsReadyForTargetedVisual": false
+    }
+  ],
+  "adapterErrorNoCommitTrace": [
+    {
+      "event": "w176_import_commit_gate",
+      "commitAllowed": false,
+      "completedResultAcceptedByW151": false,
+      "w175ImportReady": false,
+      "activeOpenLinksBeforeImport": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w176_pending_and_adapter_error_no_mutation",
+      "pendingImportReady": false,
+      "adapterErrorRequiresOperatorEvidence": true,
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w176_build_run_return_surface",
+      "buildStatus": "build_return_not_imported",
+      "runStatus": "run_surface_pending_import",
+      "openableAfterCommit": 0,
+      "supportedOpenLinksAfterCommit": 0,
+      "importedUrlsReadyForTargetedVisual": false
+    }
+  ],
+  "results": [
+    {
+      "name": "w176_starts_from_w175_import_ready_gate",
+      "pass": true,
+      "detail": "PASS_GOVERNED_RUNNER_RESULT_POLL_IMPORT_GATE_READY__COMPLETED_RESULT_IMPORT_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w176_commit_hook_ready",
+      "pass": true,
+      "detail": "completedRunnerResultImportCommitBuildReturnSurfaceV1"
+    },
+    {
+      "name": "w176_completed_commit_allowed_after_w151",
+      "pass": true,
+      "detail": "{\"completedResultStatus\":\"completed_runner_result_accepted\",\"completedResultAccepted\":true,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"w175ImportReady\":true,\"pendingImportReady\":false,\"adapterErrorImportReady\":false}"
+    },
+    {
+      "name": "w176_pending_and_adapter_error_do_not_mutate",
+      "pass": true,
+      "detail": "{\"pending\":\"completed_runner_result_import_commit_blocked\",\"adapterError\":\"completed_runner_result_import_commit_blocked\"}"
+    },
+    {
+      "name": "w176_build_run_use_imported_names",
+      "pass": true,
+      "detail": "{\"build\":{\"status\":\"build_return_imported_final_names\",\"finalNamesImported\":true,\"openableRecordCount\":9,\"customer\":\"Ariat International Outdoor Retail Account\",\"demoTransaction\":\"Ariat Seasonal Footwear Availability Demo Order\",\"heroItem\":\"Ariat Terrain H2O Work Boot Hero Item\",\"matrixProofItem\":\"Ariat Core Boot Size Color Matrix\"},\"run\":{\"status\":\"run_surface_uses_imported_final_names\",\"runCanUseImportedFinalNames\":true,\"scriptPivotObjectCount\":4,\"openableScriptPivotCount\":4}}"
+    },
+    {
+      "name": "w176_verified_open_links_ready",
+      "pass": true,
+      "detail": "{\"beforeImportSummary\":{\"missing_url\":7},\"afterImportSummary\":{\"verified_openable\":5},\"activeOpenLinksBeforeImport\":0,\"openableAfterCommit\":9,\"supportedOpenLinksAfterCommit\":9,\"importedUrlsReadyForTargetedVisual\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w176_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w176_import_commit_gate\",\"commitAllowed\":true,\"completedResultAcceptedByW151\":true,\"w175ImportReady\":true,\"activeOpenLinksBeforeImport\":0,\"mutatesFinalGeneratedNames\":true},{\"event\":\"w176_pending_and_adapter_error_no_mutation\",\"pendingImportReady\":false,\"adapterErrorRequiresOperatorEvidence\":true,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"event\":\"w176_build_run_return_surface\",\"buildStatus\":\"build_return_imported_final_names\",\"runStatus\":\"run_surface_uses_imported_final_names\",\"openableAfterCommit\":9,\"supportedOpenLinksAfterCommit\":9,\"importedUrlsReadyForTargetedVisual\":true}]"
+    },
+    {
+      "name": "w176_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w176_visual_testing_blocked_until_imported_urls_ready",
+      "pass": true,
+      "detail": "W176 proves imported URL readiness in harness but does not request visual testing. Targeted Open-link visual verification can start only after this imported URL state is installed in IDB."
+    }
+  ]
+}

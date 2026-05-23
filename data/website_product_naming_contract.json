@@ -1,0 +1,108 @@
+{
+  "schema": "idb.website-product-naming-contract.v1",
+  "generated": "2026-05-09",
+  "status": "website_product_naming_ready_create_disabled",
+  "purpose": "Make website-derived product naming visible, traceable, and available to the reviewed packet before any SuiteScript write path is enabled.",
+  "authorityOrder": [
+    "websiteSignal.productSeed",
+    "known domain product family",
+    "conversation-note product cue",
+    "lane proof anchor fallback"
+  ],
+  "requiredNamingEvidence": [
+    "authority",
+    "productSeed",
+    "productFamily",
+    "demandMoment",
+    "domain",
+    "evidence",
+    "confidence",
+    "fallbackReason",
+    "nllmRecommended"
+  ],
+  "recordNamingRules": {
+    "customer": "Customer seed from consultant input.",
+    "transaction": "Customer + demandMoment + Demo Order.",
+    "proofAnchor": "Customer + productSeed.",
+    "supportingProof": "Customer + productFamily + support record label."
+  },
+  "websiteFirstPackageRules": [
+    "Website product/category evidence selects the package and product seed before conversation notes shape story copy.",
+    "Conversation notes can make the value story specific but cannot override a high-confidence website product family with cross-lane terminology.",
+    "New websites should prefer explicit product/category tokens in the website/domain/customer name before falling back to lane proof anchor names.",
+    "If the package source is medium or low confidence, mark N/LLM recommended and show exactly what needs verification.",
+    "W28 ordered passes are known domain, website category classifier, conversation-note product cue, industry fallback, then N/LLM advisory enrichment.",
+    "N/LLM may propose sharper names only when each suggestion carries website/category/source basis or an explicit inferred_from_website flag."
+  ],
+  "websitePackageClassifierV2": {
+    "status": "ready_create_disabled",
+    "notesBoundary": "Conversation notes drive pain, ROI, competitive positioning, objections, and live run coaching after the package is selected.",
+    "classifierFields": [
+      "categoryId",
+      "laneId",
+      "productSeed",
+      "productFamily",
+      "demandMoment",
+      "evidence",
+      "confidence",
+      "antiLeakTags",
+      "nllmRecommended"
+    ]
+  },
+  "antiLeakRules": [
+    "Do not use ingredient and lot readiness for Dealer Hardgoods unless the website proves a food, beverage, ingredient, or regulated lot-controlled product.",
+    "Do not name Apparel packages as branch inventory or industrial distribution when the website shows apparel, footwear, style, size, or color.",
+    "Do not leave proof items as Finished Good or Product / SKU when a website product family can produce a better product seed."
+  ],
+  "examples": [
+    {
+      "customer": "Trek Bikes",
+      "website": "https://www.trekbikes.com",
+      "laneId": "dealer_hardgoods",
+      "productSeed": "Bicycle SKU",
+      "productFamily": "Bicycle Dealer Hardgoods",
+      "demandMoment": "dealer bicycle availability",
+      "expectedRecords": [
+        "Trek Bikes",
+        "Trek Bikes - dealer bicycle availability Demo Order",
+        "Trek Bikes Bicycle SKU",
+        "Trek Bikes Bicycle Dealer Hardgoods Inventory / Fulfillment"
+      ],
+      "blockedLanguage": ["ingredient and lot readiness", "Finished Good fallback"]
+    }
+  ],
+  "nllmUse": {
+    "whenRecommended": [
+      "websiteSignal confidence is not high",
+      "source is industry_fallback",
+      "productSeed is lane proof anchor only",
+      "conversation notes contain specific product or launch terms not captured by local rules"
+    ],
+    "mustReturn": [
+      "proposedProductSeed",
+      "proposedProductFamily",
+      "demandMoment",
+      "recordNames",
+      "websiteEvidenceSnippets",
+      "reviewFlags",
+      "sourceBasis",
+      "confidence",
+      "fallbackReason",
+      "noRegressionDeclaration"
+    ],
+    "mustNot": [
+      "approve creation",
+      "change lane",
+      "change proof anchor",
+      "change DCC toggles",
+      "invent product facts without marking them inferred"
+    ]
+  },
+  "nonRegression": {
+    "creationAllowed": false,
+    "llmAdvisoryOnly": true,
+    "noLaneAuthorityChange": true,
+    "noProofAnchorChange": true,
+    "noDccToggleChange": true
+  }
+}

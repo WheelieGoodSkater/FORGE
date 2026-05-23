@@ -1,0 +1,42 @@
+{
+  "schema": "idb.w30-advisory-naming-visibility-review.v1",
+  "generated": "2026-05-11",
+  "status": "complete_create_still_disabled",
+  "objective": "Make N/LLM naming advisory status visible in Review without adding scroll noise.",
+  "goal": "A consultant can see whether record names are website-grounded, category-derived, industry fallback, or N/LLM-recommended before any SuiteScript handoff.",
+  "roles": [
+    "N/LLM Record Naming Advisor",
+    "Consultant UX Director Agent",
+    "Website Evidence Sentinel",
+    "No-Regression Sentinel"
+  ],
+  "uxContract": {
+    "surface": "Review / Build Packet",
+    "primaryCard": "Naming advisor",
+    "compactFields": [
+      "status",
+      "sourceBasis",
+      "confidence",
+      "writeAuthority"
+    ],
+    "expandedFields": [
+      "productSeed",
+      "productFamily",
+      "website evidence",
+      "top proposed record names",
+      "no-regression declaration"
+    ]
+  },
+  "nonRegression": {
+    "noRecordCreation": true,
+    "noSuiteScriptInvocation": true,
+    "noLaneAuthorityChange": true,
+    "noProofAnchorChange": true,
+    "noDccToggleChange": true,
+    "noPacketOrderChange": true
+  },
+  "futureNotes": [
+    "If Review still feels long during pilot, collapse the full naming basis by default and show only source plus confidence.",
+    "If consultants ask for stronger evidence, W33 should add source snippets to the expanded panel without adding more first-viewport text."
+  ]
+}

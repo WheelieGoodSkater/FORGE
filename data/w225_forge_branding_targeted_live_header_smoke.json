@@ -1,0 +1,74 @@
+{
+  "schema": "idb.w225-forge-branding-targeted-live-header-smoke-harness.v1",
+  "status": "pass",
+  "passCount": 11,
+  "total": 11,
+  "results": [
+    {
+      "id": "live_rendered_shell_header_includes_forge_asset",
+      "pass": true,
+      "evidence": "drawer=true, assetPrefix=data:image/png;base64,"
+    },
+    {
+      "id": "live_rendered_shell_has_forge_rail_label",
+      "pass": true,
+      "evidence": "text=FORGE, title=Open FORGE. Drag to move the launcher."
+    },
+    {
+      "id": "old_visible_branding_absent_from_live_header",
+      "pass": true,
+      "evidence": "\n      <div class=\"idb-header\">\n        <div class=\"idb-title-row\">\n          <div class=\"idb-forge-brand\">\n            <img class=\"idb-forge-logo\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABVoAAAIDCAYAAAD14aVWABbv6ElEQVR42ly9d18US9f1X9fzqu4jk8CTzzEAkweYHMhJQFDAAAhiQhBREVFBMsZz3c/v3f32WntXD+f5oz5VXV1VHaanZ/rbq9Z2ya5uF+/Ku2RPwSW78y7R3SPloksxlZhnC1WXK1ddtlhx2XJZynWXK1Vcd7Xheip1lyqUXUbWpfOaZ0qaZ0tVy6Vtueay0hZ5V6XXdUnf7lqNY+Trva7U2+fyvQOuWO9zZcnLfZL6ByUNuO5Gn+upSZ9Gr8vX+l1RlguNfleQdqWGpL5+6S/5wCD7VAeGXWVgyFUHRyUfcY3hUUnjrs58zPWOjku64fpGJ1y/pLqs62PdKNf1ybr+sRtuYGxc0g03eGPSDU5MuQFJQ5KGp25KmnIj09NuZGpaytNuTNIoktSNz9xyN25KmrntJm7NyrLkt2+78VtzblLyqdl5d3Nuzk3P3ZFc0p27bkbSzfl7zG/fv+9u311wswsLbu6+5PckX1h0s4sP3Nzikru7uOzuLa24u5LuLy9LvuzuP1hxd1YkX5G6hw/dwsqqW3z4yC2urroHq4/dg0dP3eLjJ+7B02duRdLys"
+    },
+    {
+      "id": "close_button_accessible_in_live_header",
+      "pass": true,
+      "evidence": "close button title retained"
+    },
+    {
+      "id": "image_alt_text_exact_in_live_header",
+      "pass": true,
+      "evidence": "FORGE SC Demo Creation Tool"
+    },
+    {
+      "id": "operator_summary_copy_control_present",
+      "pass": true,
+      "evidence": "trace import/status surface has copy action"
+    },
+    {
+      "id": "copy_summary_feedback_exact",
+      "pass": true,
+      "evidence": "{\"buttonLabel\":\"Copy operator summary\",\"successCopy\":\"Operator summary copied.\",\"failureCopy\":\"Copy failed. Use export from admin/debug.\"}"
+    },
+    {
+      "id": "admin_debug_appendix_toggle_gating_correct",
+      "pass": true,
+      "evidence": "normal=-1, admin=1121"
+    },
+    {
+      "id": "normal_rendered_html_hides_forbidden_terms",
+      "pass": true,
+      "evidence": "normal shell and trace surfaces hide internal terms"
+    },
+    {
+      "id": "w218_w220_w222_w223_w224_remain_unchanged",
+      "pass": true,
+      "evidence": "frozen success/recovery/export/copy/branding preserved"
+    },
+    {
+      "id": "targeted_only_no_runner_suitescript_or_drawer_writes",
+      "pass": true,
+      "evidence": "{\"w151ImportGuardPreserved\":true,\"semanticRoleMappingPreserved\":true,\"modeAwareNamingGuardrailsPreserved\":true,\"dynamicRecordDisplayPreserved\":true,\"consultantPartialResultLanguagePreserved\":true,\"operatorReadableSmokePacketPreserved\":true,\"frozenReviewRunWordingPreserved\":true,\"importFailureRecoveryCopyPreserved\":true,\"recoveryUiSurfaceWiringPreserved\":true,\"endToEndOperatorPacketPreserved\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true,\"nllmAdvisoryOnly\":true,\"exportableOperatorSummaryPreserved\":true,\"noDrawerWritesIntroduced\":true,\"noTransactionWritesIntroduced\":true,\"noSuiteScriptCallsIntroduced\":true}"
+    }
+  ],
+  "smokePacket": {
+    "schema": "idb.w225-targeted-live-forge-header-smoke-packet.v1",
+    "railText": "FORGE",
+    "railTitle": "Open FORGE. Drag to move the launcher.",
+    "headerUsesForgeLogo": true,
+    "oldHeaderBrandingAbsent": true,
+    "closeButtonAccessible": true,
+    "copyOperatorSummaryPresent": true,
+    "diagnosticsToggleNormalHidden": true,
+    "diagnosticsToggleAdminVisible": true
+  }
+}

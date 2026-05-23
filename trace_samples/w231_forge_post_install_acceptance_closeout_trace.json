@@ -1,0 +1,48 @@
+{
+  "schema": "idb.w231-forge-post-install-acceptance-closeout-trace.v1",
+  "expectedInstalledScript": "idb-drawer.user.js",
+  "acceptedEvidenceSource": [
+    "W230 evidence review outcome.",
+    "W229 operator evidence intake fields.",
+    "Optional screenshot/reference note."
+  ],
+  "closeoutDispositions": [
+    {
+      "id": "install_accepted",
+      "label": "Install accepted",
+      "nextActions": [
+        "Keep current Tampermonkey drawer script installed.",
+        "No further action required."
+      ]
+    },
+    {
+      "id": "install_accepted_with_visual_follow_up",
+      "label": "Install accepted with visual follow-up",
+      "nextActions": [
+        "Keep current Tampermonkey drawer script installed.",
+        "Open only the named visual follow-up."
+      ]
+    },
+    {
+      "id": "install_blocked",
+      "label": "Install blocked",
+      "nextActions": [
+        "Do not treat install as accepted.",
+        "Open only the named blocked-install fix."
+      ]
+    }
+  ],
+  "blockedInstallFixCategories": [
+    "Rail button missing.",
+    "Drawer does not open.",
+    "Header logo missing.",
+    "Close button inaccessible.",
+    "Old visible header text appears.",
+    "Operator summary copy control missing."
+  ],
+  "visualFollowUpCategories": [
+    "Rail label fit polish.",
+    "Header logo sizing polish."
+  ],
+  "visualTestingDecision": "No broad visual testing for W231. Closeout records the final disposition from W230 evidence review only."
+}

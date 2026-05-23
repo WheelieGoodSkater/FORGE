@@ -1,0 +1,55 @@
+{
+  "schema": "intelligent-demo-builder-controlled-enablement-branch-plan.v1",
+  "generated": "2026-05-09",
+  "status": "branch_plan_only_create_disabled",
+  "targetBlock": "G13",
+  "recommendedBranch": "codex/g13-food-beverage-create-pilot",
+  "sourceBranchRule": "branch from green main package only after npm run preflight passes",
+  "pilotLaneId": "food_beverage",
+  "pilotProofAnchor": "Finished Good",
+  "writePathType": "suitescript_direct_write",
+  "mainPackageMustRemain": {
+    "createEnabled": false,
+    "drawerWritesRecords": false,
+    "allNonPilotLanesBlocked": true
+  },
+  "allowedPilotBranchChanges": [
+    "add guarded create execution behind CREATE_ENABLED for food_beverage only",
+    "add one-lane Food / Beverage SuiteScript write tests",
+    "add trace capture for created record ids and urls",
+    "add partial-failure response tests",
+    "add deployment notes for a controlled sandbox Suitelet"
+  ],
+  "forbiddenPilotBranchChanges": [
+    "enable create in main",
+    "enable create for non-food_beverage lanes",
+    "allow drawer direct writes",
+    "bypass consultant confirmation",
+    "change proof anchors",
+    "change DCC toggles",
+    "let LLM invoke the write path"
+  ],
+  "branchGoCriteria": [
+    "main preflight passes",
+    "authenticated NetSuite smoke completed",
+    "G12 harness passes",
+    "Food / Beverage pilot packet reviewed",
+    "rollback owner assigned",
+    "trace export verified before pilot"
+  ],
+  "branchExitCriteria": [
+    "Food / Beverage create tests pass in sandbox",
+    "created record ids and urls returned in trace",
+    "partial failure stops dependent writes",
+    "non-pilot lanes remain blocked",
+    "manual rollback notes are complete"
+  ],
+  "rollbackOwnerRequired": true,
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "foodBeverageOnly": true,
+    "noAutomaticCreate": true,
+    "noDrawerDirectWrites": true,
+    "noLlmCreateAuthority": true
+  }
+}

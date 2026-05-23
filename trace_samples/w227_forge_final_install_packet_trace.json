@@ -1,0 +1,55 @@
+{
+  "schema": "idb.w227-forge-final-install-packet-trace.v1",
+  "artifacts": [
+    {
+      "path": "idb-drawer.user.js",
+      "bytes": 3000183,
+      "present": true
+    },
+    {
+      "path": "W226_UPLOAD_MANIFEST.md",
+      "bytes": 3515,
+      "present": true
+    },
+    {
+      "path": "reports/w226_forge_header_install_cutover_packet.md",
+      "bytes": 4745,
+      "present": true
+    },
+    {
+      "path": "trace_samples/w226_forge_header_install_cutover_packet_trace.json",
+      "bytes": 1561,
+      "present": true
+    },
+    {
+      "path": "data/w226_forge_header_install_cutover_packet.json",
+      "bytes": 7661,
+      "present": true
+    }
+  ],
+  "operatorInstallNoteLines": [
+    "Update Tampermonkey drawer script only.",
+    "Refresh the NetSuite page.",
+    "Confirm the FORGE rail button appears.",
+    "Confirm the FORGE rail label is not clipped.",
+    "Open the drawer.",
+    "Confirm the larger FORGE header logo appears.",
+    "Narrow or resize the window and confirm the logo does not overlap the close button.",
+    "Confirm the close button works.",
+    "Confirm Copy operator summary appears in the Trace/import-status surface."
+  ],
+  "installExclusions": {
+    "noW144AdapterUpdate": true,
+    "noRunnerUpdate": true,
+    "noSuiteScriptDeploymentUpdate": true,
+    "noImageLookupChange": true
+  },
+  "optionalTargetedVisualCheck": {
+    "runOnlyIfOperatorWantsLiveVisualConfirmationAfterInstall": true,
+    "noBroadVisualTesting": true,
+    "noNetSuiteRecordOpenLinkTesting": true,
+    "noRunnerInvocation": true,
+    "noSuiteScriptInvocation": true
+  },
+  "visualTestingDecision": "No broad visual testing for W227. Optional targeted operator visual check may confirm FORGE logo sizing and rail fit after install only."
+}

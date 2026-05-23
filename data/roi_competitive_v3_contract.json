@@ -1,0 +1,44 @@
+{
+  "schema": "idb.roi-competitive-v3-contract.v1",
+  "status": "roi_competitive_ready_create_disabled",
+  "ownerAgents": [
+    "ROI Audit Agent",
+    "Competitive Strategy Agent",
+    "UX Director Agent"
+  ],
+  "objective": "Make ROI auditable and competitive framing industry-specific while preventing unsupported savings or competitor claims.",
+  "roiRequiredFields": [
+    "headline",
+    "claim",
+    "driver",
+    "affectedProcess",
+    "metricProxy",
+    "baselineNeeded",
+    "assumption",
+    "proofStep",
+    "confidence",
+    "sourceBasis",
+    "auditTrail",
+    "caution"
+  ],
+  "competitiveRequiredFields": [
+    "sourceState",
+    "namedCompetitor",
+    "sourceBasis",
+    "industryWinThemes",
+    "competitorSafeContrast",
+    "objectionCopy",
+    "verifiedState"
+  ],
+  "sourceStates": [
+    "unsupplied_safe_industry_framing",
+    "competitor_supplied_unverified",
+    "source_backed_verified"
+  ],
+  "nonRegression": {
+    "noMeasuredSavingsWithoutBaseline": true,
+    "noNamedCompetitorClaimsWithoutSource": true,
+    "llmAdvisoryOnly": true,
+    "creationAllowed": false
+  }
+}

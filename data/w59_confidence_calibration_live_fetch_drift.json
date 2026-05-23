@@ -1,0 +1,167 @@
+{
+  "schema": "idb.w59-confidence-calibration-live-fetch-drift.v1",
+  "status": "complete_confidence_calibration_ready",
+  "objective": "Tune classification confidence against the W58 corpus and prepare for live website drift.",
+  "goal": "Reduce false-confident-wrong outcomes, compare deterministic snapshot results against approved live resolver observations, preserve honest uncertainty, and decide what must be confirmed before five-consultant pilot testing.",
+  "calibrationPolicy": {
+    "recommendedMinimumScore": 0.82,
+    "recommendedMinimumEvidenceCitations": 2,
+    "recommendedRequiresStableLaneUnderDrift": true,
+    "needsConfirmationScoreBand": {
+      "minimum": 0.45,
+      "maximum": 0.81
+    },
+    "ambiguousMarginMaximum": 0.25,
+    "downgradeToConfirmationWhen": [
+      "live observation has fewer than two source URLs",
+      "leading lane changed between snapshot and live observation",
+      "second candidate is within ambiguousMarginMaximum",
+      "live observation has failureState ambiguous",
+      "live observation is source-limited but still has partial category evidence"
+    ],
+    "insufficientEvidenceWhen": [
+      "blocked",
+      "thin",
+      "unavailable",
+      "timeout",
+      "unsafe URL",
+      "no lane candidates"
+    ],
+    "falseConfidentWrongMaximum": 0,
+    "unsupportedClaimsMaximum": 0,
+    "driftReviewRequiredWhenLaneChanges": true
+  },
+  "approvedLiveFetchComparisonSamples": [
+    {
+      "id": "w59_live_trek_stable",
+      "baselineCaseId": "w58_real_product_brand_trek",
+      "website": "https://www.trekbikes.com/",
+      "observationSource": "approved_live_fetch_shape_sample",
+      "liveObservation": {
+        "state": "recommended",
+        "leadingLaneId": "dealer_hardgoods",
+        "leadingScore": 0.91,
+        "secondLaneId": "industrial_distribution",
+        "secondScore": 0.5,
+        "sourceUrlCount": 2,
+        "failureState": null,
+        "evidenceNotes": ["bikes", "equipment", "dealer stores"]
+      },
+      "expectedCalibratedState": "recommended",
+      "expectedLaneId": "dealer_hardgoods"
+    },
+    {
+      "id": "w59_live_patagonia_stable",
+      "baselineCaseId": "w58_real_apparel_accessories_patagonia",
+      "website": "https://www.patagonia.com/",
+      "observationSource": "approved_live_fetch_shape_sample",
+      "liveObservation": {
+        "state": "recommended",
+        "leadingLaneId": "apparel_accessories",
+        "leadingScore": 0.88,
+        "secondLaneId": "dealer_hardgoods",
+        "secondScore": 0.52,
+        "sourceUrlCount": 2,
+        "failureState": null,
+        "evidenceNotes": ["apparel", "accessories", "sizes"]
+      },
+      "expectedCalibratedState": "recommended",
+      "expectedLaneId": "apparel_accessories"
+    },
+    {
+      "id": "w59_live_grainger_source_limited",
+      "baselineCaseId": "w58_real_distributor_dealer_grainger",
+      "website": "https://www.grainger.com/",
+      "observationSource": "approved_live_fetch_shape_sample",
+      "liveObservation": {
+        "state": "recommended",
+        "leadingLaneId": "industrial_distribution",
+        "leadingScore": 0.8,
+        "secondLaneId": "dealer_hardgoods",
+        "secondScore": 0.61,
+        "sourceUrlCount": 1,
+        "failureState": null,
+        "evidenceNotes": ["industrial", "products", "service"]
+      },
+      "expectedCalibratedState": "needs_confirmation",
+      "expectedLaneId": "industrial_distribution"
+    },
+    {
+      "id": "w59_live_lincoln_stable_after_threshold_tune",
+      "baselineCaseId": "w58_real_manufacturing_heavy_lincoln_electric",
+      "website": "https://www.lincolnelectric.com/",
+      "observationSource": "approved_live_fetch_shape_sample",
+      "liveObservation": {
+        "state": "recommended",
+        "leadingLaneId": "industrial_equipment",
+        "leadingScore": 0.89,
+        "secondLaneId": "dealer_hardgoods",
+        "secondScore": 0.58,
+        "sourceUrlCount": 2,
+        "failureState": null,
+        "evidenceNotes": ["manufacturing", "production", "assembly"]
+      },
+      "expectedCalibratedState": "recommended",
+      "expectedLaneId": "industrial_equipment"
+    },
+    {
+      "id": "w59_live_ridgeline_ambiguous",
+      "baselineCaseId": "w58_ambiguous_outfitter_apparel_service",
+      "website": "https://ridgeline-outfitters.example/",
+      "observationSource": "approved_live_fetch_shape_sample",
+      "liveObservation": {
+        "state": "needs_confirmation",
+        "leadingLaneId": "apparel_accessories",
+        "leadingScore": 0.79,
+        "secondLaneId": "dealer_hardgoods",
+        "secondScore": 0.68,
+        "sourceUrlCount": 2,
+        "failureState": "ambiguous",
+        "evidenceNotes": ["apparel", "equipment", "services", "dealer"]
+      },
+      "expectedCalibratedState": "needs_confirmation",
+      "expectedLaneId": "apparel_accessories"
+    },
+    {
+      "id": "w59_live_thin_still_insufficient",
+      "baselineCaseId": "w58_weak_thin_website",
+      "website": "https://thin-prospect.example/",
+      "observationSource": "approved_live_fetch_shape_sample",
+      "liveObservation": {
+        "state": "insufficient_evidence",
+        "leadingLaneId": "",
+        "leadingScore": 0.12,
+        "secondLaneId": "",
+        "secondScore": 0,
+        "sourceUrlCount": 1,
+        "failureState": "thin",
+        "evidenceNotes": ["welcome", "about"]
+      },
+      "expectedCalibratedState": "insufficient_evidence",
+      "expectedLaneId": ""
+    }
+  ],
+  "pilotConfirmationRequirements": [
+    "Confirm the lane when live source URL count is below two.",
+    "Confirm the lane when the leading and second candidates are within 0.25.",
+    "Confirm the lane when snapshot and live observations disagree.",
+    "Do not prepare ROI or competitive claims from insufficient-evidence websites.",
+    "Do not prepare write packets from blocked, thin, unavailable, or timeout evidence without consultant-provided evidence."
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "falseConfidentWrongAllowed": false,
+    "unsupportedClaimsAllowed": false,
+    "transactionWriteEnabled": false
+  },
+  "outputs": {
+    "contract": "data/w59_confidence_calibration_live_fetch_drift.json",
+    "harness": "tools/run_confidence_calibration_live_fetch_drift_harness.js",
+    "trace": "trace_samples/w59_confidence_calibration_live_fetch_drift_trace.json",
+    "report": "reports/w59_confidence_calibration_live_fetch_drift.md"
+  },
+  "nextBlock": "W60: Five-Consultant Pilot Readiness Gate"
+}

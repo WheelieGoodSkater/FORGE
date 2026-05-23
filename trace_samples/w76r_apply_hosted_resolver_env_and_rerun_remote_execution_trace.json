@@ -1,0 +1,179 @@
+{
+  "schema": "idb.w76r-apply-hosted-resolver-env-and-rerun-remote-execution-trace.v1",
+  "generated": "2026-05-17T21:41:03.249Z",
+  "decision": "PASS",
+  "pilotDecision": "no_go_operator_env_missing",
+  "remoteEnvReady": false,
+  "remoteSmokeExecuted": false,
+  "hostedResolverPilotEnabled": false,
+  "consultantSmokeEligible": false,
+  "blockedReason": "operator_env_values_missing",
+  "observedEnvironment": {
+    "remoteSmokeOptIn": false,
+    "baseUrlConfigured": false,
+    "tokenConfigured": false,
+    "allowedOriginConfigured": false,
+    "blockedOriginConfigured": false,
+    "rawSecretsIncluded": false
+  },
+  "w76Run": {
+    "status": 0,
+    "signal": null,
+    "stdoutSummary": [
+      "> intelligent-demo-builder-drawer@0.1.1 harness:hosted-resolver-configured-remote-execution",
+      "> node tools/run_hosted_resolver_configured_remote_execution_harness.js",
+      "W76 hosted resolver configured remote execution harness: PASS pilot_decision=no_go_remote_config_missing remote_smoke_executed=false"
+    ],
+    "stderrSummary": []
+  },
+  "w76Observed": {
+    "decision": "PASS",
+    "pilotDecision": "no_go_remote_config_missing",
+    "remoteSmokeExecuted": false,
+    "hostedResolverPilotEnabled": false,
+    "blockedReason": "w75_remote_env_not_applied_or_w73r_not_remote_executed"
+  },
+  "executedRemoteResults": {
+    "health": "not_executed_missing_operator_env",
+    "authCors": "not_executed_missing_operator_env",
+    "writePayloadRejection": "not_executed_missing_operator_env",
+    "cacheHit": "not_executed_missing_operator_env",
+    "approvedLiveSiteSmoke": "not_executed_missing_operator_env",
+    "noSecretTraceChecks": "passed_for_missing_env_state",
+    "fullPreflightAfterRemoteExecution": "not_applicable_remote_not_executed"
+  },
+  "operatorActionRequired": [
+    {
+      "role": "Resolver Service Architect",
+      "action": "Provide the real hosted staging resolver base URL.",
+      "env": "IDB_REMOTE_RESOLVER_BASE_URL",
+      "mustSatisfy": "HTTPS public endpoint, not localhost, not private network, exposes /health and /idb/website-resolver/v1/resolve."
+    },
+    {
+      "role": "Security Guard",
+      "action": "Provide the resolver token through a protected shell or secret manager.",
+      "env": "IDB_REMOTE_RESOLVER_TOKEN",
+      "mustSatisfy": "Never committed, printed, logged, or stored in trace/report output."
+    },
+    {
+      "role": "Security Guard",
+      "action": "Provide the exact approved NetSuite staging origin.",
+      "env": "IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN",
+      "mustSatisfy": "CORS preflight must echo this exact origin only."
+    },
+    {
+      "role": "Security Guard",
+      "action": "Provide a blocked HTTPS origin for negative CORS smoke.",
+      "env": "IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN",
+      "mustSatisfy": "CORS preflight must fail and must not echo this origin."
+    },
+    {
+      "role": "Regression Guard Agent",
+      "action": "Set explicit remote smoke opt-in.",
+      "env": "IDB_REMOTE_RESOLVER_SMOKE",
+      "mustSatisfy": "Value must be 1 before remote smoke can execute."
+    }
+  ],
+  "safeShellTemplate": [
+    "export IDB_REMOTE_RESOLVER_SMOKE=1",
+    "export IDB_REMOTE_RESOLVER_BASE_URL='https://<remote-staging-resolver>'",
+    "export IDB_REMOTE_RESOLVER_TOKEN='<secret-manager-value>'",
+    "export IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN='https://<approved-netsuite-account>.app.netsuite.com'",
+    "export IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN='https://unapproved.example.com'",
+    "npm run harness:hosted-resolver-configured-remote-execution",
+    "npm run preflight"
+  ],
+  "pilotUnlockCriteria": [
+    "W73R trace shows remoteSmokeExecuted true.",
+    "Remote /health confirms writeAuthority none, suiteScriptInvocation false, and nllmAdvisoryOnly true.",
+    "Approved CORS passes with exact allowed origin.",
+    "Blocked CORS fails with no blocked-origin echo.",
+    "Missing token returns 401 before fetch.",
+    "Write-shaped payload returns 400 before fetch.",
+    "Second eligible resolve returns cacheHit true.",
+    "Approved live-site smoke passes with zero false-confident-wrong.",
+    "Approved live-site smoke passes with zero unsupported claims.",
+    "Blocked/thin/unavailable/timeout sites return insufficient evidence with no confident lane guesses.",
+    "Full preflight passes after W73R remote execution.",
+    "W74 can be rerun and returns hosted resolver consultant smoke eligible."
+  ],
+  "noSecretTraceRules": [
+    "Record booleans for env presence only.",
+    "Never write raw resolver token values.",
+    "Never write Authorization, cookie, or X-IDB-Resolver-Token values.",
+    "Keep rawSecretsIncluded false.",
+    "Do not persist shell exports containing secrets in repo files."
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "hostedResolverPilotEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W77: Remote Endpoint Provisioning And Secrets Handoff",
+    "prompt": "Move through W77: Remote Endpoint Provisioning And Secrets Handoff. Provision or identify the real hosted staging websiteResolverServiceV1 endpoint and establish the secret handoff needed for W76R: endpoint URL, resolver token, approved NetSuite staging origin, blocked negative-test origin, and remote smoke opt-in. Do not store secrets in repo files, traces, reports, or screenshots. Once values are available, rerun W76R and require remoteSmokeExecuted true before any hosted resolver consultant pilot toggle can be enabled. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output provisioning checklist, secret handoff instructions, rerun commands, W77 report, validator gates, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w76r_contract_schema_present",
+      "pass": true,
+      "detail": "idb.w76r-apply-hosted-resolver-env-and-rerun-remote-execution.v1"
+    },
+    {
+      "name": "w76r_operator_values_not_fabricated",
+      "pass": true,
+      "detail": "{\"contract\":{\"requiredInputsPresent\":false,\"remoteEndpointUrlPresent\":false,\"resolverTokenPresent\":false,\"approvedOriginPresent\":false,\"blockedOriginPresent\":false,\"remoteSmokeOptInPresent\":false,\"decision\":\"cannot_apply_remote_env_without_operator_values\",\"reason\":\"No real remote staging endpoint URL, resolver token, approved origin, or blocked origin are configured in the shell or repository.\"},\"observedEnv\":{\"remoteSmokeOptIn\":false,\"baseUrlConfigured\":false,\"tokenConfigured\":false,\"allowedOriginConfigured\":false,\"blockedOriginConfigured\":false,\"rawSecretsIncluded\":false}}"
+    },
+    {
+      "name": "w76r_required_environment_complete",
+      "pass": true,
+      "detail": "[\"IDB_REMOTE_RESOLVER_SMOKE=1\",\"IDB_REMOTE_RESOLVER_BASE_URL=https://<remote-staging-resolver>\",\"IDB_REMOTE_RESOLVER_TOKEN=<secret-manager-value>\",\"IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN=https://<approved-netsuite-account>.app.netsuite.com\",\"IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN=https://unapproved.example.com\"]"
+    },
+    {
+      "name": "w76r_w76_rerun_as_gate",
+      "pass": true,
+      "detail": "{\"w76Run\":{\"status\":0,\"signal\":null,\"stdoutSummary\":[\"> intelligent-demo-builder-drawer@0.1.1 harness:hosted-resolver-configured-remote-execution\",\"> node tools/run_hosted_resolver_configured_remote_execution_harness.js\",\"W76 hosted resolver configured remote execution harness: PASS pilot_decision=no_go_remote_config_missing remote_smoke_executed=false\"],\"stderrSummary\":[]},\"w76Decision\":\"PASS\"}"
+    },
+    {
+      "name": "w76r_remote_env_missing_keeps_no_go",
+      "pass": true,
+      "detail": "{\"observedEnv\":{\"remoteSmokeOptIn\":false,\"baseUrlConfigured\":false,\"tokenConfigured\":false,\"allowedOriginConfigured\":false,\"blockedOriginConfigured\":false,\"rawSecretsIncluded\":false},\"w76RemoteSmokeExecuted\":false,\"w76PilotDecision\":\"no_go_remote_config_missing\"}"
+    },
+    {
+      "name": "w76r_executed_remote_results_honest",
+      "pass": true,
+      "detail": "{\"health\":\"not_executed_missing_operator_env\",\"authCors\":\"not_executed_missing_operator_env\",\"writePayloadRejection\":\"not_executed_missing_operator_env\",\"cacheHit\":\"not_executed_missing_operator_env\",\"approvedLiveSiteSmoke\":\"not_executed_missing_operator_env\",\"noSecretTraceChecks\":\"passed_for_missing_env_state\",\"fullPreflightAfterRemoteExecution\":\"not_applicable_remote_not_executed\"}"
+    },
+    {
+      "name": "w76r_operator_action_required_complete",
+      "pass": true,
+      "detail": "[{\"role\":\"Resolver Service Architect\",\"action\":\"Provide the real hosted staging resolver base URL.\",\"env\":\"IDB_REMOTE_RESOLVER_BASE_URL\",\"mustSatisfy\":\"HTTPS public endpoint, not localhost, not private network, exposes /health and /idb/website-resolver/v1/resolve.\"},{\"role\":\"Security Guard\",\"action\":\"Provide the resolver token through a protected shell or secret manager.\",\"env\":\"IDB_REMOTE_RESOLVER_TOKEN\",\"mustSatisfy\":\"Never committed, printed, logged, or stored in trace/report output.\"},{\"role\":\"Security Guard\",\"action\":\"Provide the exact approved NetSuite staging origin.\",\"env\":\"IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN\",\"mustSatisfy\":\"CORS preflight must echo this exact origin only.\"},{\"role\":\"Security Guard\",\"action\":\"Provide a blocked HTTPS origin for negative CORS smoke.\",\"env\":\"IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN\",\"mustSatisfy\":\"CORS preflight must fail and must not echo this origin.\"},{\"role\":\"Regression Guard Agent\",\"action\":\"Set explicit remote smoke opt-in.\",\"env\":\"IDB_REMOTE_RESOLVER_SMOKE\",\"mustSatisfy\":\"Value must be 1 before remote smoke can execute.\"}]"
+    },
+    {
+      "name": "w76r_safe_shell_template_present",
+      "pass": true,
+      "detail": "[\"export IDB_REMOTE_RESOLVER_SMOKE=1\",\"export IDB_REMOTE_RESOLVER_BASE_URL='https://<remote-staging-resolver>'\",\"export IDB_REMOTE_RESOLVER_TOKEN='<secret-manager-value>'\",\"export IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN='https://<approved-netsuite-account>.app.netsuite.com'\",\"export IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN='https://unapproved.example.com'\",\"npm run harness:hosted-resolver-configured-remote-execution\",\"npm run preflight\"]"
+    },
+    {
+      "name": "w76r_unlock_and_no_secret_rules_present",
+      "pass": true,
+      "detail": "{\"unlock\":[\"W73R trace shows remoteSmokeExecuted true.\",\"Remote /health confirms writeAuthority none, suiteScriptInvocation false, and nllmAdvisoryOnly true.\",\"Approved CORS passes with exact allowed origin.\",\"Blocked CORS fails with no blocked-origin echo.\",\"Missing token returns 401 before fetch.\",\"Write-shaped payload returns 400 before fetch.\",\"Second eligible resolve returns cacheHit true.\",\"Approved live-site smoke passes with zero false-confident-wrong.\",\"Approved live-site smoke passes with zero unsupported claims.\",\"Blocked/thin/unavailable/timeout sites return insufficient evidence with no confident lane guesses.\",\"Full preflight passes after W73R remote execution.\",\"W74 can be rerun and returns hosted resolver consultant smoke eligible.\"],\"secretRules\":[\"Record booleans for env presence only.\",\"Never write raw resolver token values.\",\"Never write Authorization, cookie, or X-IDB-Resolver-Token values.\",\"Keep rawSecretsIncluded false.\",\"Do not persist shell exports containing secrets in repo files.\"]}"
+    },
+    {
+      "name": "w76r_no_regression_boundaries_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesCannotOwnIdentification\":true,\"blockedThinUnavailableTimeoutDoNotGuess\":true,\"transactionWriteEnabled\":false,\"mainDrawerCreateEnabled\":false,\"mainSuiteletCreateEnabled\":false,\"hostedResolverPilotEnabled\":false}"
+    },
+    {
+      "name": "w76r_best_next_prompt_present",
+      "pass": true,
+      "detail": "Move through W77: Remote Endpoint Provisioning And Secrets Handoff. Provision or identify the real hosted staging websiteResolverServiceV1 endpoint and establish the secret handoff needed for W76R: endpoint URL, resolver token, approved NetSuite staging origin, blocked negative-test origin, and remote smoke opt-in. Do not store secrets in repo files, traces, reports, or screenshots. Once values are available, rerun W76R and require remoteSmokeExecuted true before any hosted resolver consultant pilot toggle can be enabled. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output provisioning checklist, secret handoff instructions, rerun commands, W77 report, validator gates, and best next Codex prompt."
+    }
+  ]
+}

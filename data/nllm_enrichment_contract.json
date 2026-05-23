@@ -1,0 +1,146 @@
+{
+  "schema": "intelligent-demo-builder-nllm-enrichment.v1",
+  "generated": "2026-05-09",
+  "status": "review_only",
+  "source": "future N/LLM enrichment layer",
+  "creationAllowed": false,
+  "requestShape": {
+    "customer": {
+      "name": "string",
+      "website": "string",
+      "notes": "string"
+    },
+    "selectedLaneId": "string",
+    "laneName": "string",
+    "proofAnchor": "string",
+    "websiteSignal": {
+      "domain": "string",
+      "matchedTokens": ["string"],
+      "source": "website_primary | website_category | conversation_notes_signal | industry_fallback",
+      "confidence": "high | medium | low"
+    },
+    "websitePackageClassifier": {
+      "categoryId": "string",
+      "laneId": "string",
+      "productSeed": "string",
+      "productFamily": "string",
+      "demandMoment": "string",
+      "evidence": "string",
+      "confidence": "high | medium | low",
+      "nllmRecommended": "boolean"
+    },
+    "currentNamingEvidence": {
+      "authority": "string",
+      "productSeed": "string",
+      "productFamily": "string",
+      "demandMoment": "string",
+      "confidence": "high | medium | low",
+      "fallbackReason": "string"
+    },
+    "recordNamingAdvisoryRequest": {
+      "schema": "idb.nllm-record-naming-advisory-request.v1",
+      "writeAuthority": "none",
+      "creationAllowed": false,
+      "records": "array"
+    },
+    "dccFamilyKey": "string",
+    "dccScenario": "string",
+    "records": [
+      {
+        "label": "string",
+        "plannedName": "string",
+        "role": "customer | transaction | proof anchor | supporting proof"
+      }
+    ],
+    "guardrails": [
+      "string"
+    ]
+  },
+  "responseShape": {
+    "status": "draft_enrichment | review_needed | rejected",
+    "recordEnrichment": [
+      {
+        "label": "string",
+        "plannedName": "string",
+        "recordType": "customer | sales_order_context | inventory_item | matrix_item | assembly_item | matrix_option | manufacturing_setup | inventory_planning_record | custom_support_record",
+        "createOrder": "number",
+        "proposedName": "string",
+        "intendedUpdate": "string",
+        "description": "string",
+        "fieldAssumptions": [
+          "string"
+        ],
+        "intendedFields": [
+          {
+            "field": "string",
+            "value": "string",
+            "source": "customer_input | website_and_notes_signal | conversation_notes_signal | industry_fallback | lane_contract"
+          }
+        ],
+        "dependencies": [
+          "string"
+        ],
+        "toggleImpact": [
+          "string"
+        ],
+        "createBlockers": [
+          "string"
+        ],
+        "sourceConfidence": "high | medium | low",
+        "fallbackReason": "string",
+        "demoUse": "string",
+        "reviewFlags": [
+          "string"
+        ],
+        "status": "draft_only | review_ready | needs_context"
+      }
+    ],
+    "valueLens": {
+      "roi": "string",
+      "competitive": "string",
+      "proof": "string"
+    },
+    "reviewFlags": [
+      "string"
+    ],
+    "traceEvent": "nllm_enrichment_reviewed"
+    ,
+    "recordNamingAdvisory": {
+      "status": "nllm_optional | nllm_recommended | rejected",
+      "productSeed": "string",
+      "productFamily": "string",
+      "demandMoment": "string",
+      "websiteEvidenceSnippets": ["string"],
+      "recordNames": [
+        {
+          "sequence": "number",
+          "label": "string",
+          "role": "customer | transaction | proof anchor | supporting proof",
+          "currentName": "string",
+          "proposedName": "string",
+          "displayLabel": "string",
+          "fieldNameSuggestions": [
+            {
+              "field": "itemid | displayname | otherrefnum | memo | name | companyname",
+              "value": "string",
+              "sourceBasis": "website_primary | website_category | conversation_notes_signal | industry_fallback | inferred_from_website"
+            }
+          ],
+          "sourceBasis": "website_primary | website_category | conversation_notes_signal | industry_fallback | inferred_from_website",
+          "confidence": "high | medium | low",
+          "fallbackReason": "string"
+        }
+      ],
+      "reviewFlags": ["string"],
+      "noRegressionDeclaration": "string"
+    }
+  },
+  "nonRegression": {
+    "advisoryOnly": true,
+    "noLaneAuthorityChange": true,
+    "noProofAnchorChange": true,
+    "noRecordCreation": true,
+    "noRequiredFieldRemoval": true,
+    "mustRemainReviewable": true
+  }
+}

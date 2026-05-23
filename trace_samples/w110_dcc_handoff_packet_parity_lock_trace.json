@@ -1,0 +1,238 @@
+{
+  "schema": "idb.w110-dcc-handoff-packet-parity-lock-trace.v1",
+  "generatedAt": "2026-05-17T21:41:06.547Z",
+  "decision": "PASS",
+  "confirmedCaseCount": 5,
+  "mutationBlockCount": 9,
+  "blockedAmbiguousStatus": "blocked_until_confirmed_handoff",
+  "parityMatrix": [
+    {
+      "caseId": "apparel",
+      "laneId": "apparel_accessories",
+      "selectedPack": "apparelAccessories",
+      "selectedScenario": "Style-to-Availability Readiness",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    },
+    {
+      "caseId": "cpg",
+      "laneId": "products_cpg",
+      "selectedPack": "cpgProductsManufacturing",
+      "selectedScenario": "Promotion-to-Shelf Readiness",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    },
+    {
+      "caseId": "dealer_hardgoods",
+      "laneId": "dealer_hardgoods",
+      "selectedPack": "dealerHardgoods",
+      "selectedScenario": "Dealer-Ready Fulfillment",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    },
+    {
+      "caseId": "manufacturing_heavy",
+      "laneId": "industrial_equipment",
+      "selectedPack": "industrialManufacturing",
+      "selectedScenario": "Order-to-Assembly Readiness",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    },
+    {
+      "caseId": "ambiguous_confirmed",
+      "laneId": "industrial_distribution",
+      "selectedPack": "distribution",
+      "selectedScenario": "Branch Availability Control",
+      "suiteletParams": [
+        "custpage_prospect",
+        "custpage_website",
+        "custpage_notes",
+        "custpage_newhero",
+        "custpage_enablemfg",
+        "custpage_enablewip",
+        "custpage_evalmode",
+        "custpage_actionmode"
+      ],
+      "runnerPreviewParams": [
+        "custscript_v3_runner_prospect",
+        "custscript_v3_runner_website",
+        "custscript_v3_runner_notes",
+        "custscript_v3_runner_agenda",
+        "custscript_v3_runner_extid",
+        "custscript_v3_runner_mapping",
+        "custscript_v3_runner_folder",
+        "custscript_v3_runner_subsidiary",
+        "custscript_v3_runner_location",
+        "custscript_v3_runner_enable_wip",
+        "custscript_v3_runner_enable_mfg",
+        "custscript_v3_runner_create_new_hero",
+        "custscript_v3_runner_hero_item",
+        "custscript_v3_runner_wc_search"
+      ],
+      "status": "ready_for_dcc_suitelet_submission_review",
+      "parityStatus": "parity_locked"
+    }
+  ],
+  "validatorResults": [
+    {
+      "name": "w110_runtime_parity_lock_present",
+      "pass": true,
+      "detail": "dccHandoffParityLockV1 runtime and hook"
+    },
+    {
+      "name": "w110_confirmed_cases_lock_across_required_mix",
+      "pass": true,
+      "detail": "[{\"id\":\"apparel\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"parity\":\"parity_locked\"},{\"id\":\"cpg\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"parity\":\"parity_locked\"},{\"id\":\"dealer_hardgoods\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"parity\":\"parity_locked\"},{\"id\":\"manufacturing_heavy\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"parity\":\"parity_locked\"},{\"id\":\"ambiguous_confirmed\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"parity\":\"parity_locked\"}]"
+    },
+    {
+      "name": "w110_suitelet_payloads_map_required_form_params",
+      "pass": true,
+      "detail": "all confirmed samples include exact Suitelet form params"
+    },
+    {
+      "name": "w110_runner_previews_map_required_runner_params",
+      "pass": true,
+      "detail": "all confirmed samples include scheduled runner preview params"
+    },
+    {
+      "name": "w110_every_mutated_disagreement_blocks_export_eligibility",
+      "pass": true,
+      "detail": "[{\"name\":\"confirmed_lane_disagrees\",\"status\":\"blocked_parity_mismatch\",\"exportEligible\":false,\"blockers\":[\"confirmed_lane_matches_selected_lane\",\"exported_lane_matches_confirmed_lane\"]},{\"name\":\"exported_lane_disagrees\",\"status\":\"blocked_parity_mismatch\",\"exportEligible\":false,\"blockers\":[\"exported_lane_matches_confirmed_lane\"]},{\"name\":\"selected_pack_disagrees\",\"status\":\"blocked_parity_mismatch\",\"exportEligible\":false,\"blockers\":[\"selected_pack_matches_family_key\"]},{\"name\":\"scenario_disagrees\",\"status\":\"blocked_parity_mismatch\",\"exportEligible\":false,\"blockers\":[\"selected_scenario_matches_runner_input\"]},{\"name\":\"family_key_disagrees\",\"status\":\"blocked_parity_mismatch\",\"exportEligible\":false,\"blockers\":[\"selected_pack_matches_family_key\"]},{\"name\":\"manufacturing_flag_disagrees\",\"status\":\"blocked_parity_mismatch\",\"exportEligible\":false,\"blockers\":[\"suitelet_manufacturing_matches_runner_input\",\"runner_manufacturing_matches_runner_input\"]},{\"name\":\"wip_flag_disagrees\",\"status\":\"blocked_parity_mismatch\",\"exportEligible\":false,\"blockers\":[\"suitelet_wip_matches_runner_input\",\"runner_wip_matches_runner_input\"]},{\"name\":\"location_planning_intent_disagrees\",\"status\":\"blocked_parity_mismatch\",\"exportEligible\":false,\"blockers\":[\"location_planning_intent_matches_manufacturing_flag\"]},{\"name\":\"review_only_mode_disagrees\",\"status\":\"blocked_parity_mismatch\",\"exportEligible\":false,\"blockers\":[\"suitelet_eval_mode_review_only\",\"execution_mode_review_only_no_submit\"]}]"
+    },
+    {
+      "name": "w110_unconfirmed_ambiguous_case_blocks_handoff",
+      "pass": true,
+      "detail": "{\"status\":\"blocked_until_confirmed_handoff\",\"missing\":[\"consultant confirmation\",\"handoff parity mismatch\"],\"parityBlockers\":[\"confirmed_lane_matches_selected_lane\",\"exported_lane_matches_confirmed_lane\"],\"action\":\"Resolve lane/confirmation/parity mismatch before handoff export is eligible.\"}"
+    },
+    {
+      "name": "w110_trace_and_export_include_parity_lock",
+      "pass": true,
+      "detail": "trace export and handoff export trace include parity lock"
+    },
+    {
+      "name": "w110_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "no write/no invoke/DCC ownership boundaries"
+    }
+  ],
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "w92StateAuthorityPreserved": true,
+    "w105W107PreviewOnlyApprovalPreserved": true,
+    "dccOwnsObjectGeneration": true,
+    "noDccRunnerRewrite": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W111: DCC Preview URL Builder And Operator Copy",
+    "prompt": "Move through W111: DCC Preview URL Builder And Operator Copy. Add a review-only operator helper that formats the DCC Suitelet preview URL/query parameters from dccRunnerHandoffPacketV1 without navigating, invoking SuiteScript, submitting, queueing, or writing. Include copy-safe parameter text, operator comparison instructions, blocked/confirmed examples, and trace coverage. Preserve W110 parity lock, W92 state authority, W105-W107 preview-only approval behavior, no IDB writes, no SuiteScript invocation from IDB, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output preview URL helper contract, Review UI copy, validator gates, W111 report, and best next Codex prompt."
+  }
+}

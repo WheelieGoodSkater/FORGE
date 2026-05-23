@@ -1,0 +1,36 @@
+{
+  "schema": "idb.suitescript-lookup-idempotency-contract.v1",
+  "status": "lookup_idempotency_ready_create_disabled",
+  "ownerAgent": "SuiteScript Write Agent",
+  "objective": "Require lookup-first and idempotency handling before any create/update path can run.",
+  "requiredWritePlanFields": [
+    "lookupKey",
+    "lookupStatus",
+    "idempotencyStatus",
+    "duplicateAction",
+    "writeStatusIfEnabled"
+  ],
+  "rules": {
+    "lookupBeforeWrite": true,
+    "idempotencyKeyRequired": true,
+    "duplicateIdempotencyBlocked": true,
+    "duplicateLookupBlocked": true,
+    "lookupMatchAction": "update_or_skip_if_lookup_matches",
+    "noDuplicateCustomerOrItemIfLookupMatches": true
+  },
+  "statuses": [
+    "lookup_required_before_write",
+    "idempotency_key_ready",
+    "lookup_then_update_or_create_customer",
+    "lookup_then_update_or_create_proof_item",
+    "skipped_until_customer_and_proof_are_stable",
+    "skipped_outside_small_write_pilot"
+  ],
+  "nonRegression": {
+    "creationAllowedInMain": false,
+    "noDuplicateCustomer": true,
+    "noDuplicateItem": true,
+    "noSilentUpdate": true,
+    "traceResultRequired": true
+  }
+}

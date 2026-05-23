@@ -1,0 +1,125 @@
+{
+  "schema": "idb.w166-approved-server-adapter-live-disabled-error-retry-trace.v1",
+  "decision": "PASS_ERROR_RETRY_CONTRACT_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "normalizedStatuses": {
+    "timeout": "adapter_transport_error_drawer_safe",
+    "duplicateIdempotency": "polling_pending",
+    "adapterError": "adapter_transport_error_drawer_safe",
+    "malformedCompleted": "completed_result_awaiting_w151_import"
+  },
+  "retryPlan": [
+    {
+      "condition": "timeout",
+      "normalizedStatus": "adapter_transport_error_drawer_safe",
+      "action": "retry_same_idempotency_token",
+      "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "condition": "duplicate_idempotency",
+      "normalizedStatus": "polling_pending",
+      "action": "continue_poll_existing_runner_task",
+      "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "runnerTaskId": "fixture_w166_runner_task_001",
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "condition": "adapter_error",
+      "normalizedStatus": "adapter_transport_error_drawer_safe",
+      "action": "stop_and_surface_drawer_safe_error",
+      "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "condition": "malformed_completed_result",
+      "normalizedStatus": "completed_result_awaiting_w151_import",
+      "action": "reject_w151_import_and_keep_previous_names",
+      "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "importGuardStatus": "completed_runner_result_required",
+      "mutatesFinalGeneratedNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "malformedCompletedResultGuard": {
+    "status": "completed_runner_result_required",
+    "acceptedByW151": false,
+    "rejectedByW151": true,
+    "activeOpenLinksBeforeImport": 0
+  },
+  "mutationGuard": {
+    "finalGeneratedNamesBefore": "",
+    "finalGeneratedNamesAfter": "",
+    "finalGeneratedNamesUnchanged": true,
+    "noActiveOpenLinksCreated": true,
+    "noImportCommitAttempted": true
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noLiveInvocation": true
+  },
+  "events": [
+    {
+      "name": "w166_starts_from_w165_handshake",
+      "pass": true,
+      "detail": "PASS_HARNESS_HANDSHAKE_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w166_error_retry_hook_ready",
+      "pass": true,
+      "detail": "approved_server_adapter_error_retry_contract_ready"
+    },
+    {
+      "name": "w166_timeout_drawer_safe_retry_same_idempotency",
+      "pass": true,
+      "detail": "{\"condition\":\"timeout\",\"normalizedStatus\":\"adapter_transport_error_drawer_safe\",\"action\":\"retry_same_idempotency_token\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w166_duplicate_idempotency_poll_existing_task",
+      "pass": true,
+      "detail": "{\"condition\":\"duplicate_idempotency\",\"normalizedStatus\":\"polling_pending\",\"action\":\"continue_poll_existing_runner_task\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"runnerTaskId\":\"fixture_w166_runner_task_001\",\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w166_adapter_error_drawer_safe_stop",
+      "pass": true,
+      "detail": "{\"condition\":\"adapter_error\",\"normalizedStatus\":\"adapter_transport_error_drawer_safe\",\"action\":\"stop_and_surface_drawer_safe_error\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w166_malformed_completed_result_rejected_by_w151",
+      "pass": true,
+      "detail": "{\"status\":\"completed_runner_result_required\",\"acceptedByW151\":false,\"rejectedByW151\":true,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w166_errors_and_retries_do_not_mutate_final_names",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"noActiveOpenLinksCreated\":true,\"noImportCommitAttempted\":true}"
+    },
+    {
+      "name": "w166_errors_and_retries_do_not_create_open_links",
+      "pass": true,
+      "detail": "[{\"condition\":\"timeout\",\"normalizedStatus\":\"adapter_transport_error_drawer_safe\",\"action\":\"retry_same_idempotency_token\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"condition\":\"duplicate_idempotency\",\"normalizedStatus\":\"polling_pending\",\"action\":\"continue_poll_existing_runner_task\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"runnerTaskId\":\"fixture_w166_runner_task_001\",\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"condition\":\"adapter_error\",\"normalizedStatus\":\"adapter_transport_error_drawer_safe\",\"action\":\"stop_and_surface_drawer_safe_error\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"condition\":\"malformed_completed_result\",\"normalizedStatus\":\"completed_result_awaiting_w151_import\",\"action\":\"reject_w151_import_and_keep_previous_names\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"importGuardStatus\":\"completed_runner_result_required\",\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0}]"
+    },
+    {
+      "name": "w166_handoff_still_rejected_and_live_disabled",
+      "pass": true,
+      "detail": "handoff_packet_rejected"
+    },
+    {
+      "name": "w166_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"w151CompletedResultImportGuardPreserved\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noLiveInvocation\":true}"
+    }
+  ]
+}

@@ -1,0 +1,590 @@
+{
+  "schema": "idb.w69-hosted-resolver-staging-endpoint-trace.v1",
+  "generated": "2026-05-17T21:41:02.035Z",
+  "decision": "PASS",
+  "readinessDecision": "local_staging_endpoint_ready_not_external_hosted",
+  "inheritedW68Decision": "PASS",
+  "localServerMode": {
+    "command": "IDB_RESOLVER_STAGING_TOKEN=local-staging-token IDB_RESOLVER_ALLOWED_ORIGIN=https://YOUR_ACCOUNT_ID.app.netsuite.com IDB_RESOLVER_STAGING_PORT=8787 node tools/website_resolver_staging_endpoint.js",
+    "baseUrl": "http://127.0.0.1:8787",
+    "healthUrl": "http://127.0.0.1:8787/health",
+    "resolveUrl": "http://127.0.0.1:8787/idb/website-resolver/v1/resolve"
+  },
+  "healthSample": {
+    "status": 200,
+    "body": {
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "serviceName": "websiteResolverServiceV1",
+      "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+      "extractionPolicyVersion": "w66.extraction-policy.v1",
+      "cacheStatus": "ready"
+    }
+  },
+  "authCorsSamples": {
+    "preflight": {
+      "status": 204,
+      "headers": {
+        "Vary": "Origin",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, X-IDB-Resolver-Token",
+        "Access-Control-Allow-Origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com"
+      }
+    },
+    "blockedPreflight": {
+      "status": 403,
+      "headers": {
+        "Content-Type": "application/json",
+        "Vary": "Origin",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, X-IDB-Resolver-Token"
+      }
+    },
+    "missingToken": {
+      "status": 401,
+      "body": {
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true,
+        "error": "resolver_token_required"
+      }
+    },
+    "badToken": {
+      "status": 401,
+      "body": {
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true,
+        "error": "resolver_token_required"
+      }
+    },
+    "cookieRejected": {
+      "status": 400,
+      "body": {
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true,
+        "error": "netsuite_cookie_or_auth_rejected"
+      }
+    },
+    "writeRejected": {
+      "status": 400,
+      "body": {
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true,
+        "error": "no_write_boundary_violation",
+        "fields": [
+          "recordId",
+          "suiteletUrl",
+          "createEnabled"
+        ]
+      }
+    }
+  },
+  "cacheSample": {
+    "first": {
+      "status": 200,
+      "cacheHit": false,
+      "confidence": {
+        "state": "recommended",
+        "score": 0.95,
+        "requiresConfirmation": false
+      },
+      "laneCandidates": [
+        {
+          "laneId": "dealer_hardgoods",
+          "score": 0.95,
+          "evidence": [
+            "bike",
+            "bikes",
+            "bicycle",
+            "cycling",
+            "electric bikes",
+            "equipment"
+          ]
+        },
+        {
+          "laneId": "apparel_accessories",
+          "score": 0.55,
+          "evidence": [
+            "apparel",
+            "sku"
+          ]
+        },
+        {
+          "laneId": "industrial_distribution",
+          "score": 0.45,
+          "evidence": [
+            "replenishment"
+          ]
+        }
+      ]
+    },
+    "second": {
+      "status": 200,
+      "cacheHit": true,
+      "evidenceCacheHit": true
+    }
+  },
+  "failureSamples": [
+    {
+      "requestId": "blocked",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "requestId": "thin",
+      "failureState": "thin",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0.12,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "requestId": "unavailable",
+      "failureState": "unavailable",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none"
+    },
+    {
+      "requestId": "timeout",
+      "failureState": "timeout",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "writeAuthority": "none"
+    }
+  ],
+  "manualEvidenceSample": {
+    "status": 200,
+    "failureState": "blocked",
+    "manualEvidence": {
+      "source": "consultant_supplied",
+      "excerptPreview": "Manufacturer of workwear, boots, safety apparel, and seasonal footwear collections.",
+      "excerptHash": "b66a25e81cb95be68f7b1a39e4a8fdead56fcb4af2f01a1bb9cbaa806064d1fc",
+      "storedAs": "excerpt_hash_only"
+    },
+    "writeAuthority": "none"
+  },
+  "rateLimitSample": {
+    "status": 429,
+    "body": {
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "error": "rate_limited",
+      "domain": "thin.example"
+    }
+  },
+  "observabilityTraceSample": [
+    {
+      "requestId": "health",
+      "outcome": "health_ok",
+      "path": "/health",
+      "method": "GET",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      },
+      "cacheStatus": "ready",
+      "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+      "extractionPolicyVersion": "w66.extraction-policy.v1"
+    },
+    {
+      "requestId": "preflight",
+      "outcome": "cors_preflight_ok",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "OPTIONS",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      }
+    },
+    {
+      "requestId": "blocked_preflight",
+      "outcome": "cors_origin_denied",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "OPTIONS",
+      "origin": "https://unapproved.example.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      }
+    },
+    {
+      "requestId": "missing_token",
+      "outcome": "resolver_token_rejected",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      }
+    },
+    {
+      "requestId": "bad_token",
+      "outcome": "resolver_token_rejected",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      }
+    },
+    {
+      "requestId": "cookie_rejected",
+      "outcome": "netsuite_cookie_or_auth_rejected",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": true,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      }
+    },
+    {
+      "requestId": "auth_rejected",
+      "outcome": "netsuite_cookie_or_auth_rejected",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": true,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      }
+    },
+    {
+      "requestId": "write_rejected",
+      "outcome": "no_write_boundary_violation",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      },
+      "forbiddenFields": [
+        "recordId",
+        "suiteletUrl",
+        "createEnabled"
+      ]
+    },
+    {
+      "requestId": "trek_first",
+      "outcome": "resolved_from_fetch",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      },
+      "cacheHit": false,
+      "normalizedUrl": "https://trek.example/",
+      "domain": "trek.example",
+      "failureState": null,
+      "confidenceState": "recommended",
+      "sourceUrlCount": 4,
+      "manualEvidence": null,
+      "latencyMs": 0
+    },
+    {
+      "requestId": "trek_second",
+      "outcome": "resolved_from_cache",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      },
+      "cacheHit": true,
+      "normalizedUrl": "https://trek.example/",
+      "domain": "trek.example",
+      "failureState": null,
+      "confidenceState": "recommended"
+    },
+    {
+      "requestId": "blocked",
+      "outcome": "resolved_from_fetch",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      },
+      "cacheHit": false,
+      "normalizedUrl": "https://127.0.0.1/admin",
+      "domain": "127.0.0.1",
+      "failureState": "blocked",
+      "confidenceState": "insufficient_evidence",
+      "sourceUrlCount": 0,
+      "manualEvidence": null,
+      "latencyMs": 0
+    },
+    {
+      "requestId": "thin",
+      "outcome": "resolved_from_fetch",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      },
+      "cacheHit": false,
+      "normalizedUrl": "https://thin.example/",
+      "domain": "thin.example",
+      "failureState": "thin",
+      "confidenceState": "insufficient_evidence",
+      "sourceUrlCount": 1,
+      "manualEvidence": null,
+      "latencyMs": 0
+    },
+    {
+      "requestId": "unavailable",
+      "outcome": "resolved_from_fetch",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      },
+      "cacheHit": false,
+      "normalizedUrl": "https://down.example/",
+      "domain": "down.example",
+      "failureState": "unavailable",
+      "confidenceState": "insufficient_evidence",
+      "sourceUrlCount": 0,
+      "manualEvidence": null,
+      "latencyMs": 0
+    },
+    {
+      "requestId": "timeout",
+      "outcome": "resolved_from_fetch",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      },
+      "cacheHit": false,
+      "normalizedUrl": "https://slow.example/",
+      "domain": "slow.example",
+      "failureState": "timeout",
+      "confidenceState": "insufficient_evidence",
+      "sourceUrlCount": 0,
+      "manualEvidence": null,
+      "latencyMs": 0
+    },
+    {
+      "requestId": "manual_blocked",
+      "outcome": "resolved_from_fetch",
+      "path": "/idb/website-resolver/v1/resolve",
+      "method": "POST",
+      "origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "hasCookie": false,
+      "hasAuthorization": false,
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "redaction": {
+        "cookiesLogged": false,
+        "authorizationLogged": false,
+        "manualEvidenceFullTextLogged": false
+      },
+      "cacheHit": false,
+      "normalizedUrl": "https://127.0.0.1/admin",
+      "domain": "127.0.0.1",
+      "failureState": "blocked",
+      "confidenceState": "insufficient_evidence",
+      "sourceUrlCount": 0,
+      "manualEvidence": {
+        "excerptHash": "b66a25e81cb95be68f7b1a39e4a8fdead56fcb4af2f01a1bb9cbaa806064d1fc",
+        "storedAs": "excerpt_hash_only"
+      },
+      "latencyMs": 0
+    }
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W70: Drawer Hosted Resolver Endpoint Toggle Smoke",
+    "prompt": "Move through W70: Drawer Hosted Resolver Endpoint Toggle Smoke. Wire and prove the drawer pilot toggle path against the local staging websiteResolverServiceV1 endpoint: endpoint URL setting, token/header strategy placeholder, hosted-only mode, local fallback rollback, Plan/Review resolver status display, failure-state UX, trace export coverage, and no-write/no-SuiteScript/N/LLM-advisory-only gates. Keep notes story-only and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output drawer toggle smoke artifacts, trace samples, W70 report, validator gates, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w69_health_endpoint_no_write",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"serviceName\":\"websiteResolverServiceV1\",\"resolverVersion\":\"websiteResolverServiceV1.local-prototype.w66\",\"extractionPolicyVersion\":\"w66.extraction-policy.v1\",\"cacheStatus\":\"ready\"}"
+    },
+    {
+      "name": "w69_cors_allowlist_enforced",
+      "pass": true,
+      "detail": "{\"preflight\":{\"status\":204,\"headers\":{\"Vary\":\"Origin\",\"Access-Control-Allow-Methods\":\"POST, OPTIONS\",\"Access-Control-Allow-Headers\":\"Content-Type, X-IDB-Resolver-Token\",\"Access-Control-Allow-Origin\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com\"},\"body\":null},\"blockedPreflight\":{\"status\":403,\"headers\":{\"Content-Type\":\"application/json\",\"Vary\":\"Origin\",\"Access-Control-Allow-Methods\":\"POST, OPTIONS\",\"Access-Control-Allow-Headers\":\"Content-Type, X-IDB-Resolver-Token\"},\"body\":{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"error\":\"origin_not_allowed\"}}}"
+    },
+    {
+      "name": "w69_auth_cookie_and_write_rejections_before_fetch",
+      "pass": true,
+      "detail": "{\"missingToken\":401,\"badToken\":401,\"cookieRejected\":400,\"authRejected\":400,\"writeRejected\":{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"error\":\"no_write_boundary_violation\",\"fields\":[\"recordId\",\"suiteletUrl\",\"createEnabled\"]}}"
+    },
+    {
+      "name": "w69_resolve_endpoint_returns_evidence_and_cache_hit",
+      "pass": true,
+      "detail": "{\"first\":\"resolved\",\"lane\":{\"laneId\":\"dealer_hardgoods\",\"score\":0.95,\"evidence\":[\"bike\",\"bikes\",\"bicycle\",\"cycling\",\"electric bikes\",\"equipment\"]},\"secondCacheHit\":true}"
+    },
+    {
+      "name": "w69_failure_states_remain_insufficient_no_guess",
+      "pass": true,
+      "detail": "[{\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[]},{\"failureState\":\"thin\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0.12,\"requiresConfirmation\":true},\"laneCandidates\":[]},{\"failureState\":\"unavailable\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[]},{\"failureState\":\"timeout\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[]}]"
+    },
+    {
+      "name": "w69_manual_evidence_redacted_and_no_write",
+      "pass": true,
+      "detail": "{\"source\":\"consultant_supplied\",\"excerptPreview\":\"Manufacturer of workwear, boots, safety apparel, and seasonal footwear collections.\",\"excerptHash\":\"b66a25e81cb95be68f7b1a39e4a8fdead56fcb4af2f01a1bb9cbaa806064d1fc\",\"storedAs\":\"excerpt_hash_only\"}"
+    },
+    {
+      "name": "w69_rate_limit_guard_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"error\":\"rate_limited\",\"domain\":\"thin.example\"}"
+    },
+    {
+      "name": "w69_observability_outcomes_and_redaction_present",
+      "pass": true,
+      "detail": "[\"health_ok\",\"cors_preflight_ok\",\"cors_origin_denied\",\"resolver_token_rejected\",\"resolver_token_rejected\",\"netsuite_cookie_or_auth_rejected\",\"netsuite_cookie_or_auth_rejected\",\"no_write_boundary_violation\",\"resolved_from_fetch\",\"resolved_from_cache\",\"resolved_from_fetch\",\"resolved_from_fetch\",\"resolved_from_fetch\",\"resolved_from_fetch\",\"resolved_from_fetch\",\"resolved_from_fetch\",\"resolved_from_cache\",\"rate_limited\"]"
+    },
+    {
+      "name": "w69_contract_and_w68_handoff_present",
+      "pass": true,
+      "detail": "idb.w69-hosted-resolver-staging-endpoint-implementation.v1"
+    },
+    {
+      "name": "w69_no_regression_boundaries_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesCannotOwnIdentification\":true,\"blockedThinUnavailableTimeoutDoNotGuess\":true,\"transactionWriteEnabled\":false,\"mainDrawerCreateEnabled\":false,\"mainSuiteletCreateEnabled\":false}"
+    },
+    {
+      "name": "w69_best_next_prompt_present",
+      "pass": true,
+      "detail": "Move through W70: Drawer Hosted Resolver Endpoint Toggle Smoke. Wire and prove the drawer pilot toggle path against the local staging websiteResolverServiceV1 endpoint: endpoint URL setting, token/header strategy placeholder, hosted-only mode, local fallback rollback, Plan/Review resolver status display, failure-state UX, trace export coverage, and no-write/no-SuiteScript/N/LLM-advisory-only gates. Keep notes story-only and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output drawer toggle smoke artifacts, trace samples, W70 report, validator gates, and best next Codex prompt."
+    }
+  ]
+}

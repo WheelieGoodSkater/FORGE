@@ -1,0 +1,91 @@
+{
+  "schema": "idb.w27-visual-pilot-website-package-rubric.v1",
+  "generated": "2026-05-10",
+  "status": "complete_create_still_disabled",
+  "objective": "Turn the W25-W26 Redwood UX work and the Trek Bikes pilot finding into a visual pilot rubric plus stronger website-first package and record naming rules.",
+  "finding": {
+    "scenario": "Trek Bikes new-website run",
+    "whatWorked": [
+      "The resolver moved toward Dealer Hardgoods and Channel Fulfillment.",
+      "The Review, ROI / Competitive, Run, and Trace tabs are now easier to pilot than the earlier long-scroll versions."
+    ],
+    "whatFailed": [
+      "The package and object names still fell back to generic Finished Good/Product SKU wording in places.",
+      "Food/Beverage language such as ingredient and lot readiness leaked into a hardgoods bike scenario.",
+      "New websites need stronger product-family extraction before the packet becomes frozen."
+    ],
+    "decision": "Website evidence owns lane package, product seed, product family, and demand moment before conversation notes shape the story."
+  },
+  "websiteGuidanceUpdate": {
+    "knownDomainAdded": "trekbikes.com",
+    "expectedLaneId": "dealer_hardgoods",
+    "expectedProofAnchor": "Product / SKU",
+    "expectedProductSeed": "Bicycle SKU",
+    "expectedProductFamily": "Bicycle Dealer Hardgoods",
+    "expectedDemandMoment": "dealer bicycle availability",
+    "antiLeakRule": "Dealer hardgoods records must not use ingredient and lot readiness unless the website proves food, beverage, ingredient, or lot-controlled goods."
+  },
+  "fiveConsultantVisualPilotRubric": [
+    {
+      "tab": "Plan",
+      "question": "Can the consultant enter customer, website, and notes, click Run IDB, and understand why the lane/package was selected without reading a long story card?",
+      "passSignal": "Guided intake is first; Story Bar stays compact; recommended lane and product package are visible before Review."
+    },
+    {
+      "tab": "Review",
+      "question": "Can the consultant see what IDB will prepare before reading every record?",
+      "passSignal": "Execution Plan Preview appears before the record list; packet summary shows exact Customer, transaction context, proof item, and supporting proof names."
+    },
+    {
+      "tab": "ROI / Competitive",
+      "question": "Can the consultant answer why this matters and why NetSuite wins in under 30 seconds?",
+      "passSignal": "Top ROI and competitive point are above expandable proof, assumptions, and objection detail."
+    },
+    {
+      "tab": "Run",
+      "question": "Can the consultant keep moving live without scrolling for the next words?",
+      "passSignal": "Live controls, top-three path, presenter script, and exception handling are above deeper detail."
+    },
+    {
+      "tab": "Trace",
+      "question": "Can the consultant export/reset the session safely after a handoff or next prospect?",
+      "passSignal": "Trace export, packet export, clear trace, and clear session remain obvious and reversible."
+    },
+    {
+      "tab": "Write readiness",
+      "question": "Can the pilot owner verify whether writes are still blocked, validated, or enabled in the sandbox branch?",
+      "passSignal": "Create-disabled status, pilot gate summary, exact write list, and future record links are compact and not repeated."
+    }
+  ],
+  "nextBlocks": [
+    {
+      "block": "W28",
+      "name": "Website Package Classifier V2",
+      "goal": "Extract package/product family/product seed from new websites before packet freeze."
+    },
+    {
+      "block": "W29",
+      "name": "N/LLM Record Naming Advisory Contract",
+      "goal": "Let N/LLM propose exact record names and confidence when local website signals are medium or low."
+    },
+    {
+      "block": "W30",
+      "name": "Pilot Write Result UX",
+      "goal": "Show created/updated Customer and Proof Item links from the W24 sandbox pilot response without enabling main writes."
+    },
+    {
+      "block": "W31",
+      "name": "Transaction Context Pilot Gate",
+      "goal": "Prepare Sales Order context writing only after Customer and Proof Item IDs/URLs are stable."
+    }
+  ],
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "noAutomaticCreation": true,
+    "noSalesOrderWriteInMain": true,
+    "llmAdvisoryOnly": true,
+    "websiteBeatsGenericNotes": true,
+    "redwoodTokenLayerPreserved": true
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "idb.w95-scoring-rubric.v1",
+  "scale": "1-5",
+  "passingAverage": 4,
+  "noCategoryBelow": 3,
+  "categories": [
+    "One active drawer / no duplicate button",
+    "Plan first-viewport clarity",
+    "Website/lane/DCC pack consistency",
+    "Review DCC handoff export clarity",
+    "Run live script usefulness",
+    "Trace evidence checklist clarity",
+    "DCC operator field mapping clarity",
+    "No-submit/no-write safety clarity"
+  ],
+  "automaticNoGoIf": [
+    "Two IDB buttons or two drawers appear after refresh.",
+    "Plan shows Apparel & Accessories while export shows Products CPG, or any other lane/pack mismatch.",
+    "DCC handoff JSON is not exported.",
+    "Trace JSON is not exported.",
+    "Any IDB control appears to submit, queue, invoke SuiteScript, or write a transaction.",
+    "Operator cannot map selected pack/scenario to DCC in under 5 minutes."
+  ]
+}

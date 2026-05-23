@@ -1,0 +1,94 @@
+{
+  "schema": "intelligent-demo-builder-creation-adapter.v1",
+  "generated": "2026-05-09",
+  "status": "spec_only",
+  "defaultAdapterState": "not_connected",
+  "adapterCapabilityStates": ["not_connected", "available", "unsupported", "failed"],
+  "creationAllowedByDefault": false,
+  "confirmationGate": {
+    "requiresReviewedDryRunPacket": true,
+    "requiresAdapterCapabilityState": "available",
+    "requiresExplicitConsultantConfirmation": true,
+    "blocksCreateWhenAdapterStateIs": ["not_connected", "unsupported", "failed"]
+  },
+  "requires": [
+    "supportedCreationWritePath",
+    "explicitConsultantConfirmation",
+    "reviewedDryRunPacket",
+    "traceableResult"
+  ],
+  "supportedAdapterTypes": [
+    {
+      "id": "suitescript_direct_write",
+      "label": "SuiteScript direct write path",
+      "status": "future_supported"
+    },
+    {
+      "id": "suitelet",
+      "label": "Suitelet",
+      "status": "future_supported"
+    },
+    {
+      "id": "restlet",
+      "label": "RESTlet",
+      "status": "future_supported"
+    },
+    {
+      "id": "ui_navigation",
+      "label": "Safe UI navigation",
+      "status": "future_supported"
+    }
+  ],
+  "requestShape": {
+    "adapterType": "suitescript_direct_write | suitelet | restlet | ui_navigation",
+    "mode": "dry_run | create",
+    "source": "Intelligent Demo Builder",
+    "selectedLaneId": "string",
+    "dccFamilyKey": "string",
+    "dccScenario": "string",
+    "dccToggles": {
+      "createNewHeroItem": "boolean",
+      "enableManufacturing": "boolean",
+      "enableWip": "boolean"
+    },
+    "customer": {
+      "name": "string",
+      "website": "string",
+      "notes": "string"
+    },
+    "records": [
+      {
+        "sequence": "number",
+        "label": "string",
+        "role": "customer | transaction | proof anchor | supporting proof",
+        "status": "draft"
+      }
+    ]
+  },
+  "responseShape": {
+    "status": "dry_run | created | failed | unsupported",
+    "createdRecords": [
+      {
+        "label": "string",
+        "recordType": "string",
+        "recordId": "string",
+        "url": "string"
+      }
+    ],
+    "errors": [
+      {
+        "label": "string",
+        "message": "string",
+        "recoverable": "boolean"
+      }
+    ],
+    "traceEvent": "creation_adapter_result"
+  },
+  "nonRegression": {
+    "noHiddenWrites": true,
+    "noAutomaticRecordCreation": true,
+    "noUnsupportedObjectCreation": true,
+    "noProofAnchorChange": true,
+    "noFixtureAppend": true
+  }
+}

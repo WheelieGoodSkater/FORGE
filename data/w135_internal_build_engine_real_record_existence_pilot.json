@@ -1,0 +1,226 @@
+{
+  "schema": "idb.w135-internal-build-engine-real-record-existence-pilot.v1",
+  "status": "real_record_existence_pilot_ready_for_operator_run",
+  "decision": "PASS_CONTRACT_READY__OPERATOR_REAL_RECORD_VISUAL_REQUIRED",
+  "sourceEvidence": {
+    "w134ManualStatus": "visual_link_authority_pass_record_existence_not_proven",
+    "w134Finding": "record_existence",
+    "w134NetSuiteClickResult": "Open link navigated to a NetSuite record URL shape, then NetSuite showed Notice: That record does not exist."
+  },
+  "internalBuildEngineResultContract": {
+    "owner": "internal_build_engine",
+    "drawerAuthority": "import_display_and_link_gate_only",
+    "requiredRecords": [
+      "customer",
+      "demo_transaction",
+      "hero_item",
+      "matrix_or_proof_item",
+      "component_item"
+    ],
+    "requiredForOpenUsability": [
+      "Real numeric NetSuite internal id returned by the internal build engine.",
+      "Supported NetSuite record URL returned by the internal build engine.",
+      "Operator visual proof that the URL opens an actual record page.",
+      "Operator visual proof that NetSuite does not show the Notice: That record does not exist page.",
+      "Trace export after import, with secrets redacted."
+    ],
+    "unsupportedEvidence": [
+      "Preview placeholder ids.",
+      "Representative numeric ids that have not been created or resolved.",
+      "Any drawer-side claim that a URL is live without operator or build-engine existence proof."
+    ]
+  },
+  "importedResultJsonShape": {
+    "schema": "idb.internal-build-engine.real-record-result.v1",
+    "runStatus": "run_complete",
+    "prospect": "Ariat International",
+    "familyKey": "apparelAccessories",
+    "scenario": "Style-to-Availability Readiness",
+    "generatedRecordOwner": "internal_build_engine",
+    "recordExistenceStatus": "operator_verified_existing_records_required",
+    "customer": {
+      "name": "Ariat International Outdoor Retail Account",
+      "id": "91001",
+      "url": "/app/common/entity/custjob.nl?id=91001",
+      "existenceProof": {
+        "required": true,
+        "status": "operator_visual_proof_required",
+        "expectedPageType": "Customer or Project record page",
+        "mustNotShowNotice": "That record does not exist"
+      }
+    },
+    "salesOrder": {
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "id": "91002",
+      "url": "/app/accounting/transactions/salesord.nl?id=91002",
+      "existenceProof": {
+        "required": true,
+        "status": "operator_visual_proof_required",
+        "expectedPageType": "Sales Order record page",
+        "mustNotShowNotice": "That record does not exist"
+      }
+    },
+    "heroItem": {
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "id": "91003",
+      "url": "/app/common/item/item.nl?id=91003",
+      "existenceProof": {
+        "required": true,
+        "status": "operator_visual_proof_required",
+        "expectedPageType": "Item record page",
+        "mustNotShowNotice": "That record does not exist"
+      }
+    },
+    "matrixItem": {
+      "name": "Ariat Core Boot Size Color Matrix",
+      "id": "91004",
+      "url": "/app/common/item/item.nl?id=91004",
+      "existenceProof": {
+        "required": true,
+        "status": "operator_visual_proof_required",
+        "expectedPageType": "Item record page",
+        "mustNotShowNotice": "That record does not exist"
+      }
+    },
+    "componentItems": [
+      {
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "91005",
+        "url": "/app/common/item/item.nl?id=91005",
+        "existenceProof": {
+          "required": true,
+          "status": "operator_visual_proof_required",
+          "expectedPageType": "Item record page",
+          "mustNotShowNotice": "That record does not exist"
+        }
+      }
+    ],
+    "warnings": [],
+    "errors": [],
+    "recoverableBlockers": []
+  },
+  "drawerImportSmoke": {
+    "buildResultsUseImportedNames": true,
+    "runUsesImportedNames": true,
+    "openAnchorCount": 9,
+    "linkPendingCount": 0,
+    "links": [
+      {
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "91001",
+        "url": "/app/common/entity/custjob.nl?id=91001",
+        "linkStatus": "verified_openable",
+        "openable": true
+      },
+      {
+        "label": "Sales Order / demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "91002",
+        "url": "/app/accounting/transactions/salesord.nl?id=91002",
+        "linkStatus": "verified_openable",
+        "openable": true
+      },
+      {
+        "label": "Hero item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "91003",
+        "url": "/app/common/item/item.nl?id=91003",
+        "linkStatus": "verified_openable",
+        "openable": true
+      },
+      {
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "91004",
+        "url": "/app/common/item/item.nl?id=91004",
+        "linkStatus": "verified_openable",
+        "openable": true
+      },
+      {
+        "label": "Component item 1",
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "91005",
+        "url": "/app/common/item/item.nl?id=91005",
+        "linkStatus": "verified_openable",
+        "openable": true
+      }
+    ]
+  },
+  "targetedVisualTestChecklist": [
+    "Run or resolve records through the internal build engine only.",
+    "Export the final generated names JSON with real ids and URLs.",
+    "Import the result into the drawer Trace tab.",
+    "Confirm Build Results shows Open for Customer, demo transaction, hero item, matrix/proof item, and component records.",
+    "Confirm Run shows the same final names and Open affordances for the consultant path.",
+    "Click Customer Open and confirm the actual record page loads.",
+    "Click either demo transaction or item Open and confirm the actual record page loads.",
+    "Fail the pilot if NetSuite shows Notice: That record does not exist for any required record.",
+    "Export trace JSON after the visual proof."
+  ],
+  "operatorEvidenceTemplate": {
+    "customerRecordOpened": false,
+    "demoTransactionOpened": false,
+    "heroItemOpened": false,
+    "matrixProofItemOpened": false,
+    "componentItemOpened": false,
+    "noRecordDoesNotExistNoticeObserved": false,
+    "screenshotsCaptured": false,
+    "traceExportCaptured": false,
+    "notes": "Pending real build-engine run and visual confirmation."
+  },
+  "visualNetSuiteTestingRequiredNow": true,
+  "broaderVisualNetSuiteTestingRequired": false,
+  "broaderVisualNetSuiteTestingRationale": "Targeted visual NetSuite testing is required for W135 record existence. Broader regression visual testing waits until real record existence passes.",
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "validatorGates": [
+    {
+      "name": "w135_starts_from_w134_record_existence_gap",
+      "pass": true,
+      "detail": "{\"status\":\"visual_link_authority_pass_record_existence_not_proven\",\"gap\":\"record_existence\"}"
+    },
+    {
+      "name": "w135_real_record_result_shape_requires_existence_proof",
+      "pass": true,
+      "detail": "[{\"name\":\"Ariat International Outdoor Retail Account\",\"id\":\"91001\",\"url\":\"/app/common/entity/custjob.nl?id=91001\",\"existenceProof\":\"operator_visual_proof_required\"},{\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"id\":\"91002\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91002\",\"existenceProof\":\"operator_visual_proof_required\"},{\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"id\":\"91003\",\"url\":\"/app/common/item/item.nl?id=91003\",\"existenceProof\":\"operator_visual_proof_required\"},{\"name\":\"Ariat Core Boot Size Color Matrix\",\"id\":\"91004\",\"url\":\"/app/common/item/item.nl?id=91004\",\"existenceProof\":\"operator_visual_proof_required\"},{\"name\":\"Ariat Brown Leather Upper Component\",\"id\":\"91005\",\"url\":\"/app/common/item/item.nl?id=91005\",\"existenceProof\":\"operator_visual_proof_required\"}]"
+    },
+    {
+      "name": "w135_drawer_imports_result_but_does_not_own_existence",
+      "pass": true,
+      "detail": "{\"status\":\"using_dcc_final_names\",\"links\":[{\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"id\":\"91001\",\"url\":\"/app/common/entity/custjob.nl?id=91001\",\"linkStatus\":\"verified_openable\",\"openable\":true},{\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"id\":\"91002\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91002\",\"linkStatus\":\"verified_openable\",\"openable\":true},{\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"id\":\"91003\",\"url\":\"/app/common/item/item.nl?id=91003\",\"linkStatus\":\"verified_openable\",\"openable\":true},{\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"id\":\"91004\",\"url\":\"/app/common/item/item.nl?id=91004\",\"linkStatus\":\"verified_openable\",\"openable\":true},{\"label\":\"Component item 1\",\"name\":\"Ariat Brown Leather Upper Component\",\"id\":\"91005\",\"url\":\"/app/common/item/item.nl?id=91005\",\"linkStatus\":\"verified_openable\",\"openable\":true}],\"openAnchorCount\":9}"
+    },
+    {
+      "name": "w135_targeted_visual_test_defined_not_faked",
+      "pass": true,
+      "detail": "operator_verified_existing_records_required"
+    },
+    {
+      "name": "w135_no_write_invocation_or_transaction_from_drawer",
+      "pass": true,
+      "detail": "no drawer write/invocation signatures present"
+    },
+    {
+      "name": "w135_state_authority_handoff_parity_no_submit_preserved",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w92-state-authority.v1\",\"recommendedLaneId\":\"apparel_accessories\",\"recommendedLaneName\":\"Apparel & Accessories\",\"recommendedProofAnchor\":\"Style / SKU Matrix\",\"selectedLaneId\":\"apparel_accessories\",\"selectedLaneName\":\"Apparel & Accessories\",\"selectedProofAnchor\":\"Style / SKU Matrix\",\"confirmedLaneId\":\"apparel_accessories\",\"confirmedLaneName\":\"Apparel & Accessories\",\"exportedLaneId\":\"apparel_accessories\",\"exportedLaneName\":\"Apparel & Accessories\",\"laneSelectionSource\":\"consultant_confirmed\",\"confidenceState\":\"needs_confirmation\",\"confidenceSource\":\"website_evidence_v1\",\"hasRecommendedMismatch\":false,\"hasConfirmedMismatch\":false,\"handoffEligible\":true,\"handoffBlockers\":[],\"noRegression\":{\"websiteEvidenceOwnsIdentity\":true,\"notesRole\":\"story_only\",\"dccOwnsObjectGeneration\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noIdbTransactionWrite\":true}}"
+    },
+    {
+      "name": "w135_internal_build_engine_ownership_preserved",
+      "pass": true,
+      "detail": "internal_build_engine"
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W135R: Review Real Record Existence Evidence",
+    "prompt": "Move through W135R: Review Real Record Existence Evidence. Use the operator-provided W135 real build-engine final generated names JSON, drawer trace export, and screenshots showing Customer, demo transaction, hero item, matrix/proof item, and component Open links loading actual NetSuite record pages. Grade whether every required record exists, whether any URL showed “That record does not exist,” and whether Build/Run remain consultant-usable. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership of generated records. Output graded evidence, pass/fail decision, remediation if any record is missing, W135R report, whether broader visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "idb.w141-netsuite-side-governed-runner-adapter-trace.v1",
+  "decision": "PASS_DRY_RUN_ADAPTER_READY__NEXT_ENABLE_OPERATOR_QUEUE_GATES",
+  "adapterFile": "/path/to/workspace/intelligent demo builder drawer/netsuite/idb_governed_runner_adapter_w141_suitelet.js",
+  "dryRun": {
+    "runnerStatus": "validated_not_submitted",
+    "queueSubmitted": false,
+    "createsRecords": false,
+    "validationValid": true
+  },
+  "drawerImportSmoke": {
+    "openAnchorCount": 0,
+    "linkPendingCount": 0,
+    "missingUrlCount": 5
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterQueueOrWriteEnablement": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W141 is a NetSuite-side skeleton and dry-run harness only. It does not queue or write, so there are no real record links to visually test yet."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W142: Operator Queue Gate And Dry-Run Result Surface",
+    "prompt": "Move through W142: Operator Queue Gate And Dry-Run Result Surface. Use the W141 NetSuite-side governed runner adapter skeleton to add operator-only queue readiness gates and a dry-run result surface that proves the adapter can accept the W139 confirmed IDB request, validate W140 gates, resolve server-side runner config, and remain no-submit until governed sandbox write flags are explicitly enabled. Do not enable writes yet. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, no-submit rollback, internal runner ownership, and no active Open links without real URLs. Output queue-gate contract, dry-run result evidence, trace samples, W142 report, visual testing decision, and best next Codex prompt."
+  }
+}

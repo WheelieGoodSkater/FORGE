@@ -1,0 +1,93 @@
+{
+  "schema": "idb.w64-failure-ux-samples.v1",
+  "samples": [
+    {
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "whatIdbSaw": [
+        "Domain: blocked.example",
+        "Resolver: service / resolved",
+        "Failure state: blocked",
+        "Evidence: Fetch status: blocked / Failure state: blocked",
+        "Product seed: needs evidence",
+        "Product family: needs evidence",
+        "Demand moment: needs evidence",
+        "Fetch errors: blocked"
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "failureState": "thin",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "whatIdbSaw": [
+        "Domain: thin.example",
+        "Resolver: service / resolved",
+        "Failure state: thin",
+        "Evidence: Fetch status: thin / Failure state: thin",
+        "Product seed: needs evidence",
+        "Product family: needs evidence",
+        "Demand moment: needs evidence",
+        "Fetch errors: thin"
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "failureState": "unavailable",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "whatIdbSaw": [
+        "Domain: unavailable.example",
+        "Resolver: service / resolved",
+        "Failure state: unavailable",
+        "Evidence: Fetch status: unavailable / Failure state: unavailable",
+        "Product seed: needs evidence",
+        "Product family: needs evidence",
+        "Demand moment: needs evidence",
+        "Fetch errors: unavailable"
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "failureState": "timeout",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "whatIdbSaw": [
+        "Domain: timeout.example",
+        "Resolver: service / resolved",
+        "Failure state: timeout",
+        "Evidence: Fetch status: timeout / Failure state: timeout",
+        "Product seed: needs evidence",
+        "Product family: needs evidence",
+        "Demand moment: needs evidence",
+        "Fetch errors: timeout"
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    }
+  ]
+}

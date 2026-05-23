@@ -1,0 +1,31 @@
+{
+  "schema": "idb.w100-w103-consultant-flow-hardening-trace.v1",
+  "status": "pass",
+  "decision": "PASS / CONSULTANT FLOW HARDENED / READY FOR VALIDATED RETEST PACKET",
+  "blocks": [
+    "W100",
+    "W101",
+    "W102",
+    "W103"
+  ],
+  "runtimeCoverage": {
+    "prepareBriefGate": true,
+    "consultantLabelMap": true,
+    "sourceAuthorityModel": true,
+    "noteDrivenValueGuidance": true,
+    "reviewBuildControlCenter": true,
+    "traceSourceAuthorityExported": true
+  },
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W104: DCC Invocation Readiness",
+    "prompt": "Move through W104: DCC Invocation Readiness. Define the governed path for IDB to invoke the Demo Command Center only after consultant confirmation, type-to-confirm, and review-only preview. Preserve DCC runner mechanics, keep transaction writes blocked, and keep DCC ownership of item names, assemblies, BOMs, locations, planning, routing/WIP, CSV, and Sales Order mechanics. Output invocation contract, safety gates, rollback plan, validator gates, W104 report, and best next Codex prompt."
+  }
+}

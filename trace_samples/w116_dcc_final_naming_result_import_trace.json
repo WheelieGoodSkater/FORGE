@@ -1,0 +1,378 @@
+{
+  "schema": "idb.w116-dcc-final-naming-result-import-trace.v1",
+  "generatedAt": "2026-05-17T21:41:07.293Z",
+  "decision": "PASS",
+  "pass": true,
+  "beforeImportStatus": "not_imported",
+  "afterImportStatus": "dcc_final_names_imported",
+  "finalNamingResult": {
+    "schema": "idb.dcc-final-naming-result.v1",
+    "status": "dcc_final_names_imported",
+    "displayStatus": "Final generated names imported",
+    "importedAt": "2026-05-17T21:41:07.267Z",
+    "source": "dcc_result_import_only",
+    "finalNamesImported": true,
+    "runStatus": "preview_complete",
+    "prospect": "Ariat International",
+    "scenario": "Style-to-Availability Readiness",
+    "familyKey": "apparelAccessories",
+    "generated": {
+      "extId": "DCC-ARIAT-STYLE-READY-001",
+      "agenda": "Ariat seasonal style readiness proof"
+    },
+    "displayObjects": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Demo Account",
+        "internalName": "",
+        "id": "321",
+        "url": "/app/common/entity/custjob.nl?id=321",
+        "source": "dcc_final"
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "SO-Ariat-Fall-Launch-ATP-Readiness",
+        "internalName": "",
+        "id": "654",
+        "url": "/app/accounting/transactions/salesord.nl?id=654",
+        "source": "dcc_final"
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Heritage Boot - Demo Hero SKU",
+        "internalName": "",
+        "id": "987",
+        "url": "/app/common/item/item.nl?id=987",
+        "source": "dcc_final"
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Heritage Boot Matrix - Width Size Color",
+        "internalName": "",
+        "id": "988",
+        "url": "/app/common/item/item.nl?id=988",
+        "source": "dcc_final"
+      },
+      {
+        "role": "assembly",
+        "label": "Assembly",
+        "name": "Ariat Heritage Boot Assembly",
+        "internalName": "Ariat Heritage Boot Assembly - Demo",
+        "id": "1001",
+        "url": "",
+        "source": "dcc_final"
+      },
+      {
+        "role": "bom",
+        "label": "BOM",
+        "name": "BOM Ariat Heritage Boot Demo Build",
+        "internalName": "",
+        "id": "1002",
+        "url": "",
+        "source": "dcc_final"
+      },
+      {
+        "role": "bom_revision",
+        "label": "BOM revision",
+        "name": "BOMREV Ariat Heritage Boot Launch v1",
+        "internalName": "",
+        "id": "1003",
+        "url": "",
+        "source": "dcc_final"
+      }
+    ],
+    "componentItems": [
+      {
+        "role": "component_item",
+        "label": "Component item 1",
+        "name": "Ariat Boot Upper - Demo Component",
+        "internalName": "",
+        "id": "991",
+        "url": "",
+        "source": "dcc_final"
+      },
+      {
+        "role": "component_item",
+        "label": "Component item 2",
+        "name": "Ariat Outsole Pack - Demo Component",
+        "internalName": "",
+        "id": "992",
+        "url": "",
+        "source": "dcc_final"
+      }
+    ],
+    "locationPlanningRecords": [
+      {
+        "role": "location_planning",
+        "label": "Location / planning 1",
+        "name": "Ariat Seasonal Launch Allocation Plan",
+        "internalName": "",
+        "id": "1101",
+        "url": "",
+        "source": "dcc_final"
+      },
+      {
+        "role": "location_planning",
+        "label": "Location / planning 2",
+        "name": "Ariat East Coast Retail DC Readiness",
+        "internalName": "",
+        "id": "1102",
+        "url": "",
+        "source": "dcc_final"
+      }
+    ],
+    "csvSalesOrderArtifacts": [
+      {
+        "label": "Sales Order CSV",
+        "name": "ariat_fall_launch_atp_readiness.csv",
+        "id": "file-42",
+        "url": "",
+        "source": "dcc_final"
+      }
+    ],
+    "warnings": [
+      "Preview only; operator must verify DCC config before submit."
+    ],
+    "errors": [],
+    "recoverableBlockers": [],
+    "traceCoverage": {
+      "includedInTraceExport": true,
+      "secretsRedacted": true,
+      "importedOnly": true
+    },
+    "noRegression": {
+      "importOnly": true,
+      "noIdbWrites": true,
+      "noSuiteScriptInvocationFromIdb": true,
+      "noTransactionWritesFromIdb": true,
+      "dccOwnsObjectGeneration": true,
+      "provisionalNamesCannotBeMarkedFinal": true,
+      "w92StateAuthorityPreserved": true,
+      "w110HandoffParityPreserved": true
+    }
+  },
+  "finalNavigation": {
+    "schema": "idb.dcc-final-navigation-model.v1",
+    "status": "using_dcc_final_names",
+    "displayStatus": "Final generated names imported",
+    "source": "dcc_final_imported",
+    "runCanUseImportedFinalNames": true,
+    "reviewObjects": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Demo Account",
+        "internalName": "",
+        "id": "321",
+        "url": "/app/common/entity/custjob.nl?id=321",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "verified_openable",
+          "openable": true,
+          "displayLabel": "Open",
+          "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+          "url": "/app/common/entity/custjob.nl?id=321"
+        },
+        "openableUrl": "/app/common/entity/custjob.nl?id=321"
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "SO-Ariat-Fall-Launch-ATP-Readiness",
+        "internalName": "",
+        "id": "654",
+        "url": "/app/accounting/transactions/salesord.nl?id=654",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "verified_openable",
+          "openable": true,
+          "displayLabel": "Open",
+          "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+          "url": "/app/accounting/transactions/salesord.nl?id=654"
+        },
+        "openableUrl": "/app/accounting/transactions/salesord.nl?id=654"
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Heritage Boot - Demo Hero SKU",
+        "internalName": "",
+        "id": "987",
+        "url": "/app/common/item/item.nl?id=987",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "verified_openable",
+          "openable": true,
+          "displayLabel": "Open",
+          "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+          "url": "/app/common/item/item.nl?id=987"
+        },
+        "openableUrl": "/app/common/item/item.nl?id=987"
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Heritage Boot Matrix - Width Size Color",
+        "internalName": "",
+        "id": "988",
+        "url": "/app/common/item/item.nl?id=988",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "verified_openable",
+          "openable": true,
+          "displayLabel": "Open",
+          "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+          "url": "/app/common/item/item.nl?id=988"
+        },
+        "openableUrl": "/app/common/item/item.nl?id=988"
+      },
+      {
+        "role": "assembly",
+        "label": "Assembly",
+        "name": "Ariat Heritage Boot Assembly",
+        "internalName": "Ariat Heritage Boot Assembly - Demo",
+        "id": "1001",
+        "url": "",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "missing_url",
+          "openable": false,
+          "displayLabel": "Needs real URL",
+          "reason": "The build result did not return a NetSuite record URL.",
+          "url": ""
+        },
+        "openableUrl": ""
+      },
+      {
+        "role": "bom",
+        "label": "BOM",
+        "name": "BOM Ariat Heritage Boot Demo Build",
+        "internalName": "",
+        "id": "1002",
+        "url": "",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "missing_url",
+          "openable": false,
+          "displayLabel": "Needs real URL",
+          "reason": "The build result did not return a NetSuite record URL.",
+          "url": ""
+        },
+        "openableUrl": ""
+      }
+    ],
+    "scriptPivotObjects": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Demo Account",
+        "internalName": "",
+        "id": "321",
+        "url": "/app/common/entity/custjob.nl?id=321",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "verified_openable",
+          "openable": true,
+          "displayLabel": "Open",
+          "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+          "url": "/app/common/entity/custjob.nl?id=321"
+        },
+        "openableUrl": "/app/common/entity/custjob.nl?id=321"
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "SO-Ariat-Fall-Launch-ATP-Readiness",
+        "internalName": "",
+        "id": "654",
+        "url": "/app/accounting/transactions/salesord.nl?id=654",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "verified_openable",
+          "openable": true,
+          "displayLabel": "Open",
+          "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+          "url": "/app/accounting/transactions/salesord.nl?id=654"
+        },
+        "openableUrl": "/app/accounting/transactions/salesord.nl?id=654"
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Heritage Boot - Demo Hero SKU",
+        "internalName": "",
+        "id": "987",
+        "url": "/app/common/item/item.nl?id=987",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "verified_openable",
+          "openable": true,
+          "displayLabel": "Open",
+          "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+          "url": "/app/common/item/item.nl?id=987"
+        },
+        "openableUrl": "/app/common/item/item.nl?id=987"
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Heritage Boot Matrix - Width Size Color",
+        "internalName": "",
+        "id": "988",
+        "url": "/app/common/item/item.nl?id=988",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "verified_openable",
+          "openable": true,
+          "displayLabel": "Open",
+          "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+          "url": "/app/common/item/item.nl?id=988"
+        },
+        "openableUrl": "/app/common/item/item.nl?id=988"
+      }
+    ],
+    "linkAuthoritySummary": {
+      "verified_openable": 4,
+      "missing_url": 7
+    },
+    "warnings": [
+      "Preview only; operator must verify DCC config before submit."
+    ],
+    "noRegression": {
+      "provisionalNamesCannotBeMarkedFinal": false,
+      "noIdbWrites": true,
+      "noSuiteScriptInvocationFromIdb": true,
+      "noTransactionWritesFromIdb": true,
+      "dccOwnsObjectGeneration": true
+    }
+  },
+  "noRegression": {
+    "w92StateAuthorityPreserved": true,
+    "w110ParityLockPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWritesFromIdb": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true,
+    "idbCannotMarkProvisionalNamesAsFinal": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W117: DCC Result Export Shape And Final Naming Smoke Pack",
+    "prompt": "Move through W117: DCC Result Export Shape And Final Naming Smoke Pack. Define and test the exact Demo Command Center result JSON shape that an operator will export or paste back into IDB after DCC preview/run, then produce a sample result for apparel, CPG, dealer/distributor, manufacturing-heavy, and ambiguous cases. Verify IDB shows provisional names before import, DCC final names after import, Run uses imported final names for navigation/script pivots, Trace redacts secrets, and no IDB writes/SuiteScript invocation/transaction writes occur. Preserve W92/W110 state authority and DCC handoff parity, consultant confirmation required, hosted resolver optional until remoteSmokeExecuted=true, and DCC ownership of object generation. Output result-shape contract samples, import smoke results, validator gates, W117 report, and best next Codex prompt."
+  }
+}

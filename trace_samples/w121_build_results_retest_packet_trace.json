@@ -1,0 +1,59 @@
+{
+  "traceEvent": "w121_build_results_retest_packet_final_names",
+  "decision": "PASS",
+  "generatedAt": "2026-05-17T21:41:08.149Z",
+  "userTestRequiredNow": true,
+  "noSecrets": true,
+  "expectedScreenshotCount": 7,
+  "requiredArtifactCount": 5,
+  "consultantVisibleCopyClean": true,
+  "reviewTransformsAfterImport": true,
+  "runUsesFinalNames": true,
+  "validatorGates": [
+    {
+      "name": "w121_upload_file_exists",
+      "pass": true,
+      "detail": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js"
+    },
+    {
+      "name": "w121_sales_request_fields_complete",
+      "pass": true,
+      "detail": "[{\"field\":\"Prospect\",\"value\":\"Ariat International\"},{\"field\":\"Website\",\"value\":\"https://www.ariat.com/\"},{\"field\":\"Business pain\",\"value\":\"Seasonal footwear and apparel launches are risky because style, size, color, replenishment timing, and channel availability are managed across spreadsheets and disconnected order/inventory views.\"},{\"field\":\"Requested proof\",\"value\":\"Show a concise NetSuite proof path for style/SKU readiness, size/color availability, replenishment timing, and customer promise.\"},{\"field\":\"Decision criteria\",\"value\":\"Must connect Customer Record, Sales Order View, and Style / SKU Matrix without forcing apparel into generic manufacturing or distribution language.\"},{\"field\":\"Timeline / urgency\",\"value\":\"Internal proof review needed in 2-4 weeks before the next buying cycle.\"},{\"field\":\"Competitor / incumbent\",\"value\":\"Spreadsheets, disconnected inventory reports, and incumbent order tools.\"},{\"field\":\"Optional website/category evidence\",\"value\":\"Ariat sells footwear, apparel, workwear, outdoor gear, size/color variants, and ecommerce categories.\"}]"
+    },
+    {
+      "name": "w121_expected_screenshots_complete",
+      "pass": true,
+      "detail": "[\"Plan\",\"Review before import\",\"Trace import\",\"Review after import\",\"ROI / Competitive\",\"Run after import\",\"Trace evidence\"]"
+    },
+    {
+      "name": "w121_required_artifacts_complete",
+      "pass": true,
+      "detail": "[\"drawer userscript\",\"handoff JSON\",\"trace JSON\",\"final generated names JSON\",\"consultant/operator notes\"]"
+    },
+    {
+      "name": "w121_review_before_after_behavior_ready",
+      "pass": true,
+      "detail": "{\"pre\":\"Build Handoff What the consultant requested Ariat International Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, and channel availability stay aligned as demand changes. 1. Ready? Ready to export Consultant confirmed the lane and pack. 2. Demo path Apparel &amp; Accessories Style-to-Availability Readiness 3. Boundary Export only The build engine owns generated records. confirmed Build handoff JSON Export lane: Apparel &\",\"post\":\"Build Results What the consultant requested Ariat International Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, and channel availability stay aligned as demand changes. 1. Result Ready to export Final names are imported for the live demo. 2. Demo path Apparel &amp; Accessories Style-to-Availability Readiness 3. Boundary Export only The build engine owns generated records. confirmed Build results imported Export lane: A\"}"
+    },
+    {
+      "name": "w121_roi_and_run_final_names_ready",
+      "pass": true,
+      "detail": "{\"value\":\"Consultant value coach Talk track Use Customer Record to prove Style / SKU Matrix, then ask whether Ariat International can trust this NetSuite path for style, size, and channel availability. Lead with Ariat International&#39;s stated pain, show Core Boot and Apparel Style Matrix in the Style / SKU Matrix path, then connect the operational decision to financial impact. Discovery question Where does style, size, and channel availability break down today? Objection answer How do we know style, siz\",\"run\":\"Live controls Open Prove Handle objection Close value Selected script Prove the NetSuite path Use Ariat International to prove Style / SKU Matrix against the stated pain: Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, a.... Tie the proof to Must connect Customer Record, Sales Order View, and Style / SKU Matrix without forcing apparel into generic manufacturing or distribution language. and show how NetSuite keeps the \"}"
+    },
+    {
+      "name": "w121_trace_import_and_export_ready",
+      "pass": true,
+      "detail": "Trace actions only Export Build handoff JSON for the governed runner. Import only completed runner result JSON here; handoff packets are rejected because they do not contain generated record ids or URLs. 0 events Dry run only Review only Not connected Export handoff Export trace Clear trace Clear session Clear session resets setup, lane choice, review packet, and trace for the next prospect. Completed runner result import Final generated names imported Paste completed governed runner result JSON only. Do not paste the Build handoff JSON. The drawer imports names and URLs only; it does not submit, queue, or write. Status: Build Engine Final Names Imported Run: Run Complete Secrets redacted Im"
+    },
+    {
+      "name": "w121_consultant_visible_copy_clean",
+      "pass": true,
+      "detail": "{\"pre\":false,\"post\":false,\"value\":false,\"run\":false,\"trace\":false}"
+    },
+    {
+      "name": "w121_state_authority_and_final_names_preserved",
+      "pass": true,
+      "detail": "{\"authority\":{\"schema\":\"idb.w92-state-authority.v1\",\"recommendedLaneId\":\"apparel_accessories\",\"recommendedLaneName\":\"Apparel & Accessories\",\"recommendedProofAnchor\":\"Style / SKU Matrix\",\"selectedLaneId\":\"apparel_accessories\",\"selectedLaneName\":\"Apparel & Accessories\",\"selectedProofAnchor\":\"Style / SKU Matrix\",\"confirmedLaneId\":\"apparel_accessories\",\"confirmedLaneName\":\"Apparel & Accessories\",\"exportedLaneId\":\"apparel_accessories\",\"exportedLaneName\":\"Apparel & Accessories\",\"laneSelectionSource\":\"consultant_confirmed\",\"confidenceState\":\"needs_confirmation\",\"confidenceSource\":\"website_evidence_v1\",\"hasRecommendedMismatch\":false,\"hasConfirmedMismatch\":false,\"handoffEligible\":true,\"handoffBlockers\":[],\"noRegression\":{\"websiteEvidenceOwnsIdentity\":true,\"notesRole\":\"story_only\",\"dccOwnsObjectGeneration\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noIdbTransactionWrite\":true}},\"finalNavigation\":{\"schema\":\"idb.dcc-final-navigation-model.v1\",\"status\":\"using_dcc_final_names\",\"displayStatus\":\"Final generated names imported\",\"source\":\"dcc_final_imported\",\"runCanUseImportedFinalNames\":true,\"reviewObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International\",\"internalName\":\"\",\"id\":\"321\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Sales Order CSV import for ARIATSTYLE20260514\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"987\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"assembly\",\"label\":\"Assembly\",\"name\":\"Ariat Seasonal Style Availability Flow\",\"internalName\":\"\",\"id\":\"989\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"bom\",\"label\":\"BOM\",\"name\":\"Ariat Style Availability Structure\",\"internalName\":\"\",\"id\":\"990\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"}],\"scriptPivotObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International\",\"internalName\":\"\",\"id\":\"321\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Sales Order CSV import for ARIATSTYLE20260514\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"987\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"}],\"linkAuthoritySummary\":{\"missing_url\":10},\"warnings\":[],\"noRegression\":{\"provisionalNamesCannotBeMarkedFinal\":false,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true}}}"
+    }
+  ]
+}

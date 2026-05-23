@@ -1,0 +1,91 @@
+{
+  "schema": "idb.w91-execute-one-run-retest-grade-trace.v1",
+  "generated": "2026-05-17T21:41:05.148Z",
+  "decision": "PASS",
+  "status": "blocked_missing_w90_retest_evidence_no_go",
+  "averageScore": 1.4,
+  "pilotUnlockDecision": "no_go_missing_w90_retest_evidence",
+  "evidenceIntake": {
+    "schema": "idb.w91-retest-evidence-intake.v1",
+    "dccHandoffJson": {
+      "required": true,
+      "provided": false,
+      "files": []
+    },
+    "traceJson": {
+      "required": true,
+      "provided": false,
+      "files": []
+    },
+    "screenshots": {
+      "required": [
+        "Plan",
+        "Review DCC handoff",
+        "Trace evidence checklist"
+      ],
+      "provided": false,
+      "files": []
+    },
+    "operatorComparisonNotes": {
+      "required": true,
+      "provided": false,
+      "files": []
+    },
+    "legacySuiteScriptPackets": {
+      "provided": true,
+      "files": [
+        "/path/to/downloads/idb-suitescript-review-packet-synthetic-secondary-only.json"
+      ],
+      "note": "Legacy SuiteScript packets do not satisfy the W90 DCC handoff requirement."
+    }
+  },
+  "noRegression": {
+    "noIdbWritesObserved": true,
+    "noDccRunnerRewriteObserved": true,
+    "noTransactionWritesObserved": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W91R: Run Actual One-Run Retest Evidence Review",
+    "prompt": "Move through W91R: Run Actual One-Run Retest Evidence Review. Use the newly attached W90 retest evidence: Plan screenshot, Review DCC handoff screenshot, Trace evidence-checklist screenshot, idb-dcc-runner-handoff-packet JSON, intelligent-demo-builder trace JSON, and operator comparison notes. Grade against the W88/W90 rubric, decide pilot unlock or no-go, and preserve no IDB writes, no DCC runner rewrite, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, consultant confirmation required, and DCC ownership of object generation. Output scored results, pilot unlock/no-go decision, exact remediation, W91R report, validator gates, and best next Codex prompt."
+  },
+  "validatorResults": [
+    {
+      "name": "w91_inherits_w90_retest_packet",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w90-pilot-evidence-remediation-retest-pack.v1\",\"status\":\"pilot_evidence_remediation_ready_for_one_run_retest\"}"
+    },
+    {
+      "name": "w91_dcc_handoff_missing_blocks_unlock",
+      "pass": true,
+      "detail": "{\"required\":true,\"provided\":false,\"files\":[]}"
+    },
+    {
+      "name": "w91_screenshots_missing_blocks_unlock",
+      "pass": true,
+      "detail": "{\"required\":[\"Plan\",\"Review DCC handoff\",\"Trace evidence checklist\"],\"provided\":false,\"files\":[]}"
+    },
+    {
+      "name": "w91_operator_notes_missing_blocks_unlock",
+      "pass": true,
+      "detail": "{\"required\":true,\"provided\":false,\"files\":[]}"
+    },
+    {
+      "name": "w91_scores_force_no_go",
+      "pass": true,
+      "detail": "{\"averageScore\":1.4,\"anyBelowThree\":true}"
+    },
+    {
+      "name": "w91_legacy_packet_not_accepted_as_primary",
+      "pass": true,
+      "detail": "{\"provided\":true,\"files\":[\"/path/to/downloads/idb-suitescript-review-packet-synthetic-secondary-only.json\"],\"note\":\"Legacy SuiteScript packets do not satisfy the W90 DCC handoff requirement.\"}"
+    },
+    {
+      "name": "w91_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noIdbWritesObserved\":true,\"noDccRunnerRewriteObserved\":true,\"noTransactionWritesObserved\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"consultantConfirmationRequired\":true,\"dccOwnsObjectGeneration\":true}"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "schema": "idb.w182-build-return-server-adapter-no-call-evidence-review-trace.v1",
+  "generatedAt": "2026-05-17T21:41:16.921Z",
+  "noCallTrace": [
+    {
+      "event": "w182_no_call_evidence_review",
+      "handoffPacketValid": true,
+      "noServerAdapterCallMade": true,
+      "runnerTaskIdCaptured": false,
+      "finalGeneratedNamesImported": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w182_handoff_is_not_completed_result",
+      "handoffPacketSchema": "idb.dcc-runner-handoff-packet.v1",
+      "w151AcceptsAsCompletedResult": false,
+      "w151Status": "handoff_packet_rejected",
+      "linkAuthoritySummary": {
+        "missing_url": 7
+      }
+    },
+    {
+      "event": "w182_activation_readiness",
+      "activationReady": false,
+      "blockers": [
+        "approved_server_adapter_endpoint_configured",
+        "server_flags_confirmed",
+        "sandbox_allowlist_confirmed",
+        "operator_approval_captured",
+        "idempotency_token_generated",
+        "one_submit_limit_enforced"
+      ],
+      "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls"
+    }
+  ],
+  "activationReadyTrace": [
+    {
+      "event": "w182_no_call_evidence_review",
+      "handoffPacketValid": true,
+      "noServerAdapterCallMade": true,
+      "runnerTaskIdCaptured": false,
+      "finalGeneratedNamesImported": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w182_handoff_is_not_completed_result",
+      "handoffPacketSchema": "idb.dcc-runner-handoff-packet.v1",
+      "w151AcceptsAsCompletedResult": false,
+      "w151Status": "handoff_packet_rejected",
+      "linkAuthoritySummary": {
+        "missing_url": 7
+      }
+    },
+    {
+      "event": "w182_activation_readiness",
+      "activationReady": true,
+      "blockers": [],
+      "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls"
+    }
+  ],
+  "uploadedEvidence": {
+    "uploadedTracePath": "/path/to/downloads/intelligent-demo-builder-trace-1779023753249.json",
+    "uploadedHandoffPath": "/path/to/downloads/idb-dcc-runner-handoff-packet-1779023752645.json",
+    "handoffPacketSchema": "idb.dcc-runner-handoff-packet.v1",
+    "handoffPacketStatus": "ready_for_dcc_suitelet_submission_review",
+    "handoffPacketValid": true,
+    "handoffPacketIsCompletedRunnerResult": false,
+    "handoffPacketRejectedByW151AsFinalResult": true,
+    "finalNamingStatus": "not_imported",
+    "finalNamesImported": false,
+    "navigationStatus": "using_provisional_preview_names",
+    "linkAuthoritySummary": {
+      "missing_url": 7
+    },
+    "runnerTaskIdCaptured": false,
+    "resultCaptureStarted": false,
+    "noServerAdapterCallMade": true,
+    "visibleControls": [],
+    "enabledControls": []
+  },
+  "results": [
+    {
+      "name": "w182_uploaded_evidence_loaded",
+      "pass": true,
+      "detail": "{\"uploadedTracePath\":\"/path/to/downloads/intelligent-demo-builder-trace-1779023753249.json\",\"uploadedHandoffPath\":\"/path/to/downloads/idb-dcc-runner-handoff-packet-1779023752645.json\",\"handoffPacketSchema\":\"idb.dcc-runner-handoff-packet.v1\",\"handoffPacketStatus\":\"ready_for_dcc_suitelet_submission_review\",\"handoffPacketValid\":true,\"handoffPacketIsCompletedRunnerResult\":false,\"handoffPacketRejectedByW151AsFinalResult\":true,\"finalNamingStatus\":\"not_imported\",\"finalNamesImported\":false,\"navigationStatus\":\"using_provisional_preview_names\",\"linkAuthoritySummary\":{\"missing_url\":7},\"runnerTaskIdCaptured\":false,\"resultCaptureStarted\":false,\"noServerAdapterCallMade\":true,\"visibleControls\":[],\"enabledControls\":[]}"
+    },
+    {
+      "name": "w182_handoff_valid_but_not_completed_result",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-result-import-guard.v1\",\"valid\":false,\"status\":\"handoff_packet_rejected\",\"message\":\"This is the Build handoff JSON. It requests runner work but does not contain completed runner result records, ids, or URLs.\"}"
+    },
+    {
+      "name": "w182_idb_correctly_blocks_links",
+      "pass": true,
+      "detail": "{\"missing_url\":7}"
+    },
+    {
+      "name": "w182_no_refresh_until_runner_task",
+      "pass": true,
+      "detail": "[{\"id\":\"start_approved_adapter_call\",\"label\":\"Start approved adapter call\",\"visible\":false,\"enabled\":false,\"action\":\"server_adapter_one_call_submit_owned_by_approved_adapter\",\"reason\":\"Requires explicit one-call authorization before submit.\"},{\"id\":\"check_runner_result\",\"label\":\"Check runner result\",\"visible\":false,\"enabled\":false,\"action\":\"poll_result_capture_for_runner_task\",\"runnerTaskId\":null,\"reason\":\"Hidden until runnerTaskId exists.\"},{\"id\":\"import_completed_runner_result\",\"label\":\"Import completed runner result\",\"visible\":false,\"enabled\":false,\"action\":\"open_w151_completed_runner_result_import\",\"reason\":\"Disabled until completed runner result JSON passes W151.\"},{\"id\":\"targeted_open_link_test\",\"label\":\"Targeted Open-link test\",\"visible\":false,\"enabled\":false,\"action\":\"start_targeted_only_open_link_verification\",\"reason\":\"Hidden until completed result is imported.\"},{\"id\":\"collect_adapter_error_evidence\",\"label\":\"Collect adapter error evidence\",\"visible\":false,\"enabled\":false,\"action\":\"stop_and_collect_operator_evidence\",\"reason\":\"Adapter errors stop the drawer safely without mutating final names.\"}]"
+    },
+    {
+      "name": "w182_build_status_copy_explains_handoff_not_execution",
+      "pass": true,
+      "detail": "{\"headline\":\"No server adapter call made\",\"primaryCopy\":\"Build has exported the handoff packet only. The governed runner has not been called, no runnerTaskId exists, and there is nothing to refresh yet.\",\"handoffIsNotExecutionCopy\":\"Build handoff JSON is a request package for the runner. It is not completed runner result JSON and cannot create Open links.\",\"noRefreshUntilRunnerTaskCopy\":\"Check runner result appears only after the approved server adapter captures a runnerTaskId.\",\"importBlockedCopy\":\"Import completed runner result stays blocked until the approved server adapter returns W151-valid completed runner result JSON with numeric ids and supported NetSuite URLs.\",\"expectedFirstResponseCopy\":\"The first server-owned response should be runnerTaskId plus pending result capture, or an adapter error. It should not return fake record URLs.\"}"
+    },
+    {
+      "name": "w182_activation_checklist_complete",
+      "pass": true,
+      "detail": "[{\"id\":\"approved_server_adapter_endpoint_configured\",\"label\":\"Approved server adapter endpoint configured\",\"required\":true,\"ready\":false,\"blocker\":\"Configure the approved NetSuite server adapter endpoint before Build can call the runner path.\"},{\"id\":\"server_flags_confirmed\",\"label\":\"Server flags confirmed\",\"required\":true,\"ready\":false,\"blocker\":\"CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, and QUEUE_SUBMIT_ENABLED must be confirmed on the server deployment.\"},{\"id\":\"sandbox_allowlist_confirmed\",\"label\":\"Sandbox allowlist confirmed\",\"required\":true,\"ready\":false,\"blocker\":\"The sandbox account must be allowlisted server-side.\"},{\"id\":\"operator_approval_captured\",\"label\":\"Operator approval captured\",\"required\":true,\"ready\":false,\"blocker\":\"Capture operator approval evidence before the first server-owned adapter call.\"},{\"id\":\"idempotency_token_generated\",\"label\":\"Idempotency token generated\",\"required\":true,\"ready\":false,\"blocker\":\"Generate an idempotency token for the one-call server adapter request.\"},{\"id\":\"one_submit_limit_enforced\",\"label\":\"One-submit limit enforced\",\"required\":true,\"ready\":false,\"blocker\":\"The next live block must enforce exactly one submit attempt.\"},{\"id\":\"rollback_flags_plan_ready\",\"label\":\"Rollback by disabling server flags\",\"required\":true,\"ready\":true,\"blocker\":\"Rollback must be disabling CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, and QUEUE_SUBMIT_ENABLED.\"},{\"id\":\"expected_first_response_documented\",\"label\":\"Expected first response documented\",\"required\":true,\"ready\":true,\"blocker\":\"\"}]"
+    },
+    {
+      "name": "w182_activation_ready_only_when_all_prereqs_present",
+      "pass": true,
+      "detail": "{\"blocked\":false,\"ready\":true}"
+    },
+    {
+      "name": "w182_expected_first_response_is_task_or_error",
+      "pass": true,
+      "detail": "The first server-owned response should be runnerTaskId plus pending result capture, or an adapter error. It should not return fake record URLs."
+    },
+    {
+      "name": "w182_w181_import_commit_untouched",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlocked": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "Operator evidence is handoff-only. No runnerTaskId, result capture, completed runner result JSON, imported names, or real URLs exist."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W183: Approved Server Adapter Activation Packet And One-Call Readiness",
+    "prompt": "Move through W183: Approved Server Adapter Activation Packet And One-Call Readiness. Use the W182 no-call evidence review to prepare the exact next integration packet for the first approved server adapter call from Build: endpoint configuration, server flags, sandbox allowlist, operator approval evidence, idempotency token, one-submit limit, rollback flags, expected runnerTaskId-or-adapter-error response, and result-capture polling handoff. Keep real execution disabled unless explicitly authorized, do not create records from the drawer, do not invoke SuiteScript outside the approved server adapter path, and do not request Open-link visual testing until completed runner result JSON is imported. Output activation packet, guarded harness, trace samples, W183 report, visual testing decision blocked, and best next Codex prompt."
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "schema": "idb.w172-approved-server-adapter-sandbox-one-call-execution-harness-trace.v1",
+  "generatedAt": "2026-05-17T21:41:15.327Z",
+  "defaultNoSubmitTrace": [
+    {
+      "event": "w172_default_no_submit_gate",
+      "ready": true,
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false,
+      "evidence": [
+        "execution_not_requested",
+        "harness_authorization_missing"
+      ]
+    },
+    {
+      "event": "w172_authorized_harness_one_submit",
+      "ready": false,
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "runnerTaskId": null,
+      "submitAttemptCount": 0,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w172_result_capture_guard",
+      "ready": false,
+      "resultCaptureStatus": "not_started_no_submit",
+      "finalGeneratedNamesJsonReady": false,
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "authorizedSubmitTrace": [
+    {
+      "event": "w172_default_no_submit_gate",
+      "ready": false,
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false,
+      "evidence": []
+    },
+    {
+      "event": "w172_authorized_harness_one_submit",
+      "ready": true,
+      "liveRequestSent": true,
+      "queueSubmitted": true,
+      "runnerTaskId": "task_w172_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+      "submitAttemptCount": 1,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w172_result_capture_guard",
+      "ready": true,
+      "resultCaptureStatus": "pending_runner_completion",
+      "finalGeneratedNamesJsonReady": false,
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "adapterErrorTrace": [
+    {
+      "event": "w172_default_no_submit_gate",
+      "ready": false,
+      "liveRequestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false,
+      "evidence": []
+    },
+    {
+      "event": "w172_authorized_harness_one_submit",
+      "ready": true,
+      "liveRequestSent": true,
+      "queueSubmitted": false,
+      "runnerTaskId": null,
+      "submitAttemptCount": 1,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w172_result_capture_guard",
+      "ready": true,
+      "resultCaptureStatus": "adapter_error",
+      "finalGeneratedNamesJsonReady": false,
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "results": [
+    {
+      "name": "w172_starts_from_w171_authorization_gate",
+      "pass": true,
+      "detail": "PASS_ONE_CALL_AUTHORIZATION_GATE_READY__NO_SUBMIT__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w172_execution_hook_ready",
+      "pass": true,
+      "detail": "approvedServerAdapterSandboxOneCallExecutionHarnessV1"
+    },
+    {
+      "name": "w172_default_no_submit_no_request",
+      "pass": true,
+      "detail": "[\"execution_not_requested\",\"harness_authorization_missing\"]"
+    },
+    {
+      "name": "w172_authorized_harness_submits_once",
+      "pass": true,
+      "detail": "{\"liveRequestSent\":true,\"transportInvoked\":true,\"queueSubmitted\":true,\"runnerTaskId\":\"task_w172_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"adapterError\":false,\"resultCaptureStatus\":\"pending_runner_completion\",\"finalGeneratedNamesJsonReady\":false}"
+    },
+    {
+      "name": "w172_duplicate_second_submit_blocked",
+      "pass": true,
+      "detail": "[\"harness_authorization_missing\"]"
+    },
+    {
+      "name": "w172_adapter_error_captured_safely",
+      "pass": true,
+      "detail": "{\"liveRequestSent\":true,\"transportInvoked\":true,\"queueSubmitted\":false,\"runnerTaskId\":null,\"adapterError\":true,\"resultCaptureStatus\":\"adapter_error\",\"finalGeneratedNamesJsonReady\":false}"
+    },
+    {
+      "name": "w172_names_and_links_unchanged_until_w151_import",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"activeOpenLinks\":0,\"finalGeneratedNamesImported\":false,\"writesAttemptedFromDrawer\":false}"
+    },
+    {
+      "name": "w172_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w172_default_no_submit_gate\",\"ready\":false,\"liveRequestSent\":false,\"queueSubmitted\":false,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false,\"evidence\":[]},{\"event\":\"w172_authorized_harness_one_submit\",\"ready\":true,\"liveRequestSent\":true,\"queueSubmitted\":true,\"runnerTaskId\":\"task_w172_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"submitAttemptCount\":1,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w172_result_capture_guard\",\"ready\":true,\"resultCaptureStatus\":\"pending_runner_completion\",\"finalGeneratedNamesJsonReady\":false,\"w151ImportRequiredBeforeNamesMutate\":true,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false}]"
+    },
+    {
+      "name": "w172_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w172_visual_testing_blocked_until_runner_result_returns",
+      "pass": true,
+      "detail": "W172 only proves a harness-authorized one-call execution boundary. Visual testing remains blocked until a real governed runner result returns to IDB."
+    }
+  ]
+}

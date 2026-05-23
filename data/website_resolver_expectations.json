@@ -1,0 +1,142 @@
+{
+  "schema": "idb.website-resolver-expectations.v1",
+  "generated": "2026-05-09",
+  "purpose": "Guard website-first family routing before generic notes can pull the wrong lane.",
+  "cases": [
+    {
+      "customer": "Vans",
+      "website": "https://www.vans.com",
+      "notes": "Inventory availability, style readiness, size and color variants, footwear, skateboarding, retail and channel fulfillment.",
+      "expectedLaneId": "apparel_accessories",
+      "expectedProofAnchor": "Style / SKU Matrix",
+      "expectedProductSignal": "Core Skate Shoe Style Matrix"
+    },
+    {
+      "customer": "Gordon and Smith",
+      "website": "https://gordonandsmith.com",
+      "notes": "Durable goods and wholesale fulfillment proof point for surfboards, skateboards, custom order surfboard demand, and dealer channel readiness.",
+      "expectedLaneId": "dealer_hardgoods",
+      "expectedProofAnchor": "Product / SKU",
+      "expectedProductSignal": "Custom Surfboard and Skateboard SKU"
+    },
+    {
+      "customer": "Trek Bikes",
+      "website": "https://www.trekbikes.com",
+      "notes": "Dealer network is big, commitments move around, parts timing seems to miss with availability, buyer wants cleaner story from channel availability to replenishment.",
+      "expectedLaneId": "dealer_hardgoods",
+      "expectedProofAnchor": "Product / SKU",
+      "expectedProductSignal": "Bicycle SKU"
+    },
+    {
+      "customer": "Yeti",
+      "website": "https://www.yeti.com",
+      "notes": "Largest pain is around multi-location inventory along with retail store visibility and low cost, easy to use decision criteria.",
+      "expectedLaneId": "dealer_hardgoods",
+      "expectedProofAnchor": "Product / SKU",
+      "expectedProductSignal": "Outdoor Drinkware and Cooler SKU"
+    },
+    {
+      "customer": "Keebler",
+      "website": "https://www.keebler.com",
+      "notes": "Ingredients, landed cost, multi-location inventory, manufacturing, cookies, crackers, packaging readiness, and promotion shelf readiness.",
+      "expectedLaneId": "food_beverage",
+      "expectedProofAnchor": "Finished Good",
+      "expectedProductSignal": "Cookie Variety Pack"
+    },
+    {
+      "customer": "Liquid Death",
+      "website": "https://liquiddeath.com",
+      "notes": "Canned beverage replenishment, packaging timing, finished goods availability, retail demand, and lot traceability.",
+      "expectedLaneId": "food_beverage",
+      "expectedProofAnchor": "Finished Good",
+      "expectedProductSignal": "Sparkling Water Variety 12-Pack"
+    },
+    {
+      "customer": "Yerba Madre",
+      "website": "https://yerbamadre.com",
+      "notes": "Ready-to-drink yerba mate beverage proof needs batch readiness, organic ingredient supply, lot confidence, retail availability, and WIP visibility.",
+      "expectedLaneId": "food_beverage",
+      "expectedProofAnchor": "Finished Good",
+      "expectedProductSignal": "Yerba Mate Beverage Variety Pack"
+    },
+    {
+      "customer": "Milk-Bone",
+      "website": "https://www.milkbone.com",
+      "notes": "Mostly focused on light manufacturing, raw material management, packaging, demo demand, and retail availability.",
+      "expectedLaneId": "products_cpg",
+      "expectedProofAnchor": "Sales Order View",
+      "expectedProductSignal": "Original Dog Biscuits Variety Pack"
+    },
+    {
+      "customer": "Acme Branch Supply",
+      "website": "https://example-distribution.com",
+      "notes": "Branch inventory, warehouse transfer, supplier lead time, replenishment, distribution center, and fulfillment confidence.",
+      "expectedLaneId": "industrial_distribution",
+      "expectedProofAnchor": "Inventory / Fulfillment",
+      "expectedProductSignal": "Branch Inventory Fulfillment Position",
+      "expectedConfidenceState": "needs_confirmation"
+    },
+    {
+      "customer": "Summit Cycling",
+      "website": "https://examplecycling.com",
+      "notes": "Ingredient and lot readiness came up in the request, but the website and account context are clearly bike and cycling dealer hardgoods.",
+      "expectedLaneId": "dealer_hardgoods",
+      "expectedProofAnchor": "Product / SKU",
+      "expectedProductSignal": "Bicycle SKU",
+      "expectedConfidenceState": "needs_confirmation"
+    },
+    {
+      "customer": "Urban Footwear",
+      "website": "https://urbanfootwear.example",
+      "notes": "Warehouse and branch language came up, but the website and account context are footwear, style, size, and color availability.",
+      "expectedLaneId": "apparel_accessories",
+      "expectedProofAnchor": "Style / SKU Matrix",
+      "expectedProductSignal": "Core Style Color-Size Matrix",
+      "expectedConfidenceState": "needs_confirmation"
+    },
+    {
+      "customer": "Fresh Snack Co",
+      "website": "https://freshsnackco.example",
+      "notes": "Channel allocation and replenishment are the pain points, but website/category terms point to snacks and packaged food.",
+      "expectedLaneId": "food_beverage",
+      "expectedProofAnchor": "Finished Good",
+      "expectedProductSignal": "Finished Good Variety Pack",
+      "expectedConfidenceState": "needs_confirmation"
+    },
+    {
+      "customer": "Opaque Outdoor Brand",
+      "website": "https://solace.example",
+      "websiteEvidence": "Homepage categories: hard coolers, drinkware, outdoor bags, replacement parts, dealer locator, retail store availability.",
+      "notes": "The buyer mentioned branches, locations, and replenishment, but the public website is outdoor hardgoods and retail dealer availability.",
+      "expectedLaneId": "dealer_hardgoods",
+      "expectedProofAnchor": "Product / SKU",
+      "expectedProductSignal": "Dealer Hardgoods SKU",
+      "expectedConfidenceState": "needs_confirmation"
+    },
+    {
+      "customer": "Opaque Footwear Brand",
+      "website": "https://stride.example",
+      "websiteEvidence": "Website navigation: men's shoes, women's shoes, apparel, accessories, style guide, colors, sizes, seasonal collection.",
+      "notes": "The notes mention warehouse transfers and multi-location fulfillment, but the website is footwear and apparel variant availability.",
+      "expectedLaneId": "apparel_accessories",
+      "expectedProofAnchor": "Style / SKU Matrix",
+      "expectedProductSignal": "Core Style Color-Size Matrix",
+      "expectedConfidenceState": "needs_confirmation"
+    },
+    {
+      "customer": "Thin Unknown Prospect",
+      "website": "https://plain-example.invalid",
+      "notes": "The consultant only knows they need a better demo story and safer planning. No product, category, channel, manufacturing, distribution, or website evidence is available yet.",
+      "expectedLaneId": "",
+      "expectedProofAnchor": "",
+      "expectedProductSignal": "",
+      "expectedConfidenceState": "insufficient_evidence"
+    }
+  ],
+  "nonRegression": {
+    "websiteSignalBeatsGenericInventory": true,
+    "manualOverrideRemainsAvailable": true,
+    "noAutomaticCreation": true,
+    "noLaneExpansion": true
+  }
+}

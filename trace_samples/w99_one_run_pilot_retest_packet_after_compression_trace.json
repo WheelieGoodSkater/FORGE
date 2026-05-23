@@ -1,0 +1,38 @@
+{
+  "schema": "idb.w99-one-run-pilot-retest-trace.v1",
+  "status": "pass",
+  "block": "W99",
+  "decision": "PASS / ONE-RUN RETEST PACKET READY / USER VISUAL FEEDBACK REQUIRED",
+  "userFeedbackRequiredNow": true,
+  "inherits": {
+    "w92StateAuthority": true,
+    "w96ValueCompression": true,
+    "w97RunSelectorChips": true,
+    "w98IntakeToReviewCompression": true
+  },
+  "requiredScreenshots": [
+    "Plan first viewport",
+    "Review first viewport",
+    "ROI / Competitive first viewport",
+    "Run first viewport",
+    "Trace first viewport"
+  ],
+  "requiredExports": [
+    "idb-dcc-runner-handoff-packet-*.json",
+    "intelligent-demo-builder-trace-*.json"
+  ],
+  "operatorComparisonRequired": true,
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W100: Grade One-Run Pilot Retest Evidence After Compression",
+    "prompt": "Move through W100: Grade One-Run Pilot Retest Evidence After Compression. Use the user-provided W99 Plan/Review/ROI/Run/Trace first-viewport screenshots, idb-dcc-runner-handoff-packet JSON, intelligent-demo-builder trace JSON, consultant notes, operator comparison notes, and scoring rubric to grade the compressed one-run retest. Verify W92 state authority, W96 value compression, W97 Run selector chips, W98 intake-to-review compression, DCC handoff boundaries, no IDB writes, no SuiteScript invocation, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output scored results, UX remediation, operator mapping remediation, pilot unlock/no-go decision, W100 report, validator gates, and best next Codex prompt."
+  }
+}

@@ -1,0 +1,640 @@
+{
+  "schema": "idb.w65-approved-live-resolver-smoke-trace.v1",
+  "generated": "2026-05-12T21:46:26.854Z",
+  "decision": "PASS",
+  "mode": "approved_live_fetch",
+  "liveFetchExecuted": true,
+  "approvedLiveSites": [
+    {
+      "id": "w65_live_trek",
+      "baselineCaseId": "w58_real_product_brand_trek",
+      "website": "https://www.trekbikes.com/",
+      "expectedLaneId": "dealer_hardgoods",
+      "expectedState": "recommended",
+      "acceptedAlternateLaneIds": []
+    },
+    {
+      "id": "w65_live_patagonia",
+      "baselineCaseId": "w58_real_apparel_accessories_patagonia",
+      "website": "https://www.patagonia.com/",
+      "expectedLaneId": "apparel_accessories",
+      "expectedState": "recommended",
+      "acceptedAlternateLaneIds": []
+    },
+    {
+      "id": "w65_live_grainger",
+      "baselineCaseId": "w58_real_distributor_dealer_grainger",
+      "website": "https://www.grainger.com/",
+      "expectedLaneId": "industrial_distribution",
+      "expectedState": "needs_confirmation",
+      "acceptedAlternateLaneIds": []
+    },
+    {
+      "id": "w65_live_lincoln_electric",
+      "baselineCaseId": "w58_real_manufacturing_heavy_lincoln_electric",
+      "website": "https://www.lincolnelectric.com/",
+      "expectedLaneId": "industrial_equipment",
+      "expectedState": "recommended",
+      "acceptedAlternateLaneIds": []
+    }
+  ],
+  "metrics": {
+    "mode": "approved_live_fetch",
+    "total": 4,
+    "correctOrHonestCount": 4,
+    "falseConfidentWrongCount": 0,
+    "unsupportedClaimCount": 0,
+    "evidenceCoverageScore": 0.5,
+    "recommendedCount": 1,
+    "needsConfirmationCount": 0,
+    "insufficientEvidenceCount": 3,
+    "correctOrHonestRate": 1
+  },
+  "findings": [
+    {
+      "id": "w65_live_trek",
+      "baselineCaseId": "w58_real_product_brand_trek",
+      "website": "https://www.trekbikes.com/",
+      "liveFetchExecuted": true,
+      "expectedState": "recommended",
+      "expectedLaneId": "dealer_hardgoods",
+      "actualState": "recommended",
+      "actualLaneId": "dealer_hardgoods",
+      "actualScore": 0.95,
+      "secondLaneId": "apparel_accessories",
+      "secondScore": 0.55,
+      "failureState": null,
+      "fetchStatus": "fetched",
+      "sourceUrlCount": 3,
+      "evidenceCoverage": 1,
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaim": false,
+      "driftType": "stable",
+      "extractionGaps": [],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+        "requestId": "w65_live_trek",
+        "inputUrl": "https://www.trekbikes.com/",
+        "normalizedUrl": "https://www.trekbikes.com/",
+        "domain": "trekbikes.com",
+        "fetchStatus": "fetched",
+        "fetchErrors": [],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://www.trekbikes.com/us/en_US/",
+            "status": 200,
+            "contentHash": "3290b7154f60462ddeb6a7d57ce293548a15a13bda9e943b33f0a3f31536afcf",
+            "pageBytes": 279936,
+            "redirects": [
+              {
+                "from": "https://www.trekbikes.com/",
+                "to": "https://www.trekbikes.com/us/en_US/",
+                "status": 302
+              }
+            ]
+          },
+          {
+            "role": "navigation_discovered_category_or_products_page",
+            "url": "https://www.trekbikes.com/us/en_US/bikes/electric-bikes/c/B507/",
+            "status": 200,
+            "contentHash": "7a4cbe24c88b46c874eac330dd34729d033c744716a0e20a061815a02c60176c",
+            "pageBytes": 844025,
+            "redirects": []
+          },
+          {
+            "role": "navigation_discovered_category_or_products_page",
+            "url": "https://www.trekbikes.com/us/en_US/bikes/road-bikes/c/B200/",
+            "status": 200,
+            "contentHash": "d363d9b9fd51e3796fc15725417569013b4bde64984eb7e694d9b3d301425760",
+            "pageBytes": 851877,
+            "redirects": []
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Trek Bikes - The world's best bikes and cycling gear",
+          "metaDescription": "Discover the fun of riding with our wide range of electric, mountain, road, city, gravel, kids', and certified pre-owned bikes. Shop online or in-store!",
+          "h1Text": [
+            "Trek Bikes - The world's best bikes and cycling gear",
+            "Shop Trek Electric Bikes",
+            "Trek road bikes for efficiency and speed wherever you ride"
+          ],
+          "h2Text": [
+            "Electric bikes",
+            "Road bikes",
+            "Mountain bikes",
+            "City bikes",
+            "Be seen",
+            "Be aware",
+            "Be smart",
+            "Be ready",
+            "Lights",
+            "Apparel",
+            "Shoes",
+            "The march to modern",
+            "50 bikes that built Trek",
+            "Born in a barn",
+            "Trek stories",
+            "Shop online, we’ll deliver"
+          ],
+          "navigationLabels": [
+            "Skip to content",
+            "{{ $t('header.link.login') }}",
+            "United States / English",
+            "Shop now",
+            "Shop all Deals",
+            "Shop daytime running lights",
+            "Shop hi-viz apparel",
+            "Shop CarBack Radar",
+            "Shop WaveCel helmets",
+            "Shop AirRush",
+            "see the timeline",
+            "Read the story",
+            "Explore Trek stories",
+            "Your local Trek retailer",
+            "Our guarantee",
+            "We’ll take care of you",
+            "Road bikes",
+            "Mountain bikes",
+            "Hybrid bikes",
+            "Electric bikes",
+            "Electra bikes",
+            "Men's bikes",
+            "Women's bikes",
+            "Equipment",
+            "Bikes"
+          ],
+          "productCategoryTerms": [
+            "apparel",
+            "bike",
+            "bikes",
+            "bicycle",
+            "cycling",
+            "electric bikes",
+            "equipment",
+            "gear",
+            "gravel",
+            "helmets",
+            "mountain bikes",
+            "products",
+            "road bikes",
+            "shoes"
+          ],
+          "industryLanguage": [
+            "retail",
+            "service"
+          ],
+          "locationServiceClues": [
+            "service"
+          ],
+          "ecommerceSignals": [
+            "buy",
+            "cart",
+            "checkout",
+            "order online",
+            "shop"
+          ],
+          "manufacturingSignals": [
+            "assembly"
+          ],
+          "distributionSignals": [],
+          "sourceUrls": [
+            "https://www.trekbikes.com/us/en_US/",
+            "https://www.trekbikes.com/us/en_US/bikes/electric-bikes/c/B507/",
+            "https://www.trekbikes.com/us/en_US/bikes/road-bikes/c/B200/"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [
+            {
+              "laneId": "dealer_hardgoods",
+              "score": 0.95,
+              "evidence": [
+                "bike",
+                "bikes",
+                "bicycle",
+                "cycling",
+                "electric bikes",
+                "equipment"
+              ]
+            },
+            {
+              "laneId": "apparel_accessories",
+              "score": 0.55,
+              "evidence": [
+                "apparel",
+                "shoes",
+                "Shop hi-viz apparel"
+              ]
+            },
+            {
+              "laneId": "industrial_equipment",
+              "score": 0.45,
+              "evidence": [
+                "assembly"
+              ]
+            }
+          ],
+          "productSeed": "Bicycle SKU",
+          "productFamily": "Bicycle Dealer Hardgoods",
+          "demandMoment": "dealer inventory and replenishment readiness"
+        },
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "failureState": null,
+        "sourceUrls": [
+          "https://www.trekbikes.com/us/en_US/",
+          "https://www.trekbikes.com/us/en_US/bikes/electric-bikes/c/B507/",
+          "https://www.trekbikes.com/us/en_US/bikes/road-bikes/c/B200/"
+        ],
+        "capturedAt": "2026-05-12T21:46:26.497Z",
+        "cache": {
+          "key": "808b4d4b6228f36dc54e20f080b0bc16dfc7d247a8fed9a5f955bec465feedea",
+          "ttlSeconds": 86400,
+          "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+          "extractionPolicyVersion": "w66.extraction-policy.v1",
+          "contentHashes": [
+            {
+              "url": "https://www.trekbikes.com/us/en_US/",
+              "contentHash": "3290b7154f60462ddeb6a7d57ce293548a15a13bda9e943b33f0a3f31536afcf"
+            },
+            {
+              "url": "https://www.trekbikes.com/us/en_US/bikes/electric-bikes/c/B507/",
+              "contentHash": "7a4cbe24c88b46c874eac330dd34729d033c744716a0e20a061815a02c60176c"
+            },
+            {
+              "url": "https://www.trekbikes.com/us/en_US/bikes/road-bikes/c/B200/",
+              "contentHash": "d363d9b9fd51e3796fc15725417569013b4bde64984eb7e694d9b3d301425760"
+            }
+          ]
+        },
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true,
+          "notesCannotOwnIdentification": true,
+          "transactionWriteEnabled": false
+        }
+      }
+    },
+    {
+      "id": "w65_live_patagonia",
+      "baselineCaseId": "w58_real_apparel_accessories_patagonia",
+      "website": "https://www.patagonia.com/",
+      "liveFetchExecuted": true,
+      "expectedState": "recommended",
+      "expectedLaneId": "apparel_accessories",
+      "actualState": "insufficient_evidence",
+      "actualLaneId": "",
+      "actualScore": 0,
+      "secondLaneId": "",
+      "secondScore": 0,
+      "failureState": "thin",
+      "fetchStatus": "thin",
+      "sourceUrlCount": 1,
+      "evidenceCoverage": 0.5,
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaim": false,
+      "driftType": "thin",
+      "extractionGaps": [
+        "Live state is insufficient_evidence; expected recommended.",
+        "Fewer than two source URLs; keep needs confirmation.",
+        "Resolver returned thin; do not classify confidently."
+      ],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+        "requestId": "w65_live_patagonia",
+        "inputUrl": "https://www.patagonia.com/",
+        "normalizedUrl": "https://www.patagonia.com/",
+        "domain": "patagonia.com",
+        "fetchStatus": "thin",
+        "fetchErrors": [],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://www.patagonia.com/",
+            "status": 200,
+            "contentHash": "3972714ac75616733899d4bf9a8ecde20b0b51bb19c6f4a3b57975b23a37518c",
+            "pageBytes": 14373,
+            "redirects": []
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Hang Tight! Routing to checkout...",
+          "metaDescription": "",
+          "h1Text": [],
+          "h2Text": [
+            "Sit tight"
+          ],
+          "navigationLabels": [
+            "customer_service@patagonia.com",
+            "directsales.europe@patagonia.com",
+            "customerservice.japan@patagonia.com"
+          ],
+          "productCategoryTerms": [],
+          "industryLanguage": [
+            "service"
+          ],
+          "locationServiceClues": [
+            "service"
+          ],
+          "ecommerceSignals": [
+            "checkout"
+          ],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": [
+            "https://www.patagonia.com/"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0.12,
+          "requiresConfirmation": true
+        },
+        "failureState": "thin",
+        "sourceUrls": [
+          "https://www.patagonia.com/"
+        ],
+        "capturedAt": "2026-05-12T21:46:26.656Z",
+        "cache": {
+          "key": "2e15bcff881d6cf1e27ba667a508021f0a6d3b1e11318113feb157488f6e48b2",
+          "ttlSeconds": 86400,
+          "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+          "extractionPolicyVersion": "w66.extraction-policy.v1",
+          "contentHashes": [
+            {
+              "url": "https://www.patagonia.com/",
+              "contentHash": "3972714ac75616733899d4bf9a8ecde20b0b51bb19c6f4a3b57975b23a37518c"
+            }
+          ]
+        },
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true,
+          "notesCannotOwnIdentification": true,
+          "transactionWriteEnabled": false
+        }
+      }
+    },
+    {
+      "id": "w65_live_grainger",
+      "baselineCaseId": "w58_real_distributor_dealer_grainger",
+      "website": "https://www.grainger.com/",
+      "liveFetchExecuted": true,
+      "expectedState": "needs_confirmation",
+      "expectedLaneId": "industrial_distribution",
+      "actualState": "insufficient_evidence",
+      "actualLaneId": "",
+      "actualScore": 0,
+      "secondLaneId": "",
+      "secondScore": 0,
+      "failureState": "thin",
+      "fetchStatus": "thin",
+      "sourceUrlCount": 1,
+      "evidenceCoverage": 0.5,
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaim": false,
+      "driftType": "thin",
+      "extractionGaps": [
+        "Live state is insufficient_evidence; expected needs_confirmation.",
+        "Fewer than two source URLs; keep needs confirmation.",
+        "No product/category or industry terms extracted.",
+        "Resolver returned thin; do not classify confidently."
+      ],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+        "requestId": "w65_live_grainger",
+        "inputUrl": "https://www.grainger.com/",
+        "normalizedUrl": "https://www.grainger.com/",
+        "domain": "grainger.com",
+        "fetchStatus": "thin",
+        "fetchErrors": [],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://www.grainger.com/",
+            "status": 200,
+            "contentHash": "2eb308901c0672c7afca66639096fe5658467e4fe24d0be517011d9f346972ab",
+            "pageBytes": 18271,
+            "redirects": []
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Whoops, we couldn't find that.",
+          "metaDescription": "",
+          "h1Text": [
+            "Sorry, we're unable to complete your request"
+          ],
+          "h2Text": [],
+          "navigationLabels": [],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": [
+            "https://www.grainger.com/"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0.12,
+          "requiresConfirmation": true
+        },
+        "failureState": "thin",
+        "sourceUrls": [
+          "https://www.grainger.com/"
+        ],
+        "capturedAt": "2026-05-12T21:46:26.798Z",
+        "cache": {
+          "key": "8ad34c4c3124c846ec966ac951db593257c8b59f64ffd92f1d216bec7bc4d06b",
+          "ttlSeconds": 86400,
+          "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+          "extractionPolicyVersion": "w66.extraction-policy.v1",
+          "contentHashes": [
+            {
+              "url": "https://www.grainger.com/",
+              "contentHash": "2eb308901c0672c7afca66639096fe5658467e4fe24d0be517011d9f346972ab"
+            }
+          ]
+        },
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true,
+          "notesCannotOwnIdentification": true,
+          "transactionWriteEnabled": false
+        }
+      }
+    },
+    {
+      "id": "w65_live_lincoln_electric",
+      "baselineCaseId": "w58_real_manufacturing_heavy_lincoln_electric",
+      "website": "https://www.lincolnelectric.com/",
+      "liveFetchExecuted": true,
+      "expectedState": "recommended",
+      "expectedLaneId": "industrial_equipment",
+      "actualState": "insufficient_evidence",
+      "actualLaneId": "",
+      "actualScore": 0,
+      "secondLaneId": "",
+      "secondScore": 0,
+      "failureState": "blocked",
+      "fetchStatus": "blocked",
+      "sourceUrlCount": 0,
+      "evidenceCoverage": 0,
+      "correctOrHonest": true,
+      "falseConfidentWrong": false,
+      "unsupportedClaim": false,
+      "driftType": "blocked",
+      "extractionGaps": [
+        "Live state is insufficient_evidence; expected recommended.",
+        "No source URLs captured.",
+        "Fewer than two source URLs; keep needs confirmation.",
+        "No product/category or industry terms extracted.",
+        "Resolver returned blocked; do not classify confidently."
+      ],
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+        "requestId": "w65_live_lincoln_electric",
+        "inputUrl": "https://www.lincolnelectric.com/",
+        "normalizedUrl": "https://www.lincolnelectric.com/",
+        "domain": "lincolnelectric.com",
+        "fetchStatus": "blocked",
+        "fetchErrors": [
+          {
+            "type": "access_blocked",
+            "message": "HTTP 403 prevented readable HTML."
+          }
+        ],
+        "pagesSampled": [],
+        "extractedEvidence": {
+          "pageTitle": "",
+          "metaDescription": "",
+          "h1Text": [],
+          "h2Text": [],
+          "navigationLabels": [],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": []
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "failureState": "blocked",
+        "sourceUrls": [],
+        "capturedAt": "2026-05-12T21:46:26.853Z",
+        "cache": {
+          "key": "28bcb9cfc960d9c687bcd63214ae48f0c86f80212efad3688a36e789ce0c0568",
+          "ttlSeconds": 86400,
+          "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+          "extractionPolicyVersion": "w66.extraction-policy.v1",
+          "contentHashes": []
+        },
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true,
+          "notesCannotOwnIdentification": true,
+          "transactionWriteEnabled": false
+        }
+      }
+    }
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W66: Live Extraction Gap Closure And Resolver Tuning",
+    "prompt": "Move through W66: Live Extraction Gap Closure And Resolver Tuning. Use the W65 live smoke findings to close resolver extraction gaps for approved public websites without overfitting to static fixtures. Tune product/category vocab, page discovery, confidence calibration, and failure-state UX only where W65 evidence proves a gap. Preserve no writes, no SuiteScript invocation, N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output resolver tuning changes, updated live/snapshot harness results, extraction gap report, validator gates, W66 report, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w65_approved_site_set_present",
+      "pass": true,
+      "detail": "4"
+    },
+    {
+      "name": "w65_correct_or_honest_threshold_met",
+      "pass": true,
+      "detail": "{\"mode\":\"approved_live_fetch\",\"total\":4,\"correctOrHonestCount\":4,\"falseConfidentWrongCount\":0,\"unsupportedClaimCount\":0,\"evidenceCoverageScore\":0.5,\"recommendedCount\":1,\"needsConfirmationCount\":0,\"insufficientEvidenceCount\":3,\"correctOrHonestRate\":1}"
+    },
+    {
+      "name": "w65_false_confident_wrong_limit_met",
+      "pass": true,
+      "detail": "{\"mode\":\"approved_live_fetch\",\"total\":4,\"correctOrHonestCount\":4,\"falseConfidentWrongCount\":0,\"unsupportedClaimCount\":0,\"evidenceCoverageScore\":0.5,\"recommendedCount\":1,\"needsConfirmationCount\":0,\"insufficientEvidenceCount\":3,\"correctOrHonestRate\":1}"
+    },
+    {
+      "name": "w65_unsupported_claim_limit_met",
+      "pass": true,
+      "detail": "{\"mode\":\"approved_live_fetch\",\"total\":4,\"correctOrHonestCount\":4,\"falseConfidentWrongCount\":0,\"unsupportedClaimCount\":0,\"evidenceCoverageScore\":0.5,\"recommendedCount\":1,\"needsConfirmationCount\":0,\"insufficientEvidenceCount\":3,\"correctOrHonestRate\":1}"
+    },
+    {
+      "name": "w65_failure_states_do_not_guess",
+      "pass": true,
+      "detail": "[{\"id\":\"w65_live_trek\",\"failureState\":null,\"actualState\":\"recommended\",\"actualLaneId\":\"dealer_hardgoods\"},{\"id\":\"w65_live_patagonia\",\"failureState\":\"thin\",\"actualState\":\"insufficient_evidence\",\"actualLaneId\":\"\"},{\"id\":\"w65_live_grainger\",\"failureState\":\"thin\",\"actualState\":\"insufficient_evidence\",\"actualLaneId\":\"\"},{\"id\":\"w65_live_lincoln_electric\",\"failureState\":\"blocked\",\"actualState\":\"insufficient_evidence\",\"actualLaneId\":\"\"}]"
+    },
+    {
+      "name": "w65_no_write_boundaries_present",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "w65_best_next_prompt_present",
+      "pass": true,
+      "detail": "W66: Live Extraction Gap Closure And Resolver Tuning"
+    }
+  ]
+}

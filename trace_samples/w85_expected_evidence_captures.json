@@ -1,0 +1,23 @@
+{
+  "schema": "idb.w85-expected-evidence-captures.v1",
+  "requiredCaptures": [
+    "Confirmed dccRunnerHandoffPacketV1 JSON export.",
+    "DCC Suitelet sandbox page screenshot before submit.",
+    "Suitelet form field parity notes or screenshot.",
+    "DCC-owned deployment config readiness checklist.",
+    "Scheduled runner preview params screenshot or copied preview.",
+    "Operator note confirming no IDB SuiteScript invocation.",
+    "Operator note confirming no transaction writes.",
+    "Operator note confirming DCC owns item, assembly, BOM, location, planning, routing/WIP, and CSV/Sales Order mechanics."
+  ],
+  "optionalCaptures": [
+    "Screenshot of blocked/no-submit state.",
+    "Screenshot of DCC config page with sensitive values redacted.",
+    "Operator notes on confusing field names or missing labels."
+  ],
+  "noSecretRules": [
+    "Do not paste tokens, script deployment secrets, or account credentials into traces or reports.",
+    "Redact internal IDs if the screenshot will leave the sandbox team.",
+    "Record presence/absence of config, not secret values."
+  ]
+}

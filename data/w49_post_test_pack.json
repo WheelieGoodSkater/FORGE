@@ -1,0 +1,244 @@
+{
+  "schema": "idb.w49-post-test-pack.v1",
+  "objective": "Exercise governed Customer + Proof Item pilot writes with Customer first, Proof Item second, and transaction writes blocked.",
+  "suitelet": "netsuite/suitescript/idb_suitescript_write_path_suitelet_w24_pilot.js",
+  "method": "POST",
+  "cases": [
+    {
+      "id": "w49_success_customer_then_proof_item",
+      "expectedStatus": "created",
+      "packet": {
+        "idbReviewedPacket": {
+          "source": "Intelligent Demo Builder",
+          "packetMode": "reviewed_create_request",
+          "mode": "create",
+          "writePathType": "suitescript_direct_write",
+          "consultantConfirmed": true,
+          "selectedLaneId": "products_cpg",
+          "proofAnchor": "Sales Order View",
+          "customer": {
+            "name": "Milk Bone",
+            "website": "https://www.milkbone.com",
+            "notes": "Prospect is big on inventory visibility and has multiple locations to track."
+          },
+          "trace": {
+            "packetId": "w40-milk-bone-products-cpg-reviewed-packet"
+          },
+          "records": [
+            {
+              "sequence": 1,
+              "label": "Customer Record",
+              "plannedName": "Milk Bone",
+              "role": "customer"
+            },
+            {
+              "sequence": 2,
+              "label": "Sales Order View",
+              "plannedName": "Milk Bone - retail pet-treat replenishment Demo Order",
+              "role": "transaction"
+            },
+            {
+              "sequence": 3,
+              "label": "Finished Good",
+              "plannedName": "Milk Bone Original Dog Biscuits Variety Pack",
+              "role": "proof anchor"
+            }
+          ],
+          "creationPacketContract": {
+            "schema": "idb.creation-packet.v2",
+            "creationAllowed": false,
+            "writePathType": "suitescript_direct_write",
+            "records": [
+              {
+                "sequence": 1,
+                "label": "Customer Record",
+                "recordType": "customer",
+                "proposedName": "Milk Bone",
+                "createIntent": "create_or_update_customer",
+                "idempotencyKey": "products_cpg:w40:1:customer-record",
+                "existingRecordLookup": {
+                  "field": "companyname",
+                  "value": "Milk Bone"
+                },
+                "dependencies": [],
+                "rollbackLabel": "Rollback Customer Record",
+                "traceResultRequired": true
+              },
+              {
+                "sequence": 2,
+                "label": "Sales Order View",
+                "recordType": "transaction",
+                "proposedName": "Milk Bone - retail pet-treat replenishment Demo Order",
+                "createIntent": "create_sales_order_context",
+                "idempotencyKey": "products_cpg:w40:2:sales-order-view",
+                "existingRecordLookup": {
+                  "field": "tranid",
+                  "value": "Milk Bone - retail pet-treat replenishment Demo Order"
+                },
+                "dependencies": [
+                  "Customer Record"
+                ],
+                "rollbackLabel": "Rollback Sales Order View",
+                "traceResultRequired": true
+              },
+              {
+                "sequence": 3,
+                "label": "Finished Good",
+                "recordType": "proof anchor",
+                "proposedName": "Milk Bone Original Dog Biscuits Variety Pack",
+                "createIntent": "create_or_update_proof_item",
+                "idempotencyKey": "products_cpg:w40:3:finished-good",
+                "existingRecordLookup": {
+                  "field": "itemid",
+                  "value": "Milk Bone Original Dog Biscuits Variety Pack"
+                },
+                "dependencies": [
+                  "Customer Record"
+                ],
+                "rollbackLabel": "Rollback Finished Good",
+                "traceResultRequired": true
+              }
+            ]
+          },
+          "typeToConfirm": "CREATE MILK BONE PRODUCTS_CPG"
+        }
+      },
+      "requiredRuntimeParameters": {
+        "custscript_idb_enable_pilot_writes": true,
+        "custscript_idb_allow_customer_pilot": true,
+        "custscript_idb_allow_proof_item_pilot": true,
+        "custscript_idb_sandbox_account_only": true,
+        "custscript_idb_require_type_confirm": true,
+        "custscript_idb_default_subsidiary": "1",
+        "custscript_idb_default_location": "2",
+        "custscript_idb_default_taxschedule": "1"
+      }
+    },
+    {
+      "id": "w49_blocked_missing_vendor_context",
+      "expectedStatus": "blocked_missing_vendor_context",
+      "packet": {
+        "idbReviewedPacket": {
+          "source": "Intelligent Demo Builder",
+          "packetMode": "reviewed_create_request",
+          "mode": "create",
+          "writePathType": "suitescript_direct_write",
+          "consultantConfirmed": true,
+          "selectedLaneId": "products_cpg",
+          "proofAnchor": "Sales Order View",
+          "customer": {
+            "name": "Milk Bone",
+            "website": "https://www.milkbone.com",
+            "notes": "Prospect is big on inventory visibility and has multiple locations to track."
+          },
+          "trace": {
+            "packetId": "w40-milk-bone-products-cpg-reviewed-packet"
+          },
+          "records": [
+            {
+              "sequence": 1,
+              "label": "Customer Record",
+              "plannedName": "Milk Bone",
+              "role": "customer"
+            },
+            {
+              "sequence": 2,
+              "label": "Sales Order View",
+              "plannedName": "Milk Bone - retail pet-treat replenishment Demo Order",
+              "role": "transaction"
+            },
+            {
+              "sequence": 3,
+              "label": "Finished Good",
+              "plannedName": "Milk Bone Original Dog Biscuits Variety Pack",
+              "role": "proof anchor"
+            }
+          ],
+          "creationPacketContract": {
+            "schema": "idb.creation-packet.v2",
+            "creationAllowed": false,
+            "writePathType": "suitescript_direct_write",
+            "records": [
+              {
+                "sequence": 1,
+                "label": "Customer Record",
+                "recordType": "customer",
+                "proposedName": "Milk Bone",
+                "createIntent": "create_or_update_customer",
+                "idempotencyKey": "products_cpg:w40:1:customer-record",
+                "existingRecordLookup": {
+                  "field": "companyname",
+                  "value": "Milk Bone"
+                },
+                "dependencies": [],
+                "rollbackLabel": "Rollback Customer Record",
+                "traceResultRequired": true
+              },
+              {
+                "sequence": 2,
+                "label": "Sales Order View",
+                "recordType": "transaction",
+                "proposedName": "Milk Bone - retail pet-treat replenishment Demo Order",
+                "createIntent": "create_sales_order_context",
+                "idempotencyKey": "products_cpg:w40:2:sales-order-view",
+                "existingRecordLookup": {
+                  "field": "tranid",
+                  "value": "Milk Bone - retail pet-treat replenishment Demo Order"
+                },
+                "dependencies": [
+                  "Customer Record"
+                ],
+                "rollbackLabel": "Rollback Sales Order View",
+                "traceResultRequired": true
+              },
+              {
+                "sequence": 3,
+                "label": "Finished Good",
+                "recordType": "proof anchor",
+                "proposedName": "Milk Bone Original Dog Biscuits Variety Pack",
+                "createIntent": "create_or_update_proof_item",
+                "idempotencyKey": "products_cpg:w40:3:finished-good",
+                "existingRecordLookup": {
+                  "field": "itemid",
+                  "value": "Milk Bone Original Dog Biscuits Variety Pack"
+                },
+                "dependencies": [
+                  "Customer Record"
+                ],
+                "rollbackLabel": "Rollback Finished Good",
+                "traceResultRequired": true
+              }
+            ]
+          },
+          "typeToConfirm": "CREATE MILK BONE PRODUCTS_CPG"
+        }
+      },
+      "requiredRuntimeParameters": {
+        "custscript_idb_enable_pilot_writes": true,
+        "custscript_idb_allow_customer_pilot": true,
+        "custscript_idb_allow_proof_item_pilot": true,
+        "custscript_idb_sandbox_account_only": true,
+        "custscript_idb_require_type_confirm": true,
+        "custscript_idb_default_subsidiary": "1",
+        "custscript_idb_default_location": "2",
+        "custscript_idb_default_taxschedule": "1",
+        "custscript_idb_require_vendor_attach": true
+      }
+    }
+  ],
+  "assertions": [
+    "Customer record appears before Proof Item in createdRecords",
+    "Proof Item parentCustomerRecordId equals Customer recordId",
+    "createdRecords never contains transaction",
+    "blockedDependentWrites contains transaction context",
+    "proofItemWriteV2 is present",
+    "w49PilotHardening is present",
+    "rollbackRecoveryInstructions are present"
+  ],
+  "noRegression": {
+    "noTransactionWrite": true,
+    "noProofItemWithoutCustomerResult": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true
+  }
+}

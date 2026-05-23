@@ -1,0 +1,40 @@
+{
+  "schema": "idb.w54-grounded-roi-competitive-intelligence.v1",
+  "status": "complete_grounded_value_intelligence_ready",
+  "objective": "Build ROI and competitive summaries only from confirmed or clearly cited website/classifier evidence.",
+  "goal": "Make value selling useful without inventing claims. ROI and competitive guidance uses website evidence, classifier confidence, consultant notes, and explicit uncertainty states.",
+  "implemented": {
+    "groundedRoiSummary": true,
+    "groundedCompetitiveSummary": true,
+    "whyThisRoiEvidence": true,
+    "whyNetSuiteEvidence": true,
+    "unsupportedClaimBlocker": true,
+    "confidenceSourceStateVisible": true,
+    "traceExportCoverage": true
+  },
+  "runtimeModel": {
+    "functionName": "groundedValueEvidenceModel",
+    "schema": "idb.w54-grounded-roi-competitive.v1",
+    "sourceInputs": [
+      "websiteEvidenceUxModel",
+      "roiAuditV3Model",
+      "competitiveIntelligenceV3Model",
+      "conversationPainStoryModel"
+    ],
+    "blockedClaims": [
+      "measured savings without baseline",
+      "named competitor feature claims without source",
+      "ROI or competitive certainty when website classification needs confirmation"
+    ]
+  },
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "noMeasuredSavingsWithoutBaseline": true,
+    "noNamedCompetitorClaimsWithoutSource": true,
+    "notesCannotOwnWebsiteIdentification": true
+  },
+  "nextBlock": "W55: Five-Consultant Intelligence Pilot Pack"
+}

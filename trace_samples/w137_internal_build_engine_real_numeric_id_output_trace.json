@@ -1,0 +1,23 @@
+{
+  "schema": "idb.w137-internal-build-engine-real-numeric-id-output-trace.v1",
+  "decision": "PASS_NUMERIC_OUTPUT_CONTRACT__REAL_RECORD_VISUAL_PENDING",
+  "status": "real_numeric_id_output_contract_ready_operator_visual_required",
+  "numericOutputShapePassed": true,
+  "drawerOpenAnchorCount": 9,
+  "targetedVisualPerformedInThisHarness": false,
+  "recordExistenceProven": false,
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W137R: Review Real Numeric ID Visual Evidence",
+    "prompt": "Move through W137R: Review Real Numeric ID Visual Evidence. Use the operator-provided W137 final generated names JSON with actual numeric internal ids, drawer trace export, and screenshots proving Customer, demo transaction, hero item, matrix/proof item, and component Open links load actual NetSuite record pages. Grade whether every numeric id maps to an existing record, whether any URL showed invalid number, unexpected error, or “That record does not exist,” and whether Build/Run remain consultant-usable. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership. Output graded evidence, pass/fail decision, remediation if any record is missing, W137R report, whether broader visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

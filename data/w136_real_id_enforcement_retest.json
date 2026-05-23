@@ -1,0 +1,99 @@
+{
+  "schema": "idb.w136-real-id-enforcement-retest.v1",
+  "status": "real_id_enforcement_retest_passed",
+  "decision": "PASS_PLACEHOLDERS_BLOCKED__REAL_IDS_STILL_REQUIRED",
+  "evidenceFiles": {
+    "trace": "/path/to/downloads/intelligent-demo-builder-trace-1778889474970.json"
+  },
+  "retestEvidence": {
+    "exportedAt": "2026-05-15T23:57:54.892Z",
+    "lane": "Apparel & Accessories",
+    "finalNamingStatus": "dcc_final_names_imported",
+    "finalNavigationStatus": "using_dcc_final_names",
+    "linkAuthoritySummary": {
+      "preview_placeholder": 5
+    },
+    "placeholderRecordCount": 5,
+    "activeOpenablePlaceholderCount": 0,
+    "records": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "REPLACE_REAL_CUSTOMER_ID",
+        "url": "/app/common/entity/custjob.nl?id=REPLACE_REAL_CUSTOMER_ID",
+        "linkStatus": "preview_placeholder",
+        "openable": false,
+        "openableUrl": ""
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "REPLACE_REAL_SALES_ORDER_ID",
+        "url": "/app/accounting/transactions/salesord.nl?id=REPLACE_REAL_SALES_ORDER_ID",
+        "linkStatus": "preview_placeholder",
+        "openable": false,
+        "openableUrl": ""
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "REPLACE_REAL_HERO_ITEM_ID",
+        "url": "/app/common/item/item.nl?id=REPLACE_REAL_HERO_ITEM_ID",
+        "linkStatus": "preview_placeholder",
+        "openable": false,
+        "openableUrl": ""
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "REPLACE_REAL_MATRIX_ITEM_ID",
+        "url": "/app/common/item/item.nl?id=REPLACE_REAL_MATRIX_ITEM_ID",
+        "linkStatus": "preview_placeholder",
+        "openable": false,
+        "openableUrl": ""
+      },
+      {
+        "role": "component_item",
+        "label": "Component item 1",
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "REPLACE_REAL_COMPONENT_ITEM_ID",
+        "url": "/app/common/item/item.nl?id=REPLACE_REAL_COMPONENT_ITEM_ID",
+        "linkStatus": "preview_placeholder",
+        "openable": false,
+        "openableUrl": ""
+      }
+    ]
+  },
+  "resultInterpretation": {
+    "drawerStatus": "passed_placeholder_blocking",
+    "buildEngineStatus": "still_must_return_real_numeric_ids",
+    "recordExistenceProven": false,
+    "reason": "The retest used replacement tokens, and the drawer correctly prevented active Open links."
+  },
+  "realBuildEngineOutputRequirement": [
+    "Customer id and URL id query must both be numeric and refer to an existing NetSuite customer/project record.",
+    "Sales Order id and URL id query must both be numeric and refer to an existing NetSuite sales order.",
+    "Hero item, matrix/proof item, and component item ids must be numeric and refer to existing NetSuite item records.",
+    "The drawer remains import-only and must not create, submit, queue, or invoke SuiteScript."
+  ],
+  "visualNetSuiteTestingRequiredNow": false,
+  "targetedVisualNetSuiteTestingRequiredAfterRealIds": true,
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W137: Internal Build Engine Real Numeric ID Output",
+    "prompt": "Move through W137: Internal Build Engine Real Numeric ID Output. Use the W136 retest proving placeholder IDs are now blocked as Link pending to focus on the internal build engine output. Produce or resolve actual sandbox records for Customer, demo transaction, hero item, matrix/proof item, and component item, then return final generated names JSON with numeric internal ids and supported NetSuite URLs only. Import that result into the drawer and perform targeted visual testing proving Open links load actual record pages. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership. Output real numeric ID result JSON, targeted visual evidence, trace samples, W137 report, whether broader visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

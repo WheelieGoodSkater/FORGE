@@ -1,0 +1,49 @@
+{
+  "schema": "idb.w56-consultant-ux-compression.v1",
+  "status": "complete_consultant_ux_compressed",
+  "objective": "Make every tab readable live in under 30 seconds.",
+  "roles": [
+    {
+      "name": "Consultant UX Director",
+      "goal": "Own live-demo readability and answer-first tab layout."
+    },
+    {
+      "name": "Evidence UX Designer",
+      "goal": "Make website evidence scannable without hiding uncertainty."
+    },
+    {
+      "name": "Accessibility Guard",
+      "goal": "Preserve keyboard, focus, status labels, and non-color affordances."
+    },
+    {
+      "name": "Code Review Sentinel",
+      "goal": "Prevent hidden regression in intelligence, trace, and write-safety gates."
+    }
+  ],
+  "implemented": {
+    "planThirtySecondSummary": true,
+    "reviewPrepareConfirmBlockedFirst": true,
+    "valueOneRoiOneNetSuiteOneBlocker": true,
+    "runLiveScriptFirst": true,
+    "traceActionsOnly": true,
+    "answerFirstAuditSecondPattern": true,
+    "reducedRepeatedCards": true
+  },
+  "tabGoals": {
+    "plan": "Shows current objective, classification, confidence, and next action before audit detail.",
+    "review": "Shows Prepare / Confirm / Blocked rows before packet audit detail.",
+    "value": "Shows one ROI answer, one NetSuite answer, and one blocker before audit detail.",
+    "run": "Shows the live script before controls and coach audit detail.",
+    "trace": "Shows export/reset/import actions first with import evidence behind details."
+  },
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "websiteEvidenceStillVisible": true,
+    "traceExportStillAvailable": true,
+    "keyboardAccessibleDetailsRemainNative": true
+  },
+  "nextBlock": "W57: True Website Evidence Resolver Service"
+}

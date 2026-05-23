@@ -1,0 +1,58 @@
+{
+  "schema": "idb.w101-source-authority-refactor.v1",
+  "status": "complete_source_authority_refactored",
+  "objective": "Separate website identity authority from consultant-note value authority and fix handoff blocked/confirmed contradictions.",
+  "roles": [
+    "State Authority Architect",
+    "Website Intelligence Agent",
+    "Value Story Architect",
+    "Regression Guard"
+  ],
+  "implemented": {
+    "sourceAuthorityModel": true,
+    "websiteIdentityRoleDocumented": true,
+    "notesValueRoleDocumented": true,
+    "consultantConfirmationOwnsHandoff": true,
+    "handoffStatusUsesStateAuthorityEligibility": true,
+    "briefPreparedRequiredBeforeHandoff": true
+  },
+  "authorityModel": {
+    "websiteOwns": [
+      "lane hint",
+      "category",
+      "product family seed",
+      "naming hints",
+      "DCC pack suggestion"
+    ],
+    "notesOwn": [
+      "pain",
+      "ROI framing",
+      "competitor context",
+      "objections",
+      "run script"
+    ],
+    "consultantOwns": [
+      "final lane confirmation",
+      "pack confirmation",
+      "build readiness"
+    ],
+    "dccOwns": [
+      "item names",
+      "assemblies",
+      "BOMs",
+      "locations",
+      "planning",
+      "routing/WIP",
+      "CSV",
+      "Sales Order mechanics"
+    ]
+  },
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "nllmAdvisoryOnly": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextPrompt": "Move through W102: N/LLM Value Story Advisor. Build an advisory-only value story model where ROI and competitive guidance are generated from consultant notes, SC objective, BANT/MEDDICC, decision criteria, known competitor/incumbent, and confirmed lane. Website evidence may support context but must not block value guidance by itself. Preserve no invented competitor claims, no measured savings without baseline, no write authority, no SuiteScript invocation, consultant confirmation required, and DCC ownership of object generation. Output value advisor contract, compressed ROI/Competitive UI, validator gates, W102 report, and best next Codex prompt."
+}

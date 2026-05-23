@@ -1,0 +1,54 @@
+{
+  "schema": "idb.transaction-context-pilot-contract.v1",
+  "status": "transaction_context_pilot_ready_create_disabled",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Packet Contract Agent"
+  ],
+  "objective": "Define the controlled Sales Order context/write step after Customer Record and proof item results are stable.",
+  "approvedLaneId": "food_beverage",
+  "approvedRecord": {
+    "role": "transaction",
+    "label": "Sales Order View",
+    "recordType": "salesorder",
+    "operation": "lookup_then_create_or_update_sales_order_context"
+  },
+  "requiredParentResults": [
+    {
+      "role": "customer",
+      "requiresRecordId": true,
+      "requiresUrl": true
+    },
+    {
+      "role": "proof anchor",
+      "requiresRecordId": true,
+      "requiresUrl": true
+    }
+  ],
+  "transactionLookupRule": {
+    "lookupBeforeCreate": true,
+    "matchBy": [
+      "customer",
+      "proofAnchor",
+      "packetId",
+      "reviewed transaction name"
+    ],
+    "onMatch": "update_or_skip",
+    "onMissing": "create_after_parent_results_ready"
+  },
+  "traceResultRequired": [
+    "recordId",
+    "url",
+    "operation",
+    "recoverableErrors",
+    "parentCustomerRecordId",
+    "parentProofRecordId"
+  ],
+  "nonRegression": {
+    "creationAllowedInMain": false,
+    "noTransactionWriteWithoutCustomerAndProofResult": true,
+    "noTransactionCreationInMainPackage": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true
+  }
+}

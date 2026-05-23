@@ -1,0 +1,48 @@
+{
+  "schema": "idb.w132-final-names-live-navigation-evidence-trace.v1",
+  "decision": "FINAL_NAMES_IMPORTED_BUT_LINKS_NOT_OPEN_READY",
+  "finalNamesDisplayReady": true,
+  "activeOpenLinksReady": false,
+  "inactiveLinkCount": 5,
+  "linkStatuses": [
+    {
+      "label": "Customer",
+      "name": "Ariat International Outdoor Retail Account",
+      "linkStatus": "preview_placeholder_url"
+    },
+    {
+      "label": "Sales Order / demo transaction",
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "linkStatus": "preview_placeholder_url"
+    },
+    {
+      "label": "Hero item",
+      "name": "Ariat Terrain H2O Work Boot Hero Item",
+      "linkStatus": "preview_placeholder_url"
+    },
+    {
+      "label": "Matrix item / proof item",
+      "name": "Ariat Core Boot Size Color Matrix",
+      "linkStatus": "preview_placeholder_url"
+    },
+    {
+      "label": "Component item 1",
+      "name": "Ariat Brown Leather Upper Component",
+      "linkStatus": "preview_placeholder_url"
+    }
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "next": {
+    "block": "W133: Verified Record Link Authority And Open-Link Gating",
+    "prompt": "Move through W133: Verified Record Link Authority And Open-Link Gating. Use the W132 evidence showing imported final names but non-working preview links to split final-name display authority from record-link open authority. Add a drawer-side link authority model that classifies imported customer, demo transaction, hero item, matrix/proof item, and component links as verified openable, preview placeholder, missing URL, or unsupported path. Render active Open links only for verified openable NetSuite record URLs; render copy-safe names with Link pending / Needs real URL for preview or missing links. Update the import smoke harness, trace samples, and reports to prove preview ids do not become clickable, real NetSuite URLs remain clickable, no drawer writes are enabled, no SuiteScript is invoked from the drawer, no transactions are created from the drawer, consultant confirmation remains required, state authority and handoff parity are preserved, no-submit rollback remains intact, and generated records remain owned by the internal build engine. Output link authority contract, UI behavior contract, import smoke harness, trace samples, W133 report, whether visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

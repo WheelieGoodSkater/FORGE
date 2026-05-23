@@ -1,0 +1,68 @@
+{
+  "schema": "idb.w97-run-selector-chip-interaction-trace.v1",
+  "status": "pass",
+  "sampleProspect": "Ariat International",
+  "runSelector": {
+    "location": "top_of_run_tab",
+    "actions": [
+      {
+        "id": "open",
+        "label": "Open",
+        "updates": [
+          "title",
+          "say",
+          "show",
+          "close"
+        ]
+      },
+      {
+        "id": "prove",
+        "label": "Prove",
+        "updates": [
+          "title",
+          "say",
+          "show",
+          "close"
+        ]
+      },
+      {
+        "id": "handle_objection",
+        "label": "Handle objection",
+        "updates": [
+          "title",
+          "say",
+          "show",
+          "close"
+        ]
+      },
+      {
+        "id": "close_value",
+        "label": "Close value",
+        "updates": [
+          "title",
+          "say",
+          "show",
+          "close"
+        ]
+      }
+    ],
+    "selectedActionTraceField": "runSelectorInteraction.selectedActionId",
+    "clickTraceEvent": "story_action_selected"
+  },
+  "traceCoverage": {
+    "runSelectorInteractionExported": true,
+    "liveRunScriptPayloadPreserved": true,
+    "storyActionSelectedEventPreserved": true,
+    "selectedChipAriaPressed": true
+  },
+  "noRegression": {
+    "stateAuthorityPreserved": true,
+    "dccHandoffBoundariesPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "idb.w85-dcc-sandbox-manual-handoff-go-no-go.v1",
+  "goIf": [
+    "Confirmed handoff packet maps cleanly to DCC Suitelet form fields.",
+    "DCC-owned config params are understood and present or clearly marked as required.",
+    "Runner preview params are clear and remain DCC-owned.",
+    "No IDB SuiteScript invocation occurs.",
+    "No IDB transaction write path occurs.",
+    "Operator can explain what DCC will build in under 60 seconds."
+  ],
+  "noGoIf": [
+    "Operator cannot tell which fields to enter/check in DCC.",
+    "Any IDB path submits SuiteScript or creates/queues records.",
+    "DCC-owned config ownership is ambiguous.",
+    "Runner preview implies IDB owns queue mechanics.",
+    "DCC object-generation mechanics appear rewritten or bypassed."
+  ],
+  "currentDecision": "ready_for_manual_sandbox_parameter_smoke_no_submit"
+}

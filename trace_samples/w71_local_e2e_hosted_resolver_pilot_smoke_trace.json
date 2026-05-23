@@ -1,0 +1,897 @@
+{
+  "schema": "idb.w71-local-e2e-hosted-resolver-pilot-smoke-trace.v1",
+  "generated": "2026-05-17T21:41:02.279Z",
+  "decision": "PASS",
+  "readinessDecision": "local_e2e_hosted_resolver_smoke_pass_required_before_remote_hosting",
+  "inheritedW70Decision": "PASS",
+  "localServer": {
+    "port": 61116,
+    "healthUrl": "http://127.0.0.1:61116/health",
+    "endpointUrl": "http://127.0.0.1:61116/idb/website-resolver/v1/resolve",
+    "healthSample": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json",
+        "vary": "Origin",
+        "access-control-allow-methods": "POST, OPTIONS",
+        "access-control-allow-headers": "Content-Type, X-IDB-Resolver-Token",
+        "access-control-allow-origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+        "date": "Sun, 17 May 2026 21:41:02 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      },
+      "body": {
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true,
+        "serviceName": "websiteResolverServiceV1",
+        "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+        "extractionPolicyVersion": "w66.extraction-policy.v1",
+        "cacheStatus": "ready"
+      }
+    }
+  },
+  "gmHttpRequests": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:61116/idb/website-resolver/v1/resolve",
+      "headers": {
+        "Content-Type": "application/json",
+        "Origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+        "X-IDB-Resolver-Token": "[configured-redacted]"
+      },
+      "data": {
+        "url": "https://trek.example/",
+        "requestId": "drawer-1779054062265",
+        "maxPages": 4,
+        "timeoutMs": 12000,
+        "manualEvidence": "",
+        "drawerRequestKey": "websiteresolverservicev1|https://trek.example/|"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:61116/idb/website-resolver/v1/resolve",
+      "headers": {
+        "Content-Type": "application/json",
+        "Origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+        "X-IDB-Resolver-Token": "[configured-redacted]"
+      },
+      "data": {
+        "url": "https://trek.example/",
+        "requestId": "drawer-1779054062270",
+        "maxPages": 4,
+        "timeoutMs": 12000,
+        "manualEvidence": "",
+        "drawerRequestKey": "websiteresolverservicev1|https://trek.example/|"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:61116/idb/website-resolver/v1/resolve",
+      "headers": {
+        "Content-Type": "application/json",
+        "Origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+        "X-IDB-Resolver-Token": "[configured-redacted]"
+      },
+      "data": {
+        "url": "https://127.0.0.1/admin",
+        "requestId": "drawer-1779054062272",
+        "maxPages": 4,
+        "timeoutMs": 12000,
+        "manualEvidence": "",
+        "drawerRequestKey": "websiteresolverservicev1|https://127.0.0.1/admin|"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:61116/idb/website-resolver/v1/resolve",
+      "headers": {
+        "Content-Type": "application/json",
+        "Origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+        "X-IDB-Resolver-Token": "[configured-redacted]"
+      },
+      "data": {
+        "url": "https://thin.example/",
+        "requestId": "drawer-1779054062274",
+        "maxPages": 4,
+        "timeoutMs": 12000,
+        "manualEvidence": "",
+        "drawerRequestKey": "websiteresolverservicev1|https://thin.example/|"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:61116/idb/website-resolver/v1/resolve",
+      "headers": {
+        "Content-Type": "application/json",
+        "Origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+        "X-IDB-Resolver-Token": "[configured-redacted]"
+      },
+      "data": {
+        "url": "https://down.example/",
+        "requestId": "drawer-1779054062276",
+        "maxPages": 4,
+        "timeoutMs": 12000,
+        "manualEvidence": "",
+        "drawerRequestKey": "websiteresolverservicev1|https://down.example/|"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:61116/idb/website-resolver/v1/resolve",
+      "headers": {
+        "Content-Type": "application/json",
+        "Origin": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+        "X-IDB-Resolver-Token": "[configured-redacted]"
+      },
+      "data": {
+        "url": "https://slow.example/",
+        "requestId": "drawer-1779054062277",
+        "maxPages": 4,
+        "timeoutMs": 12000,
+        "manualEvidence": "",
+        "drawerRequestKey": "websiteresolverservicev1|https://slow.example/|"
+      }
+    }
+  ],
+  "recommendedSample": {
+    "status": "resolved",
+    "laneId": "dealer_hardgoods",
+    "runtime": {
+      "serviceName": "websiteResolverServiceV1",
+      "mode": "service",
+      "requestKey": "websiteresolverservicev1|https://trek.example/|",
+      "endpointConfigured": true,
+      "tokenConfigured": true,
+      "localFallbackEnabled": false,
+      "hostedOnlyMode": true,
+      "status": "resolved",
+      "failureState": ""
+    },
+    "confidence": {
+      "state": "recommended",
+      "score": 0.95,
+      "requiresConfirmation": false
+    },
+    "productSeed": "Bicycle SKU",
+    "ux": {
+      "schema": "idb.w53-consultant-evidence-ux.v1",
+      "status": "needs_confirmation",
+      "sourceUrls": [
+        "https://trek.example/",
+        "https://trek.example/bikes",
+        "https://trek.example/equipment",
+        "https://trek.example/stores"
+      ],
+      "whatIdbSaw": [
+        "Domain: trek.example",
+        "Resolver: service / resolved",
+        "Evidence: Fetch status: fetched / Source URLs: 4 / Signals: bike, bikes, bicycle, cycling, electric bikes, equipment",
+        "Product seed: Bicycle SKU",
+        "Product family: Bicycle Dealer Hardgoods",
+        "Demand moment: dealer inventory and replenishment readiness",
+        "Hosted resolver: enabled; local fallback disabled",
+        "Resolver auth: token header configured"
+      ],
+      "whyThisClassification": "Website evidence supports Dealer Hardgoods & Channel Fulfillment, but the consultant should confirm the category before building.",
+      "recommendedLaneId": "dealer_hardgoods",
+      "recommendedLaneName": "Dealer Hardgoods & Channel Fulfillment",
+      "proofAnchor": "Product / SKU",
+      "productSeed": "Bicycle SKU",
+      "productFamily": "Bicycle Dealer Hardgoods",
+      "demandMoment": "dealer inventory and replenishment readiness",
+      "confidence": {
+        "state": "needs_confirmation",
+        "scoreLabel": "high",
+        "requiresConfirmation": true,
+        "source": "website_evidence_v1",
+        "resolverSource": "websiteEvidenceV1",
+        "resolverMode": "service",
+        "resolverStatus": "resolved",
+        "hostedOnlyMode": true,
+        "tokenConfigured": true,
+        "failureState": ""
+      },
+      "competingCandidates": [
+        {
+          "laneId": "apparel_accessories",
+          "label": "Apparel & Accessories",
+          "confidence": 0.55,
+          "evidence": "apparel, sku"
+        },
+        {
+          "laneId": "industrial_distribution",
+          "label": "Industrial Distribution & Branch Fulfillment",
+          "confidence": 0.45,
+          "evidence": "replenishment"
+        }
+      ],
+      "missingEvidence": [
+        "Confirm the website category before ROI, competitive, or write preparation proceeds."
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "traceExportCoverage": {
+        "includedInPlanTrace": true,
+        "includedInDryRunPacket": true,
+        "includedInTraceExport": true,
+        "noWriteAuthority": true,
+        "nllmAdvisoryOnly": true
+      }
+    }
+  },
+  "cacheHitSample": {
+    "status": "resolved",
+    "cache": {
+      "key": "2fe67bc692e391289d2b415a96ed441225baa32f8beeead3d87885184c50ad49",
+      "ttlSeconds": 86400,
+      "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+      "extractionPolicyVersion": "w66.extraction-policy.v1",
+      "contentHashes": [
+        {
+          "url": "https://trek.example/",
+          "contentHash": "88dc77befe47246627a747eb1f392fcef0126a7ce677c7948d319532196dce94"
+        },
+        {
+          "url": "https://trek.example/bikes",
+          "contentHash": "5edc9e091ce4111ec1415e543dfe175ecc68654e4cdd4034389f14d9251e09f3"
+        },
+        {
+          "url": "https://trek.example/equipment",
+          "contentHash": "889b9e138299173fb1803fc36d053be0cab28ab965c6e3c7f234b120863b6e2e"
+        },
+        {
+          "url": "https://trek.example/stores",
+          "contentHash": "e228c6f75b7feb98cb4ae23d62593bb79e9f1a3155769f34b893707f0912adb6"
+        }
+      ],
+      "hit": true
+    },
+    "serverTraceOutcomes": [
+      "health_ok",
+      "resolved_from_fetch",
+      "resolved_from_cache",
+      "resolved_from_fetch",
+      "resolved_from_fetch",
+      "resolved_from_fetch",
+      "resolved_from_fetch"
+    ]
+  },
+  "failureSamples": [
+    {
+      "website": "https://127.0.0.1/admin",
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "ux": {
+        "schema": "idb.w53-consultant-evidence-ux.v1",
+        "status": "needs_confirmation",
+        "sourceUrls": [
+          "https://127.0.0.1/admin"
+        ],
+        "whatIdbSaw": [
+          "Domain: 127.0.0.1",
+          "Resolver: service / resolved",
+          "Failure state: blocked",
+          "Evidence: Fetch status: blocked / Failure state: blocked",
+          "Product seed: needs evidence",
+          "Product family: needs evidence",
+          "Demand moment: needs evidence",
+          "Fetch errors: ssrf_blocked",
+          "Hosted resolver: enabled; local fallback disabled",
+          "Resolver auth: token header configured"
+        ],
+        "whyThisClassification": "Conversation notes support a lane, but website evidence is weak. Confirm manually or add website evidence before using this live.",
+        "recommendedLaneId": "life_sciences",
+        "recommendedLaneName": "Life Sciences",
+        "proofAnchor": "Lot / Release",
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": "",
+        "confidence": {
+          "state": "needs_confirmation",
+          "scoreLabel": "low",
+          "requiresConfirmation": true,
+          "source": "website_evidence_v1",
+          "resolverSource": "websiteEvidenceV1",
+          "resolverMode": "service",
+          "resolverStatus": "resolved",
+          "hostedOnlyMode": true,
+          "tokenConfigured": true,
+          "failureState": "blocked"
+        },
+        "competingCandidates": [],
+        "missingEvidence": [
+          "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+          "Capture product/category terms from the website."
+        ],
+        "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+        "traceExportCoverage": {
+          "includedInPlanTrace": true,
+          "includedInDryRunPacket": true,
+          "includedInTraceExport": true,
+          "noWriteAuthority": true,
+          "nllmAdvisoryOnly": true
+        }
+      }
+    },
+    {
+      "website": "https://thin.example/",
+      "failureState": "thin",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0.12,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "ux": {
+        "schema": "idb.w53-consultant-evidence-ux.v1",
+        "status": "needs_confirmation",
+        "sourceUrls": [
+          "https://thin.example/"
+        ],
+        "whatIdbSaw": [
+          "Domain: thin.example",
+          "Resolver: service / resolved",
+          "Failure state: thin",
+          "Evidence: Fetch status: thin / Failure state: thin",
+          "Product seed: needs evidence",
+          "Product family: needs evidence",
+          "Demand moment: needs evidence",
+          "Hosted resolver: enabled; local fallback disabled",
+          "Resolver auth: token header configured"
+        ],
+        "whyThisClassification": "Conversation notes support a lane, but website evidence is weak. Confirm manually or add website evidence before using this live.",
+        "recommendedLaneId": "life_sciences",
+        "recommendedLaneName": "Life Sciences",
+        "proofAnchor": "Lot / Release",
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": "",
+        "confidence": {
+          "state": "needs_confirmation",
+          "scoreLabel": "low",
+          "requiresConfirmation": true,
+          "source": "website_evidence_v1",
+          "resolverSource": "websiteEvidenceV1",
+          "resolverMode": "service",
+          "resolverStatus": "resolved",
+          "hostedOnlyMode": true,
+          "tokenConfigured": true,
+          "failureState": "thin"
+        },
+        "competingCandidates": [],
+        "missingEvidence": [
+          "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+          "Capture product/category terms from the website."
+        ],
+        "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+        "traceExportCoverage": {
+          "includedInPlanTrace": true,
+          "includedInDryRunPacket": true,
+          "includedInTraceExport": true,
+          "noWriteAuthority": true,
+          "nllmAdvisoryOnly": true
+        }
+      }
+    },
+    {
+      "website": "https://down.example/",
+      "failureState": "unavailable",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "ux": {
+        "schema": "idb.w53-consultant-evidence-ux.v1",
+        "status": "needs_confirmation",
+        "sourceUrls": [
+          "https://down.example/"
+        ],
+        "whatIdbSaw": [
+          "Domain: down.example",
+          "Resolver: service / resolved",
+          "Failure state: unavailable",
+          "Evidence: Fetch status: unavailable / Failure state: unavailable",
+          "Product seed: needs evidence",
+          "Product family: needs evidence",
+          "Demand moment: needs evidence",
+          "Fetch errors: dns_or_network_error",
+          "Hosted resolver: enabled; local fallback disabled",
+          "Resolver auth: token header configured"
+        ],
+        "whyThisClassification": "Conversation notes support a lane, but website evidence is weak. Confirm manually or add website evidence before using this live.",
+        "recommendedLaneId": "life_sciences",
+        "recommendedLaneName": "Life Sciences",
+        "proofAnchor": "Lot / Release",
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": "",
+        "confidence": {
+          "state": "needs_confirmation",
+          "scoreLabel": "low",
+          "requiresConfirmation": true,
+          "source": "website_evidence_v1",
+          "resolverSource": "websiteEvidenceV1",
+          "resolverMode": "service",
+          "resolverStatus": "resolved",
+          "hostedOnlyMode": true,
+          "tokenConfigured": true,
+          "failureState": "unavailable"
+        },
+        "competingCandidates": [],
+        "missingEvidence": [
+          "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+          "Capture product/category terms from the website."
+        ],
+        "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+        "traceExportCoverage": {
+          "includedInPlanTrace": true,
+          "includedInDryRunPacket": true,
+          "includedInTraceExport": true,
+          "noWriteAuthority": true,
+          "nllmAdvisoryOnly": true
+        }
+      }
+    },
+    {
+      "website": "https://slow.example/",
+      "failureState": "timeout",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "ux": {
+        "schema": "idb.w53-consultant-evidence-ux.v1",
+        "status": "needs_confirmation",
+        "sourceUrls": [
+          "https://slow.example/"
+        ],
+        "whatIdbSaw": [
+          "Domain: slow.example",
+          "Resolver: service / resolved",
+          "Failure state: timeout",
+          "Evidence: Fetch status: timeout / Failure state: timeout",
+          "Product seed: needs evidence",
+          "Product family: needs evidence",
+          "Demand moment: needs evidence",
+          "Fetch errors: timeout",
+          "Hosted resolver: enabled; local fallback disabled",
+          "Resolver auth: token header configured"
+        ],
+        "whyThisClassification": "Conversation notes support a lane, but website evidence is weak. Confirm manually or add website evidence before using this live.",
+        "recommendedLaneId": "life_sciences",
+        "recommendedLaneName": "Life Sciences",
+        "proofAnchor": "Lot / Release",
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": "",
+        "confidence": {
+          "state": "needs_confirmation",
+          "scoreLabel": "low",
+          "requiresConfirmation": true,
+          "source": "website_evidence_v1",
+          "resolverSource": "websiteEvidenceV1",
+          "resolverMode": "service",
+          "resolverStatus": "resolved",
+          "hostedOnlyMode": true,
+          "tokenConfigured": true,
+          "failureState": "timeout"
+        },
+        "competingCandidates": [],
+        "missingEvidence": [
+          "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+          "Capture product/category terms from the website."
+        ],
+        "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+        "traceExportCoverage": {
+          "includedInPlanTrace": true,
+          "includedInDryRunPacket": true,
+          "includedInTraceExport": true,
+          "noWriteAuthority": true,
+          "nllmAdvisoryOnly": true
+        }
+      }
+    }
+  ],
+  "rollbackSample": {
+    "config": {
+      "schema": "idb.w64-drawer-resolver-service-adapter-config.v1",
+      "serviceName": "websiteResolverServiceV1",
+      "endpoint": "",
+      "endpointConfigured": false,
+      "tokenConfigured": false,
+      "authHeaderName": "X-IDB-Resolver-Token",
+      "authMode": "none",
+      "mockResolverAvailable": false,
+      "localFallbackEnabled": true,
+      "hostedOnlyMode": false,
+      "requestPath": "/idb/website-resolver/v1/resolve",
+      "writeAuthority": "none",
+      "suiteScriptInvocation": false,
+      "nllmAdvisoryOnly": true,
+      "notesAuthority": "story_only_no_identity_override"
+    },
+    "runtime": {
+      "serviceName": "websiteResolverServiceV1",
+      "mode": "local_fallback_only",
+      "requestKey": "websiteresolverservicev1|https://trek.example/|",
+      "endpointConfigured": false,
+      "tokenConfigured": false,
+      "localFallbackEnabled": true,
+      "hostedOnlyMode": false,
+      "status": "fallback_ready",
+      "failureState": ""
+    }
+  },
+  "traceCoverage": {
+    "websiteEvidenceV1": {
+      "schema": "idb.website-evidence.v1",
+      "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+      "requestId": "drawer-1779054062265",
+      "inputUrl": "https://trek.example/",
+      "normalizedUrl": "https://trek.example/",
+      "domain": "trek.example",
+      "fetchStatus": "fetched",
+      "fetchErrors": [],
+      "pagesSampled": [
+        {
+          "role": "homepage",
+          "url": "https://trek.example/",
+          "status": 200,
+          "contentHash": "88dc77befe47246627a747eb1f392fcef0126a7ce677c7948d319532196dce94",
+          "pageBytes": 528,
+          "redirects": []
+        },
+        {
+          "role": "navigation_discovered_category_or_products_page",
+          "url": "https://trek.example/bikes",
+          "status": 200,
+          "contentHash": "5edc9e091ce4111ec1415e543dfe175ecc68654e4cdd4034389f14d9251e09f3",
+          "pageBytes": 203,
+          "redirects": []
+        },
+        {
+          "role": "navigation_discovered_category_or_products_page",
+          "url": "https://trek.example/equipment",
+          "status": 200,
+          "contentHash": "889b9e138299173fb1803fc36d053be0cab28ab965c6e3c7f234b120863b6e2e",
+          "pageBytes": 176,
+          "redirects": []
+        },
+        {
+          "role": "navigation_discovered_category_or_products_page",
+          "url": "https://trek.example/stores",
+          "status": 200,
+          "contentHash": "e228c6f75b7feb98cb4ae23d62593bb79e9f1a3155769f34b893707f0912adb6",
+          "pageBytes": 180,
+          "redirects": []
+        }
+      ],
+      "extractedEvidence": {
+        "pageTitle": "Trek Bikes, Bicycle Dealer Hardgoods",
+        "metaDescription": "Bicycle dealer hardgoods, road bikes, mountain bikes, electric bikes, helmets, parts, dealer inventory.",
+        "h1Text": [
+          "Road bikes, mountain bikes and electric bikes",
+          "Road bikes mountain bikes electric bikes",
+          "Helmets equipment parts",
+          "Find a store"
+        ],
+        "h2Text": [
+          "Helmets, parts, dealer inventory and replenishment"
+        ],
+        "navigationLabels": [
+          "Bikes",
+          "Equipment",
+          "Store locator"
+        ],
+        "productCategoryTerms": [
+          "apparel",
+          "bike",
+          "bikes",
+          "bicycle",
+          "cycling",
+          "electric bikes",
+          "equipment",
+          "helmets",
+          "inventory",
+          "mountain bikes",
+          "parts",
+          "replenishment",
+          "road bikes",
+          "catalog",
+          "sku",
+          "gear"
+        ],
+        "industryLanguage": [
+          "dealer",
+          "retail",
+          "service"
+        ],
+        "locationServiceClues": [
+          "store locator",
+          "dealer locator",
+          "find a store",
+          "service"
+        ],
+        "ecommerceSignals": [
+          "shop"
+        ],
+        "manufacturingSignals": [],
+        "distributionSignals": [
+          "dealer",
+          "replenishment"
+        ],
+        "sourceUrls": [
+          "https://trek.example/",
+          "https://trek.example/bikes",
+          "https://trek.example/equipment",
+          "https://trek.example/stores"
+        ]
+      },
+      "signals": {
+        "laneCandidates": [
+          {
+            "laneId": "dealer_hardgoods",
+            "score": 0.95,
+            "evidence": [
+              "bike",
+              "bikes",
+              "bicycle",
+              "cycling",
+              "electric bikes",
+              "equipment"
+            ]
+          },
+          {
+            "laneId": "apparel_accessories",
+            "score": 0.55,
+            "evidence": [
+              "apparel",
+              "sku"
+            ]
+          },
+          {
+            "laneId": "industrial_distribution",
+            "score": 0.45,
+            "evidence": [
+              "replenishment"
+            ]
+          }
+        ],
+        "productSeed": "Bicycle SKU",
+        "productFamily": "Bicycle Dealer Hardgoods",
+        "demandMoment": "dealer inventory and replenishment readiness"
+      },
+      "confidence": {
+        "state": "recommended",
+        "score": 0.95,
+        "requiresConfirmation": false
+      },
+      "failureState": null,
+      "sourceUrls": [
+        "https://trek.example/",
+        "https://trek.example/bikes",
+        "https://trek.example/equipment",
+        "https://trek.example/stores"
+      ],
+      "capturedAt": "2026-05-12T23:45:00.000Z",
+      "cache": {
+        "key": "2fe67bc692e391289d2b415a96ed441225baa32f8beeead3d87885184c50ad49",
+        "ttlSeconds": 86400,
+        "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+        "extractionPolicyVersion": "w66.extraction-policy.v1",
+        "contentHashes": [
+          {
+            "url": "https://trek.example/",
+            "contentHash": "88dc77befe47246627a747eb1f392fcef0126a7ce677c7948d319532196dce94"
+          },
+          {
+            "url": "https://trek.example/bikes",
+            "contentHash": "5edc9e091ce4111ec1415e543dfe175ecc68654e4cdd4034389f14d9251e09f3"
+          },
+          {
+            "url": "https://trek.example/equipment",
+            "contentHash": "889b9e138299173fb1803fc36d053be0cab28ab965c6e3c7f234b120863b6e2e"
+          },
+          {
+            "url": "https://trek.example/stores",
+            "contentHash": "e228c6f75b7feb98cb4ae23d62593bb79e9f1a3155769f34b893707f0912adb6"
+          }
+        ],
+        "hit": false
+      },
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true,
+      "noRegression": {
+        "noSuiteScriptInvocation": true,
+        "noWriteAuthority": true,
+        "noHiddenLaneOverride": true,
+        "notesCannotOwnIdentification": true,
+        "transactionWriteEnabled": false
+      },
+      "resolverAdapter": {
+        "schema": "idb.w64-drawer-resolver-service-adapter.v1",
+        "serviceName": "websiteResolverServiceV1",
+        "mode": "service",
+        "requestKey": "websiteresolverservicev1|https://trek.example/|",
+        "endpointConfigured": true,
+        "tokenConfigured": true,
+        "localFallbackEnabled": false,
+        "hostedOnlyMode": true,
+        "notesAuthority": "story_only_no_identity_override"
+      }
+    },
+    "websiteResolverRuntime": {
+      "serviceName": "websiteResolverServiceV1",
+      "mode": "service",
+      "requestKey": "websiteresolverservicev1|https://trek.example/|",
+      "endpointConfigured": true,
+      "tokenConfigured": true,
+      "localFallbackEnabled": false,
+      "hostedOnlyMode": true,
+      "status": "resolved",
+      "failureState": ""
+    },
+    "websiteEvidenceUx": {
+      "schema": "idb.w53-consultant-evidence-ux.v1",
+      "status": "needs_confirmation",
+      "sourceUrls": [
+        "https://trek.example/",
+        "https://trek.example/bikes",
+        "https://trek.example/equipment",
+        "https://trek.example/stores"
+      ],
+      "whatIdbSaw": [
+        "Domain: trek.example",
+        "Resolver: service / resolved",
+        "Evidence: Fetch status: fetched / Source URLs: 4 / Signals: bike, bikes, bicycle, cycling, electric bikes, equipment",
+        "Product seed: Bicycle SKU",
+        "Product family: Bicycle Dealer Hardgoods",
+        "Demand moment: dealer inventory and replenishment readiness",
+        "Hosted resolver: enabled; local fallback disabled",
+        "Resolver auth: token header configured"
+      ],
+      "whyThisClassification": "Website evidence supports Dealer Hardgoods & Channel Fulfillment, but the consultant should confirm the category before building.",
+      "recommendedLaneId": "dealer_hardgoods",
+      "recommendedLaneName": "Dealer Hardgoods & Channel Fulfillment",
+      "proofAnchor": "Product / SKU",
+      "productSeed": "Bicycle SKU",
+      "productFamily": "Bicycle Dealer Hardgoods",
+      "demandMoment": "dealer inventory and replenishment readiness",
+      "confidence": {
+        "state": "needs_confirmation",
+        "scoreLabel": "high",
+        "requiresConfirmation": true,
+        "source": "website_evidence_v1",
+        "resolverSource": "websiteEvidenceV1",
+        "resolverMode": "service",
+        "resolverStatus": "resolved",
+        "hostedOnlyMode": true,
+        "tokenConfigured": true,
+        "failureState": ""
+      },
+      "competingCandidates": [
+        {
+          "laneId": "apparel_accessories",
+          "label": "Apparel & Accessories",
+          "confidence": 0.55,
+          "evidence": "apparel, sku"
+        },
+        {
+          "laneId": "industrial_distribution",
+          "label": "Industrial Distribution & Branch Fulfillment",
+          "confidence": 0.45,
+          "evidence": "replenishment"
+        }
+      ],
+      "missingEvidence": [
+        "Confirm the website category before ROI, competitive, or write preparation proceeds."
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "traceExportCoverage": {
+        "includedInPlanTrace": true,
+        "includedInDryRunPacket": true,
+        "includedInTraceExport": true,
+        "noWriteAuthority": true,
+        "nllmAdvisoryOnly": true
+      }
+    },
+    "resolverAdapter": {
+      "schema": "idb.w64-drawer-resolver-service-adapter.v1",
+      "serviceName": "websiteResolverServiceV1",
+      "mode": "service",
+      "requestKey": "websiteresolverservicev1|https://trek.example/|",
+      "endpointConfigured": true,
+      "tokenConfigured": true,
+      "localFallbackEnabled": false,
+      "hostedOnlyMode": true,
+      "notesAuthority": "story_only_no_identity_override"
+    },
+    "serverTraceOutcomes": [
+      "health_ok",
+      "resolved_from_fetch",
+      "resolved_from_cache",
+      "resolved_from_fetch",
+      "resolved_from_fetch",
+      "resolved_from_fetch",
+      "resolved_from_fetch"
+    ]
+  },
+  "fetchCallCount": 7,
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W72: Hosted Resolver Remote Deployment Readiness Gate",
+    "prompt": "Move through W72: Hosted Resolver Remote Deployment Readiness Gate. Convert the local end-to-end hosted resolver smoke into a remote staging deployment readiness gate: environment config, secret handling, CORS origin list, deployment target checklist, remote health smoke, remote auth/CORS smoke, approved live-site smoke through the hosted endpoint, cache/observability verification, rollback switch, and pilot go/no-go. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output remote deployment readiness plan, runnable gate harness or command pack, W72 report, validator gates, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w71_local_server_started_health_ok",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"serviceName\":\"websiteResolverServiceV1\",\"resolverVersion\":\"websiteResolverServiceV1.local-prototype.w66\",\"extractionPolicyVersion\":\"w66.extraction-policy.v1\",\"cacheStatus\":\"ready\"}"
+    },
+    {
+      "name": "w71_drawer_config_points_to_real_local_server",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w64-drawer-resolver-service-adapter-config.v1\",\"serviceName\":\"websiteResolverServiceV1\",\"endpoint\":\"http://127.0.0.1:61116/idb/website-resolver/v1/resolve\",\"endpointConfigured\":true,\"tokenConfigured\":true,\"authHeaderName\":\"X-IDB-Resolver-Token\",\"authMode\":\"resolver_token_header_placeholder\",\"mockResolverAvailable\":false,\"localFallbackEnabled\":false,\"hostedOnlyMode\":true,\"requestPath\":\"/idb/website-resolver/v1/resolve\",\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesAuthority\":\"story_only_no_identity_override\"}"
+    },
+    {
+      "name": "w71_gm_http_requests_reach_server_with_token_origin",
+      "pass": true,
+      "detail": "[{\"url\":\"http://127.0.0.1:61116/idb/website-resolver/v1/resolve\",\"headers\":[\"Content-Type\",\"Origin\",\"X-IDB-Resolver-Token\"],\"data\":\"{\\\"url\\\":\\\"https://trek.example/\\\",\\\"requestId\\\":\\\"drawer-1779054062265\\\",\\\"maxPages\\\":4,\\\"timeoutMs\\\":12000,\\\"manualEvidence\\\":\\\"\\\",\\\"drawerRequestKey\\\":\\\"websiteresolverservicev1|https://trek.example/|\\\"}\"},{\"url\":\"http://127.0.0.1:61116/idb/website-resolver/v1/resolve\",\"headers\":[\"Content-Type\",\"Origin\",\"X-IDB-Resolver-Token\"],\"data\":\"{\\\"url\\\":\\\"https://trek.example/\\\",\\\"requestId\\\":\\\"drawer-1779054062270\\\",\\\"maxPages\\\":4,\\\"timeoutMs\\\":12000,\\\"manualEvidence\\\":\\\"\\\",\\\"drawerRequestKey\\\":\\\"websiteresolverservicev1|https://trek.example/|\\\"}\"},{\"url\":\"http://127.0.0.1:61116/idb/website-resolver/v1/resolve\",\"headers\":[\"Content-Type\",\"Origin\",\"X-IDB-Resolver-Token\"],\"data\":\"{\\\"url\\\":\\\"https://127.0.0.1/admin\\\",\\\"requestId\\\":\\\"drawer-1779054062272\\\",\\\"maxPages\\\":4,\\\"timeoutMs\\\":12000,\\\"manualEvidence\\\":\\\"\\\",\\\"drawerRequestKey\\\":\\\"websiteresolverservicev1|https://127.0.0.1/admin|\\\"}\"},{\"url\":\"http://127.0.0.1:61116/idb/website-resolver/v1/resolve\",\"headers\":[\"Content-Type\",\"Origin\",\"X-IDB-Resolver-Token\"],\"data\":\"{\\\"url\\\":\\\"https://thin.example/\\\",\\\"requestId\\\":\\\"drawer-1779054062274\\\",\\\"maxPages\\\":4,\\\"timeoutMs\\\":12000,\\\"manualEvidence\\\":\\\"\\\",\\\"drawerRequestKey\\\":\\\"websiteresolverservicev1|https://thin.example/|\\\"}\"},{\"url\":\"http://127.0.0.1:61116/idb/website-resolver/v1/resolve\",\"headers\":[\"Content-Type\",\"Origin\",\"X-IDB-Resolver-Token\"],\"data\":\"{\\\"url\\\":\\\"https://down.example/\\\",\\\"requestId\\\":\\\"drawer-1779054062276\\\",\\\"maxPages\\\":4,\\\"timeoutMs\\\":12000,\\\"manualEvidence\\\":\\\"\\\",\\\"drawerRequestKey\\\":\\\"websiteresolverservicev1|https://down.example/|\\\"}\"},{\"url\":\"http://127.0.0.1:61116/idb/website-resolver/v1/resolve\",\"headers\":[\"Content-Type\",\"Origin\",\"X-IDB-Resolver-Token\"],\"data\":\"{\\\"url\\\":\\\"https://slow.example/\\\",\\\"requestId\\\":\\\"drawer-1779054062277\\\",\\\"maxPages\\\":4,\\\"timeoutMs\\\":12000,\\\"manualEvidence\\\":\\\"\\\",\\\"drawerRequestKey\\\":\\\"websiteresolverservicev1|https://slow.example/|\\\"}\"}]"
+    },
+    {
+      "name": "w71_recommended_case_website_owned_identity",
+      "pass": true,
+      "detail": "{\"lane\":\"dealer_hardgoods\",\"runtime\":{\"serviceName\":\"websiteResolverServiceV1\",\"mode\":\"service\",\"requestKey\":\"websiteresolverservicev1|https://trek.example/|\",\"endpointConfigured\":true,\"tokenConfigured\":true,\"localFallbackEnabled\":false,\"hostedOnlyMode\":true,\"status\":\"resolved\",\"failureState\":\"\"},\"productSeed\":\"Bicycle SKU\"}"
+    },
+    {
+      "name": "w71_cache_hit_case_reuses_server_cache",
+      "pass": true,
+      "detail": "{\"cache\":{\"key\":\"2fe67bc692e391289d2b415a96ed441225baa32f8beeead3d87885184c50ad49\",\"ttlSeconds\":86400,\"resolverVersion\":\"websiteResolverServiceV1.local-prototype.w66\",\"extractionPolicyVersion\":\"w66.extraction-policy.v1\",\"contentHashes\":[{\"url\":\"https://trek.example/\",\"contentHash\":\"88dc77befe47246627a747eb1f392fcef0126a7ce677c7948d319532196dce94\"},{\"url\":\"https://trek.example/bikes\",\"contentHash\":\"5edc9e091ce4111ec1415e543dfe175ecc68654e4cdd4034389f14d9251e09f3\"},{\"url\":\"https://trek.example/equipment\",\"contentHash\":\"889b9e138299173fb1803fc36d053be0cab28ab965c6e3c7f234b120863b6e2e\"},{\"url\":\"https://trek.example/stores\",\"contentHash\":\"e228c6f75b7feb98cb4ae23d62593bb79e9f1a3155769f34b893707f0912adb6\"}],\"hit\":true},\"serverOutcomes\":[\"health_ok\",\"resolved_from_fetch\",\"resolved_from_cache\",\"resolved_from_fetch\",\"resolved_from_fetch\",\"resolved_from_fetch\",\"resolved_from_fetch\"]}"
+    },
+    {
+      "name": "w71_failure_cases_insufficient_no_guess",
+      "pass": true,
+      "detail": "[{\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[]},{\"failureState\":\"thin\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0.12,\"requiresConfirmation\":true},\"laneCandidates\":[]},{\"failureState\":\"unavailable\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[]},{\"failureState\":\"timeout\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[]}]"
+    },
+    {
+      "name": "w71_rollback_returns_to_local_fallback_only",
+      "pass": true,
+      "detail": "{\"rollbackConfig\":{\"schema\":\"idb.w64-drawer-resolver-service-adapter-config.v1\",\"serviceName\":\"websiteResolverServiceV1\",\"endpoint\":\"\",\"endpointConfigured\":false,\"tokenConfigured\":false,\"authHeaderName\":\"X-IDB-Resolver-Token\",\"authMode\":\"none\",\"mockResolverAvailable\":false,\"localFallbackEnabled\":true,\"hostedOnlyMode\":false,\"requestPath\":\"/idb/website-resolver/v1/resolve\",\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesAuthority\":\"story_only_no_identity_override\"},\"runtime\":{\"serviceName\":\"websiteResolverServiceV1\",\"mode\":\"local_fallback_only\",\"requestKey\":\"websiteresolverservicev1|https://trek.example/|\",\"endpointConfigured\":false,\"tokenConfigured\":false,\"localFallbackEnabled\":true,\"hostedOnlyMode\":false,\"status\":\"fallback_ready\",\"failureState\":\"\"}}"
+    },
+    {
+      "name": "w71_plan_review_trace_export_coverage_present",
+      "pass": true,
+      "detail": "{\"ux\":[\"Domain: trek.example\",\"Resolver: service / resolved\",\"Evidence: Fetch status: fetched / Source URLs: 4 / Signals: bike, bikes, bicycle, cycling, electric bikes, equipment\",\"Product seed: Bicycle SKU\",\"Product family: Bicycle Dealer Hardgoods\",\"Demand moment: dealer inventory and replenishment readiness\",\"Hosted resolver: enabled; local fallback disabled\",\"Resolver auth: token header configured\"],\"traceExportCoverage\":{\"includedInPlanTrace\":true,\"includedInDryRunPacket\":true,\"includedInTraceExport\":true,\"noWriteAuthority\":true,\"nllmAdvisoryOnly\":true},\"resolverAdapter\":{\"schema\":\"idb.w64-drawer-resolver-service-adapter.v1\",\"serviceName\":\"websiteResolverServiceV1\",\"mode\":\"service\",\"requestKey\":\"websiteresolverservicev1|https://trek.example/|\",\"endpointConfigured\":true,\"tokenConfigured\":true,\"localFallbackEnabled\":false,\"hostedOnlyMode\":true,\"notesAuthority\":\"story_only_no_identity_override\"}}"
+    },
+    {
+      "name": "w71_no_write_suitescript_nllm_boundaries_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesCannotOwnIdentification\":true,\"blockedThinUnavailableTimeoutDoNotGuess\":true,\"transactionWriteEnabled\":false,\"mainDrawerCreateEnabled\":false,\"mainSuiteletCreateEnabled\":false}"
+    },
+    {
+      "name": "w71_contract_and_w70_handoff_present",
+      "pass": true,
+      "detail": "idb.w71-local-end-to-end-hosted-resolver-pilot-smoke.v1"
+    }
+  ]
+}

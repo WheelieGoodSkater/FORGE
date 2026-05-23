@@ -1,0 +1,1285 @@
+{
+  "schema": "idb.w183-approved-server-adapter-activation-packet.v1",
+  "status": "activation_packet_ready_no_submit",
+  "decision": "PASS_APPROVED_SERVER_ADAPTER_ACTIVATION_PACKET_READY__NO_SUBMIT__VISUAL_TESTING_BLOCKED",
+  "generatedAt": "2026-05-17T21:41:17.038Z",
+  "sourceEvidence": {
+    "w182NoCallStatus": "server_adapter_no_call_evidence_confirmed",
+    "uploadedTracePath": "/path/to/downloads/intelligent-demo-builder-trace-1779023753249.json",
+    "uploadedHandoffPath": "/path/to/downloads/idb-dcc-runner-handoff-packet-1779023752645.json",
+    "handoffPacketSchema": "idb.dcc-runner-handoff-packet.v1",
+    "handoffPacketStatus": "ready_for_dcc_suitelet_submission_review"
+  },
+  "activationPacket": {
+    "schema": "idb.approved-server-adapter-activation-packet.v1",
+    "mode": "build_one_call_readiness_only_no_submit",
+    "endpoint": {
+      "method": "POST",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idb_governed_runner_adapter&deploy=customdeploy_idb_governed_runner_adapter",
+      "approvedEndpointMode": "approved_server_adapter_only"
+    },
+    "confirmedBuildRequestJson": {
+      "schema": "idb.confirmed-build-request.v1",
+      "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "requestStatus": "confirmed_ready_for_governed_runner",
+      "producedBy": "idb_drawer",
+      "idbPrimarySurface": true,
+      "legacyDccSuiteletUi": {
+        "normalWorkflow": false,
+        "role": "legacy_reference_only",
+        "replacement": "Drawer prepares confirmed request; governed runner creates or resolves records."
+      },
+      "consultantConfirmation": {
+        "required": true,
+        "confirmed": true,
+        "source": "acceptedPacket"
+      },
+      "stateAuthority": {
+        "selectedLaneId": "apparel_accessories",
+        "confirmedLaneId": "apparel_accessories",
+        "exportedLaneId": "apparel_accessories",
+        "handoffParityStatus": "matched",
+        "noStateMismatch": true
+      },
+      "prospect": {
+        "name": "Ariat International",
+        "website": "https://www.ariat.com/"
+      },
+      "demoPath": {
+        "laneId": "apparel_accessories",
+        "laneName": "Apparel & Accessories",
+        "proofAnchor": "Style / SKU Matrix",
+        "familyKey": "apparelAccessories",
+        "scenario": "Style-to-Availability Readiness",
+        "confirmed": true
+      },
+      "storyInputs": {
+        "buyerNeed": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style",
+        "conversationNotes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise."
+      },
+      "runnerControls": {
+        "requestedMode": "server_flagged_integrated_build_return",
+        "sandboxWriteModeRequiresOperatorEnablement": true,
+        "writeAuthority": "governed_internal_runner_only",
+        "drawerAuthority": "prepare_confirm_export_import_only"
+      },
+      "requiredRecords": [
+        "customer",
+        "demoTransaction",
+        "heroItem",
+        "matrixProofItem",
+        "componentItem"
+      ],
+      "sourceHandoff": {
+        "schema": "idb.dcc-runner-handoff-packet.v1",
+        "status": "ready_for_dcc_suitelet_submission_review",
+        "executionMode": "review_only_no_submit",
+        "selectedPack": "apparelAccessories",
+        "selectedScenario": "Style-to-Availability Readiness"
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noSuiteScriptInvocationFromDrawer": true,
+        "noTransactionWritesFromDrawer": true,
+        "noActiveOpenLinksWithoutRealUrls": true
+      }
+    },
+    "operatorGate": {
+      "schema": "idb.operator-queue-gate.v1",
+      "operatorOnly": true,
+      "operator": {
+        "name": "Operator User",
+        "reviewedAt": "2026-05-17T10:52:20-04:00"
+      },
+      "reviewDecision": "operator_approved_queue_submit",
+      "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+      "confirmedNoSubmit": true,
+      "confirmedDrawerNoWrite": true,
+      "confirmedSandboxAccount": true,
+      "drawerInvocationTokenAccepted": false,
+      "notes": "W183 activation packet only. No live request is sent in this harness."
+    },
+    "serverFlags": {
+      "CREATE_ENABLED": true,
+      "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+      "QUEUE_SUBMIT_ENABLED": true
+    },
+    "sandboxAllowlistEvidence": {
+      "sandboxOnly": true,
+      "currentSandboxAccount": "SANDBOX_ACCOUNT_ID",
+      "sandboxAccountAllowlist": [
+        "SANDBOX_ACCOUNT_ID"
+      ],
+      "currentAccountAllowed": true
+    },
+    "idempotency": {
+      "token": "idb-w183-ariat-international-one-call-001",
+      "duplicateBehavior": "poll_existing_runner_task"
+    },
+    "oneSubmitLimit": {
+      "maxQueueSubmitAttempts": 1,
+      "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+      "secondSubmitBehavior": "blocked_duplicate_submit"
+    },
+    "rollbackPlan": {
+      "owner": "server_deployment_flags",
+      "action": "disable_server_flags_before_retry_or_stop",
+      "flagsToDisable": [
+        "CREATE_ENABLED",
+        "GOVERNED_SANDBOX_WRITE_ENABLED",
+        "QUEUE_SUBMIT_ENABLED"
+      ]
+    },
+    "expectedFirstResponse": {
+      "allowed": [
+        "runnerTaskId",
+        "adapter_error"
+      ],
+      "disallowed": [
+        "record_urls",
+        "fake_record_urls",
+        "final_generated_names_before_result_capture"
+      ],
+      "successEnvelope": {
+        "queueSubmitted": true,
+        "runnerTaskId": "returned_by_approved_server_adapter",
+        "resultCapture": {
+          "status": "pending_runner_completion"
+        }
+      },
+      "adapterErrorEnvelope": {
+        "queueSubmitted": false,
+        "runnerTaskId": null,
+        "resultCapture": {
+          "status": "adapter_error"
+        }
+      }
+    },
+    "resultCapturePollingHandoff": {
+      "firstResponse": "runnerTaskId_or_adapter_error",
+      "runnerTaskIdSource": "approved_server_adapter_response",
+      "pendingStatus": "pending_runner_completion",
+      "nextControlAfterRunnerTaskId": "check_runner_result",
+      "completedResultGate": "W151_completed_runner_result_import_guard",
+      "importMutationPolicy": "do_not_mutate_final_names_until_w151_valid_import",
+      "expectedFirstResponseDoesNotContainRecordUrls": true
+    },
+    "w151ResultImportGuard": {
+      "required": true,
+      "acceptsOnlyCompletedRunnerResultJson": true,
+      "rejectsHandoffJson": true,
+      "requiresNumericInternalIds": true,
+      "requiresSupportedNetSuiteUrls": true,
+      "activeOpenLinksBeforeImport": 0
+    }
+  },
+  "blockedPacket": {
+    "schema": "idb.approved-server-adapter-activation-packet-and-one-call-readiness.v1",
+    "status": "activation_packet_blocked_no_submit",
+    "mode": "activation_packet_only_real_execution_disabled_until_explicit_authorization",
+    "activationReady": false,
+    "activationBlockers": [
+      "approved_endpoint_configured",
+      "server_flags_true",
+      "sandbox_allowlist_confirmed",
+      "operator_approval_captured"
+    ],
+    "activationChecks": [
+      {
+        "id": "w182_no_call_evidence_confirmed",
+        "label": "W182 no-call evidence confirmed",
+        "ready": true,
+        "evidence": "server_adapter_no_call_evidence_confirmed"
+      },
+      {
+        "id": "confirmed_build_request_ready",
+        "label": "Confirmed Build request ready",
+        "ready": true,
+        "evidence": "confirmed_ready_for_governed_runner"
+      },
+      {
+        "id": "approved_endpoint_configured",
+        "label": "Approved server adapter endpoint configured",
+        "ready": false,
+        "evidence": "missing_endpoint_url"
+      },
+      {
+        "id": "server_flags_true",
+        "label": "Server flags confirmed true",
+        "ready": false,
+        "evidence": {
+          "CREATE_ENABLED": false,
+          "GOVERNED_SANDBOX_WRITE_ENABLED": false,
+          "QUEUE_SUBMIT_ENABLED": false
+        }
+      },
+      {
+        "id": "sandbox_allowlist_confirmed",
+        "label": "Sandbox allowlist confirmed",
+        "ready": false,
+        "evidence": {
+          "currentSandboxAccount": "",
+          "sandboxAccountAllowlist": []
+        }
+      },
+      {
+        "id": "operator_approval_captured",
+        "label": "Operator approval captured",
+        "ready": false,
+        "evidence": {
+          "schema": "idb.operator-queue-gate.v1",
+          "operatorOnly": true,
+          "operator": {
+            "name": "",
+            "reviewedAt": ""
+          },
+          "reviewDecision": "operator_review_not_started",
+          "typeToConfirm": "",
+          "confirmedNoSubmit": true,
+          "confirmedDrawerNoWrite": true,
+          "confirmedSandboxAccount": false,
+          "drawerInvocationTokenAccepted": false,
+          "notes": ""
+        }
+      },
+      {
+        "id": "idempotency_token_generated",
+        "label": "Idempotency token generated",
+        "ready": true,
+        "evidence": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+      },
+      {
+        "id": "one_submit_limit_enforced",
+        "label": "One-submit limit enforced",
+        "ready": true,
+        "evidence": {
+          "maxQueueSubmitAttempts": 1,
+          "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+          "secondSubmitBehavior": "blocked_duplicate_submit"
+        }
+      },
+      {
+        "id": "rollback_flags_ready",
+        "label": "Rollback flags ready",
+        "ready": true,
+        "evidence": {
+          "owner": "server_deployment_flags",
+          "action": "disable_server_flags_before_retry_or_stop",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        }
+      },
+      {
+        "id": "w151_result_import_guard_ready",
+        "label": "W151 result import guard ready",
+        "ready": true,
+        "evidence": {
+          "required": true,
+          "acceptsOnlyCompletedRunnerResultJson": true,
+          "rejectsHandoffJson": true,
+          "requiresNumericInternalIds": true,
+          "requiresSupportedNetSuiteUrls": true,
+          "activeOpenLinksBeforeImport": 0
+        }
+      },
+      {
+        "id": "result_capture_polling_handoff_ready",
+        "label": "Result-capture polling handoff ready",
+        "ready": true,
+        "evidence": {
+          "firstResponse": "runnerTaskId_or_adapter_error",
+          "runnerTaskIdSource": "approved_server_adapter_response",
+          "pendingStatus": "pending_runner_completion",
+          "nextControlAfterRunnerTaskId": "check_runner_result",
+          "completedResultGate": "W151_completed_runner_result_import_guard",
+          "importMutationPolicy": "do_not_mutate_final_names_until_w151_valid_import",
+          "expectedFirstResponseDoesNotContainRecordUrls": true
+        }
+      }
+    ],
+    "activationPacket": {
+      "schema": "idb.approved-server-adapter-activation-packet.v1",
+      "mode": "build_one_call_readiness_only_no_submit",
+      "endpoint": {
+        "method": "POST",
+        "url": "",
+        "approvedEndpointMode": "approved_server_adapter_only"
+      },
+      "confirmedBuildRequestJson": {
+        "schema": "idb.confirmed-build-request.v1",
+        "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "requestStatus": "confirmed_ready_for_governed_runner",
+        "producedBy": "idb_drawer",
+        "idbPrimarySurface": true,
+        "legacyDccSuiteletUi": {
+          "normalWorkflow": false,
+          "role": "legacy_reference_only",
+          "replacement": "Drawer prepares confirmed request; governed runner creates or resolves records."
+        },
+        "consultantConfirmation": {
+          "required": true,
+          "confirmed": true,
+          "source": "acceptedPacket"
+        },
+        "stateAuthority": {
+          "selectedLaneId": "apparel_accessories",
+          "confirmedLaneId": "apparel_accessories",
+          "exportedLaneId": "apparel_accessories",
+          "handoffParityStatus": "matched",
+          "noStateMismatch": true
+        },
+        "prospect": {
+          "name": "Ariat International",
+          "website": "https://www.ariat.com/"
+        },
+        "demoPath": {
+          "laneId": "apparel_accessories",
+          "laneName": "Apparel & Accessories",
+          "proofAnchor": "Style / SKU Matrix",
+          "familyKey": "apparelAccessories",
+          "scenario": "Style-to-Availability Readiness",
+          "confirmed": true
+        },
+        "storyInputs": {
+          "buyerNeed": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style",
+          "conversationNotes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise."
+        },
+        "runnerControls": {
+          "requestedMode": "server_flagged_integrated_build_return",
+          "sandboxWriteModeRequiresOperatorEnablement": true,
+          "writeAuthority": "governed_internal_runner_only",
+          "drawerAuthority": "prepare_confirm_export_import_only"
+        },
+        "requiredRecords": [
+          "customer",
+          "demoTransaction",
+          "heroItem",
+          "matrixProofItem",
+          "componentItem"
+        ],
+        "sourceHandoff": {
+          "schema": "idb.dcc-runner-handoff-packet.v1",
+          "status": "ready_for_dcc_suitelet_submission_review",
+          "executionMode": "review_only_no_submit",
+          "selectedPack": "apparelAccessories",
+          "selectedScenario": "Style-to-Availability Readiness"
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noSuiteScriptInvocationFromDrawer": true,
+          "noTransactionWritesFromDrawer": true,
+          "noActiveOpenLinksWithoutRealUrls": true
+        }
+      },
+      "operatorGate": {
+        "schema": "idb.operator-queue-gate.v1",
+        "operatorOnly": true,
+        "operator": {
+          "name": "",
+          "reviewedAt": ""
+        },
+        "reviewDecision": "operator_review_not_started",
+        "typeToConfirm": "",
+        "confirmedNoSubmit": true,
+        "confirmedDrawerNoWrite": true,
+        "confirmedSandboxAccount": false,
+        "drawerInvocationTokenAccepted": false,
+        "notes": ""
+      },
+      "serverFlags": {
+        "CREATE_ENABLED": false,
+        "GOVERNED_SANDBOX_WRITE_ENABLED": false,
+        "QUEUE_SUBMIT_ENABLED": false
+      },
+      "sandboxAllowlistEvidence": {
+        "sandboxOnly": true,
+        "currentSandboxAccount": "",
+        "sandboxAccountAllowlist": [],
+        "currentAccountAllowed": false
+      },
+      "idempotency": {
+        "token": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "duplicateBehavior": "poll_existing_runner_task"
+      },
+      "oneSubmitLimit": {
+        "maxQueueSubmitAttempts": 1,
+        "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+        "secondSubmitBehavior": "blocked_duplicate_submit"
+      },
+      "rollbackPlan": {
+        "owner": "server_deployment_flags",
+        "action": "disable_server_flags_before_retry_or_stop",
+        "flagsToDisable": [
+          "CREATE_ENABLED",
+          "GOVERNED_SANDBOX_WRITE_ENABLED",
+          "QUEUE_SUBMIT_ENABLED"
+        ]
+      },
+      "expectedFirstResponse": {
+        "allowed": [
+          "runnerTaskId",
+          "adapter_error"
+        ],
+        "disallowed": [
+          "record_urls",
+          "fake_record_urls",
+          "final_generated_names_before_result_capture"
+        ],
+        "successEnvelope": {
+          "queueSubmitted": true,
+          "runnerTaskId": "returned_by_approved_server_adapter",
+          "resultCapture": {
+            "status": "pending_runner_completion"
+          }
+        },
+        "adapterErrorEnvelope": {
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "resultCapture": {
+            "status": "adapter_error"
+          }
+        }
+      },
+      "resultCapturePollingHandoff": {
+        "firstResponse": "runnerTaskId_or_adapter_error",
+        "runnerTaskIdSource": "approved_server_adapter_response",
+        "pendingStatus": "pending_runner_completion",
+        "nextControlAfterRunnerTaskId": "check_runner_result",
+        "completedResultGate": "W151_completed_runner_result_import_guard",
+        "importMutationPolicy": "do_not_mutate_final_names_until_w151_valid_import",
+        "expectedFirstResponseDoesNotContainRecordUrls": true
+      },
+      "w151ResultImportGuard": {
+        "required": true,
+        "acceptsOnlyCompletedRunnerResultJson": true,
+        "rejectsHandoffJson": true,
+        "requiresNumericInternalIds": true,
+        "requiresSupportedNetSuiteUrls": true,
+        "activeOpenLinksBeforeImport": 0
+      }
+    },
+    "requestDecision": {
+      "liveRequestSent": false,
+      "transportInvoked": false,
+      "queueSubmitted": false,
+      "requestBodyReadyForNextBlock": false,
+      "reason": "Activation packet is blocked. Missing prerequisites prevent request construction and no request is sent."
+    },
+    "pollingHandoff": {
+      "firstResponse": "runnerTaskId_or_adapter_error",
+      "runnerTaskIdSource": "approved_server_adapter_response",
+      "pendingStatus": "pending_runner_completion",
+      "nextControlAfterRunnerTaskId": "check_runner_result",
+      "completedResultGate": "W151_completed_runner_result_import_guard",
+      "importMutationPolicy": "do_not_mutate_final_names_until_w151_valid_import",
+      "expectedFirstResponseDoesNotContainRecordUrls": true
+    },
+    "mutationGuard": {
+      "finalGeneratedNamesBefore": "",
+      "finalGeneratedNamesAfter": "",
+      "finalGeneratedNamesUnchanged": true,
+      "finalGeneratedNamesImported": false,
+      "activeOpenLinks": 0,
+      "writesAttemptedFromDrawer": false,
+      "drawerCreatedRecords": false
+    },
+    "traceSamples": [
+      {
+        "event": "w183_w182_no_call_evidence_confirmed",
+        "gate": "w182_no_call_evidence_confirmed",
+        "ready": true,
+        "evidence": "server_adapter_no_call_evidence_confirmed",
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_confirmed_build_request_ready",
+        "gate": "confirmed_build_request_ready",
+        "ready": true,
+        "evidence": "confirmed_ready_for_governed_runner",
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_approved_endpoint_configured",
+        "gate": "approved_endpoint_configured",
+        "ready": false,
+        "evidence": "missing_endpoint_url",
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_server_flags_true",
+        "gate": "server_flags_true",
+        "ready": false,
+        "evidence": {
+          "CREATE_ENABLED": false,
+          "GOVERNED_SANDBOX_WRITE_ENABLED": false,
+          "QUEUE_SUBMIT_ENABLED": false
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_sandbox_allowlist_confirmed",
+        "gate": "sandbox_allowlist_confirmed",
+        "ready": false,
+        "evidence": {
+          "currentSandboxAccount": "",
+          "sandboxAccountAllowlist": []
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_operator_approval_captured",
+        "gate": "operator_approval_captured",
+        "ready": false,
+        "evidence": {
+          "schema": "idb.operator-queue-gate.v1",
+          "operatorOnly": true,
+          "operator": {
+            "name": "",
+            "reviewedAt": ""
+          },
+          "reviewDecision": "operator_review_not_started",
+          "typeToConfirm": "",
+          "confirmedNoSubmit": true,
+          "confirmedDrawerNoWrite": true,
+          "confirmedSandboxAccount": false,
+          "drawerInvocationTokenAccepted": false,
+          "notes": ""
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_idempotency_token_generated",
+        "gate": "idempotency_token_generated",
+        "ready": true,
+        "evidence": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_one_submit_limit_enforced",
+        "gate": "one_submit_limit_enforced",
+        "ready": true,
+        "evidence": {
+          "maxQueueSubmitAttempts": 1,
+          "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+          "secondSubmitBehavior": "blocked_duplicate_submit"
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_rollback_flags_ready",
+        "gate": "rollback_flags_ready",
+        "ready": true,
+        "evidence": {
+          "owner": "server_deployment_flags",
+          "action": "disable_server_flags_before_retry_or_stop",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_w151_result_import_guard_ready",
+        "gate": "w151_result_import_guard_ready",
+        "ready": true,
+        "evidence": {
+          "required": true,
+          "acceptsOnlyCompletedRunnerResultJson": true,
+          "rejectsHandoffJson": true,
+          "requiresNumericInternalIds": true,
+          "requiresSupportedNetSuiteUrls": true,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_result_capture_polling_handoff_ready",
+        "gate": "result_capture_polling_handoff_ready",
+        "ready": true,
+        "evidence": {
+          "firstResponse": "runnerTaskId_or_adapter_error",
+          "runnerTaskIdSource": "approved_server_adapter_response",
+          "pendingStatus": "pending_runner_completion",
+          "nextControlAfterRunnerTaskId": "check_runner_result",
+          "completedResultGate": "W151_completed_runner_result_import_guard",
+          "importMutationPolicy": "do_not_mutate_final_names_until_w151_valid_import",
+          "expectedFirstResponseDoesNotContainRecordUrls": true
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      }
+    ],
+    "visualTestingDecision": {
+      "visualTestingBlocked": true,
+      "targetedOpenLinkTestingReady": false,
+      "broaderVisualNetSuiteTestingRequired": false,
+      "reason": "W183 prepares activation only. No Open-link visual testing until completed runner result JSON is imported."
+    },
+    "noRegression": {
+      "noDrawerWrites": true,
+      "noDrawerTransactionWrites": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+      "consultantConfirmationRequired": false,
+      "stateAuthorityAndHandoffParityPreserved": true,
+      "idempotencyPreserved": true,
+      "internalRunnerOwnership": true,
+      "rollbackByDisablingServerFlags": true,
+      "w151CompletedResultImportGuardPreserved": true,
+      "noActiveOpenLinksWithoutRealUrls": true,
+      "noLiveInvocation": true
+    }
+  },
+  "readyPacket": {
+    "schema": "idb.approved-server-adapter-activation-packet-and-one-call-readiness.v1",
+    "status": "activation_packet_ready_no_submit",
+    "mode": "activation_packet_only_real_execution_disabled_until_explicit_authorization",
+    "activationReady": true,
+    "activationBlockers": [],
+    "activationChecks": [
+      {
+        "id": "w182_no_call_evidence_confirmed",
+        "label": "W182 no-call evidence confirmed",
+        "ready": true,
+        "evidence": "server_adapter_no_call_evidence_confirmed"
+      },
+      {
+        "id": "confirmed_build_request_ready",
+        "label": "Confirmed Build request ready",
+        "ready": true,
+        "evidence": "confirmed_ready_for_governed_runner"
+      },
+      {
+        "id": "approved_endpoint_configured",
+        "label": "Approved server adapter endpoint configured",
+        "ready": true,
+        "evidence": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idb_governed_runner_adapter&deploy=customdeploy_idb_governed_runner_adapter"
+      },
+      {
+        "id": "server_flags_true",
+        "label": "Server flags confirmed true",
+        "ready": true,
+        "evidence": {
+          "CREATE_ENABLED": true,
+          "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+          "QUEUE_SUBMIT_ENABLED": true
+        }
+      },
+      {
+        "id": "sandbox_allowlist_confirmed",
+        "label": "Sandbox allowlist confirmed",
+        "ready": true,
+        "evidence": {
+          "currentSandboxAccount": "SANDBOX_ACCOUNT_ID",
+          "sandboxAccountAllowlist": [
+            "SANDBOX_ACCOUNT_ID"
+          ]
+        }
+      },
+      {
+        "id": "operator_approval_captured",
+        "label": "Operator approval captured",
+        "ready": true,
+        "evidence": {
+          "schema": "idb.operator-queue-gate.v1",
+          "operatorOnly": true,
+          "operator": {
+            "name": "Operator User",
+            "reviewedAt": "2026-05-17T10:52:20-04:00"
+          },
+          "reviewDecision": "operator_approved_queue_submit",
+          "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+          "confirmedNoSubmit": true,
+          "confirmedDrawerNoWrite": true,
+          "confirmedSandboxAccount": true,
+          "drawerInvocationTokenAccepted": false,
+          "notes": "W183 activation packet only. No live request is sent in this harness."
+        }
+      },
+      {
+        "id": "idempotency_token_generated",
+        "label": "Idempotency token generated",
+        "ready": true,
+        "evidence": "idb-w183-ariat-international-one-call-001"
+      },
+      {
+        "id": "one_submit_limit_enforced",
+        "label": "One-submit limit enforced",
+        "ready": true,
+        "evidence": {
+          "maxQueueSubmitAttempts": 1,
+          "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+          "secondSubmitBehavior": "blocked_duplicate_submit"
+        }
+      },
+      {
+        "id": "rollback_flags_ready",
+        "label": "Rollback flags ready",
+        "ready": true,
+        "evidence": {
+          "owner": "server_deployment_flags",
+          "action": "disable_server_flags_before_retry_or_stop",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        }
+      },
+      {
+        "id": "w151_result_import_guard_ready",
+        "label": "W151 result import guard ready",
+        "ready": true,
+        "evidence": {
+          "required": true,
+          "acceptsOnlyCompletedRunnerResultJson": true,
+          "rejectsHandoffJson": true,
+          "requiresNumericInternalIds": true,
+          "requiresSupportedNetSuiteUrls": true,
+          "activeOpenLinksBeforeImport": 0
+        }
+      },
+      {
+        "id": "result_capture_polling_handoff_ready",
+        "label": "Result-capture polling handoff ready",
+        "ready": true,
+        "evidence": {
+          "firstResponse": "runnerTaskId_or_adapter_error",
+          "runnerTaskIdSource": "approved_server_adapter_response",
+          "pendingStatus": "pending_runner_completion",
+          "nextControlAfterRunnerTaskId": "check_runner_result",
+          "completedResultGate": "W151_completed_runner_result_import_guard",
+          "importMutationPolicy": "do_not_mutate_final_names_until_w151_valid_import",
+          "expectedFirstResponseDoesNotContainRecordUrls": true
+        }
+      }
+    ],
+    "activationPacket": {
+      "schema": "idb.approved-server-adapter-activation-packet.v1",
+      "mode": "build_one_call_readiness_only_no_submit",
+      "endpoint": {
+        "method": "POST",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idb_governed_runner_adapter&deploy=customdeploy_idb_governed_runner_adapter",
+        "approvedEndpointMode": "approved_server_adapter_only"
+      },
+      "confirmedBuildRequestJson": {
+        "schema": "idb.confirmed-build-request.v1",
+        "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "requestStatus": "confirmed_ready_for_governed_runner",
+        "producedBy": "idb_drawer",
+        "idbPrimarySurface": true,
+        "legacyDccSuiteletUi": {
+          "normalWorkflow": false,
+          "role": "legacy_reference_only",
+          "replacement": "Drawer prepares confirmed request; governed runner creates or resolves records."
+        },
+        "consultantConfirmation": {
+          "required": true,
+          "confirmed": true,
+          "source": "acceptedPacket"
+        },
+        "stateAuthority": {
+          "selectedLaneId": "apparel_accessories",
+          "confirmedLaneId": "apparel_accessories",
+          "exportedLaneId": "apparel_accessories",
+          "handoffParityStatus": "matched",
+          "noStateMismatch": true
+        },
+        "prospect": {
+          "name": "Ariat International",
+          "website": "https://www.ariat.com/"
+        },
+        "demoPath": {
+          "laneId": "apparel_accessories",
+          "laneName": "Apparel & Accessories",
+          "proofAnchor": "Style / SKU Matrix",
+          "familyKey": "apparelAccessories",
+          "scenario": "Style-to-Availability Readiness",
+          "confirmed": true
+        },
+        "storyInputs": {
+          "buyerNeed": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style",
+          "conversationNotes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise."
+        },
+        "runnerControls": {
+          "requestedMode": "server_flagged_integrated_build_return",
+          "sandboxWriteModeRequiresOperatorEnablement": true,
+          "writeAuthority": "governed_internal_runner_only",
+          "drawerAuthority": "prepare_confirm_export_import_only"
+        },
+        "requiredRecords": [
+          "customer",
+          "demoTransaction",
+          "heroItem",
+          "matrixProofItem",
+          "componentItem"
+        ],
+        "sourceHandoff": {
+          "schema": "idb.dcc-runner-handoff-packet.v1",
+          "status": "ready_for_dcc_suitelet_submission_review",
+          "executionMode": "review_only_no_submit",
+          "selectedPack": "apparelAccessories",
+          "selectedScenario": "Style-to-Availability Readiness"
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noSuiteScriptInvocationFromDrawer": true,
+          "noTransactionWritesFromDrawer": true,
+          "noActiveOpenLinksWithoutRealUrls": true
+        }
+      },
+      "operatorGate": {
+        "schema": "idb.operator-queue-gate.v1",
+        "operatorOnly": true,
+        "operator": {
+          "name": "Operator User",
+          "reviewedAt": "2026-05-17T10:52:20-04:00"
+        },
+        "reviewDecision": "operator_approved_queue_submit",
+        "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+        "confirmedNoSubmit": true,
+        "confirmedDrawerNoWrite": true,
+        "confirmedSandboxAccount": true,
+        "drawerInvocationTokenAccepted": false,
+        "notes": "W183 activation packet only. No live request is sent in this harness."
+      },
+      "serverFlags": {
+        "CREATE_ENABLED": true,
+        "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+        "QUEUE_SUBMIT_ENABLED": true
+      },
+      "sandboxAllowlistEvidence": {
+        "sandboxOnly": true,
+        "currentSandboxAccount": "SANDBOX_ACCOUNT_ID",
+        "sandboxAccountAllowlist": [
+          "SANDBOX_ACCOUNT_ID"
+        ],
+        "currentAccountAllowed": true
+      },
+      "idempotency": {
+        "token": "idb-w183-ariat-international-one-call-001",
+        "duplicateBehavior": "poll_existing_runner_task"
+      },
+      "oneSubmitLimit": {
+        "maxQueueSubmitAttempts": 1,
+        "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+        "secondSubmitBehavior": "blocked_duplicate_submit"
+      },
+      "rollbackPlan": {
+        "owner": "server_deployment_flags",
+        "action": "disable_server_flags_before_retry_or_stop",
+        "flagsToDisable": [
+          "CREATE_ENABLED",
+          "GOVERNED_SANDBOX_WRITE_ENABLED",
+          "QUEUE_SUBMIT_ENABLED"
+        ]
+      },
+      "expectedFirstResponse": {
+        "allowed": [
+          "runnerTaskId",
+          "adapter_error"
+        ],
+        "disallowed": [
+          "record_urls",
+          "fake_record_urls",
+          "final_generated_names_before_result_capture"
+        ],
+        "successEnvelope": {
+          "queueSubmitted": true,
+          "runnerTaskId": "returned_by_approved_server_adapter",
+          "resultCapture": {
+            "status": "pending_runner_completion"
+          }
+        },
+        "adapterErrorEnvelope": {
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "resultCapture": {
+            "status": "adapter_error"
+          }
+        }
+      },
+      "resultCapturePollingHandoff": {
+        "firstResponse": "runnerTaskId_or_adapter_error",
+        "runnerTaskIdSource": "approved_server_adapter_response",
+        "pendingStatus": "pending_runner_completion",
+        "nextControlAfterRunnerTaskId": "check_runner_result",
+        "completedResultGate": "W151_completed_runner_result_import_guard",
+        "importMutationPolicy": "do_not_mutate_final_names_until_w151_valid_import",
+        "expectedFirstResponseDoesNotContainRecordUrls": true
+      },
+      "w151ResultImportGuard": {
+        "required": true,
+        "acceptsOnlyCompletedRunnerResultJson": true,
+        "rejectsHandoffJson": true,
+        "requiresNumericInternalIds": true,
+        "requiresSupportedNetSuiteUrls": true,
+        "activeOpenLinksBeforeImport": 0
+      }
+    },
+    "requestDecision": {
+      "liveRequestSent": false,
+      "transportInvoked": false,
+      "queueSubmitted": false,
+      "requestBodyReadyForNextBlock": true,
+      "reason": "Activation packet is ready. W183 still sends no request; the next block must explicitly authorize the one-call server adapter execution."
+    },
+    "pollingHandoff": {
+      "firstResponse": "runnerTaskId_or_adapter_error",
+      "runnerTaskIdSource": "approved_server_adapter_response",
+      "pendingStatus": "pending_runner_completion",
+      "nextControlAfterRunnerTaskId": "check_runner_result",
+      "completedResultGate": "W151_completed_runner_result_import_guard",
+      "importMutationPolicy": "do_not_mutate_final_names_until_w151_valid_import",
+      "expectedFirstResponseDoesNotContainRecordUrls": true
+    },
+    "mutationGuard": {
+      "finalGeneratedNamesBefore": "",
+      "finalGeneratedNamesAfter": "",
+      "finalGeneratedNamesUnchanged": true,
+      "finalGeneratedNamesImported": false,
+      "activeOpenLinks": 0,
+      "writesAttemptedFromDrawer": false,
+      "drawerCreatedRecords": false
+    },
+    "traceSamples": [
+      {
+        "event": "w183_w182_no_call_evidence_confirmed",
+        "gate": "w182_no_call_evidence_confirmed",
+        "ready": true,
+        "evidence": "server_adapter_no_call_evidence_confirmed",
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_confirmed_build_request_ready",
+        "gate": "confirmed_build_request_ready",
+        "ready": true,
+        "evidence": "confirmed_ready_for_governed_runner",
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_approved_endpoint_configured",
+        "gate": "approved_endpoint_configured",
+        "ready": true,
+        "evidence": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idb_governed_runner_adapter&deploy=customdeploy_idb_governed_runner_adapter",
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_server_flags_true",
+        "gate": "server_flags_true",
+        "ready": true,
+        "evidence": {
+          "CREATE_ENABLED": true,
+          "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+          "QUEUE_SUBMIT_ENABLED": true
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_sandbox_allowlist_confirmed",
+        "gate": "sandbox_allowlist_confirmed",
+        "ready": true,
+        "evidence": {
+          "currentSandboxAccount": "SANDBOX_ACCOUNT_ID",
+          "sandboxAccountAllowlist": [
+            "SANDBOX_ACCOUNT_ID"
+          ]
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_operator_approval_captured",
+        "gate": "operator_approval_captured",
+        "ready": true,
+        "evidence": {
+          "schema": "idb.operator-queue-gate.v1",
+          "operatorOnly": true,
+          "operator": {
+            "name": "Operator User",
+            "reviewedAt": "2026-05-17T10:52:20-04:00"
+          },
+          "reviewDecision": "operator_approved_queue_submit",
+          "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+          "confirmedNoSubmit": true,
+          "confirmedDrawerNoWrite": true,
+          "confirmedSandboxAccount": true,
+          "drawerInvocationTokenAccepted": false,
+          "notes": "W183 activation packet only. No live request is sent in this harness."
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_idempotency_token_generated",
+        "gate": "idempotency_token_generated",
+        "ready": true,
+        "evidence": "idb-w183-ariat-international-one-call-001",
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_one_submit_limit_enforced",
+        "gate": "one_submit_limit_enforced",
+        "ready": true,
+        "evidence": {
+          "maxQueueSubmitAttempts": 1,
+          "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+          "secondSubmitBehavior": "blocked_duplicate_submit"
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_rollback_flags_ready",
+        "gate": "rollback_flags_ready",
+        "ready": true,
+        "evidence": {
+          "owner": "server_deployment_flags",
+          "action": "disable_server_flags_before_retry_or_stop",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_w151_result_import_guard_ready",
+        "gate": "w151_result_import_guard_ready",
+        "ready": true,
+        "evidence": {
+          "required": true,
+          "acceptsOnlyCompletedRunnerResultJson": true,
+          "rejectsHandoffJson": true,
+          "requiresNumericInternalIds": true,
+          "requiresSupportedNetSuiteUrls": true,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      },
+      {
+        "event": "w183_result_capture_polling_handoff_ready",
+        "gate": "result_capture_polling_handoff_ready",
+        "ready": true,
+        "evidence": {
+          "firstResponse": "runnerTaskId_or_adapter_error",
+          "runnerTaskIdSource": "approved_server_adapter_response",
+          "pendingStatus": "pending_runner_completion",
+          "nextControlAfterRunnerTaskId": "check_runner_result",
+          "completedResultGate": "W151_completed_runner_result_import_guard",
+          "importMutationPolicy": "do_not_mutate_final_names_until_w151_valid_import",
+          "expectedFirstResponseDoesNotContainRecordUrls": true
+        },
+        "liveRequestSent": false,
+        "queueSubmitted": false,
+        "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+        "activeOpenLinks": 0,
+        "mutatesFinalGeneratedNames": false
+      }
+    ],
+    "visualTestingDecision": {
+      "visualTestingBlocked": true,
+      "targetedOpenLinkTestingReady": false,
+      "broaderVisualNetSuiteTestingRequired": false,
+      "reason": "W183 prepares activation only. No Open-link visual testing until completed runner result JSON is imported."
+    },
+    "noRegression": {
+      "noDrawerWrites": true,
+      "noDrawerTransactionWrites": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+      "consultantConfirmationRequired": true,
+      "stateAuthorityAndHandoffParityPreserved": true,
+      "idempotencyPreserved": true,
+      "internalRunnerOwnership": true,
+      "rollbackByDisablingServerFlags": true,
+      "w151CompletedResultImportGuardPreserved": true,
+      "noActiveOpenLinksWithoutRealUrls": true,
+      "noLiveInvocation": true
+    }
+  },
+  "guardedHarness": {
+    "blockedWithoutPrereqsNoRequest": true,
+    "readyOnlyWithAllActivationPrereqs": true,
+    "endpointConfigured": true,
+    "serverFlagsConfirmed": true,
+    "sandboxAllowlistConfirmed": true,
+    "operatorApprovalCaptured": true,
+    "idempotencyTokenGenerated": true,
+    "oneSubmitLimitEnforced": true,
+    "rollbackFlagsReady": true,
+    "firstResponseTaskOrErrorNotUrls": true,
+    "resultCapturePollingHandoffReady": true,
+    "noFinalNameMutation": true,
+    "noOpenLinksBeforeImport": true,
+    "visualTestingBlocked": true
+  },
+  "results": [
+    {
+      "name": "w183_blocked_without_prereqs_no_request",
+      "pass": true,
+      "detail": "[\"approved_endpoint_configured\",\"server_flags_true\",\"sandbox_allowlist_confirmed\",\"operator_approval_captured\"]"
+    },
+    {
+      "name": "w183_ready_only_with_all_activation_prereqs",
+      "pass": true,
+      "detail": "[{\"id\":\"w182_no_call_evidence_confirmed\",\"label\":\"W182 no-call evidence confirmed\",\"ready\":true,\"evidence\":\"server_adapter_no_call_evidence_confirmed\"},{\"id\":\"confirmed_build_request_ready\",\"label\":\"Confirmed Build request ready\",\"ready\":true,\"evidence\":\"confirmed_ready_for_governed_runner\"},{\"id\":\"approved_endpoint_configured\",\"label\":\"Approved server adapter endpoint configured\",\"ready\":true,\"evidence\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idb_governed_runner_adapter&deploy=customdeploy_idb_governed_runner_adapter\"},{\"id\":\"server_flags_true\",\"label\":\"Server flags confirmed true\",\"ready\":true,\"evidence\":{\"CREATE_ENABLED\":true,\"GOVERNED_SANDBOX_WRITE_ENABLED\":true,\"QUEUE_SUBMIT_ENABLED\":true}},{\"id\":\"sandbox_allowlist_confirmed\",\"label\":\"Sandbox allowlist confirmed\",\"ready\":true,\"evidence\":{\"currentSandboxAccount\":\"SANDBOX_ACCOUNT_ID\",\"sandboxAccountAllowlist\":[\"SANDBOX_ACCOUNT_ID\"]}},{\"id\":\"operator_approval_captured\",\"label\":\"Operator approval captured\",\"ready\":true,\"evidence\":{\"schema\":\"idb.operator-queue-gate.v1\",\"operatorOnly\":true,\"operator\":{\"name\":\"Operator User\",\"reviewedAt\":\"2026-05-17T10:52:20-04:00\"},\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedNoSubmit\":true,\"confirmedDrawerNoWrite\":true,\"confirmedSandboxAccount\":true,\"drawerInvocationTokenAccepted\":false,\"notes\":\"W183 activation packet only. No live request is sent in this harness.\"}},{\"id\":\"idempotency_token_generated\",\"label\":\"Idempotency token generated\",\"ready\":true,\"evidence\":\"idb-w183-ariat-international-one-call-001\"},{\"id\":\"one_submit_limit_enforced\",\"label\":\"One-submit limit enforced\",\"ready\":true,\"evidence\":{\"maxQueueSubmitAttempts\":1,\"duplicateIdempotencyBehavior\":\"poll_existing_runner_task\",\"secondSubmitBehavior\":\"blocked_duplicate_submit\"}},{\"id\":\"rollback_flags_ready\",\"label\":\"Rollback flags ready\",\"ready\":true,\"evidence\":{\"owner\":\"server_deployment_flags\",\"action\":\"disable_server_flags_before_retry_or_stop\",\"flagsToDisable\":[\"CREATE_ENABLED\",\"GOVERNED_SANDBOX_WRITE_ENABLED\",\"QUEUE_SUBMIT_ENABLED\"]}},{\"id\":\"w151_result_import_guard_ready\",\"label\":\"W151 result import guard ready\",\"ready\":true,\"evidence\":{\"required\":true,\"acceptsOnlyCompletedRunnerResultJson\":true,\"rejectsHandoffJson\":true,\"requiresNumericInternalIds\":true,\"requiresSupportedNetSuiteUrls\":true,\"activeOpenLinksBeforeImport\":0}},{\"id\":\"result_capture_polling_handoff_ready\",\"label\":\"Result-capture polling handoff ready\",\"ready\":true,\"evidence\":{\"firstResponse\":\"runnerTaskId_or_adapter_error\",\"runnerTaskIdSource\":\"approved_server_adapter_response\",\"pendingStatus\":\"pending_runner_completion\",\"nextControlAfterRunnerTaskId\":\"check_runner_result\",\"completedResultGate\":\"W151_completed_runner_result_import_guard\",\"importMutationPolicy\":\"do_not_mutate_final_names_until_w151_valid_import\",\"expectedFirstResponseDoesNotContainRecordUrls\":true}}]"
+    },
+    {
+      "name": "w183_endpoint_configured",
+      "pass": true,
+      "detail": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idb_governed_runner_adapter&deploy=customdeploy_idb_governed_runner_adapter"
+    },
+    {
+      "name": "w183_server_flags_confirmed",
+      "pass": true,
+      "detail": "{\"CREATE_ENABLED\":true,\"GOVERNED_SANDBOX_WRITE_ENABLED\":true,\"QUEUE_SUBMIT_ENABLED\":true}"
+    },
+    {
+      "name": "w183_sandbox_allowlist_confirmed",
+      "pass": true,
+      "detail": "{\"sandboxOnly\":true,\"currentSandboxAccount\":\"SANDBOX_ACCOUNT_ID\",\"sandboxAccountAllowlist\":[\"SANDBOX_ACCOUNT_ID\"],\"currentAccountAllowed\":true}"
+    },
+    {
+      "name": "w183_operator_approval_captured",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.operator-queue-gate.v1\",\"operatorOnly\":true,\"operator\":{\"name\":\"Operator User\",\"reviewedAt\":\"2026-05-17T10:52:20-04:00\"},\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedNoSubmit\":true,\"confirmedDrawerNoWrite\":true,\"confirmedSandboxAccount\":true,\"drawerInvocationTokenAccepted\":false,\"notes\":\"W183 activation packet only. No live request is sent in this harness.\"}"
+    },
+    {
+      "name": "w183_idempotency_token_generated",
+      "pass": true,
+      "detail": "idb-w183-ariat-international-one-call-001"
+    },
+    {
+      "name": "w183_one_submit_limit_enforced",
+      "pass": true,
+      "detail": "{\"maxQueueSubmitAttempts\":1,\"duplicateIdempotencyBehavior\":\"poll_existing_runner_task\",\"secondSubmitBehavior\":\"blocked_duplicate_submit\"}"
+    },
+    {
+      "name": "w183_rollback_flags_ready",
+      "pass": true,
+      "detail": "{\"owner\":\"server_deployment_flags\",\"action\":\"disable_server_flags_before_retry_or_stop\",\"flagsToDisable\":[\"CREATE_ENABLED\",\"GOVERNED_SANDBOX_WRITE_ENABLED\",\"QUEUE_SUBMIT_ENABLED\"]}"
+    },
+    {
+      "name": "w183_first_response_task_or_error_not_urls",
+      "pass": true,
+      "detail": "{\"allowed\":[\"runnerTaskId\",\"adapter_error\"],\"disallowed\":[\"record_urls\",\"fake_record_urls\",\"final_generated_names_before_result_capture\"],\"successEnvelope\":{\"queueSubmitted\":true,\"runnerTaskId\":\"returned_by_approved_server_adapter\",\"resultCapture\":{\"status\":\"pending_runner_completion\"}},\"adapterErrorEnvelope\":{\"queueSubmitted\":false,\"runnerTaskId\":null,\"resultCapture\":{\"status\":\"adapter_error\"}}}"
+    },
+    {
+      "name": "w183_result_capture_polling_handoff_ready",
+      "pass": true,
+      "detail": "{\"firstResponse\":\"runnerTaskId_or_adapter_error\",\"runnerTaskIdSource\":\"approved_server_adapter_response\",\"pendingStatus\":\"pending_runner_completion\",\"nextControlAfterRunnerTaskId\":\"check_runner_result\",\"completedResultGate\":\"W151_completed_runner_result_import_guard\",\"importMutationPolicy\":\"do_not_mutate_final_names_until_w151_valid_import\",\"expectedFirstResponseDoesNotContainRecordUrls\":true}"
+    },
+    {
+      "name": "w183_no_final_name_mutation",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"finalGeneratedNamesImported\":false,\"activeOpenLinks\":0,\"writesAttemptedFromDrawer\":false,\"drawerCreatedRecords\":false}"
+    },
+    {
+      "name": "w183_no_open_links_before_import",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "w183_visual_testing_blocked",
+      "pass": true,
+      "detail": "{\"visualTestingBlocked\":true,\"targetedOpenLinkTestingReady\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"reason\":\"W183 prepares activation only. No Open-link visual testing until completed runner result JSON is imported.\"}"
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlocked": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W183 prepares activation only. No Open-link visual testing until completed runner result JSON is imported."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W184: Explicit One-Call Server Adapter Authorization And Submission Gate",
+    "prompt": "Move through W184: Explicit One-Call Server Adapter Authorization And Submission Gate. Use the W183 activation packet to add the final execution gate for exactly one approved sandbox server adapter call from Build. Require the operator phrase AUTHORIZE ONE SANDBOX ADAPTER CALL, confirmed endpoint, server flags true, sandbox allowlist, operator approval, idempotency token, one-submit limit, rollback flags, and W151 import guard. Default remains no-submit; only if explicitly authorized should the approved server adapter be called once, returning runnerTaskId plus pending result capture or adapter error, not record URLs. Do not create records from the drawer, do not invoke SuiteScript outside the approved server adapter path, do not mutate final names, and do not request Open-link visual testing until completed runner result JSON is imported. Output authorization/submission gate, guarded harness, trace samples, W184 report, visual testing decision blocked, and best next Codex prompt."
+  }
+}

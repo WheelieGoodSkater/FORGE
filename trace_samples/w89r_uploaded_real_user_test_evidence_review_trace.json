@@ -1,0 +1,78 @@
+{
+  "schema": "idb.w89r-uploaded-real-user-test-evidence-review-trace.v1",
+  "generated": "2026-05-17T21:41:04.946Z",
+  "decision": "PASS",
+  "status": "graded_partial_real_evidence_no_go",
+  "averageScore": 3,
+  "broaderPilotDecision": "no_go_broader_consultant_pilot_partial_evidence",
+  "evidenceFiles": [
+    {
+      "type": "trace_json",
+      "expected": "intelligent-demo-builder-trace-*.json",
+      "provided": true,
+      "path": "/path/to/downloads/intelligent-demo-builder-trace-1778611737634.json"
+    },
+    {
+      "type": "dcc_runner_handoff_json",
+      "expected": "idb-dcc-runner-handoff-packet-*.json",
+      "provided": false,
+      "path": null
+    },
+    {
+      "type": "legacy_suitescript_review_packet_json",
+      "expected": "idb-suitescript-review-packet-*.json",
+      "provided": true,
+      "path": "/path/to/downloads/idb-suitescript-review-packet-1778611740134.json"
+    }
+  ],
+  "noRegression": {
+    "noIdbWritesObserved": true,
+    "noSuiteScriptInvocationFromIdbObserved": true,
+    "noTransactionWritesObserved": true,
+    "noDccRunnerRewriteObserved": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W90: Pilot Evidence Remediation And Retest Pack",
+    "prompt": "Move through W90: Pilot Evidence Remediation And Retest Pack. Use the W89R findings to fix the evidence flow before a broader consultant pilot: make the DCC handoff export primary and unmistakable, add a Trace evidence checklist for screenshots/JSON/operator notes, rename non-submitting create-mode language to review-only/export-only where appropriate, normalize trace ownership so website evidence owns identity while notes own story, and produce a one-run retest packet. Preserve no IDB writes, no DCC runner rewrite, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, consultant confirmation required, and DCC ownership of object generation. Output UI/trace remediation, updated validator gates, W90 report, and best next Codex prompt."
+  },
+  "validatorResults": [
+    {
+      "name": "w89r_trace_json_available",
+      "pass": true,
+      "detail": "/path/to/downloads/intelligent-demo-builder-trace-1778611737634.json"
+    },
+    {
+      "name": "w89r_legacy_suitescript_packet_available",
+      "pass": true,
+      "detail": "/path/to/downloads/idb-suitescript-review-packet-1778611740134.json"
+    },
+    {
+      "name": "w89r_dcc_handoff_missing_recorded",
+      "pass": true,
+      "detail": "/path/to/downloads/idb-dcc-runner-handoff-packet-1778611740134.json"
+    },
+    {
+      "name": "w89r_ariat_classification_correct",
+      "pass": true,
+      "detail": "{\"lane\":\"apparel_accessories\",\"confidence\":{\"state\":\"recommended\",\"score\":0.9,\"requiresConfirmation\":false}}"
+    },
+    {
+      "name": "w89r_no_write_boundaries_hold",
+      "pass": true,
+      "detail": "{\"noIdbWritesObserved\":true,\"noSuiteScriptInvocationFromIdbObserved\":true,\"noTransactionWritesObserved\":true,\"noDccRunnerRewriteObserved\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"consultantConfirmationRequired\":true,\"dccOwnsObjectGeneration\":true}"
+    },
+    {
+      "name": "w89r_scores_force_no_go",
+      "pass": true,
+      "detail": "{\"averageScore\":3,\"anyBelowThree\":true,\"decision\":\"no_go_broader_consultant_pilot_partial_evidence\"}"
+    },
+    {
+      "name": "w89r_remediation_targets_exact_gaps",
+      "pass": true,
+      "detail": "[{\"ownerRole\":\"Consultant UX Director\",\"issue\":\"DCC handoff export was not the artifact submitted for review.\",\"fix\":\"Make Review and Trace explicitly distinguish Export DCC handoff from legacy SuiteScript review packet; require dccRunnerHandoffPacketV1 for pilot evidence.\"},{\"ownerRole\":\"DCC Pattern Translator Agent\",\"issue\":\"Operator mapping was not proven.\",\"fix\":\"Add a one-page operator comparison checklist that marks suitelet form params, DCC-owned config params, and runner preview params as match/missing/unclear.\"},{\"ownerRole\":\"Evidence UX Designer\",\"issue\":\"Screenshots were missing.\",\"fix\":\"Add a Trace evidence checklist showing Plan, Review, DCC handoff, Trace, DCC handoff JSON, trace JSON, and operator notes before pilot-ready status.\"},{\"ownerRole\":\"Website Intelligence Agent\",\"issue\":\"Trace contains mixed ownership language: guided_intake source and website_evidence_v1 authority.\",\"fix\":\"Normalize trace language so website evidence owns identity and notes/guided intake own story only.\"},{\"ownerRole\":\"Code Review Sentinel\",\"issue\":\"Review packet says mode=create while creationAllowed=false.\",\"fix\":\"Rename pilot evidence mode to review_only / export_only wherever the path cannot submit or queue records.\"}]"
+    }
+  ]
+}

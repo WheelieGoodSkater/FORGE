@@ -1,0 +1,55 @@
+{
+  "schema": "idb.w21-five-consultant-executable-pilot-pack.v1",
+  "status": "pilot_pack_ready_create_disabled",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "Pilot Enablement Agent",
+    "Release Packaging Agent",
+    "Consultant UX Director Agent",
+    "Support Triage Agent"
+  ],
+  "objective": "Package the first executable pilot for a small consultant group.",
+  "goal": "Five consultants can install, run, validate, export evidence, and report feedback without ambiguity.",
+  "exactFiles": [
+    "idb-drawer.user.js",
+    "netsuite/suitescript/idb_suitescript_write_path_suitelet.js",
+    "data/w19_governed_write_execution_pilot_branch.json",
+    "data/w20_transaction_context_execution_design.json",
+    "data/w21_five_consultant_executable_pilot_pack.json",
+    "reports/w19_w21_write_execution_pilot_pack.md"
+  ],
+  "pilotScenarios": [
+    "Food and Beverage customer/proof item guarded write smoke",
+    "Dealer hardgoods review-only packet",
+    "Apparel review-only packet",
+    "Trace export and clear-session handoff",
+    "Blocked write explanation when creation is disabled"
+  ],
+  "safeInMain": [
+    "guided drawer",
+    "review packet",
+    "ROI / Competitive",
+    "run coach",
+    "trace export",
+    "create-disabled SuiteScript validation"
+  ],
+  "pilotBranchOnly": [
+    "Customer write",
+    "Proof Item write",
+    "transaction context write after parent result IDs and URLs exist"
+  ],
+  "feedbackRubric": [
+    "Can the consultant start a new prospect in under one minute?",
+    "Can they explain why the lane was selected?",
+    "Can they identify exact records before run?",
+    "Can they value-sell ROI and competitive differentiation without reading long paragraphs?",
+    "Can they export trace and clear the session without help?"
+  ],
+  "goNoGoChecklist": [
+    "preflight passes",
+    "main create remains disabled",
+    "pilot branch boundaries are documented",
+    "rollback and partial failure evidence is visible",
+    "five consultant feedback is collected before broad rollout"
+  ]
+}

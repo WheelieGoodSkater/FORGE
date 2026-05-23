@@ -1,0 +1,41 @@
+{
+  "schema": "idb.w32-pilot-evidence-readiness-ux.v1",
+  "generated": "2026-05-11",
+  "status": "complete_create_still_disabled",
+  "objective": "Make pilot evidence and write readiness understandable before consultant execution.",
+  "goal": "Consultants can see what evidence is ready, what blocks creation, and what result evidence must be captured after a sandbox pilot write.",
+  "roles": [
+    "Pilot Enablement Agent",
+    "Validation And Evidence Agent",
+    "Support Triage Agent",
+    "Consultant UX Director Agent"
+  ],
+  "evidenceGates": [
+    "reviewed packet export",
+    "advisory naming visible",
+    "Customer before Proof Item",
+    "trace result contract",
+    "pilot branch scope"
+  ],
+  "traceMustCapture": [
+    "record IDs",
+    "record URLs",
+    "operations",
+    "lookup status",
+    "rollback labels",
+    "recoverable errors",
+    "blocked dependents",
+    "transaction context status"
+  ],
+  "nonRegression": {
+    "createDisabledInMain": true,
+    "evidenceBeforeWrite": true,
+    "noProductionReadinessWithoutSandboxEvidence": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true
+  },
+  "futureNotes": [
+    "W33 should add a result-import/display model once a real sandbox write response is available.",
+    "Do not show production-ready language until five-consultant pilot evidence is collected."
+  ]
+}

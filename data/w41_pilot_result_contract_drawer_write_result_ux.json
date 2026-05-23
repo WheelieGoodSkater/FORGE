@@ -1,0 +1,71 @@
+{
+  "schema": "idb.w41-pilot-result-contract-drawer-write-result-ux.v1",
+  "status": "complete_result_contract_cleaned",
+  "objective": "Turn the first real Customer plus Proof Item pilot write into a clear result contract and consultant-readable evidence path.",
+  "goal": "A tester can see Customer updated or created, Proof Item updated or created, and Sales Order still blocked without reading conflicting runtime-gate text.",
+  "roles": [
+    {
+      "name": "SuiteScript Result Contract Agent",
+      "goal": "Normalize the W24 pilot response after writes so nested plans no longer report preflight-only statuses."
+    },
+    {
+      "name": "Consultant Evidence UX Agent",
+      "goal": "Keep record IDs, URLs, operations, and blocked transaction context easy to review and import into Trace."
+    },
+    {
+      "name": "DCC Pattern Translator Agent",
+      "goal": "Carry forward Demo Command Center lessons for account context, vendor attach, planning controls, and runner-governed execution into the next blocks."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "goal": "Keep the main Suitelet and drawer no-write, keep transaction context disabled, and preserve Customer before Proof Item sequencing."
+    }
+  ],
+  "implemented": {
+    "suiteletPilotResultSummary": true,
+    "customerPlanReflectsWriteResult": true,
+    "proofItemPlanReflectsWriteResult": true,
+    "transactionContextStillDisabled": true,
+    "harnessCoverage": "SuiteScript harness PASS: 24/24"
+  },
+  "writeResultContract": {
+    "schema": "idb.w41-pilot-result-summary.v1",
+    "mustInclude": [
+      "status",
+      "packetId",
+      "selectedLaneId",
+      "customer.status",
+      "customer.recordId",
+      "customer.url",
+      "customer.operation",
+      "proofItem.status",
+      "proofItem.recordId",
+      "proofItem.url",
+      "proofItem.parentCustomerRecordId",
+      "transactionContext.status",
+      "consultantMessage"
+    ]
+  },
+  "dccLessonsToCarryForward": [
+    "resolve subsidiary, location, and tax schedule before writing",
+    "add vendor attach and item procurement defaults before broad item pilots",
+    "add planning-off / planning-control fields before inventory item pilots are trusted",
+    "keep runner-style sequencing and evidence capture for dependent transaction work",
+    "treat reset/rollback as first-class release evidence, not a cleanup afterthought"
+  ],
+  "noRegression": {
+    "mainDrawerWriteEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionContextEnabled": false,
+    "customerBeforeProofItem": true,
+    "noAutomaticCreationFromDrawer": true,
+    "nllmAdvisoryOnly": true
+  },
+  "nextBlocks": [
+    "W42 DCC Runner/Suitelet Pattern Translation",
+    "W43 Account Context Admin Resolver V2",
+    "W44 Vendor Attach And Procurement Defaults",
+    "W45 Planning Control Rail",
+    "W46 Drawer Write Result UX Import Polish"
+  ]
+}

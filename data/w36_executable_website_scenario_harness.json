@@ -1,0 +1,52 @@
+{
+  "schema": "idb.w36-executable-website-scenario-harness.v1",
+  "status": "complete_create_still_disabled",
+  "objective": "Make website-first lane and package intelligence executable so arbitrary resolver changes are tested against real consultant-style prospect scenarios.",
+  "harness": "tools/run_website_resolver_harness.js",
+  "expectations": "data/website_resolver_expectations.json",
+  "traceOutput": "trace_samples/w36_website_resolver_harness_trace.json",
+  "reportOutput": "reports/w36_executable_website_scenario_harness.md",
+  "authorityModel": {
+    "websiteOwns": [
+      "laneId",
+      "productSeed",
+      "productFamily",
+      "demandMoment",
+      "proofAnchor"
+    ],
+    "conversationNotesOwn": [
+      "pain",
+      "roi",
+      "competitive framing",
+      "objections",
+      "run coaching",
+      "exceptions"
+    ],
+    "nllmOwns": [
+      "advisory website evidence summary",
+      "advisory product naming repair",
+      "advisory confidence explanation"
+    ]
+  },
+  "coverage": [
+    "known official domains",
+    "category-token domains",
+    "conversation-note conflict where website should win",
+    "food-language anti-leak outside food/beverage",
+    "apparel cannot collapse into distribution",
+    "dealer hardgoods cannot collapse into industrial distribution"
+  ],
+  "knownLimitation": "A local Tampermonkey resolver cannot infer every opaque website from URL alone. Unknown domains need either maintained website hints, category text captured from the website, pasted SC evidence, or N/LLM advisory enrichment before the consultant accepts a lane.",
+  "nextBlock": {
+    "id": "W37",
+    "name": "Website Evidence Intake + N/LLM Advisory Bridge",
+    "goal": "Add a review-only evidence input/import path so actual website text and N/LLM advisory output can improve classification without giving N/LLM write authority."
+  },
+  "nonRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "notesCannotOwnProductIdentity": true,
+    "nllmAdvisoryOnly": true,
+    "manualLaneOverrideStillAvailable": true
+  }
+}

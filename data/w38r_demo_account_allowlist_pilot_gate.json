@@ -1,0 +1,55 @@
+{
+  "schema": "idb.w38r-demo-account-allowlist-pilot-gate.v1",
+  "status": "complete_approved_demo_account_gate_ready",
+  "reasonForPivot": "The NetSuite consultant demo environment reports runtime.envType as PRODUCTION, while the pilot is expected to run in production demo accounts used by consultants.",
+  "decision": "Replace sandbox-only gating in the W24 pilot copy with approved-pilot-environment gating.",
+  "approvedPilotEnvironments": {
+    "sandbox": true,
+    "productionDemoAccounts": [
+      {
+        "accountId": "TD3021666",
+        "host": "YOUR_ACCOUNT_ID.app.netsuite.com",
+        "purpose": "NetSuite production demo account used for controlled IDB consultant pilot writes."
+      }
+    ]
+  },
+  "requiredBeforeAnyWrite": [
+    "W24 pilot file only, never the main create-disabled Suitelet",
+    "CREATE_ENABLED true only in the W24 pilot copy",
+    "custscript_idb_enable_pilot_writes checked",
+    "custscript_idb_allow_customer_pilot checked",
+    "custscript_idb_allow_proof_item_pilot checked",
+    "custscript_idb_sandbox_account_only checked as the approved environment gate",
+    "custscript_idb_require_type_confirm checked",
+    "runtime is sandbox or explicitly allowlisted production demo account",
+    "type-to-confirm phrase matches the reviewed packet",
+    "consultantConfirmed true",
+    "Creation Packet Contract V2 is valid",
+    "transaction context remains disabled"
+  ],
+  "allowedWriteScope": {
+    "laneId": "food_beverage",
+    "roles": [
+      "customer",
+      "proof anchor"
+    ],
+    "customerFirst": true,
+    "proofItemRequiresCustomerIdAndUrl": true,
+    "transactionContextEnabled": false,
+    "salesOrderWriteAllowed": false
+  },
+  "nonRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "unapprovedProductionBlocked": true,
+    "noTransactionWrite": true,
+    "noAutomaticCreationFromDrawer": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "llmAdvisoryOnly": true
+  },
+  "nextTest": {
+    "id": "W38R live retry",
+    "goal": "Upload the updated W24 pilot Suitelet, keep all five deployment flags checked, rerun the same POST in TD3021666, and verify Customer + Proof Item IDs/URLs are returned."
+  }
+}

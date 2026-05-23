@@ -1,0 +1,131 @@
+{
+  "schema": "idb.w28-website-package-classifier-v2.v1",
+  "generated": "2026-05-10",
+  "status": "complete_create_still_disabled",
+  "objective": "Make website/domain/category evidence produce lane package, product seed, product family, and demand moment before conversation notes shape the story.",
+  "orderedPasses": [
+    "known_domain_website_primary",
+    "website_category_classifier",
+    "conversation_note_product_cue",
+    "industry_fallback",
+    "nllm_advisory_enrichment"
+  ],
+  "classifiers": [
+    {
+      "categoryId": "apparel_footwear_accessories",
+      "laneId": "apparel_accessories",
+      "productSeed": "Core Style Color-Size Matrix",
+      "productFamily": "Apparel and Footwear Style",
+      "demandMoment": "style, size, and channel availability"
+    },
+    {
+      "categoryId": "bicycle_cycling_hardgoods",
+      "laneId": "dealer_hardgoods",
+      "productSeed": "Bicycle SKU",
+      "productFamily": "Bicycle Dealer Hardgoods",
+      "demandMoment": "dealer bicycle availability"
+    },
+    {
+      "categoryId": "surf_skate_hardgoods",
+      "laneId": "dealer_hardgoods",
+      "productSeed": "Custom Surfboard and Skateboard SKU",
+      "productFamily": "Surf and Skate Hardgoods",
+      "demandMoment": "dealer hardgoods fulfillment"
+    },
+    {
+      "categoryId": "dealer_durable_hardgoods",
+      "laneId": "dealer_hardgoods",
+      "productSeed": "Dealer Hardgoods SKU",
+      "productFamily": "Dealer Durable Hardgoods",
+      "demandMoment": "dealer channel availability"
+    },
+    {
+      "categoryId": "packaged_food_beverage",
+      "laneId": "food_beverage",
+      "productSeed": "Finished Good Variety Pack",
+      "productFamily": "Packaged Food and Beverage",
+      "demandMoment": "finished-good readiness"
+    },
+    {
+      "categoryId": "pet_packaged_cpg",
+      "laneId": "products_cpg",
+      "productSeed": "Pet Treats Variety Pack",
+      "productFamily": "Pet Treats",
+      "demandMoment": "retail pet-treat replenishment"
+    },
+    {
+      "categoryId": "retail_packaged_cpg",
+      "laneId": "products_cpg",
+      "productSeed": "Retail Packaged Goods Assortment",
+      "productFamily": "Packaged Goods",
+      "demandMoment": "retail shelf readiness"
+    },
+    {
+      "categoryId": "branch_industrial_distribution",
+      "laneId": "industrial_distribution",
+      "productSeed": "Inventory / Fulfillment",
+      "productFamily": "Branch Inventory Fulfillment",
+      "demandMoment": "branch fulfillment confidence"
+    }
+  ],
+  "nllmAdvisory": {
+    "agentRole": "N/LLM Website Package Advisor",
+    "useWhen": [
+      "website_category_classifier confidence is medium or low",
+      "website is unknown and local tokens do not identify product family",
+      "productSeed equals a generic proof anchor",
+      "consultant needs sharper customer-specific record names before pilot write"
+    ],
+    "mustReturn": [
+      "proposedLaneId",
+      "proposedProductSeed",
+      "proposedProductFamily",
+      "proposedDemandMoment",
+      "websiteEvidence",
+      "confidence",
+      "fallbackReason",
+      "noRegressionDeclaration"
+    ],
+    "mustNot": [
+      "approve creation",
+      "invoke SuiteScript",
+      "change DCC toggles",
+      "change proof anchor without explicit human review",
+      "claim unsupported website facts without marking them inferred"
+    ]
+  },
+  "unknownWebsiteExpectations": [
+    {
+      "website": "https://examplecycling.com",
+      "customer": "Summit Cycling",
+      "expectedLaneId": "dealer_hardgoods",
+      "expectedProductSeed": "Bicycle SKU",
+      "blockedLanguage": "ingredient and lot readiness"
+    },
+    {
+      "website": "https://urbanfootwear.example",
+      "customer": "Urban Footwear",
+      "expectedLaneId": "apparel_accessories",
+      "expectedProductSeed": "Core Style Color-Size Matrix",
+      "blockedLanguage": "Inventory / Fulfillment"
+    },
+    {
+      "website": "https://freshsnackco.example",
+      "customer": "Fresh Snack Co",
+      "expectedLaneId": "food_beverage",
+      "expectedProductSeed": "Finished Good Variety Pack",
+      "blockedLanguage": "demo demand"
+    }
+  ],
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "noAutomaticCreation": true,
+    "llmAdvisoryOnly": true,
+    "websiteBeforeNotes": true,
+    "notesDriveStoryNotPackage": true,
+    "noLaneExpansion": true,
+    "noProofAnchorChange": true,
+    "noDccToggleChange": true
+  }
+}

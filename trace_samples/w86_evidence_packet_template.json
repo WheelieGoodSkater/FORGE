@@ -1,0 +1,46 @@
+{
+  "schema": "idb.w86-evidence-packet-template.v1",
+  "requiredEvidence": [
+    "Screenshot: IDB Plan tab after intake.",
+    "Screenshot: IDB Review tab showing DCC handoff export card.",
+    "Export: dccRunnerHandoffPacketV1 JSON.",
+    "Export: IDB trace JSON.",
+    "Screenshot/notes: DCC Suitelet sandbox field parity review.",
+    "Screenshot/notes: DCC-owned deployment config readiness, with secrets redacted.",
+    "Screenshot/notes: scheduled runner preview comparison.",
+    "Completed operator scoring rubric.",
+    "Consultant notes: what felt unclear, slow, wrong, or useful.",
+    "Operator notes: what could block a governed DCC handoff."
+  ],
+  "inheritedW85Evidence": [
+    "Confirmed dccRunnerHandoffPacketV1 JSON export.",
+    "DCC Suitelet sandbox page screenshot before submit.",
+    "Suitelet form field parity notes or screenshot.",
+    "DCC-owned deployment config readiness checklist.",
+    "Scheduled runner preview params screenshot or copied preview.",
+    "Operator note confirming no IDB SuiteScript invocation.",
+    "Operator note confirming no transaction writes.",
+    "Operator note confirming DCC owns item, assembly, BOM, location, planning, routing/WIP, and CSV/Sales Order mechanics."
+  ],
+  "noSecretRules": [
+    "Do not paste tokens, script deployment secrets, or account credentials into traces or reports.",
+    "Redact internal IDs if the screenshot will leave the sandbox team.",
+    "Record presence/absence of config, not secret values."
+  ],
+  "evidenceOwner": {
+    "consultant": [
+      "Plan screenshot",
+      "Review screenshot",
+      "DCC handoff JSON",
+      "trace JSON",
+      "consultant notes"
+    ],
+    "operator": [
+      "Suitelet parity review",
+      "config readiness review",
+      "runner preview comparison",
+      "scoring rubric",
+      "operator notes"
+    ]
+  }
+}

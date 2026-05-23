@@ -1,0 +1,222 @@
+{
+  "schema": "idb.w58-real-unknown-site-corpus.v1",
+  "status": "complete_real_unknown_site_corpus_ready",
+  "objective": "Prove the live resolver and classifier against real consultant-style websites.",
+  "goal": "Evaluate human-labeled website identification, confidence calibration, false-confident-wrong limits, unsupported-claim blockers, and trace evidence coverage across real URL seeds and synthetic failure cases.",
+  "roles": [
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Evidence quality, extraction gaps, and page-sampling coverage."
+    },
+    {
+      "name": "Classifier Calibration Agent",
+      "owns": "Recommended, needs confirmation, and insufficient evidence thresholds."
+    },
+    {
+      "name": "Pilot Evidence Lead",
+      "owns": "Human labels, expected outcomes, evidence checklist, and stop/go scoring."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "Blocked domains, unsafe schemes, redirects, timeout safety, and no-write boundaries."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Validator gates, false-confident-wrong limit, unsupported-claim limit, and no-regression boundaries."
+    }
+  ],
+  "fixturePolicy": {
+    "purpose": "Deterministic corpus testing for resolver and classifier behavior before live internet fetch evaluation.",
+    "realUrlSeeds": true,
+    "snapshotHtmlIsFixture": true,
+    "liveWebsiteClaim": false,
+    "productionNextStep": "W59 should run authenticated or approved live-fetch collection against the same corpus and compare drift."
+  },
+  "evaluationPolicy": {
+    "correctOrHonestPassRateMinimum": 0.85,
+    "falseConfidentWrongRateMaximum": 0,
+    "unsupportedClaimsMaximum": 0,
+    "traceEvidenceCoverageMinimum": 0.95,
+    "minimumCorpusCases": 9,
+    "minimumRealUrlSeedCases": 4,
+    "confidenceStates": [
+      "recommended",
+      "needs_confirmation",
+      "insufficient_evidence"
+    ],
+    "correctOrHonestDefinition": [
+      "recommended with matching human-labeled lane and source-backed citations",
+      "needs_confirmation when labels identify ambiguity or accepted alternates",
+      "insufficient_evidence when labels expect blocked thin unavailable timeout or unsafe URL behavior"
+    ],
+    "falseConfidentWrongDefinition": "classificationState is recommended and the recommended lane does not match the human-labeled expected lane or accepted alternate lane.",
+    "unsupportedClaimDefinition": "any recommendation, product seed, product family, demand moment, ROI, or competitive claim without source URL evidence or without an honest uncertainty state."
+  },
+  "humanLabeledCorpus": [
+    {
+      "id": "w58_real_product_brand_trek",
+      "siteKind": "real_product_brand",
+      "website": "https://www.trekbikes.com/",
+      "sourceType": "real_url_seed_fixture_snapshot",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "recommended",
+      "expectedLaneId": "dealer_hardgoods",
+      "acceptedAlternateLaneIds": [],
+      "expectedProductSeed": "Bicycle SKU",
+      "expectedProductFamily": "Bicycle Dealer Hardgoods",
+      "expectedDemandMomentContains": "dealer inventory",
+      "evidenceRequirement": "homepage_plus_secondary_page_with_source_citations"
+    },
+    {
+      "id": "w58_real_apparel_accessories_patagonia",
+      "siteKind": "apparel_accessories",
+      "website": "https://www.patagonia.com/",
+      "sourceType": "real_url_seed_fixture_snapshot",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "recommended",
+      "expectedLaneId": "apparel_accessories",
+      "acceptedAlternateLaneIds": [],
+      "expectedProductSeed": "Core Style Color-Size Matrix",
+      "expectedProductFamily": "Apparel and Footwear Style",
+      "expectedDemandMomentContains": "style",
+      "evidenceRequirement": "apparel_category_and_variant_source_citations"
+    },
+    {
+      "id": "w58_real_distributor_dealer_grainger",
+      "siteKind": "distributor_dealer",
+      "website": "https://www.grainger.com/",
+      "sourceType": "real_url_seed_fixture_snapshot",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "recommended",
+      "expectedLaneId": "industrial_distribution",
+      "acceptedAlternateLaneIds": [],
+      "expectedProductSeed": "Distributor SKU",
+      "expectedProductFamily": "Industrial Distribution SKU",
+      "expectedDemandMomentContains": "fulfillment",
+      "evidenceRequirement": "distribution_or_branch_fulfillment_source_citations"
+    },
+    {
+      "id": "w58_real_manufacturing_heavy_lincoln_electric",
+      "siteKind": "manufacturing_heavy",
+      "website": "https://www.lincolnelectric.com/",
+      "sourceType": "real_url_seed_fixture_snapshot",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "recommended",
+      "expectedLaneId": "industrial_equipment",
+      "acceptedAlternateLaneIds": [],
+      "expectedProductSeed": "Assembly",
+      "expectedProductFamily": "Industrial Equipment Manufacturing",
+      "expectedDemandMomentContains": "assembly",
+      "evidenceRequirement": "manufacturing_and_production_source_citations"
+    },
+    {
+      "id": "w58_ambiguous_outfitter_apparel_service",
+      "siteKind": "ambiguous_multi_category",
+      "website": "https://ridgeline-outfitters.example/",
+      "sourceType": "synthetic_fixture_snapshot",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "needs_confirmation",
+      "expectedLaneId": "apparel_accessories",
+      "acceptedAlternateLaneIds": [
+        "dealer_hardgoods",
+        "industrial_distribution"
+      ],
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "competing_candidates_with_source_citations"
+    },
+    {
+      "id": "w58_weak_thin_website",
+      "siteKind": "weak_thin_website",
+      "website": "https://thin-prospect.example/",
+      "sourceType": "synthetic_fixture_snapshot",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "acceptedAlternateLaneIds": [],
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "no_lane_guess_and_manual_evidence_prompt"
+    },
+    {
+      "id": "w58_blocked_website",
+      "siteKind": "blocked",
+      "website": "https://blocked-prospect.example/",
+      "sourceType": "synthetic_failure_fixture",
+      "humanLabelerRole": "Security Guard",
+      "expectedClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "acceptedAlternateLaneIds": [],
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "blocked_failure_state_and_no_lane_guess"
+    },
+    {
+      "id": "w58_unavailable_website",
+      "siteKind": "unavailable",
+      "website": "https://unavailable-prospect.example/",
+      "sourceType": "synthetic_failure_fixture",
+      "humanLabelerRole": "Security Guard",
+      "expectedClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "acceptedAlternateLaneIds": [],
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "unavailable_failure_state_and_no_lane_guess"
+    },
+    {
+      "id": "w58_timeout_website",
+      "siteKind": "timeout",
+      "website": "https://timeout-prospect.example/",
+      "sourceType": "synthetic_failure_fixture",
+      "humanLabelerRole": "Security Guard",
+      "expectedClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "acceptedAlternateLaneIds": [],
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "timeout_failure_state_and_no_lane_guess"
+    }
+  ],
+  "requiredSiteMix": [
+    "real_product_brand",
+    "distributor_dealer",
+    "apparel_accessories",
+    "manufacturing_heavy",
+    "ambiguous_multi_category",
+    "weak_thin_website",
+    "blocked",
+    "unavailable",
+    "timeout"
+  ],
+  "scorecardOutputs": [
+    "correctOrHonestPassRate",
+    "falseConfidentWrongRate",
+    "unsupportedClaimCount",
+    "evidenceCoverageScore",
+    "resolverFailureStateCoverage",
+    "perCaseFindings"
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "evaluationMustPreferHonestUncertaintyOverGuessing": true
+  },
+  "outputs": {
+    "contract": "data/w58_real_unknown_site_corpus.json",
+    "harness": "tools/run_real_unknown_site_corpus_harness.js",
+    "evaluationTrace": "trace_samples/w58_real_unknown_site_corpus_evaluation_trace.json",
+    "report": "reports/w58_real_unknown_site_corpus.md"
+  },
+  "nextBlock": "W59: Confidence Calibration And Live Fetch Drift"
+}

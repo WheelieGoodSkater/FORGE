@@ -1,0 +1,33 @@
+{
+  "schema": "idb.w102-nllm-value-story-advisor.v1",
+  "status": "complete_note_driven_value_guidance_ready",
+  "objective": "Make ROI and Competitive guidance come from consultant notes, SC context, decision criteria, competitor/incumbent input, and confirmed lane instead of being blocked solely by website confidence.",
+  "roles": [
+    "N/LLM Advisory Architect",
+    "Consultant Story Coach",
+    "Competitive Strategy Guard",
+    "Regression Guard"
+  ],
+  "implemented": {
+    "notesDriveValue": true,
+    "confirmedLaneUnlocksValueGuidance": true,
+    "websiteDoesNotSolelyBlockValue": true,
+    "baselineCautionPreserved": true,
+    "competitorClaimGuardPreserved": true,
+    "auditDetailsRemainCollapsed": true
+  },
+  "guardrails": [
+    "No invented competitor facts.",
+    "No measured savings without customer baseline.",
+    "N/LLM remains advisory only.",
+    "Value story may use website context but is not blocked by website confidence after lane confirmation."
+  ],
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextPrompt": "Move through W103: Review As Build Control Center. Redesign Review so the first viewport shows confirmed lane, selected DCC pack, scenario, objects DCC will prepare, blockers, export/build readiness, and operator checklist. Remove audit-heavy default content. Preserve W92/W101 state authority, no IDB writes, no SuiteScript invocation, no transaction writes, consultant confirmation required, and DCC ownership of object generation. Output Review control-center UX, trace coverage, validator gates, W103 report, and best next Codex prompt."
+}

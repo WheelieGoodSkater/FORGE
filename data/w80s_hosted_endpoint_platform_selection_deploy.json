@@ -1,0 +1,111 @@
+{
+  "schema": "idb.w80s-hosted-endpoint-platform-selection-deploy.v1",
+  "status": "platform_selected_handoff_ready_remote_not_configured",
+  "objective": "Choose the staging host path, define the secret-safe deployment handoff, and keep consultant hosted pilot disabled until remoteSmokeExecuted=true.",
+  "selectedPlatform": {
+    "id": "container_https_staging_host",
+    "selected": true,
+    "reason": "W79A already packages websiteResolverServiceV1 as a portable Node container; the staging host must provide managed HTTPS, secret-backed environment variables, exact CORS origins, logs, and rollback.",
+    "requirements": [
+      "Public HTTPS endpoint for /health and /idb/website-resolver/v1/resolve.",
+      "Secret-managed IDB_RESOLVER_TOKEN and IDB_RESOLVER_ALLOWED_ORIGINS.",
+      "No wildcard CORS and no browser cookies accepted by resolver endpoint.",
+      "Configurable request timeout, rate limit, cache setting, and redacted observability.",
+      "One-command rollback or environment toggle that disables drawer hosted-only mode."
+    ],
+    "candidateExamples": [
+      "Any container-capable staging host with managed HTTPS and secret env settings.",
+      "A serverless container service is acceptable if it preserves timeout and outbound fetch controls."
+    ]
+  },
+  "deploymentSteps": [
+    {
+      "owner": "Resolver Service Architect",
+      "step": "Build and deploy deploy/hosted-resolver/Dockerfile from the W79A package.",
+      "output": "Public HTTPS service exposing GET /health and POST /idb/website-resolver/v1/resolve."
+    },
+    {
+      "owner": "Security Guard",
+      "step": "Set IDB_RESOLVER_TOKEN in the platform secret manager.",
+      "output": "Token exists only in secret manager/protected shell; no repo, trace, report, screenshot, or chat copy."
+    },
+    {
+      "owner": "Security Guard",
+      "step": "Set IDB_RESOLVER_ALLOWED_ORIGINS to the exact NetSuite staging origin list.",
+      "output": "Approved origin is non-secret and exact; wildcard CORS remains forbidden."
+    },
+    {
+      "owner": "DevOps Readiness Agent",
+      "step": "Configure rate limits, request timeout, cache TTL, and redacted logs.",
+      "output": "Resolver can observe status without raw tokens, cookies, auth headers, or request secrets."
+    },
+    {
+      "owner": "Validation And Evidence Agent",
+      "step": "Place endpoint URL and origins in protected shell, then run W80R.",
+      "output": "remoteSmokeExecuted=true is required before consultant hosted pilot can unlock."
+    }
+  ],
+  "secretSafeHandoff": {
+    "endpointUrl": "not_configured",
+    "approvedOrigin": "not_configured",
+    "blockedOrigin": "not_configured",
+    "tokenHandoffPath": "platform secret manager and protected shell only; never repo files, traces, reports, screenshots, or chat",
+    "protectedShellTemplate": "deploy/hosted-resolver/protected-shell.template.sh",
+    "tokenConfigured": false,
+    "noSecretValuesStored": true
+  },
+  "observedEnvironment": {
+    "remoteSmokeOptIn": false,
+    "remoteBaseUrlConfigured": false,
+    "tokenConfigured": false,
+    "allowedOriginConfigured": false,
+    "blockedOriginConfigured": false,
+    "platformAllowedOriginsConfigured": false,
+    "nonSecretEndpointUrl": "not_configured",
+    "approvedOrigin": "not_configured",
+    "blockedOrigin": "not_configured",
+    "platformAllowedOrigins": [
+      "not_configured"
+    ],
+    "rawSecretsIncluded": false,
+    "missing": [
+      "IDB_REMOTE_RESOLVER_SMOKE=1",
+      "IDB_REMOTE_RESOLVER_BASE_URL",
+      "IDB_REMOTE_RESOLVER_TOKEN or IDB_RESOLVER_TOKEN",
+      "IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN",
+      "IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN"
+    ],
+    "readyForW80R": false,
+    "tokenValueStored": false
+  },
+  "validatorGates": [
+    "Deployment package exists and uses website_resolver_hosted_service.js.",
+    "Protected-shell template contains placeholders only and no real token.",
+    "Observed environment records tokenConfigured as a boolean only.",
+    "Endpoint URL and origins are treated as non-secret; token value is never stored.",
+    "Hosted consultant pilot remains disabled until W80R returns remoteSmokeExecuted=true.",
+    "No writes, no SuiteScript invocation, N/LLM advisory-only, notes story-only.",
+    "Blocked, thin, unavailable, and timeout remain insufficient evidence with no confident guesses."
+  ],
+  "provisioningDecision": {
+    "readyForW80R": false,
+    "remoteSmokeExecuted": false,
+    "hostedResolverPilotEnabled": false,
+    "consultantSmokeEligible": false,
+    "noGoReason": "Real HTTPS endpoint/token/origin values are not configured in this shell.",
+    "nextAction": "Deploy W79A package to a real HTTPS staging host and configure protected shell values from the platform secret manager."
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "hostedResolverPilotEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W80T: Operator Deploy Hosted Resolver Endpoint",
+    "prompt": "Move through W80T: Operator Deploy Hosted Resolver Endpoint. Using the W80S platform selection and W79A deployment package, deploy websiteResolverServiceV1 to a real public HTTPS staging host, set IDB_RESOLVER_TOKEN and IDB_RESOLVER_ALLOWED_ORIGINS in platform secret/env settings, place only endpoint URL plus approved/blocked origins in the protected shell, and keep the resolver token out of repo files, traces, reports, screenshots, and chat. Do not enable hosted consultant pilot. Output non-secret endpoint/origin handoff, deployment evidence, W80T report, validator gates, and best next Codex prompt."
+  }
+}

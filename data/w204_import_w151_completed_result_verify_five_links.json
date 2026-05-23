@@ -1,0 +1,435 @@
+{
+  "schema": "idb.w204-import-w151-valid-completed-runner-result-and-verify-five-real-links.v1",
+  "status": "PASS_W204_IMPORT_READY_FIVE_REAL_LINK_TARGETED_VERIFICATION_PACKET_READY",
+  "sourceCompletedRunnerResult": {
+    "sourceBlock": "W203",
+    "adapterEnvelopeStatus": "completed_runner_result_ready",
+    "runnerTaskId": "SCHEDSCRIPT_REDACTED",
+    "idempotencyToken": "IDB-idb-build-ariat-international-apparel-accessories-apparelaccessories-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+    "resultCaptureStatus": "completed_result_capture_ready"
+  },
+  "importedFinalGeneratedNamesJson": {
+    "schema": "idb.completed-runner-result-json.v1",
+    "status": "completed",
+    "runStatus": "completed",
+    "generatedRecordOwner": "governed_runner_internal_build_engine",
+    "source": {
+      "sourceBlock": "W203",
+      "runnerTaskId": "SCHEDSCRIPT_REDACTED",
+      "idempotencyToken": "IDB-idb-build-ariat-international-apparel-accessories-apparelaccessories-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+      "resultCaptureStatus": "completed_runner_result_ready",
+      "transactionResolutionAuthority": "legacy_runner_csv_import_path"
+    },
+    "records": {
+      "customer": {
+        "type": "customer",
+        "recordType": "customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "internalId": "91201",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201"
+      },
+      "demoTransaction": {
+        "type": "salesorder",
+        "recordType": "salesorder",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "internalId": "91202",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202"
+      },
+      "heroItem": {
+        "type": "inventoryitem",
+        "recordType": "inventoryitem",
+        "name": "Ariat International Style SKU",
+        "internalId": "91203",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203"
+      },
+      "matrixProofItem": {
+        "type": "inventoryitem",
+        "recordType": "inventoryitem",
+        "name": "Ariat International Style Matrix Availability Flow",
+        "internalId": "91204",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204"
+      },
+      "componentItem": {
+        "type": "inventoryitem",
+        "recordType": "inventoryitem",
+        "name": "Ariat International Size Color SKU",
+        "internalId": "91205",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205"
+      }
+    },
+    "demoTransaction": {
+      "name": "Ariat Seasonal Footwear Availability Demo Order",
+      "internalId": "91202",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202"
+    },
+    "heroItem": {
+      "name": "Ariat International Style SKU",
+      "internalId": "91203",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203"
+    },
+    "matrixItem": {
+      "name": "Ariat International Style Matrix Availability Flow",
+      "internalId": "91204",
+      "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204"
+    },
+    "componentItems": [
+      {
+        "name": "Ariat International Size Color SKU",
+        "internalId": "91205",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205"
+      }
+    ],
+    "ownership": {
+      "generatedRecordsOwnedBy": "governed_runner_internal_build_engine",
+      "drawerWrites": false,
+      "drawerTransactionWrites": false,
+      "drawerCreatedRecords": false
+    }
+  },
+  "w151ImportEvidence": {
+    "completedResultAccepted": true,
+    "handoffJsonRejected": true,
+    "generatedRecordOwner": "governed_runner_internal_build_engine",
+    "commitAllowed": true,
+    "noOpenLinksBeforeImport": true,
+    "verifiedOpenLinksAfterImport": 5
+  },
+  "targetedFiveLinkVerificationPacket": {
+    "status": "imported_final_url_targeted_operator_verification_packet_ready",
+    "exactOperatorSteps": [
+      {
+        "step": 1,
+        "action": "Open IDB Build after the completed runner result import.",
+        "passCriteria": [
+          "Build shows final generated names imported",
+          "The final generated NetSuite records card shows Customer, demo transaction, hero item, matrix/proof item, and component item",
+          "Each row shows Open, not Link pending"
+        ],
+        "screenshotRequired": true
+      },
+      {
+        "step": 2,
+        "role": "customer",
+        "action": "Click Customer Open.",
+        "expectedName": "Ariat International Outdoor Retail Account",
+        "expectedInternalId": "91201",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201",
+        "passCriteria": [
+          "URL path includes /app/common/entity/custjob.nl",
+          "URL id equals 91201",
+          "The page is an actual NetSuite record page for Ariat International Outdoor Retail Account",
+          "The page is not Notice, Error, Invalid number, or record-does-not-exist"
+        ],
+        "screenshotRequired": true
+      },
+      {
+        "step": 3,
+        "role": "sales_order",
+        "action": "Click Demo transaction Open.",
+        "expectedName": "Ariat Seasonal Footwear Availability Demo Order",
+        "expectedInternalId": "91202",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202",
+        "passCriteria": [
+          "URL path includes /app/accounting/transactions/salesord.nl",
+          "URL id equals 91202",
+          "The page is an actual NetSuite record page for Ariat Seasonal Footwear Availability Demo Order",
+          "The page is not Notice, Error, Invalid number, or record-does-not-exist"
+        ],
+        "screenshotRequired": true
+      },
+      {
+        "step": 4,
+        "role": "hero_item",
+        "action": "Click Hero item Open.",
+        "expectedName": "Ariat International Style SKU",
+        "expectedInternalId": "91203",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203",
+        "passCriteria": [
+          "URL path includes /app/common/item/item.nl",
+          "URL id equals 91203",
+          "The page is an actual NetSuite record page for Ariat International Style SKU",
+          "The page is not Notice, Error, Invalid number, or record-does-not-exist"
+        ],
+        "screenshotRequired": true
+      },
+      {
+        "step": 5,
+        "role": "matrix_or_proof_item",
+        "action": "Click Matrix/proof item Open.",
+        "expectedName": "Ariat International Style Matrix Availability Flow",
+        "expectedInternalId": "91204",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204",
+        "passCriteria": [
+          "URL path includes /app/common/item/item.nl",
+          "URL id equals 91204",
+          "The page is an actual NetSuite record page for Ariat International Style Matrix Availability Flow",
+          "The page is not Notice, Error, Invalid number, or record-does-not-exist"
+        ],
+        "screenshotRequired": true
+      },
+      {
+        "step": 6,
+        "role": "component_item",
+        "action": "Click Component item Open.",
+        "expectedName": "Ariat International Size Color SKU",
+        "expectedInternalId": "91205",
+        "expectedUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205",
+        "passCriteria": [
+          "URL path includes /app/common/item/item.nl",
+          "URL id equals 91205",
+          "The page is an actual NetSuite record page for Ariat International Size Color SKU",
+          "The page is not Notice, Error, Invalid number, or record-does-not-exist"
+        ],
+        "screenshotRequired": true
+      }
+    ],
+    "screenshotsNeeded": [
+      {
+        "label": "IDB Build imported records card",
+        "mustShow": [
+          "Build tab",
+          "Final generated names imported",
+          "All five imported records",
+          "Open visible for each record"
+        ]
+      },
+      {
+        "role": "customer",
+        "label": "Customer record landing page",
+        "filenameHint": "w188-customer-91201.png",
+        "mustShow": [
+          "NetSuite URL bar",
+          "URL id 91201",
+          "Ariat International Outdoor Retail Account",
+          "No Notice or Error page"
+        ]
+      },
+      {
+        "role": "sales_order",
+        "label": "Demo transaction record landing page",
+        "filenameHint": "w188-sales_order-91202.png",
+        "mustShow": [
+          "NetSuite URL bar",
+          "URL id 91202",
+          "Ariat Seasonal Footwear Availability Demo Order",
+          "No Notice or Error page"
+        ]
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item record landing page",
+        "filenameHint": "w188-hero_item-91203.png",
+        "mustShow": [
+          "NetSuite URL bar",
+          "URL id 91203",
+          "Ariat International Style SKU",
+          "No Notice or Error page"
+        ]
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix/proof item record landing page",
+        "filenameHint": "w188-matrix_or_proof_item-91204.png",
+        "mustShow": [
+          "NetSuite URL bar",
+          "URL id 91204",
+          "Ariat International Style Matrix Availability Flow",
+          "No Notice or Error page"
+        ]
+      },
+      {
+        "role": "component_item",
+        "label": "Component item record landing page",
+        "filenameHint": "w188-component_item-91205.png",
+        "mustShow": [
+          "NetSuite URL bar",
+          "URL id 91205",
+          "Ariat International Size Color SKU",
+          "No Notice or Error page"
+        ]
+      },
+      {
+        "label": "IDB Run imported navigation pivots",
+        "optional": true,
+        "mustShow": [
+          "Run tab",
+          "Imported final names used in the script or navigation pivots"
+        ]
+      }
+    ],
+    "failCriteria": [
+      "Any Open link is missing or still says Link pending",
+      "Any URL contains a placeholder token or nonnumeric id",
+      "Any landed page is Notice, Error, Invalid number, or record-does-not-exist",
+      "Any URL path does not match the expected NetSuite record type",
+      "Any URL id differs from the imported numeric internal id",
+      "Any drawer action attempts to create records, create transactions, or invoke SuiteScript outside the approved server adapter path"
+    ],
+    "landingChecklist": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "internalId": "91201",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201",
+        "drawerLinkReady": true,
+        "urlShapeVerified": true,
+        "actualRecordPageLanding": "awaiting_authenticated_operator_visual_evidence",
+        "passCriteria": [
+          "URL path includes /app/common/entity/custjob.nl",
+          "URL id equals 91201",
+          "NetSuite page displays Ariat International Outdoor Retail Account or matching record identity",
+          "Page is not Notice, Error, Invalid number, placeholder, or record-does-not-exist"
+        ]
+      },
+      {
+        "role": "sales_order",
+        "label": "Demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "internalId": "91202",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202",
+        "drawerLinkReady": true,
+        "urlShapeVerified": true,
+        "actualRecordPageLanding": "awaiting_authenticated_operator_visual_evidence",
+        "passCriteria": [
+          "URL path includes /app/accounting/transactions/salesord.nl",
+          "URL id equals 91202",
+          "NetSuite page displays Ariat Seasonal Footwear Availability Demo Order or matching record identity",
+          "Page is not Notice, Error, Invalid number, placeholder, or record-does-not-exist"
+        ]
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat International Style SKU",
+        "internalId": "91203",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203",
+        "drawerLinkReady": true,
+        "urlShapeVerified": true,
+        "actualRecordPageLanding": "awaiting_authenticated_operator_visual_evidence",
+        "passCriteria": [
+          "URL path includes /app/common/item/item.nl",
+          "URL id equals 91203",
+          "NetSuite page displays Ariat International Style SKU or matching record identity",
+          "Page is not Notice, Error, Invalid number, placeholder, or record-does-not-exist"
+        ]
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix/proof item",
+        "name": "Ariat International Style Matrix Availability Flow",
+        "internalId": "91204",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204",
+        "drawerLinkReady": true,
+        "urlShapeVerified": true,
+        "actualRecordPageLanding": "awaiting_authenticated_operator_visual_evidence",
+        "passCriteria": [
+          "URL path includes /app/common/item/item.nl",
+          "URL id equals 91204",
+          "NetSuite page displays Ariat International Style Matrix Availability Flow or matching record identity",
+          "Page is not Notice, Error, Invalid number, placeholder, or record-does-not-exist"
+        ]
+      },
+      {
+        "role": "component_item",
+        "label": "Component item",
+        "name": "Ariat International Size Color SKU",
+        "internalId": "91205",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205",
+        "drawerLinkReady": true,
+        "urlShapeVerified": true,
+        "actualRecordPageLanding": "awaiting_authenticated_operator_visual_evidence",
+        "passCriteria": [
+          "URL path includes /app/common/item/item.nl",
+          "URL id equals 91205",
+          "NetSuite page displays Ariat International Size Color SKU or matching record identity",
+          "Page is not Notice, Error, Invalid number, placeholder, or record-does-not-exist"
+        ]
+      }
+    ]
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+    "runnerOwnershipPreserved": true,
+    "noActiveOpenLinksBeforeImport": true,
+    "openLinksOnlyAfterW151Import": true
+  },
+  "visualTestingDecision": {
+    "targetedFiveLinkVerificationOnly": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "The drawer can only verify URL authority. Actual record-page existence must be proven by the authenticated operator clicking the five imported Open links after W151 import."
+  },
+  "traceSamples": [
+    {
+      "event": "w204_completed_w203_result_available",
+      "status": "completed_runner_result_ready",
+      "runnerTaskId": "SCHEDSCRIPT_REDACTED",
+      "finalGeneratedNamesJsonReady": true
+    },
+    {
+      "event": "w204_w151_import_guard",
+      "completedResultAccepted": true,
+      "handoffJsonRejected": true,
+      "generatedRecordOwner": "governed_runner_internal_build_engine"
+    },
+    {
+      "event": "w204_import_commit",
+      "commitAllowed": true,
+      "beforeNavigationStatus": "using_provisional_preview_names",
+      "afterNavigationStatus": "using_dcc_final_names",
+      "verifiedOpenLinksAfterImport": 5
+    },
+    {
+      "event": "w204_targeted_link_verification_ready",
+      "targetedRecordCount": 5,
+      "allTargetedRecordsReady": true,
+      "broaderVisualTesting": "blocked"
+    }
+  ],
+  "results": [
+    {
+      "name": "w204_w203_completed_response_normalized",
+      "pass": true,
+      "detail": "{\"status\":\"completed_result_awaiting_w151_import\",\"ready\":true}"
+    },
+    {
+      "name": "w204_w151_accepts_completed_runner_result",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-result-import-guard.v1\",\"valid\":true,\"status\":\"completed_runner_result_accepted\",\"message\":\"Completed runner result JSON accepted. Final names and verified URLs can be imported.\",\"finalNaming\":{\"schema\":\"idb.dcc-final-naming-result.v1\",\"status\":\"dcc_final_names_imported\",\"displayStatus\":\"Final generated names imported\",\"importedAt\":\"2026-05-20T11:48:23.639Z\",\"source\":\"dcc_result_import_only\",\"finalNamesImported\":true,\"runStatus\":\"completed\",\"prospect\":\"Ariat International Outdoor Retail Account\",\"scenario\":\"Style / SKU Matrix\",\"familyKey\":\"apparel_accessories\",\"generated\":{\"extId\":\"\",\"agenda\":\"\"},\"displayObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalName\":\"\",\"id\":\"91201\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"source\":\"dcc_final\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalName\":\"\",\"id\":\"91202\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"source\":\"dcc_final\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat International Style SKU\",\"internalName\":\"\",\"id\":\"91203\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"source\":\"dcc_final\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat International Style Matrix Availability Flow\",\"internalName\":\"\",\"id\":\"91204\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"source\":\"dcc_final\"}],\"componentItems\":[{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat International Size Color SKU\",\"internalName\":\"\",\"id\":\"91205\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\",\"source\":\"dcc_final\"}],\"locationPlanningRecords\":[],\"csvSalesOrderArtifacts\":[],\"warnings\":[],\"errors\":[],\"recoverableBlockers\":[],\"traceCoverage\":{\"includedInTraceExport\":true,\"secretsRedacted\":true,\"importedOnly\":true},\"noRegression\":{\"importOnly\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true,\"provisionalNamesCannotBeMarkedFinal\":true,\"w92StateAuthorityPreserved\":true,\"w110HandoffParityPreserved\":true}},\"namingGuard\":{\"schema\":\"idb.toggle-aware-naming-import-guard.w211.v1\",\"valid\":true,\"status\":\"toggle_vocabulary_guardrail_passed\",\"selectedToggles\":{\"schema\":\"idb.toggle-aware-naming-selected-toggles.w211.v1\",\"selectedLaneId\":\"apparel_accessories\",\"enableManufacturing\":false,\"enableWip\":false,\"manufacturingExplicit\":false,\"wipExplicit\":false},\"violations\":[],\"contract\":{\"schema\":\"idb.toggle-aware-naming-vocabulary-contract.w211.v1\",\"authorityOrder\":[\"website/category evidence\",\"consultant build toggles\",\"conversation notes for story only\"],\"forbiddenWhenManufacturingFalseAndWipFalse\":[\"Finished Good\",\"Ingredient\",\"Ingredient Blend\",\"Production Line\",\"BOM\",\"Assembly\",\"Work Order\",\"Routing\",\"WIP\",\"Manufacturing Line\"],\"vocabularyByMode\":{\"distributionReplenishment\":[\"Product Availability SKU\",\"Channel Availability SKU\",\"Fulfillment Support SKU\",\"Replenishment Flow\"],\"dealerHardgoods\":[\"Channel Availability SKU\",\"Dealer Replenishment Flow\",\"Allocation Support SKU\",\"Fulfillment Support SKU\",\"Product Availability SKU\"],\"apparelStyleMatrix\":[\"Style SKU\",\"Size / Color Variant\",\"Omnichannel Availability Flow\",\"Channel Allocation Pack\"],\"manufacturing\":[\"Finished Good\",\"Assembly\",\"BOM\",\"Production Line\"],\"wipManufacturing\":[\"Work Order\",\"Routing\",\"WIP\",\"Manufacturing Line\"],\"foodIngredientManufacturing\":[\"Ingredient Blend\",\"Recipe\",\"Formula\",\"Finished Case Pack\"]}}},\"semanticGuard\":{\"schema\":\"idb.w214-semantic-runner-result-import-guard.v1\",\"valid\":true,\"status\":\"operating_mode_record_contract_passed\",\"resolvedOperatingMode\":\"apparel_style_matrix\",\"modeConfidence\":\"high\",\"selectedToggles\":{\"schema\":\"idb.w214-selected-build-toggles.v1\",\"createNewHeroItem\":true,\"enableManufacturing\":false,\"enableWip\":false,\"selectedLaneId\":\"apparel_accessories\"},\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"expectedRecordRoles\":[],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"violations\":[],\"warnings\":[],\"explicitPartialResult\":false,\"dynamicRecordDisplayModel\":{\"schema\":\"idb.w214-dynamic-record-display-model.v1\",\"status\":\"semantic_display_ready\",\"normalConsultantRecordCount\":5,\"canShowMoreThanFiveRecords\":false,\"visibleRecords\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalName\":\"\",\"id\":\"91201\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalName\":\"\",\"id\":\"91202\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat International Style SKU\",\"internalName\":\"\",\"id\":\"91203\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat International Style Matrix Availability Flow\",\"internalName\":\"\",\"id\":\"91204\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\"},{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat International Size Color SKU\",\"internalName\":\"\",\"id\":\"91205\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"verified_openable\",\"openable\":true,\"displayLabel\":\"Open\",\"reason\":\"The build result returned a supported NetSuite record URL without preview placeholders.\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\"},\"openableUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\"}],\"adminDebugWarnings\":[],\"openLinksAllowed\":true},\"resolver\":{\"schema\":\"idb.w214-operating-mode-resolver.v1\",\"resolvedOperatingMode\":\"apparel_style_matrix\",\"modeConfidence\":\"high\",\"selectedToggles\":{\"schema\":\"idb.w214-selected-build-toggles.v1\",\"createNewHeroItem\":true,\"enableManufacturing\":false,\"enableWip\":false,\"selectedLaneId\":\"apparel_accessories\"},\"namingAuthority\":{\"websiteControlsIndustryCategoryAndProductNouns\":true,\"togglesControlOperatingModelVocabulary\":true,\"notesControlPainStoryRoiObjectionsOnly\":true,\"nllmAdvisoryOnly\":true,\"domain\":\"ariat.com\",\"evidence\":[\"known domain ariat.com -> apparel_style_matrix\",\"known domain controls non-manufacturing operating mode\"]},\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"expectedRecordRoles\":[],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"storyInputs\":{\"buyerPainFromNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\",\"website\":\"https://www.ariat.com/\",\"pageContext\":\"\"},\"resultValidationExpectations\":{\"recordContract\":{\"label\":\"Apparel Style Matrix\",\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"allowedNouns\":[\"style sku\",\"style matrix\",\"size / color variant\",\"core style\",\"omnichannel availability flow\",\"channel allocation\"],\"invalidTerms\":[\"ingredient\",\"ingredient blend\",\"recipe\",\"formula\",\"work order\",\"routing\",\"wip\"]},\"manufacturingFalseBlocksManufacturingSemantics\":true,\"wipTrueRequiresWipDetailOrPartialResult\":false,\"foodVocabularyRequiresFoodEvidenceAndManufacturing\":false,\"openLinksBlockedUntilValidImport\":true},\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true}}}}"
+    },
+    {
+      "name": "w204_handoff_json_rejected",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-result-import-guard.v1\",\"valid\":false,\"status\":\"handoff_packet_rejected\",\"message\":\"This is the Build handoff JSON. It requests runner work but does not contain completed runner result records, ids, or URLs.\"}"
+    },
+    {
+      "name": "w204_no_open_links_before_import",
+      "pass": true,
+      "detail": "{\"missing_url\":7}"
+    },
+    {
+      "name": "w204_import_commit_updates_final_generated_names",
+      "pass": true,
+      "detail": "{\"requiresOperatorImportChoice\":true,\"operatorChoseImport\":true,\"sourceImportCtaStatus\":\"completed_poll_result_import_cta_ready\",\"importCtaEnabled\":true,\"w151CompletedResultAccepted\":true,\"handoffJsonRejected\":true,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"commitSurfaceSchema\":\"idb.completed-runner-result-import-commit-build-return-surface.v1\",\"commitTarget\":\"state.dccFinalNamingResult\",\"drawerCreatesRecords\":false,\"drawerInvokesSuiteScriptOutsideApprovedAdapter\":false}"
+    },
+    {
+      "name": "w204_build_run_have_five_verified_links_after_import",
+      "pass": true,
+      "detail": "{\"status\":\"using_dcc_final_names\",\"summary\":{\"verified_openable\":5},\"targeted\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalId\":\"91201\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\",\"expectedPath\":\"/app/common/entity/custjob.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForOperatorClick\":true},{\"role\":\"sales_order\",\"label\":\"Demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\",\"expectedPath\":\"/app/accounting/transactions/salesord.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForOperatorClick\":true},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat International Style SKU\",\"internalId\":\"91203\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\",\"expectedPath\":\"/app/common/item/item.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForOperatorClick\":true},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix/proof item\",\"name\":\"Ariat International Style Matrix Availability Flow\",\"internalId\":\"91204\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\",\"expectedPath\":\"/app/common/item/item.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForOperatorClick\":true},{\"role\":\"component_item\",\"label\":\"Component item\",\"name\":\"Ariat International Size Color SKU\",\"internalId\":\"91205\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\",\"expectedPath\":\"/app/common/item/item.nl\",\"openable\":true,\"numericId\":true,\"supportedUrl\":true,\"readyForOperatorClick\":true}]}"
+    },
+    {
+      "name": "w204_targeted_visual_packet_only",
+      "pass": true,
+      "detail": "{\"status\":\"imported_final_url_targeted_operator_verification_packet_ready\",\"scope\":{\"targetedOnly\":true,\"broaderVisualTestingBlocked\":true,\"recordCount\":5,\"requiredRoles\":[\"customer\",\"sales_order\",\"hero_item\",\"matrix_or_proof_item\",\"component_item\"]}}"
+    },
+    {
+      "name": "w204_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"{\\\"schema\\\":\\\"idb.dcc-final-naming-result.v1\\\",\\\"status\\\":\\\"dcc_final_names_imported\\\",\\\"displayStatus\\\":\\\"Final generated names imported\\\",\\\"importedAt\\\":\\\"2026-05-20T11:48:23.645Z\\\",\\\"source\\\":\\\"dcc_result_import_only\\\",\\\"finalNamesImported\\\":true,\\\"runStatus\\\":\\\"completed\\\",\\\"prospect\\\":\\\"Ariat International Outdoor Retail Account\\\",\\\"scenario\\\":\\\"Style / SKU Matrix\\\",\\\"familyKey\\\":\\\"apparel_accessories\\\",\\\"generated\\\":{\\\"extId\\\":\\\"\\\",\\\"agenda\\\":\\\"\\\"},\\\"displayObjects\\\":[{\\\"role\\\":\\\"customer\\\",\\\"label\\\":\\\"Customer\\\",\\\"name\\\":\\\"Ariat International Outdoor Retail Account\\\",\\\"internalName\\\":\\\"\\\",\\\"id\\\":\\\"91201\\\",\\\"url\\\":\\\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201\\\",\\\"source\\\":\\\"dcc_final\\\"},{\\\"role\\\":\\\"sales_order\\\",\\\"label\\\":\\\"Sales Order / demo transaction\\\",\\\"name\\\":\\\"Ariat Seasonal Footwear Availability Demo Order\\\",\\\"internalName\\\":\\\"\\\",\\\"id\\\":\\\"91202\\\",\\\"url\\\":\\\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=91202\\\",\\\"source\\\":\\\"dcc_final\\\"},{\\\"role\\\":\\\"hero_item\\\",\\\"label\\\":\\\"Hero item\\\",\\\"name\\\":\\\"Ariat International Style SKU\\\",\\\"internalName\\\":\\\"\\\",\\\"id\\\":\\\"91203\\\",\\\"url\\\":\\\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91203\\\",\\\"source\\\":\\\"dcc_final\\\"},{\\\"role\\\":\\\"matrix_or_proof_item\\\",\\\"label\\\":\\\"Matrix item / proof item\\\",\\\"name\\\":\\\"Ariat International Style Matrix Availability Flow\\\",\\\"internalName\\\":\\\"\\\",\\\"id\\\":\\\"91204\\\",\\\"url\\\":\\\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91204\\\",\\\"source\\\":\\\"dcc_final\\\"}],\\\"componentItems\\\":[{\\\"role\\\":\\\"component_item\\\",\\\"label\\\":\\\"Component item 1\\\",\\\"name\\\":\\\"Ariat International Size Color SKU\\\",\\\"internalName\\\":\\\"\\\",\\\"id\\\":\\\"91205\\\",\\\"url\\\":\\\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=91205\\\",\\\"source\\\":\\\"dcc_final\\\"}],\\\"locationPlanningRecords\\\":[],\\\"csvSalesOrderArtifacts\\\":[],\\\"warnings\\\":[],\\\"errors\\\":[],\\\"recoverableBlockers\\\":[],\\\"traceCoverage\\\":{\\\"includedInTraceExport\\\":true,\\\"secretsRedacted\\\":true,\\\"importedOnly\\\":true},\\\"noRegression\\\":{\\\"importOnly\\\":true,\\\"noIdbWrites\\\":true,\\\"noSuiteScriptInvocationFromIdb\\\":true,\\\"noTransactionWritesFromIdb\\\":true,\\\"dccOwnsObjectGeneration\\\":true,\\\"provisionalNamesCannotBeMarkedFinal\\\":true,\\\"w92StateAuthorityPreserved\\\":true,\\\"w110HandoffParityPreserved\\\":true}}\",\"finalGeneratedNamesMutatedOnlyByOperatorImport\":true,\"pendingFinalNamesMutated\":false,\"adapterErrorFinalNamesMutated\":false,\"malformedCompletedFinalNamesMutated\":false,\"handoffJsonFinalNamesMutated\":false,\"drawerWritesAttempted\":false,\"drawerTransactionWritesAttempted\":false}"
+    }
+  ],
+  "nextPrompt": "Move through W205: Authenticated Five-Link Landing Evidence Review And Production Consultant Flow Cleanup. Use the W204 imported final generated names and operator screenshots for Customer, demo Sales Order, hero item, matrix/proof item, and component item. Mark pass only if all five Open links land on actual NetSuite record pages with matching numeric ids and record identity, reject Notice/Error/placeholder pages, then hide W144 endpoint/flags/operator fields behind saved admin config so consultants use only name, website, notes, and simple build toggles. Preserve no drawer writes, runner ownership, W151 import guard, and no broader visual testing."
+}

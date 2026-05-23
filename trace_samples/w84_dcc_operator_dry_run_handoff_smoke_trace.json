@@ -1,0 +1,83 @@
+{
+  "schema": "idb.w84-dcc-operator-dry-run-handoff-smoke-trace.v1",
+  "generated": "2026-05-17T21:41:04.354Z",
+  "decision": "PASS",
+  "blockedDecision": "stop_preview_only_no_submit",
+  "confirmedDecision": "eligible_for_manual_dcc_suitelet_review_only",
+  "suiteletFormParamCount": 8,
+  "scheduledRunnerPreviewParamCount": 14,
+  "dccOwnedMechanics": [
+    "item names",
+    "assembly names",
+    "BOM and BOM revision names",
+    "inventory locations",
+    "planning controls",
+    "routing/WIP setup",
+    "CSV/Sales Order mechanics",
+    "runner queue/task submission",
+    "agenda/extid/notes file generation"
+  ],
+  "noRegression": {
+    "noSuiteScriptInvocationFromIdb": true,
+    "noDccRunnerMechanicsRewrite": true,
+    "noIdbTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequiredBeforeEligible": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W85: DCC Sandbox Manual Handoff Parameter Smoke",
+    "prompt": "Move through W85: DCC Sandbox Manual Handoff Parameter Smoke. Use the W84 confirmed dccRunnerHandoffPacketV1 sample to create a manual sandbox smoke script for an operator to compare IDB handoff fields against the Demo Command Center Suitelet fields and runner preview without IDB invoking SuiteScript. Verify form-param parity, DCC-owned deployment config readiness, runner queue ownership, review-only/no-submit behavior, and DCC ownership of item names, assemblies, BOMs, locations, planning, routing/WIP, and CSV/Sales Order mechanics. Preserve no IDB writes, no DCC runner rewrite, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, and consultant confirmation required. Output sandbox smoke script, expected evidence captures, go/no-go criteria, W85 report, validator gates, and best next Codex prompt."
+  },
+  "validatorResults": [
+    {
+      "name": "w84_inherits_w83_export_contract",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w83-dcc-handoff-export-operator-review-ux.v1\",\"status\":\"dcc_handoff_export_operator_review_ready\"}"
+    },
+    {
+      "name": "w84_blocked_sample_stops_before_submit",
+      "pass": true,
+      "detail": "{\"status\":\"blocked_until_confirmed_handoff\",\"actionmode\":\"previewbrief\"}"
+    },
+    {
+      "name": "w84_confirmed_sample_review_only_not_submitted",
+      "pass": true,
+      "detail": "{\"status\":\"ready_for_dcc_suitelet_submission_review\",\"invocation\":false}"
+    },
+    {
+      "name": "w84_required_suitelet_form_params_present",
+      "pass": true,
+      "detail": "{\"custpage_prospect\":\"Ariat International\",\"custpage_website\":\"https://www.ariat.com/\",\"custpage_notes\":\"Buyer needs style, size, and channel availability readiness before a seasonal launch.\",\"custpage_newhero\":\"T\",\"custpage_enablemfg\":\"F\",\"custpage_enablewip\":\"F\",\"custpage_evalmode\":\"review_only\",\"custpage_actionmode\":\"\"}"
+    },
+    {
+      "name": "w84_required_runner_preview_params_present",
+      "pass": true,
+      "detail": "{\"custscript_v3_runner_prospect\":\"Ariat International\",\"custscript_v3_runner_website\":\"https://www.ariat.com/\",\"custscript_v3_runner_notes\":\"style size channel availability seasonal launch\",\"custscript_v3_runner_agenda\":\"generated_by_dcc_suitelet\",\"custscript_v3_runner_extid\":\"generated_by_dcc_suitelet\",\"custscript_v3_runner_mapping\":\"dcc_config_required\",\"custscript_v3_runner_folder\":\"dcc_config_required\",\"custscript_v3_runner_subsidiary\":\"dcc_config_required\",\"custscript_v3_runner_location\":\"dcc_config_optional\",\"custscript_v3_runner_enable_wip\":\"F\",\"custscript_v3_runner_enable_mfg\":\"F\",\"custscript_v3_runner_create_new_hero\":\"T\",\"custscript_v3_runner_hero_item\":\"generated_by_dcc_suitelet_fresh_hero\",\"custscript_v3_runner_wc_search\":\"dcc_config_optional\"}"
+    },
+    {
+      "name": "w84_dcc_config_params_owned_by_dcc",
+      "pass": true,
+      "detail": "[\"custscriptv3_reset_subsidiary\",\"custscript_v3_reset_location\",\"custscript_v3_runner_script_id\",\"custscript_v3_runner_deploy_id\",\"custscript_csv_mapping_id\",\"custscript_csv_folder_id\",\"custscript_so_savedsearch_id\",\"custscript_wo_savedsearch_id\"]"
+    },
+    {
+      "name": "w84_runtime_still_export_only",
+      "pass": true,
+      "detail": "export function has no fetch call"
+    },
+    {
+      "name": "w84_no_regression_flags_hold",
+      "pass": true,
+      "detail": "{\"noSuiteScriptInvocationFromIdb\":true,\"noDccRunnerMechanicsRewrite\":true,\"noIdbTransactionWrites\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"consultantConfirmationRequiredBeforeEligible\":true}"
+    },
+    {
+      "name": "w84_dcc_ownership_explicit",
+      "pass": true,
+      "detail": "[\"item names\",\"assembly names\",\"BOM and BOM revision names\",\"inventory locations\",\"planning controls\",\"routing/WIP setup\",\"CSV/Sales Order mechanics\",\"runner queue/task submission\",\"agenda/extid/notes file generation\"]"
+    },
+    {
+      "name": "w84_operator_steps_cover_blocked_and_confirmed",
+      "pass": true,
+      "detail": "[{\"step\":\"Verify exported packet schema and status.\",\"passCriteria\":\"Schema is idb.dcc-runner-handoff-packet.v1 and status is either blocked_until_confirmed_handoff or ready_for_dcc_suitelet_submission_review.\",\"stopIf\":\"Schema is missing, status is unknown, or executionMode is not review_only_no_submit.\"},{\"step\":\"Verify consultant confirmation gate.\",\"passCriteria\":\"Blocked packet keeps custpage_actionmode=previewbrief; confirmed packet clears custpage_actionmode but still remains review-only from IDB.\",\"stopIf\":\"Unconfirmed packet is marked ready, or confirmed packet implies IDB submitted SuiteScript.\"},{\"step\":\"Verify exact Suitelet form params.\",\"passCriteria\":\"custpage_prospect, custpage_website, custpage_notes, custpage_newhero, custpage_enablemfg, custpage_enablewip, custpage_evalmode, and custpage_actionmode are present.\",\"stopIf\":\"Any required form param is missing or has unsupported write intent.\"},{\"step\":\"Verify DCC-owned config params.\",\"passCriteria\":\"DCC deployment owns subsidiary, location, runner script/deploy IDs, CSV mapping/folder, and saved searches.\",\"stopIf\":\"IDB attempts to provide or overwrite account config IDs.\"},{\"step\":\"Verify scheduled runner preview params.\",\"passCriteria\":\"Runner preview shows prospect, website, notes, generated agenda/extid placeholders, DCC config placeholders, manufacturing/WIP flags, hero mode, and optional WC search.\",\"stopIf\":\"Preview implies IDB owns runner queue mechanics or generated object creation.\"},{\"step\":\"Verify DCC object generation ownership.\",\"passCriteria\":\"DCC remains owner of item names, assemblies, BOMs, locations, planning controls, routing/WIP, CSV/Sales Order mechanics, agenda, extid, notes file, and runner task.\",\"stopIf\":\"IDB rewrites DCC runner mechanics or creates transaction context.\"},{\"step\":\"Operator dry-run decision.\",\"passCriteria\":\"Blocked packet stops at preview/no-submit. Confirmed packet is eligible only for manual governed DCC Suitelet review by an operator.\",\"stopIf\":\"Any path tries to invoke SuiteScript from IDB or enable transaction writes.\"}]"
+    }
+  ]
+}

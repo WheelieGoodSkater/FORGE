@@ -1,0 +1,234 @@
+{
+  "schema": "idb.w81-idb-dcc-build-packet-bridge.v1",
+  "status": "build_packet_bridge_ready_review_only",
+  "objective": "Pivot IDB into a consultant-facing intake, confirmation, and governance layer that feeds the proven Demo Command Center build engine.",
+  "buildPacketV1": {
+    "schema": "idb.build-packet.v1",
+    "objective": "Map IDB consultant intake and evidence into a DCC-owned build packet without making website intelligence own object generation.",
+    "authorityModel": {
+      "idbOwns": [
+        "consultant intake",
+        "website evidence summary",
+        "lane recommendation",
+        "scenario pack recommendation",
+        "confirmation gate",
+        "review-only build packet handoff"
+      ],
+      "websiteOwns": [
+        "identity evidence recommendation",
+        "source citations",
+        "confidence and uncertainty state"
+      ],
+      "notesOwn": [
+        "pain",
+        "ROI framing",
+        "competitive framing",
+        "objections",
+        "talk track"
+      ],
+      "dccOwns": [
+        "item names",
+        "assembly names",
+        "BOM and BOM revision names",
+        "component structure",
+        "inventory location setup",
+        "planning controls",
+        "manufacturing routing/WIP where enabled",
+        "CSV/Sales Order context mechanics"
+      ]
+    },
+    "requiredFields": [
+      "identity.prospect",
+      "identity.website",
+      "identity.selectedLaneId",
+      "identity.proofAnchor",
+      "identity.productSeed",
+      "scenarioPackSelection.selectedScenarioPack",
+      "dccRunnerInputs.familyKey",
+      "dccRunnerInputs.scenario",
+      "dccRunnerInputs.createNewHeroItem",
+      "dccRunnerInputs.enableManufacturing",
+      "dccRunnerInputs.enableWip",
+      "dccRunnerInputs.locationPlanningIntent",
+      "consultantConfirmation.required",
+      "consultantConfirmation.confirmed",
+      "dccObjectGenerationOwnership.owner",
+      "noRegression.dccRunnerMechanicsNotRewritten"
+    ],
+    "idbToDccFieldMapping": [
+      {
+        "idbField": "identity.prospect",
+        "dccInput": "prospect",
+        "owner": "IDB prepares / DCC consumes"
+      },
+      {
+        "idbField": "identity.website",
+        "dccInput": "website",
+        "owner": "IDB prepares / DCC consumes"
+      },
+      {
+        "idbField": "scenarioPackSelection.selectedScenarioPack",
+        "dccInput": "familyKey",
+        "owner": "consultant confirms / DCC executes"
+      },
+      {
+        "idbField": "scenarioPackSelection.selectedScenario",
+        "dccInput": "scenario",
+        "owner": "consultant confirms / DCC executes"
+      },
+      {
+        "idbField": "dccRunnerInputs.createNewHeroItem",
+        "dccInput": "createNewHeroItem",
+        "owner": "DCC runner"
+      },
+      {
+        "idbField": "dccRunnerInputs.enableManufacturing",
+        "dccInput": "enableManufacturing",
+        "owner": "DCC runner"
+      },
+      {
+        "idbField": "dccRunnerInputs.enableWip",
+        "dccInput": "enableWip",
+        "owner": "DCC runner"
+      },
+      {
+        "idbField": "dccRunnerInputs.signalText",
+        "dccInput": "signalText",
+        "owner": "IDB summarizes / DCC interprets"
+      },
+      {
+        "idbField": "identity.namingHints",
+        "dccInput": "names or signalText hints",
+        "owner": "advisory only"
+      },
+      {
+        "idbField": "writeMode",
+        "dccInput": "review-only until governed execution",
+        "owner": "governance gate"
+      }
+    ],
+    "scenarioPackSelectionRules": [
+      "Website evidence recommends the identity path and must cite evidence.",
+      "Consultant confirmation is required before the packet is ready for DCC handoff.",
+      "Conversation notes can shape story, ROI, competitive, objections, and talk track.",
+      "Conversation notes cannot silently override confirmed website/category identity.",
+      "DCC runner/Suitelet owns object generation and setup mechanics."
+    ],
+    "reviewUxSummary": [
+      "Show selected DCC pack and scenario first.",
+      "Show build mode: create new hero, manufacturing, WIP.",
+      "Show confirmation status and blocked write paths.",
+      "Show IDB-to-DCC field mapping under audit detail.",
+      "State clearly that DCC owns object-generation mechanics."
+    ],
+    "noRegression": {
+      "websiteCannotInventUnsupportedClaims": true,
+      "notesCannotSilentlyOverrideConfirmedIdentity": true,
+      "dccRunnerMechanicsNotRewritten": true,
+      "noTransactionWritesFromIdb": true,
+      "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+      "governedWriteExplicitAndBlockedUnlessConfirmed": true,
+      "nllmAdvisoryOnly": true
+    }
+  },
+  "sampleBuildPacket": {
+    "schema": "idb.build-packet.v1",
+    "status": "blocked_until_consultant_confirmation",
+    "writeMode": "review_only_dcc_owned_generation",
+    "identity": {
+      "prospect": "Ariat International",
+      "website": "https://www.ariat.com/",
+      "selectedLaneId": "apparel_accessories",
+      "selectedLane": "Apparel & Accessories",
+      "proofAnchor": "Style / SKU Matrix",
+      "productSeed": "Core Boot and Apparel Style Matrix",
+      "productFamily": "Apparel and Footwear Style",
+      "demandMoment": "style, size, and channel availability"
+    },
+    "scenarioPackSelection": {
+      "selectedScenarioPack": "apparelAccessories",
+      "selectedScenario": "Style-to-Availability Readiness",
+      "selectionAuthority": "website_recommends_consultant_confirms_dcc_builds",
+      "confirmationRequired": true
+    },
+    "dccRunnerInputs": {
+      "familyKey": "apparelAccessories",
+      "scenario": "Style-to-Availability Readiness",
+      "mode": "Balanced",
+      "createNewHeroItem": true,
+      "enableManufacturing": false,
+      "enableWip": false,
+      "locationPlanningIntent": "DCC owns location, inventory positioning, replenishment, and Sales Order CSV context decisions.",
+      "writeMode": "review_only_until_governed_dcc_runner_execution"
+    },
+    "dccObjectGenerationOwnership": [
+      "item names",
+      "assembly names",
+      "BOM and BOM revision names",
+      "component structure",
+      "inventory location setup",
+      "planning controls",
+      "manufacturing routing/WIP where enabled",
+      "CSV/Sales Order context mechanics"
+    ],
+    "blockedWritePaths": [
+      "IDB transaction write",
+      "IDB direct object generation"
+    ],
+    "noRegression": {
+      "websiteCannotInventUnsupportedClaims": true,
+      "notesCannotSilentlyOverrideConfirmedIdentity": true,
+      "dccRunnerMechanicsNotRewritten": true,
+      "noTransactionWritesFromIdb": true,
+      "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+      "governedWriteExplicitAndBlockedUnlessConfirmed": true,
+      "nllmAdvisoryOnly": true
+    }
+  },
+  "validatorGates": [
+    {
+      "name": "w81_build_packet_function_present",
+      "pass": true,
+      "detail": "idbBuildPacketV1"
+    },
+    {
+      "name": "w81_scenario_selection_rules_present",
+      "pass": true,
+      "detail": "scenarioPackSelectionRules"
+    },
+    {
+      "name": "w81_review_ux_bridge_present",
+      "pass": true,
+      "detail": "renderDccBuildPacketBridge"
+    },
+    {
+      "name": "w81_trace_export_includes_build_packet",
+      "pass": true,
+      "detail": "exportTrace buildPacketV1"
+    },
+    {
+      "name": "w81_dcc_ownership_preserved_in_runtime",
+      "pass": true,
+      "detail": "dcc ownership text"
+    },
+    {
+      "name": "w81_no_regression_runtime_boundaries",
+      "pass": true,
+      "detail": "no regression flags"
+    },
+    {
+      "name": "w81_contract_mapping_complete",
+      "pass": true,
+      "detail": "[{\"idbField\":\"identity.prospect\",\"dccInput\":\"prospect\",\"owner\":\"IDB prepares / DCC consumes\"},{\"idbField\":\"identity.website\",\"dccInput\":\"website\",\"owner\":\"IDB prepares / DCC consumes\"},{\"idbField\":\"scenarioPackSelection.selectedScenarioPack\",\"dccInput\":\"familyKey\",\"owner\":\"consultant confirms / DCC executes\"},{\"idbField\":\"scenarioPackSelection.selectedScenario\",\"dccInput\":\"scenario\",\"owner\":\"consultant confirms / DCC executes\"},{\"idbField\":\"dccRunnerInputs.createNewHeroItem\",\"dccInput\":\"createNewHeroItem\",\"owner\":\"DCC runner\"},{\"idbField\":\"dccRunnerInputs.enableManufacturing\",\"dccInput\":\"enableManufacturing\",\"owner\":\"DCC runner\"},{\"idbField\":\"dccRunnerInputs.enableWip\",\"dccInput\":\"enableWip\",\"owner\":\"DCC runner\"},{\"idbField\":\"dccRunnerInputs.signalText\",\"dccInput\":\"signalText\",\"owner\":\"IDB summarizes / DCC interprets\"},{\"idbField\":\"identity.namingHints\",\"dccInput\":\"names or signalText hints\",\"owner\":\"advisory only\"},{\"idbField\":\"writeMode\",\"dccInput\":\"review-only until governed execution\",\"owner\":\"governance gate\"}]"
+    },
+    {
+      "name": "w81_sample_preserves_dcc_object_generation_ownership",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.build-packet.v1\",\"status\":\"blocked_until_consultant_confirmation\",\"writeMode\":\"review_only_dcc_owned_generation\",\"identity\":{\"prospect\":\"Ariat International\",\"website\":\"https://www.ariat.com/\",\"selectedLaneId\":\"apparel_accessories\",\"selectedLane\":\"Apparel & Accessories\",\"proofAnchor\":\"Style / SKU Matrix\",\"productSeed\":\"Core Boot and Apparel Style Matrix\",\"productFamily\":\"Apparel and Footwear Style\",\"demandMoment\":\"style, size, and channel availability\"},\"scenarioPackSelection\":{\"selectedScenarioPack\":\"apparelAccessories\",\"selectedScenario\":\"Style-to-Availability Readiness\",\"selectionAuthority\":\"website_recommends_consultant_confirms_dcc_builds\",\"confirmationRequired\":true},\"dccRunnerInputs\":{\"familyKey\":\"apparelAccessories\",\"scenario\":\"Style-to-Availability Readiness\",\"mode\":\"Balanced\",\"createNewHeroItem\":true,\"enableManufacturing\":false,\"enableWip\":false,\"locationPlanningIntent\":\"DCC owns location, inventory positioning, replenishment, and Sales Order CSV context decisions.\",\"writeMode\":\"review_only_until_governed_dcc_runner_execution\"},\"dccObjectGenerationOwnership\":[\"item names\",\"assembly names\",\"BOM and BOM revision names\",\"component structure\",\"inventory location setup\",\"planning controls\",\"manufacturing routing/WIP where enabled\",\"CSV/Sales Order context mechanics\"],\"blockedWritePaths\":[\"IDB transaction write\",\"IDB direct object generation\"],\"noRegression\":{\"websiteCannotInventUnsupportedClaims\":true,\"notesCannotSilentlyOverrideConfirmedIdentity\":true,\"dccRunnerMechanicsNotRewritten\":true,\"noTransactionWritesFromIdb\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"governedWriteExplicitAndBlockedUnlessConfirmed\":true,\"nllmAdvisoryOnly\":true}}"
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W82: DCC Runner Handoff Packet And Suitelet Parameter Map",
+    "prompt": "Move through W82: DCC Runner Handoff Packet And Suitelet Parameter Map. Take buildPacketV1 and map it to the exact Demo Command Center Suitelet/runner parameters, including prospect, website, notes/signalText, family key, scenario, createNewHeroItem, enableManufacturing, enableWip, location/planning intent, and review-only write mode. Preserve DCC ownership of item names, assemblies, BOMs, locations, planning controls, routing/WIP, and CSV/Sales Order mechanics. Do not rewrite DCC runner mechanics, do not enable IDB transaction writes, keep hosted resolver optional until remoteSmokeExecuted=true, and keep consultant confirmation required before handoff. Output parameter map, handoff packet sample, blocked/confirmed examples, W82 report, validator gates, and best next Codex prompt."
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "idb.w111-dcc-preview-url-operator-copy-trace.v1",
+  "generatedAt": "2026-05-17T21:41:06.684Z",
+  "decision": "PASS",
+  "readyStatus": "ready_preview_copy_only",
+  "blockedStatus": "blocked_preview_copy_only",
+  "previewUrlTextSample": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_dcc_preview&deploy=customdeploy_dcc_preview&custpage_prospect=Ariat%20International&custpage_website=https%3A%2F%2Fwww.ariat.com%2F&custpage_notes=Ariat%20needs%20style%2C%20s",
+  "copySafeParameterTextSample": "custpage_prospect=Ariat International\ncustpage_website=https://www.ariat.com/\ncustpage_notes=Ariat needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\ncustpage_newhero=T\ncustpage_enablemfg=F\ncustpage_enablewip=F\ncustpage_evalmode=review_only\ncustpage_actionmode=previewbrief",
+  "validatorResults": [
+    {
+      "name": "w111_runtime_preview_url_copy_present",
+      "pass": true,
+      "detail": "dccPreviewUrlOperatorCopyV1 runtime and hook"
+    },
+    {
+      "name": "w111_ready_copy_formats_preview_url_and_query_params",
+      "pass": true,
+      "detail": "{\"status\":\"ready_preview_copy_only\",\"previewUrlText\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_dcc_preview&deploy=customdeploy_dcc_preview&custpage_prospect=Ariat%20International&custpage_we\"}"
+    },
+    {
+      "name": "w111_copy_only_no_navigation_or_submit",
+      "pass": true,
+      "detail": "{\"navigate\":false,\"open\":false,\"submit\":false,\"invoke\":false}"
+    },
+    {
+      "name": "w111_blocked_example_blocks_without_confirmation",
+      "pass": true,
+      "detail": "{\"status\":\"blocked_preview_copy_only\",\"reasons\":[\"Consultant has not confirmed the working lane, scenario pack, product naming, and build mode.\",\"confirmed_lane_matches_selected_lane\",\"exported_lane_matches_confirmed_lane\",\"blocked_until_confirmed_handoff\"],\"action\":\"Resolve state authority, parity, and consultant confirmation before operator preview copy is considered ready.\"}"
+    },
+    {
+      "name": "w111_operator_instructions_complete",
+      "pass": true,
+      "detail": "[\"Export the handoff JSON first.\",\"Copy the preview URL text or parameter text from the drawer.\",\"Open the build preview manually in the sandbox.\",\"Paste or compare preview-only params against the build preview fields.\",\"Do not submit, queue, invoke SuiteScript, or write from the drawer.\",\"Paste operator comparison notes back into the evidence intake.\"]"
+    },
+    {
+      "name": "w111_review_ui_copy_present",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-strong\">Ariat International</div>\n          <div class=\"idb-copy\">Prepare a concise proof path for st"
+    },
+    {
+      "name": "w111_trace_coverage_present",
+      "pass": true,
+      "detail": "trace export and handoff export trace include preview URL copy"
+    },
+    {
+      "name": "w111_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"w110ParityLockPreserved\":true,\"w92StateAuthorityPreserved\":true,\"w105W107PreviewOnlyApprovalPreserved\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWrites\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"notesStoryOnly\":true,\"consultantConfirmationRequired\":true,\"dccOwnsObjectGeneration\":true}"
+    }
+  ],
+  "noRegression": {
+    "w110ParityLockPreserved": true,
+    "w92StateAuthorityPreserved": true,
+    "w105W107PreviewOnlyApprovalPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W112: Operator Preview Retest After Copy Helper",
+    "prompt": "Move through W112: Operator Preview Retest After Copy Helper. Produce the exact hands-on operator retest for the latest IDB drawer using W111 preview URL/operator copy: file to upload, sales request fields, expected Review copy-helper screenshot, DCC handoff JSON, trace JSON, manual DCC Suitelet preview comparison steps, operator evidence fields to paste back into IDB, scoring rubric, and stop/go criteria. Preserve W110 parity lock, W92 state authority, W105-W107 preview-only approval behavior, no IDB writes, no SuiteScript invocation from IDB, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output test packet, validator gates, W112 report, and best next Codex prompt."
+  }
+}

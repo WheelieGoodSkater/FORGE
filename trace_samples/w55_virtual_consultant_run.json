@@ -1,0 +1,46 @@
+{
+  "schema": "idb.w55-virtual-consultant-run.v1",
+  "generated": "2026-05-12T00:00:00.000Z",
+  "scenario": {
+    "prospectName": "RidgeLine Outfitters",
+    "website": "https://ridgeline-outfitters.example",
+    "siteType": "ambiguous_multi_category",
+    "conversationNotes": "Prospect sells branded outdoor apparel plus replacement parts for dealer service partners. They are frustrated that wholesale allocation, style/color sizing, and service-part availability are handled in separate spreadsheets. SC wants a fast demo path that proves inventory promise, item structure, and order readiness without pretending we know their competitor facts.",
+    "scObjective": "Prepare a first-call proof path for website-led classification, Review clarity, grounded ROI, and safe write status."
+  },
+  "virtualResult": {
+    "expectedConfidence": "needs_confirmation",
+    "expectedReason": "Website/category language mixes apparel/accessories and dealer hardgoods/service-part evidence.",
+    "expectedConsultantAction": "Confirm whether the demo should prioritize apparel style/SKU control or dealer hardgoods availability before finalizing ROI and write prep.",
+    "expectedSafeBehavior": [
+      "Show competing candidates.",
+      "Do not invent competitor claims.",
+      "Use notes for pain and ROI framing only.",
+      "Keep transaction writes blocked.",
+      "Export trace JSON before handoff."
+    ]
+  },
+  "virtualScorecard": {
+    "laneAccuracy": 4,
+    "objectNamingQuality": 4,
+    "proofAnchorFit": 4,
+    "evidenceUxClarity": 5,
+    "roiUsefulness": 4,
+    "competitiveUsefulness": 4,
+    "writeSafetyClarity": 5,
+    "resetRecoveryClarity": 4
+  },
+  "feedback": [
+    "The right outcome is not a forced lane. This should be a needs-confirmation run because the business has apparel and dealer/service signals.",
+    "The evidence panel should help the consultant explain why IDB is pausing rather than guessing.",
+    "ROI guidance should stay around allocation, availability, and baseline questions; it should not claim measured savings.",
+    "Competitive guidance should stay workflow-safe unless the consultant provides sourced competitor details.",
+    "Write safety should remain clear: Customer + Proof Item may be governed; transaction writes remain blocked."
+  ],
+  "noRegression": {
+    "falseConfidentWrongAllowed": false,
+    "unsupportedClaimsAllowed": false,
+    "transactionWriteAllowed": false,
+    "nllmCanWrite": false
+  }
+}

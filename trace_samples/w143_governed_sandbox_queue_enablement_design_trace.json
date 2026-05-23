@@ -1,0 +1,29 @@
+{
+  "schema": "idb.w143-governed-sandbox-queue-enablement-design-trace.v1",
+  "decision": "PASS_QUEUE_ENABLEMENT_DESIGNED__NOT_ACTIVATED",
+  "queueSubmitEnabledNow": false,
+  "writeFlagsEnabledNow": false,
+  "serverSideSwitches": [
+    "custscript_idb_create_enabled=T",
+    "custscript_idb_governed_sandbox_write_enabled=T",
+    "custscript_idb_queue_submit_enabled=T"
+  ],
+  "sandboxAllowlist": {
+    "accountAllowed": true,
+    "writeFlagsEnabled": false,
+    "queueSubmitAllowedNow": false
+  },
+  "idempotencyToken": "IDB-idb-build-ariat-style-ready-001-Ariat_International-apparel_accessories",
+  "runnerHandoffSubmitNow": false,
+  "resultCaptureStatus": "placeholder_not_enabled",
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterQueueSubmitEnablement": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W143 only designs the queue enablement switch and result-capture contract. It does not submit the runner, write records, or produce real NetSuite record URLs."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W144: Governed Sandbox Queue Submit Pilot Behind Server Flags",
+    "prompt": "Move through W144: Governed Sandbox Queue Submit Pilot Behind Server Flags. Use the W143 queue enablement design to implement the NetSuite-side server-flagged queue submit path behind CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, QUEUE_SUBMIT_ENABLED, sandbox allowlist, operator approval, idempotency, and result-capture prerequisites. Keep the drawer export/import only and do not add drawer writes or drawer SuiteScript invocation. If flags are false, preserve the W142/W143 dry-run no-submit behavior. If flags are true in sandbox, queue the existing governed runner and return runnerTaskId plus result-capture pending status, not fake record URLs. Output queue submit adapter changes, guarded smoke harness, trace samples, W144 report, targeted visual testing decision, and best next Codex prompt."
+  }
+}

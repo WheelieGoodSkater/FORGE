@@ -1,0 +1,1532 @@
+{
+  "schema": "idb.w190-report.v1",
+  "block": "W190",
+  "title": "Governed Runner Result Capture Polling To Completed JSON",
+  "status": "PASS",
+  "pollingContract": {
+    "startsOnlyAfterRunnerTaskId": true,
+    "approvedServerAdapterPathOnly": true,
+    "onePollPerClick": true,
+    "pendingAndAdapterErrorAreNonMutating": true,
+    "completedJsonRequiresW151BeforeImport": true,
+    "noOpenLinksBeforeImport": true
+  },
+  "completedResultEnvelopeShape": {
+    "schema": "idb.approved-server-adapter-result-envelope.v1",
+    "status": "completed_runner_result_ready",
+    "runnerTaskId": "numeric-or-task-string-from-W189",
+    "resultCapture": {
+      "status": "completed_result_capture_ready",
+      "finalGeneratedNamesJson": "idb.completed-runner-result-json.v1"
+    },
+    "finalGeneratedNamesJson": {
+      "schema": "idb.completed-runner-result-json.v1",
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "records": {
+        "customer": {
+          "internalId": "number",
+          "url": "supported NetSuite record URL"
+        },
+        "demoTransaction": {
+          "internalId": "number",
+          "url": "supported NetSuite record URL"
+        },
+        "heroItem": {
+          "internalId": "number",
+          "url": "supported NetSuite record URL"
+        },
+        "matrixProofItem": {
+          "internalId": "number",
+          "url": "supported NetSuite record URL"
+        },
+        "componentItem": {
+          "internalId": "number",
+          "url": "supported NetSuite record URL"
+        }
+      }
+    }
+  },
+  "guardedHarness": {
+    "blocksWithoutRunnerTaskId": true,
+    "constructsApprovedPollRequestWithoutSubmit": true,
+    "pendingIsNonMutating": true,
+    "completedIsW151ImportReadyOnly": true,
+    "adapterErrorStopsSafely": true,
+    "noActiveLinksBeforeImport": true
+  },
+  "cases": {
+    "noRunnerTask": {
+      "schema": "idb.w190-governed-runner-result-capture-polling-to-completed-json.v1",
+      "status": "w190_poll_blocked_missing_runner_task_id",
+      "mode": "approved_server_adapter_result_capture_poll_no_final_name_mutation",
+      "pollingContract": {
+        "startsOnlyAfterRunnerTaskId": true,
+        "approvedServerAdapterPathOnly": true,
+        "onePollPerClick": true,
+        "pendingAndAdapterErrorAreNonMutating": true,
+        "completedJsonRequiresW151BeforeImport": true,
+        "noOpenLinksBeforeImport": true
+      },
+      "completedResultEnvelopeShape": {
+        "schema": "idb.approved-server-adapter-result-envelope.v1",
+        "status": "completed_runner_result_ready",
+        "runnerTaskId": "numeric-or-task-string-from-W189",
+        "resultCapture": {
+          "status": "completed_result_capture_ready",
+          "finalGeneratedNamesJson": "idb.completed-runner-result-json.v1"
+        },
+        "finalGeneratedNamesJson": {
+          "schema": "idb.completed-runner-result-json.v1",
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "records": {
+            "customer": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "demoTransaction": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "heroItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "matrixProofItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "componentItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            }
+          }
+        }
+      },
+      "gates": [
+        {
+          "id": "runner_task_id_present",
+          "ready": false
+        },
+        {
+          "id": "approved_endpoint_configured",
+          "ready": true
+        },
+        {
+          "id": "server_flags_true",
+          "ready": true
+        },
+        {
+          "id": "sandbox_allowlist_confirmed",
+          "ready": true
+        },
+        {
+          "id": "operator_approval_captured",
+          "ready": true
+        },
+        {
+          "id": "idempotency_token_present",
+          "ready": true
+        },
+        {
+          "id": "approved_endpoint_mode",
+          "ready": true
+        },
+        {
+          "id": "confirmed_build_request_parity",
+          "ready": true
+        }
+      ],
+      "blockedReasons": [
+        "runner_task_id_present"
+      ],
+      "requestReady": false,
+      "requestSent": false,
+      "pollRequestEnvelope": null,
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "false_flag_no_submit",
+        "label": "False flags: no submit",
+        "message": "Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.",
+        "rawStatus": "poll_blocked_missing_prerequisites",
+        "queueSubmitted": false,
+        "runnerTaskId": null,
+        "resultCaptureStatus": "not_started_no_submit",
+        "resultCapture": {
+          "status": "not_started_no_submit",
+          "runnerTaskId": "",
+          "finalGeneratedNamesReady": false,
+          "finalGeneratedNamesJson": null
+        },
+        "pollAttempted": false,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "completedResultMessage": "Paste completed governed runner result JSON, not a blank value or non-object JSON.",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "importReady": false,
+        "stateMutationAllowedInThisBlock": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "statePatch": {},
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "directDrawerSuiteScriptInvocation": false,
+        "activeOpenLinks": 0
+      },
+      "stopReason": "poll_blocked_before_request",
+      "traceSamples": [
+        {
+          "event": "w190_result_capture_poll_gate",
+          "requestReady": false,
+          "blockedReasons": [
+            "runner_task_id_present"
+          ],
+          "runnerTaskIdPresent": false,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_result_capture_poll_response",
+          "requestSent": false,
+          "status": "w190_poll_blocked_missing_runner_task_id",
+          "resultCaptureStatus": "not_started_no_submit",
+          "finalGeneratedNamesJsonReady": false,
+          "completedResultPresent": false,
+          "completedResultStatus": "invalid_json_payload",
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_w151_completed_json_gate",
+          "completedResultAcceptedByW151": false,
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImport": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W190 only polls result capture and marks completed JSON import-ready. Open-link testing starts after W151 import commits URLs into IDB."
+      }
+    },
+    "readyNoSubmit": {
+      "schema": "idb.w190-governed-runner-result-capture-polling-to-completed-json.v1",
+      "status": "w190_poll_ready_not_executed",
+      "mode": "approved_server_adapter_result_capture_poll_no_final_name_mutation",
+      "pollingContract": {
+        "startsOnlyAfterRunnerTaskId": true,
+        "approvedServerAdapterPathOnly": true,
+        "onePollPerClick": true,
+        "pendingAndAdapterErrorAreNonMutating": true,
+        "completedJsonRequiresW151BeforeImport": true,
+        "noOpenLinksBeforeImport": true
+      },
+      "completedResultEnvelopeShape": {
+        "schema": "idb.approved-server-adapter-result-envelope.v1",
+        "status": "completed_runner_result_ready",
+        "runnerTaskId": "numeric-or-task-string-from-W189",
+        "resultCapture": {
+          "status": "completed_result_capture_ready",
+          "finalGeneratedNamesJson": "idb.completed-runner-result-json.v1"
+        },
+        "finalGeneratedNamesJson": {
+          "schema": "idb.completed-runner-result-json.v1",
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "records": {
+            "customer": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "demoTransaction": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "heroItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "matrixProofItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "componentItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            }
+          }
+        }
+      },
+      "gates": [
+        {
+          "id": "runner_task_id_present",
+          "ready": true
+        },
+        {
+          "id": "approved_endpoint_configured",
+          "ready": true
+        },
+        {
+          "id": "server_flags_true",
+          "ready": true
+        },
+        {
+          "id": "sandbox_allowlist_confirmed",
+          "ready": true
+        },
+        {
+          "id": "operator_approval_captured",
+          "ready": true
+        },
+        {
+          "id": "idempotency_token_present",
+          "ready": true
+        },
+        {
+          "id": "approved_endpoint_mode",
+          "ready": true
+        },
+        {
+          "id": "confirmed_build_request_parity",
+          "ready": true
+        }
+      ],
+      "blockedReasons": [],
+      "requestReady": true,
+      "requestSent": false,
+      "pollRequestEnvelope": {
+        "schema": "idb.w190-governed-runner-result-capture-poll-request.v1",
+        "targetAdapter": "W144 governed runner adapter result capture",
+        "action": "poll_runner_result_capture",
+        "method": "POST",
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        "bodyEncoding": "application/x-www-form-urlencoded",
+        "bodyParams": {
+          "custpage_idb_action": "poll_runner_result_capture",
+          "custpage_idb_runner_task_id": "task_w190_ariatinternational_001",
+          "custpage_idb_idempotency_token": "idb_w190_ariatinternational_001",
+          "custpage_idb_result_capture_cursor": "cursor_w190_initial",
+          "custpage_idb_expected_result_schema": "idb.completed-runner-result-json.v1",
+          "custpage_idb_confirmed_build_request_json": "{\"schema\":\"idb.confirmed-build-request.v1\",\"requestId\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"requestStatus\":\"confirmed_ready_for_governed_runner\",\"producedBy\":\"idb_drawer\",\"idbPrimarySurface\":true,\"legacyDccSuiteletUi\":{\"normalWorkflow\":false,\"role\":\"legacy_reference_only\",\"replacement\":\"Drawer prepares confirmed request; governed runner creates or resolves records.\"},\"consultantConfirmation\":{\"required\":true,\"confirmed\":true,\"source\":\"acceptedPacket\"},\"simplifiedConsultantIntake\":{\"schema\":\"idb.production-consultant-intake.v1\",\"status\":\"consultant_intake_ready\",\"required\":[\"customer/prospect name\",\"website\",\"conversation notes\"],\"inputs\":{\"customerProspectName\":\"Ariat International\",\"website\":\"https://www.ariat.com/\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"inferred\":{\"lane\":\"Apparel & Accessories\",\"laneId\":\"apparel_accessories\",\"proofPath\":\"Style / SKU Matrix\",\"demoScenario\":\"Apparel & Accessories / Style / SKU Matrix\",\"buildStory\":\"Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings.\",\"initialRecordNamingIntent\":\"Core Boot and Apparel Style Matrix\"},\"missing\":[]},\"adminDebugConfiguration\":{\"normalConsultantWorkflow\":false,\"hiddenBehindAdminDebugState\":true,\"fields\":[\"approved W144 endpoint\",\"server flags\",\"sandbox allowlist\",\"runner script/deployment IDs\",\"mapping ID\",\"runner folder ID\",\"result capture folder ID\",\"operator approval phrase\"]},\"stateAuthority\":{\"selectedLaneId\":\"apparel_accessories\",\"confirmedLaneId\":\"apparel_accessories\",\"exportedLaneId\":\"apparel_accessories\",\"handoffParityStatus\":\"matched\",\"noStateMismatch\":true},\"prospect\":{\"name\":\"Ariat International\",\"website\":\"https://www.ariat.com/\"},\"demoPath\":{\"laneId\":\"apparel_accessories\",\"laneName\":\"Apparel & Accessories\",\"proofAnchor\":\"Style / SKU Matrix\",\"familyKey\":\"apparelAccessories\",\"scenario\":\"Style-to-Availability Readiness\",\"confirmed\":true},\"storyInputs\":{\"buyerNeed\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style\",\"scObjective\":\"Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings.\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"resolvedOperatingMode\":\"apparel_style_matrix\",\"modeConfidence\":\"high\",\"selectedToggles\":{\"schema\":\"idb.w214-selected-build-toggles.v1\",\"createNewHeroItem\":true,\"enableManufacturing\":false,\"enableWip\":false,\"selectedLaneId\":\"apparel_accessories\"},\"namingAuthority\":{\"websiteControlsIndustryCategoryAndProductNouns\":true,\"togglesControlOperatingModelVocabulary\":true,\"notesControlPainStoryRoiObjectionsOnly\":true,\"nllmAdvisoryOnly\":true,\"domain\":\"ariat.com\",\"evidence\":[\"known domain ariat.com -> apparel_style_matrix\",\"known domain controls non-manufacturing operating mode\"]},\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"resultValidationExpectations\":{\"recordContract\":{\"label\":\"Apparel Style Matrix\",\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"allowedNouns\":[\"style sku\",\"style matrix\",\"size / color variant\",\"core style\",\"omnichannel availability flow\",\"channel allocation\"],\"invalidTerms\":[\"ingredient\",\"ingredient blend\",\"recipe\",\"formula\",\"work order\",\"routing\",\"wip\"]},\"manufacturingFalseBlocksManufacturingSemantics\":true,\"wipTrueRequiresWipDetailOrPartialResult\":false,\"foodVocabularyRequiresFoodEvidenceAndManufacturing\":false,\"openLinksBlockedUntilValidImport\":true},\"runnerControls\":{\"requestedMode\":\"server_flagged_integrated_build_return\",\"sandboxWriteModeRequiresOperatorEnablement\":true,\"writeAuthority\":\"governed_internal_runner_only\",\"drawerAuthority\":\"prepare_confirm_export_import_only\"},\"requiredRecords\":[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"],\"sourceHandoff\":{\"schema\":\"idb.dcc-runner-handoff-packet.v1\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"executionMode\":\"review_only_no_submit\",\"selectedPack\":\"apparelAccessories\",\"selectedScenario\":\"Style-to-Availability Readiness\"},\"noRegression\":{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}",
+          "custpage_idb_operator_queue_gate_json": "{\"operatorEvidence\":{\"operatorName\":\"Operator User\",\"currentSandboxAccount\":\"TD3021666\",\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedSandboxAccount\":true,\"endpointConfirmed\":true,\"operatorAuthorizationPhrase\":\"AUTHORIZE ONE SANDBOX ADAPTER CALL\"},\"currentSandboxAccount\":\"TD3021666\",\"sandboxAccountAllowlist\":[\"TD3021666\"],\"oneSubmitLimit\":true,\"resultCapturePollOnly\":true}"
+        },
+        "bodyFormEncoded": "custpage_idb_action=poll_runner_result_capture&custpage_idb_runner_task_id=task_w190_ariatinternational_001&custpage_idb_idempotency_token=idb_w190_ariatinternational_001&custpage_idb_result_capture_cursor=cursor_w190_initial&custpage_idb_expected_result_schema=idb.completed-runner-result-json.v1&custpage_idb_confirmed_build_request_json=%7B%22schema%22%3A%22idb.confirmed-build-request.v1%22%2C%22requestId%22%3A%22idb-build-ariat-international-apparel-accessories-apparelaccessories%22%2C%22requestStatus%22%3A%22confirmed_ready_for_governed_runner%22%2C%22producedBy%22%3A%22idb_drawer%22%2C%22idbPrimarySurface%22%3Atrue%2C%22legacyDccSuiteletUi%22%3A%7B%22normalWorkflow%22%3Afalse%2C%22role%22%3A%22legacy_reference_only%22%2C%22replacement%22%3A%22Drawer+prepares+confirmed+request%3B+governed+runner+creates+or+resolves+records.%22%7D%2C%22consultantConfirmation%22%3A%7B%22required%22%3Atrue%2C%22confirmed%22%3Atrue%2C%22source%22%3A%22acceptedPacket%22%7D%2C%22simplifiedConsultantIntake%22%3A%7B%22schema%22%3A%22idb.production-consultant-intake.v1%22%2C%22status%22%3A%22consultant_intake_ready%22%2C%22required%22%3A%5B%22customer%2Fprospect+name%22%2C%22website%22%2C%22conversation+notes%22%5D%2C%22inputs%22%3A%7B%22customerProspectName%22%3A%22Ariat+International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%2C%22conversationNotes%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.%22%7D%2C%22inferred%22%3A%7B%22lane%22%3A%22Apparel+%26+Accessories%22%2C%22laneId%22%3A%22apparel_accessories%22%2C%22proofPath%22%3A%22Style+%2F+SKU+Matrix%22%2C%22demoScenario%22%3A%22Apparel+%26+Accessories+%2F+Style+%2F+SKU+Matrix%22%2C%22buildStory%22%3A%22Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.%22%2C%22initialRecordNamingIntent%22%3A%22Core+Boot+and+Apparel+Style+Matrix%22%7D%2C%22missing%22%3A%5B%5D%7D%2C%22adminDebugConfiguration%22%3A%7B%22normalConsultantWorkflow%22%3Afalse%2C%22hiddenBehindAdminDebugState%22%3Atrue%2C%22fields%22%3A%5B%22approved+W144+endpoint%22%2C%22server+flags%22%2C%22sandbox+allowlist%22%2C%22runner+script%2Fdeployment+IDs%22%2C%22mapping+ID%22%2C%22runner+folder+ID%22%2C%22result+capture+folder+ID%22%2C%22operator+approval+phrase%22%5D%7D%2C%22stateAuthority%22%3A%7B%22selectedLaneId%22%3A%22apparel_accessories%22%2C%22confirmedLaneId%22%3A%22apparel_accessories%22%2C%22exportedLaneId%22%3A%22apparel_accessories%22%2C%22handoffParityStatus%22%3A%22matched%22%2C%22noStateMismatch%22%3Atrue%7D%2C%22prospect%22%3A%7B%22name%22%3A%22Ariat+International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%7D%2C%22demoPath%22%3A%7B%22laneId%22%3A%22apparel_accessories%22%2C%22laneName%22%3A%22Apparel+%26+Accessories%22%2C%22proofAnchor%22%3A%22Style+%2F+SKU+Matrix%22%2C%22familyKey%22%3A%22apparelAccessories%22%2C%22scenario%22%3A%22Style-to-Availability+Readiness%22%2C%22confirmed%22%3Atrue%7D%2C%22storyInputs%22%3A%7B%22buyerNeed%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.+Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.+Fetch+status%3A+runtime_resolved+%2F+Source+URLs%3A+1+%2F+Signals%3A+website+shows+boots%2C+footwear%2C+apparel%2C+workwear%2C+outdoor+gear%2C+style%2C+size%2C+and+retail+ecommerce+signals%2C+Core+Boot+and+Apparel+Style+Matrix%2C+Apparel+and+Footwear+Style%22%2C%22scObjective%22%3A%22Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.%22%2C%22conversationNotes%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.%22%7D%2C%22resolvedOperatingMode%22%3A%22apparel_style_matrix%22%2C%22modeConfidence%22%3A%22high%22%2C%22selectedToggles%22%3A%7B%22schema%22%3A%22idb.w214-selected-build-toggles.v1%22%2C%22createNewHeroItem%22%3Atrue%2C%22enableManufacturing%22%3Afalse%2C%22enableWip%22%3Afalse%2C%22selectedLaneId%22%3A%22apparel_accessories%22%7D%2C%22namingAuthority%22%3A%7B%22websiteControlsIndustryCategoryAndProductNouns%22%3Atrue%2C%22togglesControlOperatingModelVocabulary%22%3Atrue%2C%22notesControlPainStoryRoiObjectionsOnly%22%3Atrue%2C%22nllmAdvisoryOnly%22%3Atrue%2C%22domain%22%3A%22ariat.com%22%2C%22evidence%22%3A%5B%22known+domain+ariat.com+-%3E+apparel_style_matrix%22%2C%22known+domain+controls+non-manufacturing+operating+mode%22%5D%7D%2C%22requiredRecordRoles%22%3A%5B%22customer%22%2C%22sales_order%22%2C%22style_sku%22%2C%22style_matrix_or_availability_flow%22%5D%2C%22optionalRecordRoles%22%3A%5B%22supporting_style_or_color_sku%22%5D%2C%22invalidRecordRoles%22%3A%5B%22finished_good%22%2C%22assembly%22%2C%22bom%22%2C%22work_order%22%2C%22routing%22%5D%2C%22resultValidationExpectations%22%3A%7B%22recordContract%22%3A%7B%22label%22%3A%22Apparel+Style+Matrix%22%2C%22requiredRecordRoles%22%3A%5B%22customer%22%2C%22sales_order%22%2C%22style_sku%22%2C%22style_matrix_or_availability_flow%22%5D%2C%22optionalRecordRoles%22%3A%5B%22supporting_style_or_color_sku%22%5D%2C%22invalidRecordRoles%22%3A%5B%22finished_good%22%2C%22assembly%22%2C%22bom%22%2C%22work_order%22%2C%22routing%22%5D%2C%22allowedNouns%22%3A%5B%22style+sku%22%2C%22style+matrix%22%2C%22size+%2F+color+variant%22%2C%22core+style%22%2C%22omnichannel+availability+flow%22%2C%22channel+allocation%22%5D%2C%22invalidTerms%22%3A%5B%22ingredient%22%2C%22ingredient+blend%22%2C%22recipe%22%2C%22formula%22%2C%22work+order%22%2C%22routing%22%2C%22wip%22%5D%7D%2C%22manufacturingFalseBlocksManufacturingSemantics%22%3Atrue%2C%22wipTrueRequiresWipDetailOrPartialResult%22%3Afalse%2C%22foodVocabularyRequiresFoodEvidenceAndManufacturing%22%3Afalse%2C%22openLinksBlockedUntilValidImport%22%3Atrue%7D%2C%22runnerControls%22%3A%7B%22requestedMode%22%3A%22server_flagged_integrated_build_return%22%2C%22sandboxWriteModeRequiresOperatorEnablement%22%3Atrue%2C%22writeAuthority%22%3A%22governed_internal_runner_only%22%2C%22drawerAuthority%22%3A%22prepare_confirm_export_import_only%22%7D%2C%22requiredRecords%22%3A%5B%22customer%22%2C%22demoTransaction%22%2C%22heroItem%22%2C%22matrixProofItem%22%2C%22componentItem%22%5D%2C%22sourceHandoff%22%3A%7B%22schema%22%3A%22idb.dcc-runner-handoff-packet.v1%22%2C%22status%22%3A%22ready_for_dcc_suitelet_submission_review%22%2C%22executionMode%22%3A%22review_only_no_submit%22%2C%22selectedPack%22%3A%22apparelAccessories%22%2C%22selectedScenario%22%3A%22Style-to-Availability+Readiness%22%7D%2C%22noRegression%22%3A%7B%22noDrawerWrites%22%3Atrue%2C%22noSuiteScriptInvocationFromDrawer%22%3Atrue%2C%22noTransactionWritesFromDrawer%22%3Atrue%2C%22noActiveOpenLinksWithoutRealUrls%22%3Atrue%7D%7D&custpage_idb_operator_queue_gate_json=%7B%22operatorEvidence%22%3A%7B%22operatorName%22%3A%22Aaron+Sunshine%22%2C%22currentSandboxAccount%22%3A%22TD3021666%22%2C%22reviewDecision%22%3A%22operator_approved_queue_submit%22%2C%22typeToConfirm%22%3A%22QUEUE+GOVERNED+SANDBOX+RUNNER%22%2C%22confirmedSandboxAccount%22%3Atrue%2C%22endpointConfirmed%22%3Atrue%2C%22operatorAuthorizationPhrase%22%3A%22AUTHORIZE+ONE+SANDBOX+ADAPTER+CALL%22%7D%2C%22currentSandboxAccount%22%3A%22TD3021666%22%2C%22sandboxAccountAllowlist%22%3A%5B%22TD3021666%22%5D%2C%22oneSubmitLimit%22%3Atrue%2C%22resultCapturePollOnly%22%3Atrue%7D",
+        "runnerTaskId": "task_w190_ariatinternational_001",
+        "idempotencyToken": "idb_w190_ariatinternational_001",
+        "pollCursor": "cursor_w190_initial"
+      },
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "queued_pending",
+        "label": "Queued: result pending",
+        "message": "The approved adapter reports a runner task id, but result capture is still pending.",
+        "rawStatus": "poll_ready_no_submit",
+        "queueSubmitted": true,
+        "runnerTaskId": "task_w190_ariatinternational_001",
+        "resultCaptureStatus": "pending_poll_not_executed",
+        "resultCapture": {
+          "status": "pending_poll_not_executed",
+          "runnerTaskId": "task_w190_ariatinternational_001",
+          "finalGeneratedNamesReady": false,
+          "finalGeneratedNamesJson": null
+        },
+        "pollAttempted": false,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "completedResultMessage": "Paste completed governed runner result JSON, not a blank value or non-object JSON.",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "importReady": false,
+        "stateMutationAllowedInThisBlock": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "statePatch": {},
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "directDrawerSuiteScriptInvocation": false,
+        "activeOpenLinks": 0
+      },
+      "stopReason": "poll_ready_not_executed",
+      "traceSamples": [
+        {
+          "event": "w190_result_capture_poll_gate",
+          "requestReady": true,
+          "blockedReasons": [],
+          "runnerTaskIdPresent": true,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_result_capture_poll_response",
+          "requestSent": false,
+          "status": "w190_poll_ready_not_executed",
+          "resultCaptureStatus": "pending_poll_not_executed",
+          "finalGeneratedNamesJsonReady": false,
+          "completedResultPresent": false,
+          "completedResultStatus": "invalid_json_payload",
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_w151_completed_json_gate",
+          "completedResultAcceptedByW151": false,
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImport": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W190 only polls result capture and marks completed JSON import-ready. Open-link testing starts after W151 import commits URLs into IDB."
+      }
+    },
+    "pending": {
+      "schema": "idb.w190-governed-runner-result-capture-polling-to-completed-json.v1",
+      "status": "w190_poll_pending_result_capture",
+      "mode": "approved_server_adapter_result_capture_poll_no_final_name_mutation",
+      "pollingContract": {
+        "startsOnlyAfterRunnerTaskId": true,
+        "approvedServerAdapterPathOnly": true,
+        "onePollPerClick": true,
+        "pendingAndAdapterErrorAreNonMutating": true,
+        "completedJsonRequiresW151BeforeImport": true,
+        "noOpenLinksBeforeImport": true
+      },
+      "completedResultEnvelopeShape": {
+        "schema": "idb.approved-server-adapter-result-envelope.v1",
+        "status": "completed_runner_result_ready",
+        "runnerTaskId": "numeric-or-task-string-from-W189",
+        "resultCapture": {
+          "status": "completed_result_capture_ready",
+          "finalGeneratedNamesJson": "idb.completed-runner-result-json.v1"
+        },
+        "finalGeneratedNamesJson": {
+          "schema": "idb.completed-runner-result-json.v1",
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "records": {
+            "customer": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "demoTransaction": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "heroItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "matrixProofItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "componentItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            }
+          }
+        }
+      },
+      "gates": [
+        {
+          "id": "runner_task_id_present",
+          "ready": true
+        },
+        {
+          "id": "approved_endpoint_configured",
+          "ready": true
+        },
+        {
+          "id": "server_flags_true",
+          "ready": true
+        },
+        {
+          "id": "sandbox_allowlist_confirmed",
+          "ready": true
+        },
+        {
+          "id": "operator_approval_captured",
+          "ready": true
+        },
+        {
+          "id": "idempotency_token_present",
+          "ready": true
+        },
+        {
+          "id": "approved_endpoint_mode",
+          "ready": true
+        },
+        {
+          "id": "confirmed_build_request_parity",
+          "ready": true
+        }
+      ],
+      "blockedReasons": [],
+      "requestReady": true,
+      "requestSent": true,
+      "pollRequestEnvelope": {
+        "schema": "idb.w190-governed-runner-result-capture-poll-request.v1",
+        "targetAdapter": "W144 governed runner adapter result capture",
+        "action": "poll_runner_result_capture",
+        "method": "POST",
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        "bodyEncoding": "application/x-www-form-urlencoded",
+        "bodyParams": {
+          "custpage_idb_action": "poll_runner_result_capture",
+          "custpage_idb_runner_task_id": "task_w190_ariatinternational_001",
+          "custpage_idb_idempotency_token": "idb_w190_ariatinternational_001",
+          "custpage_idb_result_capture_cursor": "cursor_w190_initial",
+          "custpage_idb_expected_result_schema": "idb.completed-runner-result-json.v1",
+          "custpage_idb_confirmed_build_request_json": "{\"schema\":\"idb.confirmed-build-request.v1\",\"requestId\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"requestStatus\":\"confirmed_ready_for_governed_runner\",\"producedBy\":\"idb_drawer\",\"idbPrimarySurface\":true,\"legacyDccSuiteletUi\":{\"normalWorkflow\":false,\"role\":\"legacy_reference_only\",\"replacement\":\"Drawer prepares confirmed request; governed runner creates or resolves records.\"},\"consultantConfirmation\":{\"required\":true,\"confirmed\":true,\"source\":\"acceptedPacket\"},\"simplifiedConsultantIntake\":{\"schema\":\"idb.production-consultant-intake.v1\",\"status\":\"consultant_intake_ready\",\"required\":[\"customer/prospect name\",\"website\",\"conversation notes\"],\"inputs\":{\"customerProspectName\":\"Ariat International\",\"website\":\"https://www.ariat.com/\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"inferred\":{\"lane\":\"Apparel & Accessories\",\"laneId\":\"apparel_accessories\",\"proofPath\":\"Style / SKU Matrix\",\"demoScenario\":\"Apparel & Accessories / Style / SKU Matrix\",\"buildStory\":\"Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings.\",\"initialRecordNamingIntent\":\"Core Boot and Apparel Style Matrix\"},\"missing\":[]},\"adminDebugConfiguration\":{\"normalConsultantWorkflow\":false,\"hiddenBehindAdminDebugState\":true,\"fields\":[\"approved W144 endpoint\",\"server flags\",\"sandbox allowlist\",\"runner script/deployment IDs\",\"mapping ID\",\"runner folder ID\",\"result capture folder ID\",\"operator approval phrase\"]},\"stateAuthority\":{\"selectedLaneId\":\"apparel_accessories\",\"confirmedLaneId\":\"apparel_accessories\",\"exportedLaneId\":\"apparel_accessories\",\"handoffParityStatus\":\"matched\",\"noStateMismatch\":true},\"prospect\":{\"name\":\"Ariat International\",\"website\":\"https://www.ariat.com/\"},\"demoPath\":{\"laneId\":\"apparel_accessories\",\"laneName\":\"Apparel & Accessories\",\"proofAnchor\":\"Style / SKU Matrix\",\"familyKey\":\"apparelAccessories\",\"scenario\":\"Style-to-Availability Readiness\",\"confirmed\":true},\"storyInputs\":{\"buyerNeed\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style\",\"scObjective\":\"Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings.\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"resolvedOperatingMode\":\"apparel_style_matrix\",\"modeConfidence\":\"high\",\"selectedToggles\":{\"schema\":\"idb.w214-selected-build-toggles.v1\",\"createNewHeroItem\":true,\"enableManufacturing\":false,\"enableWip\":false,\"selectedLaneId\":\"apparel_accessories\"},\"namingAuthority\":{\"websiteControlsIndustryCategoryAndProductNouns\":true,\"togglesControlOperatingModelVocabulary\":true,\"notesControlPainStoryRoiObjectionsOnly\":true,\"nllmAdvisoryOnly\":true,\"domain\":\"ariat.com\",\"evidence\":[\"known domain ariat.com -> apparel_style_matrix\",\"known domain controls non-manufacturing operating mode\"]},\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"resultValidationExpectations\":{\"recordContract\":{\"label\":\"Apparel Style Matrix\",\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"allowedNouns\":[\"style sku\",\"style matrix\",\"size / color variant\",\"core style\",\"omnichannel availability flow\",\"channel allocation\"],\"invalidTerms\":[\"ingredient\",\"ingredient blend\",\"recipe\",\"formula\",\"work order\",\"routing\",\"wip\"]},\"manufacturingFalseBlocksManufacturingSemantics\":true,\"wipTrueRequiresWipDetailOrPartialResult\":false,\"foodVocabularyRequiresFoodEvidenceAndManufacturing\":false,\"openLinksBlockedUntilValidImport\":true},\"runnerControls\":{\"requestedMode\":\"server_flagged_integrated_build_return\",\"sandboxWriteModeRequiresOperatorEnablement\":true,\"writeAuthority\":\"governed_internal_runner_only\",\"drawerAuthority\":\"prepare_confirm_export_import_only\"},\"requiredRecords\":[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"],\"sourceHandoff\":{\"schema\":\"idb.dcc-runner-handoff-packet.v1\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"executionMode\":\"review_only_no_submit\",\"selectedPack\":\"apparelAccessories\",\"selectedScenario\":\"Style-to-Availability Readiness\"},\"noRegression\":{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}",
+          "custpage_idb_operator_queue_gate_json": "{\"operatorEvidence\":{\"operatorName\":\"Operator User\",\"currentSandboxAccount\":\"TD3021666\",\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedSandboxAccount\":true,\"endpointConfirmed\":true,\"operatorAuthorizationPhrase\":\"AUTHORIZE ONE SANDBOX ADAPTER CALL\"},\"currentSandboxAccount\":\"TD3021666\",\"sandboxAccountAllowlist\":[\"TD3021666\"],\"oneSubmitLimit\":true,\"resultCapturePollOnly\":true}"
+        },
+        "bodyFormEncoded": "custpage_idb_action=poll_runner_result_capture&custpage_idb_runner_task_id=task_w190_ariatinternational_001&custpage_idb_idempotency_token=idb_w190_ariatinternational_001&custpage_idb_result_capture_cursor=cursor_w190_initial&custpage_idb_expected_result_schema=idb.completed-runner-result-json.v1&custpage_idb_confirmed_build_request_json=%7B%22schema%22%3A%22idb.confirmed-build-request.v1%22%2C%22requestId%22%3A%22idb-build-ariat-international-apparel-accessories-apparelaccessories%22%2C%22requestStatus%22%3A%22confirmed_ready_for_governed_runner%22%2C%22producedBy%22%3A%22idb_drawer%22%2C%22idbPrimarySurface%22%3Atrue%2C%22legacyDccSuiteletUi%22%3A%7B%22normalWorkflow%22%3Afalse%2C%22role%22%3A%22legacy_reference_only%22%2C%22replacement%22%3A%22Drawer+prepares+confirmed+request%3B+governed+runner+creates+or+resolves+records.%22%7D%2C%22consultantConfirmation%22%3A%7B%22required%22%3Atrue%2C%22confirmed%22%3Atrue%2C%22source%22%3A%22acceptedPacket%22%7D%2C%22simplifiedConsultantIntake%22%3A%7B%22schema%22%3A%22idb.production-consultant-intake.v1%22%2C%22status%22%3A%22consultant_intake_ready%22%2C%22required%22%3A%5B%22customer%2Fprospect+name%22%2C%22website%22%2C%22conversation+notes%22%5D%2C%22inputs%22%3A%7B%22customerProspectName%22%3A%22Ariat+International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%2C%22conversationNotes%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.%22%7D%2C%22inferred%22%3A%7B%22lane%22%3A%22Apparel+%26+Accessories%22%2C%22laneId%22%3A%22apparel_accessories%22%2C%22proofPath%22%3A%22Style+%2F+SKU+Matrix%22%2C%22demoScenario%22%3A%22Apparel+%26+Accessories+%2F+Style+%2F+SKU+Matrix%22%2C%22buildStory%22%3A%22Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.%22%2C%22initialRecordNamingIntent%22%3A%22Core+Boot+and+Apparel+Style+Matrix%22%7D%2C%22missing%22%3A%5B%5D%7D%2C%22adminDebugConfiguration%22%3A%7B%22normalConsultantWorkflow%22%3Afalse%2C%22hiddenBehindAdminDebugState%22%3Atrue%2C%22fields%22%3A%5B%22approved+W144+endpoint%22%2C%22server+flags%22%2C%22sandbox+allowlist%22%2C%22runner+script%2Fdeployment+IDs%22%2C%22mapping+ID%22%2C%22runner+folder+ID%22%2C%22result+capture+folder+ID%22%2C%22operator+approval+phrase%22%5D%7D%2C%22stateAuthority%22%3A%7B%22selectedLaneId%22%3A%22apparel_accessories%22%2C%22confirmedLaneId%22%3A%22apparel_accessories%22%2C%22exportedLaneId%22%3A%22apparel_accessories%22%2C%22handoffParityStatus%22%3A%22matched%22%2C%22noStateMismatch%22%3Atrue%7D%2C%22prospect%22%3A%7B%22name%22%3A%22Ariat+International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%7D%2C%22demoPath%22%3A%7B%22laneId%22%3A%22apparel_accessories%22%2C%22laneName%22%3A%22Apparel+%26+Accessories%22%2C%22proofAnchor%22%3A%22Style+%2F+SKU+Matrix%22%2C%22familyKey%22%3A%22apparelAccessories%22%2C%22scenario%22%3A%22Style-to-Availability+Readiness%22%2C%22confirmed%22%3Atrue%7D%2C%22storyInputs%22%3A%7B%22buyerNeed%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.+Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.+Fetch+status%3A+runtime_resolved+%2F+Source+URLs%3A+1+%2F+Signals%3A+website+shows+boots%2C+footwear%2C+apparel%2C+workwear%2C+outdoor+gear%2C+style%2C+size%2C+and+retail+ecommerce+signals%2C+Core+Boot+and+Apparel+Style+Matrix%2C+Apparel+and+Footwear+Style%22%2C%22scObjective%22%3A%22Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.%22%2C%22conversationNotes%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.%22%7D%2C%22resolvedOperatingMode%22%3A%22apparel_style_matrix%22%2C%22modeConfidence%22%3A%22high%22%2C%22selectedToggles%22%3A%7B%22schema%22%3A%22idb.w214-selected-build-toggles.v1%22%2C%22createNewHeroItem%22%3Atrue%2C%22enableManufacturing%22%3Afalse%2C%22enableWip%22%3Afalse%2C%22selectedLaneId%22%3A%22apparel_accessories%22%7D%2C%22namingAuthority%22%3A%7B%22websiteControlsIndustryCategoryAndProductNouns%22%3Atrue%2C%22togglesControlOperatingModelVocabulary%22%3Atrue%2C%22notesControlPainStoryRoiObjectionsOnly%22%3Atrue%2C%22nllmAdvisoryOnly%22%3Atrue%2C%22domain%22%3A%22ariat.com%22%2C%22evidence%22%3A%5B%22known+domain+ariat.com+-%3E+apparel_style_matrix%22%2C%22known+domain+controls+non-manufacturing+operating+mode%22%5D%7D%2C%22requiredRecordRoles%22%3A%5B%22customer%22%2C%22sales_order%22%2C%22style_sku%22%2C%22style_matrix_or_availability_flow%22%5D%2C%22optionalRecordRoles%22%3A%5B%22supporting_style_or_color_sku%22%5D%2C%22invalidRecordRoles%22%3A%5B%22finished_good%22%2C%22assembly%22%2C%22bom%22%2C%22work_order%22%2C%22routing%22%5D%2C%22resultValidationExpectations%22%3A%7B%22recordContract%22%3A%7B%22label%22%3A%22Apparel+Style+Matrix%22%2C%22requiredRecordRoles%22%3A%5B%22customer%22%2C%22sales_order%22%2C%22style_sku%22%2C%22style_matrix_or_availability_flow%22%5D%2C%22optionalRecordRoles%22%3A%5B%22supporting_style_or_color_sku%22%5D%2C%22invalidRecordRoles%22%3A%5B%22finished_good%22%2C%22assembly%22%2C%22bom%22%2C%22work_order%22%2C%22routing%22%5D%2C%22allowedNouns%22%3A%5B%22style+sku%22%2C%22style+matrix%22%2C%22size+%2F+color+variant%22%2C%22core+style%22%2C%22omnichannel+availability+flow%22%2C%22channel+allocation%22%5D%2C%22invalidTerms%22%3A%5B%22ingredient%22%2C%22ingredient+blend%22%2C%22recipe%22%2C%22formula%22%2C%22work+order%22%2C%22routing%22%2C%22wip%22%5D%7D%2C%22manufacturingFalseBlocksManufacturingSemantics%22%3Atrue%2C%22wipTrueRequiresWipDetailOrPartialResult%22%3Afalse%2C%22foodVocabularyRequiresFoodEvidenceAndManufacturing%22%3Afalse%2C%22openLinksBlockedUntilValidImport%22%3Atrue%7D%2C%22runnerControls%22%3A%7B%22requestedMode%22%3A%22server_flagged_integrated_build_return%22%2C%22sandboxWriteModeRequiresOperatorEnablement%22%3Atrue%2C%22writeAuthority%22%3A%22governed_internal_runner_only%22%2C%22drawerAuthority%22%3A%22prepare_confirm_export_import_only%22%7D%2C%22requiredRecords%22%3A%5B%22customer%22%2C%22demoTransaction%22%2C%22heroItem%22%2C%22matrixProofItem%22%2C%22componentItem%22%5D%2C%22sourceHandoff%22%3A%7B%22schema%22%3A%22idb.dcc-runner-handoff-packet.v1%22%2C%22status%22%3A%22ready_for_dcc_suitelet_submission_review%22%2C%22executionMode%22%3A%22review_only_no_submit%22%2C%22selectedPack%22%3A%22apparelAccessories%22%2C%22selectedScenario%22%3A%22Style-to-Availability+Readiness%22%7D%2C%22noRegression%22%3A%7B%22noDrawerWrites%22%3Atrue%2C%22noSuiteScriptInvocationFromDrawer%22%3Atrue%2C%22noTransactionWritesFromDrawer%22%3Atrue%2C%22noActiveOpenLinksWithoutRealUrls%22%3Atrue%7D%7D&custpage_idb_operator_queue_gate_json=%7B%22operatorEvidence%22%3A%7B%22operatorName%22%3A%22Aaron+Sunshine%22%2C%22currentSandboxAccount%22%3A%22TD3021666%22%2C%22reviewDecision%22%3A%22operator_approved_queue_submit%22%2C%22typeToConfirm%22%3A%22QUEUE+GOVERNED+SANDBOX+RUNNER%22%2C%22confirmedSandboxAccount%22%3Atrue%2C%22endpointConfirmed%22%3Atrue%2C%22operatorAuthorizationPhrase%22%3A%22AUTHORIZE+ONE+SANDBOX+ADAPTER+CALL%22%7D%2C%22currentSandboxAccount%22%3A%22TD3021666%22%2C%22sandboxAccountAllowlist%22%3A%5B%22TD3021666%22%5D%2C%22oneSubmitLimit%22%3Atrue%2C%22resultCapturePollOnly%22%3Atrue%7D",
+        "runnerTaskId": "task_w190_ariatinternational_001",
+        "idempotencyToken": "idb_w190_ariatinternational_001",
+        "pollCursor": "cursor_w190_initial"
+      },
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "polling_pending",
+        "label": "Polling: result pending",
+        "message": "Polling is still waiting for governed runner result capture.",
+        "rawStatus": "polling_pending",
+        "queueSubmitted": true,
+        "runnerTaskId": "task_w190_ariatinternational_001",
+        "resultCaptureStatus": "polling_pending",
+        "resultCapture": {
+          "status": "polling_pending",
+          "runnerTaskId": "task_w190_ariatinternational_001",
+          "resultCaptureCursor": "cursor_w190_pending",
+          "finalGeneratedNamesReady": false,
+          "finalGeneratedNamesJson": null
+        },
+        "pollAttempted": true,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "completedResultMessage": "Paste completed governed runner result JSON, not a blank value or non-object JSON.",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "importReady": false,
+        "stateMutationAllowedInThisBlock": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "statePatch": {
+        "integratedBuildRunnerResult": {
+          "schema": "idb.approved-server-adapter-result-envelope.v1",
+          "status": "polling_pending",
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w190_ariatinternational_001",
+          "idempotencyToken": "idb_w190_ariatinternational_001",
+          "resultCapture": {
+            "schema": "idb.runner-result-capture.v1",
+            "status": "polling_pending",
+            "runnerTaskId": "task_w190_ariatinternational_001",
+            "resultCaptureCursor": "cursor_w190_pending",
+            "finalGeneratedNamesJson": null,
+            "finalGeneratedNamesReady": false
+          },
+          "finalGeneratedNamesJson": null,
+          "activeOpenLinks": 0,
+          "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+          "label": "Polling: result pending",
+          "message": "Polling is still waiting for governed runner result capture.",
+          "rawStatus": "polling_pending",
+          "resultCaptureStatus": "polling_pending",
+          "pollAttempted": true,
+          "finalGeneratedNamesJsonReady": false,
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          },
+          "resultImportGuard": {
+            "completedResultPresent": false,
+            "completedResultAcceptedByW151": false,
+            "completedResultStatus": "invalid_json_payload",
+            "completedResultMessage": "Paste completed governed runner result JSON, not a blank value or non-object JSON.",
+            "generatedRecordOwner": "",
+            "internalRunnerOwnerValid": false,
+            "importReady": false
+          }
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "directDrawerSuiteScriptInvocation": false,
+        "activeOpenLinks": 0
+      },
+      "stopReason": "poll_transport_executed_once",
+      "traceSamples": [
+        {
+          "event": "w190_result_capture_poll_gate",
+          "requestReady": true,
+          "blockedReasons": [],
+          "runnerTaskIdPresent": true,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_result_capture_poll_response",
+          "requestSent": true,
+          "status": "w190_poll_pending_result_capture",
+          "resultCaptureStatus": "polling_pending",
+          "finalGeneratedNamesJsonReady": false,
+          "completedResultPresent": false,
+          "completedResultStatus": "invalid_json_payload",
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_w151_completed_json_gate",
+          "completedResultAcceptedByW151": false,
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImport": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W190 only polls result capture and marks completed JSON import-ready. Open-link testing starts after W151 import commits URLs into IDB."
+      }
+    },
+    "completed": {
+      "schema": "idb.w190-governed-runner-result-capture-polling-to-completed-json.v1",
+      "status": "w190_completed_result_ready_for_w151_import",
+      "mode": "approved_server_adapter_result_capture_poll_no_final_name_mutation",
+      "pollingContract": {
+        "startsOnlyAfterRunnerTaskId": true,
+        "approvedServerAdapterPathOnly": true,
+        "onePollPerClick": true,
+        "pendingAndAdapterErrorAreNonMutating": true,
+        "completedJsonRequiresW151BeforeImport": true,
+        "noOpenLinksBeforeImport": true
+      },
+      "completedResultEnvelopeShape": {
+        "schema": "idb.approved-server-adapter-result-envelope.v1",
+        "status": "completed_runner_result_ready",
+        "runnerTaskId": "numeric-or-task-string-from-W189",
+        "resultCapture": {
+          "status": "completed_result_capture_ready",
+          "finalGeneratedNamesJson": "idb.completed-runner-result-json.v1"
+        },
+        "finalGeneratedNamesJson": {
+          "schema": "idb.completed-runner-result-json.v1",
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "records": {
+            "customer": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "demoTransaction": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "heroItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "matrixProofItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "componentItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            }
+          }
+        }
+      },
+      "gates": [
+        {
+          "id": "runner_task_id_present",
+          "ready": true
+        },
+        {
+          "id": "approved_endpoint_configured",
+          "ready": true
+        },
+        {
+          "id": "server_flags_true",
+          "ready": true
+        },
+        {
+          "id": "sandbox_allowlist_confirmed",
+          "ready": true
+        },
+        {
+          "id": "operator_approval_captured",
+          "ready": true
+        },
+        {
+          "id": "idempotency_token_present",
+          "ready": true
+        },
+        {
+          "id": "approved_endpoint_mode",
+          "ready": true
+        },
+        {
+          "id": "confirmed_build_request_parity",
+          "ready": true
+        }
+      ],
+      "blockedReasons": [],
+      "requestReady": true,
+      "requestSent": true,
+      "pollRequestEnvelope": {
+        "schema": "idb.w190-governed-runner-result-capture-poll-request.v1",
+        "targetAdapter": "W144 governed runner adapter result capture",
+        "action": "poll_runner_result_capture",
+        "method": "POST",
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        "bodyEncoding": "application/x-www-form-urlencoded",
+        "bodyParams": {
+          "custpage_idb_action": "poll_runner_result_capture",
+          "custpage_idb_runner_task_id": "task_w190_ariatinternational_001",
+          "custpage_idb_idempotency_token": "idb_w190_ariatinternational_001",
+          "custpage_idb_result_capture_cursor": "cursor_w190_initial",
+          "custpage_idb_expected_result_schema": "idb.completed-runner-result-json.v1",
+          "custpage_idb_confirmed_build_request_json": "{\"schema\":\"idb.confirmed-build-request.v1\",\"requestId\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"requestStatus\":\"confirmed_ready_for_governed_runner\",\"producedBy\":\"idb_drawer\",\"idbPrimarySurface\":true,\"legacyDccSuiteletUi\":{\"normalWorkflow\":false,\"role\":\"legacy_reference_only\",\"replacement\":\"Drawer prepares confirmed request; governed runner creates or resolves records.\"},\"consultantConfirmation\":{\"required\":true,\"confirmed\":true,\"source\":\"acceptedPacket\"},\"simplifiedConsultantIntake\":{\"schema\":\"idb.production-consultant-intake.v1\",\"status\":\"consultant_intake_ready\",\"required\":[\"customer/prospect name\",\"website\",\"conversation notes\"],\"inputs\":{\"customerProspectName\":\"Ariat International\",\"website\":\"https://www.ariat.com/\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"inferred\":{\"lane\":\"Apparel & Accessories\",\"laneId\":\"apparel_accessories\",\"proofPath\":\"Style / SKU Matrix\",\"demoScenario\":\"Apparel & Accessories / Style / SKU Matrix\",\"buildStory\":\"Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings.\",\"initialRecordNamingIntent\":\"Core Boot and Apparel Style Matrix\"},\"missing\":[]},\"adminDebugConfiguration\":{\"normalConsultantWorkflow\":false,\"hiddenBehindAdminDebugState\":true,\"fields\":[\"approved W144 endpoint\",\"server flags\",\"sandbox allowlist\",\"runner script/deployment IDs\",\"mapping ID\",\"runner folder ID\",\"result capture folder ID\",\"operator approval phrase\"]},\"stateAuthority\":{\"selectedLaneId\":\"apparel_accessories\",\"confirmedLaneId\":\"apparel_accessories\",\"exportedLaneId\":\"apparel_accessories\",\"handoffParityStatus\":\"matched\",\"noStateMismatch\":true},\"prospect\":{\"name\":\"Ariat International\",\"website\":\"https://www.ariat.com/\"},\"demoPath\":{\"laneId\":\"apparel_accessories\",\"laneName\":\"Apparel & Accessories\",\"proofAnchor\":\"Style / SKU Matrix\",\"familyKey\":\"apparelAccessories\",\"scenario\":\"Style-to-Availability Readiness\",\"confirmed\":true},\"storyInputs\":{\"buyerNeed\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style\",\"scObjective\":\"Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings.\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"resolvedOperatingMode\":\"apparel_style_matrix\",\"modeConfidence\":\"high\",\"selectedToggles\":{\"schema\":\"idb.w214-selected-build-toggles.v1\",\"createNewHeroItem\":true,\"enableManufacturing\":false,\"enableWip\":false,\"selectedLaneId\":\"apparel_accessories\"},\"namingAuthority\":{\"websiteControlsIndustryCategoryAndProductNouns\":true,\"togglesControlOperatingModelVocabulary\":true,\"notesControlPainStoryRoiObjectionsOnly\":true,\"nllmAdvisoryOnly\":true,\"domain\":\"ariat.com\",\"evidence\":[\"known domain ariat.com -> apparel_style_matrix\",\"known domain controls non-manufacturing operating mode\"]},\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"resultValidationExpectations\":{\"recordContract\":{\"label\":\"Apparel Style Matrix\",\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"allowedNouns\":[\"style sku\",\"style matrix\",\"size / color variant\",\"core style\",\"omnichannel availability flow\",\"channel allocation\"],\"invalidTerms\":[\"ingredient\",\"ingredient blend\",\"recipe\",\"formula\",\"work order\",\"routing\",\"wip\"]},\"manufacturingFalseBlocksManufacturingSemantics\":true,\"wipTrueRequiresWipDetailOrPartialResult\":false,\"foodVocabularyRequiresFoodEvidenceAndManufacturing\":false,\"openLinksBlockedUntilValidImport\":true},\"runnerControls\":{\"requestedMode\":\"server_flagged_integrated_build_return\",\"sandboxWriteModeRequiresOperatorEnablement\":true,\"writeAuthority\":\"governed_internal_runner_only\",\"drawerAuthority\":\"prepare_confirm_export_import_only\"},\"requiredRecords\":[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"],\"sourceHandoff\":{\"schema\":\"idb.dcc-runner-handoff-packet.v1\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"executionMode\":\"review_only_no_submit\",\"selectedPack\":\"apparelAccessories\",\"selectedScenario\":\"Style-to-Availability Readiness\"},\"noRegression\":{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}",
+          "custpage_idb_operator_queue_gate_json": "{\"operatorEvidence\":{\"operatorName\":\"Operator User\",\"currentSandboxAccount\":\"TD3021666\",\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedSandboxAccount\":true,\"endpointConfirmed\":true,\"operatorAuthorizationPhrase\":\"AUTHORIZE ONE SANDBOX ADAPTER CALL\"},\"currentSandboxAccount\":\"TD3021666\",\"sandboxAccountAllowlist\":[\"TD3021666\"],\"oneSubmitLimit\":true,\"resultCapturePollOnly\":true}"
+        },
+        "bodyFormEncoded": "custpage_idb_action=poll_runner_result_capture&custpage_idb_runner_task_id=task_w190_ariatinternational_001&custpage_idb_idempotency_token=idb_w190_ariatinternational_001&custpage_idb_result_capture_cursor=cursor_w190_initial&custpage_idb_expected_result_schema=idb.completed-runner-result-json.v1&custpage_idb_confirmed_build_request_json=%7B%22schema%22%3A%22idb.confirmed-build-request.v1%22%2C%22requestId%22%3A%22idb-build-ariat-international-apparel-accessories-apparelaccessories%22%2C%22requestStatus%22%3A%22confirmed_ready_for_governed_runner%22%2C%22producedBy%22%3A%22idb_drawer%22%2C%22idbPrimarySurface%22%3Atrue%2C%22legacyDccSuiteletUi%22%3A%7B%22normalWorkflow%22%3Afalse%2C%22role%22%3A%22legacy_reference_only%22%2C%22replacement%22%3A%22Drawer+prepares+confirmed+request%3B+governed+runner+creates+or+resolves+records.%22%7D%2C%22consultantConfirmation%22%3A%7B%22required%22%3Atrue%2C%22confirmed%22%3Atrue%2C%22source%22%3A%22acceptedPacket%22%7D%2C%22simplifiedConsultantIntake%22%3A%7B%22schema%22%3A%22idb.production-consultant-intake.v1%22%2C%22status%22%3A%22consultant_intake_ready%22%2C%22required%22%3A%5B%22customer%2Fprospect+name%22%2C%22website%22%2C%22conversation+notes%22%5D%2C%22inputs%22%3A%7B%22customerProspectName%22%3A%22Ariat+International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%2C%22conversationNotes%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.%22%7D%2C%22inferred%22%3A%7B%22lane%22%3A%22Apparel+%26+Accessories%22%2C%22laneId%22%3A%22apparel_accessories%22%2C%22proofPath%22%3A%22Style+%2F+SKU+Matrix%22%2C%22demoScenario%22%3A%22Apparel+%26+Accessories+%2F+Style+%2F+SKU+Matrix%22%2C%22buildStory%22%3A%22Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.%22%2C%22initialRecordNamingIntent%22%3A%22Core+Boot+and+Apparel+Style+Matrix%22%7D%2C%22missing%22%3A%5B%5D%7D%2C%22adminDebugConfiguration%22%3A%7B%22normalConsultantWorkflow%22%3Afalse%2C%22hiddenBehindAdminDebugState%22%3Atrue%2C%22fields%22%3A%5B%22approved+W144+endpoint%22%2C%22server+flags%22%2C%22sandbox+allowlist%22%2C%22runner+script%2Fdeployment+IDs%22%2C%22mapping+ID%22%2C%22runner+folder+ID%22%2C%22result+capture+folder+ID%22%2C%22operator+approval+phrase%22%5D%7D%2C%22stateAuthority%22%3A%7B%22selectedLaneId%22%3A%22apparel_accessories%22%2C%22confirmedLaneId%22%3A%22apparel_accessories%22%2C%22exportedLaneId%22%3A%22apparel_accessories%22%2C%22handoffParityStatus%22%3A%22matched%22%2C%22noStateMismatch%22%3Atrue%7D%2C%22prospect%22%3A%7B%22name%22%3A%22Ariat+International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%7D%2C%22demoPath%22%3A%7B%22laneId%22%3A%22apparel_accessories%22%2C%22laneName%22%3A%22Apparel+%26+Accessories%22%2C%22proofAnchor%22%3A%22Style+%2F+SKU+Matrix%22%2C%22familyKey%22%3A%22apparelAccessories%22%2C%22scenario%22%3A%22Style-to-Availability+Readiness%22%2C%22confirmed%22%3Atrue%7D%2C%22storyInputs%22%3A%7B%22buyerNeed%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.+Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.+Fetch+status%3A+runtime_resolved+%2F+Source+URLs%3A+1+%2F+Signals%3A+website+shows+boots%2C+footwear%2C+apparel%2C+workwear%2C+outdoor+gear%2C+style%2C+size%2C+and+retail+ecommerce+signals%2C+Core+Boot+and+Apparel+Style+Matrix%2C+Apparel+and+Footwear+Style%22%2C%22scObjective%22%3A%22Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.%22%2C%22conversationNotes%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.%22%7D%2C%22resolvedOperatingMode%22%3A%22apparel_style_matrix%22%2C%22modeConfidence%22%3A%22high%22%2C%22selectedToggles%22%3A%7B%22schema%22%3A%22idb.w214-selected-build-toggles.v1%22%2C%22createNewHeroItem%22%3Atrue%2C%22enableManufacturing%22%3Afalse%2C%22enableWip%22%3Afalse%2C%22selectedLaneId%22%3A%22apparel_accessories%22%7D%2C%22namingAuthority%22%3A%7B%22websiteControlsIndustryCategoryAndProductNouns%22%3Atrue%2C%22togglesControlOperatingModelVocabulary%22%3Atrue%2C%22notesControlPainStoryRoiObjectionsOnly%22%3Atrue%2C%22nllmAdvisoryOnly%22%3Atrue%2C%22domain%22%3A%22ariat.com%22%2C%22evidence%22%3A%5B%22known+domain+ariat.com+-%3E+apparel_style_matrix%22%2C%22known+domain+controls+non-manufacturing+operating+mode%22%5D%7D%2C%22requiredRecordRoles%22%3A%5B%22customer%22%2C%22sales_order%22%2C%22style_sku%22%2C%22style_matrix_or_availability_flow%22%5D%2C%22optionalRecordRoles%22%3A%5B%22supporting_style_or_color_sku%22%5D%2C%22invalidRecordRoles%22%3A%5B%22finished_good%22%2C%22assembly%22%2C%22bom%22%2C%22work_order%22%2C%22routing%22%5D%2C%22resultValidationExpectations%22%3A%7B%22recordContract%22%3A%7B%22label%22%3A%22Apparel+Style+Matrix%22%2C%22requiredRecordRoles%22%3A%5B%22customer%22%2C%22sales_order%22%2C%22style_sku%22%2C%22style_matrix_or_availability_flow%22%5D%2C%22optionalRecordRoles%22%3A%5B%22supporting_style_or_color_sku%22%5D%2C%22invalidRecordRoles%22%3A%5B%22finished_good%22%2C%22assembly%22%2C%22bom%22%2C%22work_order%22%2C%22routing%22%5D%2C%22allowedNouns%22%3A%5B%22style+sku%22%2C%22style+matrix%22%2C%22size+%2F+color+variant%22%2C%22core+style%22%2C%22omnichannel+availability+flow%22%2C%22channel+allocation%22%5D%2C%22invalidTerms%22%3A%5B%22ingredient%22%2C%22ingredient+blend%22%2C%22recipe%22%2C%22formula%22%2C%22work+order%22%2C%22routing%22%2C%22wip%22%5D%7D%2C%22manufacturingFalseBlocksManufacturingSemantics%22%3Atrue%2C%22wipTrueRequiresWipDetailOrPartialResult%22%3Afalse%2C%22foodVocabularyRequiresFoodEvidenceAndManufacturing%22%3Afalse%2C%22openLinksBlockedUntilValidImport%22%3Atrue%7D%2C%22runnerControls%22%3A%7B%22requestedMode%22%3A%22server_flagged_integrated_build_return%22%2C%22sandboxWriteModeRequiresOperatorEnablement%22%3Atrue%2C%22writeAuthority%22%3A%22governed_internal_runner_only%22%2C%22drawerAuthority%22%3A%22prepare_confirm_export_import_only%22%7D%2C%22requiredRecords%22%3A%5B%22customer%22%2C%22demoTransaction%22%2C%22heroItem%22%2C%22matrixProofItem%22%2C%22componentItem%22%5D%2C%22sourceHandoff%22%3A%7B%22schema%22%3A%22idb.dcc-runner-handoff-packet.v1%22%2C%22status%22%3A%22ready_for_dcc_suitelet_submission_review%22%2C%22executionMode%22%3A%22review_only_no_submit%22%2C%22selectedPack%22%3A%22apparelAccessories%22%2C%22selectedScenario%22%3A%22Style-to-Availability+Readiness%22%7D%2C%22noRegression%22%3A%7B%22noDrawerWrites%22%3Atrue%2C%22noSuiteScriptInvocationFromDrawer%22%3Atrue%2C%22noTransactionWritesFromDrawer%22%3Atrue%2C%22noActiveOpenLinksWithoutRealUrls%22%3Atrue%7D%7D&custpage_idb_operator_queue_gate_json=%7B%22operatorEvidence%22%3A%7B%22operatorName%22%3A%22Aaron+Sunshine%22%2C%22currentSandboxAccount%22%3A%22TD3021666%22%2C%22reviewDecision%22%3A%22operator_approved_queue_submit%22%2C%22typeToConfirm%22%3A%22QUEUE+GOVERNED+SANDBOX+RUNNER%22%2C%22confirmedSandboxAccount%22%3Atrue%2C%22endpointConfirmed%22%3Atrue%2C%22operatorAuthorizationPhrase%22%3A%22AUTHORIZE+ONE+SANDBOX+ADAPTER+CALL%22%7D%2C%22currentSandboxAccount%22%3A%22TD3021666%22%2C%22sandboxAccountAllowlist%22%3A%5B%22TD3021666%22%5D%2C%22oneSubmitLimit%22%3Atrue%2C%22resultCapturePollOnly%22%3Atrue%7D",
+        "runnerTaskId": "task_w190_ariatinternational_001",
+        "idempotencyToken": "idb_w190_ariatinternational_001",
+        "pollCursor": "cursor_w190_initial"
+      },
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "completed_result_awaiting_w151_import",
+        "label": "Completed result waiting for import",
+        "message": "Completed runner result JSON is present, but W151 import guard must validate it before Open links appear.",
+        "rawStatus": "completed_runner_result_ready",
+        "queueSubmitted": true,
+        "runnerTaskId": "task_w190_ariatinternational_001",
+        "resultCaptureStatus": "completed_result_capture_ready",
+        "resultCapture": {
+          "status": "completed_result_capture_ready",
+          "runnerTaskId": "task_w190_ariatinternational_001",
+          "resultCaptureCursor": "cursor_w190_completed",
+          "finalGeneratedNamesJson": {
+            "schema": "idb.completed-runner-result-json.v1",
+            "status": "completed",
+            "runStatus": "completed",
+            "generatedRecordOwner": "governed_runner_internal_build_engine",
+            "records": {
+              "customer": {
+                "type": "customer",
+                "name": "Ariat International Outdoor Retail Account",
+                "internalId": 501234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+              },
+              "demoTransaction": {
+                "type": "salesorder",
+                "name": "Ariat Seasonal Footwear Availability Demo Order",
+                "internalId": 601234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+              },
+              "heroItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Terrain H2O Work Boot Hero Item",
+                "internalId": 701234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+              },
+              "matrixProofItem": {
+                "type": "matrixitem",
+                "name": "Ariat Core Boot Size Color Matrix",
+                "internalId": 701235,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+              },
+              "componentItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Boot Size Color Supporting SKU",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            },
+            "demoTransaction": {
+              "type": "salesorder",
+              "name": "Ariat Seasonal Footwear Availability Demo Order",
+              "internalId": 601234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "heroItem": {
+              "type": "inventoryitem",
+              "name": "Ariat Terrain H2O Work Boot Hero Item",
+              "internalId": 701234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "matrixItem": {
+              "type": "matrixitem",
+              "name": "Ariat Core Boot Size Color Matrix",
+              "internalId": 701235,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "componentItems": [
+              {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Boot Size Color Supporting SKU",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            ]
+          },
+          "finalGeneratedNamesReady": true
+        },
+        "pollAttempted": true,
+        "finalGeneratedNamesJsonReady": true,
+        "finalGeneratedNamesJson": {
+          "schema": "idb.completed-runner-result-json.v1",
+          "status": "completed",
+          "runStatus": "completed",
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "records": {
+            "customer": {
+              "type": "customer",
+              "name": "Ariat International Outdoor Retail Account",
+              "internalId": 501234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+            },
+            "demoTransaction": {
+              "type": "salesorder",
+              "name": "Ariat Seasonal Footwear Availability Demo Order",
+              "internalId": 601234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "heroItem": {
+              "type": "inventoryitem",
+              "name": "Ariat Terrain H2O Work Boot Hero Item",
+              "internalId": 701234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "matrixProofItem": {
+              "type": "matrixitem",
+              "name": "Ariat Core Boot Size Color Matrix",
+              "internalId": 701235,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "componentItem": {
+              "type": "inventoryitem",
+              "name": "Ariat Brown Boot Size Color Supporting SKU",
+              "internalId": 701236,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+            }
+          },
+          "demoTransaction": {
+            "type": "salesorder",
+            "name": "Ariat Seasonal Footwear Availability Demo Order",
+            "internalId": 601234,
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+          },
+          "heroItem": {
+            "type": "inventoryitem",
+            "name": "Ariat Terrain H2O Work Boot Hero Item",
+            "internalId": 701234,
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+          },
+          "matrixItem": {
+            "type": "matrixitem",
+            "name": "Ariat Core Boot Size Color Matrix",
+            "internalId": 701235,
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+          },
+          "componentItems": [
+            {
+              "type": "inventoryitem",
+              "name": "Ariat Brown Boot Size Color Supporting SKU",
+              "internalId": 701236,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+            }
+          ]
+        },
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "resultImportGuard": {
+        "completedResultPresent": true,
+        "completedResultAcceptedByW151": true,
+        "completedResultStatus": "completed_runner_result_accepted",
+        "completedResultMessage": "Completed runner result JSON accepted. Final names and verified URLs can be imported.",
+        "generatedRecordOwner": "governed_runner_internal_build_engine",
+        "internalRunnerOwnerValid": true,
+        "importReady": true,
+        "stateMutationAllowedInThisBlock": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "statePatch": {
+        "integratedBuildRunnerResult": {
+          "schema": "idb.approved-server-adapter-result-envelope.v1",
+          "status": "completed_result_awaiting_w151_import",
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w190_ariatinternational_001",
+          "idempotencyToken": "idb_w190_ariatinternational_001",
+          "resultCapture": {
+            "schema": "idb.runner-result-capture.v1",
+            "status": "completed_result_capture_ready",
+            "runnerTaskId": "task_w190_ariatinternational_001",
+            "resultCaptureCursor": "cursor_w190_completed",
+            "finalGeneratedNamesJson": {
+              "schema": "idb.completed-runner-result-json.v1",
+              "status": "completed",
+              "runStatus": "completed",
+              "generatedRecordOwner": "governed_runner_internal_build_engine",
+              "records": {
+                "customer": {
+                  "type": "customer",
+                  "name": "Ariat International Outdoor Retail Account",
+                  "internalId": 501234,
+                  "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+                },
+                "demoTransaction": {
+                  "type": "salesorder",
+                  "name": "Ariat Seasonal Footwear Availability Demo Order",
+                  "internalId": 601234,
+                  "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+                },
+                "heroItem": {
+                  "type": "inventoryitem",
+                  "name": "Ariat Terrain H2O Work Boot Hero Item",
+                  "internalId": 701234,
+                  "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+                },
+                "matrixProofItem": {
+                  "type": "matrixitem",
+                  "name": "Ariat Core Boot Size Color Matrix",
+                  "internalId": 701235,
+                  "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+                },
+                "componentItem": {
+                  "type": "inventoryitem",
+                  "name": "Ariat Brown Boot Size Color Supporting SKU",
+                  "internalId": 701236,
+                  "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+                }
+              },
+              "demoTransaction": {
+                "type": "salesorder",
+                "name": "Ariat Seasonal Footwear Availability Demo Order",
+                "internalId": 601234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+              },
+              "heroItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Terrain H2O Work Boot Hero Item",
+                "internalId": 701234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+              },
+              "matrixItem": {
+                "type": "matrixitem",
+                "name": "Ariat Core Boot Size Color Matrix",
+                "internalId": 701235,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+              },
+              "componentItems": [
+                {
+                  "type": "inventoryitem",
+                  "name": "Ariat Brown Boot Size Color Supporting SKU",
+                  "internalId": 701236,
+                  "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+                }
+              ]
+            },
+            "finalGeneratedNamesReady": true
+          },
+          "finalGeneratedNamesJson": {
+            "schema": "idb.completed-runner-result-json.v1",
+            "status": "completed",
+            "runStatus": "completed",
+            "generatedRecordOwner": "governed_runner_internal_build_engine",
+            "records": {
+              "customer": {
+                "type": "customer",
+                "name": "Ariat International Outdoor Retail Account",
+                "internalId": 501234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+              },
+              "demoTransaction": {
+                "type": "salesorder",
+                "name": "Ariat Seasonal Footwear Availability Demo Order",
+                "internalId": 601234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+              },
+              "heroItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Terrain H2O Work Boot Hero Item",
+                "internalId": 701234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+              },
+              "matrixProofItem": {
+                "type": "matrixitem",
+                "name": "Ariat Core Boot Size Color Matrix",
+                "internalId": 701235,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+              },
+              "componentItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Boot Size Color Supporting SKU",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            },
+            "demoTransaction": {
+              "type": "salesorder",
+              "name": "Ariat Seasonal Footwear Availability Demo Order",
+              "internalId": 601234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "heroItem": {
+              "type": "inventoryitem",
+              "name": "Ariat Terrain H2O Work Boot Hero Item",
+              "internalId": 701234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "matrixItem": {
+              "type": "matrixitem",
+              "name": "Ariat Core Boot Size Color Matrix",
+              "internalId": 701235,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "componentItems": [
+              {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Boot Size Color Supporting SKU",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            ]
+          },
+          "activeOpenLinks": 0,
+          "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+          "label": "Completed result waiting for import",
+          "message": "Completed runner result JSON is present, but W151 import guard must validate it before Open links appear.",
+          "rawStatus": "completed_runner_result_ready",
+          "resultCaptureStatus": "completed_result_capture_ready",
+          "pollAttempted": true,
+          "finalGeneratedNamesJsonReady": true,
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          },
+          "resultImportGuard": {
+            "completedResultPresent": true,
+            "completedResultAcceptedByW151": true,
+            "completedResultStatus": "completed_runner_result_accepted",
+            "completedResultMessage": "Completed runner result JSON accepted. Final names and verified URLs can be imported.",
+            "generatedRecordOwner": "governed_runner_internal_build_engine",
+            "internalRunnerOwnerValid": true,
+            "importReady": true
+          }
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "directDrawerSuiteScriptInvocation": false,
+        "activeOpenLinks": 0
+      },
+      "stopReason": "poll_transport_executed_once",
+      "traceSamples": [
+        {
+          "event": "w190_result_capture_poll_gate",
+          "requestReady": true,
+          "blockedReasons": [],
+          "runnerTaskIdPresent": true,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_result_capture_poll_response",
+          "requestSent": true,
+          "status": "w190_completed_result_ready_for_w151_import",
+          "resultCaptureStatus": "completed_result_capture_ready",
+          "finalGeneratedNamesJsonReady": true,
+          "completedResultPresent": true,
+          "completedResultStatus": "completed_runner_result_accepted",
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_w151_completed_json_gate",
+          "completedResultAcceptedByW151": true,
+          "importReady": true,
+          "stateMutationAllowedInThisBlock": false,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImport": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W190 only polls result capture and marks completed JSON import-ready. Open-link testing starts after W151 import commits URLs into IDB."
+      }
+    },
+    "adapterError": {
+      "schema": "idb.w190-governed-runner-result-capture-polling-to-completed-json.v1",
+      "status": "w190_adapter_error_drawer_safe",
+      "mode": "approved_server_adapter_result_capture_poll_no_final_name_mutation",
+      "pollingContract": {
+        "startsOnlyAfterRunnerTaskId": true,
+        "approvedServerAdapterPathOnly": true,
+        "onePollPerClick": true,
+        "pendingAndAdapterErrorAreNonMutating": true,
+        "completedJsonRequiresW151BeforeImport": true,
+        "noOpenLinksBeforeImport": true
+      },
+      "completedResultEnvelopeShape": {
+        "schema": "idb.approved-server-adapter-result-envelope.v1",
+        "status": "completed_runner_result_ready",
+        "runnerTaskId": "numeric-or-task-string-from-W189",
+        "resultCapture": {
+          "status": "completed_result_capture_ready",
+          "finalGeneratedNamesJson": "idb.completed-runner-result-json.v1"
+        },
+        "finalGeneratedNamesJson": {
+          "schema": "idb.completed-runner-result-json.v1",
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "records": {
+            "customer": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "demoTransaction": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "heroItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "matrixProofItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            },
+            "componentItem": {
+              "internalId": "number",
+              "url": "supported NetSuite record URL"
+            }
+          }
+        }
+      },
+      "gates": [
+        {
+          "id": "runner_task_id_present",
+          "ready": true
+        },
+        {
+          "id": "approved_endpoint_configured",
+          "ready": true
+        },
+        {
+          "id": "server_flags_true",
+          "ready": true
+        },
+        {
+          "id": "sandbox_allowlist_confirmed",
+          "ready": true
+        },
+        {
+          "id": "operator_approval_captured",
+          "ready": true
+        },
+        {
+          "id": "idempotency_token_present",
+          "ready": true
+        },
+        {
+          "id": "approved_endpoint_mode",
+          "ready": true
+        },
+        {
+          "id": "confirmed_build_request_parity",
+          "ready": true
+        }
+      ],
+      "blockedReasons": [],
+      "requestReady": true,
+      "requestSent": true,
+      "pollRequestEnvelope": {
+        "schema": "idb.w190-governed-runner-result-capture-poll-request.v1",
+        "targetAdapter": "W144 governed runner adapter result capture",
+        "action": "poll_runner_result_capture",
+        "method": "POST",
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        "bodyEncoding": "application/x-www-form-urlencoded",
+        "bodyParams": {
+          "custpage_idb_action": "poll_runner_result_capture",
+          "custpage_idb_runner_task_id": "task_w190_ariatinternational_001",
+          "custpage_idb_idempotency_token": "idb_w190_ariatinternational_001",
+          "custpage_idb_result_capture_cursor": "cursor_w190_initial",
+          "custpage_idb_expected_result_schema": "idb.completed-runner-result-json.v1",
+          "custpage_idb_confirmed_build_request_json": "{\"schema\":\"idb.confirmed-build-request.v1\",\"requestId\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"requestStatus\":\"confirmed_ready_for_governed_runner\",\"producedBy\":\"idb_drawer\",\"idbPrimarySurface\":true,\"legacyDccSuiteletUi\":{\"normalWorkflow\":false,\"role\":\"legacy_reference_only\",\"replacement\":\"Drawer prepares confirmed request; governed runner creates or resolves records.\"},\"consultantConfirmation\":{\"required\":true,\"confirmed\":true,\"source\":\"acceptedPacket\"},\"simplifiedConsultantIntake\":{\"schema\":\"idb.production-consultant-intake.v1\",\"status\":\"consultant_intake_ready\",\"required\":[\"customer/prospect name\",\"website\",\"conversation notes\"],\"inputs\":{\"customerProspectName\":\"Ariat International\",\"website\":\"https://www.ariat.com/\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"inferred\":{\"lane\":\"Apparel & Accessories\",\"laneId\":\"apparel_accessories\",\"proofPath\":\"Style / SKU Matrix\",\"demoScenario\":\"Apparel & Accessories / Style / SKU Matrix\",\"buildStory\":\"Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings.\",\"initialRecordNamingIntent\":\"Core Boot and Apparel Style Matrix\"},\"missing\":[]},\"adminDebugConfiguration\":{\"normalConsultantWorkflow\":false,\"hiddenBehindAdminDebugState\":true,\"fields\":[\"approved W144 endpoint\",\"server flags\",\"sandbox allowlist\",\"runner script/deployment IDs\",\"mapping ID\",\"runner folder ID\",\"result capture folder ID\",\"operator approval phrase\"]},\"stateAuthority\":{\"selectedLaneId\":\"apparel_accessories\",\"confirmedLaneId\":\"apparel_accessories\",\"exportedLaneId\":\"apparel_accessories\",\"handoffParityStatus\":\"matched\",\"noStateMismatch\":true},\"prospect\":{\"name\":\"Ariat International\",\"website\":\"https://www.ariat.com/\"},\"demoPath\":{\"laneId\":\"apparel_accessories\",\"laneName\":\"Apparel & Accessories\",\"proofAnchor\":\"Style / SKU Matrix\",\"familyKey\":\"apparelAccessories\",\"scenario\":\"Style-to-Availability Readiness\",\"confirmed\":true},\"storyInputs\":{\"buyerNeed\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style\",\"scObjective\":\"Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Frame ROI as reduced risk around Style / SKU Matrix readiness; capture the current baseline before claiming savings.\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"resolvedOperatingMode\":\"apparel_style_matrix\",\"modeConfidence\":\"high\",\"selectedToggles\":{\"schema\":\"idb.w214-selected-build-toggles.v1\",\"createNewHeroItem\":true,\"enableManufacturing\":false,\"enableWip\":false,\"selectedLaneId\":\"apparel_accessories\"},\"namingAuthority\":{\"websiteControlsIndustryCategoryAndProductNouns\":true,\"togglesControlOperatingModelVocabulary\":true,\"notesControlPainStoryRoiObjectionsOnly\":true,\"nllmAdvisoryOnly\":true,\"domain\":\"ariat.com\",\"evidence\":[\"known domain ariat.com -> apparel_style_matrix\",\"known domain controls non-manufacturing operating mode\"]},\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"resultValidationExpectations\":{\"recordContract\":{\"label\":\"Apparel Style Matrix\",\"requiredRecordRoles\":[\"customer\",\"sales_order\",\"style_sku\",\"style_matrix_or_availability_flow\"],\"optionalRecordRoles\":[\"supporting_style_or_color_sku\"],\"invalidRecordRoles\":[\"finished_good\",\"assembly\",\"bom\",\"work_order\",\"routing\"],\"allowedNouns\":[\"style sku\",\"style matrix\",\"size / color variant\",\"core style\",\"omnichannel availability flow\",\"channel allocation\"],\"invalidTerms\":[\"ingredient\",\"ingredient blend\",\"recipe\",\"formula\",\"work order\",\"routing\",\"wip\"]},\"manufacturingFalseBlocksManufacturingSemantics\":true,\"wipTrueRequiresWipDetailOrPartialResult\":false,\"foodVocabularyRequiresFoodEvidenceAndManufacturing\":false,\"openLinksBlockedUntilValidImport\":true},\"runnerControls\":{\"requestedMode\":\"server_flagged_integrated_build_return\",\"sandboxWriteModeRequiresOperatorEnablement\":true,\"writeAuthority\":\"governed_internal_runner_only\",\"drawerAuthority\":\"prepare_confirm_export_import_only\"},\"requiredRecords\":[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"],\"sourceHandoff\":{\"schema\":\"idb.dcc-runner-handoff-packet.v1\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"executionMode\":\"review_only_no_submit\",\"selectedPack\":\"apparelAccessories\",\"selectedScenario\":\"Style-to-Availability Readiness\"},\"noRegression\":{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}",
+          "custpage_idb_operator_queue_gate_json": "{\"operatorEvidence\":{\"operatorName\":\"Operator User\",\"currentSandboxAccount\":\"TD3021666\",\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedSandboxAccount\":true,\"endpointConfirmed\":true,\"operatorAuthorizationPhrase\":\"AUTHORIZE ONE SANDBOX ADAPTER CALL\"},\"currentSandboxAccount\":\"TD3021666\",\"sandboxAccountAllowlist\":[\"TD3021666\"],\"oneSubmitLimit\":true,\"resultCapturePollOnly\":true}"
+        },
+        "bodyFormEncoded": "custpage_idb_action=poll_runner_result_capture&custpage_idb_runner_task_id=task_w190_ariatinternational_001&custpage_idb_idempotency_token=idb_w190_ariatinternational_001&custpage_idb_result_capture_cursor=cursor_w190_initial&custpage_idb_expected_result_schema=idb.completed-runner-result-json.v1&custpage_idb_confirmed_build_request_json=%7B%22schema%22%3A%22idb.confirmed-build-request.v1%22%2C%22requestId%22%3A%22idb-build-ariat-international-apparel-accessories-apparelaccessories%22%2C%22requestStatus%22%3A%22confirmed_ready_for_governed_runner%22%2C%22producedBy%22%3A%22idb_drawer%22%2C%22idbPrimarySurface%22%3Atrue%2C%22legacyDccSuiteletUi%22%3A%7B%22normalWorkflow%22%3Afalse%2C%22role%22%3A%22legacy_reference_only%22%2C%22replacement%22%3A%22Drawer+prepares+confirmed+request%3B+governed+runner+creates+or+resolves+records.%22%7D%2C%22consultantConfirmation%22%3A%7B%22required%22%3Atrue%2C%22confirmed%22%3Atrue%2C%22source%22%3A%22acceptedPacket%22%7D%2C%22simplifiedConsultantIntake%22%3A%7B%22schema%22%3A%22idb.production-consultant-intake.v1%22%2C%22status%22%3A%22consultant_intake_ready%22%2C%22required%22%3A%5B%22customer%2Fprospect+name%22%2C%22website%22%2C%22conversation+notes%22%5D%2C%22inputs%22%3A%7B%22customerProspectName%22%3A%22Ariat+International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%2C%22conversationNotes%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.%22%7D%2C%22inferred%22%3A%7B%22lane%22%3A%22Apparel+%26+Accessories%22%2C%22laneId%22%3A%22apparel_accessories%22%2C%22proofPath%22%3A%22Style+%2F+SKU+Matrix%22%2C%22demoScenario%22%3A%22Apparel+%26+Accessories+%2F+Style+%2F+SKU+Matrix%22%2C%22buildStory%22%3A%22Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.%22%2C%22initialRecordNamingIntent%22%3A%22Core+Boot+and+Apparel+Style+Matrix%22%7D%2C%22missing%22%3A%5B%5D%7D%2C%22adminDebugConfiguration%22%3A%7B%22normalConsultantWorkflow%22%3Afalse%2C%22hiddenBehindAdminDebugState%22%3Atrue%2C%22fields%22%3A%5B%22approved+W144+endpoint%22%2C%22server+flags%22%2C%22sandbox+allowlist%22%2C%22runner+script%2Fdeployment+IDs%22%2C%22mapping+ID%22%2C%22runner+folder+ID%22%2C%22result+capture+folder+ID%22%2C%22operator+approval+phrase%22%5D%7D%2C%22stateAuthority%22%3A%7B%22selectedLaneId%22%3A%22apparel_accessories%22%2C%22confirmedLaneId%22%3A%22apparel_accessories%22%2C%22exportedLaneId%22%3A%22apparel_accessories%22%2C%22handoffParityStatus%22%3A%22matched%22%2C%22noStateMismatch%22%3Atrue%7D%2C%22prospect%22%3A%7B%22name%22%3A%22Ariat+International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%7D%2C%22demoPath%22%3A%7B%22laneId%22%3A%22apparel_accessories%22%2C%22laneName%22%3A%22Apparel+%26+Accessories%22%2C%22proofAnchor%22%3A%22Style+%2F+SKU+Matrix%22%2C%22familyKey%22%3A%22apparelAccessories%22%2C%22scenario%22%3A%22Style-to-Availability+Readiness%22%2C%22confirmed%22%3Atrue%7D%2C%22storyInputs%22%3A%7B%22buyerNeed%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.+Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.+Fetch+status%3A+runtime_resolved+%2F+Source+URLs%3A+1+%2F+Signals%3A+website+shows+boots%2C+footwear%2C+apparel%2C+workwear%2C+outdoor+gear%2C+style%2C+size%2C+and+retail+ecommerce+signals%2C+Core+Boot+and+Apparel+Style+Matrix%2C+Apparel+and+Footwear+Style%22%2C%22scObjective%22%3A%22Prove+Style+%2F+SKU+Matrix+readiness+with+Core+Boot+and+Apparel+Style+Matrix.+Frame+ROI+as+reduced+risk+around+Style+%2F+SKU+Matrix+readiness%3B+capture+the+current+baseline+before+claiming+savings.%22%2C%22conversationNotes%22%3A%22Buyer+needs+style%2C+size%2C+color%2C+replenishment+timing%2C+and+channel+availability+connected+for+seasonal+footwear+and+apparel+launches.%22%7D%2C%22resolvedOperatingMode%22%3A%22apparel_style_matrix%22%2C%22modeConfidence%22%3A%22high%22%2C%22selectedToggles%22%3A%7B%22schema%22%3A%22idb.w214-selected-build-toggles.v1%22%2C%22createNewHeroItem%22%3Atrue%2C%22enableManufacturing%22%3Afalse%2C%22enableWip%22%3Afalse%2C%22selectedLaneId%22%3A%22apparel_accessories%22%7D%2C%22namingAuthority%22%3A%7B%22websiteControlsIndustryCategoryAndProductNouns%22%3Atrue%2C%22togglesControlOperatingModelVocabulary%22%3Atrue%2C%22notesControlPainStoryRoiObjectionsOnly%22%3Atrue%2C%22nllmAdvisoryOnly%22%3Atrue%2C%22domain%22%3A%22ariat.com%22%2C%22evidence%22%3A%5B%22known+domain+ariat.com+-%3E+apparel_style_matrix%22%2C%22known+domain+controls+non-manufacturing+operating+mode%22%5D%7D%2C%22requiredRecordRoles%22%3A%5B%22customer%22%2C%22sales_order%22%2C%22style_sku%22%2C%22style_matrix_or_availability_flow%22%5D%2C%22optionalRecordRoles%22%3A%5B%22supporting_style_or_color_sku%22%5D%2C%22invalidRecordRoles%22%3A%5B%22finished_good%22%2C%22assembly%22%2C%22bom%22%2C%22work_order%22%2C%22routing%22%5D%2C%22resultValidationExpectations%22%3A%7B%22recordContract%22%3A%7B%22label%22%3A%22Apparel+Style+Matrix%22%2C%22requiredRecordRoles%22%3A%5B%22customer%22%2C%22sales_order%22%2C%22style_sku%22%2C%22style_matrix_or_availability_flow%22%5D%2C%22optionalRecordRoles%22%3A%5B%22supporting_style_or_color_sku%22%5D%2C%22invalidRecordRoles%22%3A%5B%22finished_good%22%2C%22assembly%22%2C%22bom%22%2C%22work_order%22%2C%22routing%22%5D%2C%22allowedNouns%22%3A%5B%22style+sku%22%2C%22style+matrix%22%2C%22size+%2F+color+variant%22%2C%22core+style%22%2C%22omnichannel+availability+flow%22%2C%22channel+allocation%22%5D%2C%22invalidTerms%22%3A%5B%22ingredient%22%2C%22ingredient+blend%22%2C%22recipe%22%2C%22formula%22%2C%22work+order%22%2C%22routing%22%2C%22wip%22%5D%7D%2C%22manufacturingFalseBlocksManufacturingSemantics%22%3Atrue%2C%22wipTrueRequiresWipDetailOrPartialResult%22%3Afalse%2C%22foodVocabularyRequiresFoodEvidenceAndManufacturing%22%3Afalse%2C%22openLinksBlockedUntilValidImport%22%3Atrue%7D%2C%22runnerControls%22%3A%7B%22requestedMode%22%3A%22server_flagged_integrated_build_return%22%2C%22sandboxWriteModeRequiresOperatorEnablement%22%3Atrue%2C%22writeAuthority%22%3A%22governed_internal_runner_only%22%2C%22drawerAuthority%22%3A%22prepare_confirm_export_import_only%22%7D%2C%22requiredRecords%22%3A%5B%22customer%22%2C%22demoTransaction%22%2C%22heroItem%22%2C%22matrixProofItem%22%2C%22componentItem%22%5D%2C%22sourceHandoff%22%3A%7B%22schema%22%3A%22idb.dcc-runner-handoff-packet.v1%22%2C%22status%22%3A%22ready_for_dcc_suitelet_submission_review%22%2C%22executionMode%22%3A%22review_only_no_submit%22%2C%22selectedPack%22%3A%22apparelAccessories%22%2C%22selectedScenario%22%3A%22Style-to-Availability+Readiness%22%7D%2C%22noRegression%22%3A%7B%22noDrawerWrites%22%3Atrue%2C%22noSuiteScriptInvocationFromDrawer%22%3Atrue%2C%22noTransactionWritesFromDrawer%22%3Atrue%2C%22noActiveOpenLinksWithoutRealUrls%22%3Atrue%7D%7D&custpage_idb_operator_queue_gate_json=%7B%22operatorEvidence%22%3A%7B%22operatorName%22%3A%22Aaron+Sunshine%22%2C%22currentSandboxAccount%22%3A%22TD3021666%22%2C%22reviewDecision%22%3A%22operator_approved_queue_submit%22%2C%22typeToConfirm%22%3A%22QUEUE+GOVERNED+SANDBOX+RUNNER%22%2C%22confirmedSandboxAccount%22%3Atrue%2C%22endpointConfirmed%22%3Atrue%2C%22operatorAuthorizationPhrase%22%3A%22AUTHORIZE+ONE+SANDBOX+ADAPTER+CALL%22%7D%2C%22currentSandboxAccount%22%3A%22TD3021666%22%2C%22sandboxAccountAllowlist%22%3A%5B%22TD3021666%22%5D%2C%22oneSubmitLimit%22%3Atrue%2C%22resultCapturePollOnly%22%3Atrue%7D",
+        "runnerTaskId": "task_w190_ariatinternational_001",
+        "idempotencyToken": "idb_w190_ariatinternational_001",
+        "pollCursor": "cursor_w190_initial"
+      },
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "adapter_transport_error_drawer_safe",
+        "label": "Adapter response error",
+        "message": "The adapter response reported an error. The drawer keeps generated names and Open links unchanged.",
+        "rawStatus": "adapter_error",
+        "queueSubmitted": false,
+        "runnerTaskId": "task_w190_ariatinternational_001",
+        "resultCaptureStatus": "adapter_error",
+        "resultCapture": {
+          "status": "adapter_error",
+          "runnerTaskId": "task_w190_ariatinternational_001",
+          "finalGeneratedNamesReady": false,
+          "finalGeneratedNamesJson": null
+        },
+        "pollAttempted": true,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "completedResultMessage": "Paste completed governed runner result JSON, not a blank value or non-object JSON.",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "importReady": false,
+        "stateMutationAllowedInThisBlock": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "statePatch": {
+        "integratedBuildRunnerResult": {
+          "schema": "idb.approved-server-adapter-result-envelope.v1",
+          "status": "adapter_transport_error_drawer_safe",
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w190_ariatinternational_001",
+          "idempotencyToken": "idb_w190_ariatinternational_001",
+          "resultCapture": {
+            "schema": "idb.runner-result-capture.v1",
+            "status": "adapter_error",
+            "runnerTaskId": "task_w190_ariatinternational_001",
+            "resultCaptureCursor": "cursor_w190_initial",
+            "finalGeneratedNamesJson": null,
+            "finalGeneratedNamesReady": false
+          },
+          "finalGeneratedNamesJson": null,
+          "activeOpenLinks": 0,
+          "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+          "label": "Adapter response error",
+          "message": "The adapter response reported an error. The drawer keeps generated names and Open links unchanged.",
+          "rawStatus": "adapter_error",
+          "resultCaptureStatus": "adapter_error",
+          "pollAttempted": true,
+          "finalGeneratedNamesJsonReady": false,
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          },
+          "resultImportGuard": {
+            "completedResultPresent": false,
+            "completedResultAcceptedByW151": false,
+            "completedResultStatus": "invalid_json_payload",
+            "completedResultMessage": "Paste completed governed runner result JSON, not a blank value or non-object JSON.",
+            "generatedRecordOwner": "",
+            "internalRunnerOwnerValid": false,
+            "importReady": false
+          }
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "directDrawerSuiteScriptInvocation": false,
+        "activeOpenLinks": 0
+      },
+      "stopReason": "poll_transport_executed_once",
+      "traceSamples": [
+        {
+          "event": "w190_result_capture_poll_gate",
+          "requestReady": true,
+          "blockedReasons": [],
+          "runnerTaskIdPresent": true,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_result_capture_poll_response",
+          "requestSent": true,
+          "status": "w190_adapter_error_drawer_safe",
+          "resultCaptureStatus": "adapter_error",
+          "finalGeneratedNamesJsonReady": false,
+          "completedResultPresent": false,
+          "completedResultStatus": "invalid_json_payload",
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w190_w151_completed_json_gate",
+          "completedResultAcceptedByW151": false,
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImport": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W190 only polls result capture and marks completed JSON import-ready. Open-link testing starts after W151 import commits URLs into IDB."
+      }
+    }
+  },
+  "traceSamples": [
+    {
+      "event": "w190_result_capture_poll_gate",
+      "requestReady": false,
+      "blockedReasons": [
+        "runner_task_id_present"
+      ],
+      "runnerTaskIdPresent": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_result_capture_poll_response",
+      "requestSent": false,
+      "status": "w190_poll_blocked_missing_runner_task_id",
+      "resultCaptureStatus": "not_started_no_submit",
+      "finalGeneratedNamesJsonReady": false,
+      "completedResultPresent": false,
+      "completedResultStatus": "invalid_json_payload",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_w151_completed_json_gate",
+      "completedResultAcceptedByW151": false,
+      "importReady": false,
+      "stateMutationAllowedInThisBlock": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_result_capture_poll_gate",
+      "requestReady": true,
+      "blockedReasons": [],
+      "runnerTaskIdPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_result_capture_poll_response",
+      "requestSent": false,
+      "status": "w190_poll_ready_not_executed",
+      "resultCaptureStatus": "pending_poll_not_executed",
+      "finalGeneratedNamesJsonReady": false,
+      "completedResultPresent": false,
+      "completedResultStatus": "invalid_json_payload",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_w151_completed_json_gate",
+      "completedResultAcceptedByW151": false,
+      "importReady": false,
+      "stateMutationAllowedInThisBlock": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_result_capture_poll_gate",
+      "requestReady": true,
+      "blockedReasons": [],
+      "runnerTaskIdPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_result_capture_poll_response",
+      "requestSent": true,
+      "status": "w190_poll_pending_result_capture",
+      "resultCaptureStatus": "polling_pending",
+      "finalGeneratedNamesJsonReady": false,
+      "completedResultPresent": false,
+      "completedResultStatus": "invalid_json_payload",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_w151_completed_json_gate",
+      "completedResultAcceptedByW151": false,
+      "importReady": false,
+      "stateMutationAllowedInThisBlock": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_result_capture_poll_gate",
+      "requestReady": true,
+      "blockedReasons": [],
+      "runnerTaskIdPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_result_capture_poll_response",
+      "requestSent": true,
+      "status": "w190_completed_result_ready_for_w151_import",
+      "resultCaptureStatus": "completed_result_capture_ready",
+      "finalGeneratedNamesJsonReady": true,
+      "completedResultPresent": true,
+      "completedResultStatus": "completed_runner_result_accepted",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_w151_completed_json_gate",
+      "completedResultAcceptedByW151": true,
+      "importReady": true,
+      "stateMutationAllowedInThisBlock": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_result_capture_poll_gate",
+      "requestReady": true,
+      "blockedReasons": [],
+      "runnerTaskIdPresent": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_result_capture_poll_response",
+      "requestSent": true,
+      "status": "w190_adapter_error_drawer_safe",
+      "resultCaptureStatus": "adapter_error",
+      "finalGeneratedNamesJsonReady": false,
+      "completedResultPresent": false,
+      "completedResultStatus": "invalid_json_payload",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w190_w151_completed_json_gate",
+      "completedResultAcceptedByW151": false,
+      "importReady": false,
+      "stateMutationAllowedInThisBlock": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "visualTestingDecision": {
+    "decision": "blocked_until_completed_result_import",
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "Polling can return completed JSON, but IDB Open links stay hidden until W151 import commits numeric ids and supported URLs."
+  },
+  "bestNextCodexPrompt": "Move through W191: Server Adapter Result Capture Endpoint Support And Completed JSON Return. Extend the W144 approved server adapter to support the W190 poll_runner_result_capture action, retrieve the governed runner result capture by runnerTaskId/idempotency token, and return either pending, adapter-error, or W151-valid completed runner result JSON with numeric internal ids and supported NetSuite URLs. Preserve no drawer writes, no drawer-created records, no direct SuiteScript outside the approved adapter path, internal runner ownership, rollback by disabling flags, and no active Open links until import. Output server endpoint changes, guarded harness, trace samples, W191 report, visual testing decision, and best next Codex prompt."
+}

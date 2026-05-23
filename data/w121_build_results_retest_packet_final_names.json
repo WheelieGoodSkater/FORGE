@@ -1,0 +1,316 @@
+{
+  "schema": "idb.w121-build-results-retest-packet-final-names.v1",
+  "status": "ready_for_hands_on_build_results_final_names_retest",
+  "generatedAt": "2026-05-17T21:41:08.149Z",
+  "userTestRequiredNow": true,
+  "objective": "Run one hands-on NetSuite retest proving Review changes from handoff preview to Build results after final generated names are imported.",
+  "fileToUpload": {
+    "tampermonkeyUserscript": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+    "visibleVersion": "0.1.1",
+    "installNote": "Update the existing Intelligent Demo Builder Drawer userscript in Tampermonkey, then refresh the NetSuite page."
+  },
+  "salesRequestFields": [
+    {
+      "field": "Prospect",
+      "value": "Ariat International"
+    },
+    {
+      "field": "Website",
+      "value": "https://www.ariat.com/"
+    },
+    {
+      "field": "Business pain",
+      "value": "Seasonal footwear and apparel launches are risky because style, size, color, replenishment timing, and channel availability are managed across spreadsheets and disconnected order/inventory views."
+    },
+    {
+      "field": "Requested proof",
+      "value": "Show a concise NetSuite proof path for style/SKU readiness, size/color availability, replenishment timing, and customer promise."
+    },
+    {
+      "field": "Decision criteria",
+      "value": "Must connect Customer Record, Sales Order View, and Style / SKU Matrix without forcing apparel into generic manufacturing or distribution language."
+    },
+    {
+      "field": "Timeline / urgency",
+      "value": "Internal proof review needed in 2-4 weeks before the next buying cycle."
+    },
+    {
+      "field": "Competitor / incumbent",
+      "value": "Spreadsheets, disconnected inventory reports, and incumbent order tools."
+    },
+    {
+      "field": "Optional website/category evidence",
+      "value": "Ariat sells footwear, apparel, workwear, outdoor gear, size/color variants, and ecommerce categories."
+    }
+  ],
+  "exactTestSteps": [
+    "Upload the latest drawer userscript in Tampermonkey and refresh NetSuite.",
+    "Open the drawer and clear the session if old Ariat data remains.",
+    "On Plan, enter every sales request field from this packet.",
+    "Click Prepare brief.",
+    "Confirm Apparel & Accessories and open Review.",
+    "Capture Plan and Review before final generated names import.",
+    "In Review, export the handoff JSON.",
+    "Open Trace and import final generated names JSON. Use a real build-engine export if available; otherwise use data/w118_sample_dcc_final_result_export.json.",
+    "Capture Trace import state.",
+    "Return to Review and capture Build results after import.",
+    "Open ROI / Competitive, expand Why this matters, and capture it.",
+    "Open Run and capture the final-name navigation pivots.",
+    "Return to Trace, export trace JSON, and capture the evidence checklist.",
+    "Send screenshots, handoff JSON, trace JSON, final generated names JSON, and consultant/operator notes back for grading."
+  ],
+  "expectedScreenshots": [
+    {
+      "tab": "Plan",
+      "capture": "After Prepare brief and lane confirmation, capture the 30-second plan with prospect, classification, confidence, next action, and demo path.",
+      "expectedVisibleText": [
+        "Ariat International",
+        "Apparel & Accessories",
+        "Style / SKU Matrix",
+        "Confirm lane before build handoff"
+      ]
+    },
+    {
+      "tab": "Review before import",
+      "capture": "Capture the Build Handoff before importing final generated names.",
+      "expectedVisibleText": [
+        "Build handoff",
+        "Final generated names not imported yet",
+        "Handoff preview",
+        "Export build handoff"
+      ]
+    },
+    {
+      "tab": "Trace import",
+      "capture": "Paste the final generated names JSON and click Import final names.",
+      "expectedVisibleText": [
+        "Final generated names import",
+        "Import final names",
+        "does not submit, queue, or write"
+      ]
+    },
+    {
+      "tab": "Review after import",
+      "capture": "Capture Build results after import.",
+      "expectedVisibleText": [
+        "Build results",
+        "Final generated names imported",
+        "Final generated NetSuite records",
+        "Ariat Core Boot and Apparel Style Matrix"
+      ]
+    },
+    {
+      "tab": "ROI / Competitive",
+      "capture": "Capture the consultant value coach and expanded Why this matters section.",
+      "expectedVisibleText": [
+        "Consultant value coach",
+        "Why this matters",
+        "Business risk",
+        "Baseline to capture"
+      ]
+    },
+    {
+      "tab": "Run after import",
+      "capture": "Capture the Run tab with final-name navigation pivots visible.",
+      "expectedVisibleText": [
+        "Use final build names",
+        "Ariat Core Boot and Apparel Style Matrix",
+        "Sales Order CSV import"
+      ]
+    },
+    {
+      "tab": "Trace evidence",
+      "capture": "Capture Trace after exporting handoff and trace JSON.",
+      "expectedVisibleText": [
+        "Export handoff",
+        "Export trace",
+        "Pilot evidence checklist"
+      ]
+    }
+  ],
+  "requiredArtifacts": [
+    {
+      "artifact": "Updated drawer userscript",
+      "path": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+      "consultantLabel": "drawer userscript",
+      "when": "Upload into Tampermonkey before testing."
+    },
+    {
+      "artifact": "Handoff JSON",
+      "filenamePattern": "idb-dcc-runner-handoff-packet-*.json",
+      "consultantLabel": "handoff JSON",
+      "when": "Export from Review before importing final generated names."
+    },
+    {
+      "artifact": "Trace JSON",
+      "filenamePattern": "intelligent-demo-builder-trace-*.json",
+      "consultantLabel": "trace JSON",
+      "when": "Export from Trace after importing final generated names."
+    },
+    {
+      "artifact": "Final generated names JSON",
+      "path": "/path/to/workspace/intelligent demo builder drawer/data/w118_sample_dcc_final_result_export.json",
+      "filenamePattern": "dcc_final_naming_result_v1.json or w118_sample_dcc_final_result_export.json",
+      "consultantLabel": "final generated names JSON",
+      "when": "Import in Trace. Use the sample file only if the build engine has not produced a real export yet."
+    },
+    {
+      "artifact": "Consultant/operator notes",
+      "filenamePattern": "free-form notes in chat",
+      "consultantLabel": "consultant/operator notes",
+      "when": "Add anything confusing, missing, or mismatched after the run."
+    }
+  ],
+  "scoringRubric": [
+    {
+      "category": "Plan clarity",
+      "passAt": 4,
+      "score1": "Cannot tell what to do next.",
+      "score5": "Plan is understood in under 30 seconds."
+    },
+    {
+      "category": "Review before import",
+      "passAt": 4,
+      "score1": "Looks like final build results before import.",
+      "score5": "Clearly a handoff preview only."
+    },
+    {
+      "category": "Review after import",
+      "passAt": 4,
+      "score1": "Final names are missing or mixed with provisional names.",
+      "score5": "Final generated names are obvious and useful."
+    },
+    {
+      "category": "ROI / Competitive value",
+      "passAt": 4,
+      "score1": "Still feels like audit text.",
+      "score5": "Gives a usable talk track, proof move, and why-it-matters answer."
+    },
+    {
+      "category": "Run final-name pivots",
+      "passAt": 4,
+      "score1": "Run ignores imported final names.",
+      "score5": "Run uses final names to guide demo navigation."
+    },
+    {
+      "category": "Trace usefulness",
+      "passAt": 4,
+      "score1": "Too technical or unclear what to export.",
+      "score5": "Only the necessary evidence actions are visible."
+    },
+    {
+      "category": "Language cleanliness",
+      "passAt": 5,
+      "score1": "Visible internal acronyms appear.",
+      "score5": "No visible SCAI, IDB, or DCC in consultant-facing surfaces."
+    },
+    {
+      "category": "Safety boundaries",
+      "passAt": 5,
+      "score1": "Drawer can submit, queue, invoke scripts, or write.",
+      "score5": "Drawer remains export/import/evidence-only."
+    }
+  ],
+  "stopGoCriteria": {
+    "go": [
+      "Plan, Review, ROI / Competitive, Run, and Trace are readable in under 30 seconds each.",
+      "Review before import is clearly a handoff preview, not final results.",
+      "Review after import becomes Build results and shows final generated NetSuite records.",
+      "Run uses final generated names for navigation pivots.",
+      "ROI / Competitive surfaces Why this matters as consultant-facing value guidance.",
+      "No consultant-facing SCAI, IDB, or DCC appears in visible copy.",
+      "No drawer write, submit, queue, script invocation, or transaction write occurs."
+    ],
+    "stop": [
+      "Review still feels useless or technical after W120.",
+      "Final names do not appear after import.",
+      "Provisional names are presented as final.",
+      "Run stays generic after final names are imported.",
+      "Trace still asks for unnecessary technical artifacts first.",
+      "Any visible consultant-facing surface shows SCAI, IDB, or DCC.",
+      "Any drawer path submits, queues, invokes scripts, or writes records."
+    ]
+  },
+  "expectedBehavior": {
+    "reviewBeforeImport": "Build handoff with Final generated names not imported yet.",
+    "reviewAfterImport": "Build results with Final generated NetSuite records.",
+    "runAfterImport": "Run shows Use final build names and imported object pivots.",
+    "roiCompetitive": "Why this matters is consultant-facing and concise.",
+    "trace": "Trace exposes handoff export, final generated names import, trace export, clear session, and evidence checklist.",
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true
+  },
+  "noRegression": {
+    "w92StateAuthorityPreserved": true,
+    "w110HandoffParityPreserved": true,
+    "w116W120FinalNameBehaviorPreserved": true,
+    "consultantConfirmationRequired": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "websiteSupportsIdentityNaming": true,
+    "notesDriveStoryValue": true,
+    "buildEngineOwnsObjectGeneration": true,
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true
+  },
+  "visualSmokeText": {
+    "planExpected": "Ariat International / Apparel & Accessories / Style / SKU Matrix",
+    "reviewBeforeImport": "Build Handoff What the consultant requested Ariat International Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, and channel availability stay aligned as demand changes. 1. Ready? Ready to export Consultant confirmed the lane and pack. 2. Demo path Apparel &amp; Accessories Style-to-Availability Readiness 3. Boundary Export only The build engine owns generated records. confirmed Build handoff JSON Export lane: Apparel &amp; Accessories Final generated names not imported yet Integrated Build runner return Blocked before server adapter Build runner return remains disabled until confirmed request, operator gate, approved endpoint, server flags, and sandbox allowlist are present. Blocked Before Server Adapter Call Invocation from drawer: no Toggle: disabled by default Source: Drawer Client Boundary Visual testing blocked Build return Blocked before server adapter no call Runner task Not captured no call Result capture Not Started no call Open links Hidden until real URLs import no call Invocation toggle Disabled By Default No Submit no call Polling stub Polling Stub Not Started no call Transport boundary Trans",
+    "traceImport": "Trace actions only Export Build handoff JSON for the governed runner. Import only completed runner result JSON here; handoff packets are rejected because they do not contain generated record ids or URLs. 0 events Dry run only Review only Not connected Export handoff Export trace Clear trace Clear session Clear session resets setup, lane choice, review packet, and trace for the next prospect. Completed runner result import Final generated names imported Paste completed governed runner result JSON only. Do not paste the Build handoff JSON. The drawer imports names and URLs only; it does not submit, queue, or write. Status: Build Engine Final Names Imported Run: Run Complete Secrets redacted Import runner result Clear imported names Pilot evidence checklist Evidence missing Use this checklist before asking for pilot readiness review. Primary: handoff JSON Trace export required Screenshots required Operator notes required Plan screenshot Capture the 30-second objective, classification, confidence, and next action. Capture required Review handoff screenshot Capture the build handoff or build results card with status and operator-review guidance. Capture required Handoff JSON Required ex",
+    "reviewAfterImport": "Build Results What the consultant requested Ariat International Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, and channel availability stay aligned as demand changes. 1. Result Ready to export Final names are imported for the live demo. 2. Demo path Apparel &amp; Accessories Style-to-Availability Readiness 3. Boundary Export only The build engine owns generated records. confirmed Build results imported Export lane: Apparel &amp; Accessories Final generated names imported Integrated Build runner return Completed result imported Completed runner result JSON has passed the W151 import guard. Open links remain governed by real URL authority. Completed Result Imported Invocation from drawer: no Toggle: disabled by default Source: Drawer Client Boundary Visual link test may start Build return Completed result imported no call Runner task Not captured no call Result capture Completed Result Imported no call Open links Hidden until real URLs import no call Invocation toggle Disabled By Default No Submit no call Polling stub Polling Stub Not Started no call Transport boundary Transport Request Not Constructed No Submit no call Response normalization False Flag No Submit no call Dry-run poll cycle Dry Run Fixture Poll Cycle Modeled no call Build state machine Integrated Build Harness State Machine Ready no ca",
+    "valueWhyThisMatters": "Consultant value coach Talk track Use Customer Record to prove Style / SKU Matrix, then ask whether Ariat International can trust this NetSuite path for style, size, and channel availability. Lead with Ariat International&#39;s stated pain, show Core Boot and Apparel Style Matrix in the Style / SKU Matrix path, then connect the operational decision to financial impact. Discovery question Where does style, size, and channel availability break down today? Objection answer How do we know style, size, and channel availability is current enough to trust? Proof move Prove it with Style / SKU Matrix, then ask for the current baseline before making any savings claim. ROI hypothesis Ariat International can protect the style, size, and channel availability decision. Use the notes to frame the business risk, then capture a baseline before claiming savings. NetSuite contrast NetSuite proof path: Use Style / SKU Matrix to show variant control without forcing apparel into generic manufacturing or distribution language. Caution Use caution Named competitor detail is consultant-supplied and unverified; keep claims to safe workflow contrast. Competitive prep Named incumbent or competitor Likely pressure to be ready for: spreadsheets and manual inventory reports, QuickBooks plus spreadsheets, Shopify or ecommerce apps plus inventory add-ons, Odoo, Microsoft Dynamics 365. Keep the contrast on Net",
+    "runFinalNames": "Live controls Open Prove Handle objection Close value Selected script Prove the NetSuite path Use Ariat International to prove Style / SKU Matrix against the stated pain: Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, a.... Tie the proof to Must connect Customer Record, Sales Order View, and Style / SKU Matrix without forcing apparel into generic manufacturing or distribution language. and show how NetSuite keeps the decision in one operating path. Use final build names Use imported final generated names for the next object pivot. Customer: Ariat International Needs real URL Sales Order / demo transaction: Sales Order CSV import for ARIATSTYLE20260514 Needs real URL Hero item: Ariat Core Boot and Apparel Style Matrix Needs real URL Matrix item / proof item: Ariat Core Boot and Apparel Style Matrix Needs real URL Live script first Prove the NetSuite path Customer Record / Style / SKU Matrix Say Use Ariat International to prove Style / SKU Matrix against the stated pain: Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, a.... Tie t"
+  },
+  "validatorGates": [
+    {
+      "name": "w121_upload_file_exists",
+      "pass": true,
+      "detail": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js"
+    },
+    {
+      "name": "w121_sales_request_fields_complete",
+      "pass": true,
+      "detail": "[{\"field\":\"Prospect\",\"value\":\"Ariat International\"},{\"field\":\"Website\",\"value\":\"https://www.ariat.com/\"},{\"field\":\"Business pain\",\"value\":\"Seasonal footwear and apparel launches are risky because style, size, color, replenishment timing, and channel availability are managed across spreadsheets and disconnected order/inventory views.\"},{\"field\":\"Requested proof\",\"value\":\"Show a concise NetSuite proof path for style/SKU readiness, size/color availability, replenishment timing, and customer promise.\"},{\"field\":\"Decision criteria\",\"value\":\"Must connect Customer Record, Sales Order View, and Style / SKU Matrix without forcing apparel into generic manufacturing or distribution language.\"},{\"field\":\"Timeline / urgency\",\"value\":\"Internal proof review needed in 2-4 weeks before the next buying cycle.\"},{\"field\":\"Competitor / incumbent\",\"value\":\"Spreadsheets, disconnected inventory reports, and incumbent order tools.\"},{\"field\":\"Optional website/category evidence\",\"value\":\"Ariat sells footwear, apparel, workwear, outdoor gear, size/color variants, and ecommerce categories.\"}]"
+    },
+    {
+      "name": "w121_expected_screenshots_complete",
+      "pass": true,
+      "detail": "[\"Plan\",\"Review before import\",\"Trace import\",\"Review after import\",\"ROI / Competitive\",\"Run after import\",\"Trace evidence\"]"
+    },
+    {
+      "name": "w121_required_artifacts_complete",
+      "pass": true,
+      "detail": "[\"drawer userscript\",\"handoff JSON\",\"trace JSON\",\"final generated names JSON\",\"consultant/operator notes\"]"
+    },
+    {
+      "name": "w121_review_before_after_behavior_ready",
+      "pass": true,
+      "detail": "{\"pre\":\"Build Handoff What the consultant requested Ariat International Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, and channel availability stay aligned as demand changes. 1. Ready? Ready to export Consultant confirmed the lane and pack. 2. Demo path Apparel &amp; Accessories Style-to-Availability Readiness 3. Boundary Export only The build engine owns generated records. confirmed Build handoff JSON Export lane: Apparel &\",\"post\":\"Build Results What the consultant requested Ariat International Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, and channel availability stay aligned as demand changes. 1. Result Ready to export Final names are imported for the live demo. 2. Demo path Apparel &amp; Accessories Style-to-Availability Readiness 3. Boundary Export only The build engine owns generated records. confirmed Build results imported Export lane: A\"}"
+    },
+    {
+      "name": "w121_roi_and_run_final_names_ready",
+      "pass": true,
+      "detail": "{\"value\":\"Consultant value coach Talk track Use Customer Record to prove Style / SKU Matrix, then ask whether Ariat International can trust this NetSuite path for style, size, and channel availability. Lead with Ariat International&#39;s stated pain, show Core Boot and Apparel Style Matrix in the Style / SKU Matrix path, then connect the operational decision to financial impact. Discovery question Where does style, size, and channel availability break down today? Objection answer How do we know style, siz\",\"run\":\"Live controls Open Prove Handle objection Close value Selected script Prove the NetSuite path Use Ariat International to prove Style / SKU Matrix against the stated pain: Buyer needs a fast proof for a seasonal boot and apparel launch. They need confidence that style, size, color, replenishment, a.... Tie the proof to Must connect Customer Record, Sales Order View, and Style / SKU Matrix without forcing apparel into generic manufacturing or distribution language. and show how NetSuite keeps the \"}"
+    },
+    {
+      "name": "w121_trace_import_and_export_ready",
+      "pass": true,
+      "detail": "Trace actions only Export Build handoff JSON for the governed runner. Import only completed runner result JSON here; handoff packets are rejected because they do not contain generated record ids or URLs. 0 events Dry run only Review only Not connected Export handoff Export trace Clear trace Clear session Clear session resets setup, lane choice, review packet, and trace for the next prospect. Completed runner result import Final generated names imported Paste completed governed runner result JSON only. Do not paste the Build handoff JSON. The drawer imports names and URLs only; it does not submit, queue, or write. Status: Build Engine Final Names Imported Run: Run Complete Secrets redacted Im"
+    },
+    {
+      "name": "w121_consultant_visible_copy_clean",
+      "pass": true,
+      "detail": "{\"pre\":false,\"post\":false,\"value\":false,\"run\":false,\"trace\":false}"
+    },
+    {
+      "name": "w121_state_authority_and_final_names_preserved",
+      "pass": true,
+      "detail": "{\"authority\":{\"schema\":\"idb.w92-state-authority.v1\",\"recommendedLaneId\":\"apparel_accessories\",\"recommendedLaneName\":\"Apparel & Accessories\",\"recommendedProofAnchor\":\"Style / SKU Matrix\",\"selectedLaneId\":\"apparel_accessories\",\"selectedLaneName\":\"Apparel & Accessories\",\"selectedProofAnchor\":\"Style / SKU Matrix\",\"confirmedLaneId\":\"apparel_accessories\",\"confirmedLaneName\":\"Apparel & Accessories\",\"exportedLaneId\":\"apparel_accessories\",\"exportedLaneName\":\"Apparel & Accessories\",\"laneSelectionSource\":\"consultant_confirmed\",\"confidenceState\":\"needs_confirmation\",\"confidenceSource\":\"website_evidence_v1\",\"hasRecommendedMismatch\":false,\"hasConfirmedMismatch\":false,\"handoffEligible\":true,\"handoffBlockers\":[],\"noRegression\":{\"websiteEvidenceOwnsIdentity\":true,\"notesRole\":\"story_only\",\"dccOwnsObjectGeneration\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noIdbTransactionWrite\":true}},\"finalNavigation\":{\"schema\":\"idb.dcc-final-navigation-model.v1\",\"status\":\"using_dcc_final_names\",\"displayStatus\":\"Final generated names imported\",\"source\":\"dcc_final_imported\",\"runCanUseImportedFinalNames\":true,\"reviewObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International\",\"internalName\":\"\",\"id\":\"321\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Sales Order CSV import for ARIATSTYLE20260514\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"987\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"assembly\",\"label\":\"Assembly\",\"name\":\"Ariat Seasonal Style Availability Flow\",\"internalName\":\"\",\"id\":\"989\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"bom\",\"label\":\"BOM\",\"name\":\"Ariat Style Availability Structure\",\"internalName\":\"\",\"id\":\"990\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"}],\"scriptPivotObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International\",\"internalName\":\"\",\"id\":\"321\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Sales Order CSV import for ARIATSTYLE20260514\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"987\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot and Apparel Style Matrix\",\"internalName\":\"\",\"id\":\"\",\"url\":\"\",\"source\":\"dcc_final\",\"linkAuthority\":{\"schema\":\"idb.verified-record-link-authority.v1\",\"status\":\"missing_url\",\"openable\":false,\"displayLabel\":\"Needs real URL\",\"reason\":\"The build result did not return a NetSuite record URL.\",\"url\":\"\"},\"openableUrl\":\"\"}],\"linkAuthoritySummary\":{\"missing_url\":10},\"warnings\":[],\"noRegression\":{\"provisionalNamesCannotBeMarkedFinal\":false,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true}}}"
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W122: Grade Build Results Retest Evidence",
+    "prompt": "Move through W122: Grade Build Results Retest Evidence. Use the user-provided W121 Plan, Review before import, Trace import, Review after import, ROI/Competitive Why this matters, Run final-name pivots, and Trace evidence screenshots plus handoff JSON, trace JSON, final generated names JSON, and consultant/operator notes to grade the hands-on test. Verify consultant-visible copy does not show SCAI, IDB, or DCC, Review becomes Build Results after import, Run uses final generated names, Trace remains evidence-only, and no drawer writes, no SuiteScript invocation from the drawer, no transaction writes, W92/W110 authority, and W116-W121 final-name behavior remain intact. Output scored results, exact remediation, pilot go/no-go, W122 report, validator gates, and best next Codex prompt."
+  }
+}

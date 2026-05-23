@@ -1,0 +1,322 @@
+{
+  "schema": "idb.w143-governed-sandbox-queue-enablement-design.v1",
+  "status": "queue_enablement_design_ready_not_activated",
+  "decision": "PASS_QUEUE_ENABLEMENT_DESIGNED__NOT_ACTIVATED",
+  "sourceBlocks": {
+    "w139ConfirmedRequest": "idb.confirmed-build-request.v1",
+    "w140AdapterBoundary": "PASS_ADAPTER_BOUNDARY_READY__IMPLEMENT_NETSUITE_SIDE_ADAPTER_NEXT",
+    "w142QueueGate": "PASS_QUEUE_GATE_READY__NEXT_ENABLE_GOVERNED_SANDBOX_QUEUE_DRY_RUN_ONLY"
+  },
+  "queueEnablementDesign": {
+    "schema": "idb.governed-sandbox-queue-enablement-design.v1",
+    "designStatus": "designed_not_enabled",
+    "queueSubmitAuthority": "netsuite_suitelet_server_side_operator_only",
+    "drawerAuthority": "export_request_and_import_result_only",
+    "switchRule": {
+      "summary": "The governed runner can only be queued when every server-side deployment switch and operator gate passes.",
+      "requiredServerSideFlags": [
+        "custscript_idb_create_enabled=T",
+        "custscript_idb_governed_sandbox_write_enabled=T",
+        "custscript_idb_queue_submit_enabled=T"
+      ],
+      "disabledInW143": true,
+      "drawerCannotOverride": true
+    },
+    "exactQueueFunctionRule": {
+      "allowedFutureAction": "task.create({ taskType: task.TaskType.SCHEDULED_SCRIPT, scriptId, deploymentId }) followed by scheduledTask.submit() only inside the NetSuite-side adapter after all W143 gates pass.",
+      "currentW143Action": "no task submit, no record write, no transaction write",
+      "noSubmitRollback": "If any gate fails before submit, return dry-run result with queueSubmitted=false and runnerTaskId=null."
+    }
+  },
+  "serverSideParameterContract": {
+    "schema": "idb.governed-runner-server-side-parameters.v1",
+    "requiredDeploymentParameters": [
+      {
+        "id": "custscript_idb_create_enabled",
+        "type": "checkbox",
+        "requiredValueBeforeQueue": "T",
+        "currentW143Value": "F",
+        "purpose": "Master server-side create switch."
+      },
+      {
+        "id": "custscript_idb_governed_sandbox_write_enabled",
+        "type": "checkbox",
+        "requiredValueBeforeQueue": "T",
+        "currentW143Value": "F",
+        "purpose": "Sandbox write authorization switch."
+      },
+      {
+        "id": "custscript_idb_queue_submit_enabled",
+        "type": "checkbox",
+        "requiredValueBeforeQueue": "T",
+        "currentW143Value": "F",
+        "purpose": "Scheduled runner queue-submit switch."
+      },
+      {
+        "id": "custscript_idb_sandbox_account_allowlist",
+        "type": "text",
+        "requiredValueBeforeQueue": "comma-separated sandbox account ids",
+        "currentW143Value": "SANDBOX_ACCOUNT_ID",
+        "purpose": "Prevents accidental production queueing."
+      },
+      {
+        "id": "custscript_idb_runner_script_id",
+        "type": "text",
+        "requiredValueBeforeQueue": "customscript_scai_so_csv_runner",
+        "currentW143Value": "customscript_scai_so_csv_runner",
+        "purpose": "Existing governed runner script id."
+      },
+      {
+        "id": "custscript_idb_runner_deploy_id",
+        "type": "text",
+        "requiredValueBeforeQueue": "customdeploy_scai_so_csv_runner",
+        "currentW143Value": "customdeploy_scai_so_csv_runner",
+        "purpose": "Existing governed runner deployment id."
+      },
+      {
+        "id": "custscript_idb_runner_mapping_id",
+        "type": "text",
+        "requiredValueBeforeQueue": "CSV import mapping id",
+        "currentW143Value": "112",
+        "purpose": "Sales Order CSV import mapping."
+      },
+      {
+        "id": "custscript_idb_runner_folder_id",
+        "type": "text",
+        "requiredValueBeforeQueue": "File Cabinet folder id",
+        "currentW143Value": "345",
+        "purpose": "CSV handoff file storage."
+      },
+      {
+        "id": "custscript_idb_runner_subsidiary_id",
+        "type": "text",
+        "requiredValueBeforeQueue": "numeric subsidiary id",
+        "currentW143Value": "1",
+        "purpose": "Runner transaction context."
+      },
+      {
+        "id": "custscript_idb_runner_location_id",
+        "type": "text",
+        "requiredValueBeforeQueue": "numeric location id",
+        "currentW143Value": "7",
+        "purpose": "Runner location context."
+      },
+      {
+        "id": "custscript_idb_runner_wc_search_id",
+        "type": "text",
+        "requiredValueBeforeQueue": "optional work center saved search id",
+        "currentW143Value": "",
+        "purpose": "Manufacturing/WIP support when enabled."
+      },
+      {
+        "id": "custscript_idb_result_capture_folder_id",
+        "type": "text",
+        "requiredValueBeforeQueue": "File Cabinet folder id",
+        "currentW143Value": "not_enabled_w143",
+        "purpose": "Where runner result JSON will be written or referenced."
+      }
+    ],
+    "operatorEvidenceRequired": [
+      "operatorOnly=true",
+      "operator.name present",
+      "reviewDecision changes from dry_run_reviewed_no_submit to operator_approved_queue_submit only in the future enablement step",
+      "confirmedSandboxAccount=true",
+      "confirmedNoSubmit=false only when W144 explicitly enables queue submit",
+      "confirmedDrawerNoWrite=true",
+      "drawerInvocationTokenAccepted=false"
+    ]
+  },
+  "sandboxAccountAllowlist": {
+    "schema": "idb.sandbox-account-allowlist.v1",
+    "source": "custscript_idb_sandbox_account_allowlist",
+    "currentSandboxAccountId": "SANDBOX_ACCOUNT_ID",
+    "allowedAccountIds": [
+      "SANDBOX_ACCOUNT_ID"
+    ],
+    "productionAccountsAllowed": false,
+    "queueBlockedWhenMissingOrMismatched": true,
+    "W143Evaluation": {
+      "accountAllowed": true,
+      "writeFlagsEnabled": false,
+      "queueSubmitAllowedNow": false
+    }
+  },
+  "operatorEvidenceDesign": {
+    "schema": "idb.operator-queue-evidence-design.v1",
+    "currentAcceptedDecision": "dry_run_reviewed_no_submit",
+    "futureWriteEnabledDecision": "operator_approved_queue_submit",
+    "requiresTypeToConfirm": true,
+    "typeToConfirmValue": "QUEUE GOVERNED SANDBOX RUNNER",
+    "drawerMayProduceEvidence": true,
+    "drawerMaySubmit": false
+  },
+  "idempotencyTokenContract": {
+    "schema": "idb.runner-idempotency-token.v1",
+    "required": true,
+    "tokenSource": [
+      "confirmedBuildRequest.requestId",
+      "confirmedBuildRequest.prospect.name",
+      "confirmedBuildRequest.demoPath.laneId",
+      "confirmedBuildRequest.demoPath.scenario",
+      "confirmedBuildRequest.stateAuthority.handoffHash"
+    ],
+    "sampleToken": "IDB-idb-build-ariat-style-ready-001-Ariat_International-apparel_accessories",
+    "duplicatePolicy": {
+      "beforeQueue": "block duplicate active or completed token unless operator chooses explicit resolve-existing mode in a later write-enabled block",
+      "afterQueue": "runner result capture must return the same idempotency token",
+      "drawerBehavior": "drawer imports result only and cannot retry queue submit"
+    }
+  },
+  "scheduledRunnerParameterHandoff": {
+    "schema": "idb.scheduled-runner-parameter-handoff.v1",
+    "handoffSource": "W139 confirmed IDB build request plus server-side W143 parameters",
+    "targetRunnerOwner": "governed_dcc_runner_internal_build_engine",
+    "submitNow": false,
+    "queueSubmitted": false,
+    "taskId": null,
+    "requiredRunnerParams": {
+      "custscript_v3_runner_prospect": "Ariat International",
+      "custscript_v3_runner_website": "https://www.ariat.com/",
+      "custscript_v3_runner_notes": "Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.",
+      "custscript_v3_runner_agenda": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.",
+      "custscript_v3_runner_extid": "IDB_ARIAT_INTERNATIONAL_APPAREL_ACCESSORIES_DRYRUN",
+      "custscript_v3_runner_mapping": "custscript_idb_runner_mapping_id",
+      "custscript_v3_runner_folder": "custscript_idb_runner_folder_id",
+      "custscript_v3_runner_subsidiary": "custscript_idb_runner_subsidiary_id",
+      "custscript_v3_runner_location": "custscript_idb_runner_location_id",
+      "custscript_v3_runner_wc_search": "custscript_idb_runner_wc_search_id",
+      "custscript_v3_runner_enable_wip": "F",
+      "custscript_v3_runner_enable_mfg": "F",
+      "custscript_v3_runner_create_new_hero": "T",
+      "custscript_v3_runner_hero_item": ""
+    },
+    "dryRunEvidence": {
+      "runnerStatus": "validated_not_submitted",
+      "queueReadinessStatus": "blocked_write_flags_disabled_or_gate_failed",
+      "canQueue": false,
+      "queueSubmitted": false,
+      "createsRecords": false,
+      "runnerTaskId": null,
+      "surfaceStatus": "validated_no_submit",
+      "surfacePrimaryMessage": "The adapter accepted the confirmed IDB request and operator gate, resolved server-side runner config, and stopped before queue submit because write flags are disabled.",
+      "activeOpenLinks": 0
+    },
+    "futureQueueSubmitPreconditions": [
+      "all W142 operator gates pass",
+      "sandbox account allowlist passes",
+      "idempotency token is not already active",
+      "CREATE_ENABLED is true server-side",
+      "GOVERNED_SANDBOX_WRITE_ENABLED is true server-side",
+      "QUEUE_SUBMIT_ENABLED is true server-side",
+      "result capture folder/config is present"
+    ]
+  },
+  "resultCapturePlaceholder": {
+    "schema": "idb.runner-result-capture-placeholder.v1",
+    "status": "placeholder_not_enabled",
+    "expectedFutureResultSchema": "idb.governed-runner-result.v1",
+    "resultCaptureRequiredBeforeDrawerImport": true,
+    "mustReturn": [
+      "idempotencyToken",
+      "runnerTaskId",
+      "runStatus",
+      "customer.internalId and customer.url",
+      "salesOrder.internalId and salesOrder.url",
+      "heroItem.internalId and heroItem.url",
+      "matrixItem.internalId and matrixItem.url",
+      "componentItems[].internalId and componentItems[].url",
+      "warnings",
+      "errors"
+    ],
+    "currentW143ImportPolicy": {
+      "activeOpenLinks": 0,
+      "recordExistenceStatus": "not_created_dry_run",
+      "drawerMayImportNamesOnly": true,
+      "drawerMayOpenLinks": false
+    }
+  },
+  "dryRunHarnessUpdates": [
+    "Keep W142 as the executable dry-run proof for operator gate validation.",
+    "Add W143 contract checks for server-side enablement switches without changing their values.",
+    "Assert CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, and QUEUE_SUBMIT_ENABLED remain false/not active.",
+    "Assert scheduled runner params are shaped but not submitted.",
+    "Assert result-capture placeholder requires real ids and URLs before drawer Open links appear.",
+    "Assert no drawer write or SuiteScript invocation signatures are introduced."
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "internalRunnerOwnershipPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "governedSandboxWritesNotEnabled": true,
+    "queueSubmitNotEnabled": true,
+    "designOnlyNoActivation": true
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterQueueSubmitEnablement": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W143 only designs the queue enablement switch and result-capture contract. It does not submit the runner, write records, or produce real NetSuite record URLs."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W144: Governed Sandbox Queue Submit Pilot Behind Server Flags",
+    "prompt": "Move through W144: Governed Sandbox Queue Submit Pilot Behind Server Flags. Use the W143 queue enablement design to implement the NetSuite-side server-flagged queue submit path behind CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, QUEUE_SUBMIT_ENABLED, sandbox allowlist, operator approval, idempotency, and result-capture prerequisites. Keep the drawer export/import only and do not add drawer writes or drawer SuiteScript invocation. If flags are false, preserve the W142/W143 dry-run no-submit behavior. If flags are true in sandbox, queue the existing governed runner and return runnerTaskId plus result-capture pending status, not fake record URLs. Output queue submit adapter changes, guarded smoke harness, trace samples, W144 report, targeted visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w143_starts_from_w142_queue_gate_ready",
+      "pass": true,
+      "detail": "PASS_QUEUE_GATE_READY__NEXT_ENABLE_GOVERNED_SANDBOX_QUEUE_DRY_RUN_ONLY"
+    },
+    {
+      "name": "w143_server_side_switches_designed_not_enabled",
+      "pass": true,
+      "detail": "{\"summary\":\"The governed runner can only be queued when every server-side deployment switch and operator gate passes.\",\"requiredServerSideFlags\":[\"custscript_idb_create_enabled=T\",\"custscript_idb_governed_sandbox_write_enabled=T\",\"custscript_idb_queue_submit_enabled=T\"],\"disabledInW143\":true,\"drawerCannotOverride\":true}"
+    },
+    {
+      "name": "w143_parameter_contract_covers_runner_and_capture",
+      "pass": true,
+      "detail": "[{\"id\":\"custscript_idb_create_enabled\",\"type\":\"checkbox\",\"requiredValueBeforeQueue\":\"T\",\"currentW143Value\":\"F\",\"purpose\":\"Master server-side create switch.\"},{\"id\":\"custscript_idb_governed_sandbox_write_enabled\",\"type\":\"checkbox\",\"requiredValueBeforeQueue\":\"T\",\"currentW143Value\":\"F\",\"purpose\":\"Sandbox write authorization switch.\"},{\"id\":\"custscript_idb_queue_submit_enabled\",\"type\":\"checkbox\",\"requiredValueBeforeQueue\":\"T\",\"currentW143Value\":\"F\",\"purpose\":\"Scheduled runner queue-submit switch.\"},{\"id\":\"custscript_idb_sandbox_account_allowlist\",\"type\":\"text\",\"requiredValueBeforeQueue\":\"comma-separated sandbox account ids\",\"currentW143Value\":\"SANDBOX_ACCOUNT_ID\",\"purpose\":\"Prevents accidental production queueing.\"},{\"id\":\"custscript_idb_runner_script_id\",\"type\":\"text\",\"requiredValueBeforeQueue\":\"customscript_scai_so_csv_runner\",\"currentW143Value\":\"customscript_scai_so_csv_runner\",\"purpose\":\"Existing governed runner script id.\"},{\"id\":\"custscript_idb_runner_deploy_id\",\"type\":\"text\",\"requiredValueBeforeQueue\":\"customdeploy_scai_so_csv_runner\",\"currentW143Value\":\"customdeploy_scai_so_csv_runner\",\"purpose\":\"Existing governed runner deployment id.\"},{\"id\":\"custscript_idb_runner_mapping_id\",\"type\":\"text\",\"requiredValueBeforeQueue\":\"CSV import mapping id\",\"currentW143Value\":\"112\",\"purpose\":\"Sales Order CSV import mapping.\"},{\"id\":\"custscript_idb_runner_folder_id\",\"type\":\"text\",\"requiredValueBeforeQueue\":\"File Cabinet folder id\",\"currentW143Value\":\"345\",\"purpose\":\"CSV handoff file storage.\"},{\"id\":\"custscript_idb_runner_subsidiary_id\",\"type\":\"text\",\"requiredValueBeforeQueue\":\"numeric subsidiary id\",\"currentW143Value\":\"1\",\"purpose\":\"Runner transaction context.\"},{\"id\":\"custscript_idb_runner_location_id\",\"type\":\"text\",\"requiredValueBeforeQueue\":\"numeric location id\",\"currentW143Value\":\"7\",\"purpose\":\"Runner location context.\"},{\"id\":\"custscript_idb_runner_wc_search_id\",\"type\":\"text\",\"requiredValueBeforeQueue\":\"optional work center saved search id\",\"currentW143Value\":\"\",\"purpose\":\"Manufacturing/WIP support when enabled.\"},{\"id\":\"custscript_idb_result_capture_folder_id\",\"type\":\"text\",\"requiredValueBeforeQueue\":\"File Cabinet folder id\",\"currentW143Value\":\"not_enabled_w143\",\"purpose\":\"Where runner result JSON will be written or referenced.\"}]"
+    },
+    {
+      "name": "w143_sandbox_allowlist_blocks_non_sandbox_and_write_flags",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.sandbox-account-allowlist.v1\",\"source\":\"custscript_idb_sandbox_account_allowlist\",\"currentSandboxAccountId\":\"SANDBOX_ACCOUNT_ID\",\"allowedAccountIds\":[\"SANDBOX_ACCOUNT_ID\"],\"productionAccountsAllowed\":false,\"queueBlockedWhenMissingOrMismatched\":true,\"W143Evaluation\":{\"accountAllowed\":true,\"writeFlagsEnabled\":false,\"queueSubmitAllowedNow\":false}}"
+    },
+    {
+      "name": "w143_idempotency_token_and_duplicate_policy_ready",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-idempotency-token.v1\",\"required\":true,\"tokenSource\":[\"confirmedBuildRequest.requestId\",\"confirmedBuildRequest.prospect.name\",\"confirmedBuildRequest.demoPath.laneId\",\"confirmedBuildRequest.demoPath.scenario\",\"confirmedBuildRequest.stateAuthority.handoffHash\"],\"sampleToken\":\"IDB-idb-build-ariat-style-ready-001-Ariat_International-apparel_accessories\",\"duplicatePolicy\":{\"beforeQueue\":\"block duplicate active or completed token unless operator chooses explicit resolve-existing mode in a later write-enabled block\",\"afterQueue\":\"runner result capture must return the same idempotency token\",\"drawerBehavior\":\"drawer imports result only and cannot retry queue submit\"}}"
+    },
+    {
+      "name": "w143_scheduled_runner_parameter_handoff_no_submit",
+      "pass": true,
+      "detail": "{\"custscript_v3_runner_prospect\":\"Ariat International\",\"custscript_v3_runner_website\":\"https://www.ariat.com/\",\"custscript_v3_runner_notes\":\"Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\",\"custscript_v3_runner_agenda\":\"Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.\",\"custscript_v3_runner_extid\":\"IDB_ARIAT_INTERNATIONAL_APPAREL_ACCESSORIES_DRYRUN\",\"custscript_v3_runner_mapping\":\"custscript_idb_runner_mapping_id\",\"custscript_v3_runner_folder\":\"custscript_idb_runner_folder_id\",\"custscript_v3_runner_subsidiary\":\"custscript_idb_runner_subsidiary_id\",\"custscript_v3_runner_location\":\"custscript_idb_runner_location_id\",\"custscript_v3_runner_wc_search\":\"custscript_idb_runner_wc_search_id\",\"custscript_v3_runner_enable_wip\":\"F\",\"custscript_v3_runner_enable_mfg\":\"F\",\"custscript_v3_runner_create_new_hero\":\"T\",\"custscript_v3_runner_hero_item\":\"\"}"
+    },
+    {
+      "name": "w143_result_capture_placeholder_blocks_open_links",
+      "pass": true,
+      "detail": "{\"activeOpenLinks\":0,\"recordExistenceStatus\":\"not_created_dry_run\",\"drawerMayImportNamesOnly\":true,\"drawerMayOpenLinks\":false}"
+    },
+    {
+      "name": "w143_w142_still_has_no_submit_or_record_writes",
+      "pass": true,
+      "detail": "W142 remains no-submit/no-record"
+    },
+    {
+      "name": "w143_no_drawer_write_or_invocation_added",
+      "pass": true,
+      "detail": "drawer remains export/import only"
+    },
+    {
+      "name": "w143_preserves_w139_w140_authority",
+      "pass": true,
+      "detail": "{\"w139\":\"confirmed_ready_for_governed_runner\",\"w140\":\"none\"}"
+    }
+  ]
+}

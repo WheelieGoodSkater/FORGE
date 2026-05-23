@@ -1,0 +1,73 @@
+{
+  "schema": "idb.w157-server-adapter-transport-response-normalization-trace.v1",
+  "decision": "PASS_RESPONSE_NORMALIZATION_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "normalizedStatuses": [
+    "false_flag_no_submit",
+    "queued_pending",
+    "polling_pending",
+    "completed_result_awaiting_w151_import",
+    "adapter_transport_error_drawer_safe"
+  ],
+  "completedAwaitingImport": "completed_result_awaiting_w151_import",
+  "activeOpenLinksAcrossResponses": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "events": [
+    {
+      "name": "w157_starts_from_w156_transport_boundary_ready",
+      "pass": true,
+      "detail": "PASS_APPROVED_TRANSPORT_BOUNDARY_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w157_normalization_hook_and_ui_ready",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-strong\">Ariat International</div>\n          <div class=\"idb-copy\">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div>\n        </div>\n        <div class=\"idb-status-strip\">\n          <div class=\"idb-"
+    },
+    {
+      "name": "w157_statuses_cover_required_transport_responses",
+      "pass": true,
+      "detail": "[\"false_flag_no_submit\",\"queued_pending\",\"polling_pending\",\"completed_result_awaiting_w151_import\",\"adapter_transport_error_drawer_safe\"]"
+    },
+    {
+      "name": "w157_false_flag_response_is_no_submit",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-approved-server-adapter-response-normalization.v1\",\"status\":\"false_flag_no_submit\",\"label\":\"False flags: no submit\",\"message\":\"Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.\",\"rawStatus\":\"transport_not_executed_no_submit\",\"queueSubmitted\":false,\"runnerTaskId\":null,\"resultCaptureStatus\":\"not_started_no_submit\",\"pollAttempted\":false,\"finalGeneratedNamesJsonReady\":false,\"finalGeneratedNamesJson\":null,\"importGuard\":\"W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.\",\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true}}"
+    },
+    {
+      "name": "w157_queued_and_polling_responses_keep_links_hidden",
+      "pass": true,
+      "detail": "{\"queued\":{\"schema\":\"idb.integrated-build-approved-server-adapter-response-normalization.v1\",\"status\":\"queued_pending\",\"label\":\"Queued: result pending\",\"message\":\"The approved adapter reports a runner task id, but result capture is still pending.\",\"rawStatus\":\"queued_pending_transport_fixture\",\"queueSubmitted\":true,\"runnerTaskId\":\"fixture_w157_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"resultCaptureStatus\":\"pending_runner_completion\",\"pollAttempted\":false,\"finalGeneratedNamesJsonReady\":false,\"finalGeneratedNamesJson\":null,\"importGuard\":\"W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.\",\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true}},\"polling\":{\"schema\":\"idb.integrated-build-approved-server-adapter-response-normalization.v1\",\"status\":\"polling_pending\",\"label\":\"Polling: result pending\",\"message\":\"Polling is still waiting for governed runner result capture.\",\"rawStatus\":\"poll_response_pending\",\"queueSubmitted\":true,\"runnerTaskId\":\"fixture_w157_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"resultCaptureStatus\":\"pending_runner_completion\",\"pollAttempted\":true,\"finalGeneratedNamesJsonReady\":false,\"finalGeneratedNamesJson\":null,\"importGuard\":\"W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.\",\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true}}}"
+    },
+    {
+      "name": "w157_completed_response_waits_for_w151_import",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-approved-server-adapter-response-normalization.v1\",\"status\":\"completed_result_awaiting_w151_import\",\"label\":\"Completed result waiting for import\",\"message\":\"Completed runner result JSON is present, but W151 import guard must validate it before Open links appear.\",\"rawStatus\":\"completed_runner_result_ready\",\"queueSubmitted\":true,\"runnerTaskId\":\"fixture_w157_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"resultCaptureStatus\":\"completed_result_capture_ready\",\"pollAttempted\":true,\"finalGeneratedNamesJsonReady\":true,\"finalGeneratedNamesJson\":{\"schema\":\"idb.completed-runner-result-json.v1\",\"status\":\"completed\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"records\":{\"customer\":{\"type\":\"customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalId\":501234,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234\"},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":601234,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":701234,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234\"},\"matrixProofItem\":{\"type\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":701235,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235\"},\"componentItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":701236,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236\"}}},\"importGuard\":\"W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.\",\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true}}"
+    },
+    {
+      "name": "w157_error_response_is_drawer_safe",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.integrated-build-approved-server-adapter-response-normalization.v1\",\"status\":\"adapter_transport_error_drawer_safe\",\"label\":\"Adapter response error\",\"message\":\"The adapter response reported an error. The drawer keeps generated names and Open links unchanged.\",\"rawStatus\":\"adapter_error\",\"queueSubmitted\":false,\"runnerTaskId\":\"fixture_w157_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"resultCaptureStatus\":\"adapter_error\",\"pollAttempted\":false,\"finalGeneratedNamesJsonReady\":false,\"finalGeneratedNamesJson\":null,\"importGuard\":\"W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.\",\"activeOpenLinks\":0,\"visualTestingBlocked\":true,\"noRegression\":{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true}}"
+    },
+    {
+      "name": "w157_visual_testing_blocked_and_no_regression",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

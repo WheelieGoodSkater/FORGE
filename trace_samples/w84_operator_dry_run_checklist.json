@@ -1,0 +1,96 @@
+{
+  "schema": "idb.w84-dcc-operator-dry-run-checklist.v1",
+  "status": "operator_dry_run_ready_review_only",
+  "objective": "Let an operator inspect the exported dccRunnerHandoffPacketV1 against the DCC Suitelet without IDB invoking SuiteScript.",
+  "orderedSteps": [
+    {
+      "step": "Verify exported packet schema and status.",
+      "passCriteria": "Schema is idb.dcc-runner-handoff-packet.v1 and status is either blocked_until_confirmed_handoff or ready_for_dcc_suitelet_submission_review.",
+      "stopIf": "Schema is missing, status is unknown, or executionMode is not review_only_no_submit."
+    },
+    {
+      "step": "Verify consultant confirmation gate.",
+      "passCriteria": "Blocked packet keeps custpage_actionmode=previewbrief; confirmed packet clears custpage_actionmode but still remains review-only from IDB.",
+      "stopIf": "Unconfirmed packet is marked ready, or confirmed packet implies IDB submitted SuiteScript."
+    },
+    {
+      "step": "Verify exact Suitelet form params.",
+      "passCriteria": "custpage_prospect, custpage_website, custpage_notes, custpage_newhero, custpage_enablemfg, custpage_enablewip, custpage_evalmode, and custpage_actionmode are present.",
+      "stopIf": "Any required form param is missing or has unsupported write intent."
+    },
+    {
+      "step": "Verify DCC-owned config params.",
+      "passCriteria": "DCC deployment owns subsidiary, location, runner script/deploy IDs, CSV mapping/folder, and saved searches.",
+      "stopIf": "IDB attempts to provide or overwrite account config IDs."
+    },
+    {
+      "step": "Verify scheduled runner preview params.",
+      "passCriteria": "Runner preview shows prospect, website, notes, generated agenda/extid placeholders, DCC config placeholders, manufacturing/WIP flags, hero mode, and optional WC search.",
+      "stopIf": "Preview implies IDB owns runner queue mechanics or generated object creation."
+    },
+    {
+      "step": "Verify DCC object generation ownership.",
+      "passCriteria": "DCC remains owner of item names, assemblies, BOMs, locations, planning controls, routing/WIP, CSV/Sales Order mechanics, agenda, extid, notes file, and runner task.",
+      "stopIf": "IDB rewrites DCC runner mechanics or creates transaction context."
+    },
+    {
+      "step": "Operator dry-run decision.",
+      "passCriteria": "Blocked packet stops at preview/no-submit. Confirmed packet is eligible only for manual governed DCC Suitelet review by an operator.",
+      "stopIf": "Any path tries to invoke SuiteScript from IDB or enable transaction writes."
+    }
+  ],
+  "requiredSuiteletFormParams": [
+    "custpage_prospect",
+    "custpage_website",
+    "custpage_notes",
+    "custpage_newhero",
+    "custpage_enablemfg",
+    "custpage_enablewip",
+    "custpage_evalmode",
+    "custpage_actionmode"
+  ],
+  "requiredScheduledRunnerPreviewParams": [
+    "custscript_v3_runner_prospect",
+    "custscript_v3_runner_website",
+    "custscript_v3_runner_notes",
+    "custscript_v3_runner_agenda",
+    "custscript_v3_runner_extid",
+    "custscript_v3_runner_mapping",
+    "custscript_v3_runner_folder",
+    "custscript_v3_runner_subsidiary",
+    "custscript_v3_runner_location",
+    "custscript_v3_runner_enable_wip",
+    "custscript_v3_runner_enable_mfg",
+    "custscript_v3_runner_create_new_hero",
+    "custscript_v3_runner_hero_item",
+    "custscript_v3_runner_wc_search"
+  ],
+  "dccOwnedConfigParams": [
+    "custscriptv3_reset_subsidiary",
+    "custscript_v3_reset_location",
+    "custscript_v3_runner_script_id",
+    "custscript_v3_runner_deploy_id",
+    "custscript_csv_mapping_id",
+    "custscript_csv_folder_id",
+    "custscript_so_savedsearch_id",
+    "custscript_wo_savedsearch_id"
+  ],
+  "dccOwnedMechanics": [
+    "item names",
+    "assembly names",
+    "BOM and BOM revision names",
+    "inventory locations",
+    "planning controls",
+    "routing/WIP setup",
+    "CSV/Sales Order mechanics",
+    "runner queue/task submission",
+    "agenda/extid/notes file generation"
+  ],
+  "noRegression": {
+    "noSuiteScriptInvocationFromIdb": true,
+    "noDccRunnerMechanicsRewrite": true,
+    "noIdbTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequiredBeforeEligible": true
+  }
+}

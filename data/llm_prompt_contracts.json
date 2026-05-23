@@ -1,0 +1,91 @@
+{
+  "schema": "intelligent-demo-builder-llm-prompt-contracts.v1",
+  "generated": "2026-05-09",
+  "status": "g4_contract_ready",
+  "creationWritePathDecision": {
+    "summary": "Future live creation can use the same governed SuiteScript direct write path pattern used by the prior Demo Command Center. No external connector is required for that production model.",
+    "preferredWritePathType": "suitescript_direct_write",
+    "adapterTermMeaning": "A governed internal creation/write path, not necessarily an external connector.",
+    "requiresBeforeCreate": [
+      "reviewedDryRunPacket",
+      "supportedCreationWritePath",
+      "explicitConsultantConfirmation",
+      "traceableCreationResult"
+    ],
+    "llmAuthority": "LLM may enrich preview and language only. LLM cannot authorize creation, invoke SuiteScript writes, or bypass consultant confirmation."
+  },
+  "globalRules": {
+    "requiredOutputFields": [
+      "sourceBasis",
+      "confidence",
+      "fallback",
+      "noRegressionDeclaration"
+    ],
+    "llmMay": [
+      "classify lane from customer notes and website signals",
+      "suggest product and object names",
+      "draft ROI and competitive value language",
+      "coach live demo moves",
+      "summarize execution plan previews"
+    ],
+    "llmMustNot": [
+      "authorizeCreation",
+      "invokeSuiteScriptDirectWrite",
+      "changeLaneAuthority",
+      "changeProofAnchor",
+      "inventVerifiedCompetitorFacts",
+      "hideCreateBlockers",
+      "createRecords"
+    ]
+  },
+  "contracts": [
+    {
+      "id": "lane_selection",
+      "agent": "Lane Selection Agent",
+      "objective": "Recommend the best authorized lane from customer, website, objective, and notes.",
+      "inputs": ["customer", "website", "conversationNotes", "scObjective", "authorizedLaneContract"],
+      "outputs": ["recommendedLaneId", "reason", "sourceBasis", "confidence", "fallback", "noRegressionDeclaration"],
+      "forbidden": ["newLane", "automaticLaneSwitch", "proofAnchorChange"]
+    },
+    {
+      "id": "product_naming",
+      "agent": "Product Naming Agent",
+      "objective": "Generate customer-specific record, transaction, proof item, and support object preview names.",
+      "inputs": ["customer", "website", "conversationNotes", "lane", "proofAnchor", "setupToggles"],
+      "outputs": ["proposedNames", "fieldAssumptions", "sourceBasis", "confidence", "fallback", "noRegressionDeclaration"],
+      "forbidden": ["genericFallbackWhenSignalsExist", "recordCreation", "unsupportedObjectCreation"]
+    },
+    {
+      "id": "roi_competitive",
+      "agent": "ROI And Competitive Strategy Agent",
+      "objective": "Create concise value-selling language tied to the stated pain, decision criteria, and safe competitive framing.",
+      "inputs": ["customer", "website", "conversationNotes", "scObjective", "competitor", "decisionCriteria", "lane"],
+      "outputs": ["roiThesis", "competitivePosition", "valueAgenda", "objectionResponses", "sourceBasis", "confidence", "fallback", "noRegressionDeclaration"],
+      "forbidden": ["unverifiedCompetitorClaims", "productClaimsNotInLane", "copyOutsideRoiCompetitiveTab"]
+    },
+    {
+      "id": "run_coach",
+      "agent": "Live Run Coach Agent",
+      "objective": "Guide the consultant through open, prove, handle objection, and close value moves during the demo.",
+      "inputs": ["selectedMove", "pageContext", "lane", "proofAnchor", "conversationNotes", "roiCompetitivePacket"],
+      "outputs": ["recommendedAction", "talkTrack", "objectionBridge", "nextStepClose", "sourceBasis", "confidence", "fallback", "noRegressionDeclaration"],
+      "forbidden": ["overlongScripts", "newFunctionalPath", "recordCreation"]
+    },
+    {
+      "id": "execution_plan_preview",
+      "agent": "Execution Plan Preview Agent",
+      "objective": "Summarize what IDB will prepare, what the consultant should verify, and what the future write path would create.",
+      "inputs": ["dryRunPacket", "enrichedPreview", "setupToggles", "creationGuard"],
+      "outputs": ["prepareList", "verificationChecklist", "futureCreateList", "blockedReason", "sourceBasis", "confidence", "fallback", "noRegressionDeclaration"],
+      "forbidden": ["createReadyWithoutGate", "hiddenCreatePath", "removeBlockers"]
+    },
+    {
+      "id": "creation_write_path_preview",
+      "agent": "Creation Write Path Agent",
+      "objective": "Prepare the future SuiteScript direct-write request shape without executing it.",
+      "inputs": ["reviewedDryRunPacket", "adapterBridgeRequest", "creationAdapterContract", "consultantConfirmationState"],
+      "outputs": ["writePathType", "requestPreview", "requiredGates", "blockedReason", "sourceBasis", "confidence", "fallback", "noRegressionDeclaration"],
+      "forbidden": ["invokeSuiteScriptDirectWrite", "authorizeCreation", "writeWithoutTrace", "skipConsultantConfirmation"]
+    }
+  ]
+}

@@ -1,0 +1,363 @@
+{
+  "schema": "idb.w219-mode-aware-import-failure-recovery-trace.v1",
+  "cases": [
+    {
+      "key": "handoff",
+      "status": "import_recovery_copy_ready",
+      "resolvedOperatingMode": "retail_availability",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "consultantCopy": {
+        "headline": "Paste the completed build result.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "Paste the completed build result.",
+          "Use the latest completed runner result."
+        ],
+        "openLinksAllowed": false,
+        "visibleRecords": []
+      },
+      "failureTypes": {
+        "handoffJsonRejected": true,
+        "invalidRoleOrNameCombination": false,
+        "manufacturingReturnedWhenManufacturingFalse": false,
+        "wipMissingWhenWipTrue": false,
+        "foodVocabularyWithoutFoodAuthority": false,
+        "missingNumericIds": false,
+        "unsupportedUrls": false,
+        "nonOpenableReturnedRecords": false
+      },
+      "adminDebugVisible": false,
+      "adminDebugDiagnostics": {}
+    },
+    {
+      "key": "invalidMetroline",
+      "status": "import_recovery_copy_ready",
+      "resolvedOperatingMode": "distribution_replenishment",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "industrial_distribution"
+      },
+      "consultantCopy": {
+        "headline": "This result does not match the selected operating mode.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "This result does not match the selected operating mode.",
+          "Use the latest completed runner result."
+        ],
+        "openLinksAllowed": false,
+        "visibleRecords": []
+      },
+      "failureTypes": {
+        "handoffJsonRejected": false,
+        "invalidRoleOrNameCombination": true,
+        "manufacturingReturnedWhenManufacturingFalse": true,
+        "wipMissingWhenWipTrue": false,
+        "foodVocabularyWithoutFoodAuthority": false,
+        "missingNumericIds": false,
+        "unsupportedUrls": false,
+        "nonOpenableReturnedRecords": false
+      },
+      "adminDebugVisible": false,
+      "adminDebugDiagnostics": {}
+    },
+    {
+      "key": "northstarMfgTerms",
+      "status": "import_recovery_copy_ready",
+      "resolvedOperatingMode": "retail_availability",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "consultantCopy": {
+        "headline": "This result does not match the selected operating mode.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "This result does not match the selected operating mode.",
+          "Use the latest completed runner result."
+        ],
+        "openLinksAllowed": false,
+        "visibleRecords": []
+      },
+      "failureTypes": {
+        "handoffJsonRejected": false,
+        "invalidRoleOrNameCombination": true,
+        "manufacturingReturnedWhenManufacturingFalse": true,
+        "wipMissingWhenWipTrue": false,
+        "foodVocabularyWithoutFoodAuthority": false,
+        "missingNumericIds": false,
+        "unsupportedUrls": false,
+        "nonOpenableReturnedRecords": false
+      },
+      "adminDebugVisible": false,
+      "adminDebugDiagnostics": {}
+    },
+    {
+      "key": "mccormickFallback",
+      "status": "import_recovery_copy_ready",
+      "resolvedOperatingMode": "food_batch_manufacturing",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true,
+        "selectedLaneId": "food_beverage"
+      },
+      "consultantCopy": {
+        "headline": "This result does not match the selected operating mode.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "This result does not match the selected operating mode.",
+          "Use the latest completed runner result."
+        ],
+        "openLinksAllowed": false,
+        "visibleRecords": []
+      },
+      "failureTypes": {
+        "handoffJsonRejected": false,
+        "invalidRoleOrNameCombination": true,
+        "manufacturingReturnedWhenManufacturingFalse": false,
+        "wipMissingWhenWipTrue": true,
+        "foodVocabularyWithoutFoodAuthority": true,
+        "missingNumericIds": false,
+        "unsupportedUrls": false,
+        "nonOpenableReturnedRecords": false
+      },
+      "adminDebugVisible": false,
+      "adminDebugDiagnostics": {}
+    },
+    {
+      "key": "missingIds",
+      "status": "import_recovery_copy_ready",
+      "resolvedOperatingMode": "retail_availability",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "consultantCopy": {
+        "headline": "Ask the runner to return real NetSuite links.",
+        "nextAction": "Use available records only after import succeeds.",
+        "recoveryActions": [
+          "Ask the runner to return real NetSuite links.",
+          "Use available records only after import succeeds."
+        ],
+        "openLinksAllowed": false,
+        "visibleRecords": []
+      },
+      "failureTypes": {
+        "handoffJsonRejected": false,
+        "invalidRoleOrNameCombination": false,
+        "manufacturingReturnedWhenManufacturingFalse": false,
+        "wipMissingWhenWipTrue": false,
+        "foodVocabularyWithoutFoodAuthority": false,
+        "missingNumericIds": true,
+        "unsupportedUrls": false,
+        "nonOpenableReturnedRecords": true
+      },
+      "adminDebugVisible": false,
+      "adminDebugDiagnostics": {}
+    },
+    {
+      "key": "unsupportedUrls",
+      "status": "import_recovery_copy_ready",
+      "resolvedOperatingMode": "retail_availability",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "consultantCopy": {
+        "headline": "Ask the runner to return real NetSuite links.",
+        "nextAction": "Use available records only after import succeeds.",
+        "recoveryActions": [
+          "Ask the runner to return real NetSuite links.",
+          "Use available records only after import succeeds."
+        ],
+        "openLinksAllowed": false,
+        "visibleRecords": []
+      },
+      "failureTypes": {
+        "handoffJsonRejected": false,
+        "invalidRoleOrNameCombination": false,
+        "manufacturingReturnedWhenManufacturingFalse": false,
+        "wipMissingWhenWipTrue": false,
+        "foodVocabularyWithoutFoodAuthority": false,
+        "missingNumericIds": false,
+        "unsupportedUrls": true,
+        "nonOpenableReturnedRecords": true
+      },
+      "adminDebugVisible": false,
+      "adminDebugDiagnostics": {}
+    },
+    {
+      "key": "partialWipAdmin",
+      "status": "import_recovery_not_needed",
+      "resolvedOperatingMode": "wip_manufacturing",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "consultantCopy": {
+        "headline": "This result does not match the selected operating mode.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "This result does not match the selected operating mode.",
+          "Use the latest completed runner result."
+        ],
+        "openLinksAllowed": true,
+        "visibleRecords": [
+          {
+            "label": "Customer",
+            "name": "Canyon Ridge Components Customer Account",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=6005"
+          },
+          {
+            "label": "Sales Order",
+            "name": "Canyon Ridge Components SO219",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=93005"
+          },
+          {
+            "label": "Finished/Assembly Item",
+            "name": "Canyon Ridge Components Finished Good",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=6700"
+          },
+          {
+            "label": "BOM or Assembly Structure",
+            "name": "Canyon Ridge Components Assembly Structure",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=6701"
+          },
+          {
+            "label": "BOM or Assembly Structure",
+            "name": "Canyon Ridge Components Assembly Structure",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=6701"
+          },
+          {
+            "label": "BOM or Assembly Structure",
+            "name": "Canyon Ridge Components Assembly Structure",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=6701"
+          },
+          {
+            "label": "Component Item",
+            "name": "Canyon Ridge Components Component Item",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=6702"
+          }
+        ]
+      },
+      "failureTypes": {
+        "handoffJsonRejected": false,
+        "invalidRoleOrNameCombination": false,
+        "manufacturingReturnedWhenManufacturingFalse": false,
+        "wipMissingWhenWipTrue": true,
+        "foodVocabularyWithoutFoodAuthority": false,
+        "missingNumericIds": false,
+        "unsupportedUrls": false,
+        "nonOpenableReturnedRecords": false
+      },
+      "adminDebugVisible": true,
+      "adminDebugDiagnostics": {
+        "validationStatus": "completed_runner_result_accepted",
+        "rejectedRoles": [],
+        "rejectedNames": [],
+        "missingIds": [],
+        "unsupportedUrls": [],
+        "resolvedOperatingMode": "wip_manufacturing",
+        "selectedToggles": {
+          "schema": "idb.w214-selected-build-toggles.v1",
+          "createNewHeroItem": true,
+          "enableManufacturing": true,
+          "enableWip": true,
+          "selectedLaneId": "dealer_hardgoods"
+        },
+        "mappedRoles": [
+          "customer",
+          "sales_order",
+          "finished_or_assembly_item",
+          "bom_or_assembly_structure",
+          "bom_or_assembly_structure",
+          "bom_or_assembly_structure",
+          "component_item"
+        ],
+        "guardMessage": "Completed runner result JSON accepted. Final names and verified URLs can be imported."
+      }
+    },
+    {
+      "key": "invalidAdmin",
+      "status": "import_recovery_copy_ready",
+      "resolvedOperatingMode": "distribution_replenishment",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "industrial_distribution"
+      },
+      "consultantCopy": {
+        "headline": "This result does not match the selected operating mode.",
+        "nextAction": "Use the latest completed runner result.",
+        "recoveryActions": [
+          "This result does not match the selected operating mode.",
+          "Use the latest completed runner result."
+        ],
+        "openLinksAllowed": false,
+        "visibleRecords": []
+      },
+      "failureTypes": {
+        "handoffJsonRejected": false,
+        "invalidRoleOrNameCombination": true,
+        "manufacturingReturnedWhenManufacturingFalse": false,
+        "wipMissingWhenWipTrue": false,
+        "foodVocabularyWithoutFoodAuthority": false,
+        "missingNumericIds": false,
+        "unsupportedUrls": false,
+        "nonOpenableReturnedRecords": false
+      },
+      "adminDebugVisible": true,
+      "adminDebugDiagnostics": {
+        "validationStatus": "toggle_vocabulary_guardrail_failed",
+        "rejectedRoles": [
+          "hero_item",
+          "matrix_or_proof_item"
+        ],
+        "rejectedNames": [
+          "Metroline Parts Supply Finished Good"
+        ],
+        "missingIds": [],
+        "unsupportedUrls": [],
+        "resolvedOperatingMode": "distribution_replenishment",
+        "selectedToggles": {
+          "schema": "idb.w214-selected-build-toggles.v1",
+          "createNewHeroItem": true,
+          "enableManufacturing": false,
+          "enableWip": false,
+          "selectedLaneId": "industrial_distribution"
+        },
+        "mappedRoles": [
+          "customer",
+          "sales_order",
+          "branch_or_product_sku",
+          "replenishment_or_availability_flow"
+        ],
+        "guardMessage": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Metroline Parts Supply Finished Good. Mode contract blocked: Hero item: finished good is not compatible with distribution_replenishment., Matrix item / proof item: frame welding is not compatible with distribution_replenishment.."
+      }
+    }
+  ]
+}

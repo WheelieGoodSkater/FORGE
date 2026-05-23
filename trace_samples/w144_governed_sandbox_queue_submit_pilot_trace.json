@@ -1,0 +1,21 @@
+{
+  "schema": "idb.w144-governed-sandbox-queue-submit-pilot-trace.v1",
+  "decision": "PASS_QUEUE_SUBMIT_PILOT_GUARDED__RESULT_CAPTURE_PENDING_ONLY",
+  "flagsFalseQueueSubmitted": false,
+  "badAllowlistQueueSubmitted": false,
+  "badOperatorQueueSubmitted": false,
+  "flagsTrueQueueSubmitted": true,
+  "runnerTaskId": "task_w144_queued_001",
+  "resultCaptureStatus": "pending_runner_completion",
+  "activeOpenLinks": 0,
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterDeploymentWithFlagsTrue": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W144 adds a server-side queue submit path and proves it in a stubbed harness. Real NetSuite visual testing is required only after the adapter is deployed in sandbox with flags true and returns a real runnerTaskId."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W145: Sandbox Deployment Packet For Server-Flagged Queue Submit Pilot",
+    "prompt": "Move through W145: Sandbox Deployment Packet For Server-Flagged Queue Submit Pilot. Package the W144 NetSuite-side adapter for sandbox deployment with exact script/deployment parameters, default flags false, operator enablement checklist, rollback steps, and a targeted visual test plan that only starts after the adapter returns a real runnerTaskId. Keep the drawer export/import only and do not add drawer writes or drawer SuiteScript invocation. Preserve false-flag dry-run behavior, sandbox allowlist, operator approval, idempotency, result-capture pending status, internal runner ownership, and no active Open links without real URLs. Output deployment packet, upload checklist, operator test data, rollback plan, trace samples, W145 report, visual testing decision, and best next Codex prompt."
+  }
+}

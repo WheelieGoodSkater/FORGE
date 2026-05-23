@@ -1,0 +1,1303 @@
+{
+  "schema": "idb.w189-real-sandbox-server-adapter-execution-wiring.v1",
+  "status": "real_sandbox_server_adapter_execution_wiring_ready",
+  "realExecutionWiringContract": {
+    "targetAdapter": "W144 governed runner adapter",
+    "legacyFixtureAdapterExcluded": "W153 fixture-only skeleton is not used for real queue submit.",
+    "drawerAuthority": "configure_endpoint_operator_gate_submit_once_capture_runnerTaskId_import_results_only",
+    "serverAuthority": "W144 queues governed runner and runner owns generated records"
+  },
+  "adapterRequestJsonShape": {
+    "method": "POST",
+    "contentType": "application/x-www-form-urlencoded;charset=UTF-8",
+    "fields": [
+      "custpage_idb_confirmed_build_request_json",
+      "custpage_idb_operator_queue_gate_json"
+    ],
+    "confirmedBuildRequestSchema": "idb.confirmed-build-request.v1",
+    "operatorGateSchema": "idb.operator-queue-gate.v1",
+    "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+  },
+  "adapterRequestEnvelope": {
+    "schema": "idb.w189-w144-approved-server-adapter-request.v1",
+    "targetAdapter": "W144 governed runner adapter",
+    "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+    },
+    "bodyEncoding": "application/x-www-form-urlencoded",
+    "bodyParams": {
+      "custpage_idb_confirmed_build_request_json": "{\"schema\":\"idb.confirmed-build-request.v1\",\"requestId\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"requestStatus\":\"confirmed_ready_for_governed_runner\",\"producedBy\":\"idb_drawer\",\"idbPrimarySurface\":true,\"legacyDccSuiteletUi\":{\"normalWorkflow\":false,\"role\":\"legacy_reference_only\",\"replacement\":\"Drawer prepares confirmed request; governed runner creates or resolves records.\"},\"consultantConfirmation\":{\"required\":true,\"confirmed\":true,\"source\":\"acceptedPacket\"},\"stateAuthority\":{\"selectedLaneId\":\"apparel_accessories\",\"confirmedLaneId\":\"apparel_accessories\",\"exportedLaneId\":\"apparel_accessories\",\"handoffParityStatus\":\"matched\",\"noStateMismatch\":true},\"prospect\":{\"name\":\"Ariat International\",\"website\":\"https://www.ariat.com/\"},\"demoPath\":{\"laneId\":\"apparel_accessories\",\"laneName\":\"Apparel & Accessories\",\"proofAnchor\":\"Style / SKU Matrix\",\"familyKey\":\"apparelAccessories\",\"scenario\":\"Style-to-Availability Readiness\",\"confirmed\":true},\"storyInputs\":{\"buyerNeed\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"runnerControls\":{\"requestedMode\":\"server_flagged_integrated_build_return\",\"sandboxWriteModeRequiresOperatorEnablement\":true,\"writeAuthority\":\"governed_internal_runner_only\",\"drawerAuthority\":\"prepare_confirm_export_import_only\"},\"requiredRecords\":[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"],\"sourceHandoff\":{\"schema\":\"idb.dcc-runner-handoff-packet.v1\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"executionMode\":\"review_only_no_submit\",\"selectedPack\":\"apparelAccessories\",\"selectedScenario\":\"Style-to-Availability Readiness\"},\"noRegression\":{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}",
+      "custpage_idb_operator_queue_gate_json": "{\"schema\":\"idb.operator-queue-gate.v1\",\"operatorOnly\":true,\"operator\":{\"name\":\"Operator User\",\"reviewedAt\":\"\"},\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedNoSubmit\":false,\"confirmedDrawerNoWrite\":true,\"confirmedSandboxAccount\":true,\"drawerInvocationTokenAccepted\":false,\"notes\":\"\"}"
+    },
+    "bodyFormEncoded": "custpage_idb_confirmed_build_request_json=%7B%22schema%22%3A%22idb.confirmed-build-request.v1%22%2C%22requestId%22%3A%22idb-build-ariat-international-apparel-accessories-apparelaccessories%22%2C%22requestStatus%22%3A%22confirmed_ready_for_governed_runner%22%2C%22producedBy%22%3A%22idb_drawer%22%2C%22idbPrimarySurface%22%3Atrue%2C%22legacyDccSuiteletUi%22%3A%7B%22normalWorkflow%22%3Afalse%2C%22role%22%3A%22legacy_reference_only%22%2C%22replacement%22%3A%22Drawer%20prepares%20confirmed%20request%3B%20governed%20runner%20creates%20or%20resolves%20records.%22%7D%2C%22consultantConfirmation%22%3A%7B%22required%22%3Atrue%2C%22confirmed%22%3Atrue%2C%22source%22%3A%22acceptedPacket%22%7D%2C%22stateAuthority%22%3A%7B%22selectedLaneId%22%3A%22apparel_accessories%22%2C%22confirmedLaneId%22%3A%22apparel_accessories%22%2C%22exportedLaneId%22%3A%22apparel_accessories%22%2C%22handoffParityStatus%22%3A%22matched%22%2C%22noStateMismatch%22%3Atrue%7D%2C%22prospect%22%3A%7B%22name%22%3A%22Ariat%20International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%7D%2C%22demoPath%22%3A%7B%22laneId%22%3A%22apparel_accessories%22%2C%22laneName%22%3A%22Apparel%20%26%20Accessories%22%2C%22proofAnchor%22%3A%22Style%20%2F%20SKU%20Matrix%22%2C%22familyKey%22%3A%22apparelAccessories%22%2C%22scenario%22%3A%22Style-to-Availability%20Readiness%22%2C%22confirmed%22%3Atrue%7D%2C%22storyInputs%22%3A%7B%22buyerNeed%22%3A%22Buyer%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.%20Prepare%20a%20concise%20demo%20story%20showing%20how%20NetSuite%20supports%20style%2FSKU%20readiness%2C%20size%2Fcolor%20availability%2C%20replenishment%20timing%2C%20and%20customer%20promise.%20Fetch%20status%3A%20runtime_resolved%20%2F%20Source%20URLs%3A%201%20%2F%20Signals%3A%20website%20shows%20boots%2C%20footwear%2C%20apparel%2C%20workwear%2C%20outdoor%20gear%2C%20style%2C%20size%2C%20and%20retail%20ecommerce%20signals%2C%20Core%20Boot%20and%20Apparel%20Style%20Matrix%2C%20Apparel%20and%20Footwear%20Style%22%2C%22conversationNotes%22%3A%22Buyer%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.%22%7D%2C%22runnerControls%22%3A%7B%22requestedMode%22%3A%22server_flagged_integrated_build_return%22%2C%22sandboxWriteModeRequiresOperatorEnablement%22%3Atrue%2C%22writeAuthority%22%3A%22governed_internal_runner_only%22%2C%22drawerAuthority%22%3A%22prepare_confirm_export_import_only%22%7D%2C%22requiredRecords%22%3A%5B%22customer%22%2C%22demoTransaction%22%2C%22heroItem%22%2C%22matrixProofItem%22%2C%22componentItem%22%5D%2C%22sourceHandoff%22%3A%7B%22schema%22%3A%22idb.dcc-runner-handoff-packet.v1%22%2C%22status%22%3A%22ready_for_dcc_suitelet_submission_review%22%2C%22executionMode%22%3A%22review_only_no_submit%22%2C%22selectedPack%22%3A%22apparelAccessories%22%2C%22selectedScenario%22%3A%22Style-to-Availability%20Readiness%22%7D%2C%22noRegression%22%3A%7B%22noDrawerWrites%22%3Atrue%2C%22noSuiteScriptInvocationFromDrawer%22%3Atrue%2C%22noTransactionWritesFromDrawer%22%3Atrue%2C%22noActiveOpenLinksWithoutRealUrls%22%3Atrue%7D%7D&custpage_idb_operator_queue_gate_json=%7B%22schema%22%3A%22idb.operator-queue-gate.v1%22%2C%22operatorOnly%22%3Atrue%2C%22operator%22%3A%7B%22name%22%3A%22Aaron%20Sunshine%22%2C%22reviewedAt%22%3A%22%22%7D%2C%22reviewDecision%22%3A%22operator_approved_queue_submit%22%2C%22typeToConfirm%22%3A%22QUEUE%20GOVERNED%20SANDBOX%20RUNNER%22%2C%22confirmedNoSubmit%22%3Afalse%2C%22confirmedDrawerNoWrite%22%3Atrue%2C%22confirmedSandboxAccount%22%3Atrue%2C%22drawerInvocationTokenAccepted%22%3Afalse%2C%22notes%22%3A%22%22%7D",
+    "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+    "oneSubmitLimit": {
+      "maxQueueSubmitAttempts": 1,
+      "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+      "secondSubmitBehavior": "blocked_duplicate_submit"
+    },
+    "expectedFirstResponse": {
+      "allowed": [
+        "runnerTaskId",
+        "adapter_error"
+      ],
+      "disallowed": [
+        "record_urls_before_result_capture",
+        "fake_record_urls"
+      ],
+      "successStatus": "queued_result_capture_pending"
+    },
+    "resultCapturePollingHandoff": {
+      "nextControl": "check_runner_result",
+      "pendingStatus": "pending_runner_completion",
+      "completedImportGuard": "W151"
+    },
+    "w151ResultImportGuard": {
+      "required": true,
+      "acceptsOnlyCompletedRunnerResultJson": true,
+      "rejectsHandoffJson": true,
+      "requiresNumericInternalIds": true,
+      "requiresSupportedNetSuiteUrls": true,
+      "activeOpenLinksBeforeImport": 0
+    }
+  },
+  "operatorSetupChecklist": [
+    "Deploy the W144 governed runner adapter Suitelet in sandbox.",
+    "Set CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, and QUEUE_SUBMIT_ENABLED true only on the sandbox adapter deployment.",
+    "Configure runner script id, deployment id, mapping id, folder id, subsidiary id, location id, optional work center search id, and result capture folder id on the W144 deployment.",
+    "Paste the approved W144 Suitelet endpoint into IDB Build.",
+    "Enter the sandbox account id in the allowlist and current account fields.",
+    "Set operator approval to approved and type QUEUE GOVERNED SANDBOX RUNNER.",
+    "Type AUTHORIZE ONE SANDBOX ADAPTER CALL and confirm the endpoint.",
+    "Submit once, then use Check runner result only after runnerTaskId is captured."
+  ],
+  "runnerTaskIdCapturePath": {
+    "submitted": true,
+    "queueSubmitted": true,
+    "runnerTaskIdCaptured": true,
+    "runnerTaskId": "task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories",
+    "resultCaptureStatus": "pending_runner_completion",
+    "firstResponsePolicy": "runnerTaskId_or_adapter_error_not_record_urls",
+    "statePatch": {
+      "integratedBuildRunnerResult": {
+        "schema": "idb.governed-runner-adapter-result.v1",
+        "adapterVersion": "w144-governed-sandbox-queue-submit-pilot-behind-server-flags",
+        "runnerStatus": "queued_result_capture_pending",
+        "queueSubmitted": true,
+        "runnerTaskId": "task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "resultCapture": {
+          "schema": "idb.runner-result-capture.v1",
+          "status": "pending_runner_completion",
+          "runnerTaskId": "task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories",
+          "finalGeneratedNamesReady": false,
+          "finalGeneratedNamesJson": null
+        },
+        "finalGeneratedNamesJson": null,
+        "activeOpenLinks": 0,
+        "createsRecords": false,
+        "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+        "status": "queued_result_capture_pending"
+      }
+    }
+  },
+  "resultPollingImportPath": {
+    "checkRunnerResultVisibleAfterRunnerTaskId": true,
+    "pollingEndpoint": "approved_server_adapter_result_capture_path",
+    "completedResultImportGuard": "W151",
+    "finalNamesMutationAllowedBeforeW151Import": false,
+    "openLinksBeforeCompletedImport": 0
+  },
+  "guardedHarness": {
+    "blockedWithoutConfig": true,
+    "readyUsesW144NotW153": true,
+    "requestShapeIsW144FormPost": true,
+    "operatorGatesReady": true,
+    "executionCapturesRunnerTaskId": true,
+    "resultCapturePendingNoUrls": true,
+    "noRegressionPreserved": true
+  },
+  "samples": {
+    "blocked": {
+      "schema": "idb.w189-real-sandbox-server-adapter-execution-wiring-and-runner-taskid-capture.v1",
+      "status": "w144_one_call_blocked",
+      "mode": "real_w144_adapter_path",
+      "targetAdapter": "W144 governed runner adapter",
+      "readyForOneCall": false,
+      "executionAllowed": false,
+      "blockedReasons": [
+        "approved_w144_endpoint",
+        "server_flags_true",
+        "sandbox_allowlist",
+        "operator_approval",
+        "one_call_authorization_phrase"
+      ],
+      "gates": [
+        {
+          "id": "confirmed_build_request",
+          "label": "Confirmed Build request",
+          "ready": true,
+          "evidence": "confirmed_ready_for_governed_runner"
+        },
+        {
+          "id": "approved_w144_endpoint",
+          "label": "Approved W144 endpoint URL",
+          "ready": false,
+          "evidence": "missing_endpoint_url"
+        },
+        {
+          "id": "server_flags_true",
+          "label": "Server flags true",
+          "ready": false,
+          "evidence": {
+            "CREATE_ENABLED": false,
+            "GOVERNED_SANDBOX_WRITE_ENABLED": false,
+            "QUEUE_SUBMIT_ENABLED": false
+          }
+        },
+        {
+          "id": "sandbox_allowlist",
+          "label": "Sandbox account allowlist",
+          "ready": false,
+          "evidence": {
+            "currentSandboxAccount": "",
+            "sandboxAllowlist": []
+          }
+        },
+        {
+          "id": "operator_approval",
+          "label": "Operator approval gate",
+          "ready": false,
+          "evidence": {
+            "schema": "idb.operator-queue-gate.v1",
+            "operatorOnly": true,
+            "operator": {
+              "name": "",
+              "reviewedAt": ""
+            },
+            "reviewDecision": "operator_review_not_started",
+            "typeToConfirm": "",
+            "confirmedNoSubmit": false,
+            "confirmedDrawerNoWrite": true,
+            "confirmedSandboxAccount": false,
+            "drawerInvocationTokenAccepted": false,
+            "notes": ""
+          }
+        },
+        {
+          "id": "one_call_authorization_phrase",
+          "label": "One-call authorization phrase",
+          "ready": false,
+          "evidence": {
+            "authorizationPhrase": "",
+            "endpointConfirmed": false,
+            "adapterApproved": false
+          }
+        },
+        {
+          "id": "idempotency_token",
+          "label": "Idempotency token",
+          "ready": true,
+          "evidence": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+        },
+        {
+          "id": "one_submit_limit",
+          "label": "One-submit limit unused",
+          "ready": true,
+          "evidence": {
+            "oneSubmitAlreadyUsed": false,
+            "oneSubmitLimit": {
+              "maxQueueSubmitAttempts": 1,
+              "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+              "secondSubmitBehavior": "blocked_duplicate_submit"
+            }
+          }
+        },
+        {
+          "id": "rollback_flags",
+          "label": "Rollback by disabling server flags",
+          "ready": true,
+          "evidence": {
+            "owner": "server_deployment_flags",
+            "action": "disable_CREATE_ENABLED_GOVERNED_SANDBOX_WRITE_ENABLED_QUEUE_SUBMIT_ENABLED",
+            "flagsToDisable": [
+              "CREATE_ENABLED",
+              "GOVERNED_SANDBOX_WRITE_ENABLED",
+              "QUEUE_SUBMIT_ENABLED"
+            ]
+          }
+        },
+        {
+          "id": "w151_import_guard",
+          "label": "W151 completed-result import guard",
+          "ready": true,
+          "evidence": {
+            "required": true,
+            "acceptsOnlyCompletedRunnerResultJson": true,
+            "rejectsHandoffJson": true,
+            "requiresNumericInternalIds": true,
+            "requiresSupportedNetSuiteUrls": true,
+            "activeOpenLinksBeforeImport": 0
+          }
+        }
+      ],
+      "approvedEndpointConfigurationSurface": {
+        "endpointUrl": "",
+        "adapterApproved": false,
+        "serverFlags": {
+          "CREATE_ENABLED": false,
+          "GOVERNED_SANDBOX_WRITE_ENABLED": false,
+          "QUEUE_SUBMIT_ENABLED": false
+        },
+        "sandboxAccountAllowlist": [],
+        "currentSandboxAccount": ""
+      },
+      "operatorApprovalGate": {
+        "operatorGate": {
+          "schema": "idb.operator-queue-gate.v1",
+          "operatorOnly": true,
+          "operator": {
+            "name": "",
+            "reviewedAt": ""
+          },
+          "reviewDecision": "operator_review_not_started",
+          "typeToConfirm": "",
+          "confirmedNoSubmit": false,
+          "confirmedDrawerNoWrite": true,
+          "confirmedSandboxAccount": false,
+          "drawerInvocationTokenAccepted": false,
+          "notes": ""
+        },
+        "authorizationPhraseRequired": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+        "authorizationPhrase": "",
+        "endpointConfirmed": false
+      },
+      "confirmedBuildRequestJson": {
+        "schema": "idb.confirmed-build-request.v1",
+        "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "requestStatus": "confirmed_ready_for_governed_runner",
+        "producedBy": "idb_drawer",
+        "idbPrimarySurface": true,
+        "legacyDccSuiteletUi": {
+          "normalWorkflow": false,
+          "role": "legacy_reference_only",
+          "replacement": "Drawer prepares confirmed request; governed runner creates or resolves records."
+        },
+        "consultantConfirmation": {
+          "required": true,
+          "confirmed": true,
+          "source": "acceptedPacket"
+        },
+        "stateAuthority": {
+          "selectedLaneId": "apparel_accessories",
+          "confirmedLaneId": "apparel_accessories",
+          "exportedLaneId": "apparel_accessories",
+          "handoffParityStatus": "matched",
+          "noStateMismatch": true
+        },
+        "prospect": {
+          "name": "Ariat International",
+          "website": "https://www.ariat.com/"
+        },
+        "demoPath": {
+          "laneId": "apparel_accessories",
+          "laneName": "Apparel & Accessories",
+          "proofAnchor": "Style / SKU Matrix",
+          "familyKey": "apparelAccessories",
+          "scenario": "Style-to-Availability Readiness",
+          "confirmed": true
+        },
+        "storyInputs": {
+          "buyerNeed": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style",
+          "conversationNotes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches."
+        },
+        "runnerControls": {
+          "requestedMode": "server_flagged_integrated_build_return",
+          "sandboxWriteModeRequiresOperatorEnablement": true,
+          "writeAuthority": "governed_internal_runner_only",
+          "drawerAuthority": "prepare_confirm_export_import_only"
+        },
+        "requiredRecords": [
+          "customer",
+          "demoTransaction",
+          "heroItem",
+          "matrixProofItem",
+          "componentItem"
+        ],
+        "sourceHandoff": {
+          "schema": "idb.dcc-runner-handoff-packet.v1",
+          "status": "ready_for_dcc_suitelet_submission_review",
+          "executionMode": "review_only_no_submit",
+          "selectedPack": "apparelAccessories",
+          "selectedScenario": "Style-to-Availability Readiness"
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noSuiteScriptInvocationFromDrawer": true,
+          "noTransactionWritesFromDrawer": true,
+          "noActiveOpenLinksWithoutRealUrls": true
+        }
+      },
+      "adapterRequestEnvelope": null,
+      "adapterRequestJsonShape": {
+        "method": "POST",
+        "contentType": "application/x-www-form-urlencoded;charset=UTF-8",
+        "fields": [
+          "custpage_idb_confirmed_build_request_json",
+          "custpage_idb_operator_queue_gate_json"
+        ],
+        "confirmedBuildRequestSchema": "idb.confirmed-build-request.v1",
+        "operatorGateSchema": "idb.operator-queue-gate.v1",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+      },
+      "runnerTaskIdCapturePath": {
+        "submitted": false,
+        "queueSubmitted": false,
+        "runnerTaskIdCaptured": false,
+        "runnerTaskId": null,
+        "resultCaptureStatus": "not_started_no_submit",
+        "firstResponsePolicy": "runnerTaskId_or_adapter_error_not_record_urls",
+        "statePatch": {}
+      },
+      "resultPollingImportPath": {
+        "checkRunnerResultVisibleAfterRunnerTaskId": false,
+        "pollingEndpoint": "approved_server_adapter_result_capture_path",
+        "completedResultImportGuard": "W151",
+        "finalNamesMutationAllowedBeforeW151Import": false,
+        "openLinksBeforeCompletedImport": 0
+      },
+      "operatorSetupChecklist": [
+        "Deploy the W144 governed runner adapter Suitelet in sandbox.",
+        "Set CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, and QUEUE_SUBMIT_ENABLED true only on the sandbox adapter deployment.",
+        "Configure runner script id, deployment id, mapping id, folder id, subsidiary id, location id, optional work center search id, and result capture folder id on the W144 deployment.",
+        "Paste the approved W144 Suitelet endpoint into IDB Build.",
+        "Enter the sandbox account id in the allowlist and current account fields.",
+        "Set operator approval to approved and type QUEUE GOVERNED SANDBOX RUNNER.",
+        "Type AUTHORIZE ONE SANDBOX ADAPTER CALL and confirm the endpoint.",
+        "Submit once, then use Check runner result only after runnerTaskId is captured."
+      ],
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "false_flag_no_submit",
+        "label": "False flags: no submit",
+        "message": "Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.",
+        "rawStatus": "w189_no_submit",
+        "queueSubmitted": false,
+        "runnerTaskId": null,
+        "resultCaptureStatus": "not_started_no_submit",
+        "pollAttempted": false,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "activeOpenLinks": 0,
+        "drawerCreatedRecords": false,
+        "drawerTransactionWrites": false,
+        "drawerWritesAttempted": false
+      },
+      "traceSamples": [
+        {
+          "event": "w189_w144_execution_gates",
+          "readyForOneCall": false,
+          "blockedReasons": [
+            "approved_w144_endpoint",
+            "server_flags_true",
+            "sandbox_allowlist",
+            "operator_approval",
+            "one_call_authorization_phrase"
+          ],
+          "targetAdapter": "W144",
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w189_w144_request_shape",
+          "requestConstructed": false,
+          "bodyFields": [
+            "custpage_idb_confirmed_build_request_json",
+            "custpage_idb_operator_queue_gate_json"
+          ],
+          "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+          "endpointReady": false,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w189_runner_taskid_capture",
+          "executionAllowed": false,
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "resultCaptureStatus": "not_started_no_submit",
+          "finalGeneratedNamesJsonReady": false,
+          "mutatesFinalNames": false,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImport": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W189 captures runnerTaskId and pending result capture only. Real Open-link testing starts after W151 imports completed result JSON with numeric ids and URLs."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDirectDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "noActiveOpenLinksWithoutRealUrls": true
+      }
+    },
+    "ready": {
+      "schema": "idb.w189-real-sandbox-server-adapter-execution-wiring-and-runner-taskid-capture.v1",
+      "status": "w144_one_call_ready_not_submitted",
+      "mode": "real_w144_adapter_path",
+      "targetAdapter": "W144 governed runner adapter",
+      "readyForOneCall": true,
+      "executionAllowed": false,
+      "blockedReasons": [],
+      "gates": [
+        {
+          "id": "confirmed_build_request",
+          "label": "Confirmed Build request",
+          "ready": true,
+          "evidence": "confirmed_ready_for_governed_runner"
+        },
+        {
+          "id": "approved_w144_endpoint",
+          "label": "Approved W144 endpoint URL",
+          "ready": true,
+          "evidence": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID"
+        },
+        {
+          "id": "server_flags_true",
+          "label": "Server flags true",
+          "ready": true,
+          "evidence": {
+            "CREATE_ENABLED": true,
+            "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+            "QUEUE_SUBMIT_ENABLED": true
+          }
+        },
+        {
+          "id": "sandbox_allowlist",
+          "label": "Sandbox account allowlist",
+          "ready": true,
+          "evidence": {
+            "currentSandboxAccount": "TD3021666",
+            "sandboxAllowlist": [
+              "TD3021666"
+            ]
+          }
+        },
+        {
+          "id": "operator_approval",
+          "label": "Operator approval gate",
+          "ready": true,
+          "evidence": {
+            "schema": "idb.operator-queue-gate.v1",
+            "operatorOnly": true,
+            "operator": {
+              "name": "Operator User",
+              "reviewedAt": ""
+            },
+            "reviewDecision": "operator_approved_queue_submit",
+            "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+            "confirmedNoSubmit": false,
+            "confirmedDrawerNoWrite": true,
+            "confirmedSandboxAccount": true,
+            "drawerInvocationTokenAccepted": false,
+            "notes": ""
+          }
+        },
+        {
+          "id": "one_call_authorization_phrase",
+          "label": "One-call authorization phrase",
+          "ready": true,
+          "evidence": {
+            "authorizationPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+            "endpointConfirmed": true,
+            "adapterApproved": true
+          }
+        },
+        {
+          "id": "idempotency_token",
+          "label": "Idempotency token",
+          "ready": true,
+          "evidence": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+        },
+        {
+          "id": "one_submit_limit",
+          "label": "One-submit limit unused",
+          "ready": true,
+          "evidence": {
+            "oneSubmitAlreadyUsed": false,
+            "oneSubmitLimit": {
+              "maxQueueSubmitAttempts": 1,
+              "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+              "secondSubmitBehavior": "blocked_duplicate_submit"
+            }
+          }
+        },
+        {
+          "id": "rollback_flags",
+          "label": "Rollback by disabling server flags",
+          "ready": true,
+          "evidence": {
+            "owner": "server_deployment_flags",
+            "action": "disable_CREATE_ENABLED_GOVERNED_SANDBOX_WRITE_ENABLED_QUEUE_SUBMIT_ENABLED",
+            "flagsToDisable": [
+              "CREATE_ENABLED",
+              "GOVERNED_SANDBOX_WRITE_ENABLED",
+              "QUEUE_SUBMIT_ENABLED"
+            ]
+          }
+        },
+        {
+          "id": "w151_import_guard",
+          "label": "W151 completed-result import guard",
+          "ready": true,
+          "evidence": {
+            "required": true,
+            "acceptsOnlyCompletedRunnerResultJson": true,
+            "rejectsHandoffJson": true,
+            "requiresNumericInternalIds": true,
+            "requiresSupportedNetSuiteUrls": true,
+            "activeOpenLinksBeforeImport": 0
+          }
+        }
+      ],
+      "approvedEndpointConfigurationSurface": {
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "adapterApproved": true,
+        "serverFlags": {
+          "CREATE_ENABLED": true,
+          "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+          "QUEUE_SUBMIT_ENABLED": true
+        },
+        "sandboxAccountAllowlist": [
+          "TD3021666"
+        ],
+        "currentSandboxAccount": "TD3021666"
+      },
+      "operatorApprovalGate": {
+        "operatorGate": {
+          "schema": "idb.operator-queue-gate.v1",
+          "operatorOnly": true,
+          "operator": {
+            "name": "Operator User",
+            "reviewedAt": ""
+          },
+          "reviewDecision": "operator_approved_queue_submit",
+          "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+          "confirmedNoSubmit": false,
+          "confirmedDrawerNoWrite": true,
+          "confirmedSandboxAccount": true,
+          "drawerInvocationTokenAccepted": false,
+          "notes": ""
+        },
+        "authorizationPhraseRequired": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+        "authorizationPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+        "endpointConfirmed": true
+      },
+      "confirmedBuildRequestJson": {
+        "schema": "idb.confirmed-build-request.v1",
+        "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "requestStatus": "confirmed_ready_for_governed_runner",
+        "producedBy": "idb_drawer",
+        "idbPrimarySurface": true,
+        "legacyDccSuiteletUi": {
+          "normalWorkflow": false,
+          "role": "legacy_reference_only",
+          "replacement": "Drawer prepares confirmed request; governed runner creates or resolves records."
+        },
+        "consultantConfirmation": {
+          "required": true,
+          "confirmed": true,
+          "source": "acceptedPacket"
+        },
+        "stateAuthority": {
+          "selectedLaneId": "apparel_accessories",
+          "confirmedLaneId": "apparel_accessories",
+          "exportedLaneId": "apparel_accessories",
+          "handoffParityStatus": "matched",
+          "noStateMismatch": true
+        },
+        "prospect": {
+          "name": "Ariat International",
+          "website": "https://www.ariat.com/"
+        },
+        "demoPath": {
+          "laneId": "apparel_accessories",
+          "laneName": "Apparel & Accessories",
+          "proofAnchor": "Style / SKU Matrix",
+          "familyKey": "apparelAccessories",
+          "scenario": "Style-to-Availability Readiness",
+          "confirmed": true
+        },
+        "storyInputs": {
+          "buyerNeed": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style",
+          "conversationNotes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches."
+        },
+        "runnerControls": {
+          "requestedMode": "server_flagged_integrated_build_return",
+          "sandboxWriteModeRequiresOperatorEnablement": true,
+          "writeAuthority": "governed_internal_runner_only",
+          "drawerAuthority": "prepare_confirm_export_import_only"
+        },
+        "requiredRecords": [
+          "customer",
+          "demoTransaction",
+          "heroItem",
+          "matrixProofItem",
+          "componentItem"
+        ],
+        "sourceHandoff": {
+          "schema": "idb.dcc-runner-handoff-packet.v1",
+          "status": "ready_for_dcc_suitelet_submission_review",
+          "executionMode": "review_only_no_submit",
+          "selectedPack": "apparelAccessories",
+          "selectedScenario": "Style-to-Availability Readiness"
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noSuiteScriptInvocationFromDrawer": true,
+          "noTransactionWritesFromDrawer": true,
+          "noActiveOpenLinksWithoutRealUrls": true
+        }
+      },
+      "adapterRequestEnvelope": {
+        "schema": "idb.w189-w144-approved-server-adapter-request.v1",
+        "targetAdapter": "W144 governed runner adapter",
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        "bodyEncoding": "application/x-www-form-urlencoded",
+        "bodyParams": {
+          "custpage_idb_confirmed_build_request_json": "{\"schema\":\"idb.confirmed-build-request.v1\",\"requestId\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"requestStatus\":\"confirmed_ready_for_governed_runner\",\"producedBy\":\"idb_drawer\",\"idbPrimarySurface\":true,\"legacyDccSuiteletUi\":{\"normalWorkflow\":false,\"role\":\"legacy_reference_only\",\"replacement\":\"Drawer prepares confirmed request; governed runner creates or resolves records.\"},\"consultantConfirmation\":{\"required\":true,\"confirmed\":true,\"source\":\"acceptedPacket\"},\"stateAuthority\":{\"selectedLaneId\":\"apparel_accessories\",\"confirmedLaneId\":\"apparel_accessories\",\"exportedLaneId\":\"apparel_accessories\",\"handoffParityStatus\":\"matched\",\"noStateMismatch\":true},\"prospect\":{\"name\":\"Ariat International\",\"website\":\"https://www.ariat.com/\"},\"demoPath\":{\"laneId\":\"apparel_accessories\",\"laneName\":\"Apparel & Accessories\",\"proofAnchor\":\"Style / SKU Matrix\",\"familyKey\":\"apparelAccessories\",\"scenario\":\"Style-to-Availability Readiness\",\"confirmed\":true},\"storyInputs\":{\"buyerNeed\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"runnerControls\":{\"requestedMode\":\"server_flagged_integrated_build_return\",\"sandboxWriteModeRequiresOperatorEnablement\":true,\"writeAuthority\":\"governed_internal_runner_only\",\"drawerAuthority\":\"prepare_confirm_export_import_only\"},\"requiredRecords\":[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"],\"sourceHandoff\":{\"schema\":\"idb.dcc-runner-handoff-packet.v1\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"executionMode\":\"review_only_no_submit\",\"selectedPack\":\"apparelAccessories\",\"selectedScenario\":\"Style-to-Availability Readiness\"},\"noRegression\":{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}",
+          "custpage_idb_operator_queue_gate_json": "{\"schema\":\"idb.operator-queue-gate.v1\",\"operatorOnly\":true,\"operator\":{\"name\":\"Operator User\",\"reviewedAt\":\"\"},\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedNoSubmit\":false,\"confirmedDrawerNoWrite\":true,\"confirmedSandboxAccount\":true,\"drawerInvocationTokenAccepted\":false,\"notes\":\"\"}"
+        },
+        "bodyFormEncoded": "custpage_idb_confirmed_build_request_json=%7B%22schema%22%3A%22idb.confirmed-build-request.v1%22%2C%22requestId%22%3A%22idb-build-ariat-international-apparel-accessories-apparelaccessories%22%2C%22requestStatus%22%3A%22confirmed_ready_for_governed_runner%22%2C%22producedBy%22%3A%22idb_drawer%22%2C%22idbPrimarySurface%22%3Atrue%2C%22legacyDccSuiteletUi%22%3A%7B%22normalWorkflow%22%3Afalse%2C%22role%22%3A%22legacy_reference_only%22%2C%22replacement%22%3A%22Drawer%20prepares%20confirmed%20request%3B%20governed%20runner%20creates%20or%20resolves%20records.%22%7D%2C%22consultantConfirmation%22%3A%7B%22required%22%3Atrue%2C%22confirmed%22%3Atrue%2C%22source%22%3A%22acceptedPacket%22%7D%2C%22stateAuthority%22%3A%7B%22selectedLaneId%22%3A%22apparel_accessories%22%2C%22confirmedLaneId%22%3A%22apparel_accessories%22%2C%22exportedLaneId%22%3A%22apparel_accessories%22%2C%22handoffParityStatus%22%3A%22matched%22%2C%22noStateMismatch%22%3Atrue%7D%2C%22prospect%22%3A%7B%22name%22%3A%22Ariat%20International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%7D%2C%22demoPath%22%3A%7B%22laneId%22%3A%22apparel_accessories%22%2C%22laneName%22%3A%22Apparel%20%26%20Accessories%22%2C%22proofAnchor%22%3A%22Style%20%2F%20SKU%20Matrix%22%2C%22familyKey%22%3A%22apparelAccessories%22%2C%22scenario%22%3A%22Style-to-Availability%20Readiness%22%2C%22confirmed%22%3Atrue%7D%2C%22storyInputs%22%3A%7B%22buyerNeed%22%3A%22Buyer%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.%20Prepare%20a%20concise%20demo%20story%20showing%20how%20NetSuite%20supports%20style%2FSKU%20readiness%2C%20size%2Fcolor%20availability%2C%20replenishment%20timing%2C%20and%20customer%20promise.%20Fetch%20status%3A%20runtime_resolved%20%2F%20Source%20URLs%3A%201%20%2F%20Signals%3A%20website%20shows%20boots%2C%20footwear%2C%20apparel%2C%20workwear%2C%20outdoor%20gear%2C%20style%2C%20size%2C%20and%20retail%20ecommerce%20signals%2C%20Core%20Boot%20and%20Apparel%20Style%20Matrix%2C%20Apparel%20and%20Footwear%20Style%22%2C%22conversationNotes%22%3A%22Buyer%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.%22%7D%2C%22runnerControls%22%3A%7B%22requestedMode%22%3A%22server_flagged_integrated_build_return%22%2C%22sandboxWriteModeRequiresOperatorEnablement%22%3Atrue%2C%22writeAuthority%22%3A%22governed_internal_runner_only%22%2C%22drawerAuthority%22%3A%22prepare_confirm_export_import_only%22%7D%2C%22requiredRecords%22%3A%5B%22customer%22%2C%22demoTransaction%22%2C%22heroItem%22%2C%22matrixProofItem%22%2C%22componentItem%22%5D%2C%22sourceHandoff%22%3A%7B%22schema%22%3A%22idb.dcc-runner-handoff-packet.v1%22%2C%22status%22%3A%22ready_for_dcc_suitelet_submission_review%22%2C%22executionMode%22%3A%22review_only_no_submit%22%2C%22selectedPack%22%3A%22apparelAccessories%22%2C%22selectedScenario%22%3A%22Style-to-Availability%20Readiness%22%7D%2C%22noRegression%22%3A%7B%22noDrawerWrites%22%3Atrue%2C%22noSuiteScriptInvocationFromDrawer%22%3Atrue%2C%22noTransactionWritesFromDrawer%22%3Atrue%2C%22noActiveOpenLinksWithoutRealUrls%22%3Atrue%7D%7D&custpage_idb_operator_queue_gate_json=%7B%22schema%22%3A%22idb.operator-queue-gate.v1%22%2C%22operatorOnly%22%3Atrue%2C%22operator%22%3A%7B%22name%22%3A%22Aaron%20Sunshine%22%2C%22reviewedAt%22%3A%22%22%7D%2C%22reviewDecision%22%3A%22operator_approved_queue_submit%22%2C%22typeToConfirm%22%3A%22QUEUE%20GOVERNED%20SANDBOX%20RUNNER%22%2C%22confirmedNoSubmit%22%3Afalse%2C%22confirmedDrawerNoWrite%22%3Atrue%2C%22confirmedSandboxAccount%22%3Atrue%2C%22drawerInvocationTokenAccepted%22%3Afalse%2C%22notes%22%3A%22%22%7D",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "oneSubmitLimit": {
+          "maxQueueSubmitAttempts": 1,
+          "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+          "secondSubmitBehavior": "blocked_duplicate_submit"
+        },
+        "expectedFirstResponse": {
+          "allowed": [
+            "runnerTaskId",
+            "adapter_error"
+          ],
+          "disallowed": [
+            "record_urls_before_result_capture",
+            "fake_record_urls"
+          ],
+          "successStatus": "queued_result_capture_pending"
+        },
+        "resultCapturePollingHandoff": {
+          "nextControl": "check_runner_result",
+          "pendingStatus": "pending_runner_completion",
+          "completedImportGuard": "W151"
+        },
+        "w151ResultImportGuard": {
+          "required": true,
+          "acceptsOnlyCompletedRunnerResultJson": true,
+          "rejectsHandoffJson": true,
+          "requiresNumericInternalIds": true,
+          "requiresSupportedNetSuiteUrls": true,
+          "activeOpenLinksBeforeImport": 0
+        }
+      },
+      "adapterRequestJsonShape": {
+        "method": "POST",
+        "contentType": "application/x-www-form-urlencoded;charset=UTF-8",
+        "fields": [
+          "custpage_idb_confirmed_build_request_json",
+          "custpage_idb_operator_queue_gate_json"
+        ],
+        "confirmedBuildRequestSchema": "idb.confirmed-build-request.v1",
+        "operatorGateSchema": "idb.operator-queue-gate.v1",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+      },
+      "runnerTaskIdCapturePath": {
+        "submitted": false,
+        "queueSubmitted": false,
+        "runnerTaskIdCaptured": false,
+        "runnerTaskId": null,
+        "resultCaptureStatus": "not_started_no_submit",
+        "firstResponsePolicy": "runnerTaskId_or_adapter_error_not_record_urls",
+        "statePatch": {}
+      },
+      "resultPollingImportPath": {
+        "checkRunnerResultVisibleAfterRunnerTaskId": false,
+        "pollingEndpoint": "approved_server_adapter_result_capture_path",
+        "completedResultImportGuard": "W151",
+        "finalNamesMutationAllowedBeforeW151Import": false,
+        "openLinksBeforeCompletedImport": 0
+      },
+      "operatorSetupChecklist": [
+        "Deploy the W144 governed runner adapter Suitelet in sandbox.",
+        "Set CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, and QUEUE_SUBMIT_ENABLED true only on the sandbox adapter deployment.",
+        "Configure runner script id, deployment id, mapping id, folder id, subsidiary id, location id, optional work center search id, and result capture folder id on the W144 deployment.",
+        "Paste the approved W144 Suitelet endpoint into IDB Build.",
+        "Enter the sandbox account id in the allowlist and current account fields.",
+        "Set operator approval to approved and type QUEUE GOVERNED SANDBOX RUNNER.",
+        "Type AUTHORIZE ONE SANDBOX ADAPTER CALL and confirm the endpoint.",
+        "Submit once, then use Check runner result only after runnerTaskId is captured."
+      ],
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "false_flag_no_submit",
+        "label": "False flags: no submit",
+        "message": "Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.",
+        "rawStatus": "w189_no_submit",
+        "queueSubmitted": false,
+        "runnerTaskId": null,
+        "resultCaptureStatus": "not_started_no_submit",
+        "pollAttempted": false,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "activeOpenLinks": 0,
+        "drawerCreatedRecords": false,
+        "drawerTransactionWrites": false,
+        "drawerWritesAttempted": false
+      },
+      "traceSamples": [
+        {
+          "event": "w189_w144_execution_gates",
+          "readyForOneCall": true,
+          "blockedReasons": [],
+          "targetAdapter": "W144",
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w189_w144_request_shape",
+          "requestConstructed": true,
+          "bodyFields": [
+            "custpage_idb_confirmed_build_request_json",
+            "custpage_idb_operator_queue_gate_json"
+          ],
+          "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+          "endpointReady": true,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w189_runner_taskid_capture",
+          "executionAllowed": false,
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "resultCaptureStatus": "not_started_no_submit",
+          "finalGeneratedNamesJsonReady": false,
+          "mutatesFinalNames": false,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImport": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W189 captures runnerTaskId and pending result capture only. Real Open-link testing starts after W151 imports completed result JSON with numeric ids and URLs."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDirectDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "noActiveOpenLinksWithoutRealUrls": true
+      }
+    },
+    "executed": {
+      "schema": "idb.w189-real-sandbox-server-adapter-execution-wiring-and-runner-taskid-capture.v1",
+      "status": "w144_runner_taskid_captured_result_pending",
+      "mode": "real_w144_adapter_path",
+      "targetAdapter": "W144 governed runner adapter",
+      "readyForOneCall": true,
+      "executionAllowed": true,
+      "blockedReasons": [],
+      "gates": [
+        {
+          "id": "confirmed_build_request",
+          "label": "Confirmed Build request",
+          "ready": true,
+          "evidence": "confirmed_ready_for_governed_runner"
+        },
+        {
+          "id": "approved_w144_endpoint",
+          "label": "Approved W144 endpoint URL",
+          "ready": true,
+          "evidence": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID"
+        },
+        {
+          "id": "server_flags_true",
+          "label": "Server flags true",
+          "ready": true,
+          "evidence": {
+            "CREATE_ENABLED": true,
+            "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+            "QUEUE_SUBMIT_ENABLED": true
+          }
+        },
+        {
+          "id": "sandbox_allowlist",
+          "label": "Sandbox account allowlist",
+          "ready": true,
+          "evidence": {
+            "currentSandboxAccount": "TD3021666",
+            "sandboxAllowlist": [
+              "TD3021666"
+            ]
+          }
+        },
+        {
+          "id": "operator_approval",
+          "label": "Operator approval gate",
+          "ready": true,
+          "evidence": {
+            "schema": "idb.operator-queue-gate.v1",
+            "operatorOnly": true,
+            "operator": {
+              "name": "Operator User",
+              "reviewedAt": ""
+            },
+            "reviewDecision": "operator_approved_queue_submit",
+            "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+            "confirmedNoSubmit": false,
+            "confirmedDrawerNoWrite": true,
+            "confirmedSandboxAccount": true,
+            "drawerInvocationTokenAccepted": false,
+            "notes": ""
+          }
+        },
+        {
+          "id": "one_call_authorization_phrase",
+          "label": "One-call authorization phrase",
+          "ready": true,
+          "evidence": {
+            "authorizationPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+            "endpointConfirmed": true,
+            "adapterApproved": true
+          }
+        },
+        {
+          "id": "idempotency_token",
+          "label": "Idempotency token",
+          "ready": true,
+          "evidence": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+        },
+        {
+          "id": "one_submit_limit",
+          "label": "One-submit limit unused",
+          "ready": true,
+          "evidence": {
+            "oneSubmitAlreadyUsed": false,
+            "oneSubmitLimit": {
+              "maxQueueSubmitAttempts": 1,
+              "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+              "secondSubmitBehavior": "blocked_duplicate_submit"
+            }
+          }
+        },
+        {
+          "id": "rollback_flags",
+          "label": "Rollback by disabling server flags",
+          "ready": true,
+          "evidence": {
+            "owner": "server_deployment_flags",
+            "action": "disable_CREATE_ENABLED_GOVERNED_SANDBOX_WRITE_ENABLED_QUEUE_SUBMIT_ENABLED",
+            "flagsToDisable": [
+              "CREATE_ENABLED",
+              "GOVERNED_SANDBOX_WRITE_ENABLED",
+              "QUEUE_SUBMIT_ENABLED"
+            ]
+          }
+        },
+        {
+          "id": "w151_import_guard",
+          "label": "W151 completed-result import guard",
+          "ready": true,
+          "evidence": {
+            "required": true,
+            "acceptsOnlyCompletedRunnerResultJson": true,
+            "rejectsHandoffJson": true,
+            "requiresNumericInternalIds": true,
+            "requiresSupportedNetSuiteUrls": true,
+            "activeOpenLinksBeforeImport": 0
+          }
+        }
+      ],
+      "approvedEndpointConfigurationSurface": {
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "adapterApproved": true,
+        "serverFlags": {
+          "CREATE_ENABLED": true,
+          "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+          "QUEUE_SUBMIT_ENABLED": true
+        },
+        "sandboxAccountAllowlist": [
+          "TD3021666"
+        ],
+        "currentSandboxAccount": "TD3021666"
+      },
+      "operatorApprovalGate": {
+        "operatorGate": {
+          "schema": "idb.operator-queue-gate.v1",
+          "operatorOnly": true,
+          "operator": {
+            "name": "Operator User",
+            "reviewedAt": ""
+          },
+          "reviewDecision": "operator_approved_queue_submit",
+          "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+          "confirmedNoSubmit": false,
+          "confirmedDrawerNoWrite": true,
+          "confirmedSandboxAccount": true,
+          "drawerInvocationTokenAccepted": false,
+          "notes": ""
+        },
+        "authorizationPhraseRequired": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+        "authorizationPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+        "endpointConfirmed": true
+      },
+      "confirmedBuildRequestJson": {
+        "schema": "idb.confirmed-build-request.v1",
+        "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "requestStatus": "confirmed_ready_for_governed_runner",
+        "producedBy": "idb_drawer",
+        "idbPrimarySurface": true,
+        "legacyDccSuiteletUi": {
+          "normalWorkflow": false,
+          "role": "legacy_reference_only",
+          "replacement": "Drawer prepares confirmed request; governed runner creates or resolves records."
+        },
+        "consultantConfirmation": {
+          "required": true,
+          "confirmed": true,
+          "source": "acceptedPacket"
+        },
+        "stateAuthority": {
+          "selectedLaneId": "apparel_accessories",
+          "confirmedLaneId": "apparel_accessories",
+          "exportedLaneId": "apparel_accessories",
+          "handoffParityStatus": "matched",
+          "noStateMismatch": true
+        },
+        "prospect": {
+          "name": "Ariat International",
+          "website": "https://www.ariat.com/"
+        },
+        "demoPath": {
+          "laneId": "apparel_accessories",
+          "laneName": "Apparel & Accessories",
+          "proofAnchor": "Style / SKU Matrix",
+          "familyKey": "apparelAccessories",
+          "scenario": "Style-to-Availability Readiness",
+          "confirmed": true
+        },
+        "storyInputs": {
+          "buyerNeed": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style",
+          "conversationNotes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches."
+        },
+        "runnerControls": {
+          "requestedMode": "server_flagged_integrated_build_return",
+          "sandboxWriteModeRequiresOperatorEnablement": true,
+          "writeAuthority": "governed_internal_runner_only",
+          "drawerAuthority": "prepare_confirm_export_import_only"
+        },
+        "requiredRecords": [
+          "customer",
+          "demoTransaction",
+          "heroItem",
+          "matrixProofItem",
+          "componentItem"
+        ],
+        "sourceHandoff": {
+          "schema": "idb.dcc-runner-handoff-packet.v1",
+          "status": "ready_for_dcc_suitelet_submission_review",
+          "executionMode": "review_only_no_submit",
+          "selectedPack": "apparelAccessories",
+          "selectedScenario": "Style-to-Availability Readiness"
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noSuiteScriptInvocationFromDrawer": true,
+          "noTransactionWritesFromDrawer": true,
+          "noActiveOpenLinksWithoutRealUrls": true
+        }
+      },
+      "adapterRequestEnvelope": {
+        "schema": "idb.w189-w144-approved-server-adapter-request.v1",
+        "targetAdapter": "W144 governed runner adapter",
+        "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        "bodyEncoding": "application/x-www-form-urlencoded",
+        "bodyParams": {
+          "custpage_idb_confirmed_build_request_json": "{\"schema\":\"idb.confirmed-build-request.v1\",\"requestId\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"requestStatus\":\"confirmed_ready_for_governed_runner\",\"producedBy\":\"idb_drawer\",\"idbPrimarySurface\":true,\"legacyDccSuiteletUi\":{\"normalWorkflow\":false,\"role\":\"legacy_reference_only\",\"replacement\":\"Drawer prepares confirmed request; governed runner creates or resolves records.\"},\"consultantConfirmation\":{\"required\":true,\"confirmed\":true,\"source\":\"acceptedPacket\"},\"stateAuthority\":{\"selectedLaneId\":\"apparel_accessories\",\"confirmedLaneId\":\"apparel_accessories\",\"exportedLaneId\":\"apparel_accessories\",\"handoffParityStatus\":\"matched\",\"noStateMismatch\":true},\"prospect\":{\"name\":\"Ariat International\",\"website\":\"https://www.ariat.com/\"},\"demoPath\":{\"laneId\":\"apparel_accessories\",\"laneName\":\"Apparel & Accessories\",\"proofAnchor\":\"Style / SKU Matrix\",\"familyKey\":\"apparelAccessories\",\"scenario\":\"Style-to-Availability Readiness\",\"confirmed\":true},\"storyInputs\":{\"buyerNeed\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style\",\"conversationNotes\":\"Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\"},\"runnerControls\":{\"requestedMode\":\"server_flagged_integrated_build_return\",\"sandboxWriteModeRequiresOperatorEnablement\":true,\"writeAuthority\":\"governed_internal_runner_only\",\"drawerAuthority\":\"prepare_confirm_export_import_only\"},\"requiredRecords\":[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"],\"sourceHandoff\":{\"schema\":\"idb.dcc-runner-handoff-packet.v1\",\"status\":\"ready_for_dcc_suitelet_submission_review\",\"executionMode\":\"review_only_no_submit\",\"selectedPack\":\"apparelAccessories\",\"selectedScenario\":\"Style-to-Availability Readiness\"},\"noRegression\":{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"noActiveOpenLinksWithoutRealUrls\":true}}",
+          "custpage_idb_operator_queue_gate_json": "{\"schema\":\"idb.operator-queue-gate.v1\",\"operatorOnly\":true,\"operator\":{\"name\":\"Operator User\",\"reviewedAt\":\"\"},\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedNoSubmit\":false,\"confirmedDrawerNoWrite\":true,\"confirmedSandboxAccount\":true,\"drawerInvocationTokenAccepted\":false,\"notes\":\"\"}"
+        },
+        "bodyFormEncoded": "custpage_idb_confirmed_build_request_json=%7B%22schema%22%3A%22idb.confirmed-build-request.v1%22%2C%22requestId%22%3A%22idb-build-ariat-international-apparel-accessories-apparelaccessories%22%2C%22requestStatus%22%3A%22confirmed_ready_for_governed_runner%22%2C%22producedBy%22%3A%22idb_drawer%22%2C%22idbPrimarySurface%22%3Atrue%2C%22legacyDccSuiteletUi%22%3A%7B%22normalWorkflow%22%3Afalse%2C%22role%22%3A%22legacy_reference_only%22%2C%22replacement%22%3A%22Drawer%20prepares%20confirmed%20request%3B%20governed%20runner%20creates%20or%20resolves%20records.%22%7D%2C%22consultantConfirmation%22%3A%7B%22required%22%3Atrue%2C%22confirmed%22%3Atrue%2C%22source%22%3A%22acceptedPacket%22%7D%2C%22stateAuthority%22%3A%7B%22selectedLaneId%22%3A%22apparel_accessories%22%2C%22confirmedLaneId%22%3A%22apparel_accessories%22%2C%22exportedLaneId%22%3A%22apparel_accessories%22%2C%22handoffParityStatus%22%3A%22matched%22%2C%22noStateMismatch%22%3Atrue%7D%2C%22prospect%22%3A%7B%22name%22%3A%22Ariat%20International%22%2C%22website%22%3A%22https%3A%2F%2Fwww.ariat.com%2F%22%7D%2C%22demoPath%22%3A%7B%22laneId%22%3A%22apparel_accessories%22%2C%22laneName%22%3A%22Apparel%20%26%20Accessories%22%2C%22proofAnchor%22%3A%22Style%20%2F%20SKU%20Matrix%22%2C%22familyKey%22%3A%22apparelAccessories%22%2C%22scenario%22%3A%22Style-to-Availability%20Readiness%22%2C%22confirmed%22%3Atrue%7D%2C%22storyInputs%22%3A%7B%22buyerNeed%22%3A%22Buyer%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.%20Prepare%20a%20concise%20demo%20story%20showing%20how%20NetSuite%20supports%20style%2FSKU%20readiness%2C%20size%2Fcolor%20availability%2C%20replenishment%20timing%2C%20and%20customer%20promise.%20Fetch%20status%3A%20runtime_resolved%20%2F%20Source%20URLs%3A%201%20%2F%20Signals%3A%20website%20shows%20boots%2C%20footwear%2C%20apparel%2C%20workwear%2C%20outdoor%20gear%2C%20style%2C%20size%2C%20and%20retail%20ecommerce%20signals%2C%20Core%20Boot%20and%20Apparel%20Style%20Matrix%2C%20Apparel%20and%20Footwear%20Style%22%2C%22conversationNotes%22%3A%22Buyer%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.%22%7D%2C%22runnerControls%22%3A%7B%22requestedMode%22%3A%22server_flagged_integrated_build_return%22%2C%22sandboxWriteModeRequiresOperatorEnablement%22%3Atrue%2C%22writeAuthority%22%3A%22governed_internal_runner_only%22%2C%22drawerAuthority%22%3A%22prepare_confirm_export_import_only%22%7D%2C%22requiredRecords%22%3A%5B%22customer%22%2C%22demoTransaction%22%2C%22heroItem%22%2C%22matrixProofItem%22%2C%22componentItem%22%5D%2C%22sourceHandoff%22%3A%7B%22schema%22%3A%22idb.dcc-runner-handoff-packet.v1%22%2C%22status%22%3A%22ready_for_dcc_suitelet_submission_review%22%2C%22executionMode%22%3A%22review_only_no_submit%22%2C%22selectedPack%22%3A%22apparelAccessories%22%2C%22selectedScenario%22%3A%22Style-to-Availability%20Readiness%22%7D%2C%22noRegression%22%3A%7B%22noDrawerWrites%22%3Atrue%2C%22noSuiteScriptInvocationFromDrawer%22%3Atrue%2C%22noTransactionWritesFromDrawer%22%3Atrue%2C%22noActiveOpenLinksWithoutRealUrls%22%3Atrue%7D%7D&custpage_idb_operator_queue_gate_json=%7B%22schema%22%3A%22idb.operator-queue-gate.v1%22%2C%22operatorOnly%22%3Atrue%2C%22operator%22%3A%7B%22name%22%3A%22Aaron%20Sunshine%22%2C%22reviewedAt%22%3A%22%22%7D%2C%22reviewDecision%22%3A%22operator_approved_queue_submit%22%2C%22typeToConfirm%22%3A%22QUEUE%20GOVERNED%20SANDBOX%20RUNNER%22%2C%22confirmedNoSubmit%22%3Afalse%2C%22confirmedDrawerNoWrite%22%3Atrue%2C%22confirmedSandboxAccount%22%3Atrue%2C%22drawerInvocationTokenAccepted%22%3Afalse%2C%22notes%22%3A%22%22%7D",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "oneSubmitLimit": {
+          "maxQueueSubmitAttempts": 1,
+          "duplicateIdempotencyBehavior": "poll_existing_runner_task",
+          "secondSubmitBehavior": "blocked_duplicate_submit"
+        },
+        "expectedFirstResponse": {
+          "allowed": [
+            "runnerTaskId",
+            "adapter_error"
+          ],
+          "disallowed": [
+            "record_urls_before_result_capture",
+            "fake_record_urls"
+          ],
+          "successStatus": "queued_result_capture_pending"
+        },
+        "resultCapturePollingHandoff": {
+          "nextControl": "check_runner_result",
+          "pendingStatus": "pending_runner_completion",
+          "completedImportGuard": "W151"
+        },
+        "w151ResultImportGuard": {
+          "required": true,
+          "acceptsOnlyCompletedRunnerResultJson": true,
+          "rejectsHandoffJson": true,
+          "requiresNumericInternalIds": true,
+          "requiresSupportedNetSuiteUrls": true,
+          "activeOpenLinksBeforeImport": 0
+        }
+      },
+      "adapterRequestJsonShape": {
+        "method": "POST",
+        "contentType": "application/x-www-form-urlencoded;charset=UTF-8",
+        "fields": [
+          "custpage_idb_confirmed_build_request_json",
+          "custpage_idb_operator_queue_gate_json"
+        ],
+        "confirmedBuildRequestSchema": "idb.confirmed-build-request.v1",
+        "operatorGateSchema": "idb.operator-queue-gate.v1",
+        "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+      },
+      "runnerTaskIdCapturePath": {
+        "submitted": true,
+        "queueSubmitted": true,
+        "runnerTaskIdCaptured": true,
+        "runnerTaskId": "task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "resultCaptureStatus": "pending_runner_completion",
+        "firstResponsePolicy": "runnerTaskId_or_adapter_error_not_record_urls",
+        "statePatch": {
+          "integratedBuildRunnerResult": {
+            "schema": "idb.governed-runner-adapter-result.v1",
+            "adapterVersion": "w144-governed-sandbox-queue-submit-pilot-behind-server-flags",
+            "runnerStatus": "queued_result_capture_pending",
+            "queueSubmitted": true,
+            "runnerTaskId": "task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories",
+            "resultCapture": {
+              "schema": "idb.runner-result-capture.v1",
+              "status": "pending_runner_completion",
+              "runnerTaskId": "task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories",
+              "finalGeneratedNamesReady": false,
+              "finalGeneratedNamesJson": null
+            },
+            "finalGeneratedNamesJson": null,
+            "activeOpenLinks": 0,
+            "createsRecords": false,
+            "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+            "status": "queued_result_capture_pending"
+          }
+        }
+      },
+      "resultPollingImportPath": {
+        "checkRunnerResultVisibleAfterRunnerTaskId": true,
+        "pollingEndpoint": "approved_server_adapter_result_capture_path",
+        "completedResultImportGuard": "W151",
+        "finalNamesMutationAllowedBeforeW151Import": false,
+        "openLinksBeforeCompletedImport": 0
+      },
+      "operatorSetupChecklist": [
+        "Deploy the W144 governed runner adapter Suitelet in sandbox.",
+        "Set CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, and QUEUE_SUBMIT_ENABLED true only on the sandbox adapter deployment.",
+        "Configure runner script id, deployment id, mapping id, folder id, subsidiary id, location id, optional work center search id, and result capture folder id on the W144 deployment.",
+        "Paste the approved W144 Suitelet endpoint into IDB Build.",
+        "Enter the sandbox account id in the allowlist and current account fields.",
+        "Set operator approval to approved and type QUEUE GOVERNED SANDBOX RUNNER.",
+        "Type AUTHORIZE ONE SANDBOX ADAPTER CALL and confirm the endpoint.",
+        "Submit once, then use Check runner result only after runnerTaskId is captured."
+      ],
+      "normalizedResponse": {
+        "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+        "status": "queued_pending",
+        "label": "Queued: result pending",
+        "message": "The approved adapter reports a runner task id, but result capture is still pending.",
+        "rawStatus": "pending_runner_completion",
+        "queueSubmitted": true,
+        "runnerTaskId": "task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "resultCaptureStatus": "pending_runner_completion",
+        "pollAttempted": false,
+        "finalGeneratedNamesJsonReady": false,
+        "finalGeneratedNamesJson": null,
+        "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+        "activeOpenLinks": 0,
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true
+        }
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "activeOpenLinks": 0,
+        "drawerCreatedRecords": false,
+        "drawerTransactionWrites": false,
+        "drawerWritesAttempted": false
+      },
+      "traceSamples": [
+        {
+          "event": "w189_w144_execution_gates",
+          "readyForOneCall": true,
+          "blockedReasons": [],
+          "targetAdapter": "W144",
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w189_w144_request_shape",
+          "requestConstructed": true,
+          "bodyFields": [
+            "custpage_idb_confirmed_build_request_json",
+            "custpage_idb_operator_queue_gate_json"
+          ],
+          "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+          "endpointReady": true,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w189_runner_taskid_capture",
+          "executionAllowed": true,
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories",
+          "resultCaptureStatus": "pending_runner_completion",
+          "finalGeneratedNamesJsonReady": false,
+          "mutatesFinalNames": false,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImport": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W189 captures runnerTaskId and pending result capture only. Real Open-link testing starts after W151 imports completed result JSON with numeric ids and URLs."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDirectDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "noActiveOpenLinksWithoutRealUrls": true
+      }
+    }
+  },
+  "visualTestingDecision": {
+    "visualTestingBlockedUntilCompletedResultImport": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W189 gets to runnerTaskId and pending result capture. Link testing waits for completed result JSON import."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W190: Governed Runner Result Capture Polling To Completed JSON",
+    "prompt": "Move through W190: Governed Runner Result Capture Polling To Completed JSON. Use the W189 real W144 server adapter execution wiring and captured runnerTaskId to implement the approved server-adapter polling path that checks result capture until completed runner result JSON is available. Keep pending and adapter-error states non-mutating, require W151-valid numeric internal ids and supported NetSuite URLs before import, preserve no drawer writes, no drawer transaction writes, no drawer-created records, no direct SuiteScript outside the approved server adapter path, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links before import. Output polling contract, completed result envelope shape, guarded harness, trace samples, W190 report, visual testing decision blocked until completed result import, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w189_blocked_without_config",
+      "pass": true,
+      "detail": "[\"approved_w144_endpoint\",\"server_flags_true\",\"sandbox_allowlist\",\"operator_approval\",\"one_call_authorization_phrase\"]"
+    },
+    {
+      "name": "w189_ready_uses_w144_not_w153",
+      "pass": true,
+      "detail": "W144 governed runner adapter"
+    },
+    {
+      "name": "w189_request_shape_is_w144_form_post",
+      "pass": true,
+      "detail": "{\"method\":\"POST\",\"contentType\":\"application/x-www-form-urlencoded;charset=UTF-8\",\"fields\":[\"custpage_idb_confirmed_build_request_json\",\"custpage_idb_operator_queue_gate_json\"],\"confirmedBuildRequestSchema\":\"idb.confirmed-build-request.v1\",\"operatorGateSchema\":\"idb.operator-queue-gate.v1\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\"}"
+    },
+    {
+      "name": "w189_operator_gates_ready",
+      "pass": true,
+      "detail": "[{\"id\":\"confirmed_build_request\",\"label\":\"Confirmed Build request\",\"ready\":true,\"evidence\":\"confirmed_ready_for_governed_runner\"},{\"id\":\"approved_w144_endpoint\",\"label\":\"Approved W144 endpoint URL\",\"ready\":true,\"evidence\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\"},{\"id\":\"server_flags_true\",\"label\":\"Server flags true\",\"ready\":true,\"evidence\":{\"CREATE_ENABLED\":true,\"GOVERNED_SANDBOX_WRITE_ENABLED\":true,\"QUEUE_SUBMIT_ENABLED\":true}},{\"id\":\"sandbox_allowlist\",\"label\":\"Sandbox account allowlist\",\"ready\":true,\"evidence\":{\"currentSandboxAccount\":\"TD3021666\",\"sandboxAllowlist\":[\"TD3021666\"]}},{\"id\":\"operator_approval\",\"label\":\"Operator approval gate\",\"ready\":true,\"evidence\":{\"schema\":\"idb.operator-queue-gate.v1\",\"operatorOnly\":true,\"operator\":{\"name\":\"Operator User\",\"reviewedAt\":\"\"},\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedNoSubmit\":false,\"confirmedDrawerNoWrite\":true,\"confirmedSandboxAccount\":true,\"drawerInvocationTokenAccepted\":false,\"notes\":\"\"}},{\"id\":\"one_call_authorization_phrase\",\"label\":\"One-call authorization phrase\",\"ready\":true,\"evidence\":{\"authorizationPhrase\":\"AUTHORIZE ONE SANDBOX ADAPTER CALL\",\"endpointConfirmed\":true,\"adapterApproved\":true}},{\"id\":\"idempotency_token\",\"label\":\"Idempotency token\",\"ready\":true,\"evidence\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\"},{\"id\":\"one_submit_limit\",\"label\":\"One-submit limit unused\",\"ready\":true,\"evidence\":{\"oneSubmitAlreadyUsed\":false,\"oneSubmitLimit\":{\"maxQueueSubmitAttempts\":1,\"duplicateIdempotencyBehavior\":\"poll_existing_runner_task\",\"secondSubmitBehavior\":\"blocked_duplicate_submit\"}}},{\"id\":\"rollback_flags\",\"label\":\"Rollback by disabling server flags\",\"ready\":true,\"evidence\":{\"owner\":\"server_deployment_flags\",\"action\":\"disable_CREATE_ENABLED_GOVERNED_SANDBOX_WRITE_ENABLED_QUEUE_SUBMIT_ENABLED\",\"flagsToDisable\":[\"CREATE_ENABLED\",\"GOVERNED_SANDBOX_WRITE_ENABLED\",\"QUEUE_SUBMIT_ENABLED\"]}},{\"id\":\"w151_import_guard\",\"label\":\"W151 completed-result import guard\",\"ready\":true,\"evidence\":{\"required\":true,\"acceptsOnlyCompletedRunnerResultJson\":true,\"rejectsHandoffJson\":true,\"requiresNumericInternalIds\":true,\"requiresSupportedNetSuiteUrls\":true,\"activeOpenLinksBeforeImport\":0}}]"
+    },
+    {
+      "name": "w189_execution_captures_runner_task_id",
+      "pass": true,
+      "detail": "{\"submitted\":true,\"queueSubmitted\":true,\"runnerTaskIdCaptured\":true,\"runnerTaskId\":\"task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"resultCaptureStatus\":\"pending_runner_completion\",\"firstResponsePolicy\":\"runnerTaskId_or_adapter_error_not_record_urls\",\"statePatch\":{\"integratedBuildRunnerResult\":{\"schema\":\"idb.governed-runner-adapter-result.v1\",\"adapterVersion\":\"w144-governed-sandbox-queue-submit-pilot-behind-server-flags\",\"runnerStatus\":\"queued_result_capture_pending\",\"queueSubmitted\":true,\"runnerTaskId\":\"task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"resultCapture\":{\"schema\":\"idb.runner-result-capture.v1\",\"status\":\"pending_runner_completion\",\"runnerTaskId\":\"task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"finalGeneratedNamesReady\":false,\"finalGeneratedNamesJson\":null},\"finalGeneratedNamesJson\":null,\"activeOpenLinks\":0,\"createsRecords\":false,\"generatedRecordOwner\":\"governed_dcc_runner_internal_build_engine\",\"status\":\"queued_result_capture_pending\"}}}"
+    },
+    {
+      "name": "w189_result_capture_pending_no_urls",
+      "pass": true,
+      "detail": "{\"checkRunnerResultVisibleAfterRunnerTaskId\":true,\"pollingEndpoint\":\"approved_server_adapter_result_capture_path\",\"completedResultImportGuard\":\"W151\",\"finalNamesMutationAllowedBeforeW151Import\":false,\"openLinksBeforeCompletedImport\":0}"
+    },
+    {
+      "name": "w189_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDirectDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

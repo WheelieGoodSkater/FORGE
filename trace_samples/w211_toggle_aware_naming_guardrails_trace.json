@@ -1,0 +1,65 @@
+{
+  "schema": "idb.w211-trace-samples.v1",
+  "samples": [
+    {
+      "event": "w211.naming_guard_rejected_completed_result",
+      "status": "toggle_vocabulary_guardrail_failed",
+      "violations": [
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "Summit Outdoor Supply Finished Good",
+          "reason": "Manufacturing, WIP, assembly, BOM, work order, routing, production, or ingredient vocabulary is not allowed when Manufacturing=false and WIP=false."
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "Summit Outdoor Supply Production Line",
+          "reason": "Manufacturing, WIP, assembly, BOM, work order, routing, production, or ingredient vocabulary is not allowed when Manufacturing=false and WIP=false."
+        },
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Ingredient Blend",
+          "reason": "Manufacturing, WIP, assembly, BOM, work order, routing, production, or ingredient vocabulary is not allowed when Manufacturing=false and WIP=false."
+        }
+      ]
+    },
+    {
+      "event": "w211.naming_guard_accepted_completed_result",
+      "status": "completed_runner_result_accepted",
+      "names": {
+        "customer": {
+          "type": "customer",
+          "name": "Summit Outdoor Supply Customer Account",
+          "internalId": "1722",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722"
+        },
+        "demoTransaction": {
+          "type": "salesorder",
+          "name": "SO2679",
+          "internalId": "80828",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+        },
+        "heroItem": {
+          "type": "inventoryitem",
+          "name": "Summit Outdoor Supply Channel Availability SKU",
+          "internalId": "1865",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865"
+        },
+        "matrixProofItem": {
+          "type": "inventoryitem",
+          "name": "Summit Outdoor Supply Dealer Replenishment Flow",
+          "internalId": "2545",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545"
+        },
+        "componentItem": {
+          "type": "inventoryitem",
+          "name": "Summit Outdoor Supply Allocation Support SKU",
+          "internalId": "2546",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546"
+        }
+      }
+    }
+  ]
+}

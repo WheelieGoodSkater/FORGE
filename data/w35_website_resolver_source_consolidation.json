@@ -1,0 +1,70 @@
+{
+  "schema": "idb.w35-website-resolver-source-consolidation.v1",
+  "status": "complete_create_still_disabled",
+  "objective": "Consolidate website-owned lane, package, product seed, product family, and demand moment into one governed resolver source before notes shape story, ROI, competition, objections, or run coaching.",
+  "canonicalResolver": {
+    "entrySchema": "idb.website-resolver-entry.v1",
+    "sourceFunction": "governedWebsiteResolver",
+    "profileFunction": "websiteSignalProfile",
+    "consumers": [
+      "websitePackageClassifier",
+      "productIntelligence",
+      "websiteProductNamingEvidence",
+      "laneSignalBreakdown",
+      "recordNamingAdvisoryRequest"
+    ],
+    "websiteOwnedFields": [
+      "laneId",
+      "productSeed",
+      "productFamily",
+      "demandMoment"
+    ],
+    "notesOwnedFields": [
+      "pain",
+      "roi",
+      "competitive",
+      "objections",
+      "runCoach"
+    ]
+  },
+  "authorityOrder": [
+    "known_domain_website_primary",
+    "website_category_classifier",
+    "website_secondary_hint",
+    "conversation_notes_story_only",
+    "industry_fallback"
+  ],
+  "w35Changes": [
+    "Wrapped existing known-domain and category classifiers into one normalized resolver catalog.",
+    "websiteSignalProfile now exposes resolverVersion, resolverSource, competing candidates, and explicit website-vs-notes ownership fields.",
+    "websitePackageClassifier now consumes the governed resolver output instead of independently re-matching category hints.",
+    "productIntelligence no longer carries a second website product pattern table; website package names come from websiteSignalProfile first.",
+    "YETI was added to website_signal_contract so runtime known-domain coverage matches the documented website-first contract."
+  ],
+  "nextBlocks": [
+    {
+      "block": "W36",
+      "name": "Executable Website Scenario Harness",
+      "goal": "Run every website_resolver_expectations.json case and prove expected lane, proof anchor, product seed, source, and anti-leak rules."
+    },
+    {
+      "block": "W37",
+      "name": "Notes Boundary Hardening",
+      "goal": "Make notes visibly power ROI/competitive/story while preventing notes from overriding website-owned package identity."
+    },
+    {
+      "block": "W38",
+      "name": "Real Pilot Result Evidence Review",
+      "goal": "Use W34 import on a real Customer + Proof Item sandbox response before transaction context design advances."
+    }
+  ],
+  "nonRegression": {
+    "mainDrawerCreatesNothing": true,
+    "mainSuiteletCreateEnabled": false,
+    "noLaneExpansion": true,
+    "noProofAnchorChange": true,
+    "noDccToggleChange": true,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnWebsitePackageIdentity": true
+  }
+}

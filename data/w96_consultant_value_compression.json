@@ -1,0 +1,38 @@
+{
+  "schema": "idb.w96-consultant-value-compression.v1",
+  "status": "complete_value_compression_ready",
+  "objective": "Make ROI / Competitive and live consultant guidance useful in under 30 seconds.",
+  "implemented": {
+    "liveRoiAnswerFirst": true,
+    "liveNetSuiteAnswerFirst": true,
+    "singleCautionVisible": true,
+    "auditDetailsCollapsedByDefault": true,
+    "unsupportedClaimBlockerCollapsedByDefault": true,
+    "traceAuditCoveragePreserved": true,
+    "dccHandoffRemainsPrimaryExecutionArtifact": true
+  },
+  "defaultVisibleSections": [
+    "Live value answer",
+    "One ROI answer",
+    "One NetSuite answer",
+    "One caution"
+  ],
+  "collapsedAuditSections": [
+    "Why this ROI",
+    "Competitive detail and NetSuite proof stack",
+    "Unsupported-claim blocker",
+    "Talk track, objections, and discovery"
+  ],
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesRole": "story_only",
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true,
+    "stateAuthorityPreserved": true,
+    "nllmAdvisoryOnly": true
+  },
+  "bestNextPrompt": "Move through W97: Run Selector Chip Interaction. Move Open / Prove / Handle objection / Close value to the top of Run as selector chips that dynamically update the live Say / Show / Close script, while preserving W92 state authority, DCC handoff boundaries, no IDB writes, no SuiteScript invocation, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output compressed Run interaction changes, trace coverage, validator gates, W97 report, and best next Codex prompt."
+}

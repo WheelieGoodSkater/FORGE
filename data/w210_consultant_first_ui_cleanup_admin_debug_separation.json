@@ -1,0 +1,224 @@
+{
+  "schema": "idb.w210-consultant-first-ui-cleanup-admin-debug-separation.report.v1",
+  "status": "PASS_W210_CONSULTANT_FIRST_UI_CLEANUP",
+  "consultantFirstUiContract": {
+    "normalBuildTabMode": "production_consultant_tool",
+    "visibleSurfaces": [
+      "Customer / Prospect Name",
+      "Website",
+      "Conversation Notes",
+      "Create new item",
+      "Manufacturing",
+      "WIP",
+      "Build demo records",
+      "Check status after build starts",
+      "Finish build after records are ready",
+      "Run demo",
+      "Open links after records exist"
+    ],
+    "simpleStatusCopy": [
+      {
+        "state": "ready_to_build",
+        "label": "Ready to build",
+        "copy": "Click Build demo records."
+      },
+      {
+        "state": "building_records",
+        "label": "Building records",
+        "copy": "IDB is preparing the demo records."
+      },
+      {
+        "state": "still_building",
+        "label": "Still building",
+        "copy": "Use Check status if the page has not updated."
+      },
+      {
+        "state": "records_ready",
+        "label": "Records ready",
+        "copy": "Finish the build to show final links, or run the demo when links are visible."
+      },
+      {
+        "state": "build_needs_admin_setup",
+        "label": "Build needs admin setup",
+        "copy": "Ask an admin to finish setup."
+      },
+      {
+        "state": "build_failed_ask_admin",
+        "label": "Build failed, ask admin",
+        "copy": "The build stopped safely."
+      }
+    ],
+    "hiddenNormalSurfaces": [
+      "W144 endpoint",
+      "server flags",
+      "sandbox allowlist",
+      "operator phrases",
+      "idempotency token",
+      "runnerTaskId",
+      "raw adapter status",
+      "result-capture plumbing",
+      "retry diagnostics",
+      "manual result JSON import",
+      "debug handoff export",
+      "Pilot evidence checklist"
+    ],
+    "forbiddenNormalLanguage": [
+      "W144",
+      "endpoint",
+      "operator phrase",
+      "runnerTaskId",
+      "idempotency",
+      "result JSON",
+      "W151",
+      "sandbox allowlist",
+      "server flags",
+      "debug handoff"
+    ]
+  },
+  "adminDebugSeparationMap": [
+    {
+      "surface": "Build adapter endpoint and flags",
+      "normalFlow": "hidden",
+      "adminDebug": "saved setup panel"
+    },
+    {
+      "surface": "Operator authorization and sandbox account",
+      "normalFlow": "hidden",
+      "adminDebug": "support-only setup evidence"
+    },
+    {
+      "surface": "Runner task and polling payloads",
+      "normalFlow": "simple build status",
+      "adminDebug": "diagnostic cards"
+    },
+    {
+      "surface": "Manual completed result import",
+      "normalFlow": "hidden",
+      "adminDebug": "fallback recovery only"
+    },
+    {
+      "surface": "Trace and handoff exports",
+      "normalFlow": "trace export only",
+      "adminDebug": "full evidence exports"
+    },
+    {
+      "surface": "Retry, malformed result, adapter errors",
+      "normalFlow": "Build failed, ask admin",
+      "adminDebug": "actionable recovery detail"
+    },
+    {
+      "surface": "Image enrichment",
+      "normalFlow": "disabled",
+      "adminDebug": "optional future enrichment"
+    }
+  ],
+  "implementationChanges": [
+    "Renamed normal navigation from Build handoff to Build records.",
+    "Simplified normal Build copy to customer-facing build status and record-link readiness.",
+    "Moved export, evidence, result JSON, retry, and adapter controls behind admin/debug setup mode.",
+    "Kept automatic runner submit, polling, internal W151 validation, and Open-link rendering intact.",
+    "Kept runner image lookup disabled by default through the W209 runner contract."
+  ],
+  "regressionHarness": [
+    {
+      "id": "w210_contract_declares_consultant_first_mode",
+      "pass": true,
+      "evidence": "[\"Customer / Prospect Name\",\"Website\",\"Conversation Notes\",\"Create new item\",\"Manufacturing\",\"WIP\",\"Build demo records\",\"Check status after build starts\",\"Finish build after records are ready\",\"Run demo\",\"Open links after records exist\"]"
+    },
+    {
+      "id": "normal_build_uses_production_language",
+      "pass": true,
+      "evidence": "Normal Build is consultant-first."
+    },
+    {
+      "id": "normal_build_hides_adapter_plumbing",
+      "pass": true,
+      "evidence": "No adapter, raw result, or operator vocabulary is visible in normal Build."
+    },
+    {
+      "id": "normal_trace_hides_result_import_and_debug_handoff",
+      "pass": true,
+      "evidence": "Trace normal mode keeps only support trace export."
+    },
+    {
+      "id": "normal_plan_renames_build_handoff",
+      "pass": true,
+      "evidence": "Plan CTA uses production language."
+    },
+    {
+      "id": "admin_debug_keeps_recovery_controls",
+      "pass": true,
+      "evidence": "Admin/debug retains diagnostics and recovery controls."
+    },
+    {
+      "id": "status_controls_are_stage_gated",
+      "pass": true,
+      "evidence": "Check and Finish are shown only at their stages."
+    },
+    {
+      "id": "open_links_wait_for_import",
+      "pass": true,
+      "evidence": "completed_runner_result_accepted"
+    },
+    {
+      "id": "automatic_build_regression_preserved",
+      "pass": true,
+      "evidence": "{\"automaticRunnerSubmitPreserved\":true,\"pollingPreserved\":true,\"w151ImportGuardInternal\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedServerAdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"openLinksOnlyAfterRealUrls\":true,\"imageLookupDisabledByDefault\":true}"
+    },
+    {
+      "id": "no_drawer_write_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"automaticRunnerSubmitPreserved\":true,\"pollingPreserved\":true,\"w151ImportGuardInternal\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedServerAdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"openLinksOnlyAfterRealUrls\":true,\"imageLookupDisabledByDefault\":true}"
+    },
+    {
+      "id": "image_lookup_disabled_by_default",
+      "pass": true,
+      "evidence": "W209 image lookup removal remains in force."
+    }
+  ],
+  "traceSamples": [
+    {
+      "event": "w210_consultant_build_surface_rendered",
+      "visibleSurfaces": [
+        "Customer / Prospect Name",
+        "Website",
+        "Conversation Notes",
+        "Create new item",
+        "Manufacturing",
+        "WIP",
+        "Build demo records",
+        "Check status after build starts",
+        "Finish build after records are ready",
+        "Run demo",
+        "Open links after records exist"
+      ],
+      "adminDebugHidden": true,
+      "simpleStatus": "Ready to build"
+    },
+    {
+      "event": "w210_admin_debug_surface_available",
+      "setupEditModeOnly": true,
+      "hiddenNormalSurfaces": [
+        "W144 endpoint",
+        "server flags",
+        "sandbox allowlist",
+        "operator phrases",
+        "idempotency token",
+        "runnerTaskId",
+        "raw adapter status",
+        "result-capture plumbing",
+        "retry diagnostics",
+        "manual result JSON import",
+        "debug handoff export",
+        "Pilot evidence checklist"
+      ]
+    },
+    {
+      "event": "w210_completed_links_rendered",
+      "finalNamesImported": false,
+      "openLinksOnlyAfterImport": true
+    }
+  ],
+  "releaseReadinessDecision": "release_candidate_for_consultant_first_build_smoke",
+  "nextPrompt": "Move through W211: Consultant-Normal Production Smoke With Hidden Admin Config."
+}

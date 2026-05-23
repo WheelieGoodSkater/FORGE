@@ -1,0 +1,142 @@
+{
+  "schema": "idb.w83-dcc-handoff-export-operator-review-ux-trace.v1",
+  "generated": "2026-05-17T21:41:04.256Z",
+  "decision": "PASS",
+  "exportPayload": {
+    "sourceContract": "dccRunnerHandoffPacketV1",
+    "filenamePrefix": "idb-dcc-runner-handoff-packet",
+    "executionMode": "review_only_no_submit",
+    "containsSuiteletEntryPayload": true,
+    "containsDccOwnedConfigParams": true,
+    "containsScheduledRunnerPreview": true,
+    "containsOperatorChecklist": true
+  },
+  "uiSummary": {
+    "reviewCard": "DCC handoff export",
+    "showsBlockedOrConfirmedStatus": true,
+    "showsExactSuiteletFormParams": true,
+    "showsDccOwnedConfigParams": true,
+    "showsScheduledRunnerPreviewParams": true,
+    "showsOperatorChecklist": true
+  },
+  "blockedSampleStatus": "blocked_until_confirmed_handoff",
+  "confirmedSampleStatus": "ready_for_dcc_suitelet_submission_review",
+  "noRegression": {
+    "noSuiteScriptInvocationFromIdb": true,
+    "noDccRunnerMechanicsRewrite": true,
+    "noIdbTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequiredBeforeEligible": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W84: DCC Operator Dry-Run Handoff Smoke",
+    "prompt": "Move through W84: DCC Operator Dry-Run Handoff Smoke. Use the exported dccRunnerHandoffPacketV1 JSON to build an operator dry-run checklist against the Demo Command Center Suitelet without invoking SuiteScript from IDB: verify form params, DCC-owned config params, consultant confirmation gate, review-only mode, DCC runner queue ownership, and blocked/no-submit behavior. Preserve no IDB writes, no DCC runner rewrite, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, and DCC ownership of item names, assemblies, BOMs, locations, planning, routing/WIP, and CSV/Sales Order mechanics. Output dry-run checklist, blocked and confirmed packet samples, validator gates, W84 report, and best next Codex prompt."
+  },
+  "validatorResults": [
+    {
+      "name": "w83_inherits_w82_parameter_map",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w82-dcc-runner-handoff-parameter-map.v1\",\"status\":\"dcc_runner_handoff_parameter_map_ready_review_only\"}"
+    },
+    {
+      "name": "w83_runtime_contains_function_renderdcchandoffoperatorreview",
+      "pass": true,
+      "detail": "function renderDccHandoffOperatorReview"
+    },
+    {
+      "name": "w83_runtime_contains_build_handoff",
+      "pass": true,
+      "detail": "Build Handoff"
+    },
+    {
+      "name": "w83_runtime_contains_export_build_handoff",
+      "pass": true,
+      "detail": "Export build handoff"
+    },
+    {
+      "name": "w83_runtime_contains_exact_preview_and_runner_params",
+      "pass": true,
+      "detail": "Exact preview and runner params"
+    },
+    {
+      "name": "w83_runtime_contains_build_owned_config",
+      "pass": true,
+      "detail": "Build-owned config"
+    },
+    {
+      "name": "w83_runtime_contains_scheduled_runner_params",
+      "pass": true,
+      "detail": "Scheduled runner params"
+    },
+    {
+      "name": "w83_runtime_contains_operator_checklist",
+      "pass": true,
+      "detail": "Operator checklist"
+    },
+    {
+      "name": "w83_runtime_contains_data_idb_export_dcc_handoff",
+      "pass": true,
+      "detail": "data-idb-export-dcc-handoff"
+    },
+    {
+      "name": "w83_runtime_contains_function_exportdccrunnerhandoffpacket",
+      "pass": true,
+      "detail": "function exportDccRunnerHandoffPacket"
+    },
+    {
+      "name": "w83_runtime_contains_idb_dcc_runner_handoff_packet",
+      "pass": true,
+      "detail": "idb-dcc-runner-handoff-packet"
+    },
+    {
+      "name": "w83_runtime_contains_dcc_runner_handoff_exported",
+      "pass": true,
+      "detail": "dcc_runner_handoff_exported"
+    },
+    {
+      "name": "w83_runtime_contains_suitescriptinvocationfromidb_false",
+      "pass": true,
+      "detail": "suiteScriptInvocationFromIdb: false"
+    },
+    {
+      "name": "w83_runtime_contains_noidbtransactionwrite_true",
+      "pass": true,
+      "detail": "noIdbTransactionWrite: true"
+    },
+    {
+      "name": "w83_export_uses_handoff_packet_contract",
+      "pass": true,
+      "detail": "exportDccRunnerHandoffPacket payload source"
+    },
+    {
+      "name": "w83_review_renders_operator_card",
+      "pass": true,
+      "detail": "renderReviewView operator card"
+    },
+    {
+      "name": "w83_exact_form_params_visible",
+      "pass": true,
+      "detail": "Suitelet entry params"
+    },
+    {
+      "name": "w83_dcc_owned_config_visible",
+      "pass": true,
+      "detail": "[\"custscriptv3_reset_subsidiary\",\"custscript_v3_reset_location\",\"custscript_v3_runner_script_id\",\"custscript_v3_runner_deploy_id\",\"custscript_csv_mapping_id\",\"custscript_csv_folder_id\",\"custscript_so_savedsearch_id\",\"custscript_wo_savedsearch_id\"]"
+    },
+    {
+      "name": "w83_scheduled_runner_preview_visible",
+      "pass": true,
+      "detail": "scheduled runner preview params"
+    },
+    {
+      "name": "w83_blocked_confirmed_samples_review_only",
+      "pass": true,
+      "detail": "{\"blocked\":\"blocked_until_confirmed_handoff\",\"confirmed\":\"ready_for_dcc_suitelet_submission_review\"}"
+    },
+    {
+      "name": "w83_consultant_confirmation_gate_preserved",
+      "pass": true,
+      "detail": "{\"blocked\":\"blocked_until_confirmed_handoff\",\"confirmed\":\"ready_for_dcc_suitelet_submission_review\"}"
+    }
+  ]
+}

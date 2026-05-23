@@ -1,0 +1,40 @@
+{
+  "schema": "idb.w148-governed-runner-result-capture-final-url-import-trace.v1",
+  "decision": "PASS_RESULT_CAPTURE_VALIDATED__FINAL_URLS_IMPORTED",
+  "runnerTaskId": "task_w147_real_sandbox_001",
+  "resultCaptureStatus": "completed",
+  "finalGeneratedNamesReady": true,
+  "finalGeneratedNameIds": {
+    "customer": "91201",
+    "salesOrder": "91202",
+    "heroItem": "91203",
+    "matrixItem": "91204",
+    "componentItem": "91205"
+  },
+  "importEvidence": {
+    "schema": "idb.w148-final-url-import-evidence.v1",
+    "normalizedPendingValid": false,
+    "normalizedMalformedValid": false,
+    "normalizedCompleteValid": true,
+    "allCapturedRecordsOpenable": true,
+    "finalNamesImported": true,
+    "navigationStatus": "using_dcc_final_names",
+    "buildUsesImportedNames": true,
+    "runUsesImportedNames": true,
+    "linkAuthoritySummary": {
+      "verified_openable": 5
+    },
+    "openAnchorCount": 9,
+    "linkPendingCount": 0
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredForRecordPageLanding": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W148 validates and imports numeric ids plus supported URLs into IDB. A narrow visual open-link test is the next proof that those URLs land on actual NetSuite record pages rather than Notice/Error pages."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W149: Targeted Final URL Open-Link Visual Verification",
+    "prompt": "Move through W149: Targeted Final URL Open-Link Visual Verification. Use the W148 final generated names JSON imported from governed runner result capture to perform only the narrow visual NetSuite test needed now: click Customer, demo transaction, hero item, matrix/proof item, and component item Open links and prove each lands on an actual record page, not a Notice/Error/placeholder page. Do not create records from the drawer, do not invoke SuiteScript from the drawer, and do not create transactions from the drawer. Preserve consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output targeted visual evidence, record page landing checklist, trace samples, W149 report, broader visual testing decision, and best next Codex prompt."
+  }
+}

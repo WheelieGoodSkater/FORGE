@@ -1,0 +1,419 @@
+{
+  "schema": "idb.w217-mode-aware-live-review-smoke-harness.v1",
+  "status": "pass",
+  "passCount": 9,
+  "total": 9,
+  "results": [
+    {
+      "id": "packet_has_three_representative_cases",
+      "pass": true,
+      "evidence": "complete_non_manufacturing, complete_manufacturing, partial_food_batch_wip"
+    },
+    {
+      "id": "complete_non_manufacturing_case_is_operator_readable",
+      "pass": true,
+      "evidence": "retail_availability: Build results are ready."
+    },
+    {
+      "id": "complete_manufacturing_case_has_mode_aware_labels",
+      "pass": true,
+      "evidence": "Customer, Sales Order, Finished/Assembly Item, BOM or Assembly Structure, Component Item"
+    },
+    {
+      "id": "partial_food_batch_wip_case_is_honest_and_debuggable",
+      "pass": true,
+      "evidence": "Food batch records are ready. WIP detail was not returned.; Customer, Sales Order, Finished Food/Batch Item, Formula or Batch Structure, Ingredient Item, Lot Context"
+    },
+    {
+      "id": "normal_consultant_copy_hides_internal_terms",
+      "pass": true,
+      "evidence": "Build results are ready. Use the returned records with real Open links. Build results are ready. Open Customer / Open Sales Order / Open Item Customer: Northstar Trail Outfitters Customer Account -> Sales Order: Northstar Trail Outfitters SO217 -> Product SKU: Northstar Trail Outfitters Product Availability SKU -> Availability Flow: Northstar Trail Outfitters Dealer Replenishment Flow | Build results are ready. Use the returned records with real Open links. Build results are ready. Open Customer / Open Sales Order / Open Item Customer: Evergreen Equipment Works Customer Account -> Sales Order: Evergreen Equipment Works SO217 -> Finished/Assembly Item: Evergreen Equipment Works Finished Good -> BOM or Assembly Structure: Evergreen Equipment Works Assembly Structure | Food batch records are ready. WIP detail was not returned. Use the returned food batch, ingredient, formula, and lot records. Do not claim WIP detail unless those records are returned. Use available records Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned Customer: McCormick Customer Account -> Sales Order: McCormick SO217 -> Finished Food/Batch Item: McCormick Finished Food Batch Item -> Formula or Batch Structure: McCormick Formula Batch Structure"
+    },
+    {
+      "id": "admin_debug_is_only_visible_for_expected_partial_case",
+      "pass": true,
+      "evidence": "complete_non_manufacturing:false, complete_manufacturing:false, partial_food_batch_wip:true"
+    },
+    {
+      "id": "run_next_steps_are_concise_and_record_backed",
+      "pass": true,
+      "evidence": "Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned"
+    },
+    {
+      "id": "visible_records_are_openable_only",
+      "pass": true,
+      "evidence": "complete_non_manufacturing:5, complete_manufacturing:5, partial_food_batch_wip:6"
+    },
+    {
+      "id": "w214_w215_w216_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"w151ImportGuardPreserved\":true,\"semanticRoleMappingPreserved\":true,\"modeAwareNamingGuardrailsPreserved\":true,\"dynamicRecordDisplayPreserved\":true,\"consultantPartialResultLanguagePreserved\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true,\"nllmAdvisoryOnly\":true}"
+    }
+  ],
+  "packet": {
+    "schema": "idb.w217-mode-aware-live-review-smoke-packet.v1",
+    "status": "mode_aware_live_review_smoke_packet_ready",
+    "generatedAt": "2026-05-19T22:47:40.804Z",
+    "purpose": "Targeted operator smoke packet for W214/W215/W216 Review and Run behavior.",
+    "smokeCases": [
+      {
+        "label": "Complete Non-Manufacturing Retail Availability",
+        "caseType": "complete_non_manufacturing",
+        "resolvedOperatingMode": "retail_availability",
+        "selectedToggles": {
+          "schema": "idb.w214-selected-build-toggles.v1",
+          "createNewHeroItem": true,
+          "enableManufacturing": false,
+          "enableWip": false,
+          "selectedLaneId": "dealer_hardgoods"
+        },
+        "returnedRecordRoles": [
+          "customer",
+          "sales_order",
+          "hero_sku",
+          "availability_or_replenishment_flow",
+          "location_or_channel_context"
+        ],
+        "consultantReviewHeadline": "Build results are ready.",
+        "consultantRunNextSteps": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item"
+        ],
+        "visibleRecordLabels": [
+          "Customer",
+          "Sales Order",
+          "Product SKU",
+          "Availability Flow",
+          "Channel Context"
+        ],
+        "visibleRecords": [
+          {
+            "label": "Customer",
+            "role": "customer",
+            "name": "Northstar Trail Outfitters Customer Account",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=3001",
+            "internalId": "3001",
+            "openable": true
+          },
+          {
+            "label": "Sales Order",
+            "role": "sales_order",
+            "name": "Northstar Trail Outfitters SO217",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=90001",
+            "internalId": "90001",
+            "openable": true
+          },
+          {
+            "label": "Product SKU",
+            "role": "hero_sku",
+            "name": "Northstar Trail Outfitters Product Availability SKU",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4200",
+            "internalId": "4200",
+            "openable": true
+          },
+          {
+            "label": "Availability Flow",
+            "role": "availability_or_replenishment_flow",
+            "name": "Northstar Trail Outfitters Dealer Replenishment Flow",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4201",
+            "internalId": "4201",
+            "openable": true
+          },
+          {
+            "label": "Channel Context",
+            "role": "location_or_channel_context",
+            "name": "Northstar Trail Outfitters Channel Context",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4202",
+            "internalId": "4202",
+            "openable": true
+          }
+        ],
+        "openLinkEligibility": {
+          "visibleRecordsOnlyAfterValidImport": true,
+          "openableRecordCount": 5,
+          "nonOpenableHiddenFromConsultant": true
+        },
+        "adminDebugOnlyDiagnostics": {
+          "visible": false,
+          "diagnostics": {}
+        },
+        "expectedForbiddenNormalUiTerms": [
+          "W144",
+          "runnerTaskId",
+          "raw JSON",
+          "W151",
+          "semantic guard",
+          "mode contract"
+        ],
+        "normalConsultantCopy": "Build results are ready. Use the returned records with real Open links. Build results are ready. Open Customer / Open Sales Order / Open Item Customer: Northstar Trail Outfitters Customer Account -> Sales Order: Northstar Trail Outfitters SO217 -> Product SKU: Northstar Trail Outfitters Product Availability SKU -> Availability Flow: Northstar Trail Outfitters Dealer Replenishment Flow",
+        "boundaries": {
+          "noDrawerWrites": true,
+          "noDrawerCreatedRecords": true,
+          "noDrawerTransactionWrites": true,
+          "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+          "runnerOwnsGeneratedRecords": true,
+          "nllmAdvisoryOnly": true,
+          "imageLookupDisabledByDefault": true,
+          "adminDebugDiagnosticsHiddenWhenOff": true
+        }
+      },
+      {
+        "label": "Complete Discrete Manufacturing",
+        "caseType": "complete_manufacturing",
+        "resolvedOperatingMode": "discrete_manufacturing",
+        "selectedToggles": {
+          "schema": "idb.w214-selected-build-toggles.v1",
+          "createNewHeroItem": true,
+          "enableManufacturing": true,
+          "enableWip": false,
+          "selectedLaneId": "industrial_equipment"
+        },
+        "returnedRecordRoles": [
+          "customer",
+          "sales_order",
+          "finished_or_assembly_item",
+          "bom_or_assembly_structure",
+          "bom_or_assembly_structure",
+          "bom_or_assembly_structure",
+          "component_item"
+        ],
+        "consultantReviewHeadline": "Build results are ready.",
+        "consultantRunNextSteps": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item"
+        ],
+        "visibleRecordLabels": [
+          "Customer",
+          "Sales Order",
+          "Finished/Assembly Item",
+          "BOM or Assembly Structure",
+          "Component Item"
+        ],
+        "visibleRecords": [
+          {
+            "label": "Customer",
+            "role": "customer",
+            "name": "Evergreen Equipment Works Customer Account",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=3004",
+            "internalId": "3004",
+            "openable": true
+          },
+          {
+            "label": "Sales Order",
+            "role": "sales_order",
+            "name": "Evergreen Equipment Works SO217",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=90004",
+            "internalId": "90004",
+            "openable": true
+          },
+          {
+            "label": "Finished/Assembly Item",
+            "role": "finished_or_assembly_item",
+            "name": "Evergreen Equipment Works Finished Good",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4500",
+            "internalId": "4500",
+            "openable": true
+          },
+          {
+            "label": "BOM or Assembly Structure",
+            "role": "bom_or_assembly_structure",
+            "name": "Evergreen Equipment Works Assembly Structure",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4501",
+            "internalId": "4501",
+            "openable": true
+          },
+          {
+            "label": "Component Item",
+            "role": "component_item",
+            "name": "Evergreen Equipment Works Component Item",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4502",
+            "internalId": "4502",
+            "openable": true
+          }
+        ],
+        "openLinkEligibility": {
+          "visibleRecordsOnlyAfterValidImport": true,
+          "openableRecordCount": 5,
+          "nonOpenableHiddenFromConsultant": true
+        },
+        "adminDebugOnlyDiagnostics": {
+          "visible": false,
+          "diagnostics": {}
+        },
+        "expectedForbiddenNormalUiTerms": [
+          "W144",
+          "runnerTaskId",
+          "raw JSON",
+          "W151",
+          "semantic guard",
+          "mode contract"
+        ],
+        "normalConsultantCopy": "Build results are ready. Use the returned records with real Open links. Build results are ready. Open Customer / Open Sales Order / Open Item Customer: Evergreen Equipment Works Customer Account -> Sales Order: Evergreen Equipment Works SO217 -> Finished/Assembly Item: Evergreen Equipment Works Finished Good -> BOM or Assembly Structure: Evergreen Equipment Works Assembly Structure",
+        "boundaries": {
+          "noDrawerWrites": true,
+          "noDrawerCreatedRecords": true,
+          "noDrawerTransactionWrites": true,
+          "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+          "runnerOwnsGeneratedRecords": true,
+          "nllmAdvisoryOnly": true,
+          "imageLookupDisabledByDefault": true,
+          "adminDebugDiagnosticsHiddenWhenOff": true
+        }
+      },
+      {
+        "label": "Partial Food Batch WIP",
+        "caseType": "partial_food_batch_wip",
+        "resolvedOperatingMode": "food_batch_manufacturing",
+        "selectedToggles": {
+          "schema": "idb.w214-selected-build-toggles.v1",
+          "createNewHeroItem": true,
+          "enableManufacturing": true,
+          "enableWip": true,
+          "selectedLaneId": "food_beverage"
+        },
+        "returnedRecordRoles": [
+          "customer",
+          "sales_order",
+          "finished_food_or_batch_item",
+          "formula_or_batch_structure",
+          "ingredient_or_component_item",
+          "lot_or_availability_context"
+        ],
+        "consultantReviewHeadline": "Food batch records are ready. WIP detail was not returned.",
+        "consultantRunNextSteps": [
+          "Open Customer",
+          "Open Sales Order",
+          "Open Item",
+          "Use available records",
+          "WIP detail not returned"
+        ],
+        "visibleRecordLabels": [
+          "Customer",
+          "Sales Order",
+          "Finished Food/Batch Item",
+          "Formula or Batch Structure",
+          "Ingredient Item",
+          "Lot Context"
+        ],
+        "visibleRecords": [
+          {
+            "label": "Customer",
+            "role": "customer",
+            "name": "McCormick Customer Account",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=3006",
+            "internalId": "3006",
+            "openable": true
+          },
+          {
+            "label": "Sales Order",
+            "role": "sales_order",
+            "name": "McCormick SO217",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=90006",
+            "internalId": "90006",
+            "openable": true
+          },
+          {
+            "label": "Finished Food/Batch Item",
+            "role": "finished_food_or_batch_item",
+            "name": "McCormick Finished Food Batch Item",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4700",
+            "internalId": "4700",
+            "openable": true
+          },
+          {
+            "label": "Formula or Batch Structure",
+            "role": "formula_or_batch_structure",
+            "name": "McCormick Formula Batch Structure",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4701",
+            "internalId": "4701",
+            "openable": true
+          },
+          {
+            "label": "Ingredient Item",
+            "role": "ingredient_or_component_item",
+            "name": "McCormick Ingredient Item",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4702",
+            "internalId": "4702",
+            "openable": true
+          },
+          {
+            "label": "Lot Context",
+            "role": "lot_or_availability_context",
+            "name": "McCormick Lot Context",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=4703",
+            "internalId": "4703",
+            "openable": true
+          }
+        ],
+        "openLinkEligibility": {
+          "visibleRecordsOnlyAfterValidImport": true,
+          "openableRecordCount": 6,
+          "nonOpenableHiddenFromConsultant": true
+        },
+        "adminDebugOnlyDiagnostics": {
+          "visible": true,
+          "diagnostics": {
+            "missingBomOrAssemblyStructure": true,
+            "missingWorkOrderOrWipObject": true,
+            "missingRouting": true,
+            "missingWorkCenter": true,
+            "mappedRoles": [
+              "customer",
+              "sales_order",
+              "finished_food_or_batch_item",
+              "formula_or_batch_structure",
+              "ingredient_or_component_item",
+              "lot_or_availability_context"
+            ],
+            "resolvedOperatingMode": "food_batch_manufacturing",
+            "modeConfidence": "high"
+          }
+        },
+        "expectedForbiddenNormalUiTerms": [
+          "W144",
+          "runnerTaskId",
+          "raw JSON",
+          "W151",
+          "semantic guard",
+          "mode contract"
+        ],
+        "normalConsultantCopy": "Food batch records are ready. WIP detail was not returned. Use the returned food batch, ingredient, formula, and lot records. Do not claim WIP detail unless those records are returned. Use available records Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned Customer: McCormick Customer Account -> Sales Order: McCormick SO217 -> Finished Food/Batch Item: McCormick Finished Food Batch Item -> Formula or Batch Structure: McCormick Formula Batch Structure",
+        "boundaries": {
+          "noDrawerWrites": true,
+          "noDrawerCreatedRecords": true,
+          "noDrawerTransactionWrites": true,
+          "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+          "runnerOwnsGeneratedRecords": true,
+          "nllmAdvisoryOnly": true,
+          "imageLookupDisabledByDefault": true,
+          "adminDebugDiagnosticsHiddenWhenOff": false
+        }
+      }
+    ],
+    "normalUiForbiddenTerms": [
+      "W144",
+      "runnerTaskId",
+      "raw JSON",
+      "W151",
+      "semantic guard",
+      "mode contract",
+      "internal role arrays"
+    ],
+    "noRegression": {
+      "w151ImportGuardPreserved": true,
+      "semanticRoleMappingPreserved": true,
+      "modeAwareNamingGuardrailsPreserved": true,
+      "dynamicRecordDisplayPreserved": true,
+      "consultantPartialResultLanguagePreserved": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerTransactionWrites": true,
+      "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+      "runnerOwnsGeneratedRecords": true,
+      "imageLookupDisabledByDefault": true,
+      "nllmAdvisoryOnly": true
+    },
+    "visualTestingDecision": "No broad visual testing for W217; this is a targeted operator-readable smoke packet backed by harness assertions."
+  }
+}

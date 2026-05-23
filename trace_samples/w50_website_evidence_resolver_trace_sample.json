@@ -1,0 +1,359 @@
+{
+  "schema": "idb.website-evidence-resolver-trace-sample.v1",
+  "resolverVersion": "w50.website-evidence.v1",
+  "generated": "2026-05-12T00:00:00.000Z",
+  "writeAuthority": "none",
+  "nllmAdvisoryOnly": true,
+  "cases": [
+    {
+      "id": "w50_recommended_product_brand",
+      "inputUrl": "trekbikes.com",
+      "normalizedUrl": "https://trekbikes.com/",
+      "domain": "trekbikes.com",
+      "fetchStatus": "fetched",
+      "fetchErrors": [],
+      "pagesSampled": [
+        {
+          "role": "homepage",
+          "url": "https://trekbikes.com/",
+          "status": 200
+        },
+        {
+          "role": "navigation_discovered_category_or_products_page",
+          "url": "https://trekbikes.com/us/en_US/bikes/",
+          "status": 200
+        }
+      ],
+      "extractedEvidence": {
+        "pageTitle": "Trek Bikes",
+        "metaDescription": "Bikes, cycling gear, and bicycle equipment.",
+        "h1Text": [
+          "Bikes"
+        ],
+        "h2Text": [
+          "Road bikes",
+          "Mountain bikes"
+        ],
+        "navigationLabels": [
+          "Bikes",
+          "Equipment",
+          "Stores"
+        ],
+        "productCategoryTerms": [
+          "bikes",
+          "cycling gear",
+          "helmets",
+          "components"
+        ],
+        "industryLanguage": [
+          "dealer",
+          "retail",
+          "cycling"
+        ],
+        "locationServiceClues": [
+          "stores",
+          "bike service"
+        ],
+        "ecommerceSignals": [
+          "cart",
+          "shop"
+        ],
+        "manufacturingSignals": [],
+        "distributionSignals": [
+          "dealer locator"
+        ]
+      },
+      "signals": {
+        "laneCandidates": [
+          {
+            "laneId": "dealer_hardgoods",
+            "score": 0.91,
+            "evidence": [
+              "Bikes",
+              "Equipment",
+              "dealer locator"
+            ]
+          }
+        ],
+        "productSeed": "Bicycle SKU",
+        "productFamily": "Bicycle Dealer Hardgoods",
+        "demandMoment": "dealer inventory and replenishment readiness"
+      },
+      "confidence": {
+        "state": "recommended",
+        "score": 0.91,
+        "requiresConfirmation": false
+      },
+      "failureState": null,
+      "sourceUrls": [
+        "https://trekbikes.com/",
+        "https://trekbikes.com/us/en_US/bikes/"
+      ],
+      "capturedAt": "2026-05-12T00:00:00.000Z"
+    },
+    {
+      "id": "w50_blocked_site",
+      "inputUrl": "https://blocked-example.invalid",
+      "normalizedUrl": "https://blocked-example.invalid/",
+      "domain": "blocked-example.invalid",
+      "fetchStatus": "blocked",
+      "fetchErrors": [
+        {
+          "type": "access_blocked",
+          "message": "Resolver could not retrieve readable HTML."
+        }
+      ],
+      "pagesSampled": [],
+      "extractedEvidence": {
+        "pageTitle": "",
+        "metaDescription": "",
+        "h1Text": [],
+        "h2Text": [],
+        "navigationLabels": [],
+        "productCategoryTerms": [],
+        "industryLanguage": [],
+        "locationServiceClues": [],
+        "ecommerceSignals": [],
+        "manufacturingSignals": [],
+        "distributionSignals": []
+      },
+      "signals": {
+        "laneCandidates": [],
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": ""
+      },
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "failureState": "blocked",
+      "sourceUrls": [],
+      "capturedAt": "2026-05-12T00:00:00.000Z"
+    },
+    {
+      "id": "w50_thin_site",
+      "inputUrl": "https://thin-example.invalid",
+      "normalizedUrl": "https://thin-example.invalid/",
+      "domain": "thin-example.invalid",
+      "fetchStatus": "fetched",
+      "fetchErrors": [],
+      "pagesSampled": [
+        {
+          "role": "homepage",
+          "url": "https://thin-example.invalid/",
+          "status": 200
+        }
+      ],
+      "extractedEvidence": {
+        "pageTitle": "Welcome",
+        "metaDescription": "",
+        "h1Text": [
+          "Welcome"
+        ],
+        "h2Text": [],
+        "navigationLabels": [
+          "Home",
+          "About",
+          "Contact"
+        ],
+        "productCategoryTerms": [],
+        "industryLanguage": [],
+        "locationServiceClues": [],
+        "ecommerceSignals": [],
+        "manufacturingSignals": [],
+        "distributionSignals": []
+      },
+      "signals": {
+        "laneCandidates": [],
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": ""
+      },
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0.12,
+        "requiresConfirmation": true
+      },
+      "failureState": "thin",
+      "sourceUrls": [
+        "https://thin-example.invalid/"
+      ],
+      "capturedAt": "2026-05-12T00:00:00.000Z"
+    },
+    {
+      "id": "w50_unavailable_site",
+      "inputUrl": "https://unavailable-example.invalid",
+      "normalizedUrl": "https://unavailable-example.invalid/",
+      "domain": "unavailable-example.invalid",
+      "fetchStatus": "unavailable",
+      "fetchErrors": [
+        {
+          "type": "dns_or_network_error",
+          "message": "Resolver could not reach host."
+        }
+      ],
+      "pagesSampled": [],
+      "extractedEvidence": {
+        "pageTitle": "",
+        "metaDescription": "",
+        "h1Text": [],
+        "h2Text": [],
+        "navigationLabels": [],
+        "productCategoryTerms": [],
+        "industryLanguage": [],
+        "locationServiceClues": [],
+        "ecommerceSignals": [],
+        "manufacturingSignals": [],
+        "distributionSignals": []
+      },
+      "signals": {
+        "laneCandidates": [],
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": ""
+      },
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "failureState": "unavailable",
+      "sourceUrls": [],
+      "capturedAt": "2026-05-12T00:00:00.000Z"
+    },
+    {
+      "id": "w50_ambiguous_site",
+      "inputUrl": "https://ambiguous-example.invalid",
+      "normalizedUrl": "https://ambiguous-example.invalid/",
+      "domain": "ambiguous-example.invalid",
+      "fetchStatus": "fetched",
+      "fetchErrors": [],
+      "pagesSampled": [
+        {
+          "role": "homepage",
+          "url": "https://ambiguous-example.invalid/",
+          "status": 200
+        }
+      ],
+      "extractedEvidence": {
+        "pageTitle": "Industrial Apparel And Parts",
+        "metaDescription": "Uniforms, parts, custom fabrication, and wholesale supply.",
+        "h1Text": [
+          "Products and Services"
+        ],
+        "h2Text": [
+          "Uniform programs",
+          "Custom fabricated parts",
+          "Wholesale supply"
+        ],
+        "navigationLabels": [
+          "Uniforms",
+          "Parts",
+          "Manufacturing",
+          "Wholesale"
+        ],
+        "productCategoryTerms": [
+          "uniforms",
+          "parts",
+          "fabrication"
+        ],
+        "industryLanguage": [
+          "industrial",
+          "wholesale",
+          "manufacturing"
+        ],
+        "locationServiceClues": [],
+        "ecommerceSignals": [],
+        "manufacturingSignals": [
+          "fabrication",
+          "manufacturing"
+        ],
+        "distributionSignals": [
+          "wholesale supply"
+        ]
+      },
+      "signals": {
+        "laneCandidates": [
+          {
+            "laneId": "apparel_accessories",
+            "score": 0.62,
+            "evidence": [
+              "Uniform programs"
+            ]
+          },
+          {
+            "laneId": "industrial_manufacturing",
+            "score": 0.59,
+            "evidence": [
+              "Custom fabricated parts",
+              "manufacturing"
+            ]
+          }
+        ],
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": ""
+      },
+      "confidence": {
+        "state": "needs_confirmation",
+        "score": 0.62,
+        "requiresConfirmation": true
+      },
+      "failureState": "ambiguous",
+      "sourceUrls": [
+        "https://ambiguous-example.invalid/"
+      ],
+      "capturedAt": "2026-05-12T00:00:00.000Z"
+    },
+    {
+      "id": "w50_timeout_site",
+      "inputUrl": "https://timeout-example.invalid",
+      "normalizedUrl": "https://timeout-example.invalid/",
+      "domain": "timeout-example.invalid",
+      "fetchStatus": "timeout",
+      "fetchErrors": [
+        {
+          "type": "overall_timeout",
+          "message": "Resolver exceeded 12000ms overall fetch window."
+        }
+      ],
+      "pagesSampled": [],
+      "extractedEvidence": {
+        "pageTitle": "",
+        "metaDescription": "",
+        "h1Text": [],
+        "h2Text": [],
+        "navigationLabels": [],
+        "productCategoryTerms": [],
+        "industryLanguage": [],
+        "locationServiceClues": [],
+        "ecommerceSignals": [],
+        "manufacturingSignals": [],
+        "distributionSignals": []
+      },
+      "signals": {
+        "laneCandidates": [],
+        "productSeed": "",
+        "productFamily": "",
+        "demandMoment": ""
+      },
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "failureState": "timeout",
+      "sourceUrls": [],
+      "capturedAt": "2026-05-12T00:00:00.000Z"
+    }
+  ],
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "noSuiteScriptInvocation": true
+  }
+}

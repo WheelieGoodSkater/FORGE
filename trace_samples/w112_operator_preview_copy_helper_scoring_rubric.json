@@ -1,0 +1,29 @@
+{
+  "schema": "idb.w112-operator-preview-copy-helper-scoring-rubric.v1",
+  "scale": "1-5",
+  "passingAverage": 4,
+  "noCategoryBelow": 3,
+  "categories": [
+    "One active IDB drawer and one launcher",
+    "Sales request intake is clear and quick",
+    "Plan lane, confirmed lane, DCC pack, scenario, and exported handoff agree",
+    "Review makes DCC handoff export primary",
+    "Preview URL/operator copy is easy to find and copy",
+    "Copy-safe parameter text matches DCC handoff JSON",
+    "Operator can compare Suitelet params without guessing",
+    "Operator can compare DCC-owned config without exposing secrets",
+    "Operator can compare runner preview without submitting",
+    "Operator evidence intake is easy to paste back into IDB",
+    "No-submit/no-write boundary is obvious"
+  ],
+  "automaticNoGoIf": [
+    "Duplicate IDB launcher or drawer appears.",
+    "Visible lane, confirmed lane, exported lane, DCC pack, or scenario disagree.",
+    "DCC handoff JSON is missing.",
+    "Trace JSON is missing.",
+    "Preview URL/operator copy section is missing.",
+    "Operator evidence is not pasted back into IDB.",
+    "Any IDB control appears to open DCC, submit, queue, invoke SuiteScript, or write.",
+    "Operator must guess how Suitelet params map to handoff JSON."
+  ]
+}

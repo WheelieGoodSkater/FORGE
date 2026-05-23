@@ -1,0 +1,49 @@
+{
+  "schema": "idb.creation-packet-contract.v2",
+  "generated": "2026-05-09",
+  "status": "review_contract_ready_create_disabled",
+  "purpose": "Define the reviewed packet fields required before the governed SuiteScript direct-write path can create or update NetSuite records.",
+  "creationAllowedByDefault": false,
+  "writePathType": "suitescript_direct_write",
+  "requiredPerRecord": [
+    "sequence",
+    "label",
+    "recordType",
+    "proposedName",
+    "createIntent",
+    "idempotencyKey",
+    "existingRecordLookup",
+    "dependencies",
+    "rollbackLabel",
+    "traceResultRequired"
+  ],
+  "createIntents": [
+    "create_or_update_customer",
+    "create_sales_order_context",
+    "create_or_update_proof_item",
+    "link_existing_proof_item",
+    "create_or_update_supporting_proof",
+    "preview_only_manufacturing_off",
+    "preview_only_wip_off"
+  ],
+  "traceResultContract": {
+    "requiredFields": [
+      "sequence",
+      "label",
+      "recordType",
+      "recordId",
+      "url",
+      "operation",
+      "recoverableErrors"
+    ],
+    "traceEvent": "suitescript_write_path_result"
+  },
+  "nonRegression": {
+    "createDisabledInDrawer": true,
+    "requiresConsultantConfirmation": true,
+    "requiresSuiteScriptWritePath": true,
+    "llmAdvisoryOnly": true,
+    "noLaneAuthorityChange": true,
+    "noProofAnchorChange": true
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "idb.w134-real-build-result-url-contract-trace.v1",
+  "decision": "PASS",
+  "previewPlaceholderRetest": {
+    "displayReady": true,
+    "linkPendingCount": 9,
+    "openAnchorCount": 0,
+    "links": [
+      {
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "preview-customer-123",
+        "url": "/app/common/entity/custjob.nl?id=preview-customer-123",
+        "status": "preview_placeholder",
+        "openable": false
+      },
+      {
+        "label": "Sales Order / demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "preview-salesorder-456",
+        "url": "/app/accounting/transactions/salesord.nl?id=preview-salesorder-456",
+        "status": "preview_placeholder",
+        "openable": false
+      },
+      {
+        "label": "Hero item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "preview-item-789",
+        "url": "/app/common/item/item.nl?id=preview-item-789",
+        "status": "preview_placeholder",
+        "openable": false
+      },
+      {
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "preview-matrix-790",
+        "url": "/app/common/item/item.nl?id=preview-matrix-790",
+        "status": "preview_placeholder",
+        "openable": false
+      },
+      {
+        "label": "Component item 1",
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "preview-component-791",
+        "url": "/app/common/item/item.nl?id=preview-component-791",
+        "status": "preview_placeholder",
+        "openable": false
+      }
+    ]
+  },
+  "realBuildEngineUrlRetest": {
+    "displayReady": true,
+    "openAnchorCount": 9,
+    "links": [
+      {
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "12345",
+        "url": "/app/common/entity/custjob.nl?id=12345",
+        "status": "verified_openable",
+        "openable": true
+      },
+      {
+        "label": "Sales Order / demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "23456",
+        "url": "/app/accounting/transactions/salesord.nl?id=23456",
+        "status": "verified_openable",
+        "openable": true
+      },
+      {
+        "label": "Hero item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "34567",
+        "url": "/app/common/item/item.nl?id=34567",
+        "status": "verified_openable",
+        "openable": true
+      },
+      {
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "45678",
+        "url": "/app/common/item/item.nl?id=45678",
+        "status": "verified_openable",
+        "openable": true
+      },
+      {
+        "label": "Component item 1",
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "56789",
+        "url": "/app/common/item/item.nl?id=56789",
+        "status": "verified_openable",
+        "openable": true
+      }
+    ]
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W135: Internal Build Engine Real URL Handoff Pilot",
+    "prompt": "Move through W135: Internal Build Engine Real URL Handoff Pilot. Use the W134 real build result URL contract to update the internal build engine handoff/output so customer, demo transaction, hero item, matrix/proof item, and component records return real NetSuite internal ids and supported record URLs after sandbox preview/run. Do not let the drawer create records, invoke SuiteScript, or write transactions. Run an operator-only sandbox pilot with a real build-engine result JSON, import it into the drawer, and visually verify Build Results and Run show active Open links only for verified real URLs while preview placeholders remain Link pending. Preserve consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership of generated records. Output build-engine output contract update, imported real-result JSON sample, visual link evidence, trace samples, W135 report, whether broader visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

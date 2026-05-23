@@ -1,0 +1,11 @@
+{
+  "schema": "idb.w137-real-numeric-id-visual-evidence-review-trace.v1",
+  "decision": "NO_GO_REAL_RECORD_EXISTENCE__RUNNER_DCC_CREATION_REQUIRED",
+  "drawerNumericShapePassed": true,
+  "recordExistenceProven": false,
+  "dccRunnerCreationRequired": true,
+  "next": {
+    "block": "W138: Governed DCC Runner Creation Result Capture",
+    "prompt": "Move through W138: Governed DCC Runner Creation Result Capture. Use the W137R finding that numeric drawer imports do not create records and real record existence requires the governed DCC runner/internal build engine. Define and test the operator-only path from exported handoff packet to DCC runner execution/result capture, requiring the runner to create or resolve Customer, demo transaction, hero item, matrix/proof item, and component records and return actual NetSuite internal ids plus supported URLs. Do not enable drawer writes, do not invoke SuiteScript from the drawer, and do not create transactions from the drawer. Preserve consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership. Output runner creation result contract, operator runbook, result JSON shape, trace samples, W138 report, whether targeted visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

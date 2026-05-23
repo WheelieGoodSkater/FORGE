@@ -1,0 +1,43 @@
+{
+  "schema": "idb.w197-poll-governed-runner-result-capture-trace.v1",
+  "traceSamples": [
+    {
+      "event": "w197_poll_ready_after_runner_task",
+      "runnerTaskId": "task_w196_ariat_governed_runner_001",
+      "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "requestReady": true,
+      "requestSent": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w197_poll_pending_non_mutating",
+      "status": "w190_poll_pending_result_capture",
+      "requestSent": true,
+      "importReady": false,
+      "finalGeneratedNamesImported": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w197_completed_json_w151_valid",
+      "status": "w190_completed_result_ready_for_w151_import",
+      "importReady": true,
+      "completedAcceptedByW151": true,
+      "internalRunnerOwnerValid": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w197_adapter_error_safe_stop",
+      "status": "w190_adapter_error_drawer_safe",
+      "importReady": false,
+      "finalGeneratedNamesUnchanged": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w197_malformed_result_rejected",
+      "status": "w190_poll_pending_result_capture",
+      "importReady": false,
+      "completedAcceptedByW151": false,
+      "activeOpenLinks": 0
+    }
+  ]
+}

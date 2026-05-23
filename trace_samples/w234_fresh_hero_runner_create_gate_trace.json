@@ -1,0 +1,82 @@
+{
+  "schema": "idb.w234-fresh-hero-runner-create-gate.trace.v1",
+  "generatedAt": "2026-05-20T14:13:13.532Z",
+  "primaryRunnerPath": "/path/to/workspace/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+  "dccRunnerPath": "/path/to/workspace/Demo Command Center V4 Master/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+  "resultCount": 10,
+  "passCount": 10,
+  "inspections": [
+    {
+      "file": "/path/to/workspace/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+      "hasOldThrow": false,
+      "hasRunnerCreateHandshake": true,
+      "freshHeroCanCreateWithoutPassedItem": true,
+      "ensureDemoRecordsUsesFreshCreate": true,
+      "hasFreshHeroSaveFallbackLadder": true,
+      "avoidsForcedBodyLocationOnCreate": true,
+      "syntaxLooksScheduledScript": true
+    },
+    {
+      "file": "/path/to/workspace/Demo Command Center V4 Master/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+      "hasOldThrow": false,
+      "hasRunnerCreateHandshake": true,
+      "freshHeroCanCreateWithoutPassedItem": true,
+      "ensureDemoRecordsUsesFreshCreate": true,
+      "hasFreshHeroSaveFallbackLadder": true,
+      "avoidsForcedBodyLocationOnCreate": true,
+      "syntaxLooksScheduledScript": true
+    }
+  ],
+  "results": [
+    {
+      "id": "w234_primary_runner_does_not_throw_before_create",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    },
+    {
+      "id": "w234_primary_runner_uses_runner_create_handshake",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    },
+    {
+      "id": "w234_primary_runner_fresh_mode_reaches_create_path",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    },
+    {
+      "id": "w234_primary_runner_has_subsidiary_location_save_fallbacks",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    },
+    {
+      "id": "w234_primary_runner_scheduled_script_shape_preserved",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    },
+    {
+      "id": "w234_dcc_master_runner_does_not_throw_before_create",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/Demo Command Center V4 Master/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    },
+    {
+      "id": "w234_dcc_master_runner_uses_runner_create_handshake",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/Demo Command Center V4 Master/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    },
+    {
+      "id": "w234_dcc_master_runner_fresh_mode_reaches_create_path",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/Demo Command Center V4 Master/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    },
+    {
+      "id": "w234_dcc_master_runner_has_subsidiary_location_save_fallbacks",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/Demo Command Center V4 Master/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    },
+    {
+      "id": "w234_dcc_master_runner_scheduled_script_shape_preserved",
+      "pass": true,
+      "evidence": "{\"file\":\"/path/to/workspace/Demo Command Center V4 Master/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js\",\"hasOldThrow\":false,\"hasRunnerCreateHandshake\":true,\"freshHeroCanCreateWithoutPassedItem\":true,\"ensureDemoRecordsUsesFreshCreate\":true,\"hasFreshHeroSaveFallbackLadder\":true,\"avoidsForcedBodyLocationOnCreate\":true,\"syntaxLooksScheduledScript\":true}"
+    }
+  ]
+}

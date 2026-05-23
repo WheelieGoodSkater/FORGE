@@ -1,0 +1,45 @@
+{
+  "schema": "idb.w201.trace-samples.v1",
+  "samples": [
+    {
+      "event": "runner_result_capture_written",
+      "fileName": "idb_completed_runner_result_IDB_build_token_1770000000000.json",
+      "status": "completed_result_capture_ready",
+      "generatedRecordOwner": "governed_runner_internal_build_engine"
+    },
+    {
+      "event": "completed_result_json",
+      "finalGeneratedNamesJson": {
+        "schema": "idb.completed-runner-result-json.v1",
+        "status": "completed",
+        "records": {
+          "customer": {
+            "type": "customer",
+            "internalId": "123",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=123"
+          },
+          "demoTransaction": {
+            "type": "salesorder",
+            "internalId": "456",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=456"
+          },
+          "heroItem": {
+            "type": "inventoryitem",
+            "internalId": "789",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=789"
+          },
+          "matrixProofItem": {
+            "type": "inventoryitem",
+            "internalId": "790",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=790"
+          },
+          "componentItem": {
+            "type": "inventoryitem",
+            "internalId": "791",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=791"
+          }
+        }
+      }
+    }
+  ]
+}

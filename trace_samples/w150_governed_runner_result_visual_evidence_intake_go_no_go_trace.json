@@ -1,0 +1,12 @@
+{
+  "schema": "idb.w150-governed-runner-result-visual-evidence-intake-go-no-go-trace.v1",
+  "decision": "NO_GO_W149_OPEN_LINK_TEST__FINAL_NAMES_NOT_IMPORTED",
+  "finalNamesImported": false,
+  "handoffHasFinalNames": false,
+  "activeOpenLinkCount": 0,
+  "rootCause": "The operator exported a build handoff packet, not a governed runner result-capture JSON. No runner-created record ids or URLs were imported into IDB.",
+  "next": {
+    "block": "W151: Runner Result JSON Import Guard And Missing-Result UX",
+    "prompt": "Move through W151: Runner Result JSON Import Guard And Missing-Result UX. Use the W150 evidence showing the operator exported only the build handoff packet and IDB correctly showed no links because final generated names were not imported. Harden the IDB import path and Build/Trace copy so operators clearly distinguish Build handoff JSON from governed runner result JSON. Reject handoff packets pasted into final generated names import, accept only completed runner result JSON with numeric internal ids and supported NetSuite URLs for Customer, demo transaction, hero item, matrix/proof item, and component item, and keep Open links hidden until that import succeeds. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output import guard contract, missing-result UX copy, smoke harness, trace samples, W151 report, visual testing decision, and best next Codex prompt."
+  }
+}

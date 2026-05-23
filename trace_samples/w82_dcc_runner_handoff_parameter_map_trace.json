@@ -1,0 +1,133 @@
+{
+  "schema": "idb.w82-dcc-runner-handoff-parameter-map-trace.v1",
+  "generated": "2026-05-17T21:41:04.156Z",
+  "decision": "PASS",
+  "suiteletEntryParamCount": 12,
+  "scheduledRunnerParamCount": 14,
+  "blockedStatus": "blocked_until_confirmed_handoff",
+  "confirmedStatus": "ready_for_dcc_suitelet_submission_review",
+  "noRegression": {
+    "dccOwnsItemAssemblyBomLocationPlanningRoutingAndCsv": true,
+    "noDccRunnerRewrite": true,
+    "noIdbTransactionWrite": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "suiteScriptInvocationFromIdb": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W83: DCC Handoff Export And Operator Review UX",
+    "prompt": "Move through W83: DCC Handoff Export And Operator Review UX. Add a review-only DCC handoff export from the drawer using dccRunnerHandoffPacketV1, with a compact Review card showing blocked/confirmed status, exact Suitelet form params, DCC-owned config params, scheduled runner preview params, and operator checklist. Do not invoke SuiteScript, do not rewrite DCC runner mechanics, do not enable IDB transaction writes, keep hosted resolver optional until remoteSmokeExecuted=true, and require consultant confirmation before any handoff is eligible. Output export payload, UI summary, blocked/confirmed trace samples, W83 report, validator gates, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w82_inherits_w81_bridge",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w81-idb-dcc-build-packet-bridge.v1\",\"status\":\"build_packet_bridge_ready_review_only\"}"
+    },
+    {
+      "name": "w82_runtime_contains_function_dccrunnerparametermapv1",
+      "pass": true,
+      "detail": "function dccRunnerParameterMapV1"
+    },
+    {
+      "name": "w82_runtime_contains_function_dccrunnerhandoffpacketv1",
+      "pass": true,
+      "detail": "function dccRunnerHandoffPacketV1"
+    },
+    {
+      "name": "w82_runtime_contains_custpage_prospect",
+      "pass": true,
+      "detail": "custpage_prospect"
+    },
+    {
+      "name": "w82_runtime_contains_custpage_website",
+      "pass": true,
+      "detail": "custpage_website"
+    },
+    {
+      "name": "w82_runtime_contains_custpage_notes",
+      "pass": true,
+      "detail": "custpage_notes"
+    },
+    {
+      "name": "w82_runtime_contains_custpage_newhero",
+      "pass": true,
+      "detail": "custpage_newhero"
+    },
+    {
+      "name": "w82_runtime_contains_custpage_enablemfg",
+      "pass": true,
+      "detail": "custpage_enablemfg"
+    },
+    {
+      "name": "w82_runtime_contains_custpage_enablewip",
+      "pass": true,
+      "detail": "custpage_enablewip"
+    },
+    {
+      "name": "w82_runtime_contains_custscript_v3_runner_prospect",
+      "pass": true,
+      "detail": "custscript_v3_runner_prospect"
+    },
+    {
+      "name": "w82_runtime_contains_custscript_v3_runner_mapping",
+      "pass": true,
+      "detail": "custscript_v3_runner_mapping"
+    },
+    {
+      "name": "w82_runtime_contains_custscript_v3_runner_folder",
+      "pass": true,
+      "detail": "custscript_v3_runner_folder"
+    },
+    {
+      "name": "w82_runtime_contains_custscript_v3_runner_subsidiary",
+      "pass": true,
+      "detail": "custscript_v3_runner_subsidiary"
+    },
+    {
+      "name": "w82_runtime_contains_custscript_v3_runner_enable_mfg",
+      "pass": true,
+      "detail": "custscript_v3_runner_enable_mfg"
+    },
+    {
+      "name": "w82_runtime_contains_custscript_v3_runner_create_new_hero",
+      "pass": true,
+      "detail": "custscript_v3_runner_create_new_hero"
+    },
+    {
+      "name": "w82_runtime_contains_custscript_v3_runner_hero_item",
+      "pass": true,
+      "detail": "custscript_v3_runner_hero_item"
+    },
+    {
+      "name": "w82_runtime_contains_dccrunnerhandoffpacketv1_dccrunnerhandoffpacketv1",
+      "pass": true,
+      "detail": "dccRunnerHandoffPacketV1: dccRunnerHandoffPacketV1"
+    },
+    {
+      "name": "w82_suitelet_entry_param_map_complete",
+      "pass": true,
+      "detail": "[{\"idbField\":\"identity.prospect\",\"dccParam\":\"custpage_prospect\",\"required\":true},{\"idbField\":\"identity.website\",\"dccParam\":\"custpage_website\",\"required\":false},{\"idbField\":\"consultantInputs.conversationNotes\",\"dccParam\":\"custpage_notes\",\"required\":true},{\"idbField\":\"dccRunnerInputs.createNewHeroItem\",\"dccParam\":\"custpage_newhero\",\"required\":true},{\"idbField\":\"dccRunnerInputs.enableManufacturing\",\"dccParam\":\"custpage_enablemfg\",\"required\":true},{\"idbField\":\"dccRunnerInputs.enableWip\",\"dccParam\":\"custpage_enablewip\",\"required\":true},{\"idbField\":\"writeMode\",\"dccParam\":\"custpage_evalmode\",\"required\":false},{\"idbField\":\"dccGenerated.extId\",\"dccParam\":\"custpage_extid\",\"required\":false},{\"idbField\":\"dccGenerated.agenda\",\"dccParam\":\"custpage_agenda\",\"required\":false},{\"idbField\":\"dccGenerated.runnerTaskId\",\"dccParam\":\"custpage_runnertaskid\",\"required\":false},{\"idbField\":\"dccGenerated.notesFileId\",\"dccParam\":\"custpage_notesfileid\",\"required\":false},{\"idbField\":\"handoffAction\",\"dccParam\":\"custpage_actionmode\",\"required\":false}]"
+    },
+    {
+      "name": "w82_runner_param_map_complete",
+      "pass": true,
+      "detail": "[{\"idbField\":\"identity.prospect\",\"dccParam\":\"custscript_v3_runner_prospect\"},{\"idbField\":\"identity.website\",\"dccParam\":\"custscript_v3_runner_website\"},{\"idbField\":\"dccRunnerInputs.signalText\",\"dccParam\":\"custscript_v3_runner_notes\"},{\"idbField\":\"dccGenerated.agenda\",\"dccParam\":\"custscript_v3_runner_agenda\"},{\"idbField\":\"dccGenerated.extId\",\"dccParam\":\"custscript_v3_runner_extid\"},{\"idbField\":\"dccConfig.soMappingId\",\"dccParam\":\"custscript_v3_runner_mapping\"},{\"idbField\":\"dccConfig.soFolderId\",\"dccParam\":\"custscript_v3_runner_folder\"},{\"idbField\":\"dccConfig.subsidiaryId\",\"dccParam\":\"custscript_v3_runner_subsidiary\"},{\"idbField\":\"dccConfig.locationId\",\"dccParam\":\"custscript_v3_runner_location\"},{\"idbField\":\"dccRunnerInputs.enableWip\",\"dccParam\":\"custscript_v3_runner_enable_wip\"},{\"idbField\":\"dccRunnerInputs.enableManufacturing\",\"dccParam\":\"custscript_v3_runner_enable_mfg\"},{\"idbField\":\"dccRunnerInputs.createNewHeroItem\",\"dccParam\":\"custscript_v3_runner_create_new_hero\"},{\"idbField\":\"dccGenerated.heroItemId\",\"dccParam\":\"custscript_v3_runner_hero_item\"},{\"idbField\":\"dccConfig.woSavedSearchId\",\"dccParam\":\"custscript_v3_runner_wc_search\"}]"
+    },
+    {
+      "name": "w82_dcc_config_params_marked_dcc_owned",
+      "pass": true,
+      "detail": "[\"custscriptv3_reset_subsidiary\",\"custscript_v3_reset_location\",\"custscript_v3_runner_script_id\",\"custscript_v3_runner_deploy_id\",\"custscript_csv_mapping_id\",\"custscript_csv_folder_id\",\"custscript_so_savedsearch_id\",\"custscript_wo_savedsearch_id\"]"
+    },
+    {
+      "name": "w82_blocked_confirmed_examples_keep_no_invoke",
+      "pass": true,
+      "detail": "{\"blocked\":\"blocked_until_confirmed_handoff\",\"confirmed\":\"ready_for_dcc_suitelet_submission_review\"}"
+    },
+    {
+      "name": "w82_no_regression_boundaries_present",
+      "pass": true,
+      "detail": "no regression runtime flags"
+    }
+  ]
+}

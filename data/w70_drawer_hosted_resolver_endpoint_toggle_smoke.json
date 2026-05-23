@@ -1,0 +1,99 @@
+{
+  "schema": "idb.w70-drawer-hosted-resolver-endpoint-toggle-smoke.v1",
+  "status": "complete_drawer_hosted_toggle_smoke_ready",
+  "objective": "Wire and prove the drawer pilot toggle path against the local staging websiteResolverServiceV1 endpoint.",
+  "readinessDecision": "drawer_hosted_toggle_ready_for_local_staging_smoke",
+  "roles": [
+    {
+      "name": "Resolver Service Architect",
+      "owns": "Drawer endpoint URL toggle, token/header placeholder, hosted-only mode, and fallback rollback path."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "No write/auth leakage, no SuiteScript invocation, token header containment, and failure-state honesty."
+    },
+    {
+      "name": "Consultant UX Director",
+      "owns": "Plan/Review resolver status display, failure-state UX, and live consultant readability."
+    },
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Website evidence authority over identity and notes story-only behavior."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Harness and validator gates for hosted endpoint toggle, rollback, trace export, and no-regression boundaries."
+    }
+  ],
+  "drawerToggles": {
+    "endpointUrl": {
+      "window": "window.IDB_WEBSITE_RESOLVER_ENDPOINT",
+      "localStorage": "idb.websiteResolver.endpoint.v1",
+      "example": "http://127.0.0.1:8787/idb/website-resolver/v1/resolve"
+    },
+    "token": {
+      "window": "window.IDB_WEBSITE_RESOLVER_TOKEN",
+      "localStorage": "idb.websiteResolver.token.v1",
+      "header": "X-IDB-Resolver-Token",
+      "example": "local-staging-token",
+      "traceRule": "Token configured is visible; raw token is not included in trace export."
+    },
+    "localFallback": {
+      "window": "window.IDB_WEBSITE_RESOLVER_LOCAL_FALLBACK",
+      "localStorage": "idb.websiteResolver.localFallback.v1",
+      "disabledValues": [
+        "false",
+        "0",
+        "off",
+        "disabled",
+        "hosted_only"
+      ],
+      "rollback": "Clear endpoint/token toggles or set local fallback back to true/empty."
+    }
+  },
+  "runtimeModesProved": [
+    "service_pending",
+    "service",
+    "service_rejected",
+    "service_error",
+    "local_fallback_only"
+  ],
+  "uxExpectations": [
+    "Plan and Review What IDB saw include resolver mode/status.",
+    "Hosted-only mode shows local fallback disabled.",
+    "Token configured appears only as tokenConfigured/authMode, never as the raw token.",
+    "Failure state appears for blocked, thin, unavailable, and timeout.",
+    "Trace export includes websiteEvidenceV1, websiteResolverRuntime, websiteEvidenceUx, resolverAdapter, and no-write boundaries."
+  ],
+  "traceCoverage": [
+    "website_resolver_service_result",
+    "websiteEvidenceV1",
+    "websiteResolverRuntime",
+    "websiteEvidenceUx",
+    "resolverAdapter",
+    "writeAuthority",
+    "nllmAdvisoryOnly",
+    "noSuiteScriptInvocation",
+    "notesCannotOwnIdentification"
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "outputs": {
+    "contract": "data/w70_drawer_hosted_resolver_endpoint_toggle_smoke.json",
+    "harness": "tools/run_drawer_hosted_resolver_endpoint_toggle_smoke_harness.js",
+    "trace": "trace_samples/w70_drawer_hosted_resolver_endpoint_toggle_smoke_trace.json",
+    "report": "reports/w70_drawer_hosted_resolver_endpoint_toggle_smoke.md"
+  },
+  "bestNextCodexPrompt": {
+    "block": "W71: Local End-To-End Hosted Resolver Pilot Smoke",
+    "prompt": "Move through W71: Local End-To-End Hosted Resolver Pilot Smoke. Run the local staging websiteResolverServiceV1 server and drawer hosted-toggle path together in an end-to-end pilot-shaped smoke: start server, configure drawer endpoint/token/fallback toggles, test recommended, blocked, thin, unavailable, timeout, cache-hit, rollback, Plan/Review/Trace export coverage, and no-write/no-SuiteScript/N/LLM-advisory-only gates. Keep notes story-only and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output end-to-end smoke results, trace samples, W71 report, validator gates, and best next Codex prompt."
+  }
+}

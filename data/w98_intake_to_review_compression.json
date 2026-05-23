@@ -1,0 +1,38 @@
+{
+  "schema": "idb.w98-intake-to-review-compression.v1",
+  "status": "complete_intake_to_review_compression_ready",
+  "objective": "After prospect, website, notes, and SC request context are entered, collapse Guided Intake into a concise request summary plus the single confirmation/review action.",
+  "implemented": {
+    "requestSummaryReadyState": true,
+    "guidedIntakeCollapsedAfterReady": true,
+    "singlePrimaryConfirmationOrReviewAction": true,
+    "editPathPreserved": true,
+    "dccPackVisibleInSummary": true,
+    "traceCoverage": true
+  },
+  "readySummaryFields": [
+    "prospect",
+    "website/domain",
+    "lane",
+    "proof anchor",
+    "DCC pack",
+    "DCC scenario",
+    "objective",
+    "SC context captured count"
+  ],
+  "noRegression": {
+    "stateAuthorityPreserved": true,
+    "w96CompressedValueGuidancePreserved": true,
+    "w97RunSelectorChipsPreserved": true,
+    "dccHandoffBoundariesPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesRole": "story_only",
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true,
+    "nllmAdvisoryOnly": true
+  },
+  "bestNextPrompt": "Move through W99: One-Run Pilot Retest Packet After Compression. Use W96, W97, and W98 to produce the exact next hands-on user test: file to upload, realistic sales request fields, expected Plan/Review/ROI/Run/Trace first-viewport screenshots, required DCC handoff JSON, required trace JSON, operator comparison checklist, scoring rubric, and stop/go criteria. Preserve W92 state authority, DCC handoff boundaries, no IDB writes, no SuiteScript invocation, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output test packet, validator gates, W99 report, and best next Codex prompt."
+}

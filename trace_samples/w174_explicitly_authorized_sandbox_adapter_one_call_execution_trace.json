@@ -1,0 +1,181 @@
+{
+  "schema": "idb.w174-explicitly-authorized-sandbox-adapter-one-call-execution-trace.v1",
+  "generatedAt": "2026-05-17T21:41:15.973Z",
+  "defaultNoSubmitTrace": [
+    {
+      "event": "w174_explicit_authorization_gate",
+      "ready": false,
+      "blockedReasons": [
+        "w174_explicit_authorization_missing",
+        "execution_not_requested"
+      ],
+      "requestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w174_single_submit_evidence",
+      "ready": false,
+      "submitAttemptCount": 0,
+      "maxQueueSubmitAttempts": 1,
+      "runnerTaskId": null,
+      "adapterError": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w174_result_capture_guard",
+      "ready": false,
+      "resultCaptureStatus": "not_started_no_submit",
+      "finalGeneratedNamesJsonReady": false,
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "authorizedSubmitTrace": [
+    {
+      "event": "w174_explicit_authorization_gate",
+      "ready": true,
+      "blockedReasons": [],
+      "requestSent": true,
+      "queueSubmitted": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w174_single_submit_evidence",
+      "ready": true,
+      "submitAttemptCount": 1,
+      "maxQueueSubmitAttempts": 1,
+      "runnerTaskId": "task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+      "adapterError": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w174_result_capture_guard",
+      "ready": true,
+      "resultCaptureStatus": "pending_runner_completion",
+      "finalGeneratedNamesJsonReady": false,
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "duplicateBlockedTrace": [
+    {
+      "event": "w174_explicit_authorization_gate",
+      "ready": false,
+      "blockedReasons": [
+        "one_submit_limit_already_used"
+      ],
+      "requestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w174_single_submit_evidence",
+      "ready": false,
+      "submitAttemptCount": 0,
+      "maxQueueSubmitAttempts": 1,
+      "runnerTaskId": null,
+      "adapterError": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w174_result_capture_guard",
+      "ready": false,
+      "resultCaptureStatus": "not_started_no_submit",
+      "finalGeneratedNamesJsonReady": false,
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "adapterErrorTrace": [
+    {
+      "event": "w174_explicit_authorization_gate",
+      "ready": true,
+      "blockedReasons": [],
+      "requestSent": true,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w174_single_submit_evidence",
+      "ready": true,
+      "submitAttemptCount": 1,
+      "maxQueueSubmitAttempts": 1,
+      "runnerTaskId": null,
+      "adapterError": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w174_result_capture_guard",
+      "ready": true,
+      "resultCaptureStatus": "adapter_error",
+      "finalGeneratedNamesJsonReady": false,
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "results": [
+    {
+      "name": "w174_starts_from_w173_execution_packet",
+      "pass": true,
+      "detail": "PASS_REAL_SANDBOX_ONE_CALL_PACKET_READY__EXECUTION_DISABLED__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w174_execution_hook_ready",
+      "pass": true,
+      "detail": "explicitlyAuthorizedSandboxAdapterOneCallExecutionV1"
+    },
+    {
+      "name": "w174_default_no_submit_no_request",
+      "pass": true,
+      "detail": "[\"w174_explicit_authorization_missing\",\"execution_not_requested\"]"
+    },
+    {
+      "name": "w174_authorized_submits_exactly_once",
+      "pass": true,
+      "detail": "{\"requestSent\":true,\"transportInvoked\":true,\"queueSubmitted\":true,\"submitAttemptCount\":1,\"maxQueueSubmitAttempts\":1,\"runnerTaskId\":\"task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"adapterError\":false,\"resultCaptureStatus\":\"pending_runner_completion\",\"endpointUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"explicitW174Authorization\":true,\"oneSubmitAlreadyUsed\":false}"
+    },
+    {
+      "name": "w174_duplicate_submit_blocked",
+      "pass": true,
+      "detail": "[\"one_submit_limit_already_used\"]"
+    },
+    {
+      "name": "w174_adapter_error_captured_safely",
+      "pass": true,
+      "detail": "{\"captured\":true,\"queueSubmitted\":false,\"resultCaptureStatus\":\"adapter_error\",\"normalizedStatus\":\"adapter_transport_error_drawer_safe\"}"
+    },
+    {
+      "name": "w174_names_and_links_unchanged_until_w151_import",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"finalGeneratedNamesImported\":false,\"activeOpenLinks\":0,\"writesAttemptedFromDrawer\":false}"
+    },
+    {
+      "name": "w174_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w174_explicit_authorization_gate\",\"ready\":true,\"blockedReasons\":[],\"requestSent\":true,\"queueSubmitted\":true,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w174_single_submit_evidence\",\"ready\":true,\"submitAttemptCount\":1,\"maxQueueSubmitAttempts\":1,\"runnerTaskId\":\"task_w174_idb-build-ariat-international-apparel-accessories-apparelaccessories_001\",\"adapterError\":false,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w174_result_capture_guard\",\"ready\":true,\"resultCaptureStatus\":\"pending_runner_completion\",\"finalGeneratedNamesJsonReady\":false,\"w151ImportRequiredBeforeNamesMutate\":true,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false}]"
+    },
+    {
+      "name": "w174_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w174_visual_testing_blocked_until_runner_result_returns",
+      "pass": true,
+      "detail": "W174 captures runnerTaskId or adapter-error evidence only. Visual testing stays blocked until a real governed runner result returns to IDB and W151 import succeeds."
+    }
+  ]
+}

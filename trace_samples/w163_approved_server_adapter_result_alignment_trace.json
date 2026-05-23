@@ -1,0 +1,78 @@
+{
+  "schema": "idb.w163-approved-server-adapter-result-alignment-trace.v1",
+  "decision": "PASS_SERVER_ADAPTER_RESULT_ALIGNMENT_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "normalizedStatuses": {
+    "queued": "queued_pending",
+    "polling": "polling_pending",
+    "completed": "completed_result_awaiting_w151_import",
+    "error": "adapter_transport_error_drawer_safe"
+  },
+  "completedGuardStatus": "completed_runner_result_accepted",
+  "completedCommitStatus": "fixture_import_commit_ready",
+  "errorRecovery": {
+    "status": "adapter_transport_error_drawer_safe",
+    "drawerSafe": true,
+    "next": "rollback_by_disabling_server_flags_or_retry_after_adapter_review"
+  },
+  "activeOpenLinksBeforeImport": 0,
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noActiveOpenLinksBeforeImport": true
+  },
+  "events": [
+    {
+      "name": "w163_starts_from_w162_import_commit",
+      "pass": true,
+      "detail": "PASS_FIXTURE_IMPORT_COMMIT_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w163_alignment_hook_ready",
+      "pass": true,
+      "detail": "approved_server_adapter_result_contract_aligned"
+    },
+    {
+      "name": "w163_envelopes_normalize_to_expected_states",
+      "pass": true,
+      "detail": "{\"queued\":\"queued_pending\",\"polling\":\"polling_pending\",\"completed\":\"completed_result_awaiting_w151_import\",\"error\":\"adapter_transport_error_drawer_safe\"}"
+    },
+    {
+      "name": "w163_completed_result_requires_w151_before_commit",
+      "pass": true,
+      "detail": "{\"guardStatus\":\"completed_runner_result_accepted\",\"acceptedByW151\":true,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnership\":true,\"commitStatus\":\"fixture_import_commit_ready\",\"commitAllowed\":true,\"finalNamesImportedAfterCommit\":true,\"openableAfterCommit\":9}"
+    },
+    {
+      "name": "w163_completed_result_requires_numeric_ids_and_urls",
+      "pass": true,
+      "detail": "{\"beforeImportSummary\":{\"missing_url\":7},\"afterImportSummary\":{\"verified_openable\":5},\"activeOpenLinksBeforeImport\":0,\"openableAfterCommit\":9,\"noActiveOpenLinksBeforeImport\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w163_handoff_json_still_rejected",
+      "pass": true,
+      "detail": "{\"handoffStatus\":\"handoff_packet_rejected\",\"handoffRejected\":true}"
+    },
+    {
+      "name": "w163_error_envelope_drawer_safe",
+      "pass": true,
+      "detail": "{\"status\":\"adapter_transport_error_drawer_safe\",\"drawerSafe\":true,\"next\":\"rollback_by_disabling_server_flags_or_retry_after_adapter_review\"}"
+    },
+    {
+      "name": "w163_no_open_links_before_import_and_invocation_disabled",
+      "pass": true,
+      "detail": "{\"activeOpenLinksBeforeImport\":0,\"invocationMode\":\"disabled_by_default_contract_only\"}"
+    },
+    {
+      "name": "w163_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noActiveOpenLinksBeforeImport\":true}"
+    }
+  ]
+}

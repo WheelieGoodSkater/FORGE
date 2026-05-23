@@ -1,0 +1,148 @@
+{
+  "schema": "idb.w51-website-classifier-v1-contract.v1",
+  "status": "complete_website_classifier_v1_ready",
+  "objective": "Turn websiteEvidenceV1 into traceable lane, proof anchor, product seed, product family, and demand moment recommendations.",
+  "consumes": {
+    "websiteEvidenceSchema": "idb.website-evidence.v1",
+    "sourceContract": "data/w50_website_evidence_v1_contract.json",
+    "sourceTrace": "trace_samples/w50_website_evidence_resolver_trace_sample.json"
+  },
+  "websiteClassifierV1": {
+    "schema": "idb.website-classifier.v1",
+    "requiredFields": [
+      "inputEvidenceId",
+      "normalizedUrl",
+      "domain",
+      "laneRecommendation",
+      "proofAnchorRecommendation",
+      "productSeed",
+      "productFamily",
+      "demandMoment",
+      "confidence",
+      "evidenceCitations",
+      "competingCandidates",
+      "confirmationPrompt",
+      "classificationState",
+      "notesBoundary",
+      "writeAuthority",
+      "nllmAuthority"
+    ],
+    "recommendationFields": [
+      "laneRecommendation",
+      "proofAnchorRecommendation",
+      "productSeed",
+      "productFamily",
+      "demandMoment"
+    ],
+    "confidenceStates": [
+      "recommended",
+      "needs_confirmation",
+      "insufficient_evidence"
+    ],
+    "classificationStateRules": [
+      {
+        "state": "recommended",
+        "requirements": [
+          "single leading lane candidate",
+          "score at or above 0.8",
+          "at least two evidence citations",
+          "product seed and product family present",
+          "no failure state"
+        ]
+      },
+      {
+        "state": "needs_confirmation",
+        "requirements": [
+          "conflicting or close lane candidates",
+          "score between 0.45 and 0.79",
+          "ambiguous failure state",
+          "confirmation prompt required"
+        ]
+      },
+      {
+        "state": "insufficient_evidence",
+        "requirements": [
+          "blocked thin unavailable or timeout evidence",
+          "no confident lane recommendation",
+          "no product seed guess",
+          "manual evidence or retry prompt required"
+        ]
+      }
+    ],
+    "evidenceCitationContract": {
+      "requiredFields": [
+        "sourceUrl",
+        "field",
+        "value",
+        "supports"
+      ],
+      "sourceUrlRequired": true,
+      "unsupportedClaimPolicy": "block_or_mark_insufficient_evidence"
+    },
+    "competingCandidateContract": {
+      "requiredWhen": [
+        "classificationState is needs_confirmation",
+        "failureState is ambiguous",
+        "second candidate score is within 0.15 of leading candidate"
+      ],
+      "requiredFields": [
+        "laneId",
+        "score",
+        "evidenceCitations",
+        "whyItMightFit"
+      ]
+    },
+    "confirmationPromptContract": {
+      "requiredWhen": [
+        "classificationState is needs_confirmation",
+        "classificationState is insufficient_evidence",
+        "evidence failureState is blocked thin unavailable ambiguous or timeout"
+      ],
+      "mustName": [
+        "uncertainty reason",
+        "what evidence is missing",
+        "what consultant should confirm"
+      ]
+    }
+  },
+  "rules": {
+    "websiteEvidenceOwnsIdentification": true,
+    "conversationNotesDoNotOverride": [
+      "laneRecommendation",
+      "proofAnchorRecommendation",
+      "productSeed",
+      "productFamily",
+      "demandMoment"
+    ],
+    "conversationNotesContinueToDrive": [
+      "pain",
+      "roi",
+      "competitiveFraming",
+      "objections",
+      "talkTrack",
+      "runCoaching"
+    ],
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "ambiguousRequiresCompetingCandidates": true,
+    "citationsRequiredForRecommendations": true,
+    "nllmAdvisoryOnly": true,
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false
+  },
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "noSuiteScriptInvocation": true,
+    "notesCannotOwnIdentification": true,
+    "classifierMustExposeSourceUrls": true
+  },
+  "outputs": {
+    "contract": "data/w51_website_classifier_v1_contract.json",
+    "traceSample": "trace_samples/w51_website_classifier_trace_sample.json",
+    "report": "reports/w51_intelligence_classifier_v1.md",
+    "harness": "tools/run_website_classifier_contract_harness.js"
+  },
+  "nextBlock": "W52: End-Goal Intelligence Test Harness"
+}

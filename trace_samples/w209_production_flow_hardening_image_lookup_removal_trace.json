@@ -1,0 +1,33 @@
+[
+  {
+    "event": "w209_consultant_flow_hardened",
+    "normalFlowAllowed": [
+      "Customer / Prospect Name",
+      "Website",
+      "Conversation Notes",
+      "Create new item",
+      "Manufacturing",
+      "WIP",
+      "Build demo records",
+      "Run demo",
+      "Open links after records exist"
+    ],
+    "adminDebugHidden": true,
+    "visibleStatus": "Ready to build"
+  },
+  {
+    "event": "w209_toggles_in_confirmed_build_request",
+    "toggles": {
+      "createNewHeroItem": true,
+      "enableManufacturing": true,
+      "enableWip": false
+    },
+    "requestGenerated": true
+  },
+  {
+    "event": "w209_runner_image_lookup_disabled",
+    "defaultStatus": "skipped-admin-enrichment-disabled",
+    "blocksRecords": false,
+    "optionalAdminDebugOnly": true
+  }
+]

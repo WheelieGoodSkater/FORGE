@@ -1,0 +1,47 @@
+{
+  "schema": "idb.w40-multi-lane-pilot-scope-review-stabilizer.v1",
+  "status": "complete_multi_lane_scope_and_review_stabilized",
+  "objective": "Allow the governed W24 pilot branch to test Products CPG Customer + Proof Item writes and make Review render quickly from the current computed packet.",
+  "pilotScope": {
+    "approvedLaneIds": [
+      "food_beverage",
+      "products_cpg"
+    ],
+    "approvedRoles": [
+      "customer",
+      "proof anchor"
+    ],
+    "transactionContextEnabled": false,
+    "salesOrderWriteEnabled": false
+  },
+  "reviewStabilizer": {
+    "renderSource": "current dryRunObjectPacket",
+    "doesNotRequireAcceptedPacket": true,
+    "firstPanel": "Execution plan preview",
+    "secondPanel": "Packet review",
+    "defaultDetailsCollapsed": true,
+    "heavyCreateReadinessRemovedFromDefaultReview": true
+  },
+  "testCase": {
+    "customer": "Milk Bone",
+    "website": "https://www.milkbone.com",
+    "laneId": "products_cpg",
+    "proofAnchor": "Sales Order View",
+    "typeToConfirm": "CREATE MILK BONE PRODUCTS_CPG"
+  },
+  "nonRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "pilotSuiteletOnly": true,
+    "customerFirst": true,
+    "proofItemRequiresCustomerIdAndUrl": true,
+    "transactionWriteEnabled": false,
+    "notesDoNotOverrideWebsiteNaming": true,
+    "llmAdvisoryOnly": true
+  },
+  "nextBlock": {
+    "id": "W41",
+    "name": "DCC Creation Rail Adapter",
+    "goal": "Port the proven DCC Customer and Proof Item create/update mechanics into the multi-lane pilot without enabling transaction writes."
+  }
+}

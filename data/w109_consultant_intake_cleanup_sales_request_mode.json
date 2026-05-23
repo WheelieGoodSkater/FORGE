@@ -1,0 +1,321 @@
+{
+  "schema": "idb.w109-consultant-intake-cleanup-sales-request-mode.v1",
+  "status": "sales_request_mode_ready",
+  "decision": "PASS",
+  "objective": "Make Plan intake consultant-facing and sales-request-first before DCC handoff parity work.",
+  "implemented": {
+    "salesRequestFirstPlanIntake": true,
+    "prospectWebsitePainProofCriteriaPrimary": true,
+    "timelineCompetitorWebsiteEvidenceOptional": true,
+    "prepareBriefRequiredBeforeRecommendationReady": true,
+    "internalPackIdsHiddenBehindConsultantLabels": true,
+    "websiteSupportsIdentityAndNaming": true,
+    "notesDriveValueStory": true
+  },
+  "samples": {
+    "emptyModel": {
+      "schema": "idb.w109-consultant-sales-request-mode.v1",
+      "status": "sales_request_incomplete",
+      "prepareBriefRequired": true,
+      "canPrepareBrief": false,
+      "fields": [
+        {
+          "id": "customer",
+          "label": "Prospect",
+          "role": "identity",
+          "required": true,
+          "captured": false
+        },
+        {
+          "id": "website",
+          "label": "Website",
+          "role": "identity_and_naming",
+          "required": true,
+          "captured": false
+        },
+        {
+          "id": "notes",
+          "label": "Business pain",
+          "role": "value_story",
+          "required": true,
+          "captured": false
+        },
+        {
+          "id": "scObjective",
+          "label": "Requested proof",
+          "role": "value_story",
+          "required": true,
+          "captured": false
+        },
+        {
+          "id": "decisionCriteria",
+          "label": "Decision criteria",
+          "role": "value_story",
+          "required": true,
+          "captured": false
+        },
+        {
+          "id": "timelineUrgency",
+          "label": "Timeline / urgency",
+          "role": "value_story",
+          "required": false,
+          "captured": false
+        },
+        {
+          "id": "competitor",
+          "label": "Competitor / incumbent",
+          "role": "value_story",
+          "required": false,
+          "captured": false
+        },
+        {
+          "id": "websiteEvidence",
+          "label": "Optional website/category evidence",
+          "role": "identity_and_naming_support",
+          "required": false,
+          "captured": false
+        }
+      ],
+      "missingRequiredFields": [
+        "Prospect",
+        "Website",
+        "Business pain",
+        "Requested proof",
+        "Decision criteria"
+      ],
+      "guidance": {
+        "websiteRole": "Website supports identity, category, naming, product family, and demo path.",
+        "notesRole": "Business pain, requested proof, decision criteria, timeline, and competitor context drive ROI, competitive framing, objections, and run guidance.",
+        "dccPackLabel": "Prepared after brief",
+        "dccScenarioLabel": "Prepared after brief",
+        "confidence": "insufficient_evidence"
+      },
+      "noRegression": {
+        "w92StateAuthorityPreserved": true,
+        "noIdbWrites": true,
+        "noSuiteScriptInvocationFromIdb": true,
+        "noTransactionWrites": true,
+        "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+        "consultantConfirmationRequired": true,
+        "dccOwnsObjectGeneration": true
+      }
+    },
+    "readyModel": {
+      "schema": "idb.w109-consultant-sales-request-mode.v1",
+      "status": "sales_request_ready_to_prepare",
+      "prepareBriefRequired": true,
+      "canPrepareBrief": true,
+      "fields": [
+        {
+          "id": "customer",
+          "label": "Prospect",
+          "role": "identity",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "website",
+          "label": "Website",
+          "role": "identity_and_naming",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "notes",
+          "label": "Business pain",
+          "role": "value_story",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "scObjective",
+          "label": "Requested proof",
+          "role": "value_story",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "decisionCriteria",
+          "label": "Decision criteria",
+          "role": "value_story",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "timelineUrgency",
+          "label": "Timeline / urgency",
+          "role": "value_story",
+          "required": false,
+          "captured": true
+        },
+        {
+          "id": "competitor",
+          "label": "Competitor / incumbent",
+          "role": "value_story",
+          "required": false,
+          "captured": true
+        },
+        {
+          "id": "websiteEvidence",
+          "label": "Optional website/category evidence",
+          "role": "identity_and_naming_support",
+          "required": false,
+          "captured": true
+        }
+      ],
+      "missingRequiredFields": [],
+      "guidance": {
+        "websiteRole": "Website supports identity, category, naming, product family, and demo path.",
+        "notesRole": "Business pain, requested proof, decision criteria, timeline, and competitor context drive ROI, competitive framing, objections, and run guidance.",
+        "dccPackLabel": "Prepared after brief",
+        "dccScenarioLabel": "Prepared after brief",
+        "confidence": "needs_confirmation"
+      },
+      "noRegression": {
+        "w92StateAuthorityPreserved": true,
+        "noIdbWrites": true,
+        "noSuiteScriptInvocationFromIdb": true,
+        "noTransactionWrites": true,
+        "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+        "consultantConfirmationRequired": true,
+        "dccOwnsObjectGeneration": true
+      }
+    },
+    "preparedModel": {
+      "schema": "idb.w109-consultant-sales-request-mode.v1",
+      "status": "sales_request_ready_to_prepare",
+      "prepareBriefRequired": true,
+      "canPrepareBrief": true,
+      "fields": [
+        {
+          "id": "customer",
+          "label": "Prospect",
+          "role": "identity",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "website",
+          "label": "Website",
+          "role": "identity_and_naming",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "notes",
+          "label": "Business pain",
+          "role": "value_story",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "scObjective",
+          "label": "Requested proof",
+          "role": "value_story",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "decisionCriteria",
+          "label": "Decision criteria",
+          "role": "value_story",
+          "required": true,
+          "captured": true
+        },
+        {
+          "id": "timelineUrgency",
+          "label": "Timeline / urgency",
+          "role": "value_story",
+          "required": false,
+          "captured": true
+        },
+        {
+          "id": "competitor",
+          "label": "Competitor / incumbent",
+          "role": "value_story",
+          "required": false,
+          "captured": true
+        },
+        {
+          "id": "websiteEvidence",
+          "label": "Optional website/category evidence",
+          "role": "identity_and_naming_support",
+          "required": false,
+          "captured": true
+        }
+      ],
+      "missingRequiredFields": [],
+      "guidance": {
+        "websiteRole": "Website supports identity, category, naming, product family, and demo path.",
+        "notesRole": "Business pain, requested proof, decision criteria, timeline, and competitor context drive ROI, competitive framing, objections, and run guidance.",
+        "dccPackLabel": "Apparel & Accessories",
+        "dccScenarioLabel": "Style-to-Availability Readiness",
+        "confidence": "needs_confirmation"
+      },
+      "noRegression": {
+        "w92StateAuthorityPreserved": true,
+        "noIdbWrites": true,
+        "noSuiteScriptInvocationFromIdb": true,
+        "noTransactionWrites": true,
+        "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+        "consultantConfirmationRequired": true,
+        "dccOwnsObjectGeneration": true
+      }
+    }
+  },
+  "noRegression": {
+    "w92StateAuthorityPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "validatorResults": [
+    {
+      "name": "w109_runtime_sales_request_model_present",
+      "pass": true,
+      "detail": "consultantSalesRequestModeV1 exposed"
+    },
+    {
+      "name": "w109_plan_intake_is_sales_request_facing",
+      "pass": true,
+      "detail": " <div class=\"idb-cockpit-section\"> <div class=\"idb-card idb-accent idb-w56-plan-summary\"> <div class=\"idb-section-title\">30-second plan</div> <div class=\"idb-status-key\">Prospect</div> <div class=\"idb-strong\">Ariat International</div> <div class=\"idb-copy\">Show a concise proof path for style/SKU readiness and customer promise.</div> <div class=\"idb-status-strip\"> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">Classification</div> <div class=\"idb-status-value\">Waiting for brief</div> <div class=\"idb-copy\">No lane chosen yet</div> </div> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">Confidence</div> <div class=\"idb-status-value\">Not prepared</div> <div class=\"idb-copy\">Build demo plan</div> </div> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">Next action</div> <div class=\"idb-status-value\">Build demo plan.</div> <div class=\"idb-copy\">The request is ready. Build the demo plan from the website, request, and proof needs.</div> </div> </div> <div class=\"idb-run-action-card\"> <div class=\"idb-status-key\">Demo path</div> <div class=\"idb-strong\">Build demo plan</div> <div class=\"idb-copy\">One click saves the request, prepares the brief, and confirms the dem"
+    },
+    {
+      "name": "w109_internal_audit_labels_removed_from_default_intake",
+      "pass": true,
+      "detail": " <div class=\"idb-cockpit-section\"> <div class=\"idb-card idb-accent idb-w56-plan-summary\"> <div class=\"idb-section-title\">30-second plan</div> <div class=\"idb-status-key\">Prospect</div> <div class=\"idb-strong\">Ariat International</div> <div class=\"idb-copy\">Show a concise proof path for style/SKU readiness and customer promise.</div> <div class=\"idb-status-strip\"> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">Classification</div> <div class=\"idb-status-value\">Waiting for brief</div> <div class=\"idb-copy\">No lane chosen yet</div> </div> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">Confidence</div> <div class=\"idb-status-value\">Not prepared</div> <div class=\"idb-copy\">Build demo plan</div> </div> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">Next action</div> <div class=\"idb-status-value\">Build demo plan.</div> <div class=\"idb-copy\">The request is ready. Build the demo plan from the website, request, and proof needs.</div> </div> </div> <div class=\"idb-run-action-card\"> <div class=\"idb-status-key\">Demo path</div> <div class=\"idb-strong\">Build demo plan</div> <div class=\"idb-copy\">One click saves the request, prepares the brief, and confirms the dem"
+    },
+    {
+      "name": "w109_prepare_brief_required_before_recommendation_ready",
+      "pass": true,
+      "detail": "{\"empty\":{\"schema\":\"idb.w109-consultant-sales-request-mode.v1\",\"status\":\"sales_request_incomplete\",\"prepareBriefRequired\":true,\"canPrepareBrief\":false,\"fields\":[{\"id\":\"customer\",\"label\":\"Prospect\",\"role\":\"identity\",\"required\":true,\"captured\":false},{\"id\":\"website\",\"label\":\"Website\",\"role\":\"identity_and_naming\",\"required\":true,\"captured\":false},{\"id\":\"notes\",\"label\":\"Business pain\",\"role\":\"value_story\",\"required\":true,\"captured\":false},{\"id\":\"scObjective\",\"label\":\"Requested proof\",\"role\":\"value_story\",\"required\":true,\"captured\":false},{\"id\":\"decisionCriteria\",\"label\":\"Decision criteria\",\"role\":\"value_story\",\"required\":true,\"captured\":false},{\"id\":\"timelineUrgency\",\"label\":\"Timeline / urgency\",\"role\":\"value_story\",\"required\":false,\"captured\":false},{\"id\":\"competitor\",\"label\":\"Competitor / incumbent\",\"role\":\"value_story\",\"required\":false,\"captured\":false},{\"id\":\"websiteEvidence\",\"label\":\"Optional website/category evidence\",\"role\":\"identity_and_naming_support\",\"required\":false,\"captured\":false}],\"missingRequiredFields\":[\"Prospect\",\"Website\",\"Business pain\",\"Requested proof\",\"Decision criteria\"],\"guidance\":{\"websiteRole\":\"Website supports identity, category, naming, product family, and demo path.\",\"notesRole\":\"Business pain, requested proof, decision criteria, timeline, and competitor context drive ROI, competitive framing, objections, and run guidance.\",\"dccPackLabel\":\"Prepared after brief\",\"dccScenarioLabel\":\"Prepared after brief\",\"confidence\":\"insufficient_evidence\"},\"noRegression\":{\"w92StateAuthorityPreserved\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWrites\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"consultantConfirmationRequired\":true,\"dccOwnsObjectGeneration\":true}},\"ready\":{\"schema\":\"idb.w109-consultant-sales-request-mode.v1\",\"status\":\"sales_request_ready_to_prepare\",\"prepareBriefRequired\":true,\"canPrepareBrief\":true,\"fields\":[{\"id\":\"customer\",\"label\":\"Prospect\",\"role\":\"identity\",\"required\":true,\"captured\":true},{\"id\":\"website\",\"label\":\"Website\",\"role\":\"identity_and_naming\",\"required\":true,\"captured\":true},{\"id\":\"notes\",\"label\":\"Business pain\",\"role\":\"value_story\",\"required\":true,\"captured\":true},{\"id\":\"scObjective\",\"label\":\"Requested proof\",\"role\":\"value_story\",\"required\":true,\"captured\":true},{\"id\":\"decisionCriteria\",\"label\":\"Decision criteria\",\"role\":\"value_story\",\"required\":true,\"captured\":true},{\"id\":\"timelineUrgency\",\"label\":\"Timeline / urgency\",\"role\":\"value_story\",\"required\":false,\"captured\":true},{\"id\":\"competitor\",\"label\":\"Competitor / incumbent\",\"role\":\"value_story\",\"required\":false,\"captured\":true},{\"id\":\"websiteEvidence\",\"label\":\"Optional website/category evidence\",\"role\":\"identity_and_naming_support\",\"required\":false,\"captured\":true}],\"missingRequiredFields\":[],\"guidance\":{\"websiteRole\":\"Website supports identity, category, naming, product family, and demo path.\",\"notesRole\":\"Business pain, requested proof, decision criteria, timeline, and competitor context drive ROI, competitive framing, objections, and run guidance.\",\"dccPackLabel\":\"Prepared after brief\",\"dccScenarioLabel\":\"Prepared after brief\",\"confidence\":\"needs_confirmation\"},\"noRegression\":{\"w92StateAuthorityPreserved\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWrites\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"consultantConfirmationRequired\":true,\"dccOwnsObjectGeneration\":true}}}"
+    },
+    {
+      "name": "w109_website_supports_identity_notes_drive_value",
+      "pass": true,
+      "detail": "{\"websiteRole\":\"Website supports identity, category, naming, product family, and demo path.\",\"notesRole\":\"Business pain, requested proof, decision criteria, timeline, and competitor context drive ROI, competitive framing, objections, and run guidance.\",\"dccPackLabel\":\"Prepared after brief\",\"dccScenarioLabel\":\"Prepared after brief\",\"confidence\":\"needs_confirmation\"}"
+    },
+    {
+      "name": "w109_prepared_summary_is_compact_and_consultant_facing",
+      "pass": true,
+      "detail": " <div class=\"idb-cockpit-section\"> <div class=\"idb-card idb-accent idb-w56-plan-summary\"> <div class=\"idb-section-title\">30-second plan</div> <div class=\"idb-status-key\">Prospect</div> <div class=\"idb-strong\">Ariat International</div> <div class=\"idb-copy\">Show a concise proof path for style/SKU readiness and customer promise.</div> <div class=\"idb-status-strip\"> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">Classification</div> <div class=\"idb-status-value\">Apparel &amp; Accessories</div> <div class=\"idb-copy\">Style / SKU Matrix</div> </div> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">Confidence</div> <div class=\"idb-status-value\">Needs confirmation</div> <div class=\"idb-copy\">High / Website evidence</div> </div> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">Next action</div> <div class=\"idb-status-value\">Run demo or export handoff.</div> <div class=\"idb-copy\">Confirm the website category before ROI, competitive, or write preparation proceeds.</div> </div> </div> <div class=\"idb-run-action-card\"> <div class=\"idb-status-key\">Demo path</div> <div class=\"idb-strong\">Apparel &amp; Accessories / Style-to-Availability Readiness</div> <div class=\"idb"
+    },
+    {
+      "name": "w109_trace_export_coverage_present",
+      "pass": true,
+      "detail": "trace export and hooks include W109 model"
+    },
+    {
+      "name": "w109_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"w92StateAuthorityPreserved\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWrites\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"consultantConfirmationRequired\":true,\"dccOwnsObjectGeneration\":true}"
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W110: DCC Handoff Packet Parity Lock",
+    "prompt": "Move through W110: DCC Handoff Packet Parity Lock. Build validator coverage proving every IDB dccRunnerHandoffPacketV1 field maps exactly to Demo Command Center Suitelet form params, DCC-owned config params, and scheduled runner preview params across apparel, CPG, distributor/dealer, manufacturing-heavy, and ambiguous cases. Block export when confirmed lane, selected pack, exported lane, scenario, family key, manufacturing/WIP flags, location/planning intent, or review-only mode disagree. Do not rewrite DCC runner mechanics and do not invoke SuiteScript. Preserve no IDB writes, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, W92 state authority, W105-W107 preview-only approval behavior, and DCC ownership of object generation. Output parity matrix, blocked/confirmed samples, validator gates, W110 report, and best next Codex prompt."
+  }
+}

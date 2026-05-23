@@ -1,0 +1,82 @@
+{
+  "schema": "idb.w95-hands-on-retest-after-visual-cleanup-trace.v1",
+  "generatedAt": "2026-05-17T21:41:05.648Z",
+  "decision": "PASS",
+  "status": "hands_on_retest_packet_ready_user_feedback_required",
+  "userFeedbackRequiredNow": true,
+  "fileToUpload": {
+    "absolutePath": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+    "sha256": "30f73ccc903fffc59a6210f064153b7382c6a77b517332f64212a2ff13d3f2ec",
+    "modifiedAt": "2026-05-17T17:48:39.947Z"
+  },
+  "requiredEvidence": [
+    "Plan first-viewport screenshot",
+    "Review first-viewport screenshot showing DCC handoff export",
+    "Run first-viewport screenshot showing Say/Show/Close",
+    "Trace first-viewport screenshot showing export/checklist/reset",
+    "idb-dcc-runner-handoff-packet-*.json",
+    "intelligent-demo-builder-trace-*.json",
+    "Operator comparison notes"
+  ],
+  "noRegression": {
+    "w92StateAuthorityPreserved": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W96: Grade Hands-On Retest Evidence And Decide Pilot Unlock",
+    "prompt": "Move through W96: Grade Hands-On Retest Evidence And Decide Pilot Unlock. Use the user-provided W95 Plan/Review/Run/Trace screenshots, idb-dcc-runner-handoff-packet JSON, intelligent-demo-builder trace JSON, consultant feedback, and operator comparison notes to grade the post-W94 hands-on retest. Verify one active IDB drawer, W93 compressed first-viewport readability, W92 lane/confirmed/exported/DCC pack consistency, no IDB writes, no SuiteScript invocation, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, and DCC ownership of object generation. Output scored results, UX remediation, handoff mapping remediation, pilot unlock/no-go decision, W96 report, validator gates, and best next Codex prompt."
+  },
+  "validatorResults": [
+    {
+      "name": "w95_inherits_w94_one_active_drawer_pass",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w94-shell-diagnostics.v1\",\"runtimeInstanceId\":\"idb-1779054065507-2i1lng\",\"activeRuntimeInstance\":\"idb-1779054065507-2i1lng\",\"drawerCount\":1,\"railCount\":1,\"styleCount\":1,\"ownedDrawerCount\":1,\"ownedRailCount\":1,\"ownedStyleCount\":1,\"duplicateDetected\":false,\"oneActiveRoot\":true}"
+    },
+    {
+      "name": "w95_inherits_w93_compressed_ui_pass",
+      "pass": true,
+      "detail": "{\"plan\":\"prospect_classification_confidence_dcc_pack_primary_action\",\"review\":\"dcc_handoff_status_pack_objects_blockers_export\",\"run\":\"live_script_first_audit_second\",\"trace\":\"export_checklist_reset_only\"}"
+    },
+    {
+      "name": "w95_file_to_upload_hash_present",
+      "pass": true,
+      "detail": "{\"absolutePath\":\"/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js\",\"sha256\":\"30f73ccc903fffc59a6210f064153b7382c6a77b517332f64212a2ff13d3f2ec\",\"modifiedAt\":\"2026-05-17T17:48:39.947Z\",\"tampermonkeyName\":\"Intelligent Demo Builder Drawer\",\"installInstruction\":\"Open Tampermonkey, edit Intelligent Demo Builder Drawer, replace the full script with this file, save, refresh NetSuite, and confirm only one IDB launcher appears.\"}"
+    },
+    {
+      "name": "w95_sales_request_realistic_and_complete",
+      "pass": true,
+      "detail": "{\"prospect\":\"Ariat International\",\"website\":\"https://www.ariat.com/\",\"conversationNotes\":\"Buyer says style, size, color, replenishment timing, and channel availability are hard to keep aligned for seasonal boot and apparel launches. The team uses spreadsheets and disconnected inventory views, which makes customer promise risky when demand shifts close to launch.\",\"scObjective\":\"Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise for a seasonal boot and apparel launch.\",\"knownCompetitorOrIncumbent\":\"Spreadsheets, disconnected inventory reports, and existing order tools. They are also comparing broader ERP options.\",\"decisionCriteria\":\"Must show a clear path from customer record to order/proof context; must connect style/SKU matrix, size/color availability, channel availability, replenishment timing, and customer promise.\",\"bantMeddicc\":{\"budget\":\"Budget is not finalized; team needs value proof before committing to scope.\",\"authority\":\"VP Operations and merchandising operations influence; finance signs off after value story is clear.\",\"need\":\"Reduce launch risk and avoid inventory/customer promise surprises across apparel and footwear variants.\",\"timeline\":\"Wants a credible proof path within the current evaluation cycle, ideally ready for internal review in 2-4 weeks.\",\"metrics\":\"Fewer spreadsheet handoffs, faster launch readiness review, clearer available-to-promise confidence by style/size/color/channel.\",\"economicBuyer\":\"Operations leadership with finance review.\",\"decisionProcess\":\"SC demo proof, operator build review, internal stakeholder readout, then sandbox/pilot decision.\",\"identifyPain\":\"Seasonal launches expose variant availability gaps and replenishment uncertainty.\",\"champion\":\"Merchandising operations lead pushing for cleaner launch readiness.\"}}"
+    },
+    {
+      "name": "w95_expected_viewports_cover_plan_review_run_trace",
+      "pass": true,
+      "detail": "{\"plan\":[\"Only one IDB drawer and one IDB button are visible.\",\"Plan shows Ariat International as the prospect.\",\"Classification should be Apparel & Accessories.\",\"Confidence should be recommended/high or a clear confirmation state, not Products CPG.\",\"DCC pack should align to apparelAccessories / Style-to-Availability Readiness.\",\"Primary action should be confirm/review packet, not a long story bar.\"],\"review\":[\"DCC handoff export is the first major card.\",\"Status is blocked until consultant confirmation or confirmed for operator review after confirmation.\",\"Selected pack/scenario match the visible lane.\",\"DCC will prepare object list is visible without scrolling through audit detail.\",\"Export DCC handoff button is visible.\"],\"run\":[\"Live script first is visible.\",\"Say, Show, and Close appear before controls, guardrails, or audit detail.\",\"The script stays in the apparel/style/SKU path.\"],\"trace\":[\"Trace actions only is visible.\",\"Export DCC handoff and Export JSON are visible.\",\"Pilot evidence checklist is visible.\",\"Pilot result import is not part of the normal first viewport.\"]}"
+    },
+    {
+      "name": "w95_required_evidence_complete",
+      "pass": true,
+      "detail": "{\"screenshots\":[\"Plan first viewport\",\"Review first viewport with DCC handoff export\",\"Run first viewport with Say/Show/Close\",\"Trace first viewport with export/checklist/reset\"],\"json\":[\"idb-dcc-runner-handoff-packet-*.json\",\"intelligent-demo-builder-trace-*.json\"]}"
+    },
+    {
+      "name": "w95_scoring_rubric_has_auto_no_go",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w95-scoring-rubric.v1\",\"scale\":\"1-5\",\"passingAverage\":4,\"noCategoryBelow\":3,\"categories\":[\"One active drawer / no duplicate button\",\"Plan first-viewport clarity\",\"Website/lane/DCC pack consistency\",\"Review DCC handoff export clarity\",\"Run live script usefulness\",\"Trace evidence checklist clarity\",\"DCC operator field mapping clarity\",\"No-submit/no-write safety clarity\"],\"automaticNoGoIf\":[\"Two IDB buttons or two drawers appear after refresh.\",\"Plan shows Apparel & Accessories while export shows Products CPG, or any other lane/pack mismatch.\",\"DCC handoff JSON is not exported.\",\"Trace JSON is not exported.\",\"Any IDB control appears to submit, queue, invoke SuiteScript, or write a transaction.\",\"Operator cannot map selected pack/scenario to DCC in under 5 minutes.\"]}"
+    },
+    {
+      "name": "w95_runtime_still_export_only",
+      "pass": true,
+      "detail": "export-only no-write runtime"
+    },
+    {
+      "name": "w95_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"w92StateAuthorityPreserved\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWrites\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"notesStoryOnly\":true,\"consultantConfirmationRequired\":true,\"dccOwnsObjectGeneration\":true}"
+    }
+  ]
+}

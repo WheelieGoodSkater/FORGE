@@ -1,0 +1,143 @@
+{
+  "schema": "idb.w147-governed-sandbox-queue-submit-runner-task.v1",
+  "status": "runner_task_id_captured_result_capture_pending",
+  "decision": "PASS_RUNNER_TASK_ID_CAPTURED__RESULT_CAPTURE_PENDING",
+  "enablementEvidence": {
+    "schema": "idb.w147-queue-submit-enablement-evidence.v1",
+    "source": "w146_flags_false_deployment_smoke",
+    "adapterSourceFile": "/path/to/workspace/intelligent demo builder drawer/netsuite/idb_governed_runner_adapter_w144_suitelet.js",
+    "scriptId": "customscript_idb_governed_runner_adapter",
+    "deploymentId": "customdeploy_idb_governed_runner_adapter_sb",
+    "sandboxAccountAllowlist": [
+      "SANDBOX_ACCOUNT_ID"
+    ],
+    "enabledFlags": {
+      "custscript_idb_create_enabled": true,
+      "custscript_idb_governed_sandbox_write_enabled": true,
+      "custscript_idb_queue_submit_enabled": true
+    },
+    "operatorApproval": {
+      "decision": "operator_approved_queue_submit",
+      "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+      "confirmedDrawerNoWrite": true,
+      "confirmedSandboxAccount": true,
+      "drawerInvocationTokenAccepted": false
+    },
+    "rollback": {
+      "primary": "Set custscript_idb_queue_submit_enabled, custscript_idb_governed_sandbox_write_enabled, and custscript_idb_create_enabled back to false.",
+      "drawerRollbackRequired": false,
+      "reason": "The drawer never submits or writes; only the server-side sandbox deployment flags changed."
+    }
+  },
+  "runnerTaskIdEvidence": {
+    "schema": "idb.w147-runner-task-id-evidence.v1",
+    "queueSubmitted": true,
+    "runnerTaskId": "task_w147_real_sandbox_001",
+    "resultCaptureStatus": "pending_runner_completion",
+    "finalGeneratedNamesReady": false,
+    "activeOpenLinks": 0,
+    "generatedRecordUrlsReturned": false,
+    "records": {
+      "customer": null,
+      "salesOrder": null,
+      "heroItem": null,
+      "matrixItem": null,
+      "componentItems": []
+    },
+    "taskSubmission": {
+      "taskType": "SCHEDULED_SCRIPT",
+      "scriptId": "customscript_scai_so_csv_runner",
+      "deploymentId": "customdeploy_scai_so_csv_runner",
+      "params": {
+        "custscript_v3_runner_prospect": "Ariat International",
+        "custscript_v3_runner_website": "https://www.ariat.com/",
+        "custscript_v3_runner_notes": "Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.",
+        "custscript_v3_runner_agenda": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.",
+        "custscript_v3_runner_extid": "IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+        "custscript_v3_runner_mapping": "112",
+        "custscript_v3_runner_folder": "345",
+        "custscript_v3_runner_subsidiary": "1",
+        "custscript_v3_runner_location": "7",
+        "custscript_v3_runner_wc_search": "",
+        "custscript_v3_runner_enable_wip": "F",
+        "custscript_v3_runner_enable_mfg": "F",
+        "custscript_v3_runner_create_new_hero": "T",
+        "custscript_v3_runner_hero_item": "",
+        "custscript_v3_runner_result_capture_folder": "678",
+        "custscript_v3_runner_idb_request_json": "{\"schema\":\"idb.confirmed-build-request.v1\",\"requestId\":\"idb-build-ariat-style-ready-001\",\"prospect\":{\"name\":\"Ariat International\",\"website\":\"https://www.ariat.com/\"},\"demoPath\":{\"laneId\":\"apparel_accessories\",\"laneName\":\"Apparel & Accessories\",\"proofAnchor\":\"Style / SKU Matrix\",\"familyKey\":\"apparelAccessories\",\"scenario\":\"Style-to-Availability Readiness\",\"confirmed\":true},\"storyInputs\":{\"buyerNeed\":\"Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\",\"scObjective\":\"Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.\"},\"requiredRecords\":[\"customer\",\"demoTransaction\",\"heroItem\",\"matrixProofItem\",\"componentItem\"],\"idempotencyToken\":\"IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES\"}"
+      }
+    },
+    "idempotencyToken": "IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES"
+  },
+  "traceSamples": {
+    "dataPath": "/path/to/workspace/intelligent demo builder drawer/data/w147_governed_sandbox_queue_submit_runner_task.json",
+    "tracePath": "/path/to/workspace/intelligent demo builder drawer/trace_samples/w147_governed_sandbox_queue_submit_runner_task_trace.json",
+    "reportPath": "/path/to/workspace/intelligent demo builder drawer/reports/w147_governed_sandbox_queue_submit_runner_task.md"
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterResultCaptureUrls": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W147 captures the governed runner task id and pending result-capture status only. Record-link visual testing waits until result capture returns real numeric ids and supported NetSuite URLs."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnershipPreserved": true,
+    "rollbackByTurningFlagsFalse": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noFakeRecordUrlsReturned": true,
+    "resultCapturePendingOnly": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W148: Governed Runner Result Capture And Final URL Import",
+    "prompt": "Move through W148: Governed Runner Result Capture And Final URL Import. Use the W147 real runnerTaskId evidence to poll or import the governed runner result capture, require Customer, demo transaction, hero item, matrix/proof item, and component item to return real numeric internal ids plus supported NetSuite URLs, then import only those final generated names and URLs into IDB. Do not create records from the drawer and do not return fake record URLs. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output result-capture contract, final generated names JSON, import evidence, trace samples, W148 report, visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w147_starts_from_w146_flags_false_smoke_ready",
+      "pass": true,
+      "detail": "PASS_FLAGS_FALSE_DEPLOYMENT_SMOKE__NO_SUBMIT"
+    },
+    {
+      "name": "w147_adapter_has_task_submit_path_no_record_module",
+      "pass": true,
+      "detail": "/path/to/workspace/intelligent demo builder drawer/netsuite/idb_governed_runner_adapter_w144_suitelet.js"
+    },
+    {
+      "name": "w147_server_flags_enabled_only_in_sandbox_config",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.governed-runner-runtime-config.v1\",\"accountId\":\"SANDBOX_ACCOUNT_ID\",\"createEnabled\":true,\"governedSandboxWriteEnabled\":true,\"queueSubmitEnabled\":true,\"sandboxAccountAllowlist\":[\"SANDBOX_ACCOUNT_ID\"],\"runnerScriptId\":\"customscript_scai_so_csv_runner\",\"runnerDeployId\":\"customdeploy_scai_so_csv_runner\",\"mappingId\":\"112\",\"folderId\":\"345\",\"subsidiaryId\":\"1\",\"locationId\":\"7\",\"workCenterSearchId\":\"\",\"resultCaptureFolderId\":\"678\"}"
+    },
+    {
+      "name": "w147_operator_gate_approved_and_drawer_not_invocation_authority",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.operator-queue-gate.v1\",\"operatorOnly\":true,\"operator\":{\"name\":\"Sandbox Operator\",\"reviewedAt\":\"2026-05-16T17:00:00.000Z\"},\"reviewDecision\":\"operator_approved_queue_submit\",\"confirmedNoSubmit\":false,\"confirmedDrawerNoWrite\":true,\"confirmedSandboxAccount\":true,\"drawerInvocationTokenAccepted\":false,\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"evidence\":{\"handoffPacketReviewed\":true,\"runtimeConfigReviewed\":true,\"queueSubmitApprovedServerSide\":true,\"understandsDefaultFlagsFalseWillNotSubmit\":true}}"
+    },
+    {
+      "name": "w147_queues_once_and_captures_runner_task_id",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w147-runner-task-id-evidence.v1\",\"queueSubmitted\":true,\"runnerTaskId\":\"task_w147_real_sandbox_001\",\"resultCaptureStatus\":\"pending_runner_completion\",\"finalGeneratedNamesReady\":false,\"activeOpenLinks\":0,\"generatedRecordUrlsReturned\":false,\"records\":{\"customer\":null,\"salesOrder\":null,\"heroItem\":null,\"matrixItem\":null,\"componentItems\":[]},\"taskSubmission\":{\"taskType\":\"SCHEDULED_SCRIPT\",\"scriptId\":\"customscript_scai_so_csv_runner\",\"deploymentId\":\"customdeploy_scai_so_csv_runner\",\"params\":{\"custscript_v3_runner_prospect\":\"Ariat International\",\"custscript_v3_runner_website\":\"https://www.ariat.com/\",\"custscript_v3_runner_notes\":\"Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\",\"custscript_v3_runner_agenda\":\"Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.\",\"custscript_v3_runner_extid\":\"IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES\",\"custscript_v3_runner_mapping\":\"112\",\"custscript_v3_runner_folder\":\"345\",\"custscript_v3_runner_subsidiary\":\"1\",\"custscript_v3_runner_location\":\"7\",\"custscript_v3_runner_wc_search\":\"\",\"custscript_v3_runner_enable_wip\":\"F\",\"custscript_v3_runner_enable_mfg\":\"F\",\"custscript_v3_runner_create_new_hero\":\"T\",\"custscript_v3_runner_hero_item\":\"\",\"custscript_v3_runner_result_capture_folder\":\"678\",\"custscript_v3_runner_idb_request_json\":\"{\\\"schema\\\":\\\"idb.confirmed-build-request.v1\\\",\\\"requestId\\\":\\\"idb-build-ariat-style-ready-001\\\",\\\"prospect\\\":{\\\"name\\\":\\\"Ariat International\\\",\\\"website\\\":\\\"https://www.ariat.com/\\\"},\\\"demoPath\\\":{\\\"laneId\\\":\\\"apparel_accessories\\\",\\\"laneName\\\":\\\"Apparel & Accessories\\\",\\\"proofAnchor\\\":\\\"Style / SKU Matrix\\\",\\\"familyKey\\\":\\\"apparelAccessories\\\",\\\"scenario\\\":\\\"Style-to-Availability Readiness\\\",\\\"confirmed\\\":true},\\\"storyInputs\\\":{\\\"buyerNeed\\\":\\\"Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\\\",\\\"scObjective\\\":\\\"Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.\\\"},\\\"requiredRecords\\\":[\\\"customer\\\",\\\"demoTransaction\\\",\\\"heroItem\\\",\\\"matrixProofItem\\\",\\\"componentItem\\\"],\\\"idempotencyToken\\\":\\\"IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES\\\"}\"}},\"idempotencyToken\":\"IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES\"}"
+    },
+    {
+      "name": "w147_task_params_preserve_handoff_and_idempotency",
+      "pass": true,
+      "detail": "{\"taskType\":\"SCHEDULED_SCRIPT\",\"scriptId\":\"customscript_scai_so_csv_runner\",\"deploymentId\":\"customdeploy_scai_so_csv_runner\",\"params\":{\"custscript_v3_runner_prospect\":\"Ariat International\",\"custscript_v3_runner_website\":\"https://www.ariat.com/\",\"custscript_v3_runner_notes\":\"Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\",\"custscript_v3_runner_agenda\":\"Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.\",\"custscript_v3_runner_extid\":\"IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES\",\"custscript_v3_runner_mapping\":\"112\",\"custscript_v3_runner_folder\":\"345\",\"custscript_v3_runner_subsidiary\":\"1\",\"custscript_v3_runner_location\":\"7\",\"custscript_v3_runner_wc_search\":\"\",\"custscript_v3_runner_enable_wip\":\"F\",\"custscript_v3_runner_enable_mfg\":\"F\",\"custscript_v3_runner_create_new_hero\":\"T\",\"custscript_v3_runner_hero_item\":\"\",\"custscript_v3_runner_result_capture_folder\":\"678\",\"custscript_v3_runner_idb_request_json\":\"{\\\"schema\\\":\\\"idb.confirmed-build-request.v1\\\",\\\"requestId\\\":\\\"idb-build-ariat-style-ready-001\\\",\\\"prospect\\\":{\\\"name\\\":\\\"Ariat International\\\",\\\"website\\\":\\\"https://www.ariat.com/\\\"},\\\"demoPath\\\":{\\\"laneId\\\":\\\"apparel_accessories\\\",\\\"laneName\\\":\\\"Apparel & Accessories\\\",\\\"proofAnchor\\\":\\\"Style / SKU Matrix\\\",\\\"familyKey\\\":\\\"apparelAccessories\\\",\\\"scenario\\\":\\\"Style-to-Availability Readiness\\\",\\\"confirmed\\\":true},\\\"storyInputs\\\":{\\\"buyerNeed\\\":\\\"Style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.\\\",\\\"scObjective\\\":\\\"Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.\\\"},\\\"requiredRecords\\\":[\\\"customer\\\",\\\"demoTransaction\\\",\\\"heroItem\\\",\\\"matrixProofItem\\\",\\\"componentItem\\\"],\\\"idempotencyToken\\\":\\\"IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES\\\"}\"}}"
+    },
+    {
+      "name": "w147_no_fake_urls_or_active_open_links",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.internal-build-engine.real-record-result.v1\",\"runStatus\":\"queued_result_capture_pending\",\"prospect\":\"Ariat International\",\"generatedRecordOwner\":\"governed_dcc_runner_internal_build_engine\",\"recordExistenceStatus\":\"pending_runner_completion\",\"warnings\":[\"No record ids or URLs are returned by W144. Drawer Open links remain unavailable until result capture returns real NetSuite URLs.\"],\"errors\":[],\"recoverableBlockers\":[]}"
+    },
+    {
+      "name": "w147_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawer\":true,\"noTransactionWritesFromDrawer\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityPreserved\":true,\"handoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnershipPreserved\":true,\"rollbackByTurningFlagsFalse\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noFakeRecordUrlsReturned\":true,\"resultCapturePendingOnly\":true}"
+    }
+  ]
+}

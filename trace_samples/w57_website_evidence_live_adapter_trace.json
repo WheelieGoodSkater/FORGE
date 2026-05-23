@@ -1,0 +1,563 @@
+{
+  "schema": "idb.w57-website-evidence-live-adapter-trace.v1",
+  "resolverVersion": "w57.website-evidence-live-adapter.v1",
+  "generated": "2026-05-12T15:08:00.000Z",
+  "endpoint": {
+    "method": "POST",
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true
+  },
+  "cases": [
+    {
+      "id": "recommended_dealer_hardgoods",
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "PeakCycle.Example/?utm_medium=email",
+        "normalizedUrl": "https://peakcycle.example/",
+        "domain": "peakcycle.example",
+        "fetchStatus": "fetched",
+        "fetchErrors": [
+          {
+            "type": "dns_or_network_error",
+            "message": "No sample page registered."
+          },
+          {
+            "type": "dns_or_network_error",
+            "message": "No sample page registered."
+          }
+        ],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://peakcycle.example/",
+            "status": 200
+          },
+          {
+            "role": "navigation_discovered_category_or_products_page",
+            "url": "https://peakcycle.example/bikes",
+            "status": 200
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Peak Cycle Bikes",
+          "metaDescription": "Bikes, helmets, components, equipment, stores, and dealer service.",
+          "h1Text": [
+            "Bikes and Cycling Equipment",
+            "Bike Catalog"
+          ],
+          "h2Text": [
+            "Road bikes",
+            "Mountain bikes",
+            "Bicycle SKU availability"
+          ],
+          "navigationLabels": [
+            "Bikes",
+            "Equipment",
+            "Stores"
+          ],
+          "productCategoryTerms": [
+            "bikes",
+            "components",
+            "equipment",
+            "helmets",
+            "bicycle",
+            "catalog",
+            "inventory",
+            "replenishment",
+            "sku"
+          ],
+          "industryLanguage": [
+            "dealer",
+            "service",
+            "retail"
+          ],
+          "locationServiceClues": [
+            "dealer locator",
+            "find a store",
+            "service",
+            "stores"
+          ],
+          "ecommerceSignals": [
+            "cart",
+            "shop"
+          ],
+          "manufacturingSignals": [],
+          "distributionSignals": [
+            "dealer",
+            "replenishment"
+          ],
+          "sourceUrls": [
+            "https://peakcycle.example/",
+            "https://peakcycle.example/bikes"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [
+            {
+              "laneId": "dealer_hardgoods",
+              "score": 0.95,
+              "evidence": [
+                "bikes",
+                "components",
+                "equipment",
+                "helmets",
+                "bicycle"
+              ]
+            },
+            {
+              "laneId": "industrial_distribution",
+              "score": 0.47,
+              "evidence": [
+                "replenishment"
+              ]
+            },
+            {
+              "laneId": "industrial_equipment",
+              "score": 0.47,
+              "evidence": []
+            }
+          ],
+          "productSeed": "Bicycle SKU",
+          "productFamily": "Bicycle Dealer Hardgoods",
+          "demandMoment": "dealer inventory and replenishment readiness"
+        },
+        "confidence": {
+          "state": "recommended",
+          "score": 0.95,
+          "requiresConfirmation": false
+        },
+        "failureState": null,
+        "sourceUrls": [
+          "https://peakcycle.example/",
+          "https://peakcycle.example/bikes"
+        ],
+        "capturedAt": "2026-05-12T15:08:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      }
+    },
+    {
+      "id": "ambiguous_apparel_service_distribution",
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://trailthread.example",
+        "normalizedUrl": "https://trailthread.example/",
+        "domain": "trailthread.example",
+        "fetchStatus": "fetched",
+        "fetchErrors": [
+          {
+            "type": "dns_or_network_error",
+            "message": "No sample page registered."
+          },
+          {
+            "type": "dns_or_network_error",
+            "message": "No sample page registered."
+          },
+          {
+            "type": "dns_or_network_error",
+            "message": "No sample page registered."
+          }
+        ],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://trailthread.example/",
+            "status": 200
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "TrailThread Outfitters",
+          "metaDescription": "Outdoor apparel, footwear, accessories, outfitter services, dealer distribution, and seasonal equipment.",
+          "h1Text": [
+            "Apparel, Footwear, Accessories, and Outfitter Services"
+          ],
+          "h2Text": [
+            "Seasonal style, sizes, variants, equipment, dealer distribution, and services"
+          ],
+          "navigationLabels": [
+            "Collections",
+            "Guided Services",
+            "Dealers"
+          ],
+          "productCategoryTerms": [
+            "apparel",
+            "accessories",
+            "boots",
+            "catalog",
+            "equipment",
+            "footwear",
+            "replenishment",
+            "sizes",
+            "style",
+            "variants"
+          ],
+          "industryLanguage": [
+            "dealer",
+            "distribution",
+            "service",
+            "wholesale"
+          ],
+          "locationServiceClues": [
+            "appointment",
+            "service",
+            "services"
+          ],
+          "ecommerceSignals": [
+            "shop"
+          ],
+          "manufacturingSignals": [],
+          "distributionSignals": [
+            "distribution",
+            "dealer",
+            "wholesale",
+            "replenishment"
+          ],
+          "sourceUrls": [
+            "https://trailthread.example/"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [
+            {
+              "laneId": "apparel_accessories",
+              "score": 0.95,
+              "evidence": [
+                "apparel",
+                "accessories",
+                "footwear",
+                "sizes",
+                "style"
+              ]
+            },
+            {
+              "laneId": "industrial_distribution",
+              "score": 0.71,
+              "evidence": [
+                "distribution",
+                "wholesale",
+                "replenishment"
+              ]
+            },
+            {
+              "laneId": "dealer_hardgoods",
+              "score": 0.59,
+              "evidence": [
+                "equipment",
+                "dealer",
+                "Dealers"
+              ]
+            }
+          ],
+          "productSeed": "Core Style Color-Size Matrix",
+          "productFamily": "Apparel and Footwear Style",
+          "demandMoment": "style, size, and channel availability"
+        },
+        "confidence": {
+          "state": "needs_confirmation",
+          "score": 0.95,
+          "requiresConfirmation": true
+        },
+        "failureState": "ambiguous",
+        "sourceUrls": [
+          "https://trailthread.example/"
+        ],
+        "capturedAt": "2026-05-12T15:08:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      }
+    },
+    {
+      "id": "thin_site",
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://thin.example",
+        "normalizedUrl": "https://thin.example/",
+        "domain": "thin.example",
+        "fetchStatus": "fetched",
+        "fetchErrors": [],
+        "pagesSampled": [
+          {
+            "role": "homepage",
+            "url": "https://thin.example/",
+            "status": 200
+          }
+        ],
+        "extractedEvidence": {
+          "pageTitle": "Welcome",
+          "metaDescription": "",
+          "h1Text": [
+            "Welcome"
+          ],
+          "h2Text": [],
+          "navigationLabels": [
+            "About"
+          ],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": [
+            "https://thin.example/"
+          ]
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0.12,
+          "requiresConfirmation": true
+        },
+        "failureState": "thin",
+        "sourceUrls": [
+          "https://thin.example/"
+        ],
+        "capturedAt": "2026-05-12T15:08:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      }
+    },
+    {
+      "id": "blocked_site",
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://blocked.example",
+        "normalizedUrl": "https://blocked.example/",
+        "domain": "blocked.example",
+        "fetchStatus": "blocked",
+        "fetchErrors": [
+          {
+            "type": "access_blocked",
+            "message": "HTTP 403 prevented readable HTML."
+          }
+        ],
+        "pagesSampled": [],
+        "extractedEvidence": {
+          "pageTitle": "",
+          "metaDescription": "",
+          "h1Text": [],
+          "h2Text": [],
+          "navigationLabels": [],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": []
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "failureState": "blocked",
+        "sourceUrls": [],
+        "capturedAt": "2026-05-12T15:08:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      }
+    },
+    {
+      "id": "unavailable_site",
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://unavailable.example",
+        "normalizedUrl": "https://unavailable.example/",
+        "domain": "unavailable.example",
+        "fetchStatus": "unavailable",
+        "fetchErrors": [
+          {
+            "type": "dns_or_network_error",
+            "message": "Resolver could not reach host."
+          }
+        ],
+        "pagesSampled": [],
+        "extractedEvidence": {
+          "pageTitle": "",
+          "metaDescription": "",
+          "h1Text": [],
+          "h2Text": [],
+          "navigationLabels": [],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": []
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "failureState": "unavailable",
+        "sourceUrls": [],
+        "capturedAt": "2026-05-12T15:08:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      }
+    },
+    {
+      "id": "timeout_site",
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "https://timeout.example",
+        "normalizedUrl": "https://timeout.example/",
+        "domain": "timeout.example",
+        "fetchStatus": "timeout",
+        "fetchErrors": [
+          {
+            "type": "timeout",
+            "message": "Fetch timed out."
+          }
+        ],
+        "pagesSampled": [],
+        "extractedEvidence": {
+          "pageTitle": "",
+          "metaDescription": "",
+          "h1Text": [],
+          "h2Text": [],
+          "navigationLabels": [],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": []
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "failureState": "timeout",
+        "sourceUrls": [],
+        "capturedAt": "2026-05-12T15:08:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      }
+    },
+    {
+      "id": "invalid_scheme",
+      "evidence": {
+        "schema": "idb.website-evidence.v1",
+        "resolverVersion": "w57.website-evidence-live-adapter.v1",
+        "inputUrl": "file:///etc/passwd",
+        "normalizedUrl": "",
+        "domain": "",
+        "fetchStatus": "unavailable",
+        "fetchErrors": [
+          {
+            "type": "unsupported_scheme",
+            "message": "file: URLs are not allowed."
+          }
+        ],
+        "pagesSampled": [],
+        "extractedEvidence": {
+          "pageTitle": "",
+          "metaDescription": "",
+          "h1Text": [],
+          "h2Text": [],
+          "navigationLabels": [],
+          "productCategoryTerms": [],
+          "industryLanguage": [],
+          "locationServiceClues": [],
+          "ecommerceSignals": [],
+          "manufacturingSignals": [],
+          "distributionSignals": [],
+          "sourceUrls": []
+        },
+        "signals": {
+          "laneCandidates": [],
+          "productSeed": "",
+          "productFamily": "",
+          "demandMoment": ""
+        },
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0,
+          "requiresConfirmation": true
+        },
+        "failureState": "blocked",
+        "sourceUrls": [],
+        "capturedAt": "2026-05-12T15:08:00.000Z",
+        "writeAuthority": "none",
+        "nllmAdvisoryOnly": true,
+        "noRegression": {
+          "noSuiteScriptInvocation": true,
+          "noWriteAuthority": true,
+          "noHiddenLaneOverride": true
+        }
+      }
+    }
+  ],
+  "noRegression": {
+    "noWriteAuthority": true,
+    "noSuiteScriptInvocation": true,
+    "noNllmWriteAbility": true,
+    "noHiddenLaneOverride": true
+  }
+}

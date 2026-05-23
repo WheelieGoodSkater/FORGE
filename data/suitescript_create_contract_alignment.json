@@ -1,0 +1,106 @@
+{
+  "schema": "idb.suitescript-create-contract-alignment.v1",
+  "generated": "2026-05-09",
+  "status": "aligned_create_disabled",
+  "purpose": "Align the drawer Creation Packet Contract V2 with the NetSuite-side SuiteScript direct-write scaffold before live writes are enabled.",
+  "writePathType": "suitescript_direct_write",
+  "createEnabledExpected": false,
+  "acceptedPacketSchemas": [
+    "idb.creation-packet.v2",
+    "reviewed_create_request"
+  ],
+  "requiredTopLevelFields": [
+    "mode",
+    "writePathType",
+    "consultantConfirmed",
+    "packetMode",
+    "selectedLaneId",
+    "proofAnchor",
+    "records",
+    "creationPacketContract"
+  ],
+  "requiredPerRecordFields": [
+    "sequence",
+    "label",
+    "recordType",
+    "proposedName",
+    "createIntent",
+    "idempotencyKey",
+    "existingRecordLookup",
+    "dependencies",
+    "rollbackLabel",
+    "traceResultRequired"
+  ],
+  "serverValidationOrder": [
+    "POST method",
+    "valid JSON body",
+    "idbReviewedPacket present or body is packet",
+    "mode is create",
+    "writePathType is suitescript_direct_write",
+    "consultantConfirmed is true",
+    "packetMode is reviewed_create_request",
+    "selected lane is authorized",
+    "records are present",
+    "Creation Packet Contract V2 is present",
+    "creationAllowed is false",
+    "contract record count matches reviewed records",
+    "idempotency keys are present and unique",
+    "rollback labels and trace-result requirements are present",
+    "CREATE_ENABLED remains false"
+  ],
+  "responseContract": {
+    "validatedStatus": "validated",
+    "blockedStatus": "blocked",
+    "traceEvent": "suitescript_write_path_result",
+    "createEnabled": false,
+    "writePlanRecordFields": [
+      "sequence",
+      "label",
+      "plannedName",
+      "recordType",
+      "operation",
+      "role",
+      "createContract",
+      "recordId",
+      "url",
+      "recoverableErrors",
+      "status"
+    ],
+    "createContractFieldsReturned": [
+      "createIntent",
+      "idempotencyKey",
+      "existingRecordLookup",
+      "dependencies",
+      "rollbackLabel",
+      "traceResultRequired"
+    ],
+    "futureResultFields": [
+      "recordId",
+      "url",
+      "recoverableErrors"
+    ]
+  },
+  "createUpdateRules": [
+    "Customer uses create_or_update_customer with company name and website lookup.",
+    "Transaction uses create_sales_order_context and depends on the customer.",
+    "Proof anchor uses create_or_update_proof_item only when the reviewed DCC new-item toggle supports it.",
+    "Supporting proof records depend on customer and proof anchor and must respect manufacturing and WIP toggles.",
+    "Every future write must return trace result fields before the next dependent write proceeds."
+  ],
+  "partialFailureHandling": [
+    "Return blocked while CREATE_ENABLED is false.",
+    "Return failed for invalid packet shape before any future write attempt.",
+    "In a future enabled branch, return partial_failed after any successful parent write followed by a dependent write failure.",
+    "Never silently continue dependent records after a required parent fails.",
+    "Never silently remove records as a rollback substitute; surface rollback labels and record IDs in trace."
+  ],
+  "nonRegression": {
+    "noLiveWritesInMain": true,
+    "noAutomaticCreation": true,
+    "noDrawerDirectWrites": true,
+    "noLlmAuthority": true,
+    "noLaneAuthorityChange": true,
+    "noProofAnchorChange": true,
+    "preserveDemoCommandCenterDirectWriteModel": true
+  }
+}

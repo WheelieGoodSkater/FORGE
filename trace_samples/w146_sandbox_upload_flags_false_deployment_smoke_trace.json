@@ -1,0 +1,26 @@
+{
+  "schema": "idb.w146-sandbox-upload-flags-false-deployment-smoke-trace.v1",
+  "decision": "PASS_FLAGS_FALSE_DEPLOYMENT_SMOKE__NO_SUBMIT",
+  "adapterSourceFile": "/path/to/workspace/intelligent demo builder drawer/netsuite/idb_governed_runner_adapter_w144_suitelet.js",
+  "scriptId": "customscript_idb_governed_runner_adapter",
+  "deploymentId": "customdeploy_idb_governed_runner_adapter_sb",
+  "deploymentFlags": {
+    "custscript_idb_create_enabled": false,
+    "custscript_idb_governed_sandbox_write_enabled": false,
+    "custscript_idb_queue_submit_enabled": false
+  },
+  "queueSubmitted": false,
+  "runnerTaskId": null,
+  "resultCaptureStatus": "not_started_no_submit",
+  "activeOpenLinks": 0,
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterRealRunnerTaskId": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W146 is a flags-false deployment smoke. The only required evidence is the adapter response proving no submit. Visual link testing starts after a later flags-true run returns a real runnerTaskId and result capture returns real URLs."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W147: Governed Sandbox Queue Submit Enablement And RunnerTaskId Capture",
+    "prompt": "Move through W147: Governed Sandbox Queue Submit Enablement And RunnerTaskId Capture. Use the W146 flags-false deployment smoke evidence to enable CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, and QUEUE_SUBMIT_ENABLED only on the sandbox adapter deployment with the sandbox allowlist and approved operator gate, then submit the governed runner once and capture the real runnerTaskId plus resultCapture pending status. Do not create records from the drawer and do not return fake record URLs. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by turning flags false, and no active Open links without real URLs. Output enablement evidence, runnerTaskId evidence, trace samples, W147 report, visual testing decision, and best next Codex prompt."
+  }
+}

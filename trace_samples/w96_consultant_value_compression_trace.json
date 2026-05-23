@@ -1,0 +1,37 @@
+{
+  "schema": "idb.w96-consultant-value-compression-trace.v1",
+  "status": "pass",
+  "sampleProspect": "Ariat International",
+  "visibleLiveValue": {
+    "section": "Live value answer",
+    "roiAnswer": "Ariat International can protect style, size, and channel availability decisions. Evidence points to Core Boot and Apparel Style Matrix and Style / SKU Matrix; quantify only after the consultant captures a baseline.",
+    "netSuiteAnswer": "NetSuite proof path: Use Style / SKU Matrix to show variant control without forcing apparel into generic manufacturing or distribution language.",
+    "caution": "Named competitor detail is consultant-supplied and unverified; keep claims to safe workflow contrast."
+  },
+  "collapsedAudit": {
+    "summary": "Audit: value evidence, proof stack, claim guard, and coaching",
+    "sections": [
+      "Why this ROI",
+      "Competitive detail and NetSuite proof stack",
+      "Unsupported-claim blocker",
+      "Talk track, objections, and discovery"
+    ],
+    "defaultOpen": false
+  },
+  "traceCoverage": {
+    "roiCompetitiveReviewExported": true,
+    "whyThisRoiEvidencePreserved": true,
+    "whyNetSuiteEvidencePreserved": true,
+    "unsupportedClaimBlockerPreserved": true,
+    "dccRunnerHandoffPacketRemainsPrimary": true
+  },
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true,
+    "stateAuthorityPreserved": true
+  }
+}

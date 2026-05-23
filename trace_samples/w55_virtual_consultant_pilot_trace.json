@@ -1,0 +1,85 @@
+{
+  "schema": "idb.w55-virtual-consultant-pilot-trace.v1",
+  "generated": "2026-05-12T00:00:00.000Z",
+  "decision": "virtual_go_for_controlled_pilot",
+  "runs": [
+    {
+      "id": "virtual_run_real_product_brand",
+      "siteKind": "product_brand",
+      "input": {
+        "prospect": "Trek-style bicycle brand",
+        "website": "https://trekbikes.com/",
+        "notes": "Buyer wants a cleaner demo around dealer inventory, replenishment, and showing item availability without jumping between spreadsheets and order screens."
+      },
+      "expectedBehavior": {
+        "classification": "recommended",
+        "lane": "dealer_hardgoods",
+        "proofAnchor": "Bicycle SKU Matrix",
+        "valueGuidance": "source_grounded",
+        "writeSafety": "transaction_blocked"
+      },
+      "observedFeedback": [
+        "Good pilot behavior: website evidence clearly drives the lane and product family.",
+        "Evidence UX should help a consultant explain why the recommendation was made.",
+        "ROI remains safe because it asks for a baseline instead of inventing savings."
+      ],
+      "score": {
+        "lane_accuracy": 5,
+        "proof_anchor_fit": 5,
+        "confidence_uncertainty_honesty": 5,
+        "evidence_panel_clarity": 4,
+        "roi_usefulness": 4,
+        "write_safety_clarity": 5
+      }
+    },
+    {
+      "id": "virtual_run_ambiguous_multi_category",
+      "siteKind": "ambiguous_multi_category",
+      "input": {
+        "prospect": "Industrial apparel and fabricated parts supplier",
+        "website": "https://ambiguous-example.invalid/",
+        "notes": "Prospect talks about uniforms, parts, custom fabrication, and wholesale fulfillment. SC is unsure whether to lead with apparel matrix or manufacturing readiness."
+      },
+      "expectedBehavior": {
+        "classification": "needs_confirmation",
+        "lane": "apparel_accessories_or_industrial_manufacturing",
+        "proofAnchor": "requires_confirmation",
+        "valueGuidance": "source_limited",
+        "writeSafety": "transaction_blocked"
+      },
+      "observedFeedback": [
+        "Good pilot behavior: IDB should not pretend this is obvious.",
+        "Competing candidates and missing-evidence prompt are essential here.",
+        "ROI / Competitive should stay source-limited until the consultant chooses the proof path."
+      ],
+      "score": {
+        "lane_accuracy": 4,
+        "proof_anchor_fit": 4,
+        "confidence_uncertainty_honesty": 5,
+        "evidence_panel_clarity": 5,
+        "roi_usefulness": 4,
+        "write_safety_clarity": 5
+      }
+    }
+  ],
+  "pilotFeedback": {
+    "whatWorked": [
+      "Confidence states now reward honest uncertainty instead of forced recommendations.",
+      "Plan and Review expose website evidence instead of hiding the reasoning.",
+      "ROI / Competitive now has a visible unsupported-claim blocker.",
+      "Trace export carries the evidence UX and value model."
+    ],
+    "watchClosely": [
+      "Whether consultants notice and respect needs-confirmation states.",
+      "Whether weak websites need too much manual pasted evidence.",
+      "Whether value copy is concise enough for live demo use.",
+      "Whether write result UX stays understandable under a real Suitelet response."
+    ],
+    "recommendedPilotDecision": "Proceed to five-consultant controlled intelligence pilot after installing/validating the userscript in the target NetSuite sandbox."
+  },
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "unsupportedClaimsMaximum": 0
+  }
+}

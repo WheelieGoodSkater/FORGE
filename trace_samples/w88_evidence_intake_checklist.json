@@ -1,0 +1,27 @@
+{
+  "schema": "idb.w88-evidence-intake-checklist.v1",
+  "requiredFilesFromUser": [
+    "idb-dcc-runner-handoff-packet-*.json",
+    "intelligent-demo-builder-trace-*.json"
+  ],
+  "requiredScreenshots": [
+    "Plan tab after intake.",
+    "Review tab top summary.",
+    "Review DCC build packet bridge.",
+    "Review DCC handoff export card with form/config/runner sections.",
+    "Trace tab before export.",
+    "DCC Suitelet sandbox comparison screen, if operator opens it for manual review."
+  ],
+  "requiredNotes": [
+    "Was the lane/scenario obvious enough to confirm?",
+    "Was the DCC handoff export easy to find?",
+    "Could the operator map fields in under 5 minutes?",
+    "What looked confusing, wrong, generic, or risky?",
+    "Did any IDB path appear to submit/write/queue?"
+  ],
+  "noSecretRules": [
+    "Do not include NetSuite credentials, tokens, or deployment secrets.",
+    "Redact sensitive internal IDs if screenshots leave the sandbox team.",
+    "Record config presence/absence, not secret values."
+  ]
+}

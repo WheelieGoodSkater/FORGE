@@ -1,0 +1,110 @@
+{
+  "schema": "idb.w73-remote-hosted-resolver-smoke-execution-trace.v1",
+  "generated": "2026-05-17T21:41:02.478Z",
+  "decision": "PASS",
+  "executionDecision": "not_executed_missing_remote_endpoint_config",
+  "remoteSmokeExecuted": false,
+  "blockedReason": "missing_remote_endpoint_config",
+  "inheritedW72Decision": "PASS",
+  "environmentObserved": {
+    "remoteSmokeOptIn": false,
+    "baseUrlConfigured": false,
+    "tokenConfigured": false,
+    "allowedOriginConfigured": false,
+    "blockedOriginConfigured": false,
+    "rawSecretsIncluded": false
+  },
+  "commandPack": {
+    "remoteSmoke": "IDB_REMOTE_RESOLVER_SMOKE=1 IDB_REMOTE_RESOLVER_BASE_URL=$IDB_REMOTE_RESOLVER_BASE_URL IDB_REMOTE_RESOLVER_TOKEN=$IDB_REMOTE_RESOLVER_TOKEN IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN=$IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN=$IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN node tools/run_remote_resolver_deployment_readiness_gate_harness.js",
+    "approvedLiveSmoke": "IDB_APPROVED_LIVE_RESOLVER_SMOKE=1 IDB_RESOLVER_STAGING_URL=$IDB_REMOTE_RESOLVER_BASE_URL IDB_RESOLVER_STAGING_TOKEN=$IDB_REMOTE_RESOLVER_TOKEN IDB_RESOLVER_ALLOWED_ORIGIN=$IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN node tools/run_approved_live_resolver_smoke_harness.js"
+  },
+  "remoteSmokeRequiredResults": [
+    "Remote /health returns writeAuthority none, suiteScriptInvocation false, nllmAdvisoryOnly true.",
+    "Approved CORS preflight passes without wildcard CORS.",
+    "Blocked CORS preflight fails without echoing blocked origin.",
+    "Missing token returns 401 before fetch.",
+    "Write-shaped payload returns 400 before fetch.",
+    "Second eligible request returns cacheHit true.",
+    "Approved live-site smoke has zero false-confident-wrong and zero unsupported claims.",
+    "Blocked, thin, unavailable, and timeout remain insufficient evidence with no lane candidates."
+  ],
+  "pilotGoNoGo": {
+    "currentDecision": "no_go_until_remote_smoke_executes",
+    "goIf": [
+      "W73 remote smoke executes against a real hosted URL.",
+      "Health/auth/CORS/cache checks pass.",
+      "Approved live-site smoke has zero false-confident-wrong.",
+      "Unsupported claims remain zero.",
+      "Rollback switch is documented and tested."
+    ],
+    "noGoIf": [
+      "Remote endpoint is not configured.",
+      "Any false-confident-wrong result appears.",
+      "Any unsupported claim appears.",
+      "CORS allows wildcard or blocked origin.",
+      "Resolver accepts write-shaped or NetSuite-auth-shaped payload.",
+      "Blocked, thin, unavailable, or timeout produces a confident lane."
+    ]
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W73R: Execute Remote Hosted Resolver Smoke With Config",
+    "prompt": "Move through W73R: Execute Remote Hosted Resolver Smoke With Config. Use the configured remote staging websiteResolverServiceV1 endpoint and secret environment variables to run the W72/W73 remote smoke command pack against the real hosted URL: health, auth/CORS, write-payload rejection, cache-hit, approved live-site smoke, observability checks, rollback switch, and pilot go/no-go. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output executed remote smoke results, trace samples, updated W73 report, validator gates, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w73_contract_schema_present",
+      "pass": true,
+      "detail": "idb.w73-remote-hosted-resolver-smoke-execution.v1"
+    },
+    {
+      "name": "w73_inherits_w72_readiness_gate",
+      "pass": true,
+      "detail": "{\"decision\":\"PASS\",\"mode\":\"readiness_pack_only_remote_not_configured\"}"
+    },
+    {
+      "name": "w73_remote_config_status_honest",
+      "pass": true,
+      "detail": "{\"remoteSmokeOptIn\":false,\"baseUrlConfigured\":false,\"tokenConfigured\":false,\"allowedOriginConfigured\":false,\"blockedOriginConfigured\":false,\"rawSecretsIncluded\":false}"
+    },
+    {
+      "name": "w73_required_environment_list_present",
+      "pass": true,
+      "detail": "[\"IDB_REMOTE_RESOLVER_SMOKE=1\",\"IDB_REMOTE_RESOLVER_BASE_URL=https://<remote-staging-resolver>\",\"IDB_REMOTE_RESOLVER_TOKEN=<secret-manager-value>\",\"IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN=https://<approved-netsuite-account>.app.netsuite.com\",\"IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN=https://unapproved.example.com\"]"
+    },
+    {
+      "name": "w73_command_pack_present",
+      "pass": true,
+      "detail": "{\"remoteSmoke\":\"IDB_REMOTE_RESOLVER_SMOKE=1 IDB_REMOTE_RESOLVER_BASE_URL=$IDB_REMOTE_RESOLVER_BASE_URL IDB_REMOTE_RESOLVER_TOKEN=$IDB_REMOTE_RESOLVER_TOKEN IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN=$IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN=$IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN node tools/run_remote_resolver_deployment_readiness_gate_harness.js\",\"approvedLiveSmoke\":\"IDB_APPROVED_LIVE_RESOLVER_SMOKE=1 IDB_RESOLVER_STAGING_URL=$IDB_REMOTE_RESOLVER_BASE_URL IDB_RESOLVER_STAGING_TOKEN=$IDB_REMOTE_RESOLVER_TOKEN IDB_RESOLVER_ALLOWED_ORIGIN=$IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN node tools/run_approved_live_resolver_smoke_harness.js\"}"
+    },
+    {
+      "name": "w73_remote_required_results_present",
+      "pass": true,
+      "detail": "[\"Remote /health returns writeAuthority none, suiteScriptInvocation false, nllmAdvisoryOnly true.\",\"Approved CORS preflight passes without wildcard CORS.\",\"Blocked CORS preflight fails without echoing blocked origin.\",\"Missing token returns 401 before fetch.\",\"Write-shaped payload returns 400 before fetch.\",\"Second eligible request returns cacheHit true.\",\"Approved live-site smoke has zero false-confident-wrong and zero unsupported claims.\",\"Blocked, thin, unavailable, and timeout remain insufficient evidence with no lane candidates.\"]"
+    },
+    {
+      "name": "w73_pilot_no_go_until_execution",
+      "pass": true,
+      "detail": "{\"currentDecision\":\"no_go_until_remote_smoke_executes\",\"goIf\":[\"W73 remote smoke executes against a real hosted URL.\",\"Health/auth/CORS/cache checks pass.\",\"Approved live-site smoke has zero false-confident-wrong.\",\"Unsupported claims remain zero.\",\"Rollback switch is documented and tested.\"],\"noGoIf\":[\"Remote endpoint is not configured.\",\"Any false-confident-wrong result appears.\",\"Any unsupported claim appears.\",\"CORS allows wildcard or blocked origin.\",\"Resolver accepts write-shaped or NetSuite-auth-shaped payload.\",\"Blocked, thin, unavailable, or timeout produces a confident lane.\"]}"
+    },
+    {
+      "name": "w73_no_regression_boundaries_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesCannotOwnIdentification\":true,\"blockedThinUnavailableTimeoutDoNotGuess\":true,\"transactionWriteEnabled\":false,\"mainDrawerCreateEnabled\":false,\"mainSuiteletCreateEnabled\":false}"
+    },
+    {
+      "name": "w73_best_next_prompt_present",
+      "pass": true,
+      "detail": "Move through W73R: Execute Remote Hosted Resolver Smoke With Config. Use the configured remote staging websiteResolverServiceV1 endpoint and secret environment variables to run the W72/W73 remote smoke command pack against the real hosted URL: health, auth/CORS, write-payload rejection, cache-hit, approved live-site smoke, observability checks, rollback switch, and pilot go/no-go. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output executed remote smoke results, trace samples, updated W73 report, validator gates, and best next Codex prompt."
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "idb.w217-mode-aware-live-review-smoke-trace.v1",
+  "cases": [
+    {
+      "label": "Complete Non-Manufacturing Retail Availability",
+      "caseType": "complete_non_manufacturing",
+      "resolvedOperatingMode": "retail_availability",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "consultantReviewHeadline": "Build results are ready.",
+      "consultantRunNextSteps": [
+        "Open Customer",
+        "Open Sales Order",
+        "Open Item"
+      ],
+      "visibleRecordLabels": [
+        "Customer",
+        "Sales Order",
+        "Product SKU",
+        "Availability Flow",
+        "Channel Context"
+      ],
+      "openableRecordCount": 5,
+      "adminDebugVisible": false,
+      "adminDebugDiagnostics": {}
+    },
+    {
+      "label": "Complete Discrete Manufacturing",
+      "caseType": "complete_manufacturing",
+      "resolvedOperatingMode": "discrete_manufacturing",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": false,
+        "selectedLaneId": "industrial_equipment"
+      },
+      "consultantReviewHeadline": "Build results are ready.",
+      "consultantRunNextSteps": [
+        "Open Customer",
+        "Open Sales Order",
+        "Open Item"
+      ],
+      "visibleRecordLabels": [
+        "Customer",
+        "Sales Order",
+        "Finished/Assembly Item",
+        "BOM or Assembly Structure",
+        "Component Item"
+      ],
+      "openableRecordCount": 5,
+      "adminDebugVisible": false,
+      "adminDebugDiagnostics": {}
+    },
+    {
+      "label": "Partial Food Batch WIP",
+      "caseType": "partial_food_batch_wip",
+      "resolvedOperatingMode": "food_batch_manufacturing",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": true,
+        "enableWip": true,
+        "selectedLaneId": "food_beverage"
+      },
+      "consultantReviewHeadline": "Food batch records are ready. WIP detail was not returned.",
+      "consultantRunNextSteps": [
+        "Open Customer",
+        "Open Sales Order",
+        "Open Item",
+        "Use available records",
+        "WIP detail not returned"
+      ],
+      "visibleRecordLabels": [
+        "Customer",
+        "Sales Order",
+        "Finished Food/Batch Item",
+        "Formula or Batch Structure",
+        "Ingredient Item",
+        "Lot Context"
+      ],
+      "openableRecordCount": 6,
+      "adminDebugVisible": true,
+      "adminDebugDiagnostics": {
+        "missingBomOrAssemblyStructure": true,
+        "missingWorkOrderOrWipObject": true,
+        "missingRouting": true,
+        "missingWorkCenter": true,
+        "mappedRoles": [
+          "customer",
+          "sales_order",
+          "finished_food_or_batch_item",
+          "formula_or_batch_structure",
+          "ingredient_or_component_item",
+          "lot_or_availability_context"
+        ],
+        "resolvedOperatingMode": "food_batch_manufacturing",
+        "modeConfidence": "high"
+      }
+    }
+  ]
+}

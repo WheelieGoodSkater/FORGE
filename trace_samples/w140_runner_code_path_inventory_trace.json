@@ -1,0 +1,30 @@
+{
+  "schema": "idb.w140-runner-code-path-inventory-trace.v1",
+  "decision": "PASS_ADAPTER_BOUNDARY_READY__IMPLEMENT_NETSUITE_SIDE_ADAPTER_NEXT",
+  "runnerEntryFound": true,
+  "existingRunnerWriteCounts": {
+    "runnerRecordCreateCount": 10,
+    "runnerSubmitFieldsCount": 11,
+    "runnerCsvImportSubmitPresent": true,
+    "drawerWriteSignatureCount": 0
+  },
+  "adapterInputValid": true,
+  "normalizedResultValid": true,
+  "currentGaps": [
+    "Customer-specific create/resolve is not a clean exported runner boundary yet; current runner resolves the anchor customer for CSV import.",
+    "Demo transaction internal id is not synchronously returned by the CSV import submit path; current runner returns/imports a CSV task id, then record existence must be resolved after import completion.",
+    "Matrix/proof item is represented by hero or manufacturing item anchors; a W139 role-level result adapter must map the chosen proof item explicitly.",
+    "The legacy Suitelet starts and previews runner configuration, but it should remain legacy/reference-only for IDB.",
+    "The final generated names JSON must be assembled by an adapter/result-capture layer after runner execution, not by the drawer."
+  ],
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterNetSuiteSideAdapterWrite": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W140 inventories and extracts the adapter boundary only. Visual NetSuite testing is required after the NetSuite-side adapter actually writes or resolves records and returns real URLs."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W141: NetSuite-Side Governed Runner Adapter Skeleton",
+    "prompt": "Move through W141: NetSuite-Side Governed Runner Adapter Skeleton. Treat IDB as the primary consultant-facing product and the old DCC Suitelet UI as legacy. Build the NetSuite-side governed runner adapter skeleton that accepts the W139 confirmed IDB build request JSON, validates the W140 gates, resolves runner runtime config server-side, calls or queues the existing governed runner/internal build logic, and returns write-disabled dry-run results without drawer writes. Do not enable governed sandbox writes yet. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, no-submit rollback, internal runner ownership, and no active Open links without real URLs. Output adapter skeleton, validation gates, dry-run smoke, trace samples, W141 report, visual testing decision, and best next Codex prompt."
+  }
+}

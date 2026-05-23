@@ -1,0 +1,43 @@
+{
+  "schema": "idb.w213-trace-samples.v1",
+  "samples": [
+    {
+      "event": "w213.story_roi_competitive_copy_ready",
+      "customer": "Summit Outdoor Supply",
+      "modeKey": "dealer_hardgoods",
+      "talkTrack": "Lead with the buyer risk: Summit Outdoor Supply needs one trusted view before the customer promise is made. Prove it with Product / SKU, then capture the current baseline before claiming savings. Position NetSuite as the operating system for seasonal dealer demand, channel availability, allocation, and replenishment timing.",
+      "roiAnswer": "Frame ROI as risk reduction first: protect the seasonal dealer demand, channel availability, allocation, and replenishment timing decision, capture the current baseline before claiming savings, then quantify fewer misses, delays, exposure, or manual touches only after the buyer confirms that baseline.",
+      "competitiveAnswer": "NetSuite wins by keeping dealer demand, item availability, order promise, and financial impact in one operating path instead of splitting the work across ecommerce, spreadsheets, and inventory add-ons."
+    },
+    {
+      "event": "w213.run_coaching_uses_imported_final_names",
+      "customer": "Summit Outdoor Supply",
+      "title": "Prove the NetSuite path",
+      "show": "Build results are ready.: Customer: Summit Outdoor Supply Customer Account -> Sales Order: SO2679 -> Product SKU: Summit Outdoor Supply Channel Availability SKU -> Availability Flow: Summit Outdoor Supply Dealer Replenishment Flow."
+    },
+    {
+      "event": "w213.apparel_story_copy_ready",
+      "customer": "Ariat International",
+      "modeKey": "apparel_style_matrix",
+      "proofMove": "Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Use Ariat International Style SKU and keep the proof in NetSuite, not in a detached feature tour.",
+      "objectionAnswer": "If the buyer doubts the matrix, ask which size/color promise fails first today, then prove the current path through NetSuite records."
+    },
+    {
+      "event": "w213.long_notes_distilled_for_yerba_madre",
+      "customer": "Yerba Madre",
+      "modeKey": "wip_manufacturing",
+      "consultantBrief": [
+        "Buyer: Buyer is the VP of Operations and Finance at Yerba Madre, formerly Guayaki Yerba Mate.",
+        "Pain: operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail...",
+        "Proof: The team needs a demo that proves food batch manufacturing readiness, ingredient traceability, lot-aware availability, and clean handoff from custo...",
+        "Value: reduce manual reconciliation between sales demand, inventory, ingredient planning, and production; improve confidence in available-to-promise; redu..."
+      ],
+      "talkTrack": "Lead with the buyer risk: operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail... Prove it with Yerba Mate Beverage Variety Pack, then capture the current baseline before claiming savings. Position NetSuite as the operating system for work order progress, routing readiness, work center visibility, and customer promise."
+    },
+    {
+      "event": "w213.w151_forbidden_naming_guard_preserved",
+      "status": "toggle_vocabulary_guardrail_failed",
+      "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Summit Outdoor Supply Finished Good, Matrix item / proof item: Summit Outdoor Supply Production Line, Component item 1: Summit Outdoor Supply Ingredient Blend. Mode contract blocked: Hero item: finished good is not compatible with dealer_hardgoods_replenishment., Matrix item / proof item: production line is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient blend is not compatible with dealer_hardgoods_replenishment.."
+    }
+  ]
+}

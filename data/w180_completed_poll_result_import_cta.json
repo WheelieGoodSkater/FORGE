@@ -1,0 +1,1097 @@
+{
+  "schema": "idb.w180-completed-poll-result-import-cta.v1",
+  "status": "completed_poll_result_import_cta_wiring_ready",
+  "decision": "PASS_COMPLETED_POLL_RESULT_IMPORT_CTA_READY__VISUAL_TESTING_BLOCKED",
+  "generatedAt": "2026-05-17T21:41:16.685Z",
+  "importCtaWiringContract": {
+    "schema": "idb.w180-import-cta-wiring-contract.v1",
+    "source": "idb.w179-approved-server-adapter-result-poll-control.v1",
+    "cta": "Import completed runner result",
+    "appearsOnlyAfter": [
+      "approved server adapter poll returns completed result",
+      "W151 accepts numeric internal ids",
+      "W151 accepts supported NetSuite URLs",
+      "generatedRecordOwner is governed_runner_internal_build_engine"
+    ],
+    "remainsBlockedFor": [
+      "pending poll response",
+      "adapter error",
+      "malformed completed result",
+      "missing runnerTaskId",
+      "Build handoff JSON"
+    ],
+    "mutationBoundary": "CTA readiness does not mutate state.dccFinalNamingResult; import commit remains the separate action."
+  },
+  "samples": {
+    "pending": {
+      "schema": "idb.completed-poll-result-import-cta-wiring.v1",
+      "status": "completed_poll_result_import_cta_blocked",
+      "mode": "poll_result_to_w151_import_cta_no_state_mutation",
+      "importCtaWiringContract": {
+        "sourcePollControlSchema": "idb.approved-server-adapter-result-poll-control-implementation.v1",
+        "acceptsOnlyCompletedPollResult": true,
+        "requiresW151AcceptedNumericIdsAndSupportedUrls": true,
+        "requiresInternalRunnerOwner": true,
+        "pendingResponsesDoNotMutate": true,
+        "adapterErrorsDoNotMutate": true,
+        "malformedCompletedResponsesDoNotMutate": true,
+        "importCommitOwner": "W151 plus W176 import commit",
+        "noVisualTestingBeforeImport": true
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import waits for completed result",
+        "visible": false,
+        "enabled": false,
+        "action": "none",
+        "targetView": "",
+        "guardOwner": "W151 completed runner result import guard",
+        "payloadSource": "none",
+        "blockedReason": "runner_result_still_pending"
+      },
+      "pollStatus": {
+        "status": "poll_control_pending_or_no_submit",
+        "runnerTaskIdPresent": true,
+        "requestSent": true,
+        "normalizedStatus": "polling_pending",
+        "resultCaptureStatus": "pending_runner_completion"
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "importReadyRecordCount": 0,
+        "stateMutationAllowedBeforeOperatorImport": false
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": false,
+        "statePatchAvailableAfterOperatorImport": false,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisualAfterImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "operatorRetestPacket": {
+        "title": "W180 operator retest packet",
+        "doNotVisuallyTestYet": true,
+        "prerequisite": "Run only after the Build return surface has a runnerTaskId and Check runner result is visible.",
+        "steps": [
+          "Click Check runner result only after runnerTaskId is captured.",
+          "If the response is pending, confirm Import completed runner result stays hidden or disabled.",
+          "If the response is adapter-error, stop and collect operator evidence.",
+          "If the response is malformed completed JSON, confirm W151 rejects it and no Open links appear.",
+          "If the response is completed and W151-valid, confirm Import completed runner result appears, but do not run visual Open-link testing until after import.",
+          "After import is committed in the next block, targeted Open-link testing can begin."
+        ],
+        "screenshotsNeededNow": [
+          "Build tab showing runnerTaskId captured and Check runner result visible.",
+          "Build tab after completed poll showing Import completed runner result visible.",
+          "Trace tab or import surface showing completed runner result JSON guard, if present."
+        ],
+        "screenshotsNotNeededYet": [
+          "NetSuite record landing pages",
+          "Broad Plan/Run visual sweeps"
+        ]
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w180_poll_result_to_import_cta",
+          "pollStatus": "poll_control_pending_or_no_submit",
+          "importCtaVisible": false,
+          "importCtaEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w180_w151_guard_result",
+          "completedResultAcceptedByW151": false,
+          "generatedRecordOwner": "",
+          "importReadyRecordCount": 0,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w180_operator_retest_packet",
+          "doNotVisuallyTestYet": true,
+          "targetedTestingAfterImportOnly": true,
+          "broaderVisualTestingRequired": false
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W180 exposes the guarded import CTA, but Open-link testing waits until the completed result is imported."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "w151CompletedResultImportGuardPreserved": true
+      }
+    },
+    "completed": {
+      "schema": "idb.completed-poll-result-import-cta-wiring.v1",
+      "status": "completed_poll_result_import_cta_ready",
+      "mode": "poll_result_to_w151_import_cta_no_state_mutation",
+      "importCtaWiringContract": {
+        "sourcePollControlSchema": "idb.approved-server-adapter-result-poll-control-implementation.v1",
+        "acceptsOnlyCompletedPollResult": true,
+        "requiresW151AcceptedNumericIdsAndSupportedUrls": true,
+        "requiresInternalRunnerOwner": true,
+        "pendingResponsesDoNotMutate": true,
+        "adapterErrorsDoNotMutate": true,
+        "malformedCompletedResponsesDoNotMutate": true,
+        "importCommitOwner": "W151 plus W176 import commit",
+        "noVisualTestingBeforeImport": true
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import completed runner result",
+        "visible": true,
+        "enabled": true,
+        "action": "w151_guarded_completed_runner_result_import",
+        "targetView": "trace",
+        "guardOwner": "W151 completed runner result import guard",
+        "payloadSource": "approved_server_adapter_completed_poll_response",
+        "blockedReason": ""
+      },
+      "pollStatus": {
+        "status": "poll_control_completed_result_ready_for_w151_import",
+        "runnerTaskIdPresent": true,
+        "requestSent": true,
+        "normalizedStatus": "completed_result_awaiting_w151_import",
+        "resultCaptureStatus": "completed"
+      },
+      "resultImportGuard": {
+        "completedResultPresent": true,
+        "completedResultAcceptedByW151": true,
+        "completedResultStatus": "completed_runner_result_accepted",
+        "generatedRecordOwner": "governed_runner_internal_build_engine",
+        "internalRunnerOwnerValid": true,
+        "importReadyRecordCount": 5,
+        "stateMutationAllowedBeforeOperatorImport": false
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": true,
+        "statePatchAvailableAfterOperatorImport": true,
+        "openableAfterCommit": 9,
+        "supportedOpenLinksAfterCommit": 9,
+        "importedUrlsReadyForTargetedVisualAfterImport": true,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "operatorRetestPacket": {
+        "title": "W180 operator retest packet",
+        "doNotVisuallyTestYet": true,
+        "prerequisite": "Run only after the Build return surface has a runnerTaskId and Check runner result is visible.",
+        "steps": [
+          "Click Check runner result only after runnerTaskId is captured.",
+          "If the response is pending, confirm Import completed runner result stays hidden or disabled.",
+          "If the response is adapter-error, stop and collect operator evidence.",
+          "If the response is malformed completed JSON, confirm W151 rejects it and no Open links appear.",
+          "If the response is completed and W151-valid, confirm Import completed runner result appears, but do not run visual Open-link testing until after import.",
+          "After import is committed in the next block, targeted Open-link testing can begin."
+        ],
+        "screenshotsNeededNow": [
+          "Build tab showing runnerTaskId captured and Check runner result visible.",
+          "Build tab after completed poll showing Import completed runner result visible.",
+          "Trace tab or import surface showing completed runner result JSON guard, if present."
+        ],
+        "screenshotsNotNeededYet": [
+          "NetSuite record landing pages",
+          "Broad Plan/Run visual sweeps"
+        ]
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w180_poll_result_to_import_cta",
+          "pollStatus": "poll_control_completed_result_ready_for_w151_import",
+          "importCtaVisible": true,
+          "importCtaEnabled": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w180_w151_guard_result",
+          "completedResultAcceptedByW151": true,
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "importReadyRecordCount": 5,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w180_operator_retest_packet",
+          "doNotVisuallyTestYet": true,
+          "targetedTestingAfterImportOnly": true,
+          "broaderVisualTestingRequired": false
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W180 exposes the guarded import CTA, but Open-link testing waits until the completed result is imported."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "w151CompletedResultImportGuardPreserved": true
+      }
+    },
+    "malformedCompleted": {
+      "schema": "idb.completed-poll-result-import-cta-wiring.v1",
+      "status": "completed_poll_result_import_cta_blocked",
+      "mode": "poll_result_to_w151_import_cta_no_state_mutation",
+      "importCtaWiringContract": {
+        "sourcePollControlSchema": "idb.approved-server-adapter-result-poll-control-implementation.v1",
+        "acceptsOnlyCompletedPollResult": true,
+        "requiresW151AcceptedNumericIdsAndSupportedUrls": true,
+        "requiresInternalRunnerOwner": true,
+        "pendingResponsesDoNotMutate": true,
+        "adapterErrorsDoNotMutate": true,
+        "malformedCompletedResponsesDoNotMutate": true,
+        "importCommitOwner": "W151 plus W176 import commit",
+        "noVisualTestingBeforeImport": true
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import waits for completed result",
+        "visible": false,
+        "enabled": false,
+        "action": "none",
+        "targetView": "",
+        "guardOwner": "W151 completed runner result import guard",
+        "payloadSource": "none",
+        "blockedReason": "completed_result_rejected_by_w151"
+      },
+      "pollStatus": {
+        "status": "poll_control_completed_result_rejected_by_w151",
+        "runnerTaskIdPresent": true,
+        "requestSent": true,
+        "normalizedStatus": "completed_result_awaiting_w151_import",
+        "resultCaptureStatus": "completed"
+      },
+      "resultImportGuard": {
+        "completedResultPresent": true,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "completed_runner_result_required",
+        "generatedRecordOwner": "governed_runner_internal_build_engine",
+        "internalRunnerOwnerValid": true,
+        "importReadyRecordCount": 0,
+        "stateMutationAllowedBeforeOperatorImport": false
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": false,
+        "statePatchAvailableAfterOperatorImport": false,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisualAfterImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "operatorRetestPacket": {
+        "title": "W180 operator retest packet",
+        "doNotVisuallyTestYet": true,
+        "prerequisite": "Run only after the Build return surface has a runnerTaskId and Check runner result is visible.",
+        "steps": [
+          "Click Check runner result only after runnerTaskId is captured.",
+          "If the response is pending, confirm Import completed runner result stays hidden or disabled.",
+          "If the response is adapter-error, stop and collect operator evidence.",
+          "If the response is malformed completed JSON, confirm W151 rejects it and no Open links appear.",
+          "If the response is completed and W151-valid, confirm Import completed runner result appears, but do not run visual Open-link testing until after import.",
+          "After import is committed in the next block, targeted Open-link testing can begin."
+        ],
+        "screenshotsNeededNow": [
+          "Build tab showing runnerTaskId captured and Check runner result visible.",
+          "Build tab after completed poll showing Import completed runner result visible.",
+          "Trace tab or import surface showing completed runner result JSON guard, if present."
+        ],
+        "screenshotsNotNeededYet": [
+          "NetSuite record landing pages",
+          "Broad Plan/Run visual sweeps"
+        ]
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w180_poll_result_to_import_cta",
+          "pollStatus": "poll_control_completed_result_rejected_by_w151",
+          "importCtaVisible": false,
+          "importCtaEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w180_w151_guard_result",
+          "completedResultAcceptedByW151": false,
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "importReadyRecordCount": 0,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w180_operator_retest_packet",
+          "doNotVisuallyTestYet": true,
+          "targetedTestingAfterImportOnly": true,
+          "broaderVisualTestingRequired": false
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W180 exposes the guarded import CTA, but Open-link testing waits until the completed result is imported."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "w151CompletedResultImportGuardPreserved": true
+      }
+    },
+    "adapterError": {
+      "schema": "idb.completed-poll-result-import-cta-wiring.v1",
+      "status": "completed_poll_result_import_cta_blocked",
+      "mode": "poll_result_to_w151_import_cta_no_state_mutation",
+      "importCtaWiringContract": {
+        "sourcePollControlSchema": "idb.approved-server-adapter-result-poll-control-implementation.v1",
+        "acceptsOnlyCompletedPollResult": true,
+        "requiresW151AcceptedNumericIdsAndSupportedUrls": true,
+        "requiresInternalRunnerOwner": true,
+        "pendingResponsesDoNotMutate": true,
+        "adapterErrorsDoNotMutate": true,
+        "malformedCompletedResponsesDoNotMutate": true,
+        "importCommitOwner": "W151 plus W176 import commit",
+        "noVisualTestingBeforeImport": true
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import waits for completed result",
+        "visible": false,
+        "enabled": false,
+        "action": "none",
+        "targetView": "",
+        "guardOwner": "W151 completed runner result import guard",
+        "payloadSource": "none",
+        "blockedReason": "adapter_error_requires_operator_evidence"
+      },
+      "pollStatus": {
+        "status": "poll_control_adapter_error_stopped",
+        "runnerTaskIdPresent": true,
+        "requestSent": true,
+        "normalizedStatus": "adapter_transport_error_drawer_safe",
+        "resultCaptureStatus": "adapter_error"
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "importReadyRecordCount": 0,
+        "stateMutationAllowedBeforeOperatorImport": false
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": false,
+        "statePatchAvailableAfterOperatorImport": false,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisualAfterImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "operatorRetestPacket": {
+        "title": "W180 operator retest packet",
+        "doNotVisuallyTestYet": true,
+        "prerequisite": "Run only after the Build return surface has a runnerTaskId and Check runner result is visible.",
+        "steps": [
+          "Click Check runner result only after runnerTaskId is captured.",
+          "If the response is pending, confirm Import completed runner result stays hidden or disabled.",
+          "If the response is adapter-error, stop and collect operator evidence.",
+          "If the response is malformed completed JSON, confirm W151 rejects it and no Open links appear.",
+          "If the response is completed and W151-valid, confirm Import completed runner result appears, but do not run visual Open-link testing until after import.",
+          "After import is committed in the next block, targeted Open-link testing can begin."
+        ],
+        "screenshotsNeededNow": [
+          "Build tab showing runnerTaskId captured and Check runner result visible.",
+          "Build tab after completed poll showing Import completed runner result visible.",
+          "Trace tab or import surface showing completed runner result JSON guard, if present."
+        ],
+        "screenshotsNotNeededYet": [
+          "NetSuite record landing pages",
+          "Broad Plan/Run visual sweeps"
+        ]
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w180_poll_result_to_import_cta",
+          "pollStatus": "poll_control_adapter_error_stopped",
+          "importCtaVisible": false,
+          "importCtaEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w180_w151_guard_result",
+          "completedResultAcceptedByW151": false,
+          "generatedRecordOwner": "",
+          "importReadyRecordCount": 0,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w180_operator_retest_packet",
+          "doNotVisuallyTestYet": true,
+          "targetedTestingAfterImportOnly": true,
+          "broaderVisualTestingRequired": false
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W180 exposes the guarded import CTA, but Open-link testing waits until the completed result is imported."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "w151CompletedResultImportGuardPreserved": true
+      }
+    },
+    "noTask": {
+      "schema": "idb.completed-poll-result-import-cta-wiring.v1",
+      "status": "completed_poll_result_import_cta_blocked",
+      "mode": "poll_result_to_w151_import_cta_no_state_mutation",
+      "importCtaWiringContract": {
+        "sourcePollControlSchema": "idb.approved-server-adapter-result-poll-control-implementation.v1",
+        "acceptsOnlyCompletedPollResult": true,
+        "requiresW151AcceptedNumericIdsAndSupportedUrls": true,
+        "requiresInternalRunnerOwner": true,
+        "pendingResponsesDoNotMutate": true,
+        "adapterErrorsDoNotMutate": true,
+        "malformedCompletedResponsesDoNotMutate": true,
+        "importCommitOwner": "W151 plus W176 import commit",
+        "noVisualTestingBeforeImport": true
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import waits for completed result",
+        "visible": false,
+        "enabled": false,
+        "action": "none",
+        "targetView": "",
+        "guardOwner": "W151 completed runner result import guard",
+        "payloadSource": "none",
+        "blockedReason": "runner_task_id_missing"
+      },
+      "pollStatus": {
+        "status": "poll_control_hidden_no_runner_task",
+        "runnerTaskIdPresent": false,
+        "requestSent": false,
+        "normalizedStatus": "false_flag_no_submit",
+        "resultCaptureStatus": "not_started_no_submit"
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "importReadyRecordCount": 0,
+        "stateMutationAllowedBeforeOperatorImport": false
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": false,
+        "statePatchAvailableAfterOperatorImport": false,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisualAfterImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "operatorRetestPacket": {
+        "title": "W180 operator retest packet",
+        "doNotVisuallyTestYet": true,
+        "prerequisite": "Run only after the Build return surface has a runnerTaskId and Check runner result is visible.",
+        "steps": [
+          "Click Check runner result only after runnerTaskId is captured.",
+          "If the response is pending, confirm Import completed runner result stays hidden or disabled.",
+          "If the response is adapter-error, stop and collect operator evidence.",
+          "If the response is malformed completed JSON, confirm W151 rejects it and no Open links appear.",
+          "If the response is completed and W151-valid, confirm Import completed runner result appears, but do not run visual Open-link testing until after import.",
+          "After import is committed in the next block, targeted Open-link testing can begin."
+        ],
+        "screenshotsNeededNow": [
+          "Build tab showing runnerTaskId captured and Check runner result visible.",
+          "Build tab after completed poll showing Import completed runner result visible.",
+          "Trace tab or import surface showing completed runner result JSON guard, if present."
+        ],
+        "screenshotsNotNeededYet": [
+          "NetSuite record landing pages",
+          "Broad Plan/Run visual sweeps"
+        ]
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w180_poll_result_to_import_cta",
+          "pollStatus": "poll_control_hidden_no_runner_task",
+          "importCtaVisible": false,
+          "importCtaEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w180_w151_guard_result",
+          "completedResultAcceptedByW151": false,
+          "generatedRecordOwner": "",
+          "importReadyRecordCount": 0,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w180_operator_retest_packet",
+          "doNotVisuallyTestYet": true,
+          "targetedTestingAfterImportOnly": true,
+          "broaderVisualTestingRequired": false
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W180 exposes the guarded import CTA, but Open-link testing waits until the completed result is imported."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "w151CompletedResultImportGuardPreserved": true
+      }
+    },
+    "completedImportPreview": {
+      "schema": "idb.completed-runner-result-import-commit-build-return-surface.v1",
+      "status": "completed_runner_result_import_committed",
+      "commitMode": "drawer_local_result_import_only_no_record_creation",
+      "commitAllowed": true,
+      "commitTarget": "state.dccFinalNamingResult",
+      "statePatch": {
+        "dccFinalNamingResult": {
+          "schema": "idb.dcc-final-naming-result.v1",
+          "status": "dcc_final_names_imported",
+          "displayStatus": "Final generated names imported",
+          "importedAt": "2026-05-17T21:41:16.685Z",
+          "source": "dcc_result_import_only",
+          "finalNamesImported": true,
+          "runStatus": "completed",
+          "prospect": "Ariat International Outdoor Retail Account",
+          "scenario": "Style / SKU Matrix",
+          "familyKey": "apparel_accessories",
+          "generated": {
+            "extId": "",
+            "agenda": ""
+          },
+          "displayObjects": [
+            {
+              "role": "customer",
+              "label": "Customer",
+              "name": "Ariat International Outdoor Retail Account",
+              "internalName": "",
+              "id": "501234",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234",
+              "source": "dcc_final"
+            },
+            {
+              "role": "sales_order",
+              "label": "Sales Order / demo transaction",
+              "name": "Ariat Seasonal Footwear Availability Demo Order",
+              "internalName": "",
+              "id": "601234",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234",
+              "source": "dcc_final"
+            },
+            {
+              "role": "hero_item",
+              "label": "Hero item",
+              "name": "Ariat Terrain H2O Work Boot Hero Item",
+              "internalName": "",
+              "id": "701234",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234",
+              "source": "dcc_final"
+            },
+            {
+              "role": "matrix_or_proof_item",
+              "label": "Matrix item / proof item",
+              "name": "Ariat Core Boot Size Color Matrix",
+              "internalName": "",
+              "id": "701235",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235",
+              "source": "dcc_final"
+            }
+          ],
+          "componentItems": [
+            {
+              "role": "component_item",
+              "label": "Component item 1",
+              "name": "Ariat Brown Leather Upper Component",
+              "internalName": "",
+              "id": "701236",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236",
+              "source": "dcc_final"
+            }
+          ],
+          "locationPlanningRecords": [],
+          "csvSalesOrderArtifacts": [],
+          "warnings": [],
+          "errors": [],
+          "recoverableBlockers": [],
+          "traceCoverage": {
+            "includedInTraceExport": true,
+            "secretsRedacted": true,
+            "importedOnly": true
+          },
+          "noRegression": {
+            "importOnly": true,
+            "noIdbWrites": true,
+            "noSuiteScriptInvocationFromIdb": true,
+            "noTransactionWritesFromIdb": true,
+            "dccOwnsObjectGeneration": true,
+            "provisionalNamesCannotBeMarkedFinal": true,
+            "w92StateAuthorityPreserved": true,
+            "w110HandoffParityPreserved": true
+          }
+        }
+      },
+      "importCommitContract": {
+        "requiresW175ImportReady": true,
+        "requiresW151AcceptedCompletedResult": true,
+        "requiresInternalRunnerOwner": true,
+        "pendingAndAdapterErrorDoNotMutate": true,
+        "drawerCreatesRecords": false,
+        "drawerInvokesSuiteScript": false
+      },
+      "importGuards": {
+        "completedResultStatus": "completed_runner_result_accepted",
+        "completedResultAccepted": true,
+        "generatedRecordOwner": "governed_runner_internal_build_engine",
+        "internalRunnerOwnerValid": true,
+        "w175ImportReady": true,
+        "pendingImportReady": false,
+        "adapterErrorImportReady": false
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "{\"schema\":\"idb.dcc-final-naming-result.v1\",\"status\":\"dcc_final_names_imported\",\"displayStatus\":\"Final generated names imported\",\"importedAt\":\"2026-05-17T21:41:16.685Z\",\"source\":\"dcc_result_import_only\",\"finalNamesImported\":true,\"runStatus\":\"completed\",\"prospect\":\"Ariat International Outdoor Retail Account\",\"scenario\":\"Style / SKU Matrix\",\"familyKey\":\"apparel_accessories\",\"generated\":{\"extId\":\"\",\"agenda\":\"\"},\"displayObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalName\":\"\",\"id\":\"501234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234\",\"source\":\"dcc_final\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalName\":\"\",\"id\":\"601234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234\",\"source\":\"dcc_final\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalName\":\"\",\"id\":\"701234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234\",\"source\":\"dcc_final\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalName\":\"\",\"id\":\"701235\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235\",\"source\":\"dcc_final\"}],\"componentItems\":[{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalName\":\"\",\"id\":\"701236\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236\",\"source\":\"dcc_final\"}],\"locationPlanningRecords\":[],\"csvSalesOrderArtifacts\":[],\"warnings\":[],\"errors\":[],\"recoverableBlockers\":[],\"traceCoverage\":{\"includedInTraceExport\":true,\"secretsRedacted\":true,\"importedOnly\":true},\"noRegression\":{\"importOnly\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true,\"provisionalNamesCannotBeMarkedFinal\":true,\"w92StateAuthorityPreserved\":true,\"w110HandoffParityPreserved\":true}}",
+        "pendingFinalNamesMutated": false,
+        "adapterErrorFinalNamesMutated": false,
+        "completedFinalNamesMutatedOnlyAfterW151": true,
+        "writesAttemptedFromDrawer": false
+      },
+      "linkAuthority": {
+        "beforeImportSummary": {
+          "missing_url": 7
+        },
+        "afterImportSummary": {
+          "verified_openable": 5
+        },
+        "activeOpenLinksBeforeImport": 0,
+        "openableAfterCommit": 9,
+        "supportedOpenLinksAfterCommit": 9,
+        "importedUrlsReadyForTargetedVisual": true,
+        "noActiveOpenLinksWithoutRealUrls": true
+      },
+      "buildSurface": {
+        "status": "build_return_imported_final_names",
+        "finalNamesImported": true,
+        "openableRecordCount": 9,
+        "customer": "Ariat International Outdoor Retail Account",
+        "demoTransaction": "Ariat Seasonal Footwear Availability Demo Order",
+        "heroItem": "Ariat Terrain H2O Work Boot Hero Item",
+        "matrixProofItem": "Ariat Core Boot Size Color Matrix"
+      },
+      "runSurface": {
+        "status": "run_surface_uses_imported_final_names",
+        "runCanUseImportedFinalNames": true,
+        "scriptPivotObjectCount": 4,
+        "openableScriptPivotCount": 4
+      },
+      "navigationAfterCommit": {
+        "status": "using_dcc_final_names",
+        "reviewObjects": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Ariat International Outdoor Retail Account",
+            "internalName": "",
+            "id": "501234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Ariat Seasonal Footwear Availability Demo Order",
+            "internalName": "",
+            "id": "601234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Ariat Terrain H2O Work Boot Hero Item",
+            "internalName": "",
+            "id": "701234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Ariat Core Boot Size Color Matrix",
+            "internalName": "",
+            "id": "701235",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Ariat Brown Leather Upper Component",
+            "internalName": "",
+            "id": "701236",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+          }
+        ],
+        "scriptPivotObjects": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Ariat International Outdoor Retail Account",
+            "internalName": "",
+            "id": "501234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Ariat Seasonal Footwear Availability Demo Order",
+            "internalName": "",
+            "id": "601234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Ariat Terrain H2O Work Boot Hero Item",
+            "internalName": "",
+            "id": "701234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Ariat Core Boot Size Color Matrix",
+            "internalName": "",
+            "id": "701235",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+          }
+        ],
+        "runCanUseImportedFinalNames": true
+      },
+      "rollbackPlan": {
+        "drawerRollback": "clear_state_dccFinalNamingResult_only",
+        "serverRollback": "disable approved server adapter flags",
+        "netSuiteRecordRollbackFromDrawer": "none"
+      },
+      "traceSamples": [
+        {
+          "event": "w176_import_commit_gate",
+          "commitAllowed": true,
+          "completedResultAcceptedByW151": true,
+          "w175ImportReady": true,
+          "activeOpenLinksBeforeImport": 0,
+          "mutatesFinalGeneratedNames": true
+        },
+        {
+          "event": "w176_pending_and_adapter_error_no_mutation",
+          "pendingImportReady": false,
+          "adapterErrorRequiresOperatorEvidence": true,
+          "mutatesFinalGeneratedNames": false,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w176_build_run_return_surface",
+          "buildStatus": "build_return_imported_final_names",
+          "runStatus": "run_surface_uses_imported_final_names",
+          "openableAfterCommit": 9,
+          "supportedOpenLinksAfterCommit": 9,
+          "importedUrlsReadyForTargetedVisual": true
+        }
+      ],
+      "visualTestingBlocked": true,
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilImportedUrlsReady": true
+      }
+    }
+  },
+  "operatorRetestPacket": {
+    "title": "W180 Completed Poll Result Import CTA Operator Retest",
+    "visualNetSuiteTestingNow": false,
+    "prerequisite": "Use only after Build has runnerTaskId and Check runner result is visible.",
+    "exactSteps": [
+      "Open IDB Build tab.",
+      "Confirm Check runner result is visible only after runnerTaskId exists.",
+      "Click Check runner result.",
+      "For pending result: verify Import completed runner result is not enabled and Open links remain hidden.",
+      "For adapter error: verify the drawer stops safely and asks for operator evidence.",
+      "For malformed completed result: verify W151 rejects it and Open links remain hidden.",
+      "For completed W151-valid result: verify Import completed runner result appears.",
+      "Do not click or screenshot NetSuite record Open links until after the completed result is imported."
+    ],
+    "screenshotsToSendBack": [
+      "Build tab with runnerTaskId captured and Check runner result visible.",
+      "Build tab after completed poll with Import completed runner result visible.",
+      "Any error or malformed-result message if the poll does not complete cleanly."
+    ],
+    "notNeededYet": [
+      "Customer record page screenshot",
+      "Sales Order page screenshot",
+      "Item record page screenshots",
+      "Broad visual regression sweep"
+    ]
+  },
+  "guardedHarness": {
+    "pendingDoesNotEnableImport": true,
+    "adapterErrorDoesNotEnableImport": true,
+    "malformedCompletedRejected": true,
+    "noTaskDoesNotEnableImport": true,
+    "completedEnablesImportCtaOnly": true,
+    "commitPreviewReadyButNotApplied": true,
+    "operatorRetestPacketReady": true,
+    "traceSamplesReady": true,
+    "noRegressionPreserved": true
+  },
+  "visualTestingDecision": {
+    "visualTestingBlockedUntilCompletedResultImported": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W180 only enables the guarded import CTA. Targeted Open-link screenshots wait for the import commit."
+  },
+  "results": [
+    {
+      "name": "w180_pending_does_not_enable_import",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import waits for completed result\",\"visible\":false,\"enabled\":false,\"action\":\"none\",\"targetView\":\"\",\"guardOwner\":\"W151 completed runner result import guard\",\"payloadSource\":\"none\",\"blockedReason\":\"runner_result_still_pending\"}"
+    },
+    {
+      "name": "w180_adapter_error_does_not_enable_import",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import waits for completed result\",\"visible\":false,\"enabled\":false,\"action\":\"none\",\"targetView\":\"\",\"guardOwner\":\"W151 completed runner result import guard\",\"payloadSource\":\"none\",\"blockedReason\":\"adapter_error_requires_operator_evidence\"}"
+    },
+    {
+      "name": "w180_malformed_completed_rejected",
+      "pass": true,
+      "detail": "{\"completedResultPresent\":true,\"completedResultAcceptedByW151\":false,\"completedResultStatus\":\"completed_runner_result_required\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"importReadyRecordCount\":0,\"stateMutationAllowedBeforeOperatorImport\":false}"
+    },
+    {
+      "name": "w180_no_task_does_not_enable_import",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import waits for completed result\",\"visible\":false,\"enabled\":false,\"action\":\"none\",\"targetView\":\"\",\"guardOwner\":\"W151 completed runner result import guard\",\"payloadSource\":\"none\",\"blockedReason\":\"runner_task_id_missing\"}"
+    },
+    {
+      "name": "w180_completed_enables_import_cta_only",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import completed runner result\",\"visible\":true,\"enabled\":true,\"action\":\"w151_guarded_completed_runner_result_import\",\"targetView\":\"trace\",\"guardOwner\":\"W151 completed runner result import guard\",\"payloadSource\":\"approved_server_adapter_completed_poll_response\",\"blockedReason\":\"\"}"
+    },
+    {
+      "name": "w180_commit_preview_ready_but_not_applied",
+      "pass": true,
+      "detail": "{\"commitAllowedAfterOperatorImport\":true,\"statePatchAvailableAfterOperatorImport\":true,\"openableAfterCommit\":9,\"supportedOpenLinksAfterCommit\":9,\"importedUrlsReadyForTargetedVisualAfterImport\":true,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w180_operator_retest_packet_ready",
+      "pass": true,
+      "detail": "{\"title\":\"W180 Completed Poll Result Import CTA Operator Retest\",\"visualNetSuiteTestingNow\":false,\"prerequisite\":\"Use only after Build has runnerTaskId and Check runner result is visible.\",\"exactSteps\":[\"Open IDB Build tab.\",\"Confirm Check runner result is visible only after runnerTaskId exists.\",\"Click Check runner result.\",\"For pending result: verify Import completed runner result is not enabled and Open links remain hidden.\",\"For adapter error: verify the drawer stops safely and asks for operator evidence.\",\"For malformed completed result: verify W151 rejects it and Open links remain hidden.\",\"For completed W151-valid result: verify Import completed runner result appears.\",\"Do not click or screenshot NetSuite record Open links until after the completed result is imported.\"],\"screenshotsToSendBack\":[\"Build tab with runnerTaskId captured and Check runner result visible.\",\"Build tab after completed poll with Import completed runner result visible.\",\"Any error or malformed-result message if the poll does not complete cleanly.\"],\"notNeededYet\":[\"Customer record page screenshot\",\"Sales Order page screenshot\",\"Item record page screenshots\",\"Broad visual regression sweep\"]}"
+    },
+    {
+      "name": "w180_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w180_poll_result_to_import_cta\",\"pollStatus\":\"poll_control_completed_result_ready_for_w151_import\",\"importCtaVisible\":true,\"importCtaEnabled\":true,\"activeOpenLinks\":0,\"mutatesFinalGeneratedNames\":false},{\"event\":\"w180_w151_guard_result\",\"completedResultAcceptedByW151\":true,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"importReadyRecordCount\":5,\"activeOpenLinksBeforeImport\":0},{\"event\":\"w180_operator_retest_packet\",\"doNotVisuallyTestYet\":true,\"targetedTestingAfterImportOnly\":true,\"broaderVisualTestingRequired\":false}]"
+    },
+    {
+      "name": "w180_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"w151CompletedResultImportGuardPreserved\":true}"
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W181: Completed Runner Result Import Commit Operator Flow",
+    "prompt": "Move through W181: Completed Runner Result Import Commit Operator Flow. Use the W180 completed poll result import CTA to commit final generated names into IDB only after the operator chooses the W151-validated completed runner result import. Keep pending, adapter-error, malformed completed, and handoff JSON non-mutating; after commit, Build and Run may show imported names and verified Open links. Do not create records from the drawer and do not invoke SuiteScript outside the approved server adapter path. Output import commit operator flow, guarded harness, trace samples, W181 report, visual testing decision targeted-only after imported URLs exist, and best next Codex prompt."
+  }
+}

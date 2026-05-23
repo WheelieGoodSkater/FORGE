@@ -1,0 +1,43 @@
+{
+  "schema": "idb.w39-account-context-resolver.v1",
+  "status": "complete_account_context_gate_ready",
+  "objective": "Resolve required NetSuite account context before any W24 pilot Customer or Proof Item create/update.",
+  "runtimeParameters": {
+    "required": [
+      "custscript_idb_default_subsidiary",
+      "custscript_idb_default_taxschedule"
+    ],
+    "optional": [
+      "custscript_idb_default_location"
+    ]
+  },
+  "writeGate": {
+    "statusWhenMissing": "blocked_missing_account_context",
+    "blocksBefore": [
+      "Customer Record write",
+      "Proof Item write"
+    ],
+    "jsonResponseRequired": true,
+    "html500ForMissingContextAllowed": false
+  },
+  "dccPatternInherited": {
+    "subsidiaryFirst": true,
+    "locationOptional": true,
+    "taxScheduleRequiredForProofItemPilot": true,
+    "customerSetsSubsidiaryBeforeSave": true,
+    "itemSubsidiaryArrayThenScalarFallback": true
+  },
+  "nonRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "pilotSuiteletOnly": true,
+    "transactionWriteEnabled": false,
+    "noAutomaticCreationFromDrawer": true,
+    "llmAdvisoryOnly": true
+  },
+  "nextBlock": {
+    "id": "W40",
+    "name": "DCC Creation Rail Adapter",
+    "goal": "Port the proven DCC Customer and Proof Item create/update mechanics into the W24 pilot without enabling transaction writes."
+  }
+}

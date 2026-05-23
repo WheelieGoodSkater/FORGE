@@ -1,0 +1,123 @@
+{
+  "schema": "idb.w63-local-resolver-service-prototype.v1",
+  "status": "complete_local_prototype_ready",
+  "objective": "Build the no-write website resolver service outside the drawer using the W62 websiteResolverServiceV1 contract.",
+  "service": {
+    "name": "websiteResolverServiceV1",
+    "implementation": "tools/website_resolver_service_v1.js",
+    "endpoint": "/idb/website-resolver/v1/resolve",
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAuthority": "advisory_only",
+    "notesAuthority": "story_only_no_identity_override"
+  },
+  "roles": [
+    {
+      "name": "Resolver Service Architect",
+      "owns": "Endpoint handler, optional local HTTP server, request/response envelope, cache-ready fields, and service boundary."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "Scheme lock, DNS checks, localhost/private-network blocking, unsafe redirect blocking, content types, timeouts, page-size and page-count limits."
+    },
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Homepage and secondary-page extraction, evidence fields, lane-candidate signal inference, and failure-state response quality."
+    },
+    {
+      "name": "Validation And Evidence Agent",
+      "owns": "Synthetic harness, approved live-fetch harness registration, trace sample, and failure samples."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Validator gates proving no writes, no SuiteScript, N/LLM advisory-only, notes cannot own identity, and failure states cannot guess."
+    }
+  ],
+  "implementedControls": {
+    "urlNormalization": [
+      "trim whitespace",
+      "default missing scheme to https",
+      "upgrade http to https before fetch",
+      "lowercase hostname",
+      "punycode hostname before safety checks",
+      "remove hash fragments",
+      "remove tracking query parameters",
+      "reject unsupported schemes"
+    ],
+    "security": [
+      "block file/data/javascript/mailto/tel/ftp/gopher schemes",
+      "block localhost and loopback",
+      "block RFC1918/private/link-local/metadata IPs",
+      "block internal host suffixes",
+      "resolve DNS before fetch and after redirects",
+      "reject redirects that violate HTTPS or network policy",
+      "limit redirects to five",
+      "enforce HTML/XHTML content types",
+      "enforce max pages and page-byte limits",
+      "reject forbidden write/auth request fields in endpoint handler"
+    ],
+    "fetchAndExtract": [
+      "homepage fetch",
+      "secondary page discovery from product/shop/catalog/industry/service/category navigation",
+      "page title",
+      "meta description",
+      "H1/H2 text",
+      "navigation labels",
+      "product/category terms",
+      "industry language",
+      "location/service clues",
+      "ecommerce/manufacturing/distribution signals",
+      "source URLs",
+      "content hashes"
+    ],
+    "failureStates": [
+      "blocked",
+      "thin",
+      "unavailable",
+      "ambiguous",
+      "timeout"
+    ],
+    "cacheReadyResponse": {
+      "cacheKey": "sha256(normalizedUrl + resolverVersion + extractionPolicyVersion)",
+      "ttlSeconds": 86400,
+      "contentHashes": "per sampled page"
+    }
+  },
+  "harness": {
+    "syntheticHarness": "tools/run_resolver_service_prototype_harness.js",
+    "approvedLiveFetchHarness": "registered_not_executed_by_default",
+    "approvedLiveFetchNote": "Network fetches are approval-gated; W63 deterministic synthetic harness proves service behavior without relying on external site drift."
+  },
+  "validatorGates": [
+    "w63_service_module_present",
+    "w63_endpoint_handler_present",
+    "w63_url_and_ssrf_controls_present",
+    "w63_fetch_extraction_and_cache_present",
+    "w63_harness_registered",
+    "w63_trace_passed",
+    "w63_failure_samples_no_guessing",
+    "w63_report_and_next_prompt_present"
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "outputs": {
+    "servicePrototype": "tools/website_resolver_service_v1.js",
+    "harness": "tools/run_resolver_service_prototype_harness.js",
+    "contract": "data/w63_local_resolver_service_prototype.json",
+    "traceSample": "trace_samples/w63_local_resolver_service_prototype_trace.json",
+    "failureSamples": "trace_samples/w63_failure_samples.json",
+    "report": "reports/w63_local_resolver_service_prototype.md"
+  },
+  "bestNextCodexPrompt": {
+    "block": "W64: Drawer To Resolver Service Adapter",
+    "prompt": "Move through W64: Drawer To Resolver Service Adapter. Wire the drawer runtime to call the no-write websiteResolverServiceV1 adapter/service instead of relying on local domain hints alone, with a feature flag for local fallback. Preserve website evidence as the identity authority, keep notes story-only, display resolver failure states clearly in Plan and Review, and add validator gates proving no writes, no SuiteScript invocation, N/LLM advisory-only, transaction writes blocked, and blocked/thin/unavailable/timeout never produce confident guesses. Output the adapter integration, trace samples, failure UX examples, W64 report, and best next Codex prompt."
+  }
+}

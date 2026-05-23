@@ -1,0 +1,66 @@
+{
+  "schema": "idb.w230-forge-post-install-evidence-review-fix-gate-trace.v1",
+  "expectedInstalledScript": "idb-drawer.user.js",
+  "acceptedEvidenceSource": [
+    "W229 operator evidence intake fields.",
+    "Optional screenshot/reference note."
+  ],
+  "reviewOutcomes": [
+    {
+      "id": "accept",
+      "label": "Accept",
+      "decision": "No fix needed."
+    },
+    {
+      "id": "accept_with_visual_follow_up",
+      "label": "Accept with visual follow-up",
+      "decision": "Open only the targeted visual polish follow-up named by the evidence."
+    },
+    {
+      "id": "block_install",
+      "label": "Block install",
+      "decision": "Open only the targeted blocked-install fix named by the evidence."
+    }
+  ],
+  "fixGateRouting": [
+    {
+      "id": "rail_label_fit_polish",
+      "label": "Rail label fit polish",
+      "allowedScope": "Rail label clipped."
+    },
+    {
+      "id": "header_logo_sizing_polish",
+      "label": "Header logo sizing polish",
+      "allowedScope": "Logo overlaps the close button or needs spacing polish."
+    },
+    {
+      "id": "close_button_accessibility_fix",
+      "label": "Close-button accessibility fix",
+      "allowedScope": "Close button inaccessible."
+    },
+    {
+      "id": "copy_summary_placement_fix",
+      "label": "Copy-summary placement fix",
+      "allowedScope": "Operator summary copy control missing."
+    },
+    {
+      "id": "old_branding_removal_fix",
+      "label": "Old-branding removal fix",
+      "allowedScope": "Old visible header text appears."
+    }
+  ],
+  "noFixConditions": [
+    "All W229 required fields pass.",
+    "No block condition present.",
+    "Only optional note is supplied."
+  ],
+  "blockedInstallConditions": [
+    "Rail button missing.",
+    "Drawer does not open.",
+    "Header logo missing.",
+    "Close button inaccessible.",
+    "Old visible header text appears.",
+    "Operator summary copy control missing."
+  ],
+  "visualTestingDecision": "No broad visual testing for W230. Review only supplied W229 evidence and route targeted follow-up if needed."
+}

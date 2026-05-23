@@ -1,0 +1,23 @@
+[
+  {
+    "event": "w193_w192_result_capture_written",
+    "fileName": "idb-result-task_w193_ariat_001-IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES.json",
+    "runnerTaskId": "task_w193_ariat_001",
+    "idempotencyToken": "IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w193_w191_poll_completed_result",
+    "status": "completed_runner_result_ready",
+    "resultCaptureStatus": "completed_result_capture_ready",
+    "completedResultAcceptedByW151": true,
+    "activeOpenLinksBeforeImport": 0
+  },
+  {
+    "event": "w193_final_urls_imported_into_idb",
+    "status": "completed_result_imported_final_urls_ready",
+    "verifiedOpenLinkCount": 5,
+    "buildShowsImportedNames": true,
+    "runShowsImportedNames": true
+  }
+]

@@ -1,0 +1,105 @@
+{
+  "schema": "idb.w134-manual-visual-results-review.v1",
+  "status": "visual_link_authority_pass_record_existence_not_proven",
+  "decision": "PASS_DRAWER_LINK_AUTHORITY__REQUIRES_REAL_RECORD_EXISTENCE_PILOT",
+  "evidenceFiles": {
+    "trace": "/path/to/downloads/intelligent-demo-builder-trace-1778886696446.json",
+    "handoff": "/path/to/downloads/idb-dcc-runner-handoff-packet-1778886698640.json"
+  },
+  "visualObservationFromUser": {
+    "summary": "No records exist, but drawer results worked as expected at this point.",
+    "netSuiteClickResult": "Open link navigated to a NetSuite record URL shape, then NetSuite showed Notice: That record does not exist.",
+    "implication": "The drawer can gate and open real URL-shaped links; W135 must prove the internal build engine returns actual existing record ids."
+  },
+  "traceEvidence": {
+    "exportedAt": "2026-05-15T23:11:36.368Z",
+    "lane": "Apparel & Accessories",
+    "finalNamingStatus": "dcc_final_names_imported",
+    "finalNavigationStatus": "using_dcc_final_names",
+    "linkAuthoritySummary": {
+      "verified_openable": 5
+    },
+    "links": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "12345",
+        "url": "/app/common/entity/custjob.nl?id=12345",
+        "linkStatus": "verified_openable",
+        "openable": true
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "23456",
+        "url": "/app/accounting/transactions/salesord.nl?id=23456",
+        "linkStatus": "verified_openable",
+        "openable": true
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "34567",
+        "url": "/app/common/item/item.nl?id=34567",
+        "linkStatus": "verified_openable",
+        "openable": true
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "45678",
+        "url": "/app/common/item/item.nl?id=45678",
+        "linkStatus": "verified_openable",
+        "openable": true
+      },
+      {
+        "role": "component_item",
+        "label": "Component item 1",
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "56789",
+        "url": "/app/common/item/item.nl?id=56789",
+        "linkStatus": "verified_openable",
+        "openable": true
+      }
+    ],
+    "allVerifiedOpenable": true,
+    "allRealUrlShape": true
+  },
+  "handoffEvidence": {
+    "schema": "idb.dcc-runner-handoff-packet.v1",
+    "status": "ready_for_dcc_suitelet_submission_review",
+    "executionMode": "review_only_no_submit",
+    "noSuiteScriptInvocationFromDrawer": false,
+    "noTransactionWritesFromDrawer": false
+  },
+  "architecturalFinding": {
+    "drawerContractStatus": "ready_for_real_build_engine_result",
+    "remainingGap": "record_existence",
+    "ownerOfRemainingGap": "internal_build_engine",
+    "requiredW135Proof": [
+      "Build engine must create or resolve the actual Customer record and return its real internal id and URL.",
+      "Build engine must create or resolve the actual demo transaction and return its real internal id and URL.",
+      "Build engine must create or resolve the actual hero item, matrix/proof item, and component item and return real internal ids and URLs.",
+      "Operator must click at least one returned Customer URL and one item or transaction URL and confirm NetSuite opens a real record page, not the Notice: That record does not exist page.",
+      "The drawer must remain import-only and must not create records, invoke SuiteScript, submit, queue, or write transactions."
+    ]
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W135: Internal Build Engine Real Record Existence Pilot",
+    "prompt": "Move through W135: Internal Build Engine Real Record Existence Pilot. Use the W134 manual visual evidence showing Open links route correctly but sample ids do not exist in NetSuite. Run an operator-only sandbox build-engine pilot that creates or resolves actual Customer, demo transaction, hero item, matrix/proof item, and component records, then returns their real internal ids and supported NetSuite record URLs in the final generated names JSON. Import that real result into the drawer and visually verify Build Results and Run show active Open links that open actual records, not the NetSuite “That record does not exist” notice. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership of generated records. Output real record existence evidence, imported result JSON, visual link screenshots, trace samples, W135 report, whether broader visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

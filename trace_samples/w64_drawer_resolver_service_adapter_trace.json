@@ -1,0 +1,467 @@
+{
+  "schema": "idb.w64-drawer-resolver-service-adapter-trace.v1",
+  "generated": "2026-05-17T21:41:01.538Z",
+  "decision": "PASS",
+  "serviceResolvedSample": {
+    "resolverRuntime": {
+      "serviceName": "websiteResolverServiceV1",
+      "mode": "service",
+      "requestKey": "websiteresolverservicev1|https://ariat.example/|",
+      "endpointConfigured": true,
+      "tokenConfigured": false,
+      "localFallbackEnabled": true,
+      "hostedOnlyMode": false,
+      "status": "resolved",
+      "failureState": ""
+    },
+    "laneId": "apparel_accessories",
+    "product": "Core Boot and Apparel Style Matrix",
+    "productSource": "website_evidence_v1",
+    "websiteEvidenceV1": {
+      "schema": "idb.website-evidence.v1",
+      "resolverVersion": "websiteResolverServiceV1.local-prototype.w63",
+      "requestId": "drawer-1779054061528",
+      "inputUrl": "https://ariat.example/",
+      "normalizedUrl": "https://ariat.example/",
+      "domain": "ariat.example",
+      "fetchStatus": "fetched",
+      "fetchErrors": [],
+      "pagesSampled": [
+        {
+          "role": "homepage",
+          "url": "https://ariat.example/",
+          "status": 200,
+          "contentHash": "hash",
+          "pageBytes": 1200
+        }
+      ],
+      "extractedEvidence": {
+        "pageTitle": "Ariat boots apparel footwear workwear",
+        "metaDescription": "Boots, apparel, footwear, style, size, SKU, and channel availability.",
+        "h1Text": [
+          "Performance boots and apparel"
+        ],
+        "h2Text": [
+          "Style size SKU variants"
+        ],
+        "navigationLabels": [
+          "Footwear",
+          "Apparel",
+          "Workwear",
+          "Find a store"
+        ],
+        "productCategoryTerms": [
+          "apparel",
+          "boots",
+          "footwear",
+          "style",
+          "size",
+          "sku",
+          "workwear"
+        ],
+        "industryLanguage": [
+          "retail",
+          "ecommerce"
+        ],
+        "locationServiceClues": [
+          "find a store"
+        ],
+        "ecommerceSignals": [
+          "shop"
+        ],
+        "manufacturingSignals": [],
+        "distributionSignals": []
+      },
+      "signals": {
+        "laneCandidates": [
+          {
+            "laneId": "apparel_accessories",
+            "score": 0.95,
+            "evidence": [
+              "apparel",
+              "boots",
+              "footwear",
+              "style",
+              "size",
+              "sku"
+            ]
+          }
+        ],
+        "productSeed": "Core Boot and Apparel Style Matrix",
+        "productFamily": "Apparel and Footwear Style",
+        "demandMoment": "style, size, and channel availability"
+      },
+      "confidence": {
+        "state": "recommended",
+        "score": 0.95,
+        "requiresConfirmation": false
+      },
+      "failureState": null,
+      "sourceUrls": [
+        "https://ariat.example/"
+      ],
+      "capturedAt": "2026-05-12T16:00:00.000Z",
+      "cache": {
+        "key": "cache-key",
+        "ttlSeconds": 86400,
+        "contentHashes": []
+      },
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true,
+      "noRegression": {
+        "noSuiteScriptInvocation": true,
+        "noWriteAuthority": true,
+        "noHiddenLaneOverride": true,
+        "notesCannotOwnIdentification": true,
+        "transactionWriteEnabled": false
+      },
+      "laneCandidates": [
+        {
+          "laneId": "apparel_accessories",
+          "score": 0.95,
+          "evidence": [
+            "apparel",
+            "boots",
+            "footwear",
+            "style",
+            "size",
+            "sku"
+          ]
+        }
+      ],
+      "resolverAdapter": {
+        "schema": "idb.w64-drawer-resolver-service-adapter.v1",
+        "serviceName": "websiteResolverServiceV1",
+        "mode": "service",
+        "requestKey": "websiteresolverservicev1|https://ariat.example/|",
+        "endpointConfigured": true,
+        "tokenConfigured": false,
+        "localFallbackEnabled": true,
+        "hostedOnlyMode": false,
+        "notesAuthority": "story_only_no_identity_override"
+      }
+    },
+    "websiteEvidenceUx": {
+      "schema": "idb.w53-consultant-evidence-ux.v1",
+      "status": "recommended",
+      "sourceUrls": [
+        "https://ariat.example/"
+      ],
+      "whatIdbSaw": [
+        "Domain: ariat.example",
+        "Resolver: service / resolved",
+        "Evidence: Fetch status: fetched / Source URLs: 1 / Signals: apparel, boots, footwear, style, size, sku",
+        "Product seed: Core Boot and Apparel Style Matrix",
+        "Product family: Apparel and Footwear Style",
+        "Demand moment: style, size, and channel availability"
+      ],
+      "whyThisClassification": "Website-first evidence strongly supports Apparel & Accessories.",
+      "recommendedLaneId": "apparel_accessories",
+      "recommendedLaneName": "Apparel & Accessories",
+      "proofAnchor": "Style / SKU Matrix",
+      "productSeed": "Core Boot and Apparel Style Matrix",
+      "productFamily": "Apparel and Footwear Style",
+      "demandMoment": "style, size, and channel availability",
+      "confidence": {
+        "state": "recommended",
+        "scoreLabel": "high",
+        "requiresConfirmation": false,
+        "source": "website_evidence_v1",
+        "resolverSource": "websiteEvidenceV1",
+        "resolverMode": "service",
+        "resolverStatus": "resolved",
+        "hostedOnlyMode": false,
+        "tokenConfigured": false,
+        "failureState": ""
+      },
+      "competingCandidates": [],
+      "missingEvidence": [],
+      "confirmationPrompt": "",
+      "traceExportCoverage": {
+        "includedInPlanTrace": true,
+        "includedInDryRunPacket": true,
+        "includedInTraceExport": true,
+        "noWriteAuthority": true,
+        "nllmAdvisoryOnly": true
+      }
+    }
+  },
+  "fallbackSample": {
+    "resolverRuntime": {
+      "serviceName": "websiteResolverServiceV1",
+      "mode": "local_fallback_only",
+      "requestKey": "websiteresolverservicev1|https://ariat.com/|",
+      "endpointConfigured": false,
+      "tokenConfigured": false,
+      "localFallbackEnabled": true,
+      "hostedOnlyMode": false,
+      "status": "fallback_ready",
+      "failureState": ""
+    },
+    "websiteEvidenceV1": {
+      "schema": "idb.website-evidence.v1",
+      "resolverVersion": "w60.drawer-runtime-local.v1",
+      "inputUrl": "https://ariat.com/",
+      "normalizedUrl": "https://ariat.com/",
+      "domain": "ariat.com",
+      "fetchStatus": "runtime_resolved",
+      "fetchErrors": [],
+      "pagesSampled": [
+        {
+          "role": "url_domain_and_runtime_hint",
+          "url": "https://ariat.com/",
+          "status": 200
+        }
+      ],
+      "extractedEvidence": {
+        "pageTitle": "ariat.com website evidence",
+        "metaDescription": "website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals",
+        "h1Text": [],
+        "h2Text": [],
+        "navigationLabels": [
+          "apparel",
+          "boots",
+          "boot",
+          "footwear",
+          "workwear",
+          "outdoor gear",
+          "style",
+          "size"
+        ],
+        "productCategoryTerms": [
+          "apparel",
+          "boots",
+          "boot",
+          "footwear",
+          "workwear",
+          "outdoor gear",
+          "style",
+          "size"
+        ],
+        "industryLanguage": [
+          "retail",
+          "ecommerce"
+        ],
+        "locationServiceClues": [
+          "retail"
+        ],
+        "ecommerceSignals": [
+          "ecommerce",
+          "retail"
+        ],
+        "manufacturingSignals": [],
+        "distributionSignals": []
+      },
+      "signals": {
+        "laneCandidates": [
+          {
+            "laneId": "apparel_accessories",
+            "score": 0.9,
+            "evidence": [
+              "website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals",
+              "Core Boot and Apparel Style Matrix",
+              "Apparel and Footwear Style"
+            ]
+          }
+        ],
+        "productSeed": "Core Boot and Apparel Style Matrix",
+        "productFamily": "Apparel and Footwear Style",
+        "demandMoment": "style, size, and channel availability"
+      },
+      "confidence": {
+        "state": "recommended",
+        "score": 0.9,
+        "requiresConfirmation": false
+      },
+      "failureState": null,
+      "sourceUrls": [
+        "https://ariat.com/"
+      ],
+      "capturedAt": "2026-05-17T21:41:01.530Z",
+      "resolverAdapter": {
+        "schema": "idb.w64-drawer-resolver-service-adapter.v1",
+        "serviceName": "websiteResolverServiceV1",
+        "mode": "local_fallback",
+        "requestKey": "websiteresolverservicev1|https://ariat.com/|",
+        "endpointConfigured": false,
+        "localFallbackEnabled": true,
+        "notesAuthority": "story_only_no_identity_override"
+      },
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true,
+      "noRegression": {
+        "noSuiteScriptInvocation": true,
+        "noWriteAuthority": true,
+        "noHiddenLaneOverride": true,
+        "notesCannotOwnIdentification": true,
+        "transactionWriteEnabled": false
+      }
+    }
+  },
+  "fallbackDisabledSample": {
+    "resolverRuntime": {
+      "serviceName": "websiteResolverServiceV1",
+      "mode": "local_fallback_only",
+      "requestKey": "websiteresolverservicev1|https://ariat.com/|",
+      "endpointConfigured": false,
+      "tokenConfigured": false,
+      "localFallbackEnabled": false,
+      "hostedOnlyMode": false,
+      "status": "insufficient_evidence",
+      "failureState": ""
+    },
+    "websiteEvidenceV1": null
+  },
+  "failureSamples": [
+    {
+      "failureState": "blocked",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "whatIdbSaw": [
+        "Domain: blocked.example",
+        "Resolver: service / resolved",
+        "Failure state: blocked",
+        "Evidence: Fetch status: blocked / Failure state: blocked",
+        "Product seed: needs evidence",
+        "Product family: needs evidence",
+        "Demand moment: needs evidence",
+        "Fetch errors: blocked"
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "failureState": "thin",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "whatIdbSaw": [
+        "Domain: thin.example",
+        "Resolver: service / resolved",
+        "Failure state: thin",
+        "Evidence: Fetch status: thin / Failure state: thin",
+        "Product seed: needs evidence",
+        "Product family: needs evidence",
+        "Demand moment: needs evidence",
+        "Fetch errors: thin"
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "failureState": "unavailable",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "whatIdbSaw": [
+        "Domain: unavailable.example",
+        "Resolver: service / resolved",
+        "Failure state: unavailable",
+        "Evidence: Fetch status: unavailable / Failure state: unavailable",
+        "Product seed: needs evidence",
+        "Product family: needs evidence",
+        "Demand moment: needs evidence",
+        "Fetch errors: unavailable"
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    },
+    {
+      "failureState": "timeout",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true
+      },
+      "laneCandidates": [],
+      "whatIdbSaw": [
+        "Domain: timeout.example",
+        "Resolver: service / resolved",
+        "Failure state: timeout",
+        "Evidence: Fetch status: timeout / Failure state: timeout",
+        "Product seed: needs evidence",
+        "Product family: needs evidence",
+        "Demand moment: needs evidence",
+        "Fetch errors: timeout"
+      ],
+      "confirmationPrompt": "Confirm the website category before ROI, competitive, or write preparation proceeds.",
+      "writeAuthority": "none",
+      "nllmAdvisoryOnly": true
+    }
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "results": [
+    {
+      "name": "w64_service_adapter_resolves_website_identity",
+      "pass": true,
+      "detail": "{\"serviceName\":\"websiteResolverServiceV1\",\"mode\":\"service\",\"requestKey\":\"websiteresolverservicev1|https://ariat.example/|\",\"endpointConfigured\":true,\"tokenConfigured\":false,\"localFallbackEnabled\":true,\"hostedOnlyMode\":false,\"status\":\"resolved\",\"failureState\":\"\"}"
+    },
+    {
+      "name": "w64_notes_do_not_override_service_identity",
+      "pass": true,
+      "detail": "{\"lane\":\"apparel_accessories\",\"product\":{\"product\":\"Core Boot and Apparel Style Matrix\",\"productFamily\":\"Apparel and Footwear Style\",\"demandMoment\":\"style, size, and channel availability\",\"source\":\"website_evidence_v1\",\"confidence\":\"high\",\"fallbackReason\":\"\"}}"
+    },
+    {
+      "name": "w64_request_excludes_write_and_suitescript_fields",
+      "pass": true,
+      "detail": "{\"url\":\"https://ariat.example/\",\"requestId\":\"drawer-1779054061528\",\"maxPages\":4,\"timeoutMs\":12000,\"manualEvidence\":\"\",\"drawerRequestKey\":\"websiteresolverservicev1|https://ariat.example/|\"}"
+    },
+    {
+      "name": "w64_plan_review_ux_exposes_resolver_mode",
+      "pass": true,
+      "detail": "{\"state\":\"recommended\",\"scoreLabel\":\"high\",\"requiresConfirmation\":false,\"source\":\"website_evidence_v1\",\"resolverSource\":\"websiteEvidenceV1\",\"resolverMode\":\"service\",\"resolverStatus\":\"resolved\",\"hostedOnlyMode\":false,\"tokenConfigured\":false,\"failureState\":\"\"}"
+    },
+    {
+      "name": "w64_local_fallback_is_explicit_when_service_absent",
+      "pass": true,
+      "detail": "{\"serviceName\":\"websiteResolverServiceV1\",\"mode\":\"local_fallback_only\",\"requestKey\":\"websiteresolverservicev1|https://ariat.com/|\",\"endpointConfigured\":false,\"tokenConfigured\":false,\"localFallbackEnabled\":true,\"hostedOnlyMode\":false,\"status\":\"fallback_ready\",\"failureState\":\"\"}"
+    },
+    {
+      "name": "w64_local_fallback_feature_flag_can_disable_fallback",
+      "pass": true,
+      "detail": "{\"serviceName\":\"websiteResolverServiceV1\",\"mode\":\"local_fallback_only\",\"requestKey\":\"websiteresolverservicev1|https://ariat.com/|\",\"endpointConfigured\":false,\"tokenConfigured\":false,\"localFallbackEnabled\":false,\"hostedOnlyMode\":false,\"status\":\"insufficient_evidence\",\"failureState\":\"\"}"
+    },
+    {
+      "name": "w64_failure_states_never_guess",
+      "pass": true,
+      "detail": "[{\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"whatIdbSaw\":[\"Domain: blocked.example\",\"Resolver: service / resolved\",\"Failure state: blocked\",\"Evidence: Fetch status: blocked / Failure state: blocked\",\"Product seed: needs evidence\",\"Product family: needs evidence\",\"Demand moment: needs evidence\",\"Fetch errors: blocked\"],\"confirmationPrompt\":\"Confirm the website category before ROI, competitive, or write preparation proceeds.\",\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"failureState\":\"thin\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"whatIdbSaw\":[\"Domain: thin.example\",\"Resolver: service / resolved\",\"Failure state: thin\",\"Evidence: Fetch status: thin / Failure state: thin\",\"Product seed: needs evidence\",\"Product family: needs evidence\",\"Demand moment: needs evidence\",\"Fetch errors: thin\"],\"confirmationPrompt\":\"Confirm the website category before ROI, competitive, or write preparation proceeds.\",\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"failureState\":\"unavailable\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"whatIdbSaw\":[\"Domain: unavailable.example\",\"Resolver: service / resolved\",\"Failure state: unavailable\",\"Evidence: Fetch status: unavailable / Failure state: unavailable\",\"Product seed: needs evidence\",\"Product family: needs evidence\",\"Demand moment: needs evidence\",\"Fetch errors: unavailable\"],\"confirmationPrompt\":\"Confirm the website category before ROI, competitive, or write preparation proceeds.\",\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"failureState\":\"timeout\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"whatIdbSaw\":[\"Domain: timeout.example\",\"Resolver: service / resolved\",\"Failure state: timeout\",\"Evidence: Fetch status: timeout / Failure state: timeout\",\"Product seed: needs evidence\",\"Product family: needs evidence\",\"Demand moment: needs evidence\",\"Fetch errors: timeout\"],\"confirmationPrompt\":\"Confirm the website category before ROI, competitive, or write preparation proceeds.\",\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true}]"
+    },
+    {
+      "name": "w64_failure_states_visible_in_ux",
+      "pass": true,
+      "detail": "[{\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"whatIdbSaw\":[\"Domain: blocked.example\",\"Resolver: service / resolved\",\"Failure state: blocked\",\"Evidence: Fetch status: blocked / Failure state: blocked\",\"Product seed: needs evidence\",\"Product family: needs evidence\",\"Demand moment: needs evidence\",\"Fetch errors: blocked\"],\"confirmationPrompt\":\"Confirm the website category before ROI, competitive, or write preparation proceeds.\",\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"failureState\":\"thin\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"whatIdbSaw\":[\"Domain: thin.example\",\"Resolver: service / resolved\",\"Failure state: thin\",\"Evidence: Fetch status: thin / Failure state: thin\",\"Product seed: needs evidence\",\"Product family: needs evidence\",\"Demand moment: needs evidence\",\"Fetch errors: thin\"],\"confirmationPrompt\":\"Confirm the website category before ROI, competitive, or write preparation proceeds.\",\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"failureState\":\"unavailable\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"whatIdbSaw\":[\"Domain: unavailable.example\",\"Resolver: service / resolved\",\"Failure state: unavailable\",\"Evidence: Fetch status: unavailable / Failure state: unavailable\",\"Product seed: needs evidence\",\"Product family: needs evidence\",\"Demand moment: needs evidence\",\"Fetch errors: unavailable\"],\"confirmationPrompt\":\"Confirm the website category before ROI, competitive, or write preparation proceeds.\",\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true},{\"failureState\":\"timeout\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0,\"requiresConfirmation\":true},\"laneCandidates\":[],\"whatIdbSaw\":[\"Domain: timeout.example\",\"Resolver: service / resolved\",\"Failure state: timeout\",\"Evidence: Fetch status: timeout / Failure state: timeout\",\"Product seed: needs evidence\",\"Product family: needs evidence\",\"Demand moment: needs evidence\",\"Fetch errors: timeout\"],\"confirmationPrompt\":\"Confirm the website category before ROI, competitive, or write preparation proceeds.\",\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true}]"
+    },
+    {
+      "name": "w64_rejects_false_confident_failure_response",
+      "pass": true,
+      "detail": "{\"serviceName\":\"websiteResolverServiceV1\",\"mode\":\"service_rejected_local_fallback\",\"requestKey\":\"websiteresolverservicev1|https://bad-timeout.example/|\",\"endpointConfigured\":true,\"tokenConfigured\":false,\"localFallbackEnabled\":true,\"hostedOnlyMode\":false,\"status\":\"rejected\",\"failureState\":\"timeout\",\"error\":\"domain_mismatch\"}"
+    },
+    {
+      "name": "w64_contract_has_next_prompt",
+      "pass": true,
+      "detail": "idb.w64-drawer-resolver-service-adapter.v1"
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "schema": "idb.w192-governed-runner-result-capture-writer.v1",
+  "status": "PASS",
+  "decision": "PASS_RUNNER_RESULT_CAPTURE_WRITER_READY__AWAIT_RUNNER_CALL_SITE",
+  "runnerResultWriterContract": {
+    "module": "netsuite/idb_governed_runner_result_writer_w192.js",
+    "caller": "governed internal runner after real create/resolve",
+    "drawerAuthority": "none",
+    "writes": "NetSuite File Cabinet result-capture JSON only",
+    "requiredRecords": [
+      "customer",
+      "demoTransaction",
+      "heroItem",
+      "matrixProofItem",
+      "componentItem"
+    ],
+    "requiredIds": "numeric NetSuite internal ids only",
+    "requiredUrls": "supported NetSuite customer, sales order, and item record URLs only",
+    "generatedRecordOwner": "governed_runner_internal_build_engine",
+    "compatiblePollEndpoint": "W191 custpage_idb_action=poll_runner_result_capture"
+  },
+  "fileNamingConvention": {
+    "pattern": "idb-result-${runnerTaskId || runnerTaskId-pending}-${idempotencyToken}.json",
+    "example": "idb-result-task_w192_ariat_001-IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES.json",
+    "searchCompatibility": "W191 searches the result-capture folder by runnerTaskId or idempotencyToken."
+  },
+  "runnerIntegrationFinding": {
+    "existingRunner": "/path/to/workspace/Demo Command Center V4 Master/suitelet_runtime_package_current/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+    "existingRunnerWrites": [
+      "hero item create/adopt",
+      "component items when manufacturing is enabled",
+      "Sales Order CSV import task submission"
+    ],
+    "gapClosedNow": "Completed result JSON writer exists and W191 can poll its File Cabinet output.",
+    "remainingLiveCallSite": "Wire the actual runner or a post-CSV result resolver to call writeCompletedRunnerResult only after the Sales Order internal id is resolvable."
+  },
+  "validWriteSummary": {
+    "saved": true,
+    "fileId": "1200",
+    "fileName": "idb-result-task_w192_ariat_001-IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES.json",
+    "runnerTaskId": "task_w192_ariat_001",
+    "idempotencyToken": "IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+    "completedSchema": "idb.completed-runner-result-json.v1",
+    "recordIds": {
+      "customer": "91201",
+      "demoTransaction": "91202",
+      "heroItem": "91203",
+      "matrixProofItem": "91204",
+      "componentItem": "91205"
+    }
+  },
+  "guardedHarness": {
+    "validWriteSaved": true,
+    "placeholderIdsRejected": true,
+    "missingDemoTransactionRejected": true,
+    "absoluteNetSuiteUrlsSupported": true,
+    "w191PollReadsWrittenFile": true,
+    "noDrawerWrites": true,
+    "noDrawerCreatedRecords": true,
+    "noActiveOpenLinksBeforeImport": true
+  },
+  "traceSamples": [
+    {
+      "event": "w192_completed_result_capture_saved",
+      "fileName": "idb-result-task_w192_ariat_001-IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES.json",
+      "runnerTaskId": "task_w192_ariat_001",
+      "idempotencyToken": "IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+      "requiredRecordCount": 5,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w192_invalid_placeholder_result_rejected",
+      "runnerTaskId": "task_w192_bad_placeholder",
+      "status": "blocked_invalid_completed_runner_result",
+      "errors": [
+        "customer.internalId must be numeric.",
+        "customer.url must be a supported NetSuite record URL.",
+        "demoTransaction.name is required.",
+        "demoTransaction.internalId must be numeric.",
+        "demoTransaction.url must be a supported NetSuite record URL.",
+        "heroItem.name is required.",
+        "heroItem.internalId must be numeric.",
+        "heroItem.url must be a supported NetSuite record URL.",
+        "matrixProofItem.name is required.",
+        "matrixProofItem.internalId must be numeric.",
+        "matrixProofItem.url must be a supported NetSuite record URL.",
+        "componentItem.name is required.",
+        "componentItem.internalId must be numeric.",
+        "componentItem.url must be a supported NetSuite record URL."
+      ],
+      "saved": false
+    },
+    {
+      "event": "w192_w191_poll_reads_writer_output",
+      "runnerTaskId": "task_w192_ariat_001",
+      "status": "completed_runner_result_ready",
+      "resultCaptureStatus": "completed_result_capture_ready",
+      "completedSchema": "idb.completed-runner-result-json.v1",
+      "activeOpenLinks": 0
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingRequiredNow": false,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W192 creates the server-side result writer and proves W191 can read it. Visual testing starts only after the actual runner/resolver calls this writer with real sandbox IDs and IDB imports the result."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerCreatedRecords": true,
+    "noDirectDrawerSuiteScriptInvocation": true,
+    "internalRunnerOwnership": true,
+    "w151ImportGuardStillRequired": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W193: Wire W192 Result Writer Into Governed Runner Completion Resolver",
+    "prompt": "Move through W193: Wire W192 Result Writer Into Governed Runner Completion Resolver. Use the W192 server-side result writer and W191 poll endpoint to connect the actual governed runner completion path: after the existing runner creates/resolves Customer, hero item, matrix/proof item, component item, and after the Sales Order CSV import can be resolved to a real numeric transaction internal id, call writeCompletedRunnerResult into the configured result-capture folder. Add or reuse a post-run resolver if the scheduled runner cannot synchronously know the Sales Order id. Preserve server-side-only writes, internal runner ownership, no drawer writes, W151 import guard, and no Open links before completed import. Output runner call-site changes, Sales Order resolution strategy, deployment parameters, guarded harness, trace samples, W193 report, visual testing decision, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w192_writer_module_server_side_file_output_ready",
+      "pass": true,
+      "detail": "W192 writer module uses N/file and completed-result schema."
+    },
+    {
+      "name": "w192_valid_write_saves_completed_json",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-result-capture-write.v1\",\"writerVersion\":\"w192-governed-runner-result-capture-writer\",\"saved\":true,\"status\":\"completed_result_capture_saved\",\"source\":\"governed_internal_runner_server_side\",\"fileId\":\"1200\",\"fileName\":\"idb-result-task_w192_ariat_001-IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES.json\",\"resultCaptureFolderId\":\"678\",\"runnerTaskId\":\"task_w192_ariat_001\",\"idempotencyToken\":\"IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES\",\"completedRunnerResultJson\":{\"schema\":\"idb.completed-runner-result-json.v1\",\"writerVersion\":\"w192-governed-runner-result-capture-writer\",\"status\":\"completed\",\"runStatus\":\"completed\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"runnerTaskId\":\"task_w192_ariat_001\",\"idempotencyToken\":\"IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES\",\"prospect\":\"Ariat International\",\"completedAt\":\"2026-05-17T21:41:18.052Z\",\"records\":{\"customer\":{\"type\":\"customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalId\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\"},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},\"matrixProofItem\":{\"type\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},\"componentItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},\"matrixItem\":{\"type\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},\"componentItems\":[{\"type\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}]},\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w192_filename_includes_runner_task_and_idempotency",
+      "pass": true,
+      "detail": "idb-result-task_w192_ariat_001-IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES.json"
+    },
+    {
+      "name": "w192_invalid_placeholder_rejected_without_file",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-result-capture-write.v1\",\"writerVersion\":\"w192-governed-runner-result-capture-writer\",\"saved\":false,\"status\":\"blocked_invalid_completed_runner_result\",\"errors\":[\"customer.internalId must be numeric.\",\"customer.url must be a supported NetSuite record URL.\",\"demoTransaction.name is required.\",\"demoTransaction.internalId must be numeric.\",\"demoTransaction.url must be a supported NetSuite record URL.\",\"heroItem.name is required.\",\"heroItem.internalId must be numeric.\",\"heroItem.url must be a supported NetSuite record URL.\",\"matrixProofItem.name is required.\",\"matrixProofItem.internalId must be numeric.\",\"matrixProofItem.url must be a supported NetSuite record URL.\",\"componentItem.name is required.\",\"componentItem.internalId must be numeric.\",\"componentItem.url must be a supported NetSuite record URL.\"],\"completedRunnerResultJson\":null,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w192_missing_demo_transaction_rejected",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-result-capture-write.v1\",\"writerVersion\":\"w192-governed-runner-result-capture-writer\",\"saved\":false,\"status\":\"blocked_invalid_completed_runner_result\",\"errors\":[\"demoTransaction.name is required.\",\"demoTransaction.internalId must be numeric.\",\"demoTransaction.url must be a supported NetSuite record URL.\"],\"completedRunnerResultJson\":null,\"activeOpenLinks\":0}"
+    },
+    {
+      "name": "w192_absolute_netsuite_url_supported",
+      "pass": true,
+      "detail": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=91201"
+    },
+    {
+      "name": "w192_w191_can_poll_written_capture_file",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.completed-runner-result-json.v1\",\"status\":\"completed\",\"runStatus\":\"completed\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"records\":{\"customer\":{\"type\":\"customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalId\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\"},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},\"matrixProofItem\":{\"type\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},\"componentItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}},\"demoTransaction\":{\"type\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},\"heroItem\":{\"type\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},\"matrixItem\":{\"type\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},\"componentItems\":[{\"type\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}]}"
+    },
+    {
+      "name": "w192_w144_runner_param_handoff_ready",
+      "pass": true,
+      "detail": "W144 config exposes result capture folder for runner/result writer handoff."
+    },
+    {
+      "name": "w192_no_drawer_write_or_active_links",
+      "pass": true,
+      "detail": "Writer has no drawer surface and creates no active links."
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+[
+  {
+    "event": "w190_result_capture_poll_gate",
+    "requestReady": false,
+    "blockedReasons": [
+      "runner_task_id_present"
+    ],
+    "runnerTaskIdPresent": false,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_result_capture_poll_response",
+    "requestSent": false,
+    "status": "w190_poll_blocked_missing_runner_task_id",
+    "resultCaptureStatus": "not_started_no_submit",
+    "finalGeneratedNamesJsonReady": false,
+    "completedResultPresent": false,
+    "completedResultStatus": "invalid_json_payload",
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_w151_completed_json_gate",
+    "completedResultAcceptedByW151": false,
+    "importReady": false,
+    "stateMutationAllowedInThisBlock": false,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_result_capture_poll_gate",
+    "requestReady": true,
+    "blockedReasons": [],
+    "runnerTaskIdPresent": true,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_result_capture_poll_response",
+    "requestSent": false,
+    "status": "w190_poll_ready_not_executed",
+    "resultCaptureStatus": "pending_poll_not_executed",
+    "finalGeneratedNamesJsonReady": false,
+    "completedResultPresent": false,
+    "completedResultStatus": "invalid_json_payload",
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_w151_completed_json_gate",
+    "completedResultAcceptedByW151": false,
+    "importReady": false,
+    "stateMutationAllowedInThisBlock": false,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_result_capture_poll_gate",
+    "requestReady": true,
+    "blockedReasons": [],
+    "runnerTaskIdPresent": true,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_result_capture_poll_response",
+    "requestSent": true,
+    "status": "w190_poll_pending_result_capture",
+    "resultCaptureStatus": "polling_pending",
+    "finalGeneratedNamesJsonReady": false,
+    "completedResultPresent": false,
+    "completedResultStatus": "invalid_json_payload",
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_w151_completed_json_gate",
+    "completedResultAcceptedByW151": false,
+    "importReady": false,
+    "stateMutationAllowedInThisBlock": false,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_result_capture_poll_gate",
+    "requestReady": true,
+    "blockedReasons": [],
+    "runnerTaskIdPresent": true,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_result_capture_poll_response",
+    "requestSent": true,
+    "status": "w190_completed_result_ready_for_w151_import",
+    "resultCaptureStatus": "completed_result_capture_ready",
+    "finalGeneratedNamesJsonReady": true,
+    "completedResultPresent": true,
+    "completedResultStatus": "completed_runner_result_accepted",
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_w151_completed_json_gate",
+    "completedResultAcceptedByW151": true,
+    "importReady": true,
+    "stateMutationAllowedInThisBlock": false,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_result_capture_poll_gate",
+    "requestReady": true,
+    "blockedReasons": [],
+    "runnerTaskIdPresent": true,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_result_capture_poll_response",
+    "requestSent": true,
+    "status": "w190_adapter_error_drawer_safe",
+    "resultCaptureStatus": "adapter_error",
+    "finalGeneratedNamesJsonReady": false,
+    "completedResultPresent": false,
+    "completedResultStatus": "invalid_json_payload",
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w190_w151_completed_json_gate",
+    "completedResultAcceptedByW151": false,
+    "importReady": false,
+    "stateMutationAllowedInThisBlock": false,
+    "activeOpenLinks": 0
+  }
+]

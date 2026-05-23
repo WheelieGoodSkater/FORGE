@@ -1,0 +1,74 @@
+{
+  "schema": "idb.w37-website-evidence-nllm-advisory-bridge.v1",
+  "status": "complete_create_still_disabled",
+  "objective": "Let real website evidence strengthen lane and product-package classification for unknown or opaque websites without giving conversation notes or N/LLM write authority.",
+  "userFlow": [
+    "Consultant enters customer/prospect, website, and conversation notes.",
+    "If the URL/domain is ambiguous, consultant can paste optional website evidence such as homepage copy, navigation categories, product text, or SC-provided website summary.",
+    "Future N/LLM advisory can populate the same evidence shape after reading public website content, but it remains advisory-only.",
+    "Run IDB uses website/domain/category/evidence for lane and package identity, then uses notes for ROI, competitive, objections, and live coaching."
+  ],
+  "websiteEvidenceBridge": {
+    "runtimeFunction": "websiteEvidenceBridge",
+    "intakeField": "websiteEvidence",
+    "allowedEvidence": [
+      "homepage title",
+      "homepage meta description",
+      "top navigation labels",
+      "product category labels",
+      "public product text",
+      "consultant-pasted website notes",
+      "N/LLM advisory website summary"
+    ],
+    "owns": [
+      "laneId",
+      "productSeed",
+      "productFamily",
+      "demandMoment",
+      "proofAnchor recommendation"
+    ],
+    "doesNotOwn": [
+      "record creation",
+      "SuiteScript invocation",
+      "DCC toggles",
+      "packet order",
+      "verified claims not present in evidence"
+    ]
+  },
+  "nllmAdvisoryBridge": {
+    "agentRole": "N/LLM Website Evidence Advisor",
+    "writeAuthority": "none",
+    "creationAllowed": false,
+    "promptObjective": "Read website evidence and return product category, product family, demand moment, confidence, and source basis. Do not approve creation or override governed packet gates.",
+    "mustReturn": [
+      "websiteEvidenceSummary",
+      "categoryTokens",
+      "productSeedSuggestion",
+      "productFamilySuggestion",
+      "demandMomentSuggestion",
+      "confidence",
+      "sourceBasis",
+      "noRegressionDeclaration"
+    ]
+  },
+  "harnessCoverage": [
+    "known domains still pass",
+    "category-token domains still pass",
+    "opaque domains with pasted website evidence classify correctly",
+    "conversation notes cannot own product identity",
+    "food and ingredient language cannot leak into hardgoods or apparel from notes"
+  ],
+  "nextBlock": {
+    "id": "W38",
+    "name": "Pilot Result Evidence Review",
+    "goal": "Use the imported sandbox Customer + Proof Item result flow with stronger website evidence and keep transaction writes disabled."
+  },
+  "nonRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnProductIdentity": true,
+    "websiteEvidenceDoesNotInvokeNetwork": true,
+    "manualLaneOverrideStillAvailable": true
+  }
+}

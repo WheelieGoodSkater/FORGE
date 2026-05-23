@@ -1,0 +1,38 @@
+{
+  "schema": "idb.w89r-remediation-plan.v1",
+  "priority": [
+    {
+      "ownerRole": "Consultant UX Director",
+      "issue": "DCC handoff export was not the artifact submitted for review.",
+      "fix": "Make Review and Trace explicitly distinguish Export DCC handoff from legacy SuiteScript review packet; require dccRunnerHandoffPacketV1 for pilot evidence."
+    },
+    {
+      "ownerRole": "DCC Pattern Translator Agent",
+      "issue": "Operator mapping was not proven.",
+      "fix": "Add a one-page operator comparison checklist that marks suitelet form params, DCC-owned config params, and runner preview params as match/missing/unclear."
+    },
+    {
+      "ownerRole": "Evidence UX Designer",
+      "issue": "Screenshots were missing.",
+      "fix": "Add a Trace evidence checklist showing Plan, Review, DCC handoff, Trace, DCC handoff JSON, trace JSON, and operator notes before pilot-ready status."
+    },
+    {
+      "ownerRole": "Website Intelligence Agent",
+      "issue": "Trace contains mixed ownership language: guided_intake source and website_evidence_v1 authority.",
+      "fix": "Normalize trace language so website evidence owns identity and notes/guided intake own story only."
+    },
+    {
+      "ownerRole": "Code Review Sentinel",
+      "issue": "Review packet says mode=create while creationAllowed=false.",
+      "fix": "Rename pilot evidence mode to review_only / export_only wherever the path cannot submit or queue records."
+    }
+  ],
+  "retestRequiredEvidence": [
+    "idb-dcc-runner-handoff-packet-*.json",
+    "intelligent-demo-builder-trace-*.json",
+    "Plan screenshot",
+    "Review DCC handoff screenshot",
+    "Trace evidence checklist screenshot",
+    "Operator mapping notes"
+  ]
+}

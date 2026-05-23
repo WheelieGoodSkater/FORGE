@@ -1,0 +1,187 @@
+{
+  "schema": "idb.w72-hosted-resolver-remote-deployment-readiness-gate.v1",
+  "status": "complete_remote_readiness_gate_ready",
+  "objective": "Convert the local end-to-end hosted resolver smoke into a remote staging deployment readiness gate.",
+  "readinessDecision": "remote_deployment_ready_to_configure_not_deployed",
+  "roles": [
+    {
+      "name": "Resolver Service Architect",
+      "owns": "Remote deployment target checklist, endpoint paths, health smoke, resolve smoke, cache verification, and deployment command pack."
+    },
+    {
+      "name": "Security Guard",
+      "owns": "Secret handling, CORS origin list, token rotation, auth/CORS smoke, write-payload rejection, and rollback switch."
+    },
+    {
+      "name": "Observability And Reliability Agent",
+      "owns": "Remote metrics, trace fields, latency/cache checks, alert thresholds, redaction checks, and post-deploy evidence capture."
+    },
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Approved live-site smoke through hosted endpoint, confidence/failure-state honesty, and extraction drift interpretation."
+    },
+    {
+      "name": "Pilot Evidence Lead",
+      "owns": "Pilot go/no-go, approved consultant origins, endpoint toggle rollout, trace export requirements, and stop conditions."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "Readiness harness, command pack, no-regression gates, and remote-smoke opt-in behavior."
+    }
+  ],
+  "environmentConfig": [
+    {
+      "name": "IDB_REMOTE_RESOLVER_BASE_URL",
+      "requiredForRemoteSmoke": true,
+      "example": "https://staging-idb-resolver.example.com",
+      "rules": [
+        "Must use https.",
+        "Must not be localhost, private network, or raw IP in shared staging.",
+        "Must expose /health and /idb/website-resolver/v1/resolve."
+      ]
+    },
+    {
+      "name": "IDB_REMOTE_RESOLVER_TOKEN",
+      "requiredForRemoteSmoke": true,
+      "example": "stored-in-secret-manager-not-repo",
+      "rules": [
+        "Short-lived staging token only.",
+        "Never commit token to repo.",
+        "Rotate before five-consultant pilot."
+      ]
+    },
+    {
+      "name": "IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN",
+      "requiredForRemoteSmoke": true,
+      "example": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "rules": [
+        "Must be explicit NetSuite account origin.",
+        "No wildcard production CORS.",
+        "Add one origin per approved account/environment."
+      ]
+    },
+    {
+      "name": "IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN",
+      "requiredForRemoteSmoke": true,
+      "example": "https://unapproved.example.com",
+      "rules": [
+        "Used to prove CORS denial.",
+        "Must not receive Access-Control-Allow-Origin."
+      ]
+    },
+    {
+      "name": "IDB_REMOTE_RESOLVER_SMOKE",
+      "requiredForRemoteSmoke": true,
+      "example": "1",
+      "rules": [
+        "Remote smoke is opt-in only.",
+        "Unset means validate command pack and readiness plan without network."
+      ]
+    }
+  ],
+  "secretHandling": [
+    "Store resolver token in deployment secret manager or environment secret store.",
+    "Do not pass NetSuite cookies, NetSuite auth headers, SuiteScript URLs, record IDs, or write tokens to the resolver.",
+    "Log only tokenConfigured/tokenHashPrefix, never raw token.",
+    "Redact cookies, authorization headers, and manual evidence full text.",
+    "Rotate staging token before pilot and immediately after any failed auth anomaly."
+  ],
+  "corsOriginList": {
+    "allowed": [
+      "approved NetSuite account origins only",
+      "approved local preview origin only for development"
+    ],
+    "blocked": [
+      "wildcard production CORS",
+      "unapproved public origins",
+      "null origin",
+      "file origin"
+    ],
+    "requiredSmoke": [
+      "approved preflight returns 204 and echoes approved origin",
+      "blocked preflight returns 403 and does not echo blocked origin",
+      "POST without token returns 401 before website fetch",
+      "POST with write-shaped payload returns 400 before website fetch"
+    ]
+  },
+  "deploymentTargetChecklist": [
+    "Deploy Node.js/serverless resolver service outside Tampermonkey and outside SuiteScript.",
+    "Set IDB_REMOTE_RESOLVER_BASE_URL to HTTPS remote staging URL.",
+    "Configure resolver token as environment secret.",
+    "Configure strict CORS allowlist for approved NetSuite staging origin.",
+    "Set max pages, page bytes, total bytes, timeout, and redirect controls from W67.",
+    "Enable cache key by normalized URL + resolverVersion + extractionPolicyVersion.",
+    "Enable redacted request trace and metrics.",
+    "Enable rate limits per token and per domain.",
+    "Expose /health and /idb/website-resolver/v1/resolve.",
+    "Verify rollback switch: clear drawer endpoint/token toggle and disable remote token.",
+    "Do not enable SuiteScript writes or transaction writes."
+  ],
+  "remoteSmokeCommandPack": {
+    "readinessOnly": "node tools/run_remote_resolver_deployment_readiness_gate_harness.js",
+    "remoteSmoke": "IDB_REMOTE_RESOLVER_SMOKE=1 IDB_REMOTE_RESOLVER_BASE_URL=$IDB_REMOTE_RESOLVER_BASE_URL IDB_REMOTE_RESOLVER_TOKEN=$IDB_REMOTE_RESOLVER_TOKEN IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN=$IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN=$IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN node tools/run_remote_resolver_deployment_readiness_gate_harness.js",
+    "approvedLiveSmoke": "IDB_APPROVED_LIVE_RESOLVER_SMOKE=1 IDB_RESOLVER_STAGING_URL=$IDB_REMOTE_RESOLVER_BASE_URL IDB_RESOLVER_STAGING_TOKEN=$IDB_REMOTE_RESOLVER_TOKEN IDB_RESOLVER_ALLOWED_ORIGIN=$IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN node tools/run_approved_live_resolver_smoke_harness.js"
+  },
+  "remoteSmokeGates": [
+    "Remote /health returns serviceName, resolverVersion, extractionPolicyVersion, cacheStatus, writeAuthority none, suiteScriptInvocation false, nllmAdvisoryOnly true.",
+    "Approved CORS preflight passes without wildcard CORS.",
+    "Blocked CORS preflight fails without echoing blocked origin.",
+    "Missing or bad token returns 401 before website fetch.",
+    "Write-shaped payload returns 400 and no SuiteScript invocation.",
+    "Repeated eligible URL returns cacheHit true.",
+    "Approved live-site smoke has zero false-confident-wrong and zero unsupported claims.",
+    "Blocked, thin, unavailable, and timeout remain insufficient evidence with no lane candidates."
+  ],
+  "observabilityVerification": [
+    "Trace includes requestId, normalizedUrl, domain, resolverVersion, extractionPolicyVersion, fetchStatus, failureState, sourceUrls, confidence, cacheHit, latencyMs, writeAuthority, and nllmAdvisoryOnly.",
+    "Metrics include request count, p50/p95 latency, cache hit rate, failure-state rates, confidence-state rates, false-confident-wrong, and unsupported claims.",
+    "Alerts exist for false-confident-wrong greater than zero, unsupported claims greater than zero, timeout rate spike, blocked/thin spike, CORS anomaly, and p95 latency above target.",
+    "Remote logs redact token, cookies, authorization headers, and manual evidence full text."
+  ],
+  "rollbackSwitch": [
+    "Clear localStorage:idb.websiteResolver.endpoint.v1.",
+    "Clear localStorage:idb.websiteResolver.token.v1.",
+    "Set localStorage:idb.websiteResolver.localFallback.v1 to empty/true.",
+    "Disable remote resolver token.",
+    "Preserve trace exports for failed runs.",
+    "Keep SuiteScript writes disabled; no retry writes are allowed."
+  ],
+  "pilotGoNoGo": {
+    "goIf": [
+      "Remote readiness harness passes.",
+      "Remote health/auth/CORS/cache smoke passes.",
+      "Approved live-site smoke has zero false-confident-wrong.",
+      "Unsupported claims remain zero.",
+      "Failure states are visible and honest.",
+      "Rollback switch works without drawer code changes."
+    ],
+    "noGoIf": [
+      "Any false-confident-wrong result appears.",
+      "Any unsupported claim appears.",
+      "CORS allows wildcard or blocked origin.",
+      "Resolver accepts NetSuite cookies, auth headers, SuiteScript URLs, record IDs, write tokens, or create flags.",
+      "Blocked, thin, unavailable, or timeout produces a confident lane.",
+      "Trace omits failure state, source URLs, or no-write boundary."
+    ]
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "outputs": {
+    "contract": "data/w72_hosted_resolver_remote_deployment_readiness_gate.json",
+    "harness": "tools/run_remote_resolver_deployment_readiness_gate_harness.js",
+    "trace": "trace_samples/w72_remote_resolver_deployment_readiness_gate_trace.json",
+    "report": "reports/w72_hosted_resolver_remote_deployment_readiness_gate.md"
+  },
+  "bestNextCodexPrompt": {
+    "block": "W73: Remote Hosted Resolver Smoke Execution",
+    "prompt": "Move through W73: Remote Hosted Resolver Smoke Execution. With the remote staging websiteResolverServiceV1 endpoint configured, run the W72 remote smoke command pack against the real hosted URL: health, auth/CORS, write-payload rejection, cache-hit, approved live-site smoke, observability checks, rollback switch, and pilot go/no-go. Keep drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output executed remote smoke results, trace samples, W73 report, validator gates, and best next Codex prompt."
+  }
+}

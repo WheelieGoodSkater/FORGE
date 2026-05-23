@@ -1,0 +1,45 @@
+{
+  "schema": "idb.w88-exact-test-instructions.v1",
+  "status": "ready_for_user_hands_on_test",
+  "fileToLoad": {
+    "label": "Tampermonkey userscript",
+    "absolutePath": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+    "sha256": "30f73ccc903fffc59a6210f064153b7382c6a77b517332f64212a2ff13d3f2ec",
+    "modifiedAt": "2026-05-17T17:48:39.947Z",
+    "loadInstruction": "Open Tampermonkey, replace the current Intelligent Demo Builder userscript with this file contents, then save and refresh NetSuite sandbox."
+  },
+  "steps": [
+    "Install or update the Tampermonkey script from the specified idb-drawer.user.js file.",
+    "Open a NetSuite sandbox page and open Intelligent Demo Builder.",
+    "Clear the current IDB session before starting.",
+    "Enter the exact sales request fields from this packet.",
+    "On Plan, verify the objective, classification/confidence, and next action.",
+    "On Review, verify the DCC build packet bridge and DCC handoff export card.",
+    "Confirm the scenario only if lane, proof anchor, scenario pack, and DCC build mode make sense.",
+    "Export the DCC handoff JSON from Review.",
+    "Export trace JSON from Trace.",
+    "Do not submit or queue anything from IDB.",
+    "Operator compares the exported handoff to DCC Suitelet/scheduled runner fields using W85 operator steps.",
+    "Score the rubric and record go/no-go."
+  ],
+  "screenshotsToCapture": [
+    "Plan tab after intake.",
+    "Review tab top summary.",
+    "Review DCC build packet bridge.",
+    "Review DCC handoff export card with form/config/runner sections.",
+    "Trace tab before export.",
+    "DCC Suitelet sandbox comparison screen, if operator opens it for manual review."
+  ],
+  "exportsToAttach": [
+    "idb-dcc-runner-handoff-packet-*.json",
+    "intelligent-demo-builder-trace-*.json"
+  ],
+  "operatorComparisonSteps": [
+    "Open the exported DCC handoff JSON.",
+    "Compare suiteletEntryPayload to DCC Suitelet form fields.",
+    "Confirm DCC-owned config params are present/understood, without recording secrets.",
+    "Compare scheduledRunnerPreview to DCC runner preview expectations.",
+    "Confirm no IDB SuiteScript invocation and no IDB transaction writes.",
+    "Confirm DCC owns item names, assemblies, BOMs, locations, planning, routing/WIP, CSV/Sales Order mechanics, and runner queue behavior."
+  ]
+}

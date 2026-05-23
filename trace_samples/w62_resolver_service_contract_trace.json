@@ -1,0 +1,240 @@
+{
+  "schema": "idb.w62-resolver-service-contract-trace.v1",
+  "generated": "2026-05-17T21:41:01.307Z",
+  "decision": "PASS",
+  "contractSchema": "idb.w62-resolver-service-contract-threat-model.v1",
+  "service": {
+    "name": "websiteResolverServiceV1",
+    "schemaReturned": "idb.website-evidence.v1",
+    "runtimeRole": "no_write_fetch_extract_resolver",
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAuthority": "advisory_only",
+    "notesAuthority": "story_only_no_identity_override"
+  },
+  "urlNormalization": {
+    "rules": [
+      "trim whitespace",
+      "default missing scheme to https",
+      "lowercase hostname",
+      "remove hash fragments",
+      "remove tracking query parameters",
+      "preserve meaningful path",
+      "punycode hostname before safety checks",
+      "reject unsupported schemes"
+    ],
+    "allowedSchemes": [
+      "https"
+    ],
+    "httpPolicy": "allow only when immediately upgraded or redirected to https; otherwise return blocked",
+    "blockedSchemes": [
+      "file:",
+      "data:",
+      "javascript:",
+      "mailto:",
+      "tel:",
+      "ftp:",
+      "gopher:"
+    ]
+  },
+  "securityPolicy": {
+    "ssrfControls": [
+      "block localhost and loopback",
+      "block private RFC1918 ranges",
+      "block link-local and metadata service IPs",
+      "block internal host suffixes",
+      "resolve DNS before fetch and after redirects",
+      "reject redirect targets that violate scheme or network policy"
+    ],
+    "redirectPolicy": {
+      "maximumRedirects": 5,
+      "allowed": "same registrable domain or public https redirect only",
+      "captureFinalUrl": true,
+      "redirectLoopFailureState": "unavailable"
+    },
+    "timeouts": {
+      "connectMs": 6000,
+      "overallMs": 12000,
+      "maximumOverallMs": 15000
+    },
+    "limits": {
+      "maxPages": 5,
+      "defaultPages": 4,
+      "maxPageBytes": 350000,
+      "maxTotalBytes": 1200000,
+      "allowedContentTypes": [
+        "text/html",
+        "application/xhtml+xml"
+      ]
+    },
+    "robotsAndRespectfulFetch": {
+      "userAgent": "IntelligentDemoBuilderWebsiteResolver/1.0 no-write evidence capture",
+      "rateLimitPerDomainPerMinute": 6,
+      "cacheTtlSeconds": 86400
+    }
+  },
+  "failureStateMatrix": [
+    {
+      "state": "blocked",
+      "causes": [
+        "403",
+        "401",
+        "407",
+        "429",
+        "451",
+        "bot block",
+        "scheme blocked",
+        "SSRF blocked"
+      ],
+      "classificationState": "insufficient_evidence",
+      "laneCandidatesAllowed": false,
+      "consultantAction": "Paste website/category/product evidence or retry from approved resolver environment."
+    },
+    {
+      "state": "thin",
+      "causes": [
+        "too little product/category evidence",
+        "placeholder page",
+        "homepage only marketing copy"
+      ],
+      "classificationState": "insufficient_evidence",
+      "laneCandidatesAllowed": false,
+      "consultantAction": "Paste category/product evidence or confirm the business category."
+    },
+    {
+      "state": "unavailable",
+      "causes": [
+        "DNS failure",
+        "TLS failure",
+        "5xx",
+        "unsupported content type",
+        "redirect loop"
+      ],
+      "classificationState": "insufficient_evidence",
+      "laneCandidatesAllowed": false,
+      "consultantAction": "Retry later or provide manual evidence."
+    },
+    {
+      "state": "ambiguous",
+      "causes": [
+        "multiple close lane candidates",
+        "conflicting product/service categories"
+      ],
+      "classificationState": "needs_confirmation",
+      "laneCandidatesAllowed": true,
+      "consultantAction": "Show competing candidates and require confirmation."
+    },
+    {
+      "state": "timeout",
+      "causes": [
+        "connect timeout",
+        "overall timeout",
+        "slow secondary page"
+      ],
+      "classificationState": "insufficient_evidence",
+      "laneCandidatesAllowed": false,
+      "consultantAction": "Retry or provide manual evidence."
+    }
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W63: Local Resolver Service Prototype",
+    "prompt": "Move through W63: Local Resolver Service Prototype. Build the no-write website resolver service outside the drawer using the W62 websiteResolverServiceV1 contract. Implement URL normalization, safety checks, homepage fetch, secondary page discovery, HTML extraction, failure-state responses, cache-ready response fields, synthetic and approved live-fetch harnesses, trace samples, validator gates, and a W63 report. No writes, no SuiteScript invocation, N/LLM advisory-only, notes cannot own identity, and blocked/thin/unavailable/timeout must never produce confident guesses."
+  },
+  "results": [
+    {
+      "name": "w62_schema_present",
+      "pass": true,
+      "detail": "idb.w62-resolver-service-contract-threat-model.v1"
+    },
+    {
+      "name": "w62_service_is_no_write",
+      "pass": true,
+      "detail": "{\"name\":\"websiteResolverServiceV1\",\"schemaReturned\":\"idb.website-evidence.v1\",\"runtimeRole\":\"no_write_fetch_extract_resolver\",\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAuthority\":\"advisory_only\",\"notesAuthority\":\"story_only_no_identity_override\"}"
+    },
+    {
+      "name": "w62_request_shape_present",
+      "pass": true,
+      "detail": "{\"method\":\"POST\",\"path\":\"/idb/website-resolver/v1/resolve\",\"contentType\":\"application/json\",\"body\":{\"url\":\"string required\",\"requestId\":\"string optional\",\"tenantId\":\"string optional redacted in logs\",\"maxPages\":\"number optional default 4 maximum 5\",\"timeoutMs\":\"number optional default 12000 maximum 15000\",\"manualEvidence\":\"string optional consultant-supplied fallback text\"},\"forbiddenRequestFields\":[\"recordType\",\"recordId\",\"suiteletUrl\",\"scriptId\",\"deployId\",\"writeToken\",\"nlAuth\",\"cookie\",\"authorization\"]}"
+    },
+    {
+      "name": "w62_request_forbids_write_and_auth_fields",
+      "pass": true,
+      "detail": "recordType, recordId, suiteletUrl, scriptId, deployId, writeToken, nlAuth, cookie, authorization"
+    },
+    {
+      "name": "w62_response_returns_website_evidence_v1",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.website-evidence.v1\",\"resolverVersion\":\"websiteResolverServiceV1\",\"requestId\":\"string\",\"inputUrl\":\"string\",\"normalizedUrl\":\"string\",\"domain\":\"string\",\"fetchStatus\":\"fetched | blocked | unavailable | timeout | thin | ambiguous\",\"fetchErrors\":\"array\",\"pagesSampled\":\"array of role/url/status/contentHash/pageBytes\",\"extractedEvidence\":\"page title, meta, headings, nav, product/category terms, industry language, ecommerce/manufacturing/distribution/location/service signals\",\"signals\":\"lane candidates, product seed, product family, demand moment\",\"confidence\":\"state, score, requiresConfirmation\",\"failureState\":\"blocked | thin | unavailable | ambiguous | timeout | null\",\"sourceUrls\":\"array\",\"capturedAt\":\"ISO timestamp\",\"cache\":\"cache key, ttl seconds, content hashes\",\"writeAuthority\":\"none\",\"nllmAdvisoryOnly\":true,\"noRegression\":\"no SuiteScript, no write authority, no hidden lane override, notes cannot own identity\"}"
+    },
+    {
+      "name": "w62_url_normalization_policy_present",
+      "pass": true,
+      "detail": "{\"rules\":[\"trim whitespace\",\"default missing scheme to https\",\"lowercase hostname\",\"remove hash fragments\",\"remove tracking query parameters\",\"preserve meaningful path\",\"punycode hostname before safety checks\",\"reject unsupported schemes\"],\"allowedSchemes\":[\"https\"],\"httpPolicy\":\"allow only when immediately upgraded or redirected to https; otherwise return blocked\",\"blockedSchemes\":[\"file:\",\"data:\",\"javascript:\",\"mailto:\",\"tel:\",\"ftp:\",\"gopher:\"]}"
+    },
+    {
+      "name": "w62_schemes_are_locked_down",
+      "pass": true,
+      "detail": "{\"rules\":[\"trim whitespace\",\"default missing scheme to https\",\"lowercase hostname\",\"remove hash fragments\",\"remove tracking query parameters\",\"preserve meaningful path\",\"punycode hostname before safety checks\",\"reject unsupported schemes\"],\"allowedSchemes\":[\"https\"],\"httpPolicy\":\"allow only when immediately upgraded or redirected to https; otherwise return blocked\",\"blockedSchemes\":[\"file:\",\"data:\",\"javascript:\",\"mailto:\",\"tel:\",\"ftp:\",\"gopher:\"]}"
+    },
+    {
+      "name": "w62_ssrf_controls_present",
+      "pass": true,
+      "detail": "[\"block localhost and loopback\",\"block private RFC1918 ranges\",\"block link-local and metadata service IPs\",\"block internal host suffixes\",\"resolve DNS before fetch and after redirects\",\"reject redirect targets that violate scheme or network policy\"]"
+    },
+    {
+      "name": "w62_redirect_timeout_limits_present",
+      "pass": true,
+      "detail": "{\"ssrfControls\":[\"block localhost and loopback\",\"block private RFC1918 ranges\",\"block link-local and metadata service IPs\",\"block internal host suffixes\",\"resolve DNS before fetch and after redirects\",\"reject redirect targets that violate scheme or network policy\"],\"redirectPolicy\":{\"maximumRedirects\":5,\"allowed\":\"same registrable domain or public https redirect only\",\"captureFinalUrl\":true,\"redirectLoopFailureState\":\"unavailable\"},\"timeouts\":{\"connectMs\":6000,\"overallMs\":12000,\"maximumOverallMs\":15000},\"limits\":{\"maxPages\":5,\"defaultPages\":4,\"maxPageBytes\":350000,\"maxTotalBytes\":1200000,\"allowedContentTypes\":[\"text/html\",\"application/xhtml+xml\"]},\"robotsAndRespectfulFetch\":{\"userAgent\":\"IntelligentDemoBuilderWebsiteResolver/1.0 no-write evidence capture\",\"rateLimitPerDomainPerMinute\":6,\"cacheTtlSeconds\":86400}}"
+    },
+    {
+      "name": "w62_content_types_and_rate_limit_present",
+      "pass": true,
+      "detail": "{\"userAgent\":\"IntelligentDemoBuilderWebsiteResolver/1.0 no-write evidence capture\",\"rateLimitPerDomainPerMinute\":6,\"cacheTtlSeconds\":86400}"
+    },
+    {
+      "name": "w62_failure_state_matrix_complete",
+      "pass": true,
+      "detail": "[{\"state\":\"blocked\",\"causes\":[\"403\",\"401\",\"407\",\"429\",\"451\",\"bot block\",\"scheme blocked\",\"SSRF blocked\"],\"classificationState\":\"insufficient_evidence\",\"laneCandidatesAllowed\":false,\"consultantAction\":\"Paste website/category/product evidence or retry from approved resolver environment.\"},{\"state\":\"thin\",\"causes\":[\"too little product/category evidence\",\"placeholder page\",\"homepage only marketing copy\"],\"classificationState\":\"insufficient_evidence\",\"laneCandidatesAllowed\":false,\"consultantAction\":\"Paste category/product evidence or confirm the business category.\"},{\"state\":\"unavailable\",\"causes\":[\"DNS failure\",\"TLS failure\",\"5xx\",\"unsupported content type\",\"redirect loop\"],\"classificationState\":\"insufficient_evidence\",\"laneCandidatesAllowed\":false,\"consultantAction\":\"Retry later or provide manual evidence.\"},{\"state\":\"ambiguous\",\"causes\":[\"multiple close lane candidates\",\"conflicting product/service categories\"],\"classificationState\":\"needs_confirmation\",\"laneCandidatesAllowed\":true,\"consultantAction\":\"Show competing candidates and require confirmation.\"},{\"state\":\"timeout\",\"causes\":[\"connect timeout\",\"overall timeout\",\"slow secondary page\"],\"classificationState\":\"insufficient_evidence\",\"laneCandidatesAllowed\":false,\"consultantAction\":\"Retry or provide manual evidence.\"}]"
+    },
+    {
+      "name": "w62_failure_states_do_not_guess",
+      "pass": true,
+      "detail": "[{\"state\":\"blocked\",\"causes\":[\"403\",\"401\",\"407\",\"429\",\"451\",\"bot block\",\"scheme blocked\",\"SSRF blocked\"],\"classificationState\":\"insufficient_evidence\",\"laneCandidatesAllowed\":false,\"consultantAction\":\"Paste website/category/product evidence or retry from approved resolver environment.\"},{\"state\":\"thin\",\"causes\":[\"too little product/category evidence\",\"placeholder page\",\"homepage only marketing copy\"],\"classificationState\":\"insufficient_evidence\",\"laneCandidatesAllowed\":false,\"consultantAction\":\"Paste category/product evidence or confirm the business category.\"},{\"state\":\"unavailable\",\"causes\":[\"DNS failure\",\"TLS failure\",\"5xx\",\"unsupported content type\",\"redirect loop\"],\"classificationState\":\"insufficient_evidence\",\"laneCandidatesAllowed\":false,\"consultantAction\":\"Retry later or provide manual evidence.\"},{\"state\":\"ambiguous\",\"causes\":[\"multiple close lane candidates\",\"conflicting product/service categories\"],\"classificationState\":\"needs_confirmation\",\"laneCandidatesAllowed\":true,\"consultantAction\":\"Show competing candidates and require confirmation.\"},{\"state\":\"timeout\",\"causes\":[\"connect timeout\",\"overall timeout\",\"slow secondary page\"],\"classificationState\":\"insufficient_evidence\",\"laneCandidatesAllowed\":false,\"consultantAction\":\"Retry or provide manual evidence.\"}]"
+    },
+    {
+      "name": "w62_ambiguous_requires_confirmation",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "w62_cache_ready_response_present",
+      "pass": true,
+      "detail": "{\"cacheKey\":\"sha256(normalizedUrl + resolverVersion + extractionPolicyVersion)\",\"ttlSeconds\":86400,\"contentHashes\":\"per sampled page\",\"redaction\":[\"do not cache cookies\",\"do not cache auth headers\",\"do not cache tenant secrets\",\"do not log request body manualEvidence beyond trace-safe excerpt\"]}"
+    },
+    {
+      "name": "w62_trace_requirements_present",
+      "pass": true,
+      "detail": "{\"mustInclude\":[\"requestId\",\"normalizedUrl\",\"domain\",\"fetchStatus\",\"failureState\",\"sourceUrls\",\"pagesSampled\",\"extractedEvidence\",\"signals\",\"confidence\",\"cache\",\"writeAuthority\",\"nllmAdvisoryOnly\"],\"mustNotInclude\":[\"recordWriteToken\",\"SuiteScript invocation result\",\"NetSuite cookie\",\"authorization header\",\"hidden create permission\"]}"
+    },
+    {
+      "name": "w62_no_regression_boundaries_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesCannotOwnIdentification\":true,\"blockedThinUnavailableTimeoutDoNotGuess\":true,\"transactionWriteEnabled\":false,\"mainDrawerCreateEnabled\":false,\"mainSuiteletCreateEnabled\":false}"
+    },
+    {
+      "name": "w62_best_next_codex_prompt_present",
+      "pass": true,
+      "detail": "{\"block\":\"W63: Local Resolver Service Prototype\",\"prompt\":\"Move through W63: Local Resolver Service Prototype. Build the no-write website resolver service outside the drawer using the W62 websiteResolverServiceV1 contract. Implement URL normalization, safety checks, homepage fetch, secondary page discovery, HTML extraction, failure-state responses, cache-ready response fields, synthetic and approved live-fetch harnesses, trace samples, validator gates, and a W63 report. No writes, no SuiteScript invocation, N/LLM advisory-only, notes cannot own identity, and blocked/thin/unavailable/timeout must never produce confident guesses.\"}"
+    }
+  ]
+}

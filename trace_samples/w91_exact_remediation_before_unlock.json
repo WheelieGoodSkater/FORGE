@@ -1,0 +1,20 @@
+{
+  "schema": "idb.w91-exact-remediation-before-unlock.v1",
+  "exactNextActions": [
+    "Load the current idb-drawer.user.js in Tampermonkey.",
+    "Run the W90 Ariat one-run retest from a clean IDB session.",
+    "Capture the Plan screenshot after intake.",
+    "Capture the Review screenshot showing the DCC handoff export card.",
+    "Click Export DCC handoff and attach idb-dcc-runner-handoff-packet-*.json.",
+    "Go to Trace, capture the Pilot evidence checklist screenshot, then export trace JSON.",
+    "Attach intelligent-demo-builder-trace-*.json.",
+    "Have the operator compare Suitelet form params, DCC-owned config params, and runner preview params, marking each match/missing/unclear.",
+    "Do not attach only the legacy SuiteScript review packet; it is secondary evidence only."
+  ],
+  "stopConditions": [
+    "Only the legacy SuiteScript review packet is exported.",
+    "Operator cannot identify Suitelet form params or runner preview params.",
+    "Trace source suggests notes own identity.",
+    "Any IDB path appears to submit, queue, or write records."
+  ]
+}

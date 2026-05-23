@@ -1,0 +1,77 @@
+{
+  "schema": "idb.w205-production-consultant-flow-cleanup-after-five-link-pass.v1",
+  "status": "PASS_W205_PRODUCTION_CONSULTANT_FLOW_CLEANED_UP",
+  "cleanupContract": {
+    "consultantVisibleInputs": [
+      "Customer / Prospect Name",
+      "Website",
+      "Conversation Notes"
+    ],
+    "consultantBuildToggles": [
+      "Create new hero item",
+      "Manufacturing",
+      "WIP"
+    ],
+    "adminDebugConfig": "saved_and_collapsed_outside_consultant_flow",
+    "exportHandoffMode": "debug_operator_evidence_only",
+    "openLinkPolicy": "show Open only after completed W151 result import"
+  },
+  "urlNormalization": {
+    "salesOrderUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+    "salesOrderUrlIsAbsolute": true
+  },
+  "linkAuthoritySummary": {
+    "verified_openable": 5
+  },
+  "traceSamples": {
+    "runnerTaskId": "SCHEDSCRIPT_REDACTED",
+    "importedSalesOrderUrlBeforeNormalization": "/app/accounting/transactions/salesord.nl?id=80828",
+    "importedSalesOrderUrlAfterNormalization": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+    "buildStatusSurface": "compact_imported_records_ready"
+  },
+  "noRegression": {
+    "w151ImportGuardPreserved": true,
+    "noDrawerWrites": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "runnerOwnsGeneratedRecords": true,
+    "noOpenLinksBeforeCompletedResultImport": true
+  },
+  "results": [
+    {
+      "name": "w205_w151_guard_still_accepts_completed_result",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-result-import-guard.v1\",\"valid\":true,\"status\":\"completed_runner_result_accepted\",\"message\":\"Completed runner result JSON accepted. Final names and verified URLs can be imported.\",\"finalNaming\":{\"schema\":\"idb.dcc-final-naming-result.v1\",\"status\":\"dcc_final_names_imported\",\"displayStatus\":\"Final generated names imported\",\"importedAt\":\"2026-05-18T17:51:45.193Z\",\"source\":\"dcc_result_import_only\",\"finalNamesImported\":true,\"runStatus\":\"completed\",\"prospect\":\"Ariat International Customer Account\",\"scenario\":\"Style / SKU Matrix\",\"familyKey\":\"apparel_accessories\",\"generated\":{\"extId\":\"\",\"agenda\":\"\"},\"displayObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Customer Account\",\"internalName\":\"\",\"id\":\"1722\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722\",\"source\":\"dcc_final\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"SO2677\",\"internalName\":\"\",\"id\":\"80828\",\"url\":\"/app/accounting/transactions/salesord.nl?id=80828\",\"source\":\"dcc_final\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat International Style SKU\",\"internalName\":\"SCAI - Ariat International Style SKU - ESSORIES\",\"id\":\"1865\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865\",\"source\":\"dcc_final\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat International Omnichannel Availability Flow\",\"internalName\":\"\",\"id\":\"2545\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545\",\"source\":\"dcc_final\"}],\"componentItems\":[{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat International Core Style\",\"internalName\":\"\",\"id\":\"2546\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546\",\"source\":\"dcc_final\"}],\"locationPlanningRecords\":[],\"csvSalesOrderArtifacts\":[],\"warnings\":[],\"errors\":[],\"recoverableBlockers\":[],\"traceCoverage\":{\"includedInTraceExport\":true,\"secretsRedacted\":true,\"importedOnly\":true},\"noRegression\":{\"importOnly\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true,\"provisionalNamesCannotBeMarkedFinal\":true,\"w92StateAuthorityPreserved\":true,\"w110HandoffParityPreserved\":true}}}"
+    },
+    {
+      "name": "w205_sales_order_url_normalized_to_absolute_in_drawer",
+      "pass": true,
+      "detail": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+    },
+    {
+      "name": "w205_w144_adapter_builds_absolute_record_urls",
+      "pass": true,
+      "detail": "W144 buildNetSuiteRecordUrl returns account-hosted absolute URLs."
+    },
+    {
+      "name": "w205_admin_adapter_controls_hidden_after_import",
+      "pass": true,
+      "detail": "Post-import review renders compact status and hides adapter setup controls."
+    },
+    {
+      "name": "w205_consultant_flow_reduced_to_intake_and_simple_toggles",
+      "pass": true,
+      "detail": "{\"visibleRequiredFields\":[\"customer/prospect name\",\"website\",\"conversation notes\"],\"simpleBuildToggles\":[\"create new hero item\",\"manufacturing\",\"WIP\"],\"adapterConfigurationVisibility\":\"hidden_behind_saved_admin_debug_config\"}"
+    },
+    {
+      "name": "w205_five_verified_open_links_remain_after_import",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"present\":true,\"openable\":true,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722\",\"absoluteUrl\":true},{\"role\":\"sales_order\",\"present\":true,\"openable\":true,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828\",\"absoluteUrl\":true},{\"role\":\"hero_item\",\"present\":true,\"openable\":true,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865\",\"absoluteUrl\":true},{\"role\":\"matrix_or_proof_item\",\"present\":true,\"openable\":true,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545\",\"absoluteUrl\":true},{\"role\":\"component_item\",\"present\":true,\"openable\":true,\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546\",\"absoluteUrl\":true}]"
+    },
+    {
+      "name": "w205_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"w151ImportGuardPreserved\":true,\"noDrawerWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"runnerOwnsGeneratedRecords\":true,\"noOpenLinksBeforeCompletedResultImport\":true}"
+    }
+  ]
+}

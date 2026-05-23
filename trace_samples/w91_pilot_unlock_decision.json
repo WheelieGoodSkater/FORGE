@@ -1,0 +1,14 @@
+{
+  "schema": "idb.w91-pilot-unlock-decision.v1",
+  "decision": "no_go_missing_w90_retest_evidence",
+  "broaderConsultantPilotUnlocked": false,
+  "singleRetestStillRequired": true,
+  "reason": "W90 required evidence was not provided. The unlock gate requires the DCC handoff JSON, trace JSON, screenshots, and operator comparison notes.",
+  "unlockCriteria": [
+    "DCC handoff JSON is attached.",
+    "Trace JSON is attached.",
+    "Plan, Review DCC handoff, and Trace evidence checklist screenshots are attached.",
+    "Operator maps handoff params in under 5 minutes.",
+    "No IDB SuiteScript invocation, queue action, or transaction write occurs."
+  ]
+}

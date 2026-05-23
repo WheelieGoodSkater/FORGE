@@ -1,0 +1,31 @@
+{
+  "schema": "idb.conversation-pain-story-contract.v1",
+  "status": "story_mapper_ready_create_disabled",
+  "ownerAgent": "Story Intelligence Agent",
+  "objective": "Map conversation notes into pain, objective, objections, decision criteria, top moves, and exception readiness without changing lane authority.",
+  "requiredFields": [
+    "confidence",
+    "pain",
+    "objective",
+    "signal",
+    "decisionCriteria",
+    "topMoves",
+    "likelyObjections",
+    "exceptionSet",
+    "askForMoreContext",
+    "nextQuestion"
+  ],
+  "confidenceRules": {
+    "high": "Conversation notes provide enough detail to drive a live story.",
+    "medium": "Notes are usable but may need consultant confirmation.",
+    "low": "Notes are thin and IDB must ask for more context.",
+    "none": "No notes captured; use lane fallback and ask for the SC request pain."
+  },
+  "nonRegression": {
+    "creationAllowed": false,
+    "llmAdvisoryOnly": true,
+    "noLaneAuthorityChange": true,
+    "noProofAnchorChange": true,
+    "noPacketOrderChange": true
+  }
+}

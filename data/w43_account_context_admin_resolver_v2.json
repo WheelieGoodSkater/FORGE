@@ -1,0 +1,95 @@
+{
+  "schema": "idb.w43-account-context-admin-resolver-v2.v1",
+  "status": "complete_account_context_admin_v2_ready",
+  "objective": "Extend the W39 account context resolver into a reusable admin context layer before any governed Customer or Proof Item write.",
+  "goal": "Prevent NetSuite HTML 500 failures by resolving required account setup and exposing optional admin defaults before the pilot writes.",
+  "roles": [
+    {
+      "name": "Context Architect Agent",
+      "responsibility": "Define which runtime deployment parameters are required, recommended, and optional by write role."
+    },
+    {
+      "name": "SuiteScript Worker Agent",
+      "responsibility": "Implement the resolver in the W24 pilot Suitelet and map safe defaults to Customer and Proof Item writes."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "responsibility": "Keep main package create-disabled, keep transaction writes disabled, and ensure missing config returns JSON."
+    }
+  ],
+  "requiredRuntimeParameters": [
+    "custscript_idb_default_subsidiary",
+    "custscript_idb_default_taxschedule"
+  ],
+  "recommendedRuntimeParameters": [
+    "custscript_idb_default_location",
+    "custscript_idb_default_currency",
+    "custscript_idb_default_terms"
+  ],
+  "optionalRuntimeParameters": [
+    "custscript_idb_default_location",
+    "custscript_idb_default_currency",
+    "custscript_idb_default_terms",
+    "custscript_idb_default_department",
+    "custscript_idb_default_class"
+  ],
+  "writeRequirementsByRole": {
+    "customer": {
+      "required": [
+        "custscript_idb_default_subsidiary"
+      ],
+      "optional": [
+        "custscript_idb_default_currency",
+        "custscript_idb_default_terms",
+        "custscript_idb_default_department",
+        "custscript_idb_default_class"
+      ]
+    },
+    "proofAnchor": {
+      "required": [
+        "custscript_idb_default_subsidiary",
+        "custscript_idb_default_taxschedule"
+      ],
+      "optional": [
+        "custscript_idb_default_location",
+        "custscript_idb_default_department",
+        "custscript_idb_default_class"
+      ]
+    }
+  },
+  "suiteletChanges": [
+    "W24 pilot accountContextResolver now returns idb.account-context-resolver.v2.",
+    "W24 pilot reads currency, terms, department, and class runtime parameters as admin defaults.",
+    "Customer writer safely maps optional currency, terms, department, and class when configured.",
+    "Proof Item writer safely maps optional department and class, and still requires subsidiary and tax schedule.",
+    "Missing required context returns blocked_missing_account_context JSON before any write attempt."
+  ],
+  "deploymentChecklist": [
+    "Use internal IDs for subsidiary, location, tax schedule, currency, terms, department, and class.",
+    "Set custscript_idb_default_subsidiary before any Customer write.",
+    "Set custscript_idb_default_taxschedule before any Proof Item write.",
+    "Set location, currency, terms, department, and class when the demo account or lane needs those defaults.",
+    "Keep transaction context disabled until a dedicated transaction pilot block enables it."
+  ],
+  "harnessCoverage": [
+    "Blocked JSON response when subsidiary is missing.",
+    "Blocked JSON response when tax schedule is missing before Proof Item write.",
+    "Admin resolver V2 returns optional currency, terms, department, and class values without expanding writes.",
+    "Customer first and Proof Item second still create in the approved demo account harness.",
+    "Transaction context remains disabled."
+  ],
+  "noRegression": {
+    "mainSuiteletCreateEnabled": false,
+    "mainDrawerAutomaticWrite": false,
+    "transactionWriteEnabled": false,
+    "customerFirst": true,
+    "proofItemRequiresCustomerResult": true,
+    "missingRequiredContextReturnsJson": true,
+    "llmAdvisoryOnly": true
+  },
+  "nextBlock": {
+    "id": "W44",
+    "name": "Vendor Attach And Procurement Defaults",
+    "reason": "DCC proved vendor attachment and procurement defaults are required before Proof Item writes are consultant-ready."
+  }
+}

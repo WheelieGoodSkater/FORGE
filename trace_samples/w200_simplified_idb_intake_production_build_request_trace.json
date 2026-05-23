@@ -1,0 +1,37 @@
+{
+  "schema": "idb.w200.trace-samples.v1",
+  "samples": [
+    {
+      "event": "consultant_intake_ready",
+      "requiredInputs": [
+        "customer/prospect name",
+        "website",
+        "conversation notes"
+      ],
+      "inferred": [
+        "lane",
+        "proof path",
+        "demo scenario",
+        "build story",
+        "initial record naming intent"
+      ]
+    },
+    {
+      "event": "debug_config_hidden",
+      "fields": [
+        "approved W144 endpoint",
+        "server flags",
+        "sandbox allowlist",
+        "runner script/deployment IDs",
+        "mapping ID",
+        "runner folder ID",
+        "result capture folder ID",
+        "operator approval phrase"
+      ]
+    },
+    {
+      "event": "completed_result_import_guard",
+      "guard": "W151 completed runner result JSON with numeric ids and supported NetSuite URLs"
+    }
+  ]
+}

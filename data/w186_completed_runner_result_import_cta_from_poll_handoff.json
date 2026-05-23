@@ -1,0 +1,749 @@
+{
+  "schema": "idb.w186-completed-runner-result-import-cta-from-poll-handoff.v1",
+  "status": "completed_result_import_cta_from_poll_handoff_ready",
+  "importCtaContract": {
+    "schema": "idb.w186-completed-result-import-cta-contract.v1",
+    "source": "W185 runnerTaskId poll handoff",
+    "cta": "Import completed runner result",
+    "enabledOnlyWhen": [
+      "runnerTaskId exists",
+      "Check runner result polls approved server adapter result capture",
+      "poll returns completed runner result JSON",
+      "W151 validates numeric internal ids",
+      "W151 validates supported NetSuite URLs",
+      "generatedRecordOwner is governed_runner_internal_build_engine"
+    ],
+    "blockedFor": [
+      "pending result capture",
+      "missing runnerTaskId",
+      "adapter error",
+      "malformed completed result",
+      "Build handoff JSON"
+    ],
+    "mutationBoundary": "CTA readiness does not mutate state.dccFinalNamingResult; W181/W176 import commit remains the mutation boundary."
+  },
+  "guardedHarness": {
+    "pendingNonMutating": true,
+    "missingRunnerTaskNonMutating": true,
+    "adapterErrorNonMutating": true,
+    "malformedCompletedRejected": true,
+    "handoffJsonRejected": true,
+    "completedW151ValidEnablesCtaOnly": true,
+    "noRegressionPreserved": true,
+    "visualBlockedUntilImport": true
+  },
+  "samples": {
+    "pending": {
+      "schema": "idb.completed-runner-result-import-cta-from-poll-handoff.v1",
+      "status": "completed_runner_result_import_cta_blocked_from_poll_handoff",
+      "mode": "poll_handoff_to_w151_import_cta_no_state_mutation",
+      "importCtaContract": {
+        "source": "W185 runnerTaskId poll handoff",
+        "cta": "Import completed runner result",
+        "visibleOnlyWhenW151ValidCompletedResult": true,
+        "requiresNumericInternalIds": true,
+        "requiresSupportedNetSuiteUrls": true,
+        "requiresInternalRunnerOwnership": true,
+        "pendingResponsesNonMutating": true,
+        "missingRunnerTaskNonMutating": true,
+        "adapterErrorsNonMutating": true,
+        "malformedCompletedResultNonMutating": true,
+        "handoffJsonRejected": true,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import waits for completed result",
+        "visible": false,
+        "enabled": false,
+        "action": "none",
+        "payloadSource": "none",
+        "guardOwner": "W151 completed runner result import guard",
+        "blockedReason": "runner_result_still_pending"
+      },
+      "pollHandoffStatus": {
+        "status": "runner_task_poll_handoff_check_runner_result_ready_or_pending",
+        "runnerTaskId": "task_w186_idb-w186-ariat-international-one-call-001",
+        "checkRunnerResultVisible": true,
+        "completedResultReadyForW151Import": false,
+        "adapterErrorStoppedSafely": false
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "handoffJsonRejected": true,
+        "malformedCompletedRejected": true,
+        "stateMutationAllowedBeforeOperatorImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": false,
+        "statePatchAvailableAfterOperatorImport": false,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisualAfterImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "pendingFinalNamesMutated": false,
+        "missingRunnerTaskFinalNamesMutated": false,
+        "adapterErrorFinalNamesMutated": false,
+        "malformedCompletedFinalNamesMutated": false,
+        "handoffJsonFinalNamesMutated": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w186_poll_handoff_to_import_cta",
+          "pollHandoffStatus": "runner_task_poll_handoff_check_runner_result_ready_or_pending",
+          "importCtaVisible": false,
+          "importCtaEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w186_w151_completed_result_gate",
+          "completedResultAcceptedByW151": false,
+          "generatedRecordOwner": "",
+          "numericIdsAndSupportedUrlsRequired": true,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w186_rejection_guards",
+          "handoffJsonRejected": true,
+          "malformedCompletedRejected": true,
+          "pendingMissingAndErrorNonMutating": true,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W186 enables only the completed-result import CTA. Open-link visual testing waits until the operator imports W151-valid URLs."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilCompletedRunnerResultImport": true
+      }
+    },
+    "missingRunnerTask": {
+      "schema": "idb.completed-runner-result-import-cta-from-poll-handoff.v1",
+      "status": "completed_runner_result_import_cta_blocked_from_poll_handoff",
+      "mode": "poll_handoff_to_w151_import_cta_no_state_mutation",
+      "importCtaContract": {
+        "source": "W185 runnerTaskId poll handoff",
+        "cta": "Import completed runner result",
+        "visibleOnlyWhenW151ValidCompletedResult": true,
+        "requiresNumericInternalIds": true,
+        "requiresSupportedNetSuiteUrls": true,
+        "requiresInternalRunnerOwnership": true,
+        "pendingResponsesNonMutating": true,
+        "missingRunnerTaskNonMutating": true,
+        "adapterErrorsNonMutating": true,
+        "malformedCompletedResultNonMutating": true,
+        "handoffJsonRejected": true,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import waits for completed result",
+        "visible": false,
+        "enabled": false,
+        "action": "none",
+        "payloadSource": "none",
+        "guardOwner": "W151 completed runner result import guard",
+        "blockedReason": "runner_task_id_missing"
+      },
+      "pollHandoffStatus": {
+        "status": "runner_task_poll_handoff_blocked_missing_runner_task_id",
+        "runnerTaskId": "",
+        "checkRunnerResultVisible": false,
+        "completedResultReadyForW151Import": false,
+        "adapterErrorStoppedSafely": false
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "handoffJsonRejected": true,
+        "malformedCompletedRejected": true,
+        "stateMutationAllowedBeforeOperatorImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": false,
+        "statePatchAvailableAfterOperatorImport": false,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisualAfterImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "pendingFinalNamesMutated": false,
+        "missingRunnerTaskFinalNamesMutated": false,
+        "adapterErrorFinalNamesMutated": false,
+        "malformedCompletedFinalNamesMutated": false,
+        "handoffJsonFinalNamesMutated": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w186_poll_handoff_to_import_cta",
+          "pollHandoffStatus": "runner_task_poll_handoff_blocked_missing_runner_task_id",
+          "importCtaVisible": false,
+          "importCtaEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w186_w151_completed_result_gate",
+          "completedResultAcceptedByW151": false,
+          "generatedRecordOwner": "",
+          "numericIdsAndSupportedUrlsRequired": true,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w186_rejection_guards",
+          "handoffJsonRejected": true,
+          "malformedCompletedRejected": true,
+          "pendingMissingAndErrorNonMutating": true,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W186 enables only the completed-result import CTA. Open-link visual testing waits until the operator imports W151-valid URLs."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": false,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilCompletedRunnerResultImport": true
+      }
+    },
+    "adapterError": {
+      "schema": "idb.completed-runner-result-import-cta-from-poll-handoff.v1",
+      "status": "completed_runner_result_import_cta_blocked_from_poll_handoff",
+      "mode": "poll_handoff_to_w151_import_cta_no_state_mutation",
+      "importCtaContract": {
+        "source": "W185 runnerTaskId poll handoff",
+        "cta": "Import completed runner result",
+        "visibleOnlyWhenW151ValidCompletedResult": true,
+        "requiresNumericInternalIds": true,
+        "requiresSupportedNetSuiteUrls": true,
+        "requiresInternalRunnerOwnership": true,
+        "pendingResponsesNonMutating": true,
+        "missingRunnerTaskNonMutating": true,
+        "adapterErrorsNonMutating": true,
+        "malformedCompletedResultNonMutating": true,
+        "handoffJsonRejected": true,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import waits for completed result",
+        "visible": false,
+        "enabled": false,
+        "action": "none",
+        "payloadSource": "none",
+        "guardOwner": "W151 completed runner result import guard",
+        "blockedReason": "adapter_error_requires_operator_evidence"
+      },
+      "pollHandoffStatus": {
+        "status": "runner_task_poll_handoff_stopped_adapter_error",
+        "runnerTaskId": "task_w186_idb-w186-ariat-international-one-call-001",
+        "checkRunnerResultVisible": false,
+        "completedResultReadyForW151Import": false,
+        "adapterErrorStoppedSafely": true
+      },
+      "resultImportGuard": {
+        "completedResultPresent": false,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "invalid_json_payload",
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "handoffJsonRejected": true,
+        "malformedCompletedRejected": true,
+        "stateMutationAllowedBeforeOperatorImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": false,
+        "statePatchAvailableAfterOperatorImport": false,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisualAfterImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "pendingFinalNamesMutated": false,
+        "missingRunnerTaskFinalNamesMutated": false,
+        "adapterErrorFinalNamesMutated": false,
+        "malformedCompletedFinalNamesMutated": false,
+        "handoffJsonFinalNamesMutated": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w186_poll_handoff_to_import_cta",
+          "pollHandoffStatus": "runner_task_poll_handoff_stopped_adapter_error",
+          "importCtaVisible": false,
+          "importCtaEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w186_w151_completed_result_gate",
+          "completedResultAcceptedByW151": false,
+          "generatedRecordOwner": "",
+          "numericIdsAndSupportedUrlsRequired": true,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w186_rejection_guards",
+          "handoffJsonRejected": true,
+          "malformedCompletedRejected": true,
+          "pendingMissingAndErrorNonMutating": true,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W186 enables only the completed-result import CTA. Open-link visual testing waits until the operator imports W151-valid URLs."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": false,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilCompletedRunnerResultImport": true
+      }
+    },
+    "malformed": {
+      "schema": "idb.completed-runner-result-import-cta-from-poll-handoff.v1",
+      "status": "completed_runner_result_import_cta_blocked_from_poll_handoff",
+      "mode": "poll_handoff_to_w151_import_cta_no_state_mutation",
+      "importCtaContract": {
+        "source": "W185 runnerTaskId poll handoff",
+        "cta": "Import completed runner result",
+        "visibleOnlyWhenW151ValidCompletedResult": true,
+        "requiresNumericInternalIds": true,
+        "requiresSupportedNetSuiteUrls": true,
+        "requiresInternalRunnerOwnership": true,
+        "pendingResponsesNonMutating": true,
+        "missingRunnerTaskNonMutating": true,
+        "adapterErrorsNonMutating": true,
+        "malformedCompletedResultNonMutating": true,
+        "handoffJsonRejected": true,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import waits for completed result",
+        "visible": false,
+        "enabled": false,
+        "action": "none",
+        "payloadSource": "none",
+        "guardOwner": "W151 completed runner result import guard",
+        "blockedReason": "completed_result_rejected_by_w151"
+      },
+      "pollHandoffStatus": {
+        "status": "runner_task_poll_handoff_check_runner_result_ready_or_pending",
+        "runnerTaskId": "task_w186_idb-w186-ariat-international-one-call-001",
+        "checkRunnerResultVisible": true,
+        "completedResultReadyForW151Import": false,
+        "adapterErrorStoppedSafely": false
+      },
+      "resultImportGuard": {
+        "completedResultPresent": true,
+        "completedResultAcceptedByW151": false,
+        "completedResultStatus": "completed_runner_result_required",
+        "generatedRecordOwner": "governed_runner_internal_build_engine",
+        "internalRunnerOwnerValid": true,
+        "handoffJsonRejected": true,
+        "malformedCompletedRejected": true,
+        "stateMutationAllowedBeforeOperatorImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": false,
+        "statePatchAvailableAfterOperatorImport": false,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisualAfterImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "pendingFinalNamesMutated": false,
+        "missingRunnerTaskFinalNamesMutated": false,
+        "adapterErrorFinalNamesMutated": false,
+        "malformedCompletedFinalNamesMutated": false,
+        "handoffJsonFinalNamesMutated": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w186_poll_handoff_to_import_cta",
+          "pollHandoffStatus": "runner_task_poll_handoff_check_runner_result_ready_or_pending",
+          "importCtaVisible": false,
+          "importCtaEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w186_w151_completed_result_gate",
+          "completedResultAcceptedByW151": false,
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "numericIdsAndSupportedUrlsRequired": true,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w186_rejection_guards",
+          "handoffJsonRejected": true,
+          "malformedCompletedRejected": true,
+          "pendingMissingAndErrorNonMutating": true,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W186 enables only the completed-result import CTA. Open-link visual testing waits until the operator imports W151-valid URLs."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilCompletedRunnerResultImport": true
+      }
+    },
+    "completed": {
+      "schema": "idb.completed-runner-result-import-cta-from-poll-handoff.v1",
+      "status": "completed_runner_result_import_cta_ready_from_poll_handoff",
+      "mode": "poll_handoff_to_w151_import_cta_no_state_mutation",
+      "importCtaContract": {
+        "source": "W185 runnerTaskId poll handoff",
+        "cta": "Import completed runner result",
+        "visibleOnlyWhenW151ValidCompletedResult": true,
+        "requiresNumericInternalIds": true,
+        "requiresSupportedNetSuiteUrls": true,
+        "requiresInternalRunnerOwnership": true,
+        "pendingResponsesNonMutating": true,
+        "missingRunnerTaskNonMutating": true,
+        "adapterErrorsNonMutating": true,
+        "malformedCompletedResultNonMutating": true,
+        "handoffJsonRejected": true,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "importCta": {
+        "id": "import_completed_runner_result",
+        "label": "Import completed runner result",
+        "visible": true,
+        "enabled": true,
+        "action": "w151_guarded_completed_runner_result_import",
+        "payloadSource": "w185_completed_poll_handoff",
+        "guardOwner": "W151 completed runner result import guard",
+        "blockedReason": ""
+      },
+      "pollHandoffStatus": {
+        "status": "runner_task_poll_handoff_completed_result_ready_for_w151_import",
+        "runnerTaskId": "task_w186_idb-w186-ariat-international-one-call-001",
+        "checkRunnerResultVisible": true,
+        "completedResultReadyForW151Import": true,
+        "adapterErrorStoppedSafely": false
+      },
+      "resultImportGuard": {
+        "completedResultPresent": true,
+        "completedResultAcceptedByW151": true,
+        "completedResultStatus": "completed_runner_result_accepted",
+        "generatedRecordOwner": "governed_runner_internal_build_engine",
+        "internalRunnerOwnerValid": true,
+        "handoffJsonRejected": true,
+        "malformedCompletedRejected": true,
+        "stateMutationAllowedBeforeOperatorImport": false,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "commitPreview": {
+        "commitAllowedAfterOperatorImport": true,
+        "statePatchAvailableAfterOperatorImport": true,
+        "openableAfterCommit": 9,
+        "supportedOpenLinksAfterCommit": 9,
+        "importedUrlsReadyForTargetedVisualAfterImport": true,
+        "activeOpenLinksBeforeImport": 0
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "pendingFinalNamesMutated": false,
+        "missingRunnerTaskFinalNamesMutated": false,
+        "adapterErrorFinalNamesMutated": false,
+        "malformedCompletedFinalNamesMutated": false,
+        "handoffJsonFinalNamesMutated": false,
+        "drawerWritesAttempted": false,
+        "drawerTransactionWritesAttempted": false,
+        "drawerCreatedRecords": false,
+        "activeOpenLinks": 0
+      },
+      "traceSamples": [
+        {
+          "event": "w186_poll_handoff_to_import_cta",
+          "pollHandoffStatus": "runner_task_poll_handoff_completed_result_ready_for_w151_import",
+          "importCtaVisible": true,
+          "importCtaEnabled": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w186_w151_completed_result_gate",
+          "completedResultAcceptedByW151": true,
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "numericIdsAndSupportedUrlsRequired": true,
+          "activeOpenLinksBeforeImport": 0
+        },
+        {
+          "event": "w186_rejection_guards",
+          "handoffJsonRejected": true,
+          "malformedCompletedRejected": true,
+          "pendingMissingAndErrorNonMutating": true,
+          "activeOpenLinks": 0
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlockedUntilCompletedResultImported": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W186 enables only the completed-result import CTA. Open-link visual testing waits until the operator imports W151-valid URLs."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilCompletedRunnerResultImport": true
+      }
+    }
+  },
+  "traceSamples": [
+    {
+      "event": "w186_poll_handoff_to_import_cta",
+      "pollHandoffStatus": "runner_task_poll_handoff_completed_result_ready_for_w151_import",
+      "importCtaVisible": true,
+      "importCtaEnabled": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w186_w151_completed_result_gate",
+      "completedResultAcceptedByW151": true,
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "numericIdsAndSupportedUrlsRequired": true,
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w186_rejection_guards",
+      "handoffJsonRejected": true,
+      "malformedCompletedRejected": true,
+      "pendingMissingAndErrorNonMutating": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w186_poll_handoff_to_import_cta",
+      "pollHandoffStatus": "runner_task_poll_handoff_check_runner_result_ready_or_pending",
+      "importCtaVisible": false,
+      "importCtaEnabled": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w186_w151_completed_result_gate",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "",
+      "numericIdsAndSupportedUrlsRequired": true,
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w186_rejection_guards",
+      "handoffJsonRejected": true,
+      "malformedCompletedRejected": true,
+      "pendingMissingAndErrorNonMutating": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w186_poll_handoff_to_import_cta",
+      "pollHandoffStatus": "runner_task_poll_handoff_stopped_adapter_error",
+      "importCtaVisible": false,
+      "importCtaEnabled": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w186_w151_completed_result_gate",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "",
+      "numericIdsAndSupportedUrlsRequired": true,
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w186_rejection_guards",
+      "handoffJsonRejected": true,
+      "malformedCompletedRejected": true,
+      "pendingMissingAndErrorNonMutating": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w186_poll_handoff_to_import_cta",
+      "pollHandoffStatus": "runner_task_poll_handoff_check_runner_result_ready_or_pending",
+      "importCtaVisible": false,
+      "importCtaEnabled": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w186_w151_completed_result_gate",
+      "completedResultAcceptedByW151": false,
+      "generatedRecordOwner": "governed_runner_internal_build_engine",
+      "numericIdsAndSupportedUrlsRequired": true,
+      "activeOpenLinksBeforeImport": 0
+    },
+    {
+      "event": "w186_rejection_guards",
+      "handoffJsonRejected": true,
+      "malformedCompletedRejected": true,
+      "pendingMissingAndErrorNonMutating": true,
+      "activeOpenLinks": 0
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlocked": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W186 enables the import CTA only. Targeted Open-link testing waits until completed runner result JSON is imported."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W187: Completed Runner Result Import Commit From Poll CTA",
+    "prompt": "Move through W187: Completed Runner Result Import Commit From Poll CTA. Use the W186 completed runner result import CTA to commit final generated names into IDB only after the operator chooses Import completed runner result and W151 accepts numeric internal ids, supported NetSuite URLs, and internal runner ownership. Keep pending, missing runnerTaskId, adapter-error, malformed completed result, and handoff JSON non-mutating. Do not create records from the drawer, do not invoke SuiteScript outside the approved server adapter path, and only after import prepare targeted Open-link visual testing. Output import commit contract, guarded harness, trace samples, W187 report, visual testing decision targeted-only after import, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w186_pending_non_mutating",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import waits for completed result\",\"visible\":false,\"enabled\":false,\"action\":\"none\",\"payloadSource\":\"none\",\"guardOwner\":\"W151 completed runner result import guard\",\"blockedReason\":\"runner_result_still_pending\"}"
+    },
+    {
+      "name": "w186_missing_runner_task_non_mutating",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import waits for completed result\",\"visible\":false,\"enabled\":false,\"action\":\"none\",\"payloadSource\":\"none\",\"guardOwner\":\"W151 completed runner result import guard\",\"blockedReason\":\"runner_task_id_missing\"}"
+    },
+    {
+      "name": "w186_adapter_error_non_mutating",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import waits for completed result\",\"visible\":false,\"enabled\":false,\"action\":\"none\",\"payloadSource\":\"none\",\"guardOwner\":\"W151 completed runner result import guard\",\"blockedReason\":\"adapter_error_requires_operator_evidence\"}"
+    },
+    {
+      "name": "w186_malformed_completed_rejected",
+      "pass": true,
+      "detail": "{\"completedResultPresent\":true,\"completedResultAcceptedByW151\":false,\"completedResultStatus\":\"completed_runner_result_required\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"handoffJsonRejected\":true,\"malformedCompletedRejected\":true,\"stateMutationAllowedBeforeOperatorImport\":false,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w186_handoff_json_rejected",
+      "pass": true,
+      "detail": "{\"completedResultPresent\":true,\"completedResultAcceptedByW151\":true,\"completedResultStatus\":\"completed_runner_result_accepted\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"handoffJsonRejected\":true,\"malformedCompletedRejected\":true,\"stateMutationAllowedBeforeOperatorImport\":false,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w186_completed_w151_valid_enables_cta_only",
+      "pass": true,
+      "detail": "{\"id\":\"import_completed_runner_result\",\"label\":\"Import completed runner result\",\"visible\":true,\"enabled\":true,\"action\":\"w151_guarded_completed_runner_result_import\",\"payloadSource\":\"w185_completed_poll_handoff\",\"guardOwner\":\"W151 completed runner result import guard\",\"blockedReason\":\"\"}"
+    },
+    {
+      "name": "w186_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"visualTestingBlockedUntilCompletedRunnerResultImport\":true}"
+    },
+    {
+      "name": "w186_visual_testing_blocked_until_import",
+      "pass": true,
+      "detail": "{\"visualTestingBlockedUntilCompletedResultImported\":true,\"targetedOpenLinkTestingReady\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"reason\":\"W186 enables only the completed-result import CTA. Open-link visual testing waits until the operator imports W151-valid URLs.\"}"
+    }
+  ]
+}

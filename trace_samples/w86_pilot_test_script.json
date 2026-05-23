@@ -1,0 +1,62 @@
+{
+  "schema": "idb.w86-consultant-to-operator-pilot-test-script.v1",
+  "status": "pilot_handoff_test_ready_no_submit",
+  "objective": "Run a realistic consultant-to-operator IDB-to-DCC handoff test without IDB invoking SuiteScript.",
+  "testData": {
+    "schema": "idb.w86-consultant-sales-request-test-data.v1",
+    "prospect": "Summit Trail Supply",
+    "website": "https://www.rei.com/",
+    "salesNotes": "Outdoor gear retailer expanding seasonal private-label assortment. Buyer needs confidence in style/color availability, replenishment timing, store/channel allocation, and customer promise before summer launch. Current spreadsheet process is slow and inventory availability differs by channel. Decision team wants a concise proof path, not a broad manufacturing demo.",
+    "scObjective": "Prepare a concise proof story showing how NetSuite can support seasonal assortment readiness, inventory availability, replenishment, allocation, and channel promise without forcing the prospect into manufacturing language.",
+    "knownCompetitor": "Current spreadsheets and disconnected inventory tools",
+    "decisionCriteria": "Clear path from customer/prospect context to item assortment readiness, allocation/replenishment, and Sales Order/customer promise impact.",
+    "bantMeddicc": {
+      "budget": "Budget not confirmed; discovery should quantify manual planning and inventory availability pain.",
+      "authority": "VP Operations plus merchandising lead likely influence decision.",
+      "need": "Need is seasonal assortment readiness and channel inventory promise.",
+      "timeline": "Wants directional fit within 30 days before deeper process demo.",
+      "metrics": "Reduce assortment planning effort and avoid missed customer promise during seasonal launch.",
+      "economicBuyer": "VP Operations / CFO not yet confirmed.",
+      "decisionProcess": "Initial SC proof, then stakeholder review.",
+      "decisionCriteria": "Fast evidence that NetSuite can connect item/variant readiness, replenishment, and customer promise.",
+      "paperProcess": "Unknown.",
+      "identifyPain": "Spreadsheet-driven inventory and channel promise disconnects.",
+      "champion": "Operations manager requested the proof."
+    },
+    "expectedConsultantConfirmation": {
+      "lane": "Apparel & Accessories or Dealer Hardgoods style/SKU path, depending on evidence displayed by IDB.",
+      "proofAnchor": "Style / SKU Matrix or equivalent DCC scenario pack",
+      "buildMode": "review_only_no_submit",
+      "caution": "Consultant must confirm scenario before export; weak website evidence should not silently override."
+    }
+  },
+  "consultantInstructions": [
+    "Open any NetSuite sandbox page with the IDB drawer installed.",
+    "Enter the test prospect, website, sales notes, SC objective, competitor, and decision criteria.",
+    "Review Plan and Review tabs; confirm the scenario only if the selected lane, proof anchor, naming hints, and DCC build mode make sense.",
+    "Export the DCC handoff packet from Review.",
+    "Export trace JSON after the handoff packet.",
+    "Do not attempt to submit to DCC from IDB."
+  ],
+  "operatorInstructions": [
+    "Open the exported DCC handoff packet.",
+    "Use the W85 sandbox manual smoke script to compare Suitelet form params, DCC-owned config, and runner preview params.",
+    "Open DCC Suitelet sandbox only for manual comparison; do not submit/queue from this pilot unless a later governed block explicitly authorizes it.",
+    "Record field parity, config readiness, runner preview clarity, and any ambiguity.",
+    "Score the rubric and attach required evidence."
+  ],
+  "stopConditions": [
+    "IDB tries to invoke SuiteScript.",
+    "IDB exposes a submit/queue DCC action.",
+    "Transaction writes are enabled from IDB.",
+    "Consultant cannot tell what must be confirmed before export.",
+    "Operator cannot map handoff params to DCC fields.",
+    "DCC object-generation ownership becomes ambiguous."
+  ],
+  "linkedW85SmokeScript": {
+    "schema": "idb.w85-dcc-sandbox-manual-handoff-smoke-script.v1",
+    "status": "manual_sandbox_parameter_smoke_ready_no_idb_submit",
+    "operatorMode": "manual_compare_only",
+    "stepCount": 7
+  }
+}

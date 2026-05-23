@@ -1,0 +1,119 @@
+{
+  "schema": "idb.w107-operator-preview-evidence-intake-trace.v1",
+  "decision": "PASS",
+  "pass": true,
+  "operatorApprovalEvidenceIntakeV1": {
+    "schema": "idb.w107-operator-preview-evidence-intake.v1",
+    "status": "operator_approved_preview_only",
+    "mode": "review_only_evidence_capture",
+    "canSubmit": false,
+    "canInvokeSuiteScriptFromIdb": false,
+    "fields": {
+      "operatorName": "Sandbox Operator",
+      "suiteletParamReview": "match",
+      "dccOwnedConfigReview": "match",
+      "runnerPreviewReview": "match",
+      "handoffPacketFilename": "idb-dcc-runner-handoff-packet-1778766076074.json",
+      "traceFilename": "intelligent-demo-builder-trace-1778766225474.json",
+      "notes": "Suitelet params, DCC config, and runner preview match the exported DCC handoff packet.",
+      "approvalStatus": "approved"
+    },
+    "requiredStatuses": [
+      "match",
+      "missing",
+      "unclear",
+      "not_reviewed"
+    ],
+    "approvalControls": {
+      "readyForApproval": true,
+      "approveAction": "Mark preview approved",
+      "rejectAction": "Reject preview",
+      "clearAction": "Clear operator evidence",
+      "resetRollbackBehavior": {
+        "noSubmit": "Do not submit from the drawer; return to Review, correct the handoff, and export again.",
+        "rejection": "If operator rejects the preview, clear approval evidence and keep future invocation blocked.",
+        "recovery": "Use handoff JSON, trace JSON, screenshots, and operator notes as the evidence set."
+      }
+    },
+    "previewBridgeStatus": "preview_bridge_ready_manual_only",
+    "traceCoverage": {
+      "browserStateOnly": true,
+      "traceExportIncludesEvidenceIntake": true,
+      "dccHandoffExportTraceIncludesEvidenceIntake": true
+    },
+    "noRegression": {
+      "noIdbWrites": true,
+      "noSuiteScriptInvocationFromIdb": true,
+      "noTransactionWrites": true,
+      "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+      "notesStoryOnly": true,
+      "consultantConfirmationRequired": true,
+      "w92StateAuthorityPreserved": true,
+      "dccOwnsObjectGeneration": true
+    }
+  },
+  "rejectedOperatorApprovalEvidenceIntakeV1": {
+    "schema": "idb.w107-operator-preview-evidence-intake.v1",
+    "status": "operator_rejected",
+    "mode": "review_only_evidence_capture",
+    "canSubmit": false,
+    "canInvokeSuiteScriptFromIdb": false,
+    "fields": {
+      "operatorName": "Sandbox Operator",
+      "suiteletParamReview": "match",
+      "dccOwnedConfigReview": "match",
+      "runnerPreviewReview": "missing",
+      "handoffPacketFilename": "idb-dcc-runner-handoff-packet-rejected.json",
+      "traceFilename": "intelligent-demo-builder-trace-rejected.json",
+      "notes": "Runner preview does not match the handoff packet scenario.",
+      "approvalStatus": "rejected"
+    },
+    "requiredStatuses": [
+      "match",
+      "missing",
+      "unclear",
+      "not_reviewed"
+    ],
+    "approvalControls": {
+      "readyForApproval": false,
+      "approveAction": "Mark preview approved",
+      "rejectAction": "Reject preview",
+      "clearAction": "Clear operator evidence",
+      "resetRollbackBehavior": {
+        "noSubmit": "Do not submit from the drawer; return to Review, correct the handoff, and export again.",
+        "rejection": "If operator rejects the preview, clear approval evidence and keep future invocation blocked.",
+        "recovery": "Use handoff JSON, trace JSON, screenshots, and operator notes as the evidence set."
+      }
+    },
+    "previewBridgeStatus": "preview_bridge_ready_manual_only",
+    "traceCoverage": {
+      "browserStateOnly": true,
+      "traceExportIncludesEvidenceIntake": true,
+      "dccHandoffExportTraceIncludesEvidenceIntake": true
+    },
+    "noRegression": {
+      "noIdbWrites": true,
+      "noSuiteScriptInvocationFromIdb": true,
+      "noTransactionWrites": true,
+      "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+      "notesStoryOnly": true,
+      "consultantConfirmationRequired": true,
+      "w92StateAuthorityPreserved": true,
+      "dccOwnsObjectGeneration": true
+    }
+  },
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "w92StateAuthorityPreserved": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W108: Operator Preview Retest Packet And Go/No-Go",
+    "prompt": "Move through W108: Operator Preview Retest Packet And Go/No-Go. Use W104-W107 to produce the exact hands-on operator preview test: file to upload, realistic sales request, DCC handoff export, trace export, manual Demo Command Center Suitelet preview steps, operator evidence fields to capture, screenshots, scoring rubric, stop/go criteria, and no-regression gates. Preserve no IDB writes, no SuiteScript invocation from IDB, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, notes story-only, consultant confirmation required, W92 state authority, W105/W106/W107 preview-only behavior, and DCC ownership of object generation. Output test packet, validator gates, W108 report, and best next Codex prompt."
+  }
+}

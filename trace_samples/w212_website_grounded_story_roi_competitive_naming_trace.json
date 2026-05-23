@@ -1,0 +1,29 @@
+{
+  "schema": "idb.w212-trace-samples.v1",
+  "samples": [
+    {
+      "event": "w212.website_controls_naming",
+      "customer": "Summit Outdoor Supply",
+      "modeKey": "dealer_hardgoods",
+      "names": {
+        "customerName": "Summit Outdoor Supply Customer Account",
+        "heroItemName": "Summit Outdoor Supply Channel Availability SKU",
+        "matrixProofItemName": "Summit Outdoor Supply Dealer Replenishment Flow",
+        "componentItemName": "Summit Outdoor Supply Allocation Support SKU",
+        "salesOrderName": "Summit Outdoor Supply Seasonal Availability Order",
+        "namingBasis": "dealer hardgoods website/category evidence plus non-manufacturing toggles"
+      }
+    },
+    {
+      "event": "w212.notes_control_story_roi_competitive",
+      "customer": "Ariat International",
+      "proofMove": "Use Customer, Sales Order, hero item, and matrix/proof item records to prove style/SKU availability.",
+      "roiHypothesis": "Protect launch and replenishment decisions by tying style, size, color, and channel availability to customer demand before claiming savings."
+    },
+    {
+      "event": "w212.w151_rejected_forbidden_names",
+      "status": "toggle_vocabulary_guardrail_failed",
+      "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Summit Outdoor Supply Finished Good, Matrix item / proof item: Summit Outdoor Supply Production Line, Component item 1: Summit Outdoor Supply Ingredient Blend. Mode contract blocked: Hero item: finished good is not compatible with dealer_hardgoods_replenishment., Matrix item / proof item: production line is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient blend is not compatible with dealer_hardgoods_replenishment.."
+    }
+  ]
+}

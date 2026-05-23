@@ -1,0 +1,159 @@
+{
+  "schema": "idb.w52-unknown-site-corpus-contract.v1",
+  "status": "complete_end_goal_intelligence_harness_ready",
+  "objective": "Build the production-shaped intelligence evaluation harness around real and synthetic unknown websites.",
+  "goal": "Prove IDB is becoming an intelligence product by testing human-labeled website identification, confidence calibration, false-confident-wrong limits, unsupported-claim blockers, and trace evidence coverage.",
+  "consumes": {
+    "websiteEvidenceSchema": "idb.website-evidence.v1",
+    "websiteClassifierSchema": "idb.website-classifier.v1",
+    "classifierTrace": "trace_samples/w51_website_classifier_trace_sample.json"
+  },
+  "evaluationPolicy": {
+    "correctOrHonestPassRateMinimum": 0.8,
+    "falseConfidentWrongRateMaximum": 0.05,
+    "unsupportedClaimsMaximum": 0,
+    "traceEvidenceCoverageMinimum": 0.95,
+    "confidenceStates": [
+      "recommended",
+      "needs_confirmation",
+      "insufficient_evidence"
+    ],
+    "correctOrHonestDefinition": [
+      "recommended with matching human-labeled lane and supported citations",
+      "needs_confirmation when human label allows multiple plausible lanes or marks ambiguous",
+      "insufficient_evidence when human label expects blocked thin unavailable or timeout behavior"
+    ],
+    "falseConfidentWrongDefinition": "classificationState is recommended and laneRecommendation does not match the human-labeled expected lane or accepted alternates",
+    "unsupportedClaimDefinition": "recommended lane/proof/product/demand output without a source URL citation or without allowed insufficient/confirmation state"
+  },
+  "humanLabeledCorpus": [
+    {
+      "id": "w52_real_product_brand_trek",
+      "sourceTraceCase": "w51_recommended_trek",
+      "siteKind": "real_product_brand",
+      "website": "https://trekbikes.com/",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "recommended",
+      "expectedLaneId": "dealer_hardgoods",
+      "acceptedAlternateLaneIds": [],
+      "expectedProofAnchorContains": "Bicycle",
+      "expectedProductSeed": "Bicycle SKU",
+      "expectedProductFamily": "Bicycle Dealer Hardgoods",
+      "expectedDemandMomentContains": "dealer inventory",
+      "evidenceRequirement": "at_least_two_source_url_citations",
+      "expectedResult": "correct"
+    },
+    {
+      "id": "w52_synthetic_ambiguous_industrial_apparel",
+      "sourceTraceCase": "w51_ambiguous_industrial_apparel",
+      "siteKind": "synthetic_ambiguous_multi_category",
+      "website": "https://ambiguous-example.invalid/",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "needs_confirmation",
+      "expectedLaneId": "apparel_accessories",
+      "acceptedAlternateLaneIds": [
+        "industrial_manufacturing"
+      ],
+      "expectedProofAnchorContains": "Style",
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "competing_candidates_with_source_url_citations",
+      "expectedResult": "honest_uncertainty"
+    },
+    {
+      "id": "w52_synthetic_blocked_site",
+      "sourceTraceCase": "w51_blocked_site",
+      "siteKind": "synthetic_blocked",
+      "website": "https://blocked-example.invalid/",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "acceptedAlternateLaneIds": [],
+      "expectedProofAnchorContains": "",
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "confirmation_prompt_no_lane_guess",
+      "expectedResult": "honest_insufficient_evidence"
+    },
+    {
+      "id": "w52_synthetic_thin_site",
+      "sourceTraceCase": "w51_thin_site",
+      "siteKind": "synthetic_weak_thin_website",
+      "website": "https://thin-example.invalid/",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "acceptedAlternateLaneIds": [],
+      "expectedProofAnchorContains": "",
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "confirmation_prompt_no_lane_guess",
+      "expectedResult": "honest_insufficient_evidence"
+    },
+    {
+      "id": "w52_synthetic_unavailable_site",
+      "sourceTraceCase": "w51_unavailable_site",
+      "siteKind": "synthetic_unavailable",
+      "website": "https://unavailable-example.invalid/",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "acceptedAlternateLaneIds": [],
+      "expectedProofAnchorContains": "",
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "confirmation_prompt_no_lane_guess",
+      "expectedResult": "honest_insufficient_evidence"
+    },
+    {
+      "id": "w52_synthetic_timeout_site",
+      "sourceTraceCase": "w51_timeout_site",
+      "siteKind": "synthetic_timeout",
+      "website": "https://timeout-example.invalid/",
+      "humanLabelerRole": "Pilot Evidence Lead",
+      "expectedClassificationState": "insufficient_evidence",
+      "expectedLaneId": "",
+      "acceptedAlternateLaneIds": [],
+      "expectedProofAnchorContains": "",
+      "expectedProductSeed": "",
+      "expectedProductFamily": "",
+      "expectedDemandMomentContains": "",
+      "evidenceRequirement": "confirmation_prompt_no_lane_guess",
+      "expectedResult": "honest_insufficient_evidence"
+    }
+  ],
+  "requiredSiteMix": [
+    "real_product_brand",
+    "synthetic_ambiguous_multi_category",
+    "synthetic_weak_thin_website",
+    "synthetic_blocked",
+    "synthetic_unavailable",
+    "synthetic_timeout"
+  ],
+  "scorecardOutputs": [
+    "correctOrHonestPassRate",
+    "falseConfidentWrongRate",
+    "unsupportedClaimCount",
+    "traceEvidenceCoverageScore",
+    "perCaseFindings"
+  ],
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "evaluationMustPreferHonestUncertaintyOverGuessing": true
+  },
+  "outputs": {
+    "contract": "data/w52_unknown_site_corpus_contract.json",
+    "evaluationTrace": "trace_samples/w52_end_goal_intelligence_evaluation_trace.json",
+    "report": "reports/w52_end_goal_intelligence_test_harness.md",
+    "harness": "tools/run_end_goal_intelligence_harness.js"
+  },
+  "nextBlock": "W53: Consultant Evidence UX"
+}

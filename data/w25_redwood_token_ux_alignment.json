@@ -1,0 +1,49 @@
+{
+  "schema": "idb.w25-redwood-token-ux-alignment.v1",
+  "status": "complete_create_still_disabled",
+  "generated": "2026-05-10",
+  "sourceDesignFile": "/path/to/downloads/DESIGN - Redwood.md",
+  "objective": "Apply the detailed Redwood design-token guidance to the Intelligent Demo Builder drawer UI without changing write behavior.",
+  "goal": "Move the drawer toward token-governed, accessible, compact enterprise UI so consultants get clearer live-demo guidance with less visual noise.",
+  "ownerAgents": [
+    "Consultant UX Director Agent",
+    "Redwood Token Steward Agent",
+    "Accessibility Sentinel Agent",
+    "Session State Engineer Agent",
+    "Validation And Evidence Agent"
+  ],
+  "redwoodGuidanceApplied": [
+    "semantic application token layer",
+    "explicit compact density scope",
+    "logical inline/block spacing in key shell surfaces",
+    "focus-visible treatment",
+    "reduced-motion guard",
+    "forced-colors guard",
+    "status colors retain text labels and chip shape"
+  ],
+  "implementedSurfaces": [
+    "drawer shell",
+    "rail button",
+    "header",
+    "cards",
+    "tabs",
+    "primary and secondary actions",
+    "inputs and textareas",
+    "story bar and guided step containers"
+  ],
+  "deferredForFutureTokenBuild": [
+    "validated Oracle-hosted reference token values",
+    "generated dist/css token artifacts",
+    "dark theme output",
+    "RTL screenshot smoke",
+    "pseudo-locale screenshot smoke",
+    "full raw-value lint across all legacy drawer CSS"
+  ],
+  "noRegression": {
+    "mainDrawerDirectWrites": false,
+    "mainSuiteletCreateEnabled": false,
+    "w24PilotBranchBehaviorChanged": false,
+    "noSalesOrderWrite": true,
+    "llmAdvisoryOnly": true
+  }
+}

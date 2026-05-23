@@ -1,0 +1,53 @@
+{
+  "schema": "idb.w61-evidence-extraction-upgrade.v1",
+  "status": "complete_extraction_upgrade_ready",
+  "objective": "Fix obvious real-site misses.",
+  "goal": "Add stronger apparel, footwear, workwear, industrial distribution, hardgoods, and life-sciences evidence so obvious sites stop depending on notes.",
+  "roles": [
+    {
+      "name": "Website Intelligence Agent",
+      "owns": "Terms, domain hints, and extraction evidence quality."
+    },
+    {
+      "name": "Classifier Calibration Agent",
+      "owns": "Confidence thresholds and ambiguity handling."
+    },
+    {
+      "name": "Pilot Evidence Lead",
+      "owns": "Known weak case labels for Ariat, Uline, McMaster, Home Depot, and Thermo Fisher."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "owns": "False-confident-wrong and no-notes-override tests."
+    }
+  ],
+  "upgrades": [
+    "Added Ariat as website-primary apparel/footwear/workwear evidence.",
+    "Expanded apparel classifier terms for boots, workwear, outdoor gear, retail, and ecommerce.",
+    "Added industrial distribution website-primary hints for Uline, McMaster, Fastenal, and Ferguson.",
+    "Added hardgoods website-primary hints for Home Depot, Milwaukee Tool, and DEWALT.",
+    "Added Thermo Fisher as life-sciences website-primary evidence.",
+    "Runtime websiteEvidenceV1 now feeds websiteSignalProfile before conversation notes."
+  ],
+  "knownWeakCases": [
+    "ariat.com",
+    "uline.com",
+    "mcmaster.com",
+    "homedepot.com",
+    "thermofisher.com"
+  ],
+  "noRegression": {
+    "falseConfidentWrongAllowed": false,
+    "notesCannotOwnIdentification": true,
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true
+  },
+  "outputs": {
+    "contract": "data/w61_evidence_extraction_upgrade.json",
+    "harness": "tools/run_website_runtime_integration_harness.js",
+    "trace": "trace_samples/w60_website_runtime_integration_trace.json",
+    "report": "reports/w61_evidence_extraction_upgrade.md"
+  },
+  "nextBlock": "W62: Consultant UX Compression V2"
+}

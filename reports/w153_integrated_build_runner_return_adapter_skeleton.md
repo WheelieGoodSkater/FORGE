@@ -1,0 +1,43 @@
+# W153 Integrated Build Runner Return Adapter Skeleton
+
+Decision: PASS_INTEGRATED_BUILD_RETURN_ADAPTER_SKELETON_READY__NO_VISUAL_TESTING
+
+## Adapter Skeleton Changes
+- Drawer client boundary prepares confirmed build request JSON, operator gate JSON, idempotency token, and adapter config.
+- Drawer client boundary does not call the adapter in W153.
+- Server adapter skeleton validates the integrated request and server config.
+- Server adapter skeleton returns false-flag no-submit or queued/pending fixture responses only.
+- Server adapter skeleton does not import N/task or N/record.
+
+## Dry-Run Smoke Harness
+- False flags: queueSubmitted=false, runnerTaskId=null, resultCapture=not_started_no_submit.
+- Queued fixture: queueSubmitted=true, runnerTaskId=fixture_w153_idb-build-ariat-international-apparel-accessories-apparelaccessories_001, resultCapture=pending_runner_completion.
+- Invalid request: valid=false, queueSubmitted=false.
+
+## Visual Testing Decision
+Blocked. W153 is a non-writing skeleton. It produces no completed runner result JSON and no actual record URLs to click.
+
+## Validator Gates
+- PASS w153_starts_from_w152_design_ready: PASS_INTEGRATED_BUILD_RETURN_DESIGN_READY__VISUAL_TESTING_BLOCKED
+- PASS w153_drawer_client_boundary_prepares_request_without_invocation: {"disabled":"blocked_before_server_adapter_call","ready":"ready_for_approved_server_adapter_call"}
+- PASS w153_confirmed_request_and_operator_gate_ready: {"schema":"idb.operator-queue-gate.v1","operatorOnly":true,"operator":{"name":"Sandbox Operator","reviewedAt":"2026-05-16T00:00:00.000Z"},"reviewDecision":"operator_approved_queue_submit","typeToConfirm":"QUEUE GOVERNED SANDBOX RUNNER","confirmedNoSubmit":false,"confirmedDrawerNoWrite":true,"confirmedSandboxAccount":true,"drawerInvocationTokenAccepted":false,"notes":"Operator approved W153 skeleton fixture path."}
+- PASS w153_server_skeleton_no_task_or_record_modules: /path/to/workspace/intelligent demo builder drawer/netsuite/idb_integrated_build_runner_return_adapter_w153_suitelet.js
+- PASS w153_false_flags_return_no_submit_no_links: {"schema":"idb.integrated-build-runner-adapter-result.v1","adapterVersion":"w153-integrated-build-runner-return-adapter-skeleton","status":"not_started_no_submit","queueSubmitted":false,"runnerTaskId":null,"resultCapture":{"schema":"idb.runner-result-capture.v1","status":"not_started_no_submit","runnerTaskId":null,"idempotencyToken":"idb-build-ariat-international-apparel-accessories-apparelaccessories","finalGeneratedNamesReady":false,"finalGeneratedNamesJson":null,"activeOpenLinks":0,"importPolicy":"drawer_must_wait_for_completed_runner_result_json_accepted_by_w151"},"finalGeneratedNamesJson":null,"activeOpenLinks":0,"createsRecords":false,"suiteScriptInvocationPerformed":false,"transactionWritesPerformed":false,"generatedRecordOwner":"governed_runner_internal_build_engine","serverGate":{"schema":"idb.w153-integrated-build-return-gate.v1","status":"blocked_no_submit","canReturnQueuedFixture":false,"gates":{"requestValid":true,"runtimeConfigValid":true,"createEnabled":false,"governedSandboxWriteEnabled":false,"queueSubmitEnabled":false,"sandboxAllowlistPassed":true,"fixtureQueuedResponseEnabled":false}},"runtimeConfig":{"schema":"idb.w153-integrated-build-runner-server-config.v1","accountIdPresent":true,"sandboxAccountAllowlistCount":1,"runnerScriptIdPresent":true,"runnerDeployIdPresent":true,"resultCaptureFolderIdPresent":true,"createEnabled":false,"governedSandboxWriteEnabled":false,"queueSubmitEnabled":false,"fixtureQueuedResponseEnabled":false},"validation":{"valid":true,"requestValid":true,"runtimeConfigValid":true,"errors":[]},"noSubmitRollback":{"supported":true,"performed":true,"rollbackByDisablingServerFlags":true},"visualTestingDecision":{"visualNetSuiteTestingRequiredNow":false,"visualTestingBlocked":true,"reason":"W153 returns skeleton false-flag or queued/pending fixture responses only; no completed runner result JSON exists yet."}}
+- PASS w153_flags_true_return_fixture_queued_pending_only: {"schema":"idb.integrated-build-runner-adapter-result.v1","adapterVersion":"w153-integrated-build-runner-return-adapter-skeleton","status":"queued_pending_fixture_only","queueSubmitted":true,"runnerTaskId":"fixture_w153_idb-build-ariat-international-apparel-accessories-apparelaccessories_001","resultCapture":{"schema":"idb.runner-result-capture.v1","status":"pending_runner_completion","runnerTaskId":"fixture_w153_idb-build-ariat-international-apparel-accessories-apparelaccessories_001","idempotencyToken":"idb-build-ariat-international-apparel-accessories-apparelaccessories","finalGeneratedNamesReady":false,"finalGeneratedNamesJson":null,"activeOpenLinks":0,"importPolicy":"drawer_must_wait_for_completed_runner_result_json_accepted_by_w151"},"finalGeneratedNamesJson":null,"activeOpenLinks":0,"createsRecords":false,"suiteScriptInvocationPerformed":false,"transactionWritesPerformed":false,"generatedRecordOwner":"governed_runner_internal_build_engine","serverGate":{"schema":"idb.w153-integrated-build-return-gate.v1","status":"fixture_queued_pending_allowed","canReturnQueuedFixture":true,"gates":{"requestValid":true,"runtimeConfigValid":true,"createEnabled":true,"governedSandboxWriteEnabled":true,"queueSubmitEnabled":true,"sandboxAllowlistPassed":true,"fixtureQueuedResponseEnabled":true}},"runtimeConfig":{"schema":"idb.w153-integrated-build-runner-server-config.v1","accountIdPresent":true,"sandboxAccountAllowlistCount":1,"runnerScriptIdPresent":true,"runnerDeployIdPresent":true,"resultCaptureFolderIdPresent":true,"createEnabled":true,"governedSandboxWriteEnabled":true,"queueSubmitEnabled":true,"fixtureQueuedResponseEnabled":true},"validation":{"valid":true,"requestValid":true,"runtimeConfigValid":true,"errors":[]},"noSubmitRollback":{"supported":true,"performed":false,"rollbackByDisablingServerFlags":true},"visualTestingDecision":{"visualNetSuiteTestingRequiredNow":false,"visualTestingBlocked":true,"reason":"W153 returns skeleton false-flag or queued/pending fixture responses only; no completed runner result JSON exists yet."}}
+- PASS w153_invalid_request_blocks_before_queue: {"valid":false,"requestValid":false,"runtimeConfigValid":true,"errors":["idempotencyToken is required.","confirmedBuildRequestJson schema must be idb.confirmed-build-request.v1.","confirmed build request must be ready for governed runner.","consultant confirmation is required.","state authority and handoff parity must be preserved.","requiredRecords must include customer, demoTransaction, heroItem, matrixProofItem, and componentItem.","operatorGate schema must be idb.operator-queue-gate.v1.","operator gate must approve queue submit.","typeToConfirm must be QUEUE GOVERNED SANDBOX RUNNER.","confirmedDrawerNoWrite must be true."]}
+- PASS w153_runtime_hooks_and_no_drawer_network_invocation: W153 client boundary hooks present without network call; later W189 W144 helper is separately gated
+- PASS w153_visual_testing_blocked_and_no_regression: {"noDrawerWrites":true,"noDrawerSuiteScriptInvocation":true,"noDrawerTransactionWrites":true,"consultantConfirmationRequired":true,"stateAuthorityAndHandoffParityPreserved":true,"idempotencyPreserved":true,"internalRunnerOwnership":true,"rollbackByDisablingServerFlags":true,"noActiveOpenLinksWithoutRealUrls":true}
+
+## No Regression
+- noDrawerWrites: true
+- noDrawerSuiteScriptInvocation: true
+- noDrawerTransactionWrites: true
+- consultantConfirmationRequired: true
+- stateAuthorityAndHandoffParityPreserved: true
+- idempotencyPreserved: true
+- internalRunnerOwnership: true
+- rollbackByDisablingServerFlags: true
+- noActiveOpenLinksWithoutRealUrls: true
+
+## Best Next Codex Prompt
+Move through W154: Integrated Build Button Status And Server Adapter Dry-Run Wiring. Use the W153 non-writing drawer client boundary and W153 NetSuite-side server adapter skeleton to wire Build status states in the drawer without enabling live invocation by default. Build should show blocked, ready-for-server-adapter, false-flag no-submit, queued/pending fixture, and completed-result-awaiting-W151-import states from controlled harness responses only. Do not enable real writes, do not invoke SuiteScript from the drawer, do not create transactions from the drawer, and do not request visual testing. Preserve consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, W151 completed-result import guard, and no active Open links without real URLs. Output Build status UX contract, dry-run wiring harness, trace samples, W154 report, visual testing decision blocked, and best next Codex prompt.

@@ -1,0 +1,118 @@
+{
+  "schema": "idb.w151-runner-result-import-guard-missing-result-ux.v1",
+  "status": "runner_result_import_guard_and_missing_result_ux_ready",
+  "decision": "PASS_IMPORT_GUARD_READY__VISUAL_TESTING_BLOCKED_UNTIL_INTEGRATED_BUILD_RETURN",
+  "importGuardContract": {
+    "schema": "idb.w151-runner-result-import-guard-contract.v1",
+    "rejects": [
+      "Build handoff packets",
+      "blank or non-object JSON",
+      "payloads missing required Customer, demo transaction, hero item, matrix/proof item, or component item",
+      "payloads without numeric internal ids",
+      "payloads with unsupported NetSuite URL paths",
+      "payloads where URL id does not match internal id",
+      "payloads without completed runner status"
+    ],
+    "acceptsOnly": "completed_governed_runner_result_json",
+    "drawerAuthority": "import_names_and_urls_only"
+  },
+  "missingResultUxCopy": {
+    "buildBlockedText": "Visual link testing is blocked until Build triggers the governed runner, result capture returns completed runner result JSON, and IDB imports real numeric ids plus supported NetSuite URLs.",
+    "traceImportText": "Paste completed governed runner result JSON only. Do not paste the Build handoff JSON.",
+    "importButtonLabel": "Import runner result"
+  },
+  "integratedBuildReturnReadinessContract": {
+    "schema": "idb.w151-integrated-build-return-readiness-contract.v1",
+    "status": "not_ready_handoff_only",
+    "visualTestingDecision": "blocked_until_integrated_build_runner_return_exists",
+    "nextIntegrationTarget": [
+      "Build action calls the approved server-side adapter only after consultant confirmation and server flags.",
+      "Server-side adapter owns SuiteScript invocation and runner queue submit.",
+      "IDB captures runnerTaskId without generating records itself.",
+      "IDB polls or imports result capture from the server-side path.",
+      "Completed runner result JSON imports final names, numeric ids, and supported URLs into IDB.",
+      "Only then do Open links and targeted visual testing become available."
+    ]
+  },
+  "guardEvidence": {
+    "handoffPacket": {
+      "valid": false,
+      "status": "handoff_packet_rejected",
+      "message": "This is the Build handoff JSON. It requests runner work but does not contain completed runner result records, ids, or URLs."
+    },
+    "completedRunnerResult": {
+      "valid": true,
+      "status": "completed_runner_result_accepted",
+      "finalNamesImported": true
+    },
+    "idMismatch": {
+      "valid": false,
+      "status": "completed_runner_result_required",
+      "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Blocked URLs: Customer: id_url_mismatch."
+    }
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "visualTestingBlocked": true,
+    "blockedUntil": "Build triggers governed runner execution and completed runner result returns to IDB.",
+    "broaderVisualTestingRequired": false
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawerUntilApprovedServerAdapter": true,
+    "noDrawerTransactionWrites": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnershipPreserved": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W152: Integrated Build Runner Return Adapter Design",
+    "prompt": "Move through W152: Integrated Build Runner Return Adapter Design. Use W151 to move past handoff-only testing and design the integrated Build path where the consultant-confirmed Build action calls the approved server-side adapter behind CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, QUEUE_SUBMIT_ENABLED, sandbox allowlist, operator approval, and idempotency. The server-side adapter, not the drawer, invokes/queues the governed runner, captures runnerTaskId, polls or retrieves completed result capture, and returns completed runner result JSON to IDB for final generated names import. Do not request visual testing yet. Preserve no drawer writes, no drawer SuiteScript invocation, no drawer transaction writes, consultant confirmation, state authority and handoff parity, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output integrated Build-return architecture, server adapter API contract, polling/result-capture state machine, smoke harness, trace samples, W152 report, visual testing decision blocked until implementation, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w151_uses_w150_no_links_evidence",
+      "pass": true,
+      "detail": "{\"traceFile\":\"/path/to/downloads/intelligent-demo-builder-trace-1778943212665.json\",\"handoffFile\":\"/path/to/downloads/idb-dcc-runner-handoff-packet-1778943212141.json\",\"visualObservation\":\"Build tab shows Build Handoff, Final generated names not imported yet, and no Open links. Run tab uses provisional Customer Record guidance only.\",\"finalNamingStatus\":\"not_imported\",\"finalNamingDisplayStatus\":\"Final generated names not imported yet\",\"finalNamesImported\":false,\"importedObjectCount\":0,\"navigationStatus\":\"using_provisional_preview_names\",\"linkAuthoritySummary\":{\"missing_url\":7},\"activeOpenLinkCount\":0,\"handoffStatus\":\"ready_for_dcc_suitelet_submission_review\",\"handoffExecutionMode\":\"review_only_no_submit\",\"handoffHasFinalNames\":false,\"rootCause\":\"The operator exported a build handoff packet, not a governed runner result-capture JSON. No runner-created record ids or URLs were imported into IDB.\"}"
+    },
+    {
+      "name": "w151_handoff_packet_rejected",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-result-import-guard.v1\",\"valid\":false,\"status\":\"handoff_packet_rejected\",\"message\":\"This is the Build handoff JSON. It requests runner work but does not contain completed runner result records, ids, or URLs.\"}"
+    },
+    {
+      "name": "w151_completed_runner_result_accepted",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.runner-result-import-guard.v1\",\"valid\":true,\"status\":\"completed_runner_result_accepted\",\"message\":\"Completed runner result JSON accepted. Final names and verified URLs can be imported.\",\"finalNaming\":{\"schema\":\"idb.dcc-final-naming-result.v1\",\"status\":\"dcc_final_names_imported\",\"displayStatus\":\"Final generated names imported\",\"importedAt\":\"2026-05-17T21:41:12.100Z\",\"source\":\"dcc_result_import_only\",\"finalNamesImported\":true,\"runStatus\":\"run_complete\",\"prospect\":\"Ariat International\",\"scenario\":\"Style / SKU Matrix\",\"familyKey\":\"apparel_accessories\",\"generated\":{\"extId\":\"\",\"agenda\":\"\"},\"displayObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalName\":\"\",\"id\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\",\"source\":\"dcc_final\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalName\":\"\",\"id\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\",\"source\":\"dcc_final\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalName\":\"\",\"id\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\",\"source\":\"dcc_final\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalName\":\"\",\"id\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\",\"source\":\"dcc_final\"}],\"componentItems\":[{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalName\":\"\",\"id\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\",\"source\":\"dcc_final\"}],\"locationPlanningRecords\":[],\"csvSalesOrderArtifacts\":[],\"warnings\":[],\"errors\":[],\"recoverableBlockers\":[],\"traceCoverage\":{\"includedInTraceExport\":true,\"secretsRedacted\":true,\"importedOnly\":true},\"noRegression\":{\"importOnly\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true,\"provisionalNamesCannotBeMarkedFinal\":true,\"w92StateAuthorityPreserved\":true,\"w110HandoffParityPreserved\":true}}}"
+    },
+    {
+      "name": "w151_empty_and_id_mismatch_blocked",
+      "pass": true,
+      "detail": "{\"empty\":{\"schema\":\"idb.runner-result-import-guard.v1\",\"valid\":false,\"status\":\"invalid_json_payload\",\"message\":\"Paste completed governed runner result JSON, not a blank value or non-object JSON.\"},\"mismatch\":{\"schema\":\"idb.runner-result-import-guard.v1\",\"valid\":false,\"status\":\"completed_runner_result_required\",\"message\":\"Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Blocked URLs: Customer: id_url_mismatch.\",\"finalNaming\":{\"schema\":\"idb.dcc-final-naming-result.v1\",\"status\":\"dcc_final_names_imported\",\"displayStatus\":\"Final generated names imported\",\"importedAt\":\"2026-05-17T21:41:12.100Z\",\"source\":\"dcc_result_import_only\",\"finalNamesImported\":true,\"runStatus\":\"run_complete\",\"prospect\":\"Ariat International\",\"scenario\":\"Style / SKU Matrix\",\"familyKey\":\"apparel_accessories\",\"generated\":{\"extId\":\"\",\"agenda\":\"\"},\"displayObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalName\":\"\",\"id\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=99999\",\"source\":\"dcc_final\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalName\":\"\",\"id\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\",\"source\":\"dcc_final\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalName\":\"\",\"id\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\",\"source\":\"dcc_final\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalName\":\"\",\"id\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\",\"source\":\"dcc_final\"}],\"componentItems\":[{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalName\":\"\",\"id\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\",\"source\":\"dcc_final\"}],\"locationPlanningRecords\":[],\"csvSalesOrderArtifacts\":[],\"warnings\":[],\"errors\":[],\"recoverableBlockers\":[],\"traceCoverage\":{\"includedInTraceExport\":true,\"secretsRedacted\":true,\"importedOnly\":true},\"noRegression\":{\"importOnly\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true,\"provisionalNamesCannotBeMarkedFinal\":true,\"w92StateAuthorityPreserved\":true,\"w110HandoffParityPreserved\":true}}}}"
+    },
+    {
+      "name": "w151_missing_result_ux_visible",
+      "pass": true,
+      "detail": "{\"buildBlockedText\":\"Visual link testing is blocked until Build triggers the governed runner, result capture returns completed runner result JSON, and IDB imports real numeric ids plus supported NetSuite URLs.\",\"traceImportText\":\"Paste completed governed runner result JSON only. Do not paste the Build handoff JSON.\",\"importButtonLabel\":\"Import runner result\"}"
+    },
+    {
+      "name": "w151_open_links_only_after_completed_runner_result_import",
+      "pass": true,
+      "detail": "{\"verified_openable\":5}"
+    },
+    {
+      "name": "w151_runtime_markers_present",
+      "pass": true,
+      "detail": "runtime guard and UX markers"
+    },
+    {
+      "name": "w151_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noSuiteScriptInvocationFromDrawerUntilApprovedServerAdapter\":true,\"noDrawerTransactionWrites\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityPreserved\":true,\"handoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnershipPreserved\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "idb.w139-idb-governed-runner-integration-trace.v1",
+  "decision": "PASS_CONTRACT_READY__IMPLEMENT_RUNNER_ADAPTER_NEXT",
+  "productAuthority": {
+    "primaryConsultantProduct": "Intelligent Demo Builder drawer",
+    "legacyDccSuiteletUi": "legacy_reference_only",
+    "recordCreationEngine": "governed_dcc_runner_internal_build_engine",
+    "normalOperatorPath": "IDB confirmed request -> governed runner adapter -> runner result JSON -> IDB import"
+  },
+  "dryRun": {
+    "createsRecords": false,
+    "openAnchorCount": 0,
+    "linkPendingCount": 0,
+    "missingUrlCount": 5
+  },
+  "governedSandboxResult": {
+    "createsRecords": true,
+    "openAnchorCount": 9,
+    "linkPendingCount": 0,
+    "verifiedOpenableCount": 5
+  },
+  "recordExistenceProvenInThisHarness": false,
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "targetedVisualNetSuiteTestingRequiredAfterGovernedWrite": true,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W139 is a contract and harness layer. Targeted visual NetSuite testing becomes required only after the governed runner adapter executes sandbox writes and returns actual record URLs."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W140: Runner Code Path Inventory And Adapter Extraction",
+    "prompt": "Move through W140: Runner Code Path Inventory And Adapter Extraction. Treat IDB as the primary consultant-facing product and the old DCC Suitelet UI as legacy. Inventory the governed DCC runner/internal build logic that currently creates or resolves Customer, demo transaction, hero item, matrix/proof item, and component item records. Extract the reusable runner adapter boundary that can consume the W139 confirmed IDB build request JSON and produce the W139 governed runner result JSON. Do not wire drawer writes, do not invoke SuiteScript from the drawer, and do not create transactions from the drawer. Preserve consultant confirmation, state authority and handoff parity, no-submit rollback, internal runner ownership, and no active Open links without real URLs. Output code-path inventory, adapter design, implementation steps, regression harness updates, W140 report, visual testing decision, and best next Codex prompt."
+  }
+}

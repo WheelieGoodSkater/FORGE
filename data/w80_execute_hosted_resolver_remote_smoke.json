@@ -1,0 +1,60 @@
+{
+  "schema": "idb.w80-execute-hosted-resolver-remote-smoke.v1",
+  "status": "blocked_remote_config_missing_local_hosted_smoke_passed",
+  "objective": "Execute hosted resolver smoke, using a real remote HTTPS endpoint when configured and a local production-mode endpoint to improve confidence before remote unlock.",
+  "localHostedEndpointSmoke": {
+    "executed": true,
+    "mode": "http_server",
+    "bindError": null,
+    "baseUrlRedacted": "http://127.0.0.1:<dynamic-port>",
+    "healthStatus": 200,
+    "approvedPreflightStatus": 204,
+    "blockedPreflightStatus": 403,
+    "missingTokenStatus": 401,
+    "cookieRejectedStatus": 400,
+    "writeRejectedStatus": 400,
+    "firstResolveStatus": 200,
+    "secondResolveStatus": 200,
+    "secondCacheHit": true,
+    "failureStatesNoGuess": true,
+    "noSecretTrace": true
+  },
+  "remoteSmoke": {
+    "executable": false,
+    "executed": false,
+    "observedEnvironment": {
+      "remoteSmokeOptIn": false,
+      "baseUrl": {
+        "configured": false,
+        "https": false,
+        "publicHost": false,
+        "redacted": ""
+      },
+      "tokenConfigured": false,
+      "allowedOriginConfigured": false,
+      "blockedOriginConfigured": false,
+      "rawSecretsIncluded": false
+    },
+    "error": null,
+    "result": null
+  },
+  "pilotDecision": {
+    "decision": "no_go_remote_config_missing",
+    "hostedResolverPilotEnabled": false,
+    "consultantSmokeEligible": false,
+    "reason": "Local hosted endpoint smoke passed, but no real HTTPS remote endpoint smoke executed."
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "hostedResolverPilotEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W80R: Provision Real HTTPS Endpoint And Rerun Remote Smoke",
+    "prompt": "Move through W80R: Provision Real HTTPS Endpoint And Rerun Remote Smoke. Deploy or identify the real HTTPS staging websiteResolverServiceV1 endpoint using the W79A deployment package, set IDB_REMOTE_RESOLVER_BASE_URL, IDB_REMOTE_RESOLVER_TOKEN, IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN, IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN, and IDB_REMOTE_RESOLVER_SMOKE=1 in a protected shell, then rerun W80. Do not store secrets in repo files, traces, reports, screenshots, or chat. Keep hosted consultant pilot disabled until remoteSmokeExecuted=true. Output remote execution result, exact no-go remediation if blocked, W80R report, validator gates, and best next Codex prompt."
+  }
+}

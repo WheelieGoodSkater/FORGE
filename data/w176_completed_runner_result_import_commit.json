@@ -1,0 +1,1023 @@
+{
+  "schema": "idb.w176-completed-runner-result-import-commit.v1",
+  "status": "completed_runner_result_import_commit_ready",
+  "decision": "PASS_COMPLETED_RUNNER_RESULT_IMPORT_COMMIT_READY__BUILD_RUN_URLS_READY__VISUAL_TESTING_BLOCKED",
+  "generatedAt": "2026-05-17T21:41:16.196Z",
+  "importCommitContract": {
+    "importOwner": "W151 completed runner result import guard",
+    "commitTarget": "state.dccFinalNamingResult",
+    "commitMode": "drawer_local_result_import_only_no_record_creation",
+    "recordsCreatedByDrawer": false,
+    "suiteScriptInvokedByDrawer": false,
+    "openLinksRequireImportedNumericIdsAndSupportedUrls": true
+  },
+  "guardedHarness": {
+    "startsFromW175": true,
+    "commitHookReady": true,
+    "completedCommitAllowed": true,
+    "pendingDoesNotMutate": true,
+    "adapterErrorDoesNotMutate": true,
+    "buildRunUseImportedNames": true,
+    "verifiedOpenLinksReady": true,
+    "noActiveOpenLinksBeforeImport": true,
+    "traceSamplesReady": true
+  },
+  "samples": {
+    "commit": {
+      "schema": "idb.completed-runner-result-import-commit-build-return-surface.v1",
+      "status": "completed_runner_result_import_committed",
+      "commitMode": "drawer_local_result_import_only_no_record_creation",
+      "commitAllowed": true,
+      "commitTarget": "state.dccFinalNamingResult",
+      "statePatch": {
+        "dccFinalNamingResult": {
+          "schema": "idb.dcc-final-naming-result.v1",
+          "status": "dcc_final_names_imported",
+          "displayStatus": "Final generated names imported",
+          "importedAt": "2026-05-17T21:41:16.193Z",
+          "source": "dcc_result_import_only",
+          "finalNamesImported": true,
+          "runStatus": "completed",
+          "prospect": "Ariat International Outdoor Retail Account",
+          "scenario": "Style / SKU Matrix",
+          "familyKey": "apparel_accessories",
+          "generated": {
+            "extId": "",
+            "agenda": ""
+          },
+          "displayObjects": [
+            {
+              "role": "customer",
+              "label": "Customer",
+              "name": "Ariat International Outdoor Retail Account",
+              "internalName": "",
+              "id": "501234",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234",
+              "source": "dcc_final"
+            },
+            {
+              "role": "sales_order",
+              "label": "Sales Order / demo transaction",
+              "name": "Ariat Seasonal Footwear Availability Demo Order",
+              "internalName": "",
+              "id": "601234",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234",
+              "source": "dcc_final"
+            },
+            {
+              "role": "hero_item",
+              "label": "Hero item",
+              "name": "Ariat Terrain H2O Work Boot Hero Item",
+              "internalName": "",
+              "id": "701234",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234",
+              "source": "dcc_final"
+            },
+            {
+              "role": "matrix_or_proof_item",
+              "label": "Matrix item / proof item",
+              "name": "Ariat Core Boot Size Color Matrix",
+              "internalName": "",
+              "id": "701235",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235",
+              "source": "dcc_final"
+            }
+          ],
+          "componentItems": [
+            {
+              "role": "component_item",
+              "label": "Component item 1",
+              "name": "Ariat Brown Leather Upper Component",
+              "internalName": "",
+              "id": "701236",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236",
+              "source": "dcc_final"
+            }
+          ],
+          "locationPlanningRecords": [],
+          "csvSalesOrderArtifacts": [],
+          "warnings": [],
+          "errors": [],
+          "recoverableBlockers": [],
+          "traceCoverage": {
+            "includedInTraceExport": true,
+            "secretsRedacted": true,
+            "importedOnly": true
+          },
+          "noRegression": {
+            "importOnly": true,
+            "noIdbWrites": true,
+            "noSuiteScriptInvocationFromIdb": true,
+            "noTransactionWritesFromIdb": true,
+            "dccOwnsObjectGeneration": true,
+            "provisionalNamesCannotBeMarkedFinal": true,
+            "w92StateAuthorityPreserved": true,
+            "w110HandoffParityPreserved": true
+          }
+        }
+      },
+      "importCommitContract": {
+        "requiresW175ImportReady": true,
+        "requiresW151AcceptedCompletedResult": true,
+        "requiresInternalRunnerOwner": true,
+        "pendingAndAdapterErrorDoNotMutate": true,
+        "drawerCreatesRecords": false,
+        "drawerInvokesSuiteScript": false
+      },
+      "importGuards": {
+        "completedResultStatus": "completed_runner_result_accepted",
+        "completedResultAccepted": true,
+        "generatedRecordOwner": "governed_runner_internal_build_engine",
+        "internalRunnerOwnerValid": true,
+        "w175ImportReady": true,
+        "pendingImportReady": false,
+        "adapterErrorImportReady": false
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "{\"schema\":\"idb.dcc-final-naming-result.v1\",\"status\":\"dcc_final_names_imported\",\"displayStatus\":\"Final generated names imported\",\"importedAt\":\"2026-05-17T21:41:16.193Z\",\"source\":\"dcc_result_import_only\",\"finalNamesImported\":true,\"runStatus\":\"completed\",\"prospect\":\"Ariat International Outdoor Retail Account\",\"scenario\":\"Style / SKU Matrix\",\"familyKey\":\"apparel_accessories\",\"generated\":{\"extId\":\"\",\"agenda\":\"\"},\"displayObjects\":[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalName\":\"\",\"id\":\"501234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234\",\"source\":\"dcc_final\"},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalName\":\"\",\"id\":\"601234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234\",\"source\":\"dcc_final\"},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalName\":\"\",\"id\":\"701234\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234\",\"source\":\"dcc_final\"},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalName\":\"\",\"id\":\"701235\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235\",\"source\":\"dcc_final\"}],\"componentItems\":[{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalName\":\"\",\"id\":\"701236\",\"url\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236\",\"source\":\"dcc_final\"}],\"locationPlanningRecords\":[],\"csvSalesOrderArtifacts\":[],\"warnings\":[],\"errors\":[],\"recoverableBlockers\":[],\"traceCoverage\":{\"includedInTraceExport\":true,\"secretsRedacted\":true,\"importedOnly\":true},\"noRegression\":{\"importOnly\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true,\"provisionalNamesCannotBeMarkedFinal\":true,\"w92StateAuthorityPreserved\":true,\"w110HandoffParityPreserved\":true}}",
+        "pendingFinalNamesMutated": false,
+        "adapterErrorFinalNamesMutated": false,
+        "completedFinalNamesMutatedOnlyAfterW151": true,
+        "writesAttemptedFromDrawer": false
+      },
+      "linkAuthority": {
+        "beforeImportSummary": {
+          "missing_url": 7
+        },
+        "afterImportSummary": {
+          "verified_openable": 5
+        },
+        "activeOpenLinksBeforeImport": 0,
+        "openableAfterCommit": 9,
+        "supportedOpenLinksAfterCommit": 9,
+        "importedUrlsReadyForTargetedVisual": true,
+        "noActiveOpenLinksWithoutRealUrls": true
+      },
+      "buildSurface": {
+        "status": "build_return_imported_final_names",
+        "finalNamesImported": true,
+        "openableRecordCount": 9,
+        "customer": "Ariat International Outdoor Retail Account",
+        "demoTransaction": "Ariat Seasonal Footwear Availability Demo Order",
+        "heroItem": "Ariat Terrain H2O Work Boot Hero Item",
+        "matrixProofItem": "Ariat Core Boot Size Color Matrix"
+      },
+      "runSurface": {
+        "status": "run_surface_uses_imported_final_names",
+        "runCanUseImportedFinalNames": true,
+        "scriptPivotObjectCount": 4,
+        "openableScriptPivotCount": 4
+      },
+      "navigationAfterCommit": {
+        "status": "using_dcc_final_names",
+        "reviewObjects": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Ariat International Outdoor Retail Account",
+            "internalName": "",
+            "id": "501234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Ariat Seasonal Footwear Availability Demo Order",
+            "internalName": "",
+            "id": "601234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Ariat Terrain H2O Work Boot Hero Item",
+            "internalName": "",
+            "id": "701234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Ariat Core Boot Size Color Matrix",
+            "internalName": "",
+            "id": "701235",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Ariat Brown Leather Upper Component",
+            "internalName": "",
+            "id": "701236",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+          }
+        ],
+        "scriptPivotObjects": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Ariat International Outdoor Retail Account",
+            "internalName": "",
+            "id": "501234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "Ariat Seasonal Footwear Availability Demo Order",
+            "internalName": "",
+            "id": "601234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Ariat Terrain H2O Work Boot Hero Item",
+            "internalName": "",
+            "id": "701234",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Ariat Core Boot Size Color Matrix",
+            "internalName": "",
+            "id": "701235",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+          }
+        ],
+        "runCanUseImportedFinalNames": true
+      },
+      "rollbackPlan": {
+        "drawerRollback": "clear_state_dccFinalNamingResult_only",
+        "serverRollback": "disable approved server adapter flags",
+        "netSuiteRecordRollbackFromDrawer": "none"
+      },
+      "traceSamples": [
+        {
+          "event": "w176_import_commit_gate",
+          "commitAllowed": true,
+          "completedResultAcceptedByW151": true,
+          "w175ImportReady": true,
+          "activeOpenLinksBeforeImport": 0,
+          "mutatesFinalGeneratedNames": true
+        },
+        {
+          "event": "w176_pending_and_adapter_error_no_mutation",
+          "pendingImportReady": false,
+          "adapterErrorRequiresOperatorEvidence": true,
+          "mutatesFinalGeneratedNames": false,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w176_build_run_return_surface",
+          "buildStatus": "build_return_imported_final_names",
+          "runStatus": "run_surface_uses_imported_final_names",
+          "openableAfterCommit": 9,
+          "supportedOpenLinksAfterCommit": 9,
+          "importedUrlsReadyForTargetedVisual": true
+        }
+      ],
+      "visualTestingBlocked": true,
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilImportedUrlsReady": true
+      }
+    },
+    "pendingNoCommit": {
+      "schema": "idb.completed-runner-result-import-commit-build-return-surface.v1",
+      "status": "completed_runner_result_import_commit_blocked",
+      "commitMode": "drawer_local_result_import_only_no_record_creation",
+      "commitAllowed": false,
+      "commitTarget": "state.dccFinalNamingResult",
+      "statePatch": {},
+      "importCommitContract": {
+        "requiresW175ImportReady": true,
+        "requiresW151AcceptedCompletedResult": true,
+        "requiresInternalRunnerOwner": true,
+        "pendingAndAdapterErrorDoNotMutate": true,
+        "drawerCreatesRecords": false,
+        "drawerInvokesSuiteScript": false
+      },
+      "importGuards": {
+        "completedResultStatus": "invalid_json_payload",
+        "completedResultAccepted": false,
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "w175ImportReady": false,
+        "pendingImportReady": false,
+        "adapterErrorImportReady": false
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "pendingFinalNamesMutated": false,
+        "adapterErrorFinalNamesMutated": false,
+        "completedFinalNamesMutatedOnlyAfterW151": false,
+        "writesAttemptedFromDrawer": false
+      },
+      "linkAuthority": {
+        "beforeImportSummary": {
+          "missing_url": 7
+        },
+        "afterImportSummary": {
+          "missing_url": 7
+        },
+        "activeOpenLinksBeforeImport": 0,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisual": false,
+        "noActiveOpenLinksWithoutRealUrls": true
+      },
+      "buildSurface": {
+        "status": "build_return_not_imported",
+        "finalNamesImported": false,
+        "openableRecordCount": 0,
+        "customer": "Ariat International",
+        "demoTransaction": "",
+        "heroItem": "",
+        "matrixProofItem": ""
+      },
+      "runSurface": {
+        "status": "run_surface_pending_import",
+        "runCanUseImportedFinalNames": false,
+        "scriptPivotObjectCount": 4,
+        "openableScriptPivotCount": 0
+      },
+      "navigationAfterCommit": {
+        "status": "using_provisional_preview_names",
+        "reviewObjects": [
+          {
+            "role": "customer",
+            "label": "Customer Record",
+            "name": "Ariat International",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "transaction",
+            "label": "Sales Order View",
+            "name": "Ariat International - style, size, and channel availability Demo Order",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "proof anchor",
+            "label": "Style / SKU Matrix",
+            "name": "Ariat International Core Boot and Apparel Style Matrix",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "supporting proof",
+            "label": "Size / Color Variants",
+            "name": "Ariat International Core Boot and Apparel Style Matrix Variants",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "supporting proof",
+            "label": "Allocation / Replenishment",
+            "name": "Ariat International Apparel and Footwear Style Allocation Plan",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "supporting proof",
+            "label": "Channel / Location Availability",
+            "name": "Ariat International Apparel and Footwear Style Channel Availability",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          }
+        ],
+        "scriptPivotObjects": [
+          {
+            "role": "customer",
+            "label": "Customer Record",
+            "name": "Ariat International",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "transaction",
+            "label": "Sales Order View",
+            "name": "Ariat International - style, size, and channel availability Demo Order",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "proof anchor",
+            "label": "Style / SKU Matrix",
+            "name": "Ariat International Core Boot and Apparel Style Matrix",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "supporting proof",
+            "label": "Size / Color Variants",
+            "name": "Ariat International Core Boot and Apparel Style Matrix Variants",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          }
+        ],
+        "runCanUseImportedFinalNames": false
+      },
+      "rollbackPlan": {
+        "drawerRollback": "clear_state_dccFinalNamingResult_only",
+        "serverRollback": "disable approved server adapter flags",
+        "netSuiteRecordRollbackFromDrawer": "none"
+      },
+      "traceSamples": [
+        {
+          "event": "w176_import_commit_gate",
+          "commitAllowed": false,
+          "completedResultAcceptedByW151": false,
+          "w175ImportReady": false,
+          "activeOpenLinksBeforeImport": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w176_pending_and_adapter_error_no_mutation",
+          "pendingImportReady": false,
+          "adapterErrorRequiresOperatorEvidence": true,
+          "mutatesFinalGeneratedNames": false,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w176_build_run_return_surface",
+          "buildStatus": "build_return_not_imported",
+          "runStatus": "run_surface_pending_import",
+          "openableAfterCommit": 0,
+          "supportedOpenLinksAfterCommit": 0,
+          "importedUrlsReadyForTargetedVisual": false
+        }
+      ],
+      "visualTestingBlocked": true,
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": false,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilImportedUrlsReady": true
+      }
+    },
+    "adapterErrorNoCommit": {
+      "schema": "idb.completed-runner-result-import-commit-build-return-surface.v1",
+      "status": "completed_runner_result_import_commit_blocked",
+      "commitMode": "drawer_local_result_import_only_no_record_creation",
+      "commitAllowed": false,
+      "commitTarget": "state.dccFinalNamingResult",
+      "statePatch": {},
+      "importCommitContract": {
+        "requiresW175ImportReady": true,
+        "requiresW151AcceptedCompletedResult": true,
+        "requiresInternalRunnerOwner": true,
+        "pendingAndAdapterErrorDoNotMutate": true,
+        "drawerCreatesRecords": false,
+        "drawerInvokesSuiteScript": false
+      },
+      "importGuards": {
+        "completedResultStatus": "invalid_json_payload",
+        "completedResultAccepted": false,
+        "generatedRecordOwner": "",
+        "internalRunnerOwnerValid": false,
+        "w175ImportReady": false,
+        "pendingImportReady": false,
+        "adapterErrorImportReady": false
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "pendingFinalNamesMutated": false,
+        "adapterErrorFinalNamesMutated": false,
+        "completedFinalNamesMutatedOnlyAfterW151": false,
+        "writesAttemptedFromDrawer": false
+      },
+      "linkAuthority": {
+        "beforeImportSummary": {
+          "missing_url": 7
+        },
+        "afterImportSummary": {
+          "missing_url": 7
+        },
+        "activeOpenLinksBeforeImport": 0,
+        "openableAfterCommit": 0,
+        "supportedOpenLinksAfterCommit": 0,
+        "importedUrlsReadyForTargetedVisual": false,
+        "noActiveOpenLinksWithoutRealUrls": true
+      },
+      "buildSurface": {
+        "status": "build_return_not_imported",
+        "finalNamesImported": false,
+        "openableRecordCount": 0,
+        "customer": "Ariat International",
+        "demoTransaction": "",
+        "heroItem": "",
+        "matrixProofItem": ""
+      },
+      "runSurface": {
+        "status": "run_surface_pending_import",
+        "runCanUseImportedFinalNames": false,
+        "scriptPivotObjectCount": 4,
+        "openableScriptPivotCount": 0
+      },
+      "navigationAfterCommit": {
+        "status": "using_provisional_preview_names",
+        "reviewObjects": [
+          {
+            "role": "customer",
+            "label": "Customer Record",
+            "name": "Ariat International",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "transaction",
+            "label": "Sales Order View",
+            "name": "Ariat International - style, size, and channel availability Demo Order",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "proof anchor",
+            "label": "Style / SKU Matrix",
+            "name": "Ariat International Core Boot and Apparel Style Matrix",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "supporting proof",
+            "label": "Size / Color Variants",
+            "name": "Ariat International Core Boot and Apparel Style Matrix Variants",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "supporting proof",
+            "label": "Allocation / Replenishment",
+            "name": "Ariat International Apparel and Footwear Style Allocation Plan",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "supporting proof",
+            "label": "Channel / Location Availability",
+            "name": "Ariat International Apparel and Footwear Style Channel Availability",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          }
+        ],
+        "scriptPivotObjects": [
+          {
+            "role": "customer",
+            "label": "Customer Record",
+            "name": "Ariat International",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "transaction",
+            "label": "Sales Order View",
+            "name": "Ariat International - style, size, and channel availability Demo Order",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "proof anchor",
+            "label": "Style / SKU Matrix",
+            "name": "Ariat International Core Boot and Apparel Style Matrix",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          },
+          {
+            "role": "supporting proof",
+            "label": "Size / Color Variants",
+            "name": "Ariat International Core Boot and Apparel Style Matrix Variants",
+            "id": "",
+            "url": "",
+            "source": "idb_provisional_preview",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "missing_url",
+              "openable": false,
+              "displayLabel": "Needs real URL",
+              "reason": "The build result did not return a NetSuite record URL.",
+              "url": ""
+            },
+            "openableUrl": ""
+          }
+        ],
+        "runCanUseImportedFinalNames": false
+      },
+      "rollbackPlan": {
+        "drawerRollback": "clear_state_dccFinalNamingResult_only",
+        "serverRollback": "disable approved server adapter flags",
+        "netSuiteRecordRollbackFromDrawer": "none"
+      },
+      "traceSamples": [
+        {
+          "event": "w176_import_commit_gate",
+          "commitAllowed": false,
+          "completedResultAcceptedByW151": false,
+          "w175ImportReady": false,
+          "activeOpenLinksBeforeImport": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w176_pending_and_adapter_error_no_mutation",
+          "pendingImportReady": false,
+          "adapterErrorRequiresOperatorEvidence": true,
+          "mutatesFinalGeneratedNames": false,
+          "activeOpenLinks": 0
+        },
+        {
+          "event": "w176_build_run_return_surface",
+          "buildStatus": "build_return_not_imported",
+          "runStatus": "run_surface_pending_import",
+          "openableAfterCommit": 0,
+          "supportedOpenLinksAfterCommit": 0,
+          "importedUrlsReadyForTargetedVisual": false
+        }
+      ],
+      "visualTestingBlocked": true,
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": false,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilImportedUrlsReady": true
+      }
+    }
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "visualTestingDecision": {
+    "visualTestingBlocked": true,
+    "importedUrlsReadyForTargetedVisual": true,
+    "visualNetSuiteTestingRequiredNow": false,
+    "reason": "W176 proves imported URL readiness in harness but does not request visual testing. Targeted Open-link visual verification can start only after this imported URL state is installed in IDB."
+  },
+  "results": [
+    {
+      "name": "w176_starts_from_w175_import_ready_gate",
+      "pass": true,
+      "detail": "PASS_GOVERNED_RUNNER_RESULT_POLL_IMPORT_GATE_READY__COMPLETED_RESULT_IMPORT_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w176_commit_hook_ready",
+      "pass": true,
+      "detail": "completedRunnerResultImportCommitBuildReturnSurfaceV1"
+    },
+    {
+      "name": "w176_completed_commit_allowed_after_w151",
+      "pass": true,
+      "detail": "{\"completedResultStatus\":\"completed_runner_result_accepted\",\"completedResultAccepted\":true,\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"w175ImportReady\":true,\"pendingImportReady\":false,\"adapterErrorImportReady\":false}"
+    },
+    {
+      "name": "w176_pending_and_adapter_error_do_not_mutate",
+      "pass": true,
+      "detail": "{\"pending\":\"completed_runner_result_import_commit_blocked\",\"adapterError\":\"completed_runner_result_import_commit_blocked\"}"
+    },
+    {
+      "name": "w176_build_run_use_imported_names",
+      "pass": true,
+      "detail": "{\"build\":{\"status\":\"build_return_imported_final_names\",\"finalNamesImported\":true,\"openableRecordCount\":9,\"customer\":\"Ariat International Outdoor Retail Account\",\"demoTransaction\":\"Ariat Seasonal Footwear Availability Demo Order\",\"heroItem\":\"Ariat Terrain H2O Work Boot Hero Item\",\"matrixProofItem\":\"Ariat Core Boot Size Color Matrix\"},\"run\":{\"status\":\"run_surface_uses_imported_final_names\",\"runCanUseImportedFinalNames\":true,\"scriptPivotObjectCount\":4,\"openableScriptPivotCount\":4}}"
+    },
+    {
+      "name": "w176_verified_open_links_ready",
+      "pass": true,
+      "detail": "{\"beforeImportSummary\":{\"missing_url\":7},\"afterImportSummary\":{\"verified_openable\":5},\"activeOpenLinksBeforeImport\":0,\"openableAfterCommit\":9,\"supportedOpenLinksAfterCommit\":9,\"importedUrlsReadyForTargetedVisual\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w176_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w176_import_commit_gate\",\"commitAllowed\":true,\"completedResultAcceptedByW151\":true,\"w175ImportReady\":true,\"activeOpenLinksBeforeImport\":0,\"mutatesFinalGeneratedNames\":true},{\"event\":\"w176_pending_and_adapter_error_no_mutation\",\"pendingImportReady\":false,\"adapterErrorRequiresOperatorEvidence\":true,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"event\":\"w176_build_run_return_surface\",\"buildStatus\":\"build_return_imported_final_names\",\"runStatus\":\"run_surface_uses_imported_final_names\",\"openableAfterCommit\":9,\"supportedOpenLinksAfterCommit\":9,\"importedUrlsReadyForTargetedVisual\":true}]"
+    },
+    {
+      "name": "w176_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w176_visual_testing_blocked_until_imported_urls_ready",
+      "pass": true,
+      "detail": "W176 proves imported URL readiness in harness but does not request visual testing. Targeted Open-link visual verification can start only after this imported URL state is installed in IDB."
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W177: Imported URL Targeted Open-Link Verification Packet",
+    "prompt": "Move through W177: Imported URL Targeted Open-Link Verification Packet. Use the W176 completed runner result import commit to prepare the narrow targeted Open-link verification packet for Customer, demo transaction, hero item, matrix/proof item, and component item. Do not create records from the drawer, do not invoke SuiteScript from the drawer, and do not broaden visual testing. Prove the imported Build/Run names and verified NetSuite URLs are ready for targeted operator verification, preserve pending/error no-mutation behavior, and keep broader visual testing blocked. Output targeted verification packet, exact operator steps, trace samples, W177 report, visual testing decision targeted-only, and best next Codex prompt."
+  }
+}

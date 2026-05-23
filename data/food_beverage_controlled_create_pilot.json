@@ -1,0 +1,99 @@
+{
+  "schema": "intelligent-demo-builder-controlled-create-pilot.v1",
+  "generated": "2026-05-09",
+  "status": "pilot_plan_only_create_disabled",
+  "pilotLaneId": "food_beverage",
+  "pilotLaneName": "Food / Beverage CPG Manufacturing",
+  "writePathType": "suitescript_direct_write",
+  "createEnabledForPilot": false,
+  "pilotCustomerPattern": {
+    "customer": "Georgetown Foods or Liquid Death",
+    "website": "required",
+    "conversationNotes": "must include ingredient readiness, packaging timing, replenishment, promotion risk, finished-good availability, or line continuity"
+  },
+  "requiredRecords": [
+    {
+      "sequence": 1,
+      "label": "Customer Record",
+      "role": "customer",
+      "recordType": "customer",
+      "operation": "create_or_update_customer"
+    },
+    {
+      "sequence": 2,
+      "label": "Sales Order View",
+      "role": "transaction",
+      "recordType": "salesorder",
+      "operation": "create_sales_order_context_or_view"
+    },
+    {
+      "sequence": 3,
+      "label": "Finished Good",
+      "role": "proof anchor",
+      "recordType": "inventoryitem",
+      "operation": "create_or_update_lane_proof_anchor"
+    },
+    {
+      "sequence": 4,
+      "label": "Ingredient / Packaging Structure",
+      "role": "supporting proof",
+      "recordType": "customrecord_idb_food_readiness",
+      "operation": "create_or_update_supporting_proof_record"
+    },
+    {
+      "sequence": 5,
+      "label": "Packaging & Line Details",
+      "role": "supporting proof",
+      "recordType": "customrecord_idb_food_readiness",
+      "operation": "create_or_update_supporting_proof_record"
+    },
+    {
+      "sequence": 6,
+      "label": "Production Setup",
+      "role": "supporting proof",
+      "recordType": "customrecord_idb_food_readiness",
+      "operation": "create_or_update_supporting_proof_record"
+    }
+  ],
+  "requiredGates": [
+    "authenticatedNetSuiteSession",
+    "Food / Beverage lane selected",
+    "Finished Good proof anchor confirmed",
+    "reviewedDryRunPacket",
+    "CREATE_ENABLED deliberately enabled for pilot branch only",
+    "explicitConsultantConfirmation",
+    "traceableCreationResult",
+    "rollbackRunbookReady"
+  ],
+  "stopConditions": [
+    "lane is not food_beverage",
+    "proof anchor is not Finished Good",
+    "record order changes",
+    "createNewHeroItem is false without reviewed existing item context",
+    "enableManufacturing is false for the Food / Beverage pilot",
+    "consultant confirmation missing",
+    "trace cannot capture created record IDs and URLs",
+    "partial failure cannot identify created records"
+  ],
+  "rollbackRunbook": [
+    "Export trace before create.",
+    "After each write, append created record type, id, url, sequence, and operation to trace.",
+    "If customer creation succeeds and transaction fails, return partial_failed and stop.",
+    "If proof anchor creation succeeds and supporting proof fails, return partial_failed and stop dependent writes.",
+    "Do not silently delete records; provide created IDs for manual review or cleanup.",
+    "Do not retry writes without adding retry details to trace."
+  ],
+  "successCriteria": [
+    "Only Food / Beverage records are created.",
+    "Customer, Sales Order View, Finished Good, and supporting proof records return IDs or explicit skipped reasons.",
+    "Trace includes suitescript_write_path_result.",
+    "Create remains unavailable for all non-pilot lanes."
+  ],
+  "nonRegression": {
+    "noMultiLaneCreate": true,
+    "noAutomaticCreate": true,
+    "noDrawerDirectWrites": true,
+    "noProofAnchorChange": true,
+    "noLlmCreateAuthority": true
+  }
+}

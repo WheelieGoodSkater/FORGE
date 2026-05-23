@@ -1,0 +1,74 @@
+{
+  "schema": "idb.w162-integrated-build-result-fixture-import-commit-trace.v1",
+  "decision": "PASS_FIXTURE_IMPORT_COMMIT_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "commitStatus": "fixture_import_commit_ready",
+  "completedResultGuardStatus": "completed_runner_result_accepted",
+  "handoffRejectionStatus": "handoff_packet_rejected",
+  "activeOpenLinksBeforeImport": 0,
+  "openableAfterCommit": 9,
+  "rollback": {
+    "action": "clear_state_dccFinalNamingResult_only",
+    "serverFlagRollback": "disable approved server adapter flags",
+    "netSuiteRecordRollbackFromDrawer": "none"
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noActiveOpenLinksBeforeImport": true
+  },
+  "events": [
+    {
+      "name": "w162_starts_from_w161_fixture_handoff",
+      "pass": true,
+      "detail": "PASS_RESULT_IMPORT_CTA_FIXTURE_HANDOFF_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w162_import_commit_hook_ready",
+      "pass": true,
+      "detail": "fixture_import_commit_ready"
+    },
+    {
+      "name": "w162_completed_result_commits_only_after_w151",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w162-import-commit-contract.v1\",\"startsFromW161Decision\":\"PASS_RESULT_IMPORT_CTA_FIXTURE_HANDOFF_READY__VISUAL_TESTING_BLOCKED\",\"commitStatus\":\"fixture_import_commit_ready\",\"commitMode\":\"harness_only_state_patch_no_submit\",\"commitTarget\":\"state.dccFinalNamingResult\",\"completedResultGuardStatus\":\"completed_runner_result_accepted\",\"handoffRejectionStatus\":\"handoff_packet_rejected\",\"finalNamesImported\":true,\"committedRecordCount\":5,\"openableAfterCommit\":9,\"activeOpenLinksBeforeImport\":0,\"rollbackAction\":\"clear_state_dccFinalNamingResult_only\"}"
+    },
+    {
+      "name": "w162_handoff_json_rejected_and_cannot_commit",
+      "pass": true,
+      "detail": "{\"status\":\"fixture_import_commit_blocked\",\"guards\":{\"completedResultStatus\":\"handoff_packet_rejected\",\"completedResultAccepted\":false,\"handoffStatus\":\"handoff_packet_rejected\",\"handoffRejected\":true,\"acceptsBuildHandoffJson\":false}}"
+    },
+    {
+      "name": "w162_no_open_links_before_import",
+      "pass": true,
+      "detail": "{\"beforeImport\":null,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w162_committed_state_updates_final_generated_names",
+      "pass": true,
+      "detail": "{\"finalNaming\":\"Final generated names imported\",\"navigation\":\"using_dcc_final_names\"}"
+    },
+    {
+      "name": "w162_open_links_only_after_commit_and_real_urls",
+      "pass": true,
+      "detail": "{\"beforeImportSummary\":{\"missing_url\":7},\"afterImportSummary\":{\"verified_openable\":5},\"activeOpenLinksBeforeImport\":0,\"openableAfterCommit\":9,\"noActiveOpenLinksBeforeImport\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    },
+    {
+      "name": "w162_rollback_scope_is_drawer_state_only",
+      "pass": true,
+      "detail": "{\"action\":\"clear_state_dccFinalNamingResult_only\",\"serverFlagRollback\":\"disable approved server adapter flags\",\"netSuiteRecordRollbackFromDrawer\":\"none\"}"
+    },
+    {
+      "name": "w162_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noActiveOpenLinksBeforeImport\":true}"
+    }
+  ]
+}

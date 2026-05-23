@@ -1,0 +1,57 @@
+{
+  "schema": "idb.w152-integrated-build-runner-return-adapter-trace.v1",
+  "decision": "PASS_INTEGRATED_BUILD_RETURN_DESIGN_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "queueSubmitEnabledByThisBlock": false,
+  "drawerWritesEnabled": false,
+  "drawerSuiteScriptInvocationEnabled": false,
+  "runnerOwnership": "internal_runner",
+  "stateMachine": [
+    "not_started",
+    "blocked_by_flags_false",
+    "ready_to_submit",
+    "queued",
+    "polling",
+    "completed_result_available",
+    "failed_or_timeout",
+    "rolled_back_flags_disabled"
+  ],
+  "noActiveOpenLinksWithoutRealUrls": true,
+  "events": [
+    {
+      "name": "w152_uses_w151_as_entry_condition",
+      "pass": true,
+      "detail": "{\"visualNetSuiteTestingRequiredNow\":false,\"visualTestingBlocked\":true,\"blockedUntil\":\"Build triggers governed runner execution and completed runner result returns to IDB.\",\"broaderVisualTestingRequired\":false}"
+    },
+    {
+      "name": "w152_api_contract_requires_server_flags_and_operator_gate",
+      "pass": true,
+      "detail": "{\"CREATE_ENABLED\":true,\"GOVERNED_SANDBOX_WRITE_ENABLED\":true,\"QUEUE_SUBMIT_ENABLED\":true,\"SANDBOX_ACCOUNT_ALLOWLIST\":[\"SANDBOX_ACCOUNT_ID\"]}"
+    },
+    {
+      "name": "w152_state_machine_blocks_visual_until_completed_import",
+      "pass": true,
+      "detail": "[{\"state\":\"not_started\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"blocked_by_flags_false\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"ready_to_submit\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"queued\",\"runnerTaskIdRequired\":true,\"resultCapture\":\"pending_runner_completion\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"polling\",\"runnerTaskIdRequired\":true,\"resultCapture\":\"pending_runner_completion\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"completed_result_available\",\"requiredImportGuard\":\"W151\",\"drawerOpenLinks\":\"after accepted import only\",\"visualTesting\":\"targeted_visual_can_start_after_import\"},{\"state\":\"failed_or_timeout\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"},{\"state\":\"rolled_back_flags_disabled\",\"drawerOpenLinks\":0,\"visualTesting\":\"blocked\"}]"
+    },
+    {
+      "name": "w152_false_flag_and_queued_states_return_no_open_links",
+      "pass": true,
+      "detail": "{\"falseFlag\":{\"queueSubmitted\":false,\"runnerTaskId\":null,\"resultCapture\":\"not_started_no_submit\",\"finalGeneratedNamesJson\":null,\"activeOpenLinks\":0},\"queued\":{\"queueSubmitted\":true,\"runnerTaskId\":\"task_w152_example_001\",\"resultCapture\":\"pending_runner_completion\",\"finalGeneratedNamesJson\":null,\"activeOpenLinks\":0}}"
+    },
+    {
+      "name": "w152_completed_result_shape_uses_numeric_ids_and_supported_urls",
+      "pass": true,
+      "detail": "[{\"id\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\"},{\"id\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\"},{\"id\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\"},{\"id\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\"},{\"id\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\"}]"
+    },
+    {
+      "name": "w152_reuses_prior_runner_contracts_without_visual_request",
+      "pass": true,
+      "detail": "{\"w139\":\"idb_governed_runner_integration_contract_ready\",\"w144\":\"queue_submit_pilot_ready_behind_server_flags\",\"runnerTaskId\":\"task_w147_real_sandbox_001\"}"
+    },
+    {
+      "name": "w152_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerSuiteScriptInvocation\":true,\"noDrawerTransactionWrites\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityPreserved\":true,\"handoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

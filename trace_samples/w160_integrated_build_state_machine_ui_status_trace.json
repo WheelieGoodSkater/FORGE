@@ -1,0 +1,74 @@
+{
+  "schema": "idb.w160-integrated-build-state-machine-ui-status-trace.v1",
+  "decision": "PASS_BUILD_STATUS_UI_AND_IMPORT_CTA_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "currentState": "completed_awaiting_w151_import",
+  "statePath": [
+    "blocked",
+    "no_submit",
+    "queued",
+    "polling",
+    "completed_awaiting_w151_import",
+    "imported",
+    "error_recoverable"
+  ],
+  "importCta": {
+    "label": "Open guarded result import",
+    "enabled": true,
+    "action": "open_trace_completed_runner_result_import",
+    "targetView": "trace",
+    "guardOwner": "W151 completed runner result import guard",
+    "requiresCompletedRunnerResultJson": true,
+    "acceptsBuildHandoffJson": false,
+    "activeOpenLinksBeforeImport": 0,
+    "copy": "Completed runner result JSON is available. Import remains guarded by W151 numeric id and NetSuite URL validation."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "events": [
+    {
+      "name": "w160_starts_from_w159_state_machine",
+      "pass": true,
+      "detail": "PASS_BUILD_STATE_MACHINE_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w160_ui_hook_and_render_ready",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-strong\">Ariat International</div>\n          <div class=\"idb-copy\">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div>\n        </div>\n        <div class=\"idb-status-strip\">\n          <div class=\"idb-status-cell\">\n            <div class=\"idb-status-key\">1. Ready?</div>\n            <div class=\"idb-status-value\">Ready to export</div>\n            <div class=\"idb-copy\">Consultant confirmed the lane an"
+    },
+    {
+      "name": "w160_renders_all_required_states",
+      "pass": true,
+      "detail": "[\"blocked\",\"no_submit\",\"queued\",\"polling\",\"completed_awaiting_w151_import\",\"imported\",\"error_recoverable\"]"
+    },
+    {
+      "name": "w160_import_cta_gated_to_completed_awaiting_w151_import",
+      "pass": true,
+      "detail": "{\"label\":\"Open guarded result import\",\"enabled\":true,\"action\":\"open_trace_completed_runner_result_import\",\"targetView\":\"trace\",\"guardOwner\":\"W151 completed runner result import guard\",\"requiresCompletedRunnerResultJson\":true,\"acceptsBuildHandoffJson\":false,\"activeOpenLinksBeforeImport\":0,\"copy\":\"Completed runner result JSON is available. Import remains guarded by W151 numeric id and NetSuite URL validation.\"}"
+    },
+    {
+      "name": "w160_imported_state_disables_cta_after_guarded_import",
+      "pass": true,
+      "detail": "{\"label\":\"Runner result imported\",\"enabled\":false,\"action\":\"none\",\"targetView\":\"\",\"guardOwner\":\"W151 completed runner result import guard\",\"requiresCompletedRunnerResultJson\":true,\"acceptsBuildHandoffJson\":false,\"activeOpenLinksBeforeImport\":0,\"copy\":\"The completed runner result has already been imported. Open links remain URL-authority gated.\"}"
+    },
+    {
+      "name": "w160_no_open_links_before_import_and_visual_blocked",
+      "pass": true,
+      "detail": "{\"activeOpenLinksBeforeImport\":0,\"visualTestingBlocked\":true}"
+    },
+    {
+      "name": "w160_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

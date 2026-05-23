@@ -1,0 +1,56 @@
+{
+  "schema": "idb.w216-trace-samples.v1",
+  "samples": [
+    {
+      "event": "w216.partial_manufacturing_consultant_copy",
+      "headline": "Core build records are ready. Manufacturing setup detail was not returned.",
+      "runNextSteps": [
+        "Open Customer",
+        "Open Sales Order",
+        "Open Item",
+        "Use available records",
+        "Manufacturing detail not returned"
+      ]
+    },
+    {
+      "event": "w216.partial_wip_admin_debug",
+      "headline": "Core build records are ready. WIP detail was not returned.",
+      "adminDebug": {
+        "visible": true,
+        "diagnostics": {
+          "missingBomOrAssemblyStructure": false,
+          "missingWorkOrderOrWipObject": true,
+          "missingRouting": true,
+          "missingWorkCenter": true,
+          "mappedRoles": [
+            "customer",
+            "sales_order",
+            "finished_or_assembly_item",
+            "bom_or_assembly_structure",
+            "bom_or_assembly_structure",
+            "bom_or_assembly_structure",
+            "component_item"
+          ],
+          "resolvedOperatingMode": "wip_manufacturing",
+          "modeConfidence": "high"
+        }
+      }
+    },
+    {
+      "event": "w216.food_batch_partial_copy",
+      "headline": "Food batch records are ready. WIP detail was not returned.",
+      "labels": [
+        "Customer",
+        "Sales Order",
+        "Finished Food/Batch Item",
+        "Formula or Batch Structure",
+        "Ingredient Item",
+        "Lot Context"
+      ]
+    },
+    {
+      "event": "w216.handoff_json_rejected",
+      "status": "handoff_packet_rejected"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "idb.w215-trace-samples.v1",
+  "samples": [
+    {
+      "event": "w215.complete_non_manufacturing_role_mapping",
+      "customer": "Northstar Trail Outfitters",
+      "mode": "retail_availability",
+      "mappedRoles": [
+        {
+          "role": "customer",
+          "w215MappedRole": "customer",
+          "name": "Northstar Trail Outfitters Customer Account"
+        },
+        {
+          "role": "sales_order",
+          "w215MappedRole": "sales_order",
+          "name": "Northstar Trail Outfitters SO215"
+        },
+        {
+          "role": "hero_item",
+          "w215MappedRole": "hero_sku",
+          "name": "Northstar Trail Outfitters Product Availability SKU"
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "w215MappedRole": "availability_or_replenishment_flow",
+          "name": "Northstar Trail Outfitters Retail Replenishment Flow"
+        },
+        {
+          "role": "location_planning",
+          "w215MappedRole": "location_or_channel_context",
+          "name": "Northstar Trail Outfitters Store Channel Context"
+        }
+      ]
+    },
+    {
+      "event": "w215.complete_manufacturing_more_than_five_records",
+      "customer": "Evergreen Equipment Works",
+      "displayStatus": "semantic_display_ready",
+      "recordCount": 7
+    },
+    {
+      "event": "w215.partial_wip_admin_debug_warning",
+      "customer": "Canyon Ridge Components",
+      "status": "partial_result_imported_with_admin_debug_warning",
+      "adminDebugWarnings": [
+        "WIP detail not returned."
+      ],
+      "normalConsultantCopy": "Build results were imported with available records. Some manufacturing details were not returned."
+    },
+    {
+      "event": "w215.handoff_json_rejected",
+      "status": "handoff_packet_rejected",
+      "message": "This is the Build handoff JSON. It requests runner work but does not contain completed runner result records, ids, or URLs."
+    }
+  ]
+}

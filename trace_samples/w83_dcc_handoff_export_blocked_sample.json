@@ -1,0 +1,56 @@
+{
+  "schema": "idb.dcc-runner-handoff-packet.v1",
+  "status": "blocked_until_confirmed_handoff",
+  "executionMode": "review_only_no_submit",
+  "selectedPack": "Apparel and footwear style readiness",
+  "selectedScenario": "Style / SKU Matrix",
+  "suiteletEntryPayload": {
+    "custpage_prospect": "Ariat International",
+    "custpage_website": "https://www.ariat.com/",
+    "custpage_notes": "Buyer needs style, size, and channel availability readiness before a seasonal launch.",
+    "custpage_newhero": "T",
+    "custpage_enablemfg": "F",
+    "custpage_enablewip": "F",
+    "custpage_evalmode": "review_only",
+    "custpage_actionmode": "previewbrief"
+  },
+  "dccOwnedConfigParams": [
+    "custscriptv3_reset_subsidiary",
+    "custscript_v3_reset_location",
+    "custscript_v3_runner_script_id",
+    "custscript_v3_runner_deploy_id",
+    "custscript_csv_mapping_id",
+    "custscript_csv_folder_id",
+    "custscript_so_savedsearch_id",
+    "custscript_wo_savedsearch_id"
+  ],
+  "scheduledRunnerPreview": {
+    "custscript_v3_runner_prospect": "Ariat International",
+    "custscript_v3_runner_website": "https://www.ariat.com/",
+    "custscript_v3_runner_notes": "style size channel availability seasonal launch",
+    "custscript_v3_runner_agenda": "generated_by_dcc_suitelet",
+    "custscript_v3_runner_extid": "generated_by_dcc_suitelet",
+    "custscript_v3_runner_mapping": "dcc_config_required",
+    "custscript_v3_runner_folder": "dcc_config_required",
+    "custscript_v3_runner_subsidiary": "dcc_config_required",
+    "custscript_v3_runner_location": "dcc_config_optional",
+    "custscript_v3_runner_enable_wip": "F",
+    "custscript_v3_runner_enable_mfg": "F",
+    "custscript_v3_runner_create_new_hero": "T",
+    "custscript_v3_runner_hero_item": "generated_by_dcc_suitelet_fresh_hero",
+    "custscript_v3_runner_wc_search": "dcc_config_optional"
+  },
+  "operatorChecklist": [
+    "Block handoff until consultant confirms lane, pack, naming, and build mode.",
+    "Export DCC handoff packet for operator review.",
+    "Operator verifies Suitelet form params and DCC-owned deployment config.",
+    "Submit only from governed DCC surface; IDB does not invoke SuiteScript."
+  ],
+  "noRegression": {
+    "dccRunnerMechanicsNotRewritten": true,
+    "suiteScriptInvocationFromIdb": false,
+    "idbTransactionWritesEnabled": false,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true
+  }
+}

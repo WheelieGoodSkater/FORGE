@@ -1,0 +1,65 @@
+{
+  "schema": "idb.w38-pilot-result-evidence-review-sample.v1",
+  "evidenceSource": "representative_shape_only_not_live_sandbox_evidence",
+  "capturedAt": "2026-05-11T00:00:00.000Z",
+  "liveSandboxEvidence": false,
+  "importExpectation": {
+    "reviewShouldShowCustomerResult": true,
+    "reviewShouldShowProofItemResult": true,
+    "transactionContextReviewReady": true,
+    "transactionWriteEnabled": false,
+    "blockedDependentWrites": 1
+  },
+  "suiteScriptResponse": {
+    "status": "created",
+    "traceEvent": "suitescript_write_path_result",
+    "writePathType": "suitescript_direct_write",
+    "createEnabled": true,
+    "packetId": "idb-georgetown-foods-food-beverage-1770000000000",
+    "selectedLaneId": "food_beverage",
+    "proofAnchor": "Finished Good",
+    "createdRecords": [
+      {
+        "sequence": 1,
+        "label": "Customer Record",
+        "role": "customer",
+        "recordType": "customer",
+        "recordId": "12345",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=12345",
+        "operation": "lookup_then_update_or_create_customer",
+        "lookupStatus": "created",
+        "rollbackLabel": "customer_record",
+        "recoverableErrors": []
+      },
+      {
+        "sequence": 3,
+        "label": "Finished Good",
+        "role": "proof anchor",
+        "recordType": "inventoryitem",
+        "recordId": "67890",
+        "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=67890",
+        "operation": "lookup_then_update_or_create_proof_item",
+        "lookupStatus": "created",
+        "parentCustomerRecordId": "12345",
+        "rollbackLabel": "proof_anchor_item",
+        "recoverableErrors": []
+      }
+    ],
+    "blockedDependentWrites": [
+      {
+        "sequence": 2,
+        "label": "Sales Order View",
+        "reason": "Transaction context write is disabled in W38.",
+        "recoverable": true
+      }
+    ],
+    "errors": []
+  },
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "noAutomaticCreationFromDrawer": true,
+    "llmAdvisoryOnly": true
+  }
+}

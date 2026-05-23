@@ -1,0 +1,693 @@
+{
+  "schema": "idb.w213-consultant-story-roi-competitive-quality-harness.v1",
+  "status": "pass",
+  "passCount": 13,
+  "total": 13,
+  "results": [
+    {
+      "id": "w213_hook_and_w212_baseline_present",
+      "pass": true,
+      "evidence": "idb.w212-website-grounded-story-roi-competitive-naming-orchestration.v1"
+    },
+    {
+      "id": "website_and_notes_roles_are_separated",
+      "pass": true,
+      "evidence": "{\"websiteAnchorsIndustryAndProductContext\":true,\"notesShapePainRoiCompetitiveAndObjectionsOnly\":true,\"netSuitePositionedAsWinningOperatingSystem\":true,\"noUnsupportedIndustryClaims\":true,\"noMeasuredSavingsWithoutBaseline\":true,\"nllmAdvisoryOnly\":true}"
+    },
+    {
+      "id": "netsuite_is_positioned_as_winning_operating_system",
+      "pass": true,
+      "evidence": "NetSuite wins by keeping dealer demand, item availability, order promise, and financial impact in one operating path instead of splitting the work across ecommerce, spreadsheets, and inventory add-ons."
+    },
+    {
+      "id": "roi_copy_requires_baseline_before_savings",
+      "pass": true,
+      "evidence": "Frame ROI as risk reduction first: protect the seasonal dealer demand, channel availability, allocation, and replenishment timing decision, capture the current baseline before claiming savings, then quantify fewer misses, delays, exposure, or manual touches only after the buyer confirms that baseline."
+    },
+    {
+      "id": "summit_copy_uses_dealer_channel_replenishment_language",
+      "pass": true,
+      "evidence": "Lead with the buyer risk: Summit Outdoor Supply needs one trusted view before the customer promise is made. Prove it with Product / SKU, then capture the current baseline before claiming savings. Position NetSuite as the operating system for seasonal dealer demand, channel availability, allocation, and replenishment timing."
+    },
+    {
+      "id": "ariat_copy_uses_style_sku_language",
+      "pass": true,
+      "evidence": "Lead with the buyer risk: Ariat International needs one trusted view before the customer promise is made. Prove it with Core Boot and Apparel Style Matrix, then capture the current baseline before claiming savings. Position NetSuite as the operating system for style, size, color, replenishment timing, and channel availability."
+    },
+    {
+      "id": "objection_handling_returns_to_proof_without_unsupported_claims",
+      "pass": true,
+      "evidence": "If the buyer doubts the matrix, ask which size/color promise fails first today, then prove the current path through NetSuite records."
+    },
+    {
+      "id": "run_coaching_has_four_consultant_actions",
+      "pass": true,
+      "evidence": "open, prove, handle_objection, close_value"
+    },
+    {
+      "id": "value_review_packet_uses_w213_copy",
+      "pass": true,
+      "evidence": "Which stockout, backorder, allocation delay, or manual channel reconciliation is costing the team the most right now?"
+    },
+    {
+      "id": "long_notes_are_distilled_not_echoed_in_consultant_copy",
+      "pass": true,
+      "evidence": "Lead with the buyer risk: operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail... Prove it with Yerba Mate Beverage Variety Pack, then capture the current baseline before claiming savings. Position NetSuite as the operating system for work order progress, routing readiness, work center visibility, and customer promise. :: Open with Yerba Madre's risk: operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail... Keep this a business decision about Finished Good readiness, not a tour of screens."
+    },
+    {
+      "id": "run_script_uses_w213_copy_and_imported_names",
+      "pass": true,
+      "evidence": "Prove the NetSuite path; Build results are ready.: Customer: Summit Outdoor Supply Customer Account -> Sales Order: SO2679 -> Product SKU: Summit Outdoor Supply Channel Availability SKU -> Availability Flow: Summit Outdoor Supply Dealer Replenishment Flow."
+    },
+    {
+      "id": "w151_still_rejects_forbidden_naming_results",
+      "pass": true,
+      "evidence": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Summit Outdoor Supply Finished Good, Matrix item / proof item: Summit Outdoor Supply Production Line, Component item 1: Summit Outdoor Supply Ingredient Blend. Mode contract blocked: Hero item: finished good is not compatible with dealer_hardgoods_replenishment., Matrix item / proof item: production line is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient blend is not compatible with dealer_hardgoods_replenishment.."
+    },
+    {
+      "id": "no_regression_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"oneClickBuildPreserved\":true,\"savedW144AdminConfigPreserved\":true,\"resultPollingPreserved\":true,\"w151ImportGuardPreserved\":true,\"noDrawerWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedServerAdapterPath\":true,\"openLinksOnlyAfterRealRecordsExist\":true}"
+    }
+  ],
+  "storyRoiCompetitiveCoachingContract": {
+    "websiteAnchorsIndustryAndProductContext": true,
+    "notesShapePainRoiCompetitiveAndObjectionsOnly": true,
+    "netSuitePositionedAsWinningOperatingSystem": true,
+    "noUnsupportedIndustryClaims": true,
+    "noMeasuredSavingsWithoutBaseline": true,
+    "nllmAdvisoryOnly": true
+  },
+  "fixtures": {
+    "summit": {
+      "laneId": "dealer_hardgoods",
+      "modeKey": "dealer_hardgoods",
+      "copyModel": {
+        "schema": "idb.w213-consultant-copy-model.v1",
+        "talkTrack": "Lead with the buyer risk: Summit Outdoor Supply needs one trusted view before the customer promise is made. Prove it with Product / SKU, then capture the current baseline before claiming savings. Position NetSuite as the operating system for seasonal dealer demand, channel availability, allocation, and replenishment timing.",
+        "discoveryQuestion": "Which stockout, backorder, allocation delay, or manual channel reconciliation is costing the team the most right now?",
+        "proofMove": "Prove Product / SKU readiness with Product / SKU. Use Summit Outdoor Supply Channel Availability SKU and keep the proof in NetSuite, not in a detached feature tour.",
+        "roiAnswer": "Frame ROI as risk reduction first: protect the seasonal dealer demand, channel availability, allocation, and replenishment timing decision, capture the current baseline before claiming savings, then quantify fewer misses, delays, exposure, or manual touches only after the buyer confirms that baseline.",
+        "competitiveAnswer": "NetSuite wins by keeping dealer demand, item availability, order promise, and financial impact in one operating path instead of splitting the work across ecommerce, spreadsheets, and inventory add-ons.",
+        "objectionAnswer": "If the buyer doubts availability, acknowledge the concern and ask which channel they trust least today, then prove the demand-to-promise path in NetSuite.",
+        "closeValue": "Confirm the decision owner, the baseline to capture, and whether Summit Outdoor Supply can trust the NetSuite path for seasonal dealer demand, channel availability, allocation, and replenishment timing.",
+        "runCoaching": {
+          "open": {
+            "title": "Open on the buyer risk",
+            "say": "Open with Summit Outdoor Supply's risk: Summit Outdoor Supply needs one trusted view before the customer promise is made. Keep this a business decision about Product / SKU readiness, not a tour of screens.",
+            "show": "Start from Summit Outdoor Supply Channel Availability SKU; show customer demand flowing into item availability and dealer fulfillment confidence.",
+            "close": "Which stockout, backorder, allocation delay, or manual channel reconciliation is costing the team the most right now?"
+          },
+          "prove": {
+            "title": "Prove the NetSuite path",
+            "say": "Use Product / SKU to prove the requested path: Prove Product / SKU readiness with Product / SKU. Tie it back to Summit Outdoor Supply needs one trusted view before the customer promise is made. and show that NetSuite keeps the operating decision in one path.",
+            "show": "Move through the live Customer, Sales Order, and item records that support seasonal dealer demand, channel availability, allocation, and replenishment timing.",
+            "close": "Ask whether this proof gives Summit Outdoor Supply enough trust to make the next decision without manual reconciliation."
+          },
+          "handle_objection": {
+            "title": "Handle the buying doubt",
+            "say": "If the buyer doubts availability, acknowledge the concern and ask which channel they trust least today, then prove the demand-to-promise path in NetSuite.",
+            "show": "Return to Summit Outdoor Supply Channel Availability SKU, then compare the current workflow against the NetSuite path without making unsupported competitor claims.",
+            "close": "Ask what would still make seasonal dealer demand, channel availability, allocation, and replenishment timing untrusted after seeing the NetSuite proof."
+          },
+          "close_value": {
+            "title": "Close on financial impact",
+            "say": "Summarize the decision Summit Outdoor Supply can now make: Use Summit Outdoor Supply Channel Availability SKU to help Summit Outdoor Supply trust seasonal dealer demand, channel availability, allocation, and replenishment timing inside NetSuite.. Capture the baseline before claiming savings.",
+            "show": "Use the final generated records to connect seasonal dealer demand, channel availability, allocation, and replenishment timing to order promise and financial impact.",
+            "close": "Confirm owner, timing, baseline, and next step."
+          }
+        }
+      },
+      "runPreview": {
+        "title": "Prove the NetSuite path",
+        "say": "Use Product / SKU to prove the requested path: Prove Product / SKU readiness with Product / SKU. Tie it back to Summit Outdoor Supply needs one trusted view before the customer promise is made. and show that NetSuite keeps the operating decision in one path.",
+        "show": "Build results are ready.: Customer: Summit Outdoor Supply Customer Account -> Sales Order: SO2679 -> Product SKU: Summit Outdoor Supply Channel Availability SKU -> Availability Flow: Summit Outdoor Supply Dealer Replenishment Flow.",
+        "close": "Open Customer / Open Sales Order / Open Item"
+      }
+    },
+    "ariat": {
+      "laneId": "apparel_accessories",
+      "modeKey": "apparel_style_matrix",
+      "copyModel": {
+        "schema": "idb.w213-consultant-copy-model.v1",
+        "talkTrack": "Lead with the buyer risk: Ariat International needs one trusted view before the customer promise is made. Prove it with Core Boot and Apparel Style Matrix, then capture the current baseline before claiming savings. Position NetSuite as the operating system for style, size, color, replenishment timing, and channel availability.",
+        "discoveryQuestion": "Where do style, size, color, or channel availability decisions break down during launch or replenishment?",
+        "proofMove": "Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Use Ariat International Style SKU and keep the proof in NetSuite, not in a detached feature tour.",
+        "roiAnswer": "Frame ROI as risk reduction first: protect the style, size, color, replenishment timing, and channel availability decision, capture the current baseline before claiming savings, then quantify fewer misses, delays, exposure, or manual touches only after the buyer confirms that baseline.",
+        "competitiveAnswer": "NetSuite wins by keeping style/SKU availability, order promise, financial impact, and replenishment decisions together instead of separating ERP, ecommerce, PLM, and inventory tools.",
+        "objectionAnswer": "If the buyer doubts the matrix, ask which size/color promise fails first today, then prove the current path through NetSuite records.",
+        "closeValue": "Confirm the decision owner, the baseline to capture, and whether Ariat International can trust the NetSuite path for style, size, color, replenishment timing, and channel availability.",
+        "runCoaching": {
+          "open": {
+            "title": "Open on the buyer risk",
+            "say": "Open with Ariat International's risk: Ariat International needs one trusted view before the customer promise is made. Keep this a business decision about Style / SKU Matrix readiness, not a tour of screens.",
+            "show": "Start from Ariat International Style SKU; show the style/SKU matrix as the operating proof behind customer promise and launch readiness.",
+            "close": "Where do style, size, color, or channel availability decisions break down during launch or replenishment?"
+          },
+          "prove": {
+            "title": "Prove the NetSuite path",
+            "say": "Use Core Boot and Apparel Style Matrix to prove the requested path: Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Tie it back to Ariat International needs one trusted view before the customer promise is made. and show that NetSuite keeps the operating decision in one path.",
+            "show": "Move through the live Customer, Sales Order, and item records that support style, size, color, replenishment timing, and channel availability.",
+            "close": "Ask whether this proof gives Ariat International enough trust to make the next decision without manual reconciliation."
+          },
+          "handle_objection": {
+            "title": "Handle the buying doubt",
+            "say": "If the buyer doubts the matrix, ask which size/color promise fails first today, then prove the current path through NetSuite records.",
+            "show": "Return to Ariat International Style SKU, then compare the current workflow against the NetSuite path without making unsupported competitor claims.",
+            "close": "Ask what would still make style, size, color, replenishment timing, and channel availability untrusted after seeing the NetSuite proof."
+          },
+          "close_value": {
+            "title": "Close on financial impact",
+            "say": "Summarize the decision Ariat International can now make: Use Ariat International Style SKU to help Ariat International trust style, size, color, replenishment timing, and channel availability inside NetSuite.. Capture the baseline before claiming savings.",
+            "show": "Use the final generated records to connect style, size, color, replenishment timing, and channel availability to order promise and financial impact.",
+            "close": "Confirm owner, timing, baseline, and next step."
+          }
+        }
+      },
+      "runPreview": {
+        "title": "Prove the NetSuite path",
+        "say": "Use Core Boot and Apparel Style Matrix to prove the requested path: Prove Style / SKU Matrix readiness with Core Boot and Apparel Style Matrix. Tie it back to Ariat International needs one trusted view before the customer promise is made. and show that NetSuite keeps the operating decision in one path.",
+        "show": "Build results are ready.: Customer: Ariat International Customer Account -> Sales Order: SO2679 -> Style SKU: Ariat International Style SKU -> Style Matrix: Ariat International Omnichannel Availability Flow.",
+        "close": "Open Customer / Open Sales Order / Open Item"
+      }
+    },
+    "yerbaMadre": {
+      "laneId": "food_beverage",
+      "modeKey": "wip_manufacturing",
+      "digest": {
+        "schema": "idb.consultant-notes-digest.v1",
+        "customer": "Yerba Madre",
+        "product": "Yerba Mate Beverage Variety Pack",
+        "proofAnchor": "Finished Good",
+        "buyer": "Buyer is the VP of Operations and Finance at Yerba Madre, formerly Guayaki Yerba Mate.",
+        "pain": "operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail...",
+        "proof": "The team needs a demo that proves food batch manufacturing readiness, ingredient traceability, lot-aware availability, and clean handoff from custo...",
+        "roi": "reduce manual reconciliation between sales demand, inventory, ingredient planning, and production; improve confidence in available-to-promise; redu...",
+        "competitive": "show that FORGE can create a food and beverage proof path grounded in website evidence and selected toggles, not generic manufacturing names.",
+        "consultantBrief": [
+          "Buyer: Buyer is the VP of Operations and Finance at Yerba Madre, formerly Guayaki Yerba Mate.",
+          "Pain: operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail...",
+          "Proof: The team needs a demo that proves food batch manufacturing readiness, ingredient traceability, lot-aware availability, and clean handoff from custo...",
+          "Value: reduce manual reconciliation between sales demand, inventory, ingredient planning, and production; improve confidence in available-to-promise; redu..."
+        ],
+        "talkTrack": "Lead with the buyer risk: operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail... Prove it with Yerba Mate Beverage Variety Pack, then capture the current baseline before claiming savings.",
+        "runOpen": "Open with Yerba Madre's risk: operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail... Keep this a business decision about Finished Good readiness, not a tour of screens.",
+        "runProve": "Use Yerba Mate Beverage Variety Pack to prove the requested path: The team needs a demo that proves food batch manufacturing readiness, ingredient traceability, lot-aware availability, and clean handoff from custo...",
+        "noRegression": {
+          "notesShapeStoryOnly": true,
+          "websiteStillOwnsProductNouns": true,
+          "noRawNotesEchoInConsultantSummary": true
+        }
+      },
+      "copyModel": {
+        "schema": "idb.w213-consultant-copy-model.v1",
+        "talkTrack": "Lead with the buyer risk: operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail... Prove it with Yerba Mate Beverage Variety Pack, then capture the current baseline before claiming savings. Position NetSuite as the operating system for work order progress, routing readiness, work center visibility, and customer promise.",
+        "discoveryQuestion": "Where does work center, routing, or WIP status lose trust before the customer promise is made?",
+        "proofMove": "The team needs a demo that proves food batch manufacturing readiness, ingredient traceability, lot-aware availability, and clean handoff from custo... Use Finished Good and keep the proof in NetSuite, not in a detached feature tour.",
+        "roiAnswer": "Frame ROI as risk reduction first: protect the work order progress, routing readiness, work center visibility, and customer promise decision, capture the current baseline before claiming savings, then quantify fewer misses, delays, exposure, or manual touches only after the buyer confirms that baseline.",
+        "competitiveAnswer": "NetSuite wins by connecting WIP, work centers, inventory, order promise, and financial impact in one operating path instead of forcing MES/spreadsheet reconciliation.",
+        "objectionAnswer": "If the buyer questions execution status, return to work order and work center proof before claiming measurable savings.",
+        "closeValue": "Confirm the decision owner, the baseline to capture, and whether Yerba Madre can trust the NetSuite path for work order progress, routing readiness, work center visibility, and customer promise.",
+        "runCoaching": {
+          "open": {
+            "title": "Open on the buyer risk",
+            "say": "Open with Yerba Madre's risk: operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail... Keep this a business decision about Finished Good readiness, not a tour of screens.",
+            "show": "Start from Finished Good; show WIP progress and routing context as the operating proof behind the promise date.",
+            "close": "Where does work center, routing, or WIP status lose trust before the customer promise is made?"
+          },
+          "prove": {
+            "title": "Prove the NetSuite path",
+            "say": "Use Yerba Mate Beverage Variety Pack to prove the requested path: The team needs a demo that proves food batch manufacturing readiness, ingredient traceability, lot-aware availability, and clean handoff from custo... Tie it back to operations can see demand building in retail and direct channels, but finance and supply planning do not always have the same view of what is avail... and show that NetSuite keeps the operating decision in one path.",
+            "show": "Move through the live Customer, Sales Order, and item records that support work order progress, routing readiness, work center visibility, and customer promise.",
+            "close": "Ask whether this proof gives Yerba Madre enough trust to make the next decision without manual reconciliation."
+          },
+          "handle_objection": {
+            "title": "Handle the buying doubt",
+            "say": "If the buyer questions execution status, return to work order and work center proof before claiming measurable savings.",
+            "show": "Return to Finished Good, then compare the current workflow against the NetSuite path without making unsupported competitor claims.",
+            "close": "Ask what would still make work order progress, routing readiness, work center visibility, and customer promise untrusted after seeing the NetSuite proof."
+          },
+          "close_value": {
+            "title": "Close on financial impact",
+            "say": "Summarize the decision Yerba Madre can now make: Use Finished Good to help Yerba Madre trust work order progress, routing readiness, work center visibility, and customer promise inside NetSuite.. Capture the baseline before claiming savings.",
+            "show": "Use the final generated records to connect work order progress, routing readiness, work center visibility, and customer promise to order promise and financial impact.",
+            "close": "Confirm owner, timing, baseline, and next step."
+          }
+        }
+      }
+    }
+  },
+  "badGuard": {
+    "schema": "idb.runner-result-import-guard.v1",
+    "valid": false,
+    "status": "toggle_vocabulary_guardrail_failed",
+    "message": "Paste completed governed runner result JSON with numeric internal ids and supported NetSuite URLs. Naming blocked: Hero item: Summit Outdoor Supply Finished Good, Matrix item / proof item: Summit Outdoor Supply Production Line, Component item 1: Summit Outdoor Supply Ingredient Blend. Mode contract blocked: Hero item: finished good is not compatible with dealer_hardgoods_replenishment., Matrix item / proof item: production line is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient is not compatible with dealer_hardgoods_replenishment., Component item 1: ingredient blend is not compatible with dealer_hardgoods_replenishment..",
+    "finalNaming": {
+      "schema": "idb.dcc-final-naming-result.v1",
+      "status": "dcc_final_names_imported",
+      "displayStatus": "Final generated names imported",
+      "importedAt": "2026-05-20T11:48:23.524Z",
+      "source": "dcc_result_import_only",
+      "finalNamesImported": true,
+      "runStatus": "completed",
+      "prospect": "Summit Outdoor Supply Customer Account",
+      "scenario": "Product / SKU",
+      "familyKey": "dealer_hardgoods",
+      "generated": {
+        "extId": "",
+        "agenda": ""
+      },
+      "displayObjects": [
+        {
+          "role": "customer",
+          "label": "Customer",
+          "name": "Summit Outdoor Supply Customer Account",
+          "internalName": "",
+          "id": "1722",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722",
+          "source": "dcc_final"
+        },
+        {
+          "role": "sales_order",
+          "label": "Sales Order / demo transaction",
+          "name": "SO2679",
+          "internalName": "",
+          "id": "80828",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+          "source": "dcc_final"
+        },
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "Summit Outdoor Supply Finished Good",
+          "internalName": "",
+          "id": "1865",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865",
+          "source": "dcc_final"
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "Summit Outdoor Supply Production Line",
+          "internalName": "",
+          "id": "2545",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545",
+          "source": "dcc_final"
+        }
+      ],
+      "componentItems": [
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Ingredient Blend",
+          "internalName": "",
+          "id": "2546",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546",
+          "source": "dcc_final"
+        }
+      ],
+      "locationPlanningRecords": [],
+      "csvSalesOrderArtifacts": [],
+      "warnings": [],
+      "errors": [],
+      "recoverableBlockers": [],
+      "traceCoverage": {
+        "includedInTraceExport": true,
+        "secretsRedacted": true,
+        "importedOnly": true
+      },
+      "noRegression": {
+        "importOnly": true,
+        "noIdbWrites": true,
+        "noSuiteScriptInvocationFromIdb": true,
+        "noTransactionWritesFromIdb": true,
+        "dccOwnsObjectGeneration": true,
+        "provisionalNamesCannotBeMarkedFinal": true,
+        "w92StateAuthorityPreserved": true,
+        "w110HandoffParityPreserved": true
+      }
+    },
+    "namingGuard": {
+      "schema": "idb.toggle-aware-naming-import-guard.w211.v1",
+      "valid": false,
+      "status": "toggle_vocabulary_guardrail_failed",
+      "selectedToggles": {
+        "schema": "idb.toggle-aware-naming-selected-toggles.w211.v1",
+        "selectedLaneId": "dealer_hardgoods",
+        "enableManufacturing": false,
+        "enableWip": false,
+        "manufacturingExplicit": true,
+        "wipExplicit": true
+      },
+      "violations": [
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "Summit Outdoor Supply Finished Good",
+          "reason": "Manufacturing, WIP, assembly, BOM, work order, routing, production, or ingredient vocabulary is not allowed when Manufacturing=false and WIP=false."
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "Summit Outdoor Supply Production Line",
+          "reason": "Manufacturing, WIP, assembly, BOM, work order, routing, production, or ingredient vocabulary is not allowed when Manufacturing=false and WIP=false."
+        },
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Ingredient Blend",
+          "reason": "Manufacturing, WIP, assembly, BOM, work order, routing, production, or ingredient vocabulary is not allowed when Manufacturing=false and WIP=false."
+        }
+      ],
+      "contract": {
+        "schema": "idb.toggle-aware-naming-vocabulary-contract.w211.v1",
+        "authorityOrder": [
+          "website/category evidence",
+          "consultant build toggles",
+          "conversation notes for story only"
+        ],
+        "forbiddenWhenManufacturingFalseAndWipFalse": [
+          "Finished Good",
+          "Ingredient",
+          "Ingredient Blend",
+          "Production Line",
+          "BOM",
+          "Assembly",
+          "Work Order",
+          "Routing",
+          "WIP",
+          "Manufacturing Line"
+        ],
+        "vocabularyByMode": {
+          "distributionReplenishment": [
+            "Product Availability SKU",
+            "Channel Availability SKU",
+            "Fulfillment Support SKU",
+            "Replenishment Flow"
+          ],
+          "dealerHardgoods": [
+            "Channel Availability SKU",
+            "Dealer Replenishment Flow",
+            "Allocation Support SKU",
+            "Fulfillment Support SKU",
+            "Product Availability SKU"
+          ],
+          "apparelStyleMatrix": [
+            "Style SKU",
+            "Size / Color Variant",
+            "Omnichannel Availability Flow",
+            "Channel Allocation Pack"
+          ],
+          "manufacturing": [
+            "Finished Good",
+            "Assembly",
+            "BOM",
+            "Production Line"
+          ],
+          "wipManufacturing": [
+            "Work Order",
+            "Routing",
+            "WIP",
+            "Manufacturing Line"
+          ],
+          "foodIngredientManufacturing": [
+            "Ingredient Blend",
+            "Recipe",
+            "Formula",
+            "Finished Case Pack"
+          ]
+        }
+      }
+    },
+    "semanticGuard": {
+      "schema": "idb.w214-semantic-runner-result-import-guard.v1",
+      "valid": false,
+      "status": "operating_mode_record_contract_failed",
+      "resolvedOperatingMode": "dealer_hardgoods_replenishment",
+      "modeConfidence": "high",
+      "selectedToggles": {
+        "schema": "idb.w214-selected-build-toggles.v1",
+        "createNewHeroItem": true,
+        "enableManufacturing": false,
+        "enableWip": false,
+        "selectedLaneId": "dealer_hardgoods"
+      },
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "product_sku",
+        "dealer_availability_or_replenishment_flow"
+      ],
+      "expectedRecordRoles": [],
+      "optionalRecordRoles": [
+        "allocation_support_sku",
+        "channel_context"
+      ],
+      "invalidRecordRoles": [
+        "ingredient",
+        "batch",
+        "bom",
+        "assembly",
+        "work_order",
+        "routing",
+        "wip"
+      ],
+      "violations": [
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "Summit Outdoor Supply Finished Good",
+          "term": "finished good",
+          "reason": "finished good is not compatible with dealer_hardgoods_replenishment."
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "Summit Outdoor Supply Production Line",
+          "term": "production line",
+          "reason": "production line is not compatible with dealer_hardgoods_replenishment."
+        },
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Ingredient Blend",
+          "term": "ingredient",
+          "reason": "ingredient is not compatible with dealer_hardgoods_replenishment."
+        },
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "Summit Outdoor Supply Ingredient Blend",
+          "term": "ingredient blend",
+          "reason": "ingredient blend is not compatible with dealer_hardgoods_replenishment."
+        }
+      ],
+      "warnings": [],
+      "explicitPartialResult": false,
+      "dynamicRecordDisplayModel": {
+        "schema": "idb.w214-dynamic-record-display-model.v1",
+        "status": "semantic_display_blocked_or_partial",
+        "normalConsultantRecordCount": 5,
+        "canShowMoreThanFiveRecords": false,
+        "visibleRecords": [
+          {
+            "role": "customer",
+            "label": "Customer",
+            "name": "Summit Outdoor Supply Customer Account",
+            "internalName": "",
+            "id": "1722",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1722"
+          },
+          {
+            "role": "sales_order",
+            "label": "Sales Order / demo transaction",
+            "name": "SO2679",
+            "internalName": "",
+            "id": "80828",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828"
+          },
+          {
+            "role": "hero_item",
+            "label": "Hero item",
+            "name": "Summit Outdoor Supply Finished Good",
+            "internalName": "",
+            "id": "1865",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=1865"
+          },
+          {
+            "role": "matrix_or_proof_item",
+            "label": "Matrix item / proof item",
+            "name": "Summit Outdoor Supply Production Line",
+            "internalName": "",
+            "id": "2545",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2545"
+          },
+          {
+            "role": "component_item",
+            "label": "Component item 1",
+            "name": "Summit Outdoor Supply Ingredient Blend",
+            "internalName": "",
+            "id": "2546",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546",
+            "source": "dcc_final",
+            "linkAuthority": {
+              "schema": "idb.verified-record-link-authority.v1",
+              "status": "verified_openable",
+              "openable": true,
+              "displayLabel": "Open",
+              "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546"
+            },
+            "openableUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2546"
+          }
+        ],
+        "adminDebugWarnings": [],
+        "openLinksAllowed": false
+      },
+      "resolver": {
+        "schema": "idb.w214-operating-mode-resolver.v1",
+        "resolvedOperatingMode": "dealer_hardgoods_replenishment",
+        "modeConfidence": "high",
+        "selectedToggles": {
+          "schema": "idb.w214-selected-build-toggles.v1",
+          "createNewHeroItem": true,
+          "enableManufacturing": false,
+          "enableWip": false,
+          "selectedLaneId": "dealer_hardgoods"
+        },
+        "namingAuthority": {
+          "websiteControlsIndustryCategoryAndProductNouns": true,
+          "togglesControlOperatingModelVocabulary": true,
+          "notesControlPainStoryRoiObjectionsOnly": true,
+          "nllmAdvisoryOnly": true,
+          "domain": "summitoutdoorsupply.com",
+          "evidence": [
+            "dealer hardgoods evidence"
+          ]
+        },
+        "requiredRecordRoles": [
+          "customer",
+          "sales_order",
+          "product_sku",
+          "dealer_availability_or_replenishment_flow"
+        ],
+        "expectedRecordRoles": [],
+        "optionalRecordRoles": [
+          "allocation_support_sku",
+          "channel_context"
+        ],
+        "invalidRecordRoles": [
+          "ingredient",
+          "batch",
+          "bom",
+          "assembly",
+          "work_order",
+          "routing",
+          "wip"
+        ],
+        "storyInputs": {
+          "buyerPainFromNotes": "Regional outdoor gear distributor is struggling to keep seasonal inventory aligned across retail, ecommerce, and wholesale channels. Buyers need better visibility into item availability, replenishment timing, and channel demand before committing to large seasonal orders.",
+          "website": "https://www.summitoutdoorsupply.com",
+          "pageContext": ""
+        },
+        "resultValidationExpectations": {
+          "recordContract": {
+            "label": "Dealer Hardgoods Replenishment",
+            "requiredRecordRoles": [
+              "customer",
+              "sales_order",
+              "product_sku",
+              "dealer_availability_or_replenishment_flow"
+            ],
+            "optionalRecordRoles": [
+              "allocation_support_sku",
+              "channel_context"
+            ],
+            "invalidRecordRoles": [
+              "ingredient",
+              "batch",
+              "bom",
+              "assembly",
+              "work_order",
+              "routing",
+              "wip"
+            ],
+            "allowedNouns": [
+              "channel availability sku",
+              "dealer replenishment flow",
+              "allocation support sku",
+              "fulfillment support sku",
+              "product availability sku"
+            ],
+            "invalidTerms": [
+              "finished good",
+              "ingredient",
+              "ingredient blend",
+              "production line",
+              "bom",
+              "assembly",
+              "work order",
+              "routing",
+              "wip",
+              "controlled assembly execution",
+              "frame welding",
+              "component a"
+            ]
+          },
+          "manufacturingFalseBlocksManufacturingSemantics": true,
+          "wipTrueRequiresWipDetailOrPartialResult": false,
+          "foodVocabularyRequiresFoodEvidenceAndManufacturing": false,
+          "openLinksBlockedUntilValidImport": true
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerCreatedRecords": true,
+          "noDrawerTransactionWrites": true,
+          "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+          "runnerOwnsGeneratedRecords": true,
+          "imageLookupDisabledByDefault": true
+        }
+      }
+    }
+  }
+}

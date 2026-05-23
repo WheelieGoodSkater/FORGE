@@ -1,0 +1,18 @@
+{
+  "schema": "idb.w138-governed-dcc-runner-creation-result-capture-trace.v1",
+  "decision": "PASS_CONTRACT_READY__RUNNER_EXECUTION_REQUIRED",
+  "runnerCreationAuthority": "dcc_runner_only",
+  "drawerAuthority": "import_result_only",
+  "importSmoke": {
+    "navigationStatus": "using_dcc_final_names",
+    "openAnchorCount": 9,
+    "linkPendingCount": 0,
+    "verifiedOpenableCount": 5
+  },
+  "recordExistenceProvenInThisHarness": false,
+  "targetedVisualNetSuiteTestingRequiredNow": true,
+  "bestNextCodexPrompt": {
+    "block": "W138R: Review Governed Runner Creation Evidence",
+    "prompt": "Move through W138R: Review Governed Runner Creation Evidence. Use the operator-provided governed DCC runner result JSON, drawer trace export, and screenshots proving the runner-created or runner-resolved Customer, demo transaction, hero item, matrix/proof item, and component records open in NetSuite. Grade runner result completeness, handoff parity, record existence, no drawer writes, no drawer SuiteScript invocation, no drawer transaction writes, and consultant usability. Output pass/fail, remediation, W138R report, whether broader visual NetSuite testing is required, and best next Codex prompt."
+  }
+}

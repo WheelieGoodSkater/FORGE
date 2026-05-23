@@ -1,0 +1,49 @@
+{
+  "schema": "idb.w20-transaction-context-execution-design.v1",
+  "status": "transaction_context_design_ready_blocked_in_main",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Packet Contract Agent",
+    "Transaction Context Agent",
+    "Validation And Evidence Agent"
+  ],
+  "objective": "Prepare transaction context writes after Customer and Proof Item results are stable.",
+  "goal": "Sales Order View or equivalent transaction context can be created or updated only after parent records exist and are traceable.",
+  "requiredParentResults": {
+    "customer": {
+      "recordId": true,
+      "url": true,
+      "operation": true,
+      "lookupStatus": true
+    },
+    "proofAnchor": {
+      "recordId": true,
+      "url": true,
+      "operation": true,
+      "lookupStatus": true
+    }
+  },
+  "transactionRecord": {
+    "role": "transaction",
+    "operation": "lookup_then_create_or_update_sales_order_context",
+    "parentCustomerRecordIdRequired": true,
+    "parentProofRecordIdRequired": true,
+    "duplicateLookupBlocksWrite": true
+  },
+  "traceResultContract": {
+    "recordId": true,
+    "url": true,
+    "operation": true,
+    "recoverableErrors": true,
+    "parentCustomerRecordId": true,
+    "parentProofRecordId": true
+  },
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "noTransactionWriteWithoutCustomerAndProofResult": true,
+    "noTransactionCreationInMainPackage": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true
+  }
+}

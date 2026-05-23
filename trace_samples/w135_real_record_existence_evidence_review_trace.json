@@ -1,0 +1,11 @@
+{
+  "schema": "idb.w135-real-record-existence-evidence-review-trace.v1",
+  "decision": "FAIL_REAL_RECORD_EXISTENCE__PLACEHOLDER_IDS_IMPORTED",
+  "correctedOpenableCount": 0,
+  "unresolvedReplacementTokenCount": 5,
+  "recordExistenceProven": false,
+  "next": {
+    "block": "W136: Real ID Enforcement Retest And Build Engine Output Fix",
+    "prompt": "Move through W136: Real ID Enforcement Retest And Build Engine Output Fix. Use the W135 evidence showing REPLACE_REAL_* placeholder ids were imported and incorrectly appeared as Open before the link authority hardening. Verify the drawer now renders unresolved replacement ids as Link pending or Needs real URL, then update the internal build engine/operator output path so final generated names JSON contains actual numeric NetSuite internal ids and supported URLs for Customer, demo transaction, hero item, matrix/proof item, and component records. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership. Output corrected import smoke, real build-engine output requirements, trace samples, W136 report, whether targeted visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

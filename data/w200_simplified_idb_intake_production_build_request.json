@@ -1,0 +1,105 @@
+{
+  "schema": "idb.w200.simplified-idb-intake-production-build-request.v1",
+  "status": "pass",
+  "simplifiedIdbIntakeArchitecture": {
+    "consultantFacingRequiredInputs": [
+      "customer/prospect name",
+      "website",
+      "conversation notes"
+    ],
+    "inferredByIdb": [
+      "lane",
+      "proof path",
+      "demo scenario",
+      "build story",
+      "initial record naming intent"
+    ],
+    "debugOnlyConfiguration": [
+      "approved W144 endpoint",
+      "server flags",
+      "sandbox allowlist",
+      "runner script/deployment IDs",
+      "mapping ID",
+      "runner folder ID",
+      "result capture folder ID",
+      "operator approval phrase"
+    ]
+  },
+  "confirmedBuildRequestJsonContract": {
+    "schema": "idb.confirmed-build-request.v1",
+    "generatedFrom": [
+      "name",
+      "website",
+      "notes",
+      "confirmed inferred lane/proof/demo path",
+      "idempotency token",
+      "required record set"
+    ],
+    "requiredRecordSet": [
+      "Customer",
+      "demo transaction / Sales Order",
+      "hero item",
+      "matrix/proof item",
+      "component item"
+    ]
+  },
+  "buildReadinessStates": [
+    "consultant_intake_incomplete",
+    "demo_path_needs_confirmation",
+    "build_request_ready",
+    "server_adapter_not_configured",
+    "ready_for_governed_runner_submit",
+    "runnerTaskId_captured",
+    "waiting_for_completed_runner_result",
+    "completed_result_imported"
+  ],
+  "regressionGates": [
+    {
+      "name": "consultant readiness requires only the three production inputs",
+      "pass": true,
+      "detail": "setupReadiness no longer makes proof/objective fields required."
+    },
+    {
+      "name": "production consultant intake contract exists",
+      "pass": true,
+      "detail": "W200 adds the three-input contract and required record set."
+    },
+    {
+      "name": "confirmed build request includes simplified intake and admin/debug contract",
+      "pass": true,
+      "detail": "The request JSON names the consultant contract and hidden adapter configuration."
+    },
+    {
+      "name": "normal consultant form shows only customer website and notes",
+      "pass": true,
+      "detail": "Legacy objective/decision fields are retained only inside admin/debug details."
+    },
+    {
+      "name": "server adapter controls are hidden behind admin/debug",
+      "pass": true,
+      "detail": "W144 endpoint/flags/operator fields are not part of the normal consultant workflow."
+    },
+    {
+      "name": "handoff-only export is de-emphasized",
+      "pass": true,
+      "detail": "Build handoff remains available as debug evidence, not the primary production action."
+    },
+    {
+      "name": "existing W144 runnerTaskId path remains intact",
+      "pass": true,
+      "detail": "W200 does not remove the current W144 adapter call and runnerTaskId capture path."
+    },
+    {
+      "name": "W151 import guard and link authority remain required",
+      "pass": true,
+      "detail": "Open links still wait for completed runner result import."
+    },
+    {
+      "name": "package exposes W200 harness",
+      "pass": true,
+      "detail": "The regression harness is runnable by name."
+    }
+  ],
+  "visualTestingDecision": "blocked_until_completed_runner_result_import",
+  "bestNextCodexPrompt": "Move through W201: Governed Runner Completed Result Writer For Active V4 Runner. Patch the active scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js path to write W151-valid completed runner result JSON with numeric ids and supported NetSuite URLs into the configured result capture folder after successful server-side runner execution, then prove IDB polling can retrieve it without drawer writes."
+}

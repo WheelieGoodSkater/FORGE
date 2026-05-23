@@ -1,0 +1,193 @@
+{
+  "schema": "idb.w91-execute-one-run-retest-grade-pilot-unlock.v1",
+  "status": "blocked_missing_w90_retest_evidence_no_go",
+  "evidenceIntake": {
+    "schema": "idb.w91-retest-evidence-intake.v1",
+    "dccHandoffJson": {
+      "required": true,
+      "provided": false,
+      "files": []
+    },
+    "traceJson": {
+      "required": true,
+      "provided": false,
+      "files": []
+    },
+    "screenshots": {
+      "required": [
+        "Plan",
+        "Review DCC handoff",
+        "Trace evidence checklist"
+      ],
+      "provided": false,
+      "files": []
+    },
+    "operatorComparisonNotes": {
+      "required": true,
+      "provided": false,
+      "files": []
+    },
+    "legacySuiteScriptPackets": {
+      "provided": true,
+      "files": [
+        "/path/to/downloads/idb-suitescript-review-packet-synthetic-secondary-only.json"
+      ],
+      "note": "Legacy SuiteScript packets do not satisfy the W90 DCC handoff requirement."
+    }
+  },
+  "scoredResults": {
+    "schema": "idb.w91-scored-one-run-retest-results.v1",
+    "status": "blocked_missing_w90_retest_evidence",
+    "averageScore": 1.4,
+    "passingScore": 4,
+    "anyCategoryBelowThree": true,
+    "pilotUnlockEligible": false,
+    "categories": [
+      {
+        "category": "Plan screenshot after intake",
+        "score": 1,
+        "evidence": "No W90 Plan screenshot was provided."
+      },
+      {
+        "category": "Review DCC handoff screenshot",
+        "score": 1,
+        "evidence": "No Review screenshot showing the DCC handoff card was provided."
+      },
+      {
+        "category": "Trace evidence-checklist screenshot",
+        "score": 1,
+        "evidence": "No Trace screenshot showing the W90 evidence checklist was provided."
+      },
+      {
+        "category": "DCC handoff JSON",
+        "score": 1,
+        "evidence": "Missing idb-dcc-runner-handoff-packet-*.json."
+      },
+      {
+        "category": "Trace JSON",
+        "score": 1,
+        "evidence": "Missing intelligent-demo-builder-trace-*.json."
+      },
+      {
+        "category": "Operator comparison notes",
+        "score": 1,
+        "evidence": "No operator notes proving form params, DCC config params, and runner preview parity were provided."
+      },
+      {
+        "category": "No-submit/no-write safety",
+        "score": 3,
+        "evidence": "No write was observed, but the required W90 handoff evidence was not available to verify the retest path."
+      },
+      {
+        "category": "DCC ownership proof",
+        "score": 2,
+        "evidence": "Prior artifacts preserve DCC ownership, but the W90 retest did not provide a DCC handoff packet or operator comparison."
+      }
+    ],
+    "findings": [
+      {
+        "severity": "blocker",
+        "area": "DCC handoff evidence",
+        "finding": "No idb-dcc-runner-handoff-packet JSON was found, so the primary W90 remediation cannot be verified."
+      },
+      {
+        "severity": "blocker",
+        "area": "UX screenshots",
+        "finding": "No Plan, Review DCC handoff, or Trace evidence-checklist screenshots were provided."
+      },
+      {
+        "severity": "blocker",
+        "area": "operator proof",
+        "finding": "No operator comparison notes were provided, so Suitelet form-param parity and runner-preview parity are unproven."
+      },
+      {
+        "severity": "safe_boundary",
+        "area": "no write",
+        "finding": "No IDB write, transaction write, or DCC runner rewrite was observed in the available evidence."
+      }
+    ],
+    "noRegression": {
+      "noIdbWritesObserved": true,
+      "noDccRunnerRewriteObserved": true,
+      "noTransactionWritesObserved": true,
+      "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+      "consultantConfirmationRequired": true,
+      "dccOwnsObjectGeneration": true
+    }
+  },
+  "pilotUnlockDecision": {
+    "schema": "idb.w91-pilot-unlock-decision.v1",
+    "decision": "no_go_missing_w90_retest_evidence",
+    "broaderConsultantPilotUnlocked": false,
+    "singleRetestStillRequired": true,
+    "reason": "W90 required evidence was not provided. The unlock gate requires the DCC handoff JSON, trace JSON, screenshots, and operator comparison notes.",
+    "unlockCriteria": [
+      "DCC handoff JSON is attached.",
+      "Trace JSON is attached.",
+      "Plan, Review DCC handoff, and Trace evidence checklist screenshots are attached.",
+      "Operator maps handoff params in under 5 minutes.",
+      "No IDB SuiteScript invocation, queue action, or transaction write occurs."
+    ]
+  },
+  "remediation": {
+    "schema": "idb.w91-exact-remediation-before-unlock.v1",
+    "exactNextActions": [
+      "Load the current idb-drawer.user.js in Tampermonkey.",
+      "Run the W90 Ariat one-run retest from a clean IDB session.",
+      "Capture the Plan screenshot after intake.",
+      "Capture the Review screenshot showing the DCC handoff export card.",
+      "Click Export DCC handoff and attach idb-dcc-runner-handoff-packet-*.json.",
+      "Go to Trace, capture the Pilot evidence checklist screenshot, then export trace JSON.",
+      "Attach intelligent-demo-builder-trace-*.json.",
+      "Have the operator compare Suitelet form params, DCC-owned config params, and runner preview params, marking each match/missing/unclear.",
+      "Do not attach only the legacy SuiteScript review packet; it is secondary evidence only."
+    ],
+    "stopConditions": [
+      "Only the legacy SuiteScript review packet is exported.",
+      "Operator cannot identify Suitelet form params or runner preview params.",
+      "Trace source suggests notes own identity.",
+      "Any IDB path appears to submit, queue, or write records."
+    ]
+  },
+  "validatorResults": [
+    {
+      "name": "w91_inherits_w90_retest_packet",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w90-pilot-evidence-remediation-retest-pack.v1\",\"status\":\"pilot_evidence_remediation_ready_for_one_run_retest\"}"
+    },
+    {
+      "name": "w91_dcc_handoff_missing_blocks_unlock",
+      "pass": true,
+      "detail": "{\"required\":true,\"provided\":false,\"files\":[]}"
+    },
+    {
+      "name": "w91_screenshots_missing_blocks_unlock",
+      "pass": true,
+      "detail": "{\"required\":[\"Plan\",\"Review DCC handoff\",\"Trace evidence checklist\"],\"provided\":false,\"files\":[]}"
+    },
+    {
+      "name": "w91_operator_notes_missing_blocks_unlock",
+      "pass": true,
+      "detail": "{\"required\":true,\"provided\":false,\"files\":[]}"
+    },
+    {
+      "name": "w91_scores_force_no_go",
+      "pass": true,
+      "detail": "{\"averageScore\":1.4,\"anyBelowThree\":true}"
+    },
+    {
+      "name": "w91_legacy_packet_not_accepted_as_primary",
+      "pass": true,
+      "detail": "{\"provided\":true,\"files\":[\"/path/to/downloads/idb-suitescript-review-packet-synthetic-secondary-only.json\"],\"note\":\"Legacy SuiteScript packets do not satisfy the W90 DCC handoff requirement.\"}"
+    },
+    {
+      "name": "w91_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noIdbWritesObserved\":true,\"noDccRunnerRewriteObserved\":true,\"noTransactionWritesObserved\":true,\"hostedResolverOptionalUntilRemoteSmokeExecuted\":true,\"consultantConfirmationRequired\":true,\"dccOwnsObjectGeneration\":true}"
+    }
+  ],
+  "bestNextCodexPrompt": {
+    "block": "W91R: Run Actual One-Run Retest Evidence Review",
+    "prompt": "Move through W91R: Run Actual One-Run Retest Evidence Review. Use the newly attached W90 retest evidence: Plan screenshot, Review DCC handoff screenshot, Trace evidence-checklist screenshot, idb-dcc-runner-handoff-packet JSON, intelligent-demo-builder trace JSON, and operator comparison notes. Grade against the W88/W90 rubric, decide pilot unlock or no-go, and preserve no IDB writes, no DCC runner rewrite, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, consultant confirmation required, and DCC ownership of object generation. Output scored results, pilot unlock/no-go decision, exact remediation, W91R report, validator gates, and best next Codex prompt."
+  }
+}

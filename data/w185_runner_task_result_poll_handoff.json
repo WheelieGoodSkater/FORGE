@@ -1,0 +1,1778 @@
+{
+  "schema": "idb.w185-runner-task-result-poll-handoff.v1",
+  "status": "runner_task_poll_handoff_ready",
+  "decision": "PASS_RUNNER_TASK_RESULT_POLL_HANDOFF_READY__VISUAL_TESTING_BLOCKED",
+  "generatedAt": "2026-05-17T21:41:17.270Z",
+  "sourceEvidence": {
+    "w184Status": "one_call_submitted_result_capture_pending",
+    "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+    "adapterErrorStatus": "one_call_adapter_error_drawer_safe"
+  },
+  "samples": {
+    "pendingHandoff": {
+      "schema": "idb.runner-task-result-poll-handoff-from-authorized-build-call.v1",
+      "status": "runner_task_poll_handoff_check_runner_result_ready_or_pending",
+      "mode": "runner_task_poll_handoff_no_state_mutation",
+      "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+      "adapterError": false,
+      "buildReturnState": {
+        "runnerTaskIdCaptured": true,
+        "checkRunnerResultVisible": true,
+        "checkRunnerResultEnabled": true,
+        "resultCaptureStatus": "polling_pending",
+        "completedResultReadyForW151Import": false,
+        "adapterErrorStoppedSafely": false,
+        "importCompletedRunnerResultEnabled": false,
+        "targetedOpenLinkTestingReady": false
+      },
+      "pollControl": {
+        "schema": "idb.approved-server-adapter-result-poll-control-implementation.v1",
+        "status": "poll_control_pending_or_no_submit",
+        "mode": "visible_check_runner_result_control_poll_no_state_mutation",
+        "pollControlImplementationContract": {
+          "visibleControl": "check_runner_result",
+          "hiddenUntilRunnerTaskId": true,
+          "requestConstructedOnlyAfterPrerequisites": true,
+          "pollPath": "approved_server_adapter_result_capture_only",
+          "completedResultRequiresW151BeforeImport": true,
+          "noFinalNameMutationDuringPoll": true
+        },
+        "prerequisites": {
+          "runnerTaskIdPresent": true,
+          "confirmedBuildRequestReady": true,
+          "serverFlagsReady": true,
+          "sandboxAllowlistReady": true,
+          "operatorApprovalReady": true,
+          "idempotencyTokenPresent": true,
+          "approvedEndpointModeReady": true
+        },
+        "prerequisiteFailures": [],
+        "visibleControl": {
+          "currentStage": "runner_task_captured",
+          "checkRunnerResultVisible": true,
+          "checkRunnerResultEnabled": true,
+          "visibleControls": [
+            "check_runner_result"
+          ],
+          "enabledControls": [
+            "check_runner_result"
+          ]
+        },
+        "pollRequest": {
+          "requestConstructed": true,
+          "requestSent": true,
+          "envelope": {
+            "schema": "idb.approved-server-adapter-result-poll-request.v1",
+            "action": "poll_runner_result_capture",
+            "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+            "idempotencyToken": "idb-w185-ariat-international-one-call-001",
+            "approvedEndpointMode": "approved_server_adapter_only",
+            "serverFlags": {
+              "CREATE_ENABLED": true,
+              "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+              "QUEUE_SUBMIT_ENABLED": true
+            },
+            "sandboxAllowlistEvidence": {
+              "allowlisted": true,
+              "sandboxOnly": true,
+              "currentSandboxAccount": "SANDBOX_ACCOUNT_ID",
+              "sandboxAccountAllowlist": [
+                "SANDBOX_ACCOUNT_ID"
+              ],
+              "currentAccountAllowed": true
+            },
+            "operatorGate": {
+              "approved": true,
+              "schema": "idb.operator-queue-gate.v1",
+              "operatorOnly": true,
+              "operator": {
+                "name": "Operator User",
+                "reviewedAt": "2026-05-17T10:52:20-04:00"
+              },
+              "reviewDecision": "operator_approved_queue_submit",
+              "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+              "confirmedNoSubmit": true,
+              "confirmedDrawerNoWrite": true,
+              "confirmedSandboxAccount": true,
+              "drawerInvocationTokenAccepted": false,
+              "notes": "W185 harness approval evidence. Poll transport is mocked."
+            },
+            "pollCursor": null,
+            "confirmedBuildRequest": {
+              "schema": "idb.confirmed-build-request.v1",
+              "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+              "requestStatus": "confirmed_ready_for_governed_runner",
+              "producedBy": "idb_drawer",
+              "idbPrimarySurface": true,
+              "legacyDccSuiteletUi": {
+                "normalWorkflow": false,
+                "role": "legacy_reference_only",
+                "replacement": "Drawer prepares confirmed request; governed runner creates or resolves records."
+              },
+              "consultantConfirmation": {
+                "required": true,
+                "confirmed": true,
+                "source": "acceptedPacket"
+              },
+              "stateAuthority": {
+                "selectedLaneId": "apparel_accessories",
+                "confirmedLaneId": "apparel_accessories",
+                "exportedLaneId": "apparel_accessories",
+                "handoffParityStatus": "matched",
+                "noStateMismatch": true
+              },
+              "prospect": {
+                "name": "Ariat International",
+                "website": "https://www.ariat.com/"
+              },
+              "demoPath": {
+                "laneId": "apparel_accessories",
+                "laneName": "Apparel & Accessories",
+                "proofAnchor": "Style / SKU Matrix",
+                "familyKey": "apparelAccessories",
+                "scenario": "Style-to-Availability Readiness",
+                "confirmed": true
+              },
+              "storyInputs": {
+                "buyerNeed": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style",
+                "conversationNotes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise."
+              },
+              "runnerControls": {
+                "requestedMode": "server_flagged_integrated_build_return",
+                "sandboxWriteModeRequiresOperatorEnablement": true,
+                "writeAuthority": "governed_internal_runner_only",
+                "drawerAuthority": "prepare_confirm_export_import_only"
+              },
+              "requiredRecords": [
+                "customer",
+                "demoTransaction",
+                "heroItem",
+                "matrixProofItem",
+                "componentItem"
+              ],
+              "sourceHandoff": {
+                "schema": "idb.dcc-runner-handoff-packet.v1",
+                "status": "ready_for_dcc_suitelet_submission_review",
+                "executionMode": "review_only_no_submit",
+                "selectedPack": "apparelAccessories",
+                "selectedScenario": "Style-to-Availability Readiness"
+              },
+              "noRegression": {
+                "noDrawerWrites": true,
+                "noSuiteScriptInvocationFromDrawer": true,
+                "noTransactionWritesFromDrawer": true,
+                "noActiveOpenLinksWithoutRealUrls": true
+              }
+            }
+          },
+          "onePollPerClick": true,
+          "stopReason": "poll_transport_executed_once"
+        },
+        "normalizedPollResponse": {
+          "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+          "status": "polling_pending",
+          "label": "Polling: result pending",
+          "message": "Polling is still waiting for governed runner result capture.",
+          "rawStatus": "polling_pending",
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+          "resultCaptureStatus": "polling_pending",
+          "pollAttempted": true,
+          "finalGeneratedNamesJsonReady": false,
+          "finalGeneratedNamesJson": null,
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "activeOpenLinks": 0,
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          }
+        },
+        "resultImportGuard": {
+          "completedResultPresent": false,
+          "completedResultAcceptedByW151": false,
+          "completedResultStatus": "invalid_json_payload",
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "mutationGuard": {
+          "finalGeneratedNamesBefore": "",
+          "finalGeneratedNamesAfter": "",
+          "finalGeneratedNamesUnchanged": true,
+          "finalGeneratedNamesImported": false,
+          "drawerWritesAttempted": false,
+          "drawerTransactionWritesAttempted": false,
+          "activeOpenLinks": 0
+        },
+        "traceSamples": [
+          {
+            "event": "w179_poll_control_visibility",
+            "runnerTaskIdPresent": true,
+            "checkRunnerResultVisible": true,
+            "requestSent": true,
+            "activeOpenLinks": 0
+          },
+          {
+            "event": "w179_poll_request_gate",
+            "requestConstructed": true,
+            "prerequisiteFailures": [],
+            "approvedEndpointModeReady": true,
+            "idempotencyTokenPresent": true,
+            "activeOpenLinks": 0
+          },
+          {
+            "event": "w179_poll_response_normalized",
+            "status": "polling_pending",
+            "resultCaptureStatus": "polling_pending",
+            "completedResultAcceptedByW151": false,
+            "mutatesFinalGeneratedNames": false,
+            "activeOpenLinks": 0
+          }
+        ],
+        "visualTestingDecision": {
+          "visualTestingBlockedUntilCompletedResultImported": true,
+          "targetedOpenLinkTestingReady": false,
+          "broaderVisualNetSuiteTestingRequired": false,
+          "reason": "W179 only checks result capture. Visual testing remains blocked until completed runner result JSON is imported."
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "consultantConfirmationRequired": true,
+          "stateAuthorityAndHandoffParityPreserved": true,
+          "idempotencyPreserved": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true,
+          "noActiveOpenLinksWithoutRealUrls": true
+        }
+      },
+      "pollImportGate": {
+        "schema": "idb.governed-runner-result-poll-and-import-gate.v1",
+        "status": "runner_result_poll_pending_or_blocked",
+        "mode": "poll_or_accept_result_capture_no_state_mutation",
+        "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+        "pollGate": {
+          "runnerTaskIdPresent": true,
+          "adapterErrorFromW174": false,
+          "pollTransportPresent": true,
+          "maxPollAttempts": 1,
+          "attempts": [
+            {
+              "attempt": 1,
+              "status": "polling_pending",
+              "resultCaptureStatus": "polling_pending",
+              "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+              "finalGeneratedNamesJsonReady": false,
+              "adapterError": false,
+              "activeOpenLinks": 0
+            }
+          ],
+          "stopReason": "poll_limit_reached_or_pending",
+          "resultCaptureStatus": "polling_pending"
+        },
+        "normalizedResponse": {
+          "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+          "status": "polling_pending",
+          "label": "Polling: result pending",
+          "message": "Polling is still waiting for governed runner result capture.",
+          "rawStatus": "polling_pending",
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+          "resultCaptureStatus": "polling_pending",
+          "pollAttempted": true,
+          "finalGeneratedNamesJsonReady": false,
+          "finalGeneratedNamesJson": null,
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "activeOpenLinks": 0,
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          }
+        },
+        "importGate": {
+          "completedResultAcceptedByW151": false,
+          "completedResultStatus": "invalid_json_payload",
+          "generatedRecordOwner": "",
+          "internalRunnerOwnerValid": false,
+          "handoffStatus": "handoff_packet_rejected",
+          "handoffRejected": true,
+          "importReady": false,
+          "importTarget": "state.dccFinalNamingResult",
+          "stateMutationAllowedInThisBlock": false
+        },
+        "resultJsonEvidence": {
+          "finalGeneratedNamesJsonReady": false,
+          "completedResultJson": null,
+          "acceptedRecordCount": 0,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "adapterErrorEvidence": {
+          "captured": false,
+          "stopReason": "poll_limit_reached_or_pending",
+          "operatorEvidenceRequired": false,
+          "finalGeneratedNamesMutated": false
+        },
+        "mutationGuard": {
+          "finalGeneratedNamesBefore": "",
+          "finalGeneratedNamesAfter": "",
+          "finalGeneratedNamesUnchanged": true,
+          "finalGeneratedNamesImported": false,
+          "activeOpenLinks": 0,
+          "writesAttemptedFromDrawer": false
+        },
+        "rollbackPlan": {
+          "action": "disable_server_flags_before_retry_or_result_repoll",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        },
+        "traceSamples": [
+          {
+            "event": "w175_poll_gate_started",
+            "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+            "adapterErrorFromW174": false,
+            "pollAttempted": true,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          },
+          {
+            "event": "w175_poll_terminal_status",
+            "status": "runner_result_poll_pending_or_blocked",
+            "stopReason": "poll_limit_reached_or_pending",
+            "resultCaptureStatus": "polling_pending",
+            "finalGeneratedNamesJsonReady": false,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          },
+          {
+            "event": "w175_w151_import_gate",
+            "acceptedByW151": false,
+            "importReady": false,
+            "handoffRejected": true,
+            "stateMutationAllowedInThisBlock": false,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          }
+        ],
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "consultantConfirmationRequired": true,
+          "stateAuthorityAndHandoffParityPreserved": true,
+          "idempotencyPreserved": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true,
+          "w151CompletedResultImportGuardPreserved": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "visualTestingBlockedUntilCompletedResultImport": true
+        }
+      },
+      "operatorEvidenceRequirement": {
+        "required": false,
+        "reason": "Runner task exists; operator may use Check runner result without mutating final names."
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "activeOpenLinks": 0,
+        "writesAttemptedFromDrawer": false,
+        "drawerCreatedRecords": false
+      },
+      "traceSamples": [
+        {
+          "event": "w185_runner_task_capture_handoff",
+          "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+          "adapterError": false,
+          "checkRunnerResultVisible": true,
+          "checkRunnerResultEnabled": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w185_result_capture_poll_handoff",
+          "pollStatus": "poll_control_pending_or_no_submit",
+          "resultCaptureStatus": "polling_pending",
+          "completedResultReadyForW151Import": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w185_w151_import_boundary",
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "adapterErrorStoppedSafely": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlocked": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W185 exposes polling from runnerTaskId only. Open-link visual testing remains blocked until completed runner result JSON is imported."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilCompletedRunnerResultImport": true
+      }
+    },
+    "completedHandoff": {
+      "schema": "idb.runner-task-result-poll-handoff-from-authorized-build-call.v1",
+      "status": "runner_task_poll_handoff_completed_result_ready_for_w151_import",
+      "mode": "runner_task_poll_handoff_no_state_mutation",
+      "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+      "adapterError": false,
+      "buildReturnState": {
+        "runnerTaskIdCaptured": true,
+        "checkRunnerResultVisible": true,
+        "checkRunnerResultEnabled": true,
+        "resultCaptureStatus": "completed_result_capture_ready",
+        "completedResultReadyForW151Import": true,
+        "adapterErrorStoppedSafely": false,
+        "importCompletedRunnerResultEnabled": true,
+        "targetedOpenLinkTestingReady": false
+      },
+      "pollControl": {
+        "schema": "idb.approved-server-adapter-result-poll-control-implementation.v1",
+        "status": "poll_control_completed_result_ready_for_w151_import",
+        "mode": "visible_check_runner_result_control_poll_no_state_mutation",
+        "pollControlImplementationContract": {
+          "visibleControl": "check_runner_result",
+          "hiddenUntilRunnerTaskId": true,
+          "requestConstructedOnlyAfterPrerequisites": true,
+          "pollPath": "approved_server_adapter_result_capture_only",
+          "completedResultRequiresW151BeforeImport": true,
+          "noFinalNameMutationDuringPoll": true
+        },
+        "prerequisites": {
+          "runnerTaskIdPresent": true,
+          "confirmedBuildRequestReady": true,
+          "serverFlagsReady": true,
+          "sandboxAllowlistReady": true,
+          "operatorApprovalReady": true,
+          "idempotencyTokenPresent": true,
+          "approvedEndpointModeReady": true
+        },
+        "prerequisiteFailures": [],
+        "visibleControl": {
+          "currentStage": "runner_task_captured",
+          "checkRunnerResultVisible": true,
+          "checkRunnerResultEnabled": true,
+          "visibleControls": [
+            "check_runner_result"
+          ],
+          "enabledControls": [
+            "check_runner_result"
+          ]
+        },
+        "pollRequest": {
+          "requestConstructed": true,
+          "requestSent": true,
+          "envelope": {
+            "schema": "idb.approved-server-adapter-result-poll-request.v1",
+            "action": "poll_runner_result_capture",
+            "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+            "idempotencyToken": "idb-w185-ariat-international-one-call-001",
+            "approvedEndpointMode": "approved_server_adapter_only",
+            "serverFlags": {
+              "CREATE_ENABLED": true,
+              "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+              "QUEUE_SUBMIT_ENABLED": true
+            },
+            "sandboxAllowlistEvidence": {
+              "allowlisted": true,
+              "sandboxOnly": true,
+              "currentSandboxAccount": "SANDBOX_ACCOUNT_ID",
+              "sandboxAccountAllowlist": [
+                "SANDBOX_ACCOUNT_ID"
+              ],
+              "currentAccountAllowed": true
+            },
+            "operatorGate": {
+              "approved": true,
+              "schema": "idb.operator-queue-gate.v1",
+              "operatorOnly": true,
+              "operator": {
+                "name": "Operator User",
+                "reviewedAt": "2026-05-17T10:52:20-04:00"
+              },
+              "reviewDecision": "operator_approved_queue_submit",
+              "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+              "confirmedNoSubmit": true,
+              "confirmedDrawerNoWrite": true,
+              "confirmedSandboxAccount": true,
+              "drawerInvocationTokenAccepted": false,
+              "notes": "W185 harness approval evidence. Poll transport is mocked."
+            },
+            "pollCursor": null,
+            "confirmedBuildRequest": {
+              "schema": "idb.confirmed-build-request.v1",
+              "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+              "requestStatus": "confirmed_ready_for_governed_runner",
+              "producedBy": "idb_drawer",
+              "idbPrimarySurface": true,
+              "legacyDccSuiteletUi": {
+                "normalWorkflow": false,
+                "role": "legacy_reference_only",
+                "replacement": "Drawer prepares confirmed request; governed runner creates or resolves records."
+              },
+              "consultantConfirmation": {
+                "required": true,
+                "confirmed": true,
+                "source": "acceptedPacket"
+              },
+              "stateAuthority": {
+                "selectedLaneId": "apparel_accessories",
+                "confirmedLaneId": "apparel_accessories",
+                "exportedLaneId": "apparel_accessories",
+                "handoffParityStatus": "matched",
+                "noStateMismatch": true
+              },
+              "prospect": {
+                "name": "Ariat International",
+                "website": "https://www.ariat.com/"
+              },
+              "demoPath": {
+                "laneId": "apparel_accessories",
+                "laneName": "Apparel & Accessories",
+                "proofAnchor": "Style / SKU Matrix",
+                "familyKey": "apparelAccessories",
+                "scenario": "Style-to-Availability Readiness",
+                "confirmed": true
+              },
+              "storyInputs": {
+                "buyerNeed": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style",
+                "conversationNotes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise."
+              },
+              "runnerControls": {
+                "requestedMode": "server_flagged_integrated_build_return",
+                "sandboxWriteModeRequiresOperatorEnablement": true,
+                "writeAuthority": "governed_internal_runner_only",
+                "drawerAuthority": "prepare_confirm_export_import_only"
+              },
+              "requiredRecords": [
+                "customer",
+                "demoTransaction",
+                "heroItem",
+                "matrixProofItem",
+                "componentItem"
+              ],
+              "sourceHandoff": {
+                "schema": "idb.dcc-runner-handoff-packet.v1",
+                "status": "ready_for_dcc_suitelet_submission_review",
+                "executionMode": "review_only_no_submit",
+                "selectedPack": "apparelAccessories",
+                "selectedScenario": "Style-to-Availability Readiness"
+              },
+              "noRegression": {
+                "noDrawerWrites": true,
+                "noSuiteScriptInvocationFromDrawer": true,
+                "noTransactionWritesFromDrawer": true,
+                "noActiveOpenLinksWithoutRealUrls": true
+              }
+            }
+          },
+          "onePollPerClick": true,
+          "stopReason": "poll_transport_executed_once"
+        },
+        "normalizedPollResponse": {
+          "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+          "status": "completed_result_awaiting_w151_import",
+          "label": "Completed result waiting for import",
+          "message": "Completed runner result JSON is present, but W151 import guard must validate it before Open links appear.",
+          "rawStatus": "completed_runner_result_ready",
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+          "resultCaptureStatus": "completed_result_capture_ready",
+          "pollAttempted": true,
+          "finalGeneratedNamesJsonReady": true,
+          "finalGeneratedNamesJson": {
+            "schema": "idb.completed-runner-result-json.v1",
+            "status": "completed",
+            "runStatus": "completed",
+            "generatedRecordOwner": "governed_runner_internal_build_engine",
+            "records": {
+              "customer": {
+                "type": "customer",
+                "name": "Ariat International Outdoor Retail Account",
+                "internalId": 501234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+              },
+              "demoTransaction": {
+                "type": "salesorder",
+                "name": "Ariat Seasonal Footwear Availability Demo Order",
+                "internalId": 601234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+              },
+              "heroItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Terrain H2O Work Boot Hero Item",
+                "internalId": 701234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+              },
+              "matrixProofItem": {
+                "type": "matrixitem",
+                "name": "Ariat Core Boot Size Color Matrix",
+                "internalId": 701235,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+              },
+              "componentItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Leather Upper Component",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            },
+            "demoTransaction": {
+              "type": "salesorder",
+              "name": "Ariat Seasonal Footwear Availability Demo Order",
+              "internalId": 601234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "heroItem": {
+              "type": "inventoryitem",
+              "name": "Ariat Terrain H2O Work Boot Hero Item",
+              "internalId": 701234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "matrixItem": {
+              "type": "matrixitem",
+              "name": "Ariat Core Boot Size Color Matrix",
+              "internalId": 701235,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "componentItems": [
+              {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Leather Upper Component",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            ]
+          },
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "activeOpenLinks": 0,
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          }
+        },
+        "resultImportGuard": {
+          "completedResultPresent": true,
+          "completedResultAcceptedByW151": true,
+          "completedResultStatus": "completed_runner_result_accepted",
+          "importReady": true,
+          "stateMutationAllowedInThisBlock": false,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "mutationGuard": {
+          "finalGeneratedNamesBefore": "",
+          "finalGeneratedNamesAfter": "",
+          "finalGeneratedNamesUnchanged": true,
+          "finalGeneratedNamesImported": false,
+          "drawerWritesAttempted": false,
+          "drawerTransactionWritesAttempted": false,
+          "activeOpenLinks": 0
+        },
+        "traceSamples": [
+          {
+            "event": "w179_poll_control_visibility",
+            "runnerTaskIdPresent": true,
+            "checkRunnerResultVisible": true,
+            "requestSent": true,
+            "activeOpenLinks": 0
+          },
+          {
+            "event": "w179_poll_request_gate",
+            "requestConstructed": true,
+            "prerequisiteFailures": [],
+            "approvedEndpointModeReady": true,
+            "idempotencyTokenPresent": true,
+            "activeOpenLinks": 0
+          },
+          {
+            "event": "w179_poll_response_normalized",
+            "status": "completed_result_awaiting_w151_import",
+            "resultCaptureStatus": "completed_result_capture_ready",
+            "completedResultAcceptedByW151": true,
+            "mutatesFinalGeneratedNames": false,
+            "activeOpenLinks": 0
+          }
+        ],
+        "visualTestingDecision": {
+          "visualTestingBlockedUntilCompletedResultImported": true,
+          "targetedOpenLinkTestingReady": false,
+          "broaderVisualNetSuiteTestingRequired": false,
+          "reason": "W179 only checks result capture. Visual testing remains blocked until completed runner result JSON is imported."
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "consultantConfirmationRequired": true,
+          "stateAuthorityAndHandoffParityPreserved": true,
+          "idempotencyPreserved": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true,
+          "noActiveOpenLinksWithoutRealUrls": true
+        }
+      },
+      "pollImportGate": {
+        "schema": "idb.governed-runner-result-poll-and-import-gate.v1",
+        "status": "completed_runner_result_ready_for_w151_import",
+        "mode": "poll_or_accept_result_capture_no_state_mutation",
+        "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+        "pollGate": {
+          "runnerTaskIdPresent": true,
+          "adapterErrorFromW174": false,
+          "pollTransportPresent": true,
+          "maxPollAttempts": 1,
+          "attempts": [
+            {
+              "attempt": 1,
+              "status": "completed_result_awaiting_w151_import",
+              "resultCaptureStatus": "completed_result_capture_ready",
+              "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+              "finalGeneratedNamesJsonReady": true,
+              "adapterError": false,
+              "activeOpenLinks": 0
+            }
+          ],
+          "stopReason": "completed_runner_result_returned",
+          "resultCaptureStatus": "completed_result_capture_ready"
+        },
+        "normalizedResponse": {
+          "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+          "status": "completed_result_awaiting_w151_import",
+          "label": "Completed result waiting for import",
+          "message": "Completed runner result JSON is present, but W151 import guard must validate it before Open links appear.",
+          "rawStatus": "completed_runner_result_ready",
+          "queueSubmitted": true,
+          "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+          "resultCaptureStatus": "completed_result_capture_ready",
+          "pollAttempted": true,
+          "finalGeneratedNamesJsonReady": true,
+          "finalGeneratedNamesJson": {
+            "schema": "idb.completed-runner-result-json.v1",
+            "status": "completed",
+            "runStatus": "completed",
+            "generatedRecordOwner": "governed_runner_internal_build_engine",
+            "records": {
+              "customer": {
+                "type": "customer",
+                "name": "Ariat International Outdoor Retail Account",
+                "internalId": 501234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+              },
+              "demoTransaction": {
+                "type": "salesorder",
+                "name": "Ariat Seasonal Footwear Availability Demo Order",
+                "internalId": 601234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+              },
+              "heroItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Terrain H2O Work Boot Hero Item",
+                "internalId": 701234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+              },
+              "matrixProofItem": {
+                "type": "matrixitem",
+                "name": "Ariat Core Boot Size Color Matrix",
+                "internalId": 701235,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+              },
+              "componentItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Leather Upper Component",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            },
+            "demoTransaction": {
+              "type": "salesorder",
+              "name": "Ariat Seasonal Footwear Availability Demo Order",
+              "internalId": 601234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "heroItem": {
+              "type": "inventoryitem",
+              "name": "Ariat Terrain H2O Work Boot Hero Item",
+              "internalId": 701234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "matrixItem": {
+              "type": "matrixitem",
+              "name": "Ariat Core Boot Size Color Matrix",
+              "internalId": 701235,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "componentItems": [
+              {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Leather Upper Component",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            ]
+          },
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "activeOpenLinks": 0,
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          }
+        },
+        "importGate": {
+          "completedResultAcceptedByW151": true,
+          "completedResultStatus": "completed_runner_result_accepted",
+          "generatedRecordOwner": "governed_runner_internal_build_engine",
+          "internalRunnerOwnerValid": true,
+          "handoffStatus": "handoff_packet_rejected",
+          "handoffRejected": true,
+          "importReady": true,
+          "importTarget": "state.dccFinalNamingResult",
+          "stateMutationAllowedInThisBlock": false
+        },
+        "resultJsonEvidence": {
+          "finalGeneratedNamesJsonReady": true,
+          "completedResultJson": {
+            "schema": "idb.completed-runner-result-json.v1",
+            "status": "completed",
+            "runStatus": "completed",
+            "generatedRecordOwner": "governed_runner_internal_build_engine",
+            "records": {
+              "customer": {
+                "type": "customer",
+                "name": "Ariat International Outdoor Retail Account",
+                "internalId": 501234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=501234"
+              },
+              "demoTransaction": {
+                "type": "salesorder",
+                "name": "Ariat Seasonal Footwear Availability Demo Order",
+                "internalId": 601234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+              },
+              "heroItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Terrain H2O Work Boot Hero Item",
+                "internalId": 701234,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+              },
+              "matrixProofItem": {
+                "type": "matrixitem",
+                "name": "Ariat Core Boot Size Color Matrix",
+                "internalId": 701235,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+              },
+              "componentItem": {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Leather Upper Component",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            },
+            "demoTransaction": {
+              "type": "salesorder",
+              "name": "Ariat Seasonal Footwear Availability Demo Order",
+              "internalId": 601234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=601234"
+            },
+            "heroItem": {
+              "type": "inventoryitem",
+              "name": "Ariat Terrain H2O Work Boot Hero Item",
+              "internalId": 701234,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701234"
+            },
+            "matrixItem": {
+              "type": "matrixitem",
+              "name": "Ariat Core Boot Size Color Matrix",
+              "internalId": 701235,
+              "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701235"
+            },
+            "componentItems": [
+              {
+                "type": "inventoryitem",
+                "name": "Ariat Brown Leather Upper Component",
+                "internalId": 701236,
+                "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=701236"
+              }
+            ]
+          },
+          "acceptedRecordCount": 5,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "adapterErrorEvidence": {
+          "captured": false,
+          "stopReason": "completed_runner_result_returned",
+          "operatorEvidenceRequired": false,
+          "finalGeneratedNamesMutated": false
+        },
+        "mutationGuard": {
+          "finalGeneratedNamesBefore": "",
+          "finalGeneratedNamesAfter": "",
+          "finalGeneratedNamesUnchanged": true,
+          "finalGeneratedNamesImported": false,
+          "activeOpenLinks": 0,
+          "writesAttemptedFromDrawer": false
+        },
+        "rollbackPlan": {
+          "action": "disable_server_flags_before_retry_or_result_repoll",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        },
+        "traceSamples": [
+          {
+            "event": "w175_poll_gate_started",
+            "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+            "adapterErrorFromW174": false,
+            "pollAttempted": true,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          },
+          {
+            "event": "w175_poll_terminal_status",
+            "status": "completed_runner_result_ready_for_w151_import",
+            "stopReason": "completed_runner_result_returned",
+            "resultCaptureStatus": "completed_result_capture_ready",
+            "finalGeneratedNamesJsonReady": true,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          },
+          {
+            "event": "w175_w151_import_gate",
+            "acceptedByW151": true,
+            "importReady": true,
+            "handoffRejected": true,
+            "stateMutationAllowedInThisBlock": false,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          }
+        ],
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "consultantConfirmationRequired": true,
+          "stateAuthorityAndHandoffParityPreserved": true,
+          "idempotencyPreserved": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true,
+          "w151CompletedResultImportGuardPreserved": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "visualTestingBlockedUntilCompletedResultImport": true
+        }
+      },
+      "operatorEvidenceRequirement": {
+        "required": false,
+        "reason": "Completed runner result is ready for W151 import; visual testing remains blocked until import commits."
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "activeOpenLinks": 0,
+        "writesAttemptedFromDrawer": false,
+        "drawerCreatedRecords": false
+      },
+      "traceSamples": [
+        {
+          "event": "w185_runner_task_capture_handoff",
+          "runnerTaskId": "task_w185_idb-w185-ariat-international-one-call-001",
+          "adapterError": false,
+          "checkRunnerResultVisible": true,
+          "checkRunnerResultEnabled": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w185_result_capture_poll_handoff",
+          "pollStatus": "poll_control_completed_result_ready_for_w151_import",
+          "resultCaptureStatus": "completed_result_capture_ready",
+          "completedResultReadyForW151Import": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w185_w151_import_boundary",
+          "importReady": true,
+          "stateMutationAllowedInThisBlock": false,
+          "adapterErrorStoppedSafely": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlocked": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W185 exposes polling from runnerTaskId only. Open-link visual testing remains blocked until completed runner result JSON is imported."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilCompletedRunnerResultImport": true
+      }
+    },
+    "adapterErrorHandoff": {
+      "schema": "idb.runner-task-result-poll-handoff-from-authorized-build-call.v1",
+      "status": "runner_task_poll_handoff_stopped_adapter_error",
+      "mode": "runner_task_poll_handoff_no_state_mutation",
+      "runnerTaskId": "",
+      "adapterError": true,
+      "buildReturnState": {
+        "runnerTaskIdCaptured": false,
+        "checkRunnerResultVisible": false,
+        "checkRunnerResultEnabled": false,
+        "resultCaptureStatus": "not_started_no_submit",
+        "completedResultReadyForW151Import": false,
+        "adapterErrorStoppedSafely": true,
+        "importCompletedRunnerResultEnabled": false,
+        "targetedOpenLinkTestingReady": false
+      },
+      "pollControl": {
+        "schema": "idb.approved-server-adapter-result-poll-control-implementation.v1",
+        "status": "poll_control_hidden_no_runner_task",
+        "mode": "visible_check_runner_result_control_poll_no_state_mutation",
+        "pollControlImplementationContract": {
+          "visibleControl": "check_runner_result",
+          "hiddenUntilRunnerTaskId": true,
+          "requestConstructedOnlyAfterPrerequisites": true,
+          "pollPath": "approved_server_adapter_result_capture_only",
+          "completedResultRequiresW151BeforeImport": true,
+          "noFinalNameMutationDuringPoll": true
+        },
+        "prerequisites": {
+          "runnerTaskIdPresent": false,
+          "confirmedBuildRequestReady": true,
+          "serverFlagsReady": true,
+          "sandboxAllowlistReady": true,
+          "operatorApprovalReady": true,
+          "idempotencyTokenPresent": true,
+          "approvedEndpointModeReady": true
+        },
+        "prerequisiteFailures": [
+          "runnerTaskIdPresent"
+        ],
+        "visibleControl": {
+          "currentStage": "adapter_error_stop",
+          "checkRunnerResultVisible": false,
+          "checkRunnerResultEnabled": false,
+          "visibleControls": [
+            "collect_adapter_error_evidence"
+          ],
+          "enabledControls": [
+            "collect_adapter_error_evidence"
+          ]
+        },
+        "pollRequest": {
+          "requestConstructed": false,
+          "requestSent": false,
+          "envelope": null,
+          "onePollPerClick": true,
+          "stopReason": "poll_control_hidden_until_runner_task_id_exists"
+        },
+        "normalizedPollResponse": {
+          "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+          "status": "false_flag_no_submit",
+          "label": "False flags: no submit",
+          "message": "Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.",
+          "rawStatus": "poll_control_hidden_no_runner_task",
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "resultCaptureStatus": "not_started_no_submit",
+          "pollAttempted": false,
+          "finalGeneratedNamesJsonReady": false,
+          "finalGeneratedNamesJson": null,
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "activeOpenLinks": 0,
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          }
+        },
+        "resultImportGuard": {
+          "completedResultPresent": false,
+          "completedResultAcceptedByW151": false,
+          "completedResultStatus": "invalid_json_payload",
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "mutationGuard": {
+          "finalGeneratedNamesBefore": "",
+          "finalGeneratedNamesAfter": "",
+          "finalGeneratedNamesUnchanged": true,
+          "finalGeneratedNamesImported": false,
+          "drawerWritesAttempted": false,
+          "drawerTransactionWritesAttempted": false,
+          "activeOpenLinks": 0
+        },
+        "traceSamples": [
+          {
+            "event": "w179_poll_control_visibility",
+            "runnerTaskIdPresent": false,
+            "checkRunnerResultVisible": false,
+            "requestSent": false,
+            "activeOpenLinks": 0
+          },
+          {
+            "event": "w179_poll_request_gate",
+            "requestConstructed": false,
+            "prerequisiteFailures": [
+              "runnerTaskIdPresent"
+            ],
+            "approvedEndpointModeReady": true,
+            "idempotencyTokenPresent": true,
+            "activeOpenLinks": 0
+          },
+          {
+            "event": "w179_poll_response_normalized",
+            "status": "false_flag_no_submit",
+            "resultCaptureStatus": "not_started_no_submit",
+            "completedResultAcceptedByW151": false,
+            "mutatesFinalGeneratedNames": false,
+            "activeOpenLinks": 0
+          }
+        ],
+        "visualTestingDecision": {
+          "visualTestingBlockedUntilCompletedResultImported": true,
+          "targetedOpenLinkTestingReady": false,
+          "broaderVisualNetSuiteTestingRequired": false,
+          "reason": "W179 only checks result capture. Visual testing remains blocked until completed runner result JSON is imported."
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "consultantConfirmationRequired": true,
+          "stateAuthorityAndHandoffParityPreserved": true,
+          "idempotencyPreserved": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true,
+          "noActiveOpenLinksWithoutRealUrls": true
+        }
+      },
+      "pollImportGate": {
+        "schema": "idb.governed-runner-result-poll-and-import-gate.v1",
+        "status": "poll_stopped_adapter_error_operator_evidence_required",
+        "mode": "poll_or_accept_result_capture_no_state_mutation",
+        "runnerTaskId": "",
+        "pollGate": {
+          "runnerTaskIdPresent": false,
+          "adapterErrorFromW174": true,
+          "pollTransportPresent": false,
+          "maxPollAttempts": 1,
+          "attempts": [],
+          "stopReason": "adapter_error_from_w174_requires_operator_evidence",
+          "resultCaptureStatus": "adapter_error_requires_operator_evidence"
+        },
+        "normalizedResponse": {
+          "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+          "status": "adapter_transport_error_drawer_safe",
+          "label": "Adapter response error",
+          "message": "The adapter response reported an error. The drawer keeps generated names and Open links unchanged.",
+          "rawStatus": "adapter_error",
+          "queueSubmitted": false,
+          "runnerTaskId": "",
+          "resultCaptureStatus": "adapter_error_requires_operator_evidence",
+          "pollAttempted": false,
+          "finalGeneratedNamesJsonReady": false,
+          "finalGeneratedNamesJson": null,
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "activeOpenLinks": 0,
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          }
+        },
+        "importGate": {
+          "completedResultAcceptedByW151": false,
+          "completedResultStatus": "invalid_json_payload",
+          "generatedRecordOwner": "",
+          "internalRunnerOwnerValid": false,
+          "handoffStatus": "handoff_packet_rejected",
+          "handoffRejected": true,
+          "importReady": false,
+          "importTarget": "state.dccFinalNamingResult",
+          "stateMutationAllowedInThisBlock": false
+        },
+        "resultJsonEvidence": {
+          "finalGeneratedNamesJsonReady": false,
+          "completedResultJson": null,
+          "acceptedRecordCount": 0,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "adapterErrorEvidence": {
+          "captured": true,
+          "stopReason": "adapter_error_from_w174_requires_operator_evidence",
+          "operatorEvidenceRequired": true,
+          "finalGeneratedNamesMutated": false
+        },
+        "mutationGuard": {
+          "finalGeneratedNamesBefore": "",
+          "finalGeneratedNamesAfter": "",
+          "finalGeneratedNamesUnchanged": true,
+          "finalGeneratedNamesImported": false,
+          "activeOpenLinks": 0,
+          "writesAttemptedFromDrawer": false
+        },
+        "rollbackPlan": {
+          "action": "disable_server_flags_before_retry_or_result_repoll",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        },
+        "traceSamples": [
+          {
+            "event": "w175_poll_gate_started",
+            "runnerTaskId": "",
+            "adapterErrorFromW174": true,
+            "pollAttempted": false,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          },
+          {
+            "event": "w175_poll_terminal_status",
+            "status": "poll_stopped_adapter_error_operator_evidence_required",
+            "stopReason": "adapter_error_from_w174_requires_operator_evidence",
+            "resultCaptureStatus": "adapter_error_requires_operator_evidence",
+            "finalGeneratedNamesJsonReady": false,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          },
+          {
+            "event": "w175_w151_import_gate",
+            "acceptedByW151": false,
+            "importReady": false,
+            "handoffRejected": true,
+            "stateMutationAllowedInThisBlock": false,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          }
+        ],
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "consultantConfirmationRequired": true,
+          "stateAuthorityAndHandoffParityPreserved": true,
+          "idempotencyPreserved": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true,
+          "w151CompletedResultImportGuardPreserved": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "visualTestingBlockedUntilCompletedResultImport": true
+        }
+      },
+      "operatorEvidenceRequirement": {
+        "required": true,
+        "reason": "Adapter error stops Build return and requires operator evidence before retry."
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "activeOpenLinks": 0,
+        "writesAttemptedFromDrawer": false,
+        "drawerCreatedRecords": false
+      },
+      "traceSamples": [
+        {
+          "event": "w185_runner_task_capture_handoff",
+          "runnerTaskId": "",
+          "adapterError": true,
+          "checkRunnerResultVisible": false,
+          "checkRunnerResultEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w185_result_capture_poll_handoff",
+          "pollStatus": "poll_control_hidden_no_runner_task",
+          "resultCaptureStatus": "not_started_no_submit",
+          "completedResultReadyForW151Import": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w185_w151_import_boundary",
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "adapterErrorStoppedSafely": true,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlocked": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W185 exposes polling from runnerTaskId only. Open-link visual testing remains blocked until completed runner result JSON is imported."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilCompletedRunnerResultImport": true
+      }
+    },
+    "missingRunnerTaskHandoff": {
+      "schema": "idb.runner-task-result-poll-handoff-from-authorized-build-call.v1",
+      "status": "runner_task_poll_handoff_blocked_missing_runner_task_id",
+      "mode": "runner_task_poll_handoff_no_state_mutation",
+      "runnerTaskId": "",
+      "adapterError": false,
+      "buildReturnState": {
+        "runnerTaskIdCaptured": false,
+        "checkRunnerResultVisible": false,
+        "checkRunnerResultEnabled": false,
+        "resultCaptureStatus": "not_started_no_submit",
+        "completedResultReadyForW151Import": false,
+        "adapterErrorStoppedSafely": false,
+        "importCompletedRunnerResultEnabled": false,
+        "targetedOpenLinkTestingReady": false
+      },
+      "pollControl": {
+        "schema": "idb.approved-server-adapter-result-poll-control-implementation.v1",
+        "status": "poll_control_hidden_no_runner_task",
+        "mode": "visible_check_runner_result_control_poll_no_state_mutation",
+        "pollControlImplementationContract": {
+          "visibleControl": "check_runner_result",
+          "hiddenUntilRunnerTaskId": true,
+          "requestConstructedOnlyAfterPrerequisites": true,
+          "pollPath": "approved_server_adapter_result_capture_only",
+          "completedResultRequiresW151BeforeImport": true,
+          "noFinalNameMutationDuringPoll": true
+        },
+        "prerequisites": {
+          "runnerTaskIdPresent": false,
+          "confirmedBuildRequestReady": true,
+          "serverFlagsReady": true,
+          "sandboxAllowlistReady": true,
+          "operatorApprovalReady": true,
+          "idempotencyTokenPresent": true,
+          "approvedEndpointModeReady": true
+        },
+        "prerequisiteFailures": [
+          "runnerTaskIdPresent"
+        ],
+        "visibleControl": {
+          "currentStage": "no_server_adapter_call_made",
+          "checkRunnerResultVisible": false,
+          "checkRunnerResultEnabled": false,
+          "visibleControls": [],
+          "enabledControls": []
+        },
+        "pollRequest": {
+          "requestConstructed": false,
+          "requestSent": false,
+          "envelope": null,
+          "onePollPerClick": true,
+          "stopReason": "poll_control_hidden_until_runner_task_id_exists"
+        },
+        "normalizedPollResponse": {
+          "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+          "status": "false_flag_no_submit",
+          "label": "False flags: no submit",
+          "message": "Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.",
+          "rawStatus": "poll_control_hidden_no_runner_task",
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "resultCaptureStatus": "not_started_no_submit",
+          "pollAttempted": false,
+          "finalGeneratedNamesJsonReady": false,
+          "finalGeneratedNamesJson": null,
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "activeOpenLinks": 0,
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          }
+        },
+        "resultImportGuard": {
+          "completedResultPresent": false,
+          "completedResultAcceptedByW151": false,
+          "completedResultStatus": "invalid_json_payload",
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "mutationGuard": {
+          "finalGeneratedNamesBefore": "",
+          "finalGeneratedNamesAfter": "",
+          "finalGeneratedNamesUnchanged": true,
+          "finalGeneratedNamesImported": false,
+          "drawerWritesAttempted": false,
+          "drawerTransactionWritesAttempted": false,
+          "activeOpenLinks": 0
+        },
+        "traceSamples": [
+          {
+            "event": "w179_poll_control_visibility",
+            "runnerTaskIdPresent": false,
+            "checkRunnerResultVisible": false,
+            "requestSent": false,
+            "activeOpenLinks": 0
+          },
+          {
+            "event": "w179_poll_request_gate",
+            "requestConstructed": false,
+            "prerequisiteFailures": [
+              "runnerTaskIdPresent"
+            ],
+            "approvedEndpointModeReady": true,
+            "idempotencyTokenPresent": true,
+            "activeOpenLinks": 0
+          },
+          {
+            "event": "w179_poll_response_normalized",
+            "status": "false_flag_no_submit",
+            "resultCaptureStatus": "not_started_no_submit",
+            "completedResultAcceptedByW151": false,
+            "mutatesFinalGeneratedNames": false,
+            "activeOpenLinks": 0
+          }
+        ],
+        "visualTestingDecision": {
+          "visualTestingBlockedUntilCompletedResultImported": true,
+          "targetedOpenLinkTestingReady": false,
+          "broaderVisualNetSuiteTestingRequired": false,
+          "reason": "W179 only checks result capture. Visual testing remains blocked until completed runner result JSON is imported."
+        },
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "consultantConfirmationRequired": true,
+          "stateAuthorityAndHandoffParityPreserved": true,
+          "idempotencyPreserved": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true,
+          "noActiveOpenLinksWithoutRealUrls": true
+        }
+      },
+      "pollImportGate": {
+        "schema": "idb.governed-runner-result-poll-and-import-gate.v1",
+        "status": "runner_result_poll_blocked_missing_runner_task_id",
+        "mode": "poll_or_accept_result_capture_no_state_mutation",
+        "runnerTaskId": "",
+        "pollGate": {
+          "runnerTaskIdPresent": false,
+          "adapterErrorFromW174": false,
+          "pollTransportPresent": false,
+          "maxPollAttempts": 1,
+          "attempts": [],
+          "stopReason": "runner_task_id_missing",
+          "resultCaptureStatus": "not_started_no_submit"
+        },
+        "normalizedResponse": {
+          "schema": "idb.integrated-build-approved-server-adapter-response-normalization.v1",
+          "status": "false_flag_no_submit",
+          "label": "False flags: no submit",
+          "message": "Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.",
+          "rawStatus": "poll_blocked_missing_runner_task_id",
+          "queueSubmitted": false,
+          "runnerTaskId": null,
+          "resultCaptureStatus": "not_started_no_submit",
+          "pollAttempted": false,
+          "finalGeneratedNamesJsonReady": false,
+          "finalGeneratedNamesJson": null,
+          "importGuard": "W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.",
+          "activeOpenLinks": 0,
+          "visualTestingBlocked": true,
+          "noRegression": {
+            "noDrawerWrites": true,
+            "noDrawerTransactionWrites": true,
+            "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+            "noActiveOpenLinksWithoutRealUrls": true,
+            "internalRunnerOwnership": true,
+            "rollbackByDisablingServerFlags": true
+          }
+        },
+        "importGate": {
+          "completedResultAcceptedByW151": false,
+          "completedResultStatus": "invalid_json_payload",
+          "generatedRecordOwner": "",
+          "internalRunnerOwnerValid": false,
+          "handoffStatus": "handoff_packet_rejected",
+          "handoffRejected": true,
+          "importReady": false,
+          "importTarget": "state.dccFinalNamingResult",
+          "stateMutationAllowedInThisBlock": false
+        },
+        "resultJsonEvidence": {
+          "finalGeneratedNamesJsonReady": false,
+          "completedResultJson": null,
+          "acceptedRecordCount": 0,
+          "activeOpenLinksBeforeImport": 0
+        },
+        "adapterErrorEvidence": {
+          "captured": false,
+          "stopReason": "runner_task_id_missing",
+          "operatorEvidenceRequired": false,
+          "finalGeneratedNamesMutated": false
+        },
+        "mutationGuard": {
+          "finalGeneratedNamesBefore": "",
+          "finalGeneratedNamesAfter": "",
+          "finalGeneratedNamesUnchanged": true,
+          "finalGeneratedNamesImported": false,
+          "activeOpenLinks": 0,
+          "writesAttemptedFromDrawer": false
+        },
+        "rollbackPlan": {
+          "action": "disable_server_flags_before_retry_or_result_repoll",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        },
+        "traceSamples": [
+          {
+            "event": "w175_poll_gate_started",
+            "runnerTaskId": "",
+            "adapterErrorFromW174": false,
+            "pollAttempted": false,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          },
+          {
+            "event": "w175_poll_terminal_status",
+            "status": "runner_result_poll_blocked_missing_runner_task_id",
+            "stopReason": "runner_task_id_missing",
+            "resultCaptureStatus": "not_started_no_submit",
+            "finalGeneratedNamesJsonReady": false,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          },
+          {
+            "event": "w175_w151_import_gate",
+            "acceptedByW151": false,
+            "importReady": false,
+            "handoffRejected": true,
+            "stateMutationAllowedInThisBlock": false,
+            "activeOpenLinks": 0,
+            "mutatesFinalGeneratedNames": false
+          }
+        ],
+        "visualTestingBlocked": true,
+        "noRegression": {
+          "noDrawerWrites": true,
+          "noDrawerTransactionWrites": true,
+          "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+          "consultantConfirmationRequired": true,
+          "stateAuthorityAndHandoffParityPreserved": true,
+          "idempotencyPreserved": true,
+          "internalRunnerOwnership": true,
+          "rollbackByDisablingServerFlags": true,
+          "w151CompletedResultImportGuardPreserved": true,
+          "noActiveOpenLinksWithoutRealUrls": true,
+          "visualTestingBlockedUntilCompletedResultImport": true
+        }
+      },
+      "operatorEvidenceRequirement": {
+        "required": false,
+        "reason": "Runner task exists; operator may use Check runner result without mutating final names."
+      },
+      "mutationGuard": {
+        "finalGeneratedNamesBefore": "",
+        "finalGeneratedNamesAfter": "",
+        "finalGeneratedNamesUnchanged": true,
+        "finalGeneratedNamesImported": false,
+        "activeOpenLinks": 0,
+        "writesAttemptedFromDrawer": false,
+        "drawerCreatedRecords": false
+      },
+      "traceSamples": [
+        {
+          "event": "w185_runner_task_capture_handoff",
+          "runnerTaskId": "",
+          "adapterError": false,
+          "checkRunnerResultVisible": false,
+          "checkRunnerResultEnabled": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w185_result_capture_poll_handoff",
+          "pollStatus": "poll_control_hidden_no_runner_task",
+          "resultCaptureStatus": "not_started_no_submit",
+          "completedResultReadyForW151Import": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        },
+        {
+          "event": "w185_w151_import_boundary",
+          "importReady": false,
+          "stateMutationAllowedInThisBlock": false,
+          "adapterErrorStoppedSafely": false,
+          "activeOpenLinks": 0,
+          "mutatesFinalGeneratedNames": false
+        }
+      ],
+      "visualTestingDecision": {
+        "visualTestingBlocked": true,
+        "targetedOpenLinkTestingReady": false,
+        "broaderVisualNetSuiteTestingRequired": false,
+        "reason": "W185 exposes polling from runnerTaskId only. Open-link visual testing remains blocked until completed runner result JSON is imported."
+      },
+      "noRegression": {
+        "noDrawerWrites": true,
+        "noDrawerTransactionWrites": true,
+        "noDrawerCreatedRecords": true,
+        "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+        "consultantConfirmationRequired": true,
+        "stateAuthorityAndHandoffParityPreserved": true,
+        "idempotencyPreserved": true,
+        "internalRunnerOwnership": true,
+        "rollbackByDisablingServerFlags": true,
+        "w151CompletedResultImportGuardPreserved": true,
+        "noActiveOpenLinksWithoutRealUrls": true,
+        "visualTestingBlockedUntilCompletedRunnerResultImport": true
+      }
+    }
+  },
+  "guardedHarness": {
+    "runnerTaskExposesCheckControl": true,
+    "pendingDoesNotMutate": true,
+    "completedReadyButNotImported": true,
+    "adapterErrorStopsSafely": true,
+    "missingRunnerTaskBlocksControl": true,
+    "w151GuardPreserved": true,
+    "noDrawerWritesOrRecords": true,
+    "noOpenLinksBeforeImport": true
+  },
+  "results": [
+    {
+      "name": "w185_runner_task_exposes_check_control",
+      "pass": true,
+      "detail": "{\"runnerTaskIdCaptured\":true,\"checkRunnerResultVisible\":true,\"checkRunnerResultEnabled\":true,\"resultCaptureStatus\":\"polling_pending\",\"completedResultReadyForW151Import\":false,\"adapterErrorStoppedSafely\":false,\"importCompletedRunnerResultEnabled\":false,\"targetedOpenLinkTestingReady\":false}"
+    },
+    {
+      "name": "w185_pending_does_not_mutate",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"finalGeneratedNamesImported\":false,\"activeOpenLinks\":0,\"writesAttemptedFromDrawer\":false,\"drawerCreatedRecords\":false}"
+    },
+    {
+      "name": "w185_completed_ready_but_not_imported",
+      "pass": true,
+      "detail": "{\"runnerTaskIdCaptured\":true,\"checkRunnerResultVisible\":true,\"checkRunnerResultEnabled\":true,\"resultCaptureStatus\":\"completed_result_capture_ready\",\"completedResultReadyForW151Import\":true,\"adapterErrorStoppedSafely\":false,\"importCompletedRunnerResultEnabled\":true,\"targetedOpenLinkTestingReady\":false}"
+    },
+    {
+      "name": "w185_adapter_error_stops_safely",
+      "pass": true,
+      "detail": "{\"required\":true,\"reason\":\"Adapter error stops Build return and requires operator evidence before retry.\"}"
+    },
+    {
+      "name": "w185_missing_runner_task_blocks_control",
+      "pass": true,
+      "detail": "{\"runnerTaskIdCaptured\":false,\"checkRunnerResultVisible\":false,\"checkRunnerResultEnabled\":false,\"resultCaptureStatus\":\"not_started_no_submit\",\"completedResultReadyForW151Import\":false,\"adapterErrorStoppedSafely\":false,\"importCompletedRunnerResultEnabled\":false,\"targetedOpenLinkTestingReady\":false}"
+    },
+    {
+      "name": "w185_w151_guard_preserved",
+      "pass": true,
+      "detail": "{\"completedResultAcceptedByW151\":true,\"completedResultStatus\":\"completed_runner_result_accepted\",\"generatedRecordOwner\":\"governed_runner_internal_build_engine\",\"internalRunnerOwnerValid\":true,\"handoffStatus\":\"handoff_packet_rejected\",\"handoffRejected\":true,\"importReady\":true,\"importTarget\":\"state.dccFinalNamingResult\",\"stateMutationAllowedInThisBlock\":false}"
+    },
+    {
+      "name": "w185_no_drawer_writes_or_records",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"visualTestingBlockedUntilCompletedRunnerResultImport\":true}"
+    },
+    {
+      "name": "w185_no_open_links_before_import",
+      "pass": true,
+      "detail": "{\"visualTestingBlocked\":true,\"targetedOpenLinkTestingReady\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"reason\":\"W185 exposes polling from runnerTaskId only. Open-link visual testing remains blocked until completed runner result JSON is imported.\"}"
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlocked": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W185 exposes polling from runnerTaskId only. Open-link visual testing remains blocked until completed runner result JSON is imported."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W186: Completed Runner Result Import CTA From Poll Handoff",
+    "prompt": "Move through W186: Completed Runner Result Import CTA From Poll Handoff. Use the W185 runnerTaskId poll handoff to enable Import completed runner result only when polling returns W151-valid completed runner result JSON with numeric internal ids, supported NetSuite URLs, and internal runner ownership. Keep pending, missing runnerTaskId, adapter-error, malformed completed result, and handoff JSON non-mutating. Do not create records from the drawer, do not invoke SuiteScript outside the approved server adapter path, and do not show active Open links before import. Output completed-result import CTA contract, guarded harness, trace samples, W186 report, visual testing decision blocked until import, and best next Codex prompt."
+  }
+}

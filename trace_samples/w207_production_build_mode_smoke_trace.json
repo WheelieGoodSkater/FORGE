@@ -1,0 +1,19 @@
+[
+  {
+    "event": "w207_consultant_normal_build_ready",
+    "status": "production_build_ready_to_submit",
+    "requestId": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+    "adminDebugHidden": true
+  },
+  {
+    "event": "w207_runner_task_captured",
+    "runnerTaskId": "SCHEDSCRIPT_REDACTED",
+    "drawerCreatesRecords": false,
+    "drawerTransactionWrites": false
+  },
+  {
+    "event": "w207_completed_result_imported",
+    "w151Status": "completed_runner_result_accepted",
+    "verifiedOpenLinkCount": 5
+  }
+]

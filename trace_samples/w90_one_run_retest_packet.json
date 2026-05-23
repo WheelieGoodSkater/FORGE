@@ -1,0 +1,37 @@
+{
+  "schema": "idb.w90-one-run-retest-packet.v1",
+  "status": "ready_for_single_retest_no_submit",
+  "objective": "Retest exactly one consultant-to-operator flow and prove the correct DCC handoff evidence is captured.",
+  "fileToLoad": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+  "testData": {
+    "customer": "Ariat International",
+    "website": "https://www.ariat.com/",
+    "notes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Current process relies on spreadsheets and disconnected inventory views.",
+    "scObjective": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise for a seasonal boot and apparel launch.",
+    "knownCompetitor": "Current spreadsheets and existing inventory tools; broader ERP options under comparison.",
+    "decisionCriteria": "Must show style/SKU matrix fit, size/color visibility, channel availability, replenishment timing, and customer-to-order impact."
+  },
+  "requiredEvidence": [
+    "Plan screenshot after intake.",
+    "Review screenshot showing DCC handoff export card.",
+    "Trace screenshot showing Pilot evidence checklist.",
+    "Export idb-dcc-runner-handoff-packet-*.json.",
+    "Export intelligent-demo-builder-trace-*.json.",
+    "Operator comparison notes marking Suitelet form params, DCC config params, and runner preview params as match/missing/unclear."
+  ],
+  "stopGo": {
+    "goIf": [
+      "DCC handoff JSON is attached.",
+      "Trace JSON is attached.",
+      "Plan, Review DCC handoff, and Trace evidence checklist screenshots are attached.",
+      "Operator maps handoff params in under 5 minutes.",
+      "No IDB SuiteScript invocation, queue action, or transaction write occurs."
+    ],
+    "noGoIf": [
+      "Only the legacy SuiteScript review packet is exported.",
+      "Operator cannot identify Suitelet form params or runner preview params.",
+      "Trace source suggests notes own identity.",
+      "Any IDB path appears to submit, queue, or write records."
+    ]
+  }
+}

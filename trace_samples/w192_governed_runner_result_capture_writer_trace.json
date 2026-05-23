@@ -1,0 +1,40 @@
+[
+  {
+    "event": "w192_completed_result_capture_saved",
+    "fileName": "idb-result-task_w192_ariat_001-IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES.json",
+    "runnerTaskId": "task_w192_ariat_001",
+    "idempotencyToken": "IDB-idb-build-ariat-style-ready-001-ARIAT_INTERNATIONAL-APPAREL_ACCESSORIES",
+    "requiredRecordCount": 5,
+    "activeOpenLinks": 0
+  },
+  {
+    "event": "w192_invalid_placeholder_result_rejected",
+    "runnerTaskId": "task_w192_bad_placeholder",
+    "status": "blocked_invalid_completed_runner_result",
+    "errors": [
+      "customer.internalId must be numeric.",
+      "customer.url must be a supported NetSuite record URL.",
+      "demoTransaction.name is required.",
+      "demoTransaction.internalId must be numeric.",
+      "demoTransaction.url must be a supported NetSuite record URL.",
+      "heroItem.name is required.",
+      "heroItem.internalId must be numeric.",
+      "heroItem.url must be a supported NetSuite record URL.",
+      "matrixProofItem.name is required.",
+      "matrixProofItem.internalId must be numeric.",
+      "matrixProofItem.url must be a supported NetSuite record URL.",
+      "componentItem.name is required.",
+      "componentItem.internalId must be numeric.",
+      "componentItem.url must be a supported NetSuite record URL."
+    ],
+    "saved": false
+  },
+  {
+    "event": "w192_w191_poll_reads_writer_output",
+    "runnerTaskId": "task_w192_ariat_001",
+    "status": "completed_runner_result_ready",
+    "resultCaptureStatus": "completed_result_capture_ready",
+    "completedSchema": "idb.completed-runner-result-json.v1",
+    "activeOpenLinks": 0
+  }
+]

@@ -1,0 +1,134 @@
+{
+  "schema": "idb.w228-post-install-forge-operator-acceptance-harness.v1",
+  "status": "pass",
+  "passCount": 8,
+  "total": 8,
+  "results": [
+    {
+      "id": "acceptance_checklist_compact_and_complete",
+      "pass": true,
+      "evidence": "FORGE rail button appears. | FORGE rail label is not clipped. | Drawer opens. | Larger responsive FORGE header logo appears. | Logo scales without overlapping the close button on a narrower window. | Close button works. | Copy operator summary appears in the Trace/import-status surface."
+    },
+    {
+      "id": "acceptance_outcomes_present",
+      "pass": true,
+      "evidence": "Accept | Accept with visual follow-up | Block install"
+    },
+    {
+      "id": "block_conditions_cover_required_failures",
+      "pass": true,
+      "evidence": "Rail label clipped. | Header logo missing. | Close button inaccessible. | Old visible header text appears. | Operator summary copy control missing."
+    },
+    {
+      "id": "normal_acceptance_note_hides_forbidden_internal_terms",
+      "pass": true,
+      "evidence": "After installing the Tampermonkey drawer script, use this checklist to confirm the FORGE drawer is ready.\nIf every visible check passes, accept the install.\nIf the drawer works but spacing needs polish, accept with visual follow-up.\nIf a required control or FORGE brand element is missing, block the install."
+    },
+    {
+      "id": "w226_responsive_logo_sizing_remains_unchanged",
+      "pass": true,
+      "evidence": "width: min(420px, calc(100% - 72px))"
+    },
+    {
+      "id": "w227_final_install_packet_remains_unchanged",
+      "pass": true,
+      "evidence": "{\"runOnlyIfOperatorWantsLiveVisualConfirmationAfterInstall\":true,\"noBroadVisualTesting\":true,\"noNetSuiteRecordOpenLinkTesting\":true,\"noRunnerInvocation\":true,\"noSuiteScriptInvocation\":true}"
+    },
+    {
+      "id": "install_exclusions_remain_explicit",
+      "pass": true,
+      "evidence": "{\"noW144AdapterUpdate\":true,\"noRunnerUpdate\":true,\"noSuiteScriptDeploymentUpdate\":true,\"noImageLookupChange\":true}"
+    },
+    {
+      "id": "w214_to_w227_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"w151ImportGuardPreserved\":true,\"semanticRoleMappingPreserved\":true,\"modeAwareNamingGuardrailsPreserved\":true,\"dynamicRecordDisplayPreserved\":true,\"consultantPartialResultLanguagePreserved\":true,\"operatorReadableSmokePacketPreserved\":true,\"frozenReviewRunWordingPreserved\":true,\"importFailureRecoveryCopyPreserved\":true,\"recoveryUiSurfaceWiringPreserved\":true,\"endToEndOperatorPacketPreserved\":true,\"exportableOperatorSummaryPreserved\":true,\"consultantCopyExportActionPreserved\":true,\"forgeBrandingPreserved\":true,\"targetedLiveHeaderSmokePreserved\":true,\"forgeRailFontFitCorrectionPreserved\":true,\"responsiveForgeHeaderLogoPolishPreserved\":true,\"installCutoverPacketPreserved\":true,\"finalInstallPacketPreserved\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true,\"nllmAdvisoryOnly\":true}"
+    }
+  ],
+  "acceptancePacket": {
+    "schema": "idb.w228-post-install-forge-operator-acceptance.v1",
+    "status": "post_install_acceptance_packet_ready",
+    "expectedInstalledScript": "idb-drawer.user.js",
+    "acceptanceChecks": [
+      "FORGE rail button appears.",
+      "FORGE rail label is not clipped.",
+      "Drawer opens.",
+      "Larger responsive FORGE header logo appears.",
+      "Logo scales without overlapping the close button on a narrower window.",
+      "Close button works.",
+      "Copy operator summary appears in the Trace/import-status surface."
+    ],
+    "acceptanceOutcomes": [
+      {
+        "id": "accept",
+        "label": "Accept",
+        "useWhen": "All visible checks pass."
+      },
+      {
+        "id": "accept_with_visual_follow_up",
+        "label": "Accept with visual follow-up",
+        "useWhen": "The drawer works and the FORGE surface is usable, but minor spacing polish is desired."
+      },
+      {
+        "id": "block_install",
+        "label": "Block install",
+        "useWhen": "A required FORGE surface, close control, or copy-summary control is missing or unusable."
+      }
+    ],
+    "blockConditions": [
+      "Rail label clipped.",
+      "Header logo missing.",
+      "Close button inaccessible.",
+      "Old visible header text appears.",
+      "Operator summary copy control missing."
+    ],
+    "normalAcceptanceNote": "After installing the Tampermonkey drawer script, use this checklist to confirm the FORGE drawer is ready.\nIf every visible check passes, accept the install.\nIf the drawer works but spacing needs polish, accept with visual follow-up.\nIf a required control or FORGE brand element is missing, block the install.",
+    "installExclusions": {
+      "noW144AdapterUpdate": true,
+      "noRunnerUpdate": true,
+      "noSuiteScriptDeploymentUpdate": true,
+      "noImageLookupChange": true
+    },
+    "normalAcceptanceNoteHidesForbiddenTerms": true,
+    "preservedFromW227": {
+      "finalInstallPacketStatus": "forge_final_install_packet_ready",
+      "scriptToInstallOrUpdate": "idb-drawer.user.js",
+      "responsiveLogoWidthRule": "width: min(420px, calc(100% - 72px))",
+      "railFontFitCorrection": true,
+      "optionalTargetedVisualCheck": {
+        "runOnlyIfOperatorWantsLiveVisualConfirmationAfterInstall": true,
+        "noBroadVisualTesting": true,
+        "noNetSuiteRecordOpenLinkTesting": true,
+        "noRunnerInvocation": true,
+        "noSuiteScriptInvocation": true
+      }
+    },
+    "noRegressionBoundarySummary": {
+      "w151ImportGuardPreserved": true,
+      "semanticRoleMappingPreserved": true,
+      "modeAwareNamingGuardrailsPreserved": true,
+      "dynamicRecordDisplayPreserved": true,
+      "consultantPartialResultLanguagePreserved": true,
+      "operatorReadableSmokePacketPreserved": true,
+      "frozenReviewRunWordingPreserved": true,
+      "importFailureRecoveryCopyPreserved": true,
+      "recoveryUiSurfaceWiringPreserved": true,
+      "endToEndOperatorPacketPreserved": true,
+      "exportableOperatorSummaryPreserved": true,
+      "consultantCopyExportActionPreserved": true,
+      "forgeBrandingPreserved": true,
+      "targetedLiveHeaderSmokePreserved": true,
+      "forgeRailFontFitCorrectionPreserved": true,
+      "responsiveForgeHeaderLogoPolishPreserved": true,
+      "installCutoverPacketPreserved": true,
+      "finalInstallPacketPreserved": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerTransactionWrites": true,
+      "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+      "runnerOwnsGeneratedRecords": true,
+      "imageLookupDisabledByDefault": true,
+      "nllmAdvisoryOnly": true
+    },
+    "visualTestingDecision": "No broad visual testing for W228. Use the post-install checklist for targeted operator acceptance only."
+  }
+}

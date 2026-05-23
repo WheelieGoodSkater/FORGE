@@ -1,0 +1,57 @@
+{
+  "schema": "idb.w196-approved-server-adapter-one-call-execution-trace.v1",
+  "traceSamples": [
+    {
+      "event": "w196_blocked_before_inputs",
+      "status": "w144_one_call_blocked",
+      "blockedReasons": [
+        "approved_w144_endpoint",
+        "server_flags_true",
+        "sandbox_allowlist",
+        "operator_approval",
+        "one_call_authorization_phrase"
+      ],
+      "requestSent": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w196_ready_no_submit",
+      "status": "w144_one_call_ready_not_submitted",
+      "requestConstructed": true,
+      "requestSent": false,
+      "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w196_one_call_runner_taskid_captured",
+      "status": "w144_runner_taskid_captured_result_pending",
+      "requestSent": true,
+      "transportCallCount": 1,
+      "runnerTaskId": "task_w196_ariat_governed_runner_001",
+      "resultCaptureStatus": "pending_runner_completion",
+      "finalGeneratedNamesImported": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w196_adapter_error_safe_stop",
+      "status": "w144_adapter_error_drawer_safe",
+      "requestSent": true,
+      "transportCallCount": 1,
+      "runnerTaskIdCaptured": false,
+      "finalGeneratedNamesUnchanged": true,
+      "activeOpenLinks": 0
+    }
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerCreatedRecords": true,
+    "noDirectDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  }
+}

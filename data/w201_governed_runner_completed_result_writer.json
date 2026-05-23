@@ -1,0 +1,79 @@
+{
+  "schema": "idb.w201.governed-runner-completed-result-writer.v1",
+  "status": "pass",
+  "runnerResultWriterChanges": {
+    "runnerPath": "/path/to/workspace/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+    "resultCaptureParam": "custscript_v3_runner_result_capture_folder",
+    "fallbackResultCaptureParam": "custscript_idb_result_capture_folder_id",
+    "writeFunction": "writeIdbCompletedRunnerResultCaptureV1",
+    "ownership": "governed_runner_internal_build_engine",
+    "drawerWrites": false
+  },
+  "completedRunnerResultJsonContract": {
+    "schema": "idb.completed-runner-result-json.v1",
+    "status": "completed",
+    "runStatus": "completed",
+    "generatedRecordOwner": "governed_runner_internal_build_engine",
+    "requiredRecords": [
+      "customer",
+      "demoTransaction",
+      "heroItem",
+      "matrixProofItem",
+      "componentItem"
+    ],
+    "perRecordRequiredFields": [
+      "name",
+      "internalId numeric string",
+      "supported NetSuite URL"
+    ]
+  },
+  "resultCaptureFileNamingLookupContract": {
+    "pattern": "idb_completed_runner_result_<idempotencyToken>_<timestamp>.json",
+    "folder": "configured result capture folder",
+    "lookup": "W144/W190 searches result capture folder by runnerTaskId OR idempotencyToken"
+  },
+  "regressionGates": [
+    {
+      "name": "runner reads configured result capture folder",
+      "pass": true,
+      "detail": "The active v4 runner can receive the W144 result capture folder parameter."
+    },
+    {
+      "name": "runner writes W151 completed result capture",
+      "pass": true,
+      "detail": "Completed result JSON uses the schema and ownership metadata IDB imports."
+    },
+    {
+      "name": "runner creates/resolves all required IDB records server-side",
+      "pass": true,
+      "detail": "Customer, Sales Order, hero item, matrix/proof item, and component item are runner-owned."
+    },
+    {
+      "name": "completed result contains numeric ids and supported NetSuite URLs",
+      "pass": true,
+      "detail": "The writer validates numeric internalId values and supported record URL paths."
+    },
+    {
+      "name": "result capture file is discoverable by W144 polling",
+      "pass": true,
+      "detail": "File names contain the idempotency token so W144/W190 polling can find them."
+    },
+    {
+      "name": "legacy DCC CSV import remains isolated from IDB result capture mode",
+      "pass": true,
+      "detail": "Legacy CSV import still runs when result capture mode is not configured."
+    },
+    {
+      "name": "drawer remains non-writing",
+      "pass": true,
+      "detail": "The drawer/adapter polling path imports result JSON only; record creation stays in the scheduled runner."
+    },
+    {
+      "name": "package exposes W201 harness",
+      "pass": true,
+      "detail": "The regression harness is runnable by name."
+    }
+  ],
+  "visualTestingDecision": "blocked_until_completed_runner_result_import",
+  "bestNextCodexPrompt": "Move through W202: Upload Active V4 Runner Result Writer And Poll Completed Result. Upload the patched scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js, run one approved W144 submit, use Check runner result to retrieve the completed result JSON, import it into IDB, then only if five Open links appear perform targeted link verification."
+}

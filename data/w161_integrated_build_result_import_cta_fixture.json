@@ -1,0 +1,98 @@
+{
+  "schema": "idb.w161-integrated-build-result-import-cta-fixture.v1",
+  "status": "result_import_cta_fixture_handoff_ready",
+  "decision": "PASS_RESULT_IMPORT_CTA_FIXTURE_HANDOFF_READY__VISUAL_TESTING_BLOCKED",
+  "fixtureHandoffContract": {
+    "schema": "idb.w161-fixture-handoff-contract.v1",
+    "startsFromW160Decision": "PASS_BUILD_STATUS_UI_AND_IMPORT_CTA_READY__VISUAL_TESTING_BLOCKED",
+    "ctaLabel": "Open guarded result import",
+    "ctaEnabled": true,
+    "ctaAction": "open_trace_completed_runner_result_import",
+    "sourceFixtureStatus": "completed_result_awaiting_w151_import",
+    "completedResultGuardStatus": "completed_runner_result_accepted",
+    "handoffRejectionStatus": "handoff_packet_rejected",
+    "generatedRecordOwner": "governed_runner_internal_build_engine",
+    "guardedRecordCount": 5,
+    "guardedOpenableCount": 5,
+    "activeOpenLinksBeforeImport": 0
+  },
+  "guardedHarness": {
+    "startsFromW160": true,
+    "fixtureHookReady": true,
+    "completedResultAcceptedByW151": true,
+    "handoffJsonRejected": true,
+    "ctaConnectsToServerFixture": true,
+    "numericIdsAndSupportedUrlsAccepted": true,
+    "noOpenLinksBeforeImport": true,
+    "navigationWouldUseOpenLinksOnlyAfterGuardedImport": true,
+    "renderedBuildStillShowsGuardedCta": true
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "visualTestingBlocked": true,
+    "reason": "W161 uses a controlled server-result fixture only. Visual testing remains blocked until real approved server adapter execution returns completed runner result JSON."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noActiveOpenLinksBeforeImport": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W162: Integrated Build Result Fixture Import State Commit Harness",
+    "prompt": "Move through W162: Integrated Build Result Fixture Import State Commit Harness. Use the W161 controlled server-result fixture handoff to model the final drawer import commit step after W151 validation, still harness-only and real invocation disabled by default. Prove completed runner result JSON can update IDB final generated names only after W151 accepts numeric ids and supported NetSuite URLs, while handoff JSON remains rejected and no active Open links appear before import. Preserve no drawer writes, no drawer transaction writes, no drawer SuiteScript invocation outside the approved server adapter path, consultant confirmation, state authority and handoff parity, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Do not request visual testing. Output import commit contract, guarded harness, trace samples, W162 report, visual testing decision blocked, and best next Codex prompt."
+  },
+  "validatorGates": [
+    {
+      "name": "w161_starts_from_w160_ui_status_contract",
+      "pass": true,
+      "detail": "PASS_BUILD_STATUS_UI_AND_IMPORT_CTA_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w161_fixture_handoff_hook_ready",
+      "pass": true,
+      "detail": "completed_result_fixture_ready_for_w151_import"
+    },
+    {
+      "name": "w161_cta_connects_completed_result_fixture_to_w151",
+      "pass": true,
+      "detail": "{\"label\":\"Open guarded result import\",\"enabled\":true,\"action\":\"open_trace_completed_runner_result_import\",\"targetView\":\"trace\",\"guardOwner\":\"W151 completed runner result import guard\"}"
+    },
+    {
+      "name": "w161_handoff_json_rejected_by_import_guard",
+      "pass": true,
+      "detail": "{\"rejected\":\"handoff_packet_rejected\",\"fixture\":\"handoff_packet_rejected\"}"
+    },
+    {
+      "name": "w161_numeric_ids_and_supported_urls_required",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"label\":\"Customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"id\":\"501234\",\"linkStatus\":\"verified_openable\",\"openable\":true},{\"role\":\"sales_order\",\"label\":\"Sales Order / demo transaction\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"id\":\"601234\",\"linkStatus\":\"verified_openable\",\"openable\":true},{\"role\":\"hero_item\",\"label\":\"Hero item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"id\":\"701234\",\"linkStatus\":\"verified_openable\",\"openable\":true},{\"role\":\"matrix_or_proof_item\",\"label\":\"Matrix item / proof item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"id\":\"701235\",\"linkStatus\":\"verified_openable\",\"openable\":true},{\"role\":\"component_item\",\"label\":\"Component item 1\",\"name\":\"Ariat Brown Leather Upper Component\",\"id\":\"701236\",\"linkStatus\":\"verified_openable\",\"openable\":true}]"
+    },
+    {
+      "name": "w161_no_open_links_before_explicit_import",
+      "pass": true,
+      "detail": "{\"stateImport\":null,\"activeOpenLinksBeforeImport\":0}"
+    },
+    {
+      "name": "w161_navigation_links_only_after_guarded_import_preview",
+      "pass": true,
+      "detail": "{\"verified_openable\":5}"
+    },
+    {
+      "name": "w161_rendered_build_keeps_guarded_cta_copy",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-strong\">Ariat International</div>\n          <div class=\"idb-copy\">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div>\n        </div>\n        <div class=\"idb-status-strip\">\n          <div class=\"idb-status-cell\">\n            <div class=\"idb-status-key\">1. Ready?</div>\n            <div class=\"idb-status-value\">Ready to export</div>\n            <div class=\"idb-copy\">Consultant confirmed the lane and pack.</div>\n          </div>\n          <div class=\"idb-status-cell\">\n            <div class=\"idb-s"
+    },
+    {
+      "name": "w161_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noActiveOpenLinksBeforeImport\":true}"
+    }
+  ]
+}

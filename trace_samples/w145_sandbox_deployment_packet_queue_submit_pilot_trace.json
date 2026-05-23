@@ -1,0 +1,55 @@
+{
+  "schema": "idb.w145-sandbox-deployment-packet-queue-submit-pilot-trace.v1",
+  "decision": "PASS_SANDBOX_DEPLOYMENT_PACKET_READY__DEFAULT_FLAGS_FALSE",
+  "adapterSourceFile": "/path/to/workspace/intelligent demo builder drawer/netsuite/idb_governed_runner_adapter_w144_suitelet.js",
+  "defaultFlagsFalse": true,
+  "requiredParameterCount": 12,
+  "falseFlagExpectedResponse": {
+    "queueSubmitted": false,
+    "runnerTaskId": null,
+    "resultCaptureStatus": "not_started_no_submit",
+    "activeOpenLinks": 0,
+    "recordUrlsReturned": false
+  },
+  "enabledSandboxExpectedResponse": {
+    "queueSubmitted": true,
+    "runnerTaskId": "real NetSuite scheduled task id",
+    "resultCaptureStatus": "pending_runner_completion",
+    "finalGeneratedNamesReady": false,
+    "activeOpenLinks": 0,
+    "recordUrlsReturned": false
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "startCondition": "Only start after the deployed adapter returns queueSubmitted=true and a real non-placeholder runnerTaskId.",
+    "stepsAfterRunnerTaskId": [
+      "Open the NetSuite scheduled script/task status for the returned runnerTaskId.",
+      "Verify the task belongs to the governed runner/internal build engine, not the drawer.",
+      "Wait for result capture to return final generated names with numeric internal ids and supported NetSuite URLs.",
+      "Import the result JSON into IDB Trace > Final generated names import.",
+      "Confirm Build and Run show active Open only for records with real URLs.",
+      "Click Customer, demo transaction, hero item, matrix/proof item, and component Open links.",
+      "Confirm each link lands on an actual NetSuite record page and not a Notice, Error, placeholder id, or unsupported path."
+    ],
+    "broaderVisualNetSuiteTestingRequired": false
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "falseFlagDryRunPreserved": true,
+    "sandboxAllowlistRequired": true,
+    "operatorApprovalRequired": true,
+    "idempotencyRequired": true,
+    "resultCapturePendingStatusRequired": true,
+    "internalRunnerOwnershipPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W146: Sandbox Upload And Flags-False Deployment Smoke",
+    "prompt": "Move through W146: Sandbox Upload And Flags-False Deployment Smoke. Use the W145 deployment packet to upload/deploy the W144 NetSuite-side adapter with all write/queue flags false, then run an operator dry-run smoke proving the adapter accepts the confirmed IDB request and operator evidence but returns queueSubmitted=false, runnerTaskId=null, resultCapture not_started_no_submit, and no active Open links. Do not enable writes or queue submit yet. Preserve no drawer writes, no SuiteScript invocation from the drawer, no drawer transaction writes, consultant confirmation, state authority and handoff parity, no-submit rollback, internal runner ownership, sandbox allowlist, idempotency, and no active Open links without real URLs. Output flags-false deployment evidence, operator test data, trace samples, W146 report, visual testing decision, and best next Codex prompt."
+  }
+}

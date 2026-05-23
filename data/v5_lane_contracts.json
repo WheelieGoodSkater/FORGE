@@ -1,0 +1,109 @@
+{
+  "schema": "intelligent-demo-builder-drawer.v1",
+  "generated": "2026-05-09",
+  "source": "Demo Command Center V5 six-industry productization contract",
+  "nonRegression": {
+    "noNewIndustries": false,
+    "apparelAccessoriesLaneAuthorized": true,
+    "noResolverChange": true,
+    "noRunnerChange": true,
+    "noProofAnchorChange": true,
+    "noFixtureAppend": true,
+    "noCertificationLanguage": true,
+    "keepOperatingSpineFallback": true,
+    "imagesOptionalForProofReadiness": true
+  },
+  "product": {
+    "name": "Intelligent Demo Builder",
+    "surface": "Right-side NetSuite assistant drawer",
+    "version": "0.1.1"
+  },
+  "lanes": [
+    {
+      "id": "products_cpg",
+      "name": "Products CPG",
+      "proofAnchor": "Sales Order View",
+      "promise": "Promotion demand, packaging readiness, replenishment, and shelf confidence stay connected.",
+      "validateLive": "Validate promotion demand, pack-size readiness, replenishment timing, and shelf availability in one path.",
+      "storyline": "Lead with packaged-goods CPG through promotion-to-shelf readiness and prove packaging, replenishment, and shelf confidence.",
+      "signals": ["brand/product context", "promotion or demand signal", "packaging/case-pack readiness", "replenishment", "shelf confidence"],
+      "guardrails": ["Do not drift into ingredient, batch, lab, dealer, branch, or service-order language."],
+      "moves": ["Customer Record", "Sales Order View", "Finished Good"],
+      "modules": ["Order Management", "Inventory", "Manufacturing"]
+    },
+    {
+      "id": "food_beverage",
+      "name": "Food / Beverage CPG Manufacturing",
+      "proofAnchor": "Finished Good",
+      "promise": "Ingredient and packaging readiness flow into finished-good availability and customer promise protection.",
+      "validateLive": "Validate ingredient readiness, packaging timing, line continuity, and finished-good availability in one path.",
+      "storyline": "Lead with food and beverage readiness through ingredient, packaging, line continuity, and finished-good confidence.",
+      "signals": ["food/beverage context", "ingredient readiness", "packaging timing", "line continuity", "finished goods"],
+      "guardrails": ["Do not drift into generic CPG shelf language, branch distribution, industrial assembly, or lab-release proof."],
+      "moves": ["Customer Record", "Sales Order View", "Finished Good"],
+      "modules": ["Order Management", "Inventory", "Manufacturing", "Quality"]
+    },
+    {
+      "id": "industrial_equipment",
+      "name": "Industrial Equipment Manufacturing",
+      "proofAnchor": "Assembly",
+      "promise": "Component readiness and supplier timing protect assembly confidence and delivery promise.",
+      "validateLive": "Validate configured demand, component readiness, assembly timing, and delivery confidence in one equipment path.",
+      "storyline": "Lead with industrial equipment through component readiness, supplier timing, assembly confidence, and shipment control.",
+      "signals": ["configured-order context", "component readiness", "supplier timing", "assembly/build timing", "promise confidence"],
+      "guardrails": ["Do not drift into WIP, field service, dealer hardgoods, food batching, or life-sciences release proof."],
+      "moves": ["Customer Record", "Sales Order View", "Assembly"],
+      "modules": ["Order Management", "Inventory", "Manufacturing"]
+    },
+    {
+      "id": "life_sciences",
+      "name": "Life Sciences",
+      "proofAnchor": "Lot / Release",
+      "promise": "Validation, traceability, lot/release readiness, and controlled fulfillment protect regulated customer commitments.",
+      "validateLive": "Validate regulated demand, validation readiness, traceability, serialization, and lot release in one life-sciences path.",
+      "storyline": "Lead with Life Sciences through controlled instrument build fulfillment and prove lot readiness, validation control, traceability, and release confidence.",
+      "signals": ["regulated product context", "validation/traceability", "lot/release readiness", "quality documentation", "controlled fulfillment"],
+      "guardrails": ["Do not drift into food batching, industrial equipment, dealer-channel, or generic distribution language."],
+      "moves": ["Customer Record", "Sales Order View", "Lot / Release"],
+      "modules": ["Order Management", "Inventory", "Manufacturing", "Quality"]
+    },
+    {
+      "id": "industrial_distribution",
+      "name": "Industrial Distribution & Branch Fulfillment",
+      "proofAnchor": "Inventory / Fulfillment",
+      "promise": "Branch availability, supplier timing, replenishment control, and fulfillment confidence protect customer promise.",
+      "validateLive": "Validate branch availability, supplier timing, replenishment control, and fulfillment confidence in one distribution path.",
+      "storyline": "Lead with branch availability, supplier exceptions, transfer-aware replenishment, and realistic promise control.",
+      "signals": ["branch/distribution context", "supplier lead time", "replenishment", "transfer-aware inventory", "fulfillment confidence"],
+      "guardrails": ["Do not drift into manufacturing, food, field-service, dealer-channel, or lab-release language."],
+      "moves": ["Customer Record", "Sales Order View", "Inventory / Fulfillment"],
+      "modules": ["Order Management", "Inventory"]
+    },
+    {
+      "id": "dealer_hardgoods",
+      "name": "Dealer Hardgoods & Channel Fulfillment",
+      "proofAnchor": "Product / SKU",
+      "promise": "Product/SKU availability, dealer/channel replenishment, and fulfillment confidence protect channel promise.",
+      "validateLive": "Validate product availability, dealer allocation, replenishment timing, and channel fulfillment in one hardgoods path.",
+      "storyline": "Lead with dealer/channel hardgoods through product availability, allocation, replenishment timing, and fulfillment confidence.",
+      "signals": ["dealer/channel context", "product/SKU promise", "allocation", "replenishment timing", "supplier risk", "hardgoods", "durable goods", "wholesale fulfillment", "surfboards", "skateboards"],
+      "guardrails": ["Do not collapse dealer-channel truth into branch distribution, field service, food, or regulated release language."],
+      "moves": ["Customer Record", "Sales Order View", "Product / SKU"],
+      "modules": ["Order Management", "Inventory"]
+    },
+    {
+      "id": "apparel_accessories",
+      "name": "Apparel & Accessories",
+      "proofAnchor": "Style / SKU Matrix",
+      "promise": "Style, size, color, allocation, replenishment, and channel availability stay connected.",
+      "validateLive": "Validate style readiness, size/color availability, allocation, replenishment timing, and channel promise in one apparel path.",
+      "storyline": "Lead with apparel and accessories through style/SKU matrix readiness, variant availability, allocation confidence, and collection launch control.",
+      "signals": ["apparel context", "accessories context", "style", "size/color", "seasonal collection", "allocation", "channel availability", "footwear", "shoes", "sneakers", "skateboarding", "vans"],
+      "guardrails": ["Do not collapse apparel and accessories into industrial equipment, generic branch distribution, food batching, or regulated release proof."],
+      "moves": ["Customer Record", "Sales Order View", "Style / SKU Matrix"],
+      "modules": ["Order Management", "Inventory"]
+    }
+  ],
+  "unsupportedModulesHiddenUntilSupported": ["MRP", "WIP", "Advanced Manufacturing Scheduling", "Demand Planning"],
+  "traceEvents": ["drawer_opened", "page_context_captured", "drawer_view_changed", "setup_saved", "setup_plan_built", "setup_lane_applied", "setup_toggle_changed", "lane_recommended", "lane_accepted", "lane_selected", "move_selected", "move_recommended", "story_action_selected", "guardrail_viewed", "trace_exported", "nllm_enrichment_reviewed", "adapter_bridge_result", "creation_adapter_result"]
+}

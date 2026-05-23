@@ -1,0 +1,63 @@
+{
+  "schema": "idb.w90-pilot-evidence-remediation-trace.v1",
+  "generated": "2026-05-17T21:41:05.047Z",
+  "decision": "PASS",
+  "status": "pilot_evidence_remediation_ready_for_one_run_retest",
+  "remediationCount": 4,
+  "requiredEvidenceCount": 6,
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noDccRunnerRewrite": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W91: Execute One-Run Retest And Grade Pilot Unlock",
+    "prompt": "Move through W91: Execute One-Run Retest And Grade Pilot Unlock. Use the W90 retest packet to run one hands-on consultant-to-operator test. Require Plan, Review DCC handoff, and Trace evidence-checklist screenshots; idb-dcc-runner-handoff-packet JSON; intelligent-demo-builder trace JSON; and operator comparison notes. Grade against the W88/W90 rubric, verify no IDB writes, no DCC runner rewrite, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, consultant confirmation required, and DCC ownership of object generation. Output scored results, pilot unlock/no-go decision, exact remediation, W91 report, validator gates, and best next Codex prompt."
+  },
+  "validatorResults": [
+    {
+      "name": "w90_inherits_w89r_no_go_findings",
+      "pass": true,
+      "detail": "{\"status\":\"graded_partial_real_evidence_no_go\",\"decision\":\"no_go_broader_consultant_pilot_partial_evidence\"}"
+    },
+    {
+      "name": "w90_dcc_handoff_primary_in_review_and_trace",
+      "pass": true,
+      "detail": "primary handoff evidence labels"
+    },
+    {
+      "name": "w90_trace_evidence_checklist_present",
+      "pass": true,
+      "detail": "pilot evidence checklist model and UI"
+    },
+    {
+      "name": "w90_suitescript_packet_language_review_only",
+      "pass": true,
+      "detail": "review-only export language"
+    },
+    {
+      "name": "w90_trace_ownership_normalized",
+      "pass": true,
+      "detail": "website owns identity, notes own story"
+    },
+    {
+      "name": "w90_trace_export_covers_checklist",
+      "pass": true,
+      "detail": "trace and handoff export coverage"
+    },
+    {
+      "name": "w90_no_write_boundaries_preserved",
+      "pass": true,
+      "detail": "no submit/write boundaries"
+    },
+    {
+      "name": "w90_retest_packet_complete",
+      "pass": true,
+      "detail": "[\"Plan screenshot after intake.\",\"Review screenshot showing DCC handoff export card.\",\"Trace screenshot showing Pilot evidence checklist.\",\"Export idb-dcc-runner-handoff-packet-*.json.\",\"Export intelligent-demo-builder-trace-*.json.\",\"Operator comparison notes marking Suitelet form params, DCC config params, and runner preview params as match/missing/unclear.\"]"
+    }
+  ]
+}

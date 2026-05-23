@@ -1,0 +1,97 @@
+{
+  "decision": "PASS",
+  "status": "sandbox_preview_operator_smoke_ready",
+  "events": [
+    "w128_contract_loaded",
+    "confirmed_handoff_compared",
+    "operator_preview_smoke_executed",
+    "final_generated_names_json_returned",
+    "no_submit_rollback_proven"
+  ],
+  "previewRun": {
+    "mode": "sandbox_preview_no_submit",
+    "submitOccurred": false,
+    "drawerWritesAllowed": false,
+    "suiteScriptInvocationFromDrawerAllowed": false,
+    "transactionWritesFromDrawerAllowed": false,
+    "generatedRecordOwner": "internal_build_engine"
+  },
+  "handoffComparison": {
+    "prospectMatches": true,
+    "familyKeyMatches": true,
+    "scenarioMatches": true,
+    "stateAuthorityMatches": true,
+    "ownershipMatches": true,
+    "writeBoundariesMatch": true,
+    "readyForFinalNamesImport": true
+  },
+  "resultJson": {
+    "schema": "idb.dcc-final-naming-result.v1",
+    "status": "dcc_final_names_imported",
+    "displayObjectCount": 4,
+    "componentItemCount": 1
+  },
+  "visualNetSuiteTestingRequiredNow": false,
+  "results": [
+    {
+      "name": "w129_inherits_w128_contract",
+      "pass": true,
+      "detail": "{\"block\":\"W128\",\"schema\":\"idb.w128-governed-build-invocation-contract.v1\",\"requiredStatus\":\"governed_build_invocation_contract_ready\",\"previewParamSchema\":\"idb.internal-build-engine.preview-run-params.v1\",\"resultSchema\":\"idb.internal-build-engine.result.v1\"}"
+    },
+    {
+      "name": "w129_preview_params_match_confirmed_handoff",
+      "pass": true,
+      "detail": "{\"prospect\":{\"handoff\":\"Ariat International\",\"preview\":\"Ariat International\",\"match\":true},\"website\":{\"handoff\":\"https://www.ariat.com/\",\"preview\":\"https://www.ariat.com/\",\"match\":true},\"familyKey\":{\"handoff\":\"apparelAccessories\",\"preview\":\"apparelAccessories\",\"match\":true},\"laneId\":{\"handoff\":\"apparel_accessories\",\"preview\":\"apparel_accessories\",\"match\":true},\"scenario\":{\"handoff\":\"Style-to-Availability Readiness\",\"preview\":\"Style-to-Availability Readiness\",\"match\":true},\"proofAnchor\":{\"handoff\":\"Style / SKU Matrix\",\"preview\":\"Style / SKU Matrix\",\"match\":true},\"submitAllowed\":{\"handoff\":false,\"preview\":false,\"match\":true},\"recordWritesAllowed\":{\"handoff\":false,\"preview\":false,\"match\":true},\"transactionWritesAllowed\":{\"handoff\":false,\"preview\":false,\"match\":true}}"
+    },
+    {
+      "name": "w129_internal_build_engine_preview_result_ready",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.internal-build-engine.result.v1\",\"status\":\"preview_complete\",\"count\":4}"
+    },
+    {
+      "name": "w129_final_generated_names_json_ready",
+      "pass": true,
+      "detail": "[\"customer\",\"sales_order\",\"hero_item\",\"matrix_or_proof_item\"]"
+    },
+    {
+      "name": "w129_no_submit_rollback_proven",
+      "pass": true,
+      "detail": "{\"submitOccurred\":false,\"rollbackRequired\":false,\"drawerRollbackAction\":\"clear_imported_final_names_only\",\"netSuiteRecordRollbackAction\":\"none_from_drawer\",\"operatorRejectedBehavior\":\"preserve handoff and trace, return to Build, import nothing\",\"stateMismatchBehavior\":\"block preview/run and require re-confirmed handoff export\"}"
+    },
+    {
+      "name": "w129_no_drawer_writes",
+      "pass": true,
+      "detail": "drawer source has no direct write or post invocation"
+    },
+    {
+      "name": "w129_no_suitescript_invocation_from_drawer",
+      "pass": true,
+      "detail": "{\"generatedRecordsOwnedBy\":\"internal_build_engine\",\"drawerCreatedRecords\":false,\"drawerInvokedSuiteScript\":false,\"drawerCreatedTransactions\":false}"
+    },
+    {
+      "name": "w129_no_transaction_writes_from_drawer",
+      "pass": true,
+      "detail": "{\"generatedRecordsOwnedBy\":\"internal_build_engine\",\"drawerCreatedRecords\":false,\"drawerInvokedSuiteScript\":false,\"drawerCreatedTransactions\":false}"
+    },
+    {
+      "name": "w129_state_authority_and_handoff_parity_preserved",
+      "pass": true,
+      "detail": "{\"recommendedLaneId\":\"apparel_accessories\",\"selectedLaneId\":\"apparel_accessories\",\"confirmedLaneId\":\"apparel_accessories\",\"exportedLaneId\":\"apparel_accessories\",\"hasRecommendedMismatch\":false,\"hasConfirmedMismatch\":false}"
+    },
+    {
+      "name": "w129_internal_build_engine_owns_generated_records",
+      "pass": true,
+      "detail": "{\"generatedRecordsOwnedBy\":\"internal_build_engine\",\"drawerCreatedRecords\":false,\"drawerInvokedSuiteScript\":false,\"drawerCreatedTransactions\":false}"
+    },
+    {
+      "name": "w129_operator_evidence_complete",
+      "pass": true,
+      "detail": "{\"operatorName\":\"W129 local smoke operator\",\"reviewedAt\":\"2026-05-15T22:00:00.000Z\",\"sourceHandoffId\":\"handoff-ariat-style-availability-001\",\"handoffFilename\":\"idb-build-handoff-ariat-international.json\",\"traceFilename\":\"idb-trace-ariat-international.json\",\"previewParamsReviewed\":true,\"resultComparedToHandoff\":true,\"noSubmitObserved\":true,\"noDrawerWriteObserved\":true,\"notes\":\"Local harness smoke only. No browser, SuiteScript, queue, submit, or NetSuite write path was invoked.\"}"
+    },
+    {
+      "name": "w129_visual_testing_not_required",
+      "pass": true,
+      "detail": "false"
+    }
+  ]
+}

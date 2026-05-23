@@ -1,0 +1,46 @@
+{
+  "schema": "idb.suitescript-pilot-write-branch-plan.v1",
+  "status": "pilot_branch_plan_ready_main_create_disabled",
+  "branchName": "codex/idb-food-beverage-sandbox-write-pilot",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Packet Contract Agent",
+    "Validation And Release Agent"
+  ],
+  "objective": "Define the first tiny write-capable branch while keeping main create-disabled.",
+  "sandboxOnlyScope": true,
+  "firstLane": {
+    "laneId": "food_beverage",
+    "laneName": "Food / Beverage CPG Manufacturing",
+    "proofAnchor": "Finished Good"
+  },
+  "firstRecords": [
+    "Customer Record",
+    "Finished Good"
+  ],
+  "branchGuards": {
+    "mainCreateEnabled": false,
+    "pilotCreateEnabledCanBeTrueOnlyOnBranch": true,
+    "approvedLaneOnly": "food_beverage",
+    "approvedRecordsOnly": [
+      "customer",
+      "proof anchor"
+    ],
+    "requiresSandboxRuntime": true,
+    "requiresConsultantConfirmation": true,
+    "requiresTypeToConfirmPhrase": true,
+    "requiresTraceResult": true
+  },
+  "rollbackPlan": [
+    "Tag records with IDB packet id and rollback label.",
+    "Return record ids and urls for every create or update.",
+    "If any required record fails, stop the packet and return recoverable errors.",
+    "Do not continue to transaction creation until customer and proof item succeed."
+  ],
+  "nonRegression": {
+    "mainStaysCreateDisabled": true,
+    "pilotCannotWriteOutsideApprovedLane": true,
+    "pilotCannotWriteOutsideSandbox": true,
+    "llmAdvisoryOnly": true
+  }
+}

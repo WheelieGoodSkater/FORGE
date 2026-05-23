@@ -1,0 +1,351 @@
+{
+  "schema": "idb.website-classifier-v1-trace-sample.v1",
+  "classifierVersion": "w51.website-classifier.v1",
+  "generated": "2026-05-12T00:00:00.000Z",
+  "inputEvidenceSchema": "idb.website-evidence.v1",
+  "writeAuthority": "none",
+  "nllmAdvisoryOnly": true,
+  "cases": [
+    {
+      "id": "w51_recommended_trek",
+      "inputEvidenceId": "w50_recommended_product_brand",
+      "normalizedUrl": "https://trekbikes.com/",
+      "domain": "trekbikes.com",
+      "classificationState": "recommended",
+      "laneRecommendation": {
+        "laneId": "dealer_hardgoods",
+        "label": "Dealer Hardgoods",
+        "score": 0.91
+      },
+      "proofAnchorRecommendation": {
+        "label": "Bicycle SKU Matrix",
+        "basis": "Product category and dealer/store evidence"
+      },
+      "productSeed": "Bicycle SKU",
+      "productFamily": "Bicycle Dealer Hardgoods",
+      "demandMoment": "dealer inventory and replenishment readiness",
+      "confidence": {
+        "state": "recommended",
+        "score": 0.91,
+        "requiresConfirmation": false,
+        "reason": "The website evidence has a clear hardgoods product category and dealer/store signals."
+      },
+      "evidenceCitations": [
+        {
+          "sourceUrl": "https://trekbikes.com/",
+          "field": "navigationLabels",
+          "value": "Bikes",
+          "supports": "laneRecommendation"
+        },
+        {
+          "sourceUrl": "https://trekbikes.com/us/en_US/bikes/",
+          "field": "productCategoryTerms",
+          "value": "bikes",
+          "supports": "productSeed"
+        },
+        {
+          "sourceUrl": "https://trekbikes.com/",
+          "field": "distributionSignals",
+          "value": "dealer locator",
+          "supports": "demandMoment"
+        }
+      ],
+      "competingCandidates": [],
+      "confirmationPrompt": null,
+      "notesBoundary": {
+        "notesReviewed": "Consultant says apparel launch is the priority.",
+        "notesAllowedFor": [
+          "pain",
+          "roi",
+          "competitiveFraming",
+          "objections",
+          "talkTrack",
+          "runCoaching"
+        ],
+        "notesNotAllowedFor": [
+          "laneRecommendation",
+          "proofAnchorRecommendation",
+          "productSeed",
+          "productFamily",
+          "demandMoment"
+        ],
+        "notesDidOverrideIdentification": false
+      }
+    },
+    {
+      "id": "w51_ambiguous_industrial_apparel",
+      "inputEvidenceId": "w50_ambiguous_site",
+      "normalizedUrl": "https://ambiguous-example.invalid/",
+      "domain": "ambiguous-example.invalid",
+      "classificationState": "needs_confirmation",
+      "laneRecommendation": {
+        "laneId": "apparel_accessories",
+        "label": "Apparel & Accessories",
+        "score": 0.62
+      },
+      "proofAnchorRecommendation": {
+        "label": "Style / SKU Matrix",
+        "basis": "Uniform evidence is slightly stronger than manufacturing evidence, but confidence is not sufficient."
+      },
+      "productSeed": "",
+      "productFamily": "",
+      "demandMoment": "",
+      "confidence": {
+        "state": "needs_confirmation",
+        "score": 0.62,
+        "requiresConfirmation": true,
+        "reason": "Website evidence supports both apparel and industrial manufacturing interpretations."
+      },
+      "evidenceCitations": [
+        {
+          "sourceUrl": "https://ambiguous-example.invalid/",
+          "field": "h2Text",
+          "value": "Uniform programs",
+          "supports": "laneRecommendation"
+        },
+        {
+          "sourceUrl": "https://ambiguous-example.invalid/",
+          "field": "h2Text",
+          "value": "Custom fabricated parts",
+          "supports": "competingCandidate"
+        }
+      ],
+      "competingCandidates": [
+        {
+          "laneId": "apparel_accessories",
+          "score": 0.62,
+          "whyItMightFit": "Uniform programs and apparel-like navigation are present.",
+          "evidenceCitations": [
+            {
+              "sourceUrl": "https://ambiguous-example.invalid/",
+              "field": "navigationLabels",
+              "value": "Uniforms",
+              "supports": "competingCandidate"
+            }
+          ]
+        },
+        {
+          "laneId": "industrial_manufacturing",
+          "score": 0.59,
+          "whyItMightFit": "Fabrication, parts, and manufacturing language are also present.",
+          "evidenceCitations": [
+            {
+              "sourceUrl": "https://ambiguous-example.invalid/",
+              "field": "manufacturingSignals",
+              "value": "fabrication",
+              "supports": "competingCandidate"
+            }
+          ]
+        }
+      ],
+      "confirmationPrompt": {
+        "reason": "The website appears to mix uniform/apparel and manufactured-parts evidence.",
+        "missingEvidence": "Confirm whether the live demo should prioritize apparel SKU/style control or manufacturing work order readiness.",
+        "question": "Should IDB classify this prospect as Apparel & Accessories or Industrial Manufacturing?"
+      },
+      "notesBoundary": {
+        "notesReviewed": "Conversation notes mention warehouse pain.",
+        "notesAllowedFor": [
+          "pain",
+          "roi",
+          "competitiveFraming",
+          "objections",
+          "talkTrack",
+          "runCoaching"
+        ],
+        "notesNotAllowedFor": [
+          "laneRecommendation",
+          "proofAnchorRecommendation",
+          "productSeed",
+          "productFamily",
+          "demandMoment"
+        ],
+        "notesDidOverrideIdentification": false
+      }
+    },
+    {
+      "id": "w51_blocked_site",
+      "inputEvidenceId": "w50_blocked_site",
+      "normalizedUrl": "https://blocked-example.invalid/",
+      "domain": "blocked-example.invalid",
+      "classificationState": "insufficient_evidence",
+      "laneRecommendation": null,
+      "proofAnchorRecommendation": null,
+      "productSeed": "",
+      "productFamily": "",
+      "demandMoment": "",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true,
+        "reason": "The website was blocked and produced no usable evidence."
+      },
+      "evidenceCitations": [],
+      "competingCandidates": [],
+      "confirmationPrompt": {
+        "reason": "The site blocked readable evidence capture.",
+        "missingEvidence": "Paste homepage/category/product text or provide SC-confirmed category evidence.",
+        "question": "Can you provide website evidence before IDB selects a lane?"
+      },
+      "notesBoundary": {
+        "notesReviewed": "Notes mention a likely distributor.",
+        "notesAllowedFor": [
+          "pain",
+          "roi",
+          "competitiveFraming",
+          "objections",
+          "talkTrack",
+          "runCoaching"
+        ],
+        "notesNotAllowedFor": [
+          "laneRecommendation",
+          "proofAnchorRecommendation",
+          "productSeed",
+          "productFamily",
+          "demandMoment"
+        ],
+        "notesDidOverrideIdentification": false
+      }
+    },
+    {
+      "id": "w51_thin_site",
+      "inputEvidenceId": "w50_thin_site",
+      "normalizedUrl": "https://thin-example.invalid/",
+      "domain": "thin-example.invalid",
+      "classificationState": "insufficient_evidence",
+      "laneRecommendation": null,
+      "proofAnchorRecommendation": null,
+      "productSeed": "",
+      "productFamily": "",
+      "demandMoment": "",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0.12,
+        "requiresConfirmation": true,
+        "reason": "The website content is too thin to identify product category or lane."
+      },
+      "evidenceCitations": [],
+      "competingCandidates": [],
+      "confirmationPrompt": {
+        "reason": "The site only exposed generic welcome/about/contact content.",
+        "missingEvidence": "Need product, service, category, industry, or navigation evidence.",
+        "question": "Can you paste a product/category page or confirm the prospect type?"
+      },
+      "notesBoundary": {
+        "notesReviewed": "Notes mention inventory pain.",
+        "notesAllowedFor": [
+          "pain",
+          "roi",
+          "competitiveFraming",
+          "objections",
+          "talkTrack",
+          "runCoaching"
+        ],
+        "notesNotAllowedFor": [
+          "laneRecommendation",
+          "proofAnchorRecommendation",
+          "productSeed",
+          "productFamily",
+          "demandMoment"
+        ],
+        "notesDidOverrideIdentification": false
+      }
+    },
+    {
+      "id": "w51_unavailable_site",
+      "inputEvidenceId": "w50_unavailable_site",
+      "normalizedUrl": "https://unavailable-example.invalid/",
+      "domain": "unavailable-example.invalid",
+      "classificationState": "insufficient_evidence",
+      "laneRecommendation": null,
+      "proofAnchorRecommendation": null,
+      "productSeed": "",
+      "productFamily": "",
+      "demandMoment": "",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true,
+        "reason": "The resolver could not reach the website."
+      },
+      "evidenceCitations": [],
+      "competingCandidates": [],
+      "confirmationPrompt": {
+        "reason": "The site was unavailable.",
+        "missingEvidence": "Need reachable website evidence, pasted website text, or SC-confirmed category evidence.",
+        "question": "Should IDB retry later or use pasted evidence?"
+      },
+      "notesBoundary": {
+        "notesReviewed": "Notes mention apparel.",
+        "notesAllowedFor": [
+          "pain",
+          "roi",
+          "competitiveFraming",
+          "objections",
+          "talkTrack",
+          "runCoaching"
+        ],
+        "notesNotAllowedFor": [
+          "laneRecommendation",
+          "proofAnchorRecommendation",
+          "productSeed",
+          "productFamily",
+          "demandMoment"
+        ],
+        "notesDidOverrideIdentification": false
+      }
+    },
+    {
+      "id": "w51_timeout_site",
+      "inputEvidenceId": "w50_timeout_site",
+      "normalizedUrl": "https://timeout-example.invalid/",
+      "domain": "timeout-example.invalid",
+      "classificationState": "insufficient_evidence",
+      "laneRecommendation": null,
+      "proofAnchorRecommendation": null,
+      "productSeed": "",
+      "productFamily": "",
+      "demandMoment": "",
+      "confidence": {
+        "state": "insufficient_evidence",
+        "score": 0,
+        "requiresConfirmation": true,
+        "reason": "The resolver timed out before it captured usable evidence."
+      },
+      "evidenceCitations": [],
+      "competingCandidates": [],
+      "confirmationPrompt": {
+        "reason": "Website evidence capture timed out.",
+        "missingEvidence": "Need retry, pasted homepage text, or category evidence.",
+        "question": "Should IDB retry or proceed with manual website evidence?"
+      },
+      "notesBoundary": {
+        "notesReviewed": "Notes mention manufacturing.",
+        "notesAllowedFor": [
+          "pain",
+          "roi",
+          "competitiveFraming",
+          "objections",
+          "talkTrack",
+          "runCoaching"
+        ],
+        "notesNotAllowedFor": [
+          "laneRecommendation",
+          "proofAnchorRecommendation",
+          "productSeed",
+          "productFamily",
+          "demandMoment"
+        ],
+        "notesDidOverrideIdentification": false
+      }
+    }
+  ],
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "noSuiteScriptInvocation": true,
+    "notesCannotOwnIdentification": true
+  }
+}

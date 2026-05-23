@@ -1,0 +1,89 @@
+{
+  "schema": "intelligent-demo-builder-dry-run-packet.v1",
+  "generated": "2026-05-09",
+  "sourceTrace": "/path/to/downloads/intelligent-demo-builder-trace-1778344929240.json",
+  "packetMode": "dry_run_only",
+  "adapterStatus": "not_connected",
+  "creationAllowed": false,
+  "consultantConfirmationRequired": true,
+  "customer": {
+    "name": "georgetown foods",
+    "website": "https://georgetownfoods.example",
+    "notes": "Customer makes packaged beverages and is worried about ingredient readiness, packaging timing, line continuity, finished goods availability, and replenishment risk for upcoming promotions."
+  },
+  "lane": {
+    "id": "food_beverage",
+    "name": "Food / Beverage CPG Manufacturing",
+    "dccFamilyKey": "foodManufacturing",
+    "dccScenario": "Promotion-Driven Food Manufacturing",
+    "dccMode": "Balanced",
+    "dccToggles": {
+      "createNewHeroItem": true,
+      "enableManufacturing": true,
+      "enableWip": false
+    },
+    "proofAnchor": "Finished Good",
+    "recommendedMove": "Customer Record",
+    "pageType": "NetSuite page"
+  },
+  "records": [
+    {
+      "sequence": 1,
+      "label": "Customer Record",
+      "role": "customer",
+      "status": "draft",
+      "source": "Demo Command Center V4 inherited setup path",
+      "assumptions": ["Use Georgetown Foods as the demo account story anchor.", "Attach website and discovery notes to the setup context."]
+    },
+    {
+      "sequence": 2,
+      "label": "Sales Order View",
+      "role": "transaction",
+      "status": "draft",
+      "source": "Demo Command Center V4 inherited setup path",
+      "assumptions": ["Show promotion-driven demand and finished-good customer commitment."]
+    },
+    {
+      "sequence": 3,
+      "label": "Finished Good",
+      "role": "proof anchor",
+      "status": "draft",
+      "source": "Demo Command Center V4 inherited setup path",
+      "assumptions": ["Use a packaged beverage finished good as the hero proof item."]
+    },
+    {
+      "sequence": 4,
+      "label": "Ingredient / Packaging Structure",
+      "role": "supporting proof",
+      "status": "draft",
+      "source": "Demo Command Center V4 inherited setup path",
+      "assumptions": ["Represent ingredient readiness and package timing risk."]
+    },
+    {
+      "sequence": 5,
+      "label": "Packaging & Line Details",
+      "role": "supporting proof",
+      "status": "draft",
+      "source": "Demo Command Center V4 inherited setup path",
+      "assumptions": ["Support line continuity and packaging availability proof."]
+    },
+    {
+      "sequence": 6,
+      "label": "Production Setup",
+      "role": "supporting proof",
+      "status": "draft",
+      "source": "Demo Command Center V4 inherited setup path",
+      "assumptions": ["Keep production setup draft-only until a supported adapter exists."]
+    }
+  ],
+  "stopGo": "go_for_review_only",
+  "missing": [],
+  "safeNextAction": "Review draft records before any creation adapter is used.",
+  "nonRegression": {
+    "noLiveCreation": true,
+    "noProofAnchorChange": true,
+    "noNewLane": true,
+    "noFixtureAppend": true,
+    "noUnsupportedObjectCreation": true
+  }
+}

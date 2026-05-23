@@ -1,0 +1,119 @@
+{
+  "schema": "idb.w29-nllm-record-naming-advisory-contract.v1",
+  "generated": "2026-05-10",
+  "status": "complete_create_still_disabled",
+  "objective": "Make N/LLM record naming advisory explicit, exportable, and reviewable so website evidence can improve customer-specific record and transaction names without gaining write or lane authority.",
+  "agentRoles": [
+    {
+      "name": "N/LLM Record Naming Advisor",
+      "goal": "Propose sharper record names from website/category evidence and current packet context."
+    },
+    {
+      "name": "Website Evidence Sentinel",
+      "goal": "Confirm website-owned package identity remains ahead of conversation-note story shaping."
+    },
+    {
+      "name": "Packet Contract Agent",
+      "goal": "Keep packet order, role, dependency, and create-readiness metadata unchanged."
+    },
+    {
+      "name": "No-Regression Sentinel",
+      "goal": "Block advisory output from changing lane, proof anchor, DCC toggles, SuiteScript status, or creation authority."
+    }
+  ],
+  "advisoryRequest": {
+    "schema": "idb.nllm-record-naming-advisory-request.v1",
+    "writeAuthority": "none",
+    "creationAllowed": false,
+    "statusValues": [
+      "nllm_optional",
+      "nllm_recommended"
+    ],
+    "inputs": [
+      "customer",
+      "selectedLaneId",
+      "selectedLane",
+      "proofAnchor",
+      "websitePackageClassifier",
+      "currentNamingEvidence",
+      "conversationNotesUse",
+      "records"
+    ],
+    "allowedOutputPerRecord": [
+      "proposedName",
+      "displayLabel",
+      "fieldNameSuggestions",
+      "sourceBasis",
+      "confidence",
+      "fallbackReason"
+    ]
+  },
+  "authorityOrder": [
+    "known website/domain signal",
+    "website category classifier",
+    "conversation-note product cue",
+    "industry fallback",
+    "N/LLM advisory naming suggestion"
+  ],
+  "conversationNotesBoundary": "Conversation notes can sharpen pain, demand moment wording, ROI, competitive framing, objections, and live run coaching, but cannot override website-owned package identity or create permission.",
+  "exportContract": {
+    "tracePayloadField": "recordNamingAdvisoryRequest",
+    "mustInclude": [
+      "schema",
+      "agentRole",
+      "writeAuthority",
+      "creationAllowed",
+      "websitePackageClassifier",
+      "currentNamingEvidence",
+      "records",
+      "mustReturn",
+      "mustNot",
+      "noRegression"
+    ]
+  },
+  "mustReturn": [
+    "productSeed",
+    "productFamily",
+    "demandMoment",
+    "recordNames",
+    "websiteEvidenceSnippets",
+    "reviewFlags",
+    "sourceBasis",
+    "confidence",
+    "fallbackReason",
+    "noRegressionDeclaration"
+  ],
+  "mustNot": [
+    "authorizeCreation",
+    "invokeSuiteScriptDirectWrite",
+    "changeLaneAuthority",
+    "changeProofAnchor",
+    "changeDccToggles",
+    "changePacketOrder",
+    "inventVerifiedWebsiteFacts",
+    "hideCreateBlockers"
+  ],
+  "nextBlocks": [
+    {
+      "block": "W30",
+      "objective": "Render advisory status and source basis in Review without adding scroll noise.",
+      "goal": "Consultant sees whether website, classifier, or N/LLM shaped the names."
+    },
+    {
+      "block": "W31",
+      "objective": "Prepare sandbox pilot handoff to test advisory-named Customer and Proof Item writes.",
+      "goal": "Governed branch can write only reviewed Customer plus Proof Item after explicit confirmation."
+    }
+  ],
+  "nonRegression": {
+    "advisoryOnly": true,
+    "noRecordCreation": true,
+    "noSuiteScriptInvocation": true,
+    "noLaneAuthorityChange": true,
+    "noProofAnchorChange": true,
+    "noDccToggleChange": true,
+    "noPacketOrderChange": true,
+    "mainSuiteletCreateEnabled": false,
+    "mainDrawerCreateEnabled": false
+  }
+}

@@ -1,0 +1,213 @@
+{
+  "schema": "idb.w184-explicit-one-call-server-adapter-submission-gate-trace.v1",
+  "generatedAt": "2026-05-17T21:41:17.153Z",
+  "defaultNoSubmitTrace": [
+    {
+      "event": "w184_authorization_gate",
+      "ready": false,
+      "blockedReasons": [
+        "execution_not_requested_default_no_submit",
+        "operator_phrase_missing_or_wrong",
+        "endpoint_not_confirmed"
+      ],
+      "requiredPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+      "providedPhrase": "",
+      "requestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w184_one_submit_evidence",
+      "ready": false,
+      "submitAttemptCount": 0,
+      "maxQueueSubmitAttempts": 1,
+      "runnerTaskId": null,
+      "adapterError": false,
+      "idempotencyToken": "idb-w184-ariat-international-one-call-001",
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w184_first_response_guard",
+      "ready": false,
+      "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+      "recordUrlsReturned": false,
+      "resultCaptureStatus": "not_started_no_submit",
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "authorizedSubmitTrace": [
+    {
+      "event": "w184_authorization_gate",
+      "ready": true,
+      "blockedReasons": [],
+      "requiredPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+      "providedPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+      "requestSent": true,
+      "queueSubmitted": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w184_one_submit_evidence",
+      "ready": true,
+      "submitAttemptCount": 1,
+      "maxQueueSubmitAttempts": 1,
+      "runnerTaskId": "task_w184_idb-w184-ariat-international-one-call-001",
+      "adapterError": false,
+      "idempotencyToken": "idb-w184-ariat-international-one-call-001",
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w184_first_response_guard",
+      "ready": true,
+      "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+      "recordUrlsReturned": false,
+      "resultCaptureStatus": "pending_runner_completion",
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "duplicateBlockedTrace": [
+    {
+      "event": "w184_authorization_gate",
+      "ready": false,
+      "blockedReasons": [
+        "one_submit_limit_already_used"
+      ],
+      "requiredPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+      "providedPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+      "requestSent": false,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w184_one_submit_evidence",
+      "ready": false,
+      "submitAttemptCount": 0,
+      "maxQueueSubmitAttempts": 1,
+      "runnerTaskId": null,
+      "adapterError": false,
+      "idempotencyToken": "idb-w184-ariat-international-one-call-001",
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w184_first_response_guard",
+      "ready": false,
+      "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+      "recordUrlsReturned": false,
+      "resultCaptureStatus": "not_started_no_submit",
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "adapterErrorTrace": [
+    {
+      "event": "w184_authorization_gate",
+      "ready": true,
+      "blockedReasons": [],
+      "requiredPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+      "providedPhrase": "AUTHORIZE ONE SANDBOX ADAPTER CALL",
+      "requestSent": true,
+      "queueSubmitted": false,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w184_one_submit_evidence",
+      "ready": true,
+      "submitAttemptCount": 1,
+      "maxQueueSubmitAttempts": 1,
+      "runnerTaskId": null,
+      "adapterError": true,
+      "idempotencyToken": "idb-w184-ariat-international-one-call-001",
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    },
+    {
+      "event": "w184_first_response_guard",
+      "ready": true,
+      "expectedFirstResponse": "runnerTaskId_or_adapter_error_not_record_urls",
+      "recordUrlsReturned": false,
+      "resultCaptureStatus": "adapter_error",
+      "w151ImportRequiredBeforeNamesMutate": true,
+      "activeOpenLinks": 0,
+      "mutatesFinalGeneratedNames": false
+    }
+  ],
+  "results": [
+    {
+      "name": "w184_activation_packet_ready",
+      "pass": true,
+      "detail": "activation_packet_ready_no_submit"
+    },
+    {
+      "name": "w184_default_no_submit_no_request",
+      "pass": true,
+      "detail": "[\"execution_not_requested_default_no_submit\",\"operator_phrase_missing_or_wrong\",\"endpoint_not_confirmed\"]"
+    },
+    {
+      "name": "w184_authorized_submit_once",
+      "pass": true,
+      "detail": "{\"requestSent\":true,\"transportInvoked\":true,\"queueSubmitted\":true,\"submitAttemptCount\":1,\"maxQueueSubmitAttempts\":1,\"runnerTaskId\":\"task_w184_idb-w184-ariat-international-one-call-001\",\"adapterError\":false,\"resultCaptureStatus\":\"pending_runner_completion\",\"idempotencyToken\":\"idb-w184-ariat-international-one-call-001\",\"endpointUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idb_governed_runner_adapter&deploy=customdeploy_idb_governed_runner_adapter\",\"expectedFirstResponseOnly\":\"runnerTaskId_or_adapter_error_not_record_urls\",\"firstResponseAllowed\":true,\"recordUrlsReturned\":false}"
+    },
+    {
+      "name": "w184_runner_task_captured_pending_only",
+      "pass": true,
+      "detail": "{\"captured\":true,\"runnerTaskId\":\"task_w184_idb-w184-ariat-international-one-call-001\",\"resultCaptureStatus\":\"pending_runner_completion\",\"w151ImportRequiredBeforeNamesMutate\":true}"
+    },
+    {
+      "name": "w184_duplicate_submit_blocked",
+      "pass": true,
+      "detail": "[\"one_submit_limit_already_used\"]"
+    },
+    {
+      "name": "w184_adapter_error_stops_safely",
+      "pass": true,
+      "detail": "{\"captured\":true,\"normalizedStatus\":\"adapter_transport_error_drawer_safe\",\"resultCaptureStatus\":\"adapter_error\"}"
+    },
+    {
+      "name": "w184_no_final_name_mutation",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"finalGeneratedNamesImported\":false,\"activeOpenLinks\":0,\"writesAttemptedFromDrawer\":false,\"drawerCreatedRecords\":false}"
+    },
+    {
+      "name": "w184_no_drawer_writes_or_records",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"oneSubmitLimit\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"visualTestingBlockedUntilCompletedRunnerResultImport\":true}"
+    },
+    {
+      "name": "w184_w151_guard_preserved",
+      "pass": true,
+      "detail": "{\"captured\":true,\"runnerTaskId\":\"task_w184_idb-w184-ariat-international-one-call-001\",\"resultCaptureStatus\":\"pending_runner_completion\",\"w151ImportRequiredBeforeNamesMutate\":true}"
+    },
+    {
+      "name": "w184_no_open_links_and_visual_blocked",
+      "pass": true,
+      "detail": "{\"visualTestingBlocked\":true,\"targetedOpenLinkTestingReady\":false,\"broaderVisualNetSuiteTestingRequired\":false,\"reason\":\"W184 stops at runnerTaskId or adapter error. Open-link visual testing remains blocked until completed runner result JSON is imported.\"}"
+    },
+    {
+      "name": "w184_first_response_not_urls",
+      "pass": true,
+      "detail": "{\"requestSent\":true,\"transportInvoked\":true,\"queueSubmitted\":true,\"submitAttemptCount\":1,\"maxQueueSubmitAttempts\":1,\"runnerTaskId\":\"task_w184_idb-w184-ariat-international-one-call-001\",\"adapterError\":false,\"resultCaptureStatus\":\"pending_runner_completion\",\"idempotencyToken\":\"idb-w184-ariat-international-one-call-001\",\"endpointUrl\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idb_governed_runner_adapter&deploy=customdeploy_idb_governed_runner_adapter\",\"expectedFirstResponseOnly\":\"runnerTaskId_or_adapter_error_not_record_urls\",\"firstResponseAllowed\":true,\"recordUrlsReturned\":false}"
+    }
+  ],
+  "visualTestingDecision": {
+    "visualTestingBlocked": true,
+    "targetedOpenLinkTestingReady": false,
+    "broaderVisualNetSuiteTestingRequired": false,
+    "reason": "W184 stops at runnerTaskId or adapter error. Open-link visual testing remains blocked until completed runner result JSON is imported."
+  },
+  "bestNextCodexPrompt": {
+    "block": "W185: RunnerTaskId Result Poll Handoff From Authorized Build Call",
+    "prompt": "Move through W185: RunnerTaskId Result Poll Handoff From Authorized Build Call. Use the W184 explicit one-call server adapter gate and captured runnerTaskId or adapter error evidence to wire the next Build-return state: if runnerTaskId exists, expose Check runner result and poll result capture through the approved server adapter; if adapter error exists, stop safely with operator evidence. Do not mutate final generated names until W151 validates completed runner result JSON with numeric ids and supported NetSuite URLs. Preserve no drawer writes, no drawer transaction writes, no drawer-created records, no drawer SuiteScript invocation outside the approved server adapter path, consultant confirmation, state authority and handoff parity, idempotency, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Do not request Open-link visual testing until completed runner result JSON is imported. Output runnerTaskId poll handoff, guarded harness, trace samples, W185 report, visual testing decision blocked, and best next Codex prompt."
+  }
+}

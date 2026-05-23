@@ -1,0 +1,356 @@
+{
+  "schema": "idb.w216-consultant-partial-result-review-polish-harness.v1",
+  "status": "pass",
+  "passCount": 13,
+  "total": 13,
+  "results": [
+    {
+      "id": "complete_retail_review_ready_clean",
+      "pass": true,
+      "evidence": "Build results are ready."
+    },
+    {
+      "id": "complete_apparel_labels_clean",
+      "pass": true,
+      "evidence": "Customer, Sales Order, Style SKU, Style Matrix, Component Item"
+    },
+    {
+      "id": "complete_discrete_manufacturing_can_name_bom_when_present",
+      "pass": true,
+      "evidence": "Customer: Evergreen Equipment Works Customer Account -> Sales Order: Evergreen Equipment Works SO216 -> Finished/Assembly Item: Evergreen Equipment Works Finished Good -> BOM or Assembly Structure: Evergreen Equipment Works Assembly Structure"
+    },
+    {
+      "id": "partial_discrete_consultant_copy_honest_and_clean",
+      "pass": true,
+      "evidence": "Core build records are ready. Manufacturing setup detail was not returned."
+    },
+    {
+      "id": "partial_discrete_admin_debug_shows_diagnostics",
+      "pass": true,
+      "evidence": "{\"missingBomOrAssemblyStructure\":true,\"missingWorkOrderOrWipObject\":false,\"missingRouting\":false,\"missingWorkCenter\":false,\"mappedRoles\":[\"customer\",\"sales_order\",\"finished_or_assembly_item\",\"component_item\"],\"resolvedOperatingMode\":\"discrete_manufacturing\",\"modeConfidence\":\"high\"}"
+    },
+    {
+      "id": "complete_wip_run_can_use_wip_records",
+      "pass": true,
+      "evidence": "Customer: Canyon Ridge Components Customer Account -> Sales Order: Canyon Ridge Components SO216 -> Finished/Assembly Item: Canyon Ridge Components Finished Good -> BOM or Assembly Structure: Canyon Ridge Components Assembly Structure"
+    },
+    {
+      "id": "partial_wip_admin_debug_and_run_do_not_prove_missing_wip",
+      "pass": true,
+      "evidence": "Core build records are ready. WIP detail was not returned.; Use available records: Customer: Canyon Ridge Components Customer Account -> Sales Order: Canyon Ridge Components SO216 -> Finished/Assembly Item: Canyon Ridge Components Finished Good -> BOM or Assembly Structure: Canyon Ridge Components Assembly Structure."
+    },
+    {
+      "id": "partial_food_batch_uses_food_language_only",
+      "pass": true,
+      "evidence": "Food batch records are ready. WIP detail was not returned."
+    },
+    {
+      "id": "invalid_fallback_names_remain_rejected",
+      "pass": true,
+      "evidence": "toggle_vocabulary_guardrail_failed; mode_record_contract_partial"
+    },
+    {
+      "id": "handoff_json_still_rejected",
+      "pass": true,
+      "evidence": "This is the Build handoff JSON. It requests runner work but does not contain completed runner result records, ids, or URLs."
+    },
+    {
+      "id": "normal_run_copy_uses_returned_records_only_after_valid_import",
+      "pass": true,
+      "evidence": "Build results are ready.: Customer: Northstar Trail Outfitters Customer Account -> Sales Order: Northstar Trail Outfitters SO216 -> Product SKU: Northstar Trail Outfitters Product Availability SKU -> Availability Flow: Northstar Trail Outfitters Retail Replenishment Flow."
+    },
+    {
+      "id": "admin_debug_only_terms_are_hidden_when_off",
+      "pass": true,
+      "evidence": "normal Review/Run copy is clean"
+    },
+    {
+      "id": "boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"noDrawerWrites\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"nllmAdvisoryOnly\":true,\"imageLookupDisabledByDefault\":true,\"adminDebugDiagnosticsHiddenWhenOff\":true}"
+    }
+  ],
+  "fixtures": {
+    "retail": {
+      "headline": "Build results are ready.",
+      "summary": "Use the returned records with real Open links.",
+      "visibleRecords": [
+        {
+          "role": "customer",
+          "label": "Customer",
+          "name": "Northstar Trail Outfitters Customer Account",
+          "internalName": "",
+          "id": "1701",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1701",
+          "source": "dcc_final",
+          "w214Role": "customer",
+          "w215MappedRole": "customer",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1701"
+          },
+          "consultantLabel": "Customer"
+        },
+        {
+          "role": "sales_order",
+          "label": "Sales Order / demo transaction",
+          "name": "Northstar Trail Outfitters SO216",
+          "internalName": "",
+          "id": "80001",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80001",
+          "source": "dcc_final",
+          "w214Role": "sales_order",
+          "w215MappedRole": "sales_order",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80001"
+          },
+          "consultantLabel": "Sales Order"
+        },
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "Northstar Trail Outfitters Product Availability SKU",
+          "internalName": "",
+          "id": "2200",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2200",
+          "source": "dcc_final",
+          "w214Role": "hero_sku",
+          "w215MappedRole": "hero_sku",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2200"
+          },
+          "consultantLabel": "Product SKU"
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "Northstar Trail Outfitters Retail Replenishment Flow",
+          "internalName": "",
+          "id": "2201",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2201",
+          "source": "dcc_final",
+          "w214Role": "availability_or_replenishment_flow",
+          "w215MappedRole": "availability_or_replenishment_flow",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2201"
+          },
+          "consultantLabel": "Availability Flow"
+        },
+        {
+          "role": "location_planning",
+          "label": "Location / planning 1",
+          "name": "Northstar Trail Outfitters Store Channel Context",
+          "internalName": "",
+          "id": "2202",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2202",
+          "source": "dcc_final",
+          "w214Role": "location_or_channel_context",
+          "w215MappedRole": "location_or_channel_context",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2202"
+          },
+          "consultantLabel": "Channel Context"
+        }
+      ],
+      "hiddenNonOpenableRecordCount": 0,
+      "noFakeOpenLinks": true
+    },
+    "apparelLabels": [
+      "Customer",
+      "Sales Order",
+      "Style SKU",
+      "Style Matrix",
+      "Component Item"
+    ],
+    "discretePartial": {
+      "visible": true,
+      "diagnostics": {
+        "missingBomOrAssemblyStructure": true,
+        "missingWorkOrderOrWipObject": false,
+        "missingRouting": false,
+        "missingWorkCenter": false,
+        "mappedRoles": [
+          "customer",
+          "sales_order",
+          "finished_or_assembly_item",
+          "component_item"
+        ],
+        "resolvedOperatingMode": "discrete_manufacturing",
+        "modeConfidence": "high"
+      }
+    },
+    "wipPartial": {
+      "visible": true,
+      "diagnostics": {
+        "missingBomOrAssemblyStructure": false,
+        "missingWorkOrderOrWipObject": true,
+        "missingRouting": true,
+        "missingWorkCenter": true,
+        "mappedRoles": [
+          "customer",
+          "sales_order",
+          "finished_or_assembly_item",
+          "bom_or_assembly_structure",
+          "bom_or_assembly_structure",
+          "bom_or_assembly_structure",
+          "component_item"
+        ],
+        "resolvedOperatingMode": "wip_manufacturing",
+        "modeConfidence": "high"
+      }
+    },
+    "foodPartial": {
+      "headline": "Food batch records are ready. WIP detail was not returned.",
+      "summary": "Use the returned food batch, ingredient, formula, and lot records. Do not claim WIP detail unless those records are returned.",
+      "visibleRecords": [
+        {
+          "role": "customer",
+          "label": "Customer",
+          "name": "McCormick Customer Account",
+          "internalName": "",
+          "id": "1706",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1706",
+          "source": "dcc_final",
+          "w214Role": "customer",
+          "w215MappedRole": "customer",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/entity/custjob.nl?id=1706"
+          },
+          "consultantLabel": "Customer"
+        },
+        {
+          "role": "sales_order",
+          "label": "Sales Order / demo transaction",
+          "name": "McCormick SO216",
+          "internalName": "",
+          "id": "80006",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80006",
+          "source": "dcc_final",
+          "w214Role": "sales_order",
+          "w215MappedRole": "sales_order",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80006"
+          },
+          "consultantLabel": "Sales Order"
+        },
+        {
+          "role": "hero_item",
+          "label": "Hero item",
+          "name": "McCormick Finished Food Batch Item",
+          "internalName": "",
+          "id": "2700",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2700",
+          "source": "dcc_final",
+          "w214Role": "finished_food_or_batch_item",
+          "w215MappedRole": "finished_food_or_batch_item",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2700"
+          },
+          "consultantLabel": "Finished Food/Batch Item"
+        },
+        {
+          "role": "matrix_or_proof_item",
+          "label": "Matrix item / proof item",
+          "name": "McCormick Formula Batch Structure",
+          "internalName": "",
+          "id": "2701",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2701",
+          "source": "dcc_final",
+          "w214Role": "formula_or_batch_structure",
+          "w215MappedRole": "formula_or_batch_structure",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2701"
+          },
+          "consultantLabel": "Formula or Batch Structure"
+        },
+        {
+          "role": "component_item",
+          "label": "Component item 1",
+          "name": "McCormick Ingredient Item",
+          "internalName": "",
+          "id": "2702",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2702",
+          "source": "dcc_final",
+          "w214Role": "ingredient_or_component_item",
+          "w215MappedRole": "ingredient_or_component_item",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2702"
+          },
+          "consultantLabel": "Ingredient Item"
+        },
+        {
+          "role": "location_planning",
+          "label": "Location / planning 1",
+          "name": "McCormick Lot Context",
+          "internalName": "",
+          "id": "2703",
+          "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2703",
+          "source": "dcc_final",
+          "w214Role": "lot_or_availability_context",
+          "w215MappedRole": "lot_or_availability_context",
+          "linkAuthority": {
+            "schema": "idb.verified-record-link-authority.v1",
+            "status": "verified_openable",
+            "openable": true,
+            "displayLabel": "Open",
+            "reason": "The build result returned a supported NetSuite record URL without preview placeholders.",
+            "url": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/common/item/item.nl?id=2703"
+          },
+          "consultantLabel": "Lot Context"
+        }
+      ],
+      "hiddenNonOpenableRecordCount": 0,
+      "noFakeOpenLinks": true
+    },
+    "handoffGuard": "handoff_packet_rejected"
+  }
+}

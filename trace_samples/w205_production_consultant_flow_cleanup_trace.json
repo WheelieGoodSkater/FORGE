@@ -1,0 +1,13 @@
+{
+  "schema": "idb.w205-trace-samples.v1",
+  "samples": {
+    "runnerTaskId": "SCHEDSCRIPT_REDACTED",
+    "importedSalesOrderUrlBeforeNormalization": "/app/accounting/transactions/salesord.nl?id=80828",
+    "importedSalesOrderUrlAfterNormalization": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/accounting/transactions/salesord.nl?id=80828",
+    "buildStatusSurface": "compact_imported_records_ready"
+  },
+  "cleanupStatus": "PASS_W205_PRODUCTION_CONSULTANT_FLOW_CLEANED_UP",
+  "linkAuthoritySummary": {
+    "verified_openable": 5
+  }
+}

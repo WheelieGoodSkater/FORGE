@@ -1,0 +1,74 @@
+{
+  "schema": "idb.w108-operator-evidence-fields.v1",
+  "status": "required_for_w108_retest",
+  "fieldsToPasteIntoIdb": [
+    {
+      "field": "operatorName",
+      "required": true,
+      "expected": "Operator reviewer name."
+    },
+    {
+      "field": "suiteletParamReview",
+      "required": true,
+      "allowed": [
+        "match",
+        "missing",
+        "unclear"
+      ],
+      "expected": "Suitelet form params comparison result."
+    },
+    {
+      "field": "dccOwnedConfigReview",
+      "required": true,
+      "allowed": [
+        "match",
+        "missing",
+        "unclear"
+      ],
+      "expected": "DCC-owned config comparison result. Do not paste secrets."
+    },
+    {
+      "field": "runnerPreviewReview",
+      "required": true,
+      "allowed": [
+        "match",
+        "missing",
+        "unclear"
+      ],
+      "expected": "Scheduled runner preview comparison result."
+    },
+    {
+      "field": "handoffPacketFilename",
+      "required": true,
+      "expected": "idb-dcc-runner-handoff-packet-*.json."
+    },
+    {
+      "field": "traceFilename",
+      "required": true,
+      "expected": "intelligent-demo-builder-trace-*.json."
+    },
+    {
+      "field": "notes",
+      "required": true,
+      "expected": "What matched, what was missing, and what is unclear."
+    },
+    {
+      "field": "approvalStatus",
+      "required": true,
+      "allowed": [
+        "approved",
+        "rejected"
+      ],
+      "expected": "Mark preview approved or reject preview in IDB."
+    }
+  ],
+  "noSecretRules": [
+    "Do not paste tokens, passwords, internal deployment secrets, or private config values.",
+    "Record whether a config value exists and matches expectation, not the value itself."
+  ],
+  "previewOnlyBoundary": {
+    "idbCanSubmit": false,
+    "idbCanInvokeSuiteScript": false,
+    "idbCanWriteTransactions": false
+  }
+}

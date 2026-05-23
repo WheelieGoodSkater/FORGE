@@ -1,0 +1,474 @@
+{
+  "schema": "idb.w68-staging-resolver-endpoint-smoke-trace.v1",
+  "generated": "2026-05-17T21:41:01.930Z",
+  "decision": "PASS",
+  "readinessDecision": "staging_smoke_ready_not_hosted_endpoint_go",
+  "inheritedReadinessEvidence": {
+    "w67Decision": "PASS",
+    "w67ReadinessDecision": "plan_ready_not_production_go",
+    "trekAfterW66": {
+      "actualState": "recommended",
+      "actualLaneId": "dealer_hardgoods",
+      "driftType": "stable",
+      "sourceUrlCount": 3,
+      "extractionGaps": []
+    },
+    "remainingHonestFailures": 3
+  },
+  "environmentVariables": [
+    {
+      "name": "IDB_RESOLVER_STAGING_URL",
+      "required": true,
+      "example": "https://staging-idb-resolver.example.com",
+      "purpose": "Base URL for the hosted staging resolver endpoint."
+    },
+    {
+      "name": "IDB_RESOLVER_STAGING_TOKEN",
+      "required": true,
+      "example": "pilot-short-lived-token",
+      "purpose": "Short-lived resolver API token or signed request secret for staging smoke."
+    },
+    {
+      "name": "IDB_RESOLVER_ALLOWED_ORIGIN",
+      "required": true,
+      "example": "https://YOUR_ACCOUNT_ID.app.netsuite.com",
+      "purpose": "Approved NetSuite origin used for CORS preflight and POST smoke."
+    },
+    {
+      "name": "IDB_RESOLVER_BLOCKED_ORIGIN",
+      "required": true,
+      "example": "https://unapproved.example.com",
+      "purpose": "Known unapproved origin used to prove CORS denial."
+    },
+    {
+      "name": "IDB_APPROVED_LIVE_RESOLVER_SMOKE",
+      "required": true,
+      "example": "1",
+      "purpose": "Explicit live-smoke opt-in switch."
+    },
+    {
+      "name": "IDB_WEBSITE_RESOLVER_ENDPOINT",
+      "required": false,
+      "example": "https://staging-idb-resolver.example.com/idb/website-resolver/v1/resolve",
+      "purpose": "Drawer pilot endpoint toggle."
+    },
+    {
+      "name": "IDB_WEBSITE_RESOLVER_LOCAL_FALLBACK",
+      "required": false,
+      "example": "0",
+      "purpose": "Drawer fallback toggle; keep explicit during staging."
+    }
+  ],
+  "endpointPaths": {
+    "health": {
+      "method": "GET",
+      "path": "/health",
+      "expectedStatus": 200,
+      "expectedFields": [
+        "serviceName",
+        "resolverVersion",
+        "extractionPolicyVersion",
+        "writeAuthority",
+        "suiteScriptInvocation",
+        "nllmAdvisoryOnly",
+        "cacheStatus"
+      ]
+    },
+    "resolve": {
+      "method": "POST",
+      "path": "/idb/website-resolver/v1/resolve",
+      "contentType": "application/json",
+      "expectedResponseSchema": "idb.website-evidence.v1"
+    }
+  },
+  "authCorsTestCases": [
+    {
+      "id": "authorized_preflight",
+      "request": "OPTIONS resolve path with approved NetSuite Origin and Content-Type header",
+      "expectedStatus": 204,
+      "expected": [
+        "Access-Control-Allow-Origin echoes approved origin",
+        "Access-Control-Allow-Methods includes POST",
+        "Access-Control-Allow-Headers includes Content-Type and resolver auth header",
+        "No wildcard production CORS"
+      ]
+    },
+    {
+      "id": "blocked_origin_preflight",
+      "request": "OPTIONS resolve path with unapproved Origin",
+      "expectedStatus": 403,
+      "expected": [
+        "No Access-Control-Allow-Origin for the blocked origin",
+        "No resolver details leaked"
+      ]
+    },
+    {
+      "id": "missing_token",
+      "request": "POST resolve path without resolver token",
+      "expectedStatus": 401,
+      "expected": [
+        "No website fetch attempted",
+        "No cache lookup attempted",
+        "No classification returned"
+      ]
+    },
+    {
+      "id": "bad_token",
+      "request": "POST resolve path with invalid resolver token",
+      "expectedStatus": 401,
+      "expected": [
+        "No website fetch attempted",
+        "No cache lookup attempted",
+        "No classification returned"
+      ]
+    },
+    {
+      "id": "netsuite_cookie_rejected",
+      "request": "POST resolve path with NetSuite session cookie or authorization header",
+      "expectedStatus": 400,
+      "expected": [
+        "Reject cookie/header",
+        "Do not log cookie/header value",
+        "Do not continue to website fetch"
+      ]
+    },
+    {
+      "id": "write_payload_rejected",
+      "request": "POST resolve path with recordId, suiteletUrl, createEnabled, or write token fields",
+      "expectedStatus": 400,
+      "expected": [
+        "Reject write-shaped payload",
+        "Return no_write_boundary_violation",
+        "No SuiteScript invocation"
+      ]
+    }
+  ],
+  "cacheValidation": [
+    {
+      "id": "same_url_second_request_cache_hit",
+      "steps": [
+        "POST approved live URL once",
+        "POST same normalized URL again with same resolverVersion and extractionPolicyVersion"
+      ],
+      "expected": [
+        "First trace cacheHit false or cold",
+        "Second trace cacheHit true",
+        "Evidence payload is equivalent except requestId, generatedAt, latency, and cache metadata"
+      ]
+    },
+    {
+      "id": "versioned_cache_key",
+      "steps": [
+        "Change resolverVersion or extractionPolicyVersion",
+        "POST same normalized URL"
+      ],
+      "expected": [
+        "Cache key changes",
+        "No stale evidence crosses policy version"
+      ]
+    },
+    {
+      "id": "manual_evidence_not_cached_full_text",
+      "steps": [
+        "POST blocked URL with consultant-supplied manual evidence"
+      ],
+      "expected": [
+        "Trace stores excerpt/hash only",
+        "Manual evidence full text is not cached",
+        "Manual evidence remains consultant_supplied"
+      ]
+    }
+  ],
+  "approvedLiveSiteSmokeCommand": {
+    "purpose": "Run only after a real staging endpoint exists and explicit live-smoke opt-in is set.",
+    "command": "IDB_APPROVED_LIVE_RESOLVER_SMOKE=1 IDB_RESOLVER_STAGING_URL=$IDB_RESOLVER_STAGING_URL IDB_RESOLVER_STAGING_TOKEN=$IDB_RESOLVER_STAGING_TOKEN IDB_RESOLVER_ALLOWED_ORIGIN=$IDB_RESOLVER_ALLOWED_ORIGIN node tools/run_approved_live_resolver_smoke_harness.js",
+    "approvedSites": [
+      "https://www.trekbikes.com/us/en_US/",
+      "https://www.patagonia.com/",
+      "https://www.grainger.com/",
+      "https://www.lincolnelectric.com/"
+    ],
+    "requiredOutcomes": [
+      "Zero false-confident-wrong",
+      "Zero unsupported claims",
+      "Trek remains recommended Dealer Hardgoods when evidence is sufficient",
+      "Thin, blocked, unavailable, and timeout cases remain insufficient evidence with no lane guess"
+    ]
+  },
+  "smokeSamples": {
+    "healthSample": {
+      "request": {
+        "method": "GET",
+        "path": "/health"
+      },
+      "expectedStatus": 200,
+      "response": {
+        "serviceName": "websiteResolverServiceV1",
+        "resolverVersion": "websiteResolverServiceV1.local-prototype.w66",
+        "extractionPolicyVersion": "w66.extraction-policy.v1",
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true,
+        "cacheStatus": "ready"
+      }
+    },
+    "authCorsSamples": [
+      {
+        "id": "authorized_preflight",
+        "expectedStatus": 204,
+        "simulated": true,
+        "result": "expected_staging_behavior_defined",
+        "noWebsiteFetchOnRejectedRequest": false
+      },
+      {
+        "id": "blocked_origin_preflight",
+        "expectedStatus": 403,
+        "simulated": true,
+        "result": "expected_staging_behavior_defined",
+        "noWebsiteFetchOnRejectedRequest": false
+      },
+      {
+        "id": "missing_token",
+        "expectedStatus": 401,
+        "simulated": true,
+        "result": "expected_staging_behavior_defined",
+        "noWebsiteFetchOnRejectedRequest": true
+      },
+      {
+        "id": "bad_token",
+        "expectedStatus": 401,
+        "simulated": true,
+        "result": "expected_staging_behavior_defined",
+        "noWebsiteFetchOnRejectedRequest": true
+      },
+      {
+        "id": "netsuite_cookie_rejected",
+        "expectedStatus": 400,
+        "simulated": true,
+        "result": "expected_staging_behavior_defined",
+        "noWebsiteFetchOnRejectedRequest": true
+      },
+      {
+        "id": "write_payload_rejected",
+        "expectedStatus": 400,
+        "simulated": true,
+        "result": "expected_staging_behavior_defined",
+        "noWebsiteFetchOnRejectedRequest": true
+      }
+    ],
+    "cacheSamples": [
+      {
+        "id": "same_url_second_request_cache_hit",
+        "expected": [
+          "First trace cacheHit false or cold",
+          "Second trace cacheHit true",
+          "Evidence payload is equivalent except requestId, generatedAt, latency, and cache metadata"
+        ],
+        "simulated": true,
+        "traceRequirement": "cache_metadata_required"
+      },
+      {
+        "id": "versioned_cache_key",
+        "expected": [
+          "Cache key changes",
+          "No stale evidence crosses policy version"
+        ],
+        "simulated": true,
+        "traceRequirement": "cache_metadata_required"
+      },
+      {
+        "id": "manual_evidence_not_cached_full_text",
+        "expected": [
+          "Trace stores excerpt/hash only",
+          "Manual evidence full text is not cached",
+          "Manual evidence remains consultant_supplied"
+        ],
+        "simulated": true,
+        "traceRequirement": "store_excerpt_hash_only"
+      }
+    ],
+    "failureSamples": [
+      {
+        "id": "blocked_private_network",
+        "inputUrl": "https://127.0.0.1/admin",
+        "failureState": "blocked",
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0
+        },
+        "laneCandidates": [],
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true
+      },
+      {
+        "id": "thin_public_page",
+        "inputUrl": "https://example.com/",
+        "failureState": "thin",
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0
+        },
+        "laneCandidates": [],
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true
+      },
+      {
+        "id": "unavailable_domain",
+        "inputUrl": "https://unavailable.invalid/",
+        "failureState": "unavailable",
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0
+        },
+        "laneCandidates": [],
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true
+      },
+      {
+        "id": "timeout_site",
+        "inputUrl": "https://timeout.example/",
+        "failureState": "timeout",
+        "confidence": {
+          "state": "insufficient_evidence",
+          "score": 0
+        },
+        "laneCandidates": [],
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false,
+        "nllmAdvisoryOnly": true
+      }
+    ],
+    "manualEvidenceSamples": [
+      {
+        "id": "blocked_with_manual_evidence",
+        "fetchState": "blocked",
+        "manualEvidenceSource": "consultant_supplied_homepage_excerpt",
+        "visibleSource": true,
+        "storedAs": "excerpt_hash_only",
+        "confidenceFloor": "insufficient_evidence",
+        "confidenceCeilingWithoutConfirmation": "needs_confirmation",
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false
+      },
+      {
+        "id": "thin_with_category_text",
+        "fetchState": "thin",
+        "manualEvidenceSource": "consultant_supplied_category_text",
+        "visibleSource": true,
+        "storedAs": "excerpt_hash_only",
+        "confidenceFloor": "insufficient_evidence",
+        "confidenceCeilingWithoutConfirmation": "needs_confirmation",
+        "writeAuthority": "none",
+        "suiteScriptInvocation": false
+      }
+    ]
+  },
+  "observabilityChecklist": [
+    "Every request has requestId, normalizedUrl, domain, resolverVersion, extractionPolicyVersion, fetchStatus, failureState, cacheHit, latencyMs, writeAuthority, and nllmAdvisoryOnly.",
+    "Auth and CORS failures are counted but redact credentials and cookies.",
+    "Metrics include request count, p50/p95 latency, cache hit rate, failure-state rates, confidence-state rates, false-confident-wrong, and unsupported claims.",
+    "Alerts exist for false-confident-wrong greater than zero, unsupported claims greater than zero, timeout rate above threshold, CORS anomaly, and p95 above target.",
+    "Trace exports include source URLs for sufficient evidence and failure reason for insufficient evidence."
+  ],
+  "pilotToggleInstructions": [
+    "Set window.IDB_WEBSITE_RESOLVER_ENDPOINT or localStorage:idb.websiteResolver.endpoint.v1 to the staging resolve URL for pilot browsers only.",
+    "Set localStorage:idb.websiteResolver.localFallback.v1 explicitly to 0 when testing hosted-only behavior.",
+    "Clear the endpoint toggle to roll back to local fallback or manual evidence mode.",
+    "Do not enable any create/write flags as part of resolver smoke.",
+    "Capture trace export after each staging smoke run."
+  ],
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W69: Hosted Resolver Staging Endpoint Implementation",
+    "prompt": "Move through W69: Hosted Resolver Staging Endpoint Implementation. Build the staging no-write websiteResolverServiceV1 endpoint wrapper around the local resolver service: health endpoint, POST resolve endpoint, auth token validation, strict CORS allowlist, cookie/auth-header rejection, write-payload rejection, cache adapter, rate/timeout controls, redacted observability, and local staging server mode. Keep the drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output endpoint implementation, local staging run instructions, harness results, trace samples, W69 report, validator gates, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w68_contract_schema_present",
+      "pass": true,
+      "detail": "idb.w68-staging-resolver-endpoint-smoke-pack.v1"
+    },
+    {
+      "name": "w68_readiness_position_is_staging_only",
+      "pass": true,
+      "detail": "staging_smoke_ready_not_hosted_endpoint_go"
+    },
+    {
+      "name": "w68_environment_variables_present",
+      "pass": true,
+      "detail": "IDB_RESOLVER_STAGING_URL, IDB_RESOLVER_STAGING_TOKEN, IDB_RESOLVER_ALLOWED_ORIGIN, IDB_RESOLVER_BLOCKED_ORIGIN, IDB_APPROVED_LIVE_RESOLVER_SMOKE, IDB_WEBSITE_RESOLVER_ENDPOINT, IDB_WEBSITE_RESOLVER_LOCAL_FALLBACK"
+    },
+    {
+      "name": "w68_health_check_no_write_shape_present",
+      "pass": true,
+      "detail": "{\"request\":{\"method\":\"GET\",\"path\":\"/health\"},\"expectedStatus\":200,\"response\":{\"serviceName\":\"websiteResolverServiceV1\",\"resolverVersion\":\"websiteResolverServiceV1.local-prototype.w66\",\"extractionPolicyVersion\":\"w66.extraction-policy.v1\",\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"cacheStatus\":\"ready\"}}"
+    },
+    {
+      "name": "w68_resolve_endpoint_shape_present",
+      "pass": true,
+      "detail": "{\"method\":\"POST\",\"path\":\"/idb/website-resolver/v1/resolve\",\"contentType\":\"application/json\",\"expectedResponseSchema\":\"idb.website-evidence.v1\"}"
+    },
+    {
+      "name": "w68_auth_cors_cases_complete",
+      "pass": true,
+      "detail": "authorized_preflight, blocked_origin_preflight, missing_token, bad_token, netsuite_cookie_rejected, write_payload_rejected"
+    },
+    {
+      "name": "w68_rejected_auth_cases_do_not_fetch",
+      "pass": true,
+      "detail": "[{\"id\":\"authorized_preflight\",\"expectedStatus\":204,\"simulated\":true,\"result\":\"expected_staging_behavior_defined\",\"noWebsiteFetchOnRejectedRequest\":false},{\"id\":\"blocked_origin_preflight\",\"expectedStatus\":403,\"simulated\":true,\"result\":\"expected_staging_behavior_defined\",\"noWebsiteFetchOnRejectedRequest\":false},{\"id\":\"missing_token\",\"expectedStatus\":401,\"simulated\":true,\"result\":\"expected_staging_behavior_defined\",\"noWebsiteFetchOnRejectedRequest\":true},{\"id\":\"bad_token\",\"expectedStatus\":401,\"simulated\":true,\"result\":\"expected_staging_behavior_defined\",\"noWebsiteFetchOnRejectedRequest\":true},{\"id\":\"netsuite_cookie_rejected\",\"expectedStatus\":400,\"simulated\":true,\"result\":\"expected_staging_behavior_defined\",\"noWebsiteFetchOnRejectedRequest\":true},{\"id\":\"write_payload_rejected\",\"expectedStatus\":400,\"simulated\":true,\"result\":\"expected_staging_behavior_defined\",\"noWebsiteFetchOnRejectedRequest\":true}]"
+    },
+    {
+      "name": "w68_cache_validation_complete",
+      "pass": true,
+      "detail": "same_url_second_request_cache_hit, versioned_cache_key, manual_evidence_not_cached_full_text"
+    },
+    {
+      "name": "w68_approved_live_smoke_command_present",
+      "pass": true,
+      "detail": "IDB_APPROVED_LIVE_RESOLVER_SMOKE=1 IDB_RESOLVER_STAGING_URL=$IDB_RESOLVER_STAGING_URL IDB_RESOLVER_STAGING_TOKEN=$IDB_RESOLVER_STAGING_TOKEN IDB_RESOLVER_ALLOWED_ORIGIN=$IDB_RESOLVER_ALLOWED_ORIGIN node tools/run_approved_live_resolver_smoke_harness.js"
+    },
+    {
+      "name": "w68_failure_samples_do_not_guess",
+      "pass": true,
+      "detail": "[{\"id\":\"blocked_private_network\",\"inputUrl\":\"https://127.0.0.1/admin\",\"failureState\":\"blocked\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true},{\"id\":\"thin_public_page\",\"inputUrl\":\"https://example.com/\",\"failureState\":\"thin\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true},{\"id\":\"unavailable_domain\",\"inputUrl\":\"https://unavailable.invalid/\",\"failureState\":\"unavailable\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true},{\"id\":\"timeout_site\",\"inputUrl\":\"https://timeout.example/\",\"failureState\":\"timeout\",\"confidence\":{\"state\":\"insufficient_evidence\",\"score\":0},\"laneCandidates\":[],\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true}]"
+    },
+    {
+      "name": "w68_manual_evidence_fallback_safe",
+      "pass": true,
+      "detail": "[{\"id\":\"blocked_with_manual_evidence\",\"fetchState\":\"blocked\",\"manualEvidenceSource\":\"consultant_supplied_homepage_excerpt\",\"visibleSource\":true,\"storedAs\":\"excerpt_hash_only\",\"confidenceFloor\":\"insufficient_evidence\",\"confidenceCeilingWithoutConfirmation\":\"needs_confirmation\",\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false},{\"id\":\"thin_with_category_text\",\"fetchState\":\"thin\",\"manualEvidenceSource\":\"consultant_supplied_category_text\",\"visibleSource\":true,\"storedAs\":\"excerpt_hash_only\",\"confidenceFloor\":\"insufficient_evidence\",\"confidenceCeilingWithoutConfirmation\":\"needs_confirmation\",\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false}]"
+    },
+    {
+      "name": "w68_observability_checklist_present",
+      "pass": true,
+      "detail": "Every request has requestId, normalizedUrl, domain, resolverVersion, extractionPolicyVersion, fetchStatus, failureState, cacheHit, latencyMs, writeAuthority, and nllmAdvisoryOnly. | Auth and CORS failures are counted but redact credentials and cookies. | Metrics include request count, p50/p95 latency, cache hit rate, failure-state rates, confidence-state rates, false-confident-wrong, and unsupported claims. | Alerts exist for false-confident-wrong greater than zero, unsupported claims greater than zero, timeout rate above threshold, CORS anomaly, and p95 above target. | Trace exports include source URLs for sufficient evidence and failure reason for insufficient evidence."
+    },
+    {
+      "name": "w68_pilot_toggle_instructions_present",
+      "pass": true,
+      "detail": "Set window.IDB_WEBSITE_RESOLVER_ENDPOINT or localStorage:idb.websiteResolver.endpoint.v1 to the staging resolve URL for pilot browsers only. | Set localStorage:idb.websiteResolver.localFallback.v1 explicitly to 0 when testing hosted-only behavior. | Clear the endpoint toggle to roll back to local fallback or manual evidence mode. | Do not enable any create/write flags as part of resolver smoke. | Capture trace export after each staging smoke run."
+    },
+    {
+      "name": "w68_no_regression_boundaries_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesCannotOwnIdentification\":true,\"blockedThinUnavailableTimeoutDoNotGuess\":true,\"transactionWriteEnabled\":false,\"mainDrawerCreateEnabled\":false,\"mainSuiteletCreateEnabled\":false}"
+    },
+    {
+      "name": "w68_best_next_prompt_present",
+      "pass": true,
+      "detail": "Move through W69: Hosted Resolver Staging Endpoint Implementation. Build the staging no-write websiteResolverServiceV1 endpoint wrapper around the local resolver service: health endpoint, POST resolve endpoint, auth token validation, strict CORS allowlist, cookie/auth-header rejection, write-payload rejection, cache adapter, rate/timeout controls, redacted observability, and local staging server mode. Keep the drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output endpoint implementation, local staging run instructions, harness results, trace samples, W69 report, validator gates, and best next Codex prompt."
+    }
+  ]
+}

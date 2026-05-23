@@ -1,0 +1,133 @@
+{
+  "schema": "idb.dcc-result-export-shape.v1",
+  "source": "demo_command_center_final_result_export_bridge_v1",
+  "runStatus": "run_complete",
+  "prospect": "Ariat International",
+  "familyKey": "apparelAccessories",
+  "scenario": "Style-to-Availability Readiness",
+  "generatedExtId": "ARIATSTYLE20260514",
+  "generatedAgenda": "Show style/SKU readiness, size/color availability, replenishment timing, and customer promise.",
+  "customer": {
+    "role": "customer",
+    "name": "Ariat International",
+    "internalName": "",
+    "id": "321",
+    "url": "",
+    "externalId": "SCAI_ANCHOR_CUSTOMER",
+    "status": "returned"
+  },
+  "salesOrder": {
+    "role": "sales_order",
+    "name": "Sales Order CSV import for ARIATSTYLE20260514",
+    "internalName": "",
+    "id": "",
+    "url": "",
+    "externalId": "ARIATSTYLE20260514",
+    "status": "csv_import_submitted_pending_transaction_id"
+  },
+  "heroItem": {
+    "role": "hero_item",
+    "name": "Ariat Core Boot and Apparel Style Matrix",
+    "internalName": "",
+    "id": "987",
+    "url": "",
+    "externalId": "",
+    "status": "returned"
+  },
+  "matrixItem": {
+    "role": "matrix_or_proof_item",
+    "name": "Ariat Core Boot and Apparel Style Matrix",
+    "internalName": "",
+    "id": "",
+    "url": "",
+    "externalId": "",
+    "status": "returned"
+  },
+  "proofItem": {
+    "role": "proof_item",
+    "name": "Ariat Core Boot and Apparel Style Matrix",
+    "internalName": "",
+    "id": "",
+    "url": "",
+    "externalId": "",
+    "status": "returned"
+  },
+  "componentItems": [
+    {
+      "role": "component_item",
+      "name": "Ariat Width Size Color Variant Control",
+      "internalName": "",
+      "id": "992",
+      "url": "",
+      "externalId": "",
+      "status": "returned"
+    },
+    {
+      "role": "component_item",
+      "name": "Ariat Channel Availability Commitment",
+      "internalName": "",
+      "id": "993",
+      "url": "",
+      "externalId": "",
+      "status": "returned"
+    },
+    {
+      "role": "component_item",
+      "name": "Ariat Seasonal Replenishment Signal",
+      "internalName": "",
+      "id": "994",
+      "url": "",
+      "externalId": "",
+      "status": "returned"
+    }
+  ],
+  "assembly": {
+    "role": "assembly",
+    "name": "Ariat Seasonal Style Availability Flow",
+    "internalName": "",
+    "id": "989",
+    "url": "",
+    "externalId": "",
+    "status": "returned"
+  },
+  "bom": {
+    "role": "bom",
+    "name": "Ariat Style Availability Structure",
+    "internalName": "",
+    "id": "990",
+    "url": "",
+    "externalId": "",
+    "status": "returned"
+  },
+  "bomRevision": {
+    "role": "bom_revision",
+    "name": "Ariat Launch Readiness Revision",
+    "internalName": "",
+    "id": "991",
+    "url": "",
+    "externalId": "",
+    "status": "returned"
+  },
+  "locationPlanningRecords": [],
+  "csvSalesOrderArtifacts": [
+    {
+      "label": "Sales Order CSV",
+      "name": "scai_so_ARIATSTYLE20260514.csv",
+      "id": "file-42",
+      "url": "",
+      "status": "csv_import_submitted"
+    }
+  ],
+  "warnings": [],
+  "errors": [],
+  "recoverableBlockers": [],
+  "exportMeta": {
+    "generatedAt": "2026-05-17T21:41:08.090Z",
+    "noSecrets": true,
+    "idbImportOnly": true,
+    "dccOwnsObjectGeneration": true,
+    "namingMechanicsChanged": false,
+    "enableManufacturing": true,
+    "enableWip": false
+  }
+}

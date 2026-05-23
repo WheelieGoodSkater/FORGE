@@ -1,0 +1,70 @@
+# W131 Final Generated Names Operator Copy And Live Navigation QA
+
+Generated: 2026-05-17T21:41:09.492Z
+
+Decision: PASS / OPERATOR COPY NAVIGATION QA READY
+
+## Copy / Navigation QA Contract
+
+- Source: internal_build_engine_preview_result_json
+- Copy mode: copy_safe_names_and_urls_only
+- Build uses imported final names: true
+- Run uses imported final names: true
+
+## Copy-Safe Operator Snippets
+
+- Customer: Ariat International Outdoor Retail Account (/app/common/entity/custjob.nl?id=preview-customer-123)
+- Sales Order / demo transaction: Ariat Seasonal Footwear Availability Demo Order (/app/accounting/transactions/salesord.nl?id=preview-salesorder-456)
+- Hero item: Ariat Terrain H2O Work Boot Hero Item (/app/common/item/item.nl?id=preview-item-789)
+- Matrix item / proof item: Ariat Core Boot Size Color Matrix (/app/common/item/item.nl?id=preview-matrix-790)
+- Record: Ariat Brown Leather Upper Component (/app/common/item/item.nl?id=preview-component-791)
+
+## Visible Smoke Checklist
+
+- Build Results shows final generated names imported.
+- Build Results shows Customer, demo transaction, hero item, and matrix/proof item names.
+- Build Results exposes Open links only, not submit or write controls.
+- Run shows Use final build names.
+- Run shows Customer, demo transaction, hero item, and matrix/proof item names.
+- Run exposes Open links for final generated records.
+- Component copy snippet is present for operator handoff.
+- No drawer write, SuiteScript invocation, queue, submit, or transaction write control appears.
+
+## Build Smoke
+
+- Customer: Ariat International Outdoor Retail Account (/app/common/entity/custjob.nl?id=preview-customer-123)
+- Sales Order / demo transaction: Ariat Seasonal Footwear Availability Demo Order (/app/accounting/transactions/salesord.nl?id=preview-salesorder-456)
+- Hero item: Ariat Terrain H2O Work Boot Hero Item (/app/common/item/item.nl?id=preview-item-789)
+- Matrix item / proof item: Ariat Core Boot Size Color Matrix (/app/common/item/item.nl?id=preview-matrix-790)
+- Component: Ariat Brown Leather Upper Component (/app/common/item/item.nl?id=preview-component-791)
+
+## Run Smoke
+
+- Customer: Ariat International Outdoor Retail Account (/app/common/entity/custjob.nl?id=preview-customer-123)
+- Sales Order / demo transaction: Ariat Seasonal Footwear Availability Demo Order (/app/accounting/transactions/salesord.nl?id=preview-salesorder-456)
+- Hero item: Ariat Terrain H2O Work Boot Hero Item (/app/common/item/item.nl?id=preview-item-789)
+- Matrix item / proof item: Ariat Core Boot Size Color Matrix (/app/common/item/item.nl?id=preview-matrix-790)
+
+## Visual NetSuite Testing
+
+- Required now: Yes. Required before consultant use because W131 makes final generated record links visible in Run and verifies Build/Run as a live navigation surface.
+
+## Validator Gates
+
+| Status | Rule | Detail |
+| --- | --- | --- |
+| PASS | w131_runtime_contract_present | finalGeneratedNamesOperatorCopyNavigationQaV1 hook and runtime function |
+| PASS | w131_inherits_w130_navigation_model | {"w130":"final_generated_names_navigation_integrated","qa":"operator_copy_navigation_qa_ready","navigation":"using_dcc_final_names"} |
+| PASS | w131_copy_safe_snippets_cover_required_records | [{"role":"customer","label":"Customer","name":"Ariat International Outdoor Retail Account","id":"preview-customer-123","url":"/app/common/entity/custjob.nl?id=preview-customer-123","copyText":"Customer: Ariat International Outdoor Retail Account","consultantUsable":true,"linkAuthority":{"schema":"idb.verified-record-link-authority.v1","status":"preview_placeholder","openable":false,"displayLabel":"Link pending","reason":"Preview placeholder ids are not real NetSuite record ids.","url":"/app/common/entity/custjob.nl?id=preview-customer-123"},"opensFromDrawerOnlyAsLink":false},{"role":"sales_order","label":"Sales Order / demo transaction","name":"Ariat Seasonal Footwear Availability Demo Order","id":"preview-salesorder-456","url":"/app/accounting/transactions/salesord.nl?id=preview-salesorder-456","copyText":"Sales Order / demo transaction: Ariat Seasonal Footwear Availability Demo Order","consultantUsable":true,"linkAuthority":{"schema":"idb.verified-record-link-authority.v1","status":"preview_placeholder","openable":false,"displayLabel":"Link pending","reason":"Preview placeholder ids are not real NetSuite record ids.","url":"/app/accounting/transactions/salesord.nl?id=preview-salesorder-456"},"opensFromDrawerOnlyAsLink":false},{"role":"hero_item","label":"Hero item","name":"Ariat Terrain H2O Work Boot Hero Item","id":"preview-item-789","url":"/app/common/item/item.nl?id=preview-item-789","copyText":"Hero item: Ariat Terrain H2O Work Boot Hero Item","consultantUsable":true,"linkAuthority":{"schema":"idb.verified-record-link-authority.v1","status":"preview_placeholder","openable":false,"displayLabel":"Link pending","reason":"Preview placeholder ids are not real NetSuite record ids.","url":"/app/common/item/item.nl?id=preview-item-789"},"opensFromDrawerOnlyAsLink":false},{"role":"matrix_or_proof_item","label":"Matrix item / proof item","name":"Ariat Core Boot Size Color Matrix","id":"preview-matrix-790","url":"/app/common/item/item.nl?id=preview-matrix-790","copyText":"Matrix item / proof item: Ariat Core Boot Size Color Matrix","consultantUsable":true,"linkAuthority":{"schema":"idb.verified-record-link-authority.v1","status":"preview_placeholder","openable":false,"displayLabel":"Link pending","reason":"Preview placeholder ids are not real NetSuite record ids.","url":"/app/common/item/item.nl?id=preview-matrix-790"},"opensFromDrawerOnlyAsLink":false},{"role":"record","label":"Record","name":"Ariat Brown Leather Upper Component","id":"preview-component-791","url":"/app/common/item/item.nl?id=preview-component-791","copyText":"Record: Ariat Brown Leather Upper Component","consultantUsable":true,"linkAuthority":{"schema":"idb.verified-record-link-authority.v1","status":"preview_placeholder","openable":false,"displayLabel":"Link pending","reason":"Preview placeholder ids are not real NetSuite record ids.","url":"/app/common/item/item.nl?id=preview-component-791"},"opensFromDrawerOnlyAsLink":false}] |
+| PASS | w131_build_visible_smoke_has_final_names_and_link_pending |  <div class="idb-cockpit-section"> <div class="idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results"> <div class="idb-section-title">Build Results</div> <div class="idb-run-action-card idb-w114-request-summary"> <div class="idb-status-key">What the consultant requested</div> <div class="idb-strong">Ariat International</div> <div class="idb-copy">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div> </div> <div class="idb-status-strip"> <div class="idb-status-cell"> <div class="idb-status-key">1. Result</div> <div class="idb-status-value">Ready to export</div> <div class="idb-copy">Final names are imported for the live demo.</div> </div> <div class="idb-status-cell"> <div class="idb-status-key">2. Demo path</div> <div class="idb-status-value">Apparel &amp; Accessories</div> <div class="idb-copy">Style-to-Availability Readiness</div> </div> <div class="idb-status-cell"> <div class="idb-status-key">3. Boundary</div> <div class="idb-status-value">Export only</div> <div class="idb-copy">The build engine owns generated records.</div> </div> </div> <div class="idb-chip-row"> <span class="idb-chip idb-ready">confirmed</span> <span class="idb-chip idb-ready">Build results imported</span> <span class="idb-mini-chip">Export lane: Apparel &amp; Accessories</span> <span class="idb-mini-chip">Final generated names imported</span> </div> <div class="idb-run-action-card idb-w154-build-return-status"> <div class="idb-status-key">Integrated Bu |
+| PASS | w131_run_visible_smoke_has_final_names_and_link_pending |  <div class="idb-card idb-accent idb-w97-run-selector"> <div class="idb-section-title">Live controls</div> <div class="idb-run-selector-chips" role="group" aria-label="Live script mode"> <button class="idb-action-chip " data-idb-action="open" aria-pressed="false" title="Open with buyer pain and set the NetSuite proof path." > Open </button> <button class="idb-action-chip idb-selected" data-idb-action="prove" aria-pressed="true" title="Show the proof record and connect it to the business outcome." > Prove </button> <button class="idb-action-chip " data-idb-action="handle_objection" aria-pressed="false" title="Handle risk, exception, or competitive doubt without leaving the proof path." > Handle objection </button> <button class="idb-action-chip " data-idb-action="close_value" aria-pressed="false" title="Close on the operational decision and financial impact." > Close value </button> </div> <div class="idb-run-action-card"> <div class="idb-status-key">Selected script</div> <div class="idb-strong">Prove the NetSuite path</div> <div class="idb-copy">Use Ariat International Outdoor Retail Account to prove Style / SKU Matrix against the stated pain: Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel laun.... Tie the proof to Must show style/SKU matrix fit, size/color visibility, channel availability, replenishment timing, and customer-to-order impact. and show how NetSuite keeps the decision in one operating path.</div> </div> <div class="idb-run-action-card idb-w116-final-navigation"> <div class="idb-status- |
+| PASS | w131_visible_smoke_checklist_complete | ["Build Results shows final generated names imported.","Build Results shows Customer, demo transaction, hero item, and matrix/proof item names.","Build Results exposes Open links only, not submit or write controls.","Run shows Use final build names.","Run shows Customer, demo transaction, hero item, and matrix/proof item names.","Run exposes Open links for final generated records.","Component copy snippet is present for operator handoff.","No drawer write, SuiteScript invocation, queue, submit, or transaction write control appears."] |
+| PASS | w131_state_authority_and_handoff_parity_preserved | {"authority":{"schema":"idb.w92-state-authority.v1","recommendedLaneId":"apparel_accessories","recommendedLaneName":"Apparel & Accessories","recommendedProofAnchor":"Style / SKU Matrix","selectedLaneId":"apparel_accessories","selectedLaneName":"Apparel & Accessories","selectedProofAnchor":"Style / SKU Matrix","confirmedLaneId":"apparel_accessories","confirmedLaneName":"Apparel & Accessories","exportedLaneId":"apparel_accessories","exportedLaneName":"Apparel & Accessories","laneSelectionSource":"consultant_confirmed","confidenceState":"needs_confirmation","confidenceSource":"website_evidence_v1","hasRecommendedMismatch":false,"hasConfirmedMismatch":false,"handoffEligible":true,"handoffBlockers":[],"noRegression":{"websiteEvidenceOwnsIdentity":true,"notesRole":"story_only","dccOwnsObjectGeneration":true,"noSuiteScriptInvocationFromIdb":true,"noIdbTransactionWrite":true}},"w129":{"prospectMatches":true,"familyKeyMatches":true,"scenarioMatches":true,"stateAuthorityMatches":true,"ownershipMatches":true,"writeBoundariesMatch":true,"readyForFinalNamesImport":true},"w130":{"noDrawerWrites":true,"noSuiteScriptInvocationFromDrawer":true,"noTransactionWritesFromDrawer":true,"consultantConfirmationRequired":true,"stateAuthorityPreserved":true,"handoffParityPreserved":true,"noSubmitRollbackPreserved":true,"generatedRecordsOwnedByInternalBuildEngine":true,"importOnly":true}} |
+| PASS | w131_no_submit_rollback_preserved | {"noSubmitBehavior":"If import fails, clear imported names and keep provisional names non-final.","drawerRollbackAction":"Clear browser-local imported names only; do not alter NetSuite records.","netSuiteRecordRollbackAction":"none_from_drawer","rejectedResultBehavior":"Import nothing and keep Build/Run on provisional navigation."} |
+| PASS | w131_no_write_invocation_or_transaction_from_drawer | {"noDrawerWrites":true,"noSuiteScriptInvocationFromDrawer":true,"noTransactionWritesFromDrawer":true,"consultantConfirmationRequired":true,"stateAuthorityPreserved":true,"handoffParityPreserved":true,"noSubmitRollbackPreserved":true,"generatedRecordsOwnedByInternalBuildEngine":true,"copyOnly":true} |
+| PASS | w131_internal_build_engine_ownership_preserved | {"generatedRecordsOwnedBy":"internal_build_engine","drawerCreatedRecords":false,"drawerInvokedSuiteScript":false,"drawerCreatedTransactions":false} |
+| PASS | w131_visual_netsuite_testing_required | Yes. W131 changes visible Run final-name link rendering and requires a visible Build/Run smoke before consultant use. |
+
+## Best Next Codex Prompt
+
+Move through W132: Final Names Live Navigation Retest And Copy Polish. Use the W131 copy-safe final generated names snippets and visible Build/Run smoke to run a focused browser/NetSuite visual retest of Build Results and Run final-name navigation links. Polish any consultant-facing copy or link affordance issues without enabling drawer writes, SuiteScript invocation from the drawer, or transaction writes from the drawer. Preserve consultant confirmation required, state authority and handoff parity, no-submit rollback behavior, and internal build engine ownership of generated records. Output visual retest evidence, copy/link polish if needed, trace samples, W132 report, whether broader visual NetSuite testing is required, and the best next Codex prompt.

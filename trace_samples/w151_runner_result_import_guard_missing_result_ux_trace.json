@@ -1,0 +1,11 @@
+{
+  "schema": "idb.w151-runner-result-import-guard-missing-result-ux-trace.v1",
+  "decision": "PASS_IMPORT_GUARD_READY__VISUAL_TESTING_BLOCKED_UNTIL_INTEGRATED_BUILD_RETURN",
+  "handoffRejected": "handoff_packet_rejected",
+  "completedRunnerResultAccepted": "completed_runner_result_accepted",
+  "visualTestingBlocked": true,
+  "next": {
+    "block": "W152: Integrated Build Runner Return Adapter Design",
+    "prompt": "Move through W152: Integrated Build Runner Return Adapter Design. Use W151 to move past handoff-only testing and design the integrated Build path where the consultant-confirmed Build action calls the approved server-side adapter behind CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, QUEUE_SUBMIT_ENABLED, sandbox allowlist, operator approval, and idempotency. The server-side adapter, not the drawer, invokes/queues the governed runner, captures runnerTaskId, polls or retrieves completed result capture, and returns completed runner result JSON to IDB for final generated names import. Do not request visual testing yet. Preserve no drawer writes, no drawer SuiteScript invocation, no drawer transaction writes, consultant confirmation, state authority and handoff parity, internal runner ownership, rollback by disabling server flags, and no active Open links without real URLs. Output integrated Build-return architecture, server adapter API contract, polling/result-capture state machine, smoke harness, trace samples, W152 report, visual testing decision blocked until implementation, and best next Codex prompt."
+  }
+}

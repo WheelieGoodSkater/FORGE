@@ -1,0 +1,57 @@
+{
+  "schema": "idb.w87-evidence-placeholders.v1",
+  "placeholders": [
+    {
+      "evidence": "Screenshot: IDB Plan tab after intake.",
+      "simulatedStatus": "capture_required_in_real_test",
+      "owner": "consultant"
+    },
+    {
+      "evidence": "Screenshot: IDB Review tab showing DCC handoff export card.",
+      "simulatedStatus": "placeholder_generated_by_dry_run",
+      "owner": "consultant"
+    },
+    {
+      "evidence": "Export: dccRunnerHandoffPacketV1 JSON.",
+      "simulatedStatus": "placeholder_generated_by_dry_run",
+      "owner": "consultant"
+    },
+    {
+      "evidence": "Export: IDB trace JSON.",
+      "simulatedStatus": "placeholder_generated_by_dry_run",
+      "owner": "consultant"
+    },
+    {
+      "evidence": "Screenshot/notes: DCC Suitelet sandbox field parity review.",
+      "simulatedStatus": "capture_required_in_real_test",
+      "owner": "consultant"
+    },
+    {
+      "evidence": "Screenshot/notes: DCC-owned deployment config readiness, with secrets redacted.",
+      "simulatedStatus": "capture_required_in_real_test",
+      "owner": "consultant"
+    },
+    {
+      "evidence": "Screenshot/notes: scheduled runner preview comparison.",
+      "simulatedStatus": "capture_required_in_real_test",
+      "owner": "consultant"
+    },
+    {
+      "evidence": "Completed operator scoring rubric.",
+      "simulatedStatus": "capture_required_in_real_test",
+      "owner": "operator"
+    },
+    {
+      "evidence": "Consultant notes: what felt unclear, slow, wrong, or useful.",
+      "simulatedStatus": "capture_required_in_real_test",
+      "owner": "consultant"
+    },
+    {
+      "evidence": "Operator notes: what could block a governed DCC handoff.",
+      "simulatedStatus": "placeholder_generated_by_dry_run",
+      "owner": "consultant"
+    }
+  ],
+  "screenshotsCapturedInThisDryRun": false,
+  "reason": "W87 is a structured dry run; real screenshots are expected in the next user/operator test."
+}

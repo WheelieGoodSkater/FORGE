@@ -1,0 +1,60 @@
+{
+  "schema": "idb.w15-customer-write-pilot-contract.v1",
+  "status": "customer_write_pilot_ready_create_disabled",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Packet Contract Agent",
+    "Validation And Evidence Agent"
+  ],
+  "objective": "Define the first guarded SuiteScript write path for Customer only while main remains create-disabled.",
+  "approvedScope": {
+    "laneId": "food_beverage",
+    "role": "customer",
+    "recordType": "customer",
+    "operation": "lookup_then_create_or_update_customer",
+    "transactionWritesAllowed": false,
+    "proofItemWritesAllowedInW15": false
+  },
+  "requiredPacketFields": [
+    "packetMode",
+    "mode",
+    "writePathType",
+    "consultantConfirmed",
+    "selectedLaneId",
+    "customer.name",
+    "customer.website",
+    "trace.packetId",
+    "creationPacketContract"
+  ],
+  "fieldMapping": {
+    "companyname": "customer.name",
+    "url": "customer.website",
+    "comments": "customer.notes",
+    "custentity_idb_packet_id": "trace.packetId",
+    "custentity_idb_lane": "selectedLaneId",
+    "custentity_idb_proof_anchor": "proofAnchor"
+  },
+  "lookupFirstRules": {
+    "lookupByCompanyNameAndWebsite": true,
+    "createIfNoMatch": true,
+    "updateIfExactlyOneMatch": true,
+    "blockIfMultipleMatches": true,
+    "idempotencyKeyRequired": true
+  },
+  "traceResultContract": {
+    "recordId": true,
+    "url": true,
+    "operation": true,
+    "lookupStatus": true,
+    "rollbackLabel": true,
+    "recoverableErrors": true
+  },
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "noAutomaticCreationFromDrawer": true,
+    "noTransactionWrite": true,
+    "noProofItemWriteInW15": true,
+    "llmAdvisoryOnly": true
+  }
+}

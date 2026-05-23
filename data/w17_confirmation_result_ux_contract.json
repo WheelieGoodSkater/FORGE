@@ -1,0 +1,61 @@
+{
+  "schema": "idb.w17-confirmation-result-ux-contract.v1",
+  "status": "confirmation_result_ux_ready_create_disabled",
+  "generated": "2026-05-10",
+  "ownerAgents": [
+    "Consultant UX Director Agent",
+    "SuiteScript Write Agent",
+    "Packet Contract Agent",
+    "Validation And Evidence Agent"
+  ],
+  "objective": "Define the consultant-facing confirmation, write result, partial failure, and recovery evidence UX before any live write is enabled.",
+  "confirmationGate": {
+    "exactWriteListRequired": true,
+    "environmentIndicatorRequired": true,
+    "typeToConfirmPhraseRequired": true,
+    "consultantConfirmationRequired": true,
+    "createButtonDisabledUnlessAllPilotGatesPass": true,
+    "mainPackageCreateDisabled": true
+  },
+  "pilotGateOrder": [
+    "reviewed_packet_ready",
+    "creation_packet_contract_v2_ready",
+    "suitescript_direct_write_available",
+    "customer_write_result_ready",
+    "proof_item_write_result_ready",
+    "trace_result_capture_ready",
+    "consultant_type_to_confirm_ready"
+  ],
+  "resultStates": {
+    "success": "Show created or updated records with record IDs, URLs, operation, lookup status, and packet ID.",
+    "blocked": "Show the blocking gate, reason, and next corrective action without attempting any write.",
+    "partial_failed": "Show completed parent records with IDs/URLs, blocked dependents, rollback labels, and recoverable errors.",
+    "failed": "Show no-created-record or unrecoverable failure with exported trace evidence and manual recovery instruction."
+  },
+  "requiredResultFields": [
+    "status",
+    "traceEvent",
+    "packetId",
+    "recordId",
+    "url",
+    "operation",
+    "lookupStatus",
+    "rollbackLabel",
+    "recoverableErrors",
+    "blockedDependents"
+  ],
+  "recoveryRules": {
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "showCompletedParentRecords": true,
+    "showBlockedDependents": true,
+    "exportableEvidenceRequired": true
+  },
+  "nonRegression": {
+    "mainCreateDisabled": true,
+    "noAutomaticCreationFromDrawer": true,
+    "noHiddenWrites": true,
+    "noLlmApprovalAuthority": true,
+    "noTransactionWriteWithoutCustomerAndProofResult": true
+  }
+}

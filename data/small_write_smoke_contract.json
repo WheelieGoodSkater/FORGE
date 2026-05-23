@@ -1,0 +1,41 @@
+{
+  "schema": "idb.small-write-smoke-contract.v1",
+  "status": "small_write_smoke_ready_create_disabled",
+  "ownerAgents": [
+    "SuiteScript Write Agent",
+    "Validation And Release Agent"
+  ],
+  "objective": "Define the first controlled sandbox smoke for Customer plus one proof item while keeping main create-disabled.",
+  "approvedLaneId": "food_beverage",
+  "approvedRecords": [
+    {
+      "role": "customer",
+      "label": "Customer Record",
+      "operation": "lookup_then_update_or_create_customer"
+    },
+    {
+      "role": "proof anchor",
+      "label": "Finished Good",
+      "operation": "lookup_then_update_or_create_proof_item"
+    }
+  ],
+  "blockedUntilLater": [
+    "Sales Order View",
+    "supporting proof records",
+    "transaction creation"
+  ],
+  "requiredResponseFields": [
+    "recordId",
+    "url",
+    "operation",
+    "recoverableErrors",
+    "smallWriteSmokePlan"
+  ],
+  "nonRegression": {
+    "mainCreateEnabled": false,
+    "explicitConfirmationRequired": true,
+    "noTransactionCreationUntilCustomerAndProofStable": true,
+    "sandboxOnly": true,
+    "traceResultRequired": true
+  }
+}

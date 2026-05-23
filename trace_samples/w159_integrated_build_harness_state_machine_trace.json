@@ -1,0 +1,98 @@
+{
+  "schema": "idb.w159-integrated-build-harness-state-machine-trace.v1",
+  "decision": "PASS_BUILD_STATE_MACHINE_READY__VISUAL_TESTING_BLOCKED",
+  "visualTestingBlocked": true,
+  "stateOrder": [
+    "blocked",
+    "no_submit",
+    "queued",
+    "polling",
+    "completed_awaiting_w151_import",
+    "imported",
+    "error_recoverable"
+  ],
+  "runnerTaskId": "fixture_w158_idb-build-ariat-international-apparel-accessories-apparelaccessories_001",
+  "activeOpenLinksByState": [
+    {
+      "state": "blocked",
+      "activeOpenLinks": 0
+    },
+    {
+      "state": "no_submit",
+      "activeOpenLinks": 0
+    },
+    {
+      "state": "queued",
+      "activeOpenLinks": 0
+    },
+    {
+      "state": "polling",
+      "activeOpenLinks": 0
+    },
+    {
+      "state": "completed_awaiting_w151_import",
+      "activeOpenLinks": 0
+    },
+    {
+      "state": "imported",
+      "activeOpenLinks": 5
+    },
+    {
+      "state": "error_recoverable",
+      "activeOpenLinks": 0
+    }
+  ],
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "noActiveOpenLinksWithoutRealUrls": true
+  },
+  "events": [
+    {
+      "name": "w159_starts_from_w158_poll_cycle_ready",
+      "pass": true,
+      "detail": "PASS_DRY_RUN_POLL_CYCLE_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w159_state_machine_hook_and_ui_ready",
+      "pass": true,
+      "detail": "\n      <div class=\"idb-cockpit-section\">\n        \n      <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\">\n        <div class=\"idb-section-title\">Build Handoff</div>\n        <div class=\"idb-run-action-card idb-w114-request-summary\">\n          <div class=\"idb-status-key\">What the consultant requested</div>\n          <div class=\"idb-strong\">Ariat International</div>\n          <div class=\"idb-copy\">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div>\n        </div>\n        <div class=\"idb-status-strip\">\n          <div class=\"idb-"
+    },
+    {
+      "name": "w159_state_order_covers_required_build_states",
+      "pass": true,
+      "detail": "[\"blocked\",\"no_submit\",\"queued\",\"polling\",\"completed_awaiting_w151_import\",\"imported\",\"error_recoverable\"]"
+    },
+    {
+      "name": "w159_completed_state_waits_for_w151_import",
+      "pass": true,
+      "detail": "{\"state\":\"completed_awaiting_w151_import\",\"sourceStatus\":\"completed_result_awaiting_w151_import\",\"finalGeneratedNamesJsonReady\":true,\"activeOpenLinks\":0,\"next\":\"imported\",\"importOwner\":\"W151 completed runner result import guard\",\"visualTesting\":\"blocked_until_real_integrated_build_return\"}"
+    },
+    {
+      "name": "w159_imported_state_requires_w151_guard_and_real_urls",
+      "pass": true,
+      "detail": "{\"state\":\"imported\",\"sourceStatus\":\"completed_runner_result_accepted\",\"importAccepted\":true,\"importedRecordCount\":5,\"activeOpenLinks\":5,\"next\":\"visual_verification_after_real_integrated_build_return\",\"visualTesting\":\"blocked_harness_only\",\"allOpenLinksHaveRealUrls\":true}"
+    },
+    {
+      "name": "w159_error_recoverable_state_safe",
+      "pass": true,
+      "detail": "{\"state\":\"error_recoverable\",\"sourceStatus\":\"adapter_transport_error_drawer_safe\",\"activeOpenLinks\":0,\"next\":\"rollback_or_retry_after_flags_review\",\"visualTesting\":\"blocked_harness_only\"}"
+    },
+    {
+      "name": "w159_no_drawer_state_mutation_before_import_handoff",
+      "pass": true,
+      "detail": "{\"dccFinalNamingResult\":null}"
+    },
+    {
+      "name": "w159_visual_testing_blocked_and_no_regression",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

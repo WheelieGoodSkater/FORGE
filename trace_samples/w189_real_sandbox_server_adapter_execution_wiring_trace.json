@@ -1,0 +1,136 @@
+{
+  "schema": "idb.w189-real-sandbox-server-adapter-execution-wiring-trace.v1",
+  "blockedTrace": [
+    {
+      "event": "w189_w144_execution_gates",
+      "readyForOneCall": false,
+      "blockedReasons": [
+        "approved_w144_endpoint",
+        "server_flags_true",
+        "sandbox_allowlist",
+        "operator_approval",
+        "one_call_authorization_phrase"
+      ],
+      "targetAdapter": "W144",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w189_w144_request_shape",
+      "requestConstructed": false,
+      "bodyFields": [
+        "custpage_idb_confirmed_build_request_json",
+        "custpage_idb_operator_queue_gate_json"
+      ],
+      "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "endpointReady": false,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w189_runner_taskid_capture",
+      "executionAllowed": false,
+      "queueSubmitted": false,
+      "runnerTaskId": null,
+      "resultCaptureStatus": "not_started_no_submit",
+      "finalGeneratedNamesJsonReady": false,
+      "mutatesFinalNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "readyTrace": [
+    {
+      "event": "w189_w144_execution_gates",
+      "readyForOneCall": true,
+      "blockedReasons": [],
+      "targetAdapter": "W144",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w189_w144_request_shape",
+      "requestConstructed": true,
+      "bodyFields": [
+        "custpage_idb_confirmed_build_request_json",
+        "custpage_idb_operator_queue_gate_json"
+      ],
+      "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "endpointReady": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w189_runner_taskid_capture",
+      "executionAllowed": false,
+      "queueSubmitted": false,
+      "runnerTaskId": null,
+      "resultCaptureStatus": "not_started_no_submit",
+      "finalGeneratedNamesJsonReady": false,
+      "mutatesFinalNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "executedTrace": [
+    {
+      "event": "w189_w144_execution_gates",
+      "readyForOneCall": true,
+      "blockedReasons": [],
+      "targetAdapter": "W144",
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w189_w144_request_shape",
+      "requestConstructed": true,
+      "bodyFields": [
+        "custpage_idb_confirmed_build_request_json",
+        "custpage_idb_operator_queue_gate_json"
+      ],
+      "idempotencyToken": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "endpointReady": true,
+      "activeOpenLinks": 0
+    },
+    {
+      "event": "w189_runner_taskid_capture",
+      "executionAllowed": true,
+      "queueSubmitted": true,
+      "runnerTaskId": "task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories",
+      "resultCaptureStatus": "pending_runner_completion",
+      "finalGeneratedNamesJsonReady": false,
+      "mutatesFinalNames": false,
+      "activeOpenLinks": 0
+    }
+  ],
+  "results": [
+    {
+      "name": "w189_blocked_without_config",
+      "pass": true,
+      "detail": "[\"approved_w144_endpoint\",\"server_flags_true\",\"sandbox_allowlist\",\"operator_approval\",\"one_call_authorization_phrase\"]"
+    },
+    {
+      "name": "w189_ready_uses_w144_not_w153",
+      "pass": true,
+      "detail": "W144 governed runner adapter"
+    },
+    {
+      "name": "w189_request_shape_is_w144_form_post",
+      "pass": true,
+      "detail": "{\"method\":\"POST\",\"contentType\":\"application/x-www-form-urlencoded;charset=UTF-8\",\"fields\":[\"custpage_idb_confirmed_build_request_json\",\"custpage_idb_operator_queue_gate_json\"],\"confirmedBuildRequestSchema\":\"idb.confirmed-build-request.v1\",\"operatorGateSchema\":\"idb.operator-queue-gate.v1\",\"idempotencyToken\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\"}"
+    },
+    {
+      "name": "w189_operator_gates_ready",
+      "pass": true,
+      "detail": "[{\"id\":\"confirmed_build_request\",\"label\":\"Confirmed Build request\",\"ready\":true,\"evidence\":\"confirmed_ready_for_governed_runner\"},{\"id\":\"approved_w144_endpoint\",\"label\":\"Approved W144 endpoint URL\",\"ready\":true,\"evidence\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\"},{\"id\":\"server_flags_true\",\"label\":\"Server flags true\",\"ready\":true,\"evidence\":{\"CREATE_ENABLED\":true,\"GOVERNED_SANDBOX_WRITE_ENABLED\":true,\"QUEUE_SUBMIT_ENABLED\":true}},{\"id\":\"sandbox_allowlist\",\"label\":\"Sandbox account allowlist\",\"ready\":true,\"evidence\":{\"currentSandboxAccount\":\"TD3021666\",\"sandboxAllowlist\":[\"TD3021666\"]}},{\"id\":\"operator_approval\",\"label\":\"Operator approval gate\",\"ready\":true,\"evidence\":{\"schema\":\"idb.operator-queue-gate.v1\",\"operatorOnly\":true,\"operator\":{\"name\":\"Operator User\",\"reviewedAt\":\"\"},\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedNoSubmit\":false,\"confirmedDrawerNoWrite\":true,\"confirmedSandboxAccount\":true,\"drawerInvocationTokenAccepted\":false,\"notes\":\"\"}},{\"id\":\"one_call_authorization_phrase\",\"label\":\"One-call authorization phrase\",\"ready\":true,\"evidence\":{\"authorizationPhrase\":\"AUTHORIZE ONE SANDBOX ADAPTER CALL\",\"endpointConfirmed\":true,\"adapterApproved\":true}},{\"id\":\"idempotency_token\",\"label\":\"Idempotency token\",\"ready\":true,\"evidence\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\"},{\"id\":\"one_submit_limit\",\"label\":\"One-submit limit unused\",\"ready\":true,\"evidence\":{\"oneSubmitAlreadyUsed\":false,\"oneSubmitLimit\":{\"maxQueueSubmitAttempts\":1,\"duplicateIdempotencyBehavior\":\"poll_existing_runner_task\",\"secondSubmitBehavior\":\"blocked_duplicate_submit\"}}},{\"id\":\"rollback_flags\",\"label\":\"Rollback by disabling server flags\",\"ready\":true,\"evidence\":{\"owner\":\"server_deployment_flags\",\"action\":\"disable_CREATE_ENABLED_GOVERNED_SANDBOX_WRITE_ENABLED_QUEUE_SUBMIT_ENABLED\",\"flagsToDisable\":[\"CREATE_ENABLED\",\"GOVERNED_SANDBOX_WRITE_ENABLED\",\"QUEUE_SUBMIT_ENABLED\"]}},{\"id\":\"w151_import_guard\",\"label\":\"W151 completed-result import guard\",\"ready\":true,\"evidence\":{\"required\":true,\"acceptsOnlyCompletedRunnerResultJson\":true,\"rejectsHandoffJson\":true,\"requiresNumericInternalIds\":true,\"requiresSupportedNetSuiteUrls\":true,\"activeOpenLinksBeforeImport\":0}}]"
+    },
+    {
+      "name": "w189_execution_captures_runner_task_id",
+      "pass": true,
+      "detail": "{\"submitted\":true,\"queueSubmitted\":true,\"runnerTaskIdCaptured\":true,\"runnerTaskId\":\"task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"resultCaptureStatus\":\"pending_runner_completion\",\"firstResponsePolicy\":\"runnerTaskId_or_adapter_error_not_record_urls\",\"statePatch\":{\"integratedBuildRunnerResult\":{\"schema\":\"idb.governed-runner-adapter-result.v1\",\"adapterVersion\":\"w144-governed-sandbox-queue-submit-pilot-behind-server-flags\",\"runnerStatus\":\"queued_result_capture_pending\",\"queueSubmitted\":true,\"runnerTaskId\":\"task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"resultCapture\":{\"schema\":\"idb.runner-result-capture.v1\",\"status\":\"pending_runner_completion\",\"runnerTaskId\":\"task_w189_idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"finalGeneratedNamesReady\":false,\"finalGeneratedNamesJson\":null},\"finalGeneratedNamesJson\":null,\"activeOpenLinks\":0,\"createsRecords\":false,\"generatedRecordOwner\":\"governed_dcc_runner_internal_build_engine\",\"status\":\"queued_result_capture_pending\"}}}"
+    },
+    {
+      "name": "w189_result_capture_pending_no_urls",
+      "pass": true,
+      "detail": "{\"checkRunnerResultVisibleAfterRunnerTaskId\":true,\"pollingEndpoint\":\"approved_server_adapter_result_capture_path\",\"completedResultImportGuard\":\"W151\",\"finalNamesMutationAllowedBeforeW151Import\":false,\"openLinksBeforeCompletedImport\":0}"
+    },
+    {
+      "name": "w189_no_regression_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerCreatedRecords\":true,\"noDirectDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"noActiveOpenLinksWithoutRealUrls\":true}"
+    }
+  ]
+}

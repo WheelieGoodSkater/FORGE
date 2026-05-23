@@ -1,0 +1,343 @@
+{
+  "schema": "idb.w169-approved-server-adapter-live-transport-readiness-gate.v1",
+  "status": "approved_server_adapter_live_transport_readiness_gate_ready",
+  "decision": "PASS_LIVE_TRANSPORT_READINESS_GATE_READY__NO_REQUEST_SENT__VISUAL_TESTING_BLOCKED",
+  "liveTransportReadinessGate": {
+    "schema": "idb.approved-server-adapter-live-transport-readiness-gate.v1",
+    "status": "live_transport_go_gate_ready_no_request_sent",
+    "mode": "go_no_go_gate_only_live_invocation_disabled",
+    "readyForLiveCall": true,
+    "blockedReasons": [],
+    "endpointUrl": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+    "gateChecks": [
+      {
+        "id": "approved_endpoint_url",
+        "label": "Approved endpoint URL",
+        "ready": true,
+        "evidence": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID"
+      },
+      {
+        "id": "deployment_flags",
+        "label": "Deployment flags",
+        "ready": true,
+        "evidence": {
+          "CREATE_ENABLED": true,
+          "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+          "QUEUE_SUBMIT_ENABLED": true
+        }
+      },
+      {
+        "id": "sandbox_allowlist",
+        "label": "Sandbox allowlist",
+        "ready": true,
+        "evidence": "sandbox_account_allowlist_present"
+      },
+      {
+        "id": "operator_approval_evidence",
+        "label": "Operator approval evidence",
+        "ready": true,
+        "evidence": {
+          "operatorName": "Operator QA",
+          "reviewedAt": "2026-05-16T22:30:00.000Z",
+          "reviewDecision": "operator_approved_queue_submit",
+          "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+          "confirmedSandboxAccount": true,
+          "confirmedNoSubmit": true,
+          "notes": "Readiness gate only. Do not invoke live transport."
+        }
+      },
+      {
+        "id": "idempotency_token",
+        "label": "Idempotency token",
+        "ready": true,
+        "evidence": "idb-build-ariat-international-apparel-accessories-apparelaccessories"
+      },
+      {
+        "id": "retry_recovery_readiness",
+        "label": "Retry recovery readiness",
+        "ready": true,
+        "evidence": "retry_recovery_harness_ready"
+      },
+      {
+        "id": "rollback_flag_plan",
+        "label": "Rollback flag plan",
+        "ready": true,
+        "evidence": {
+          "owner": "server_deployment_flags",
+          "action": "disable_server_flags_before_any_retry",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        }
+      },
+      {
+        "id": "w151_result_import_guard",
+        "label": "W151 result import guard",
+        "ready": true,
+        "evidence": {
+          "malformedCompleted": {
+            "status": "completed_runner_result_required",
+            "valid": false,
+            "rejectedByW151": true
+          },
+          "correctedCompleted": {
+            "status": "completed_runner_result_accepted",
+            "valid": true,
+            "importReadyAfterW151": true
+          },
+          "handoff": {
+            "status": "handoff_packet_rejected",
+            "rejected": true
+          },
+          "activeOpenLinksBeforeImport": 0
+        }
+      }
+    ],
+    "requestDecision": {
+      "liveRequestSent": false,
+      "transportInvoked": false,
+      "requestBodyConstructedForSend": false,
+      "wouldAllowRequestConstructionAfterExplicitUnlock": true,
+      "reason": "All prerequisites are present, but W169 is still live-disabled and does not send a request."
+    },
+    "rollbackPlan": {
+      "owner": "server_deployment_flags",
+      "action": "disable_server_flags_before_any_retry",
+      "flagsToDisable": [
+        "CREATE_ENABLED",
+        "GOVERNED_SANDBOX_WRITE_ENABLED",
+        "QUEUE_SUBMIT_ENABLED"
+      ]
+    },
+    "mutationGuard": {
+      "finalGeneratedNamesBefore": "",
+      "finalGeneratedNamesAfter": "",
+      "finalGeneratedNamesUnchanged": true,
+      "activeOpenLinks": 0,
+      "writesAttempted": false
+    },
+    "traceSamples": [
+      {
+        "event": "w169_approved_endpoint_url",
+        "gate": "approved_endpoint_url",
+        "ready": true,
+        "evidence": "https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID",
+        "liveRequestSent": false,
+        "mutatesFinalGeneratedNames": false,
+        "activeOpenLinks": 0
+      },
+      {
+        "event": "w169_deployment_flags",
+        "gate": "deployment_flags",
+        "ready": true,
+        "evidence": {
+          "CREATE_ENABLED": true,
+          "GOVERNED_SANDBOX_WRITE_ENABLED": true,
+          "QUEUE_SUBMIT_ENABLED": true
+        },
+        "liveRequestSent": false,
+        "mutatesFinalGeneratedNames": false,
+        "activeOpenLinks": 0
+      },
+      {
+        "event": "w169_sandbox_allowlist",
+        "gate": "sandbox_allowlist",
+        "ready": true,
+        "evidence": "sandbox_account_allowlist_present",
+        "liveRequestSent": false,
+        "mutatesFinalGeneratedNames": false,
+        "activeOpenLinks": 0
+      },
+      {
+        "event": "w169_operator_approval_evidence",
+        "gate": "operator_approval_evidence",
+        "ready": true,
+        "evidence": {
+          "operatorName": "Operator QA",
+          "reviewedAt": "2026-05-16T22:30:00.000Z",
+          "reviewDecision": "operator_approved_queue_submit",
+          "typeToConfirm": "QUEUE GOVERNED SANDBOX RUNNER",
+          "confirmedSandboxAccount": true,
+          "confirmedNoSubmit": true,
+          "notes": "Readiness gate only. Do not invoke live transport."
+        },
+        "liveRequestSent": false,
+        "mutatesFinalGeneratedNames": false,
+        "activeOpenLinks": 0
+      },
+      {
+        "event": "w169_idempotency_token",
+        "gate": "idempotency_token",
+        "ready": true,
+        "evidence": "idb-build-ariat-international-apparel-accessories-apparelaccessories",
+        "liveRequestSent": false,
+        "mutatesFinalGeneratedNames": false,
+        "activeOpenLinks": 0
+      },
+      {
+        "event": "w169_retry_recovery_readiness",
+        "gate": "retry_recovery_readiness",
+        "ready": true,
+        "evidence": "retry_recovery_harness_ready",
+        "liveRequestSent": false,
+        "mutatesFinalGeneratedNames": false,
+        "activeOpenLinks": 0
+      },
+      {
+        "event": "w169_rollback_flag_plan",
+        "gate": "rollback_flag_plan",
+        "ready": true,
+        "evidence": {
+          "owner": "server_deployment_flags",
+          "action": "disable_server_flags_before_any_retry",
+          "flagsToDisable": [
+            "CREATE_ENABLED",
+            "GOVERNED_SANDBOX_WRITE_ENABLED",
+            "QUEUE_SUBMIT_ENABLED"
+          ]
+        },
+        "liveRequestSent": false,
+        "mutatesFinalGeneratedNames": false,
+        "activeOpenLinks": 0
+      },
+      {
+        "event": "w169_w151_result_import_guard",
+        "gate": "w151_result_import_guard",
+        "ready": true,
+        "evidence": {
+          "malformedCompleted": {
+            "status": "completed_runner_result_required",
+            "valid": false,
+            "rejectedByW151": true
+          },
+          "correctedCompleted": {
+            "status": "completed_runner_result_accepted",
+            "valid": true,
+            "importReadyAfterW151": true
+          },
+          "handoff": {
+            "status": "handoff_packet_rejected",
+            "rejected": true
+          },
+          "activeOpenLinksBeforeImport": 0
+        },
+        "liveRequestSent": false,
+        "mutatesFinalGeneratedNames": false,
+        "activeOpenLinks": 0
+      }
+    ]
+  },
+  "blockedCaseSamples": {
+    "missingEndpoint": {
+      "status": "live_transport_go_gate_blocked_no_request_sent",
+      "blockedReasons": [
+        "approved_endpoint_url"
+      ],
+      "liveRequestSent": false
+    },
+    "missingFlags": {
+      "status": "live_transport_go_gate_blocked_no_request_sent",
+      "blockedReasons": [
+        "deployment_flags"
+      ],
+      "liveRequestSent": false
+    },
+    "missingOperatorApproval": {
+      "status": "live_transport_go_gate_blocked_no_request_sent",
+      "blockedReasons": [
+        "operator_approval_evidence"
+      ],
+      "liveRequestSent": false
+    }
+  },
+  "guardedHarness": {
+    "startsFromW168": true,
+    "readinessHookReady": true,
+    "allReadyGatesPresent": true,
+    "readyWithoutRequest": true,
+    "missingEndpointBlocks": true,
+    "missingFlagsBlock": true,
+    "missingOperatorBlocks": true,
+    "noFinalGeneratedNameMutation": true,
+    "noActiveOpenLinks": true,
+    "traceSamplesReady": true,
+    "rollbackPlanReady": true,
+    "w151ImportGuardReady": true
+  },
+  "visualTestingDecision": {
+    "visualNetSuiteTestingRequiredNow": false,
+    "visualTestingBlocked": true,
+    "reason": "W169 is a go/no-go readiness gate only. It does not send a live request, write records, import final names, or create Open links."
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noDrawerTransactionWrites": true,
+    "noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityAndHandoffParityPreserved": true,
+    "idempotencyPreserved": true,
+    "internalRunnerOwnership": true,
+    "rollbackByDisablingServerFlags": true,
+    "w151CompletedResultImportGuardPreserved": true,
+    "noActiveOpenLinksWithoutRealUrls": true,
+    "noLiveInvocation": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W170: Approved Server Adapter Sandbox Live Transport Operator Unlock Packet",
+    "prompt": "Move through W170: Approved Server Adapter Sandbox Live Transport Operator Unlock Packet. Use the W169 live transport readiness gate to prepare the exact sandbox-only operator unlock packet for the first approved server adapter call: endpoint URL, deployment flag values, sandbox allowlist evidence, operator approval evidence, idempotency token, retry/rollback plan, one-submit limit, polling limit, and W151 result import guard. Keep real invocation disabled unless the user explicitly authorizes the live sandbox call in that block. Do not request visual testing. Output operator unlock packet, guarded harness, trace samples, W170 report, visual testing decision blocked until a real runner result returns, and best next Codex prompt."
+  },
+  "validatorGates": [
+    {
+      "name": "w169_starts_from_w168_retry_recovery",
+      "pass": true,
+      "detail": "PASS_RETRY_RECOVERY_READY__VISUAL_TESTING_BLOCKED"
+    },
+    {
+      "name": "w169_readiness_hook_ready",
+      "pass": true,
+      "detail": "live_transport_go_gate_ready_no_request_sent"
+    },
+    {
+      "name": "w169_all_ready_gates_present",
+      "pass": true,
+      "detail": "[{\"id\":\"approved_endpoint_url\",\"label\":\"Approved endpoint URL\",\"ready\":true,\"evidence\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\"},{\"id\":\"deployment_flags\",\"label\":\"Deployment flags\",\"ready\":true,\"evidence\":{\"CREATE_ENABLED\":true,\"GOVERNED_SANDBOX_WRITE_ENABLED\":true,\"QUEUE_SUBMIT_ENABLED\":true}},{\"id\":\"sandbox_allowlist\",\"label\":\"Sandbox allowlist\",\"ready\":true,\"evidence\":\"sandbox_account_allowlist_present\"},{\"id\":\"operator_approval_evidence\",\"label\":\"Operator approval evidence\",\"ready\":true,\"evidence\":{\"operatorName\":\"Operator QA\",\"reviewedAt\":\"2026-05-16T22:30:00.000Z\",\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedSandboxAccount\":true,\"confirmedNoSubmit\":true,\"notes\":\"Readiness gate only. Do not invoke live transport.\"}},{\"id\":\"idempotency_token\",\"label\":\"Idempotency token\",\"ready\":true,\"evidence\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\"},{\"id\":\"retry_recovery_readiness\",\"label\":\"Retry recovery readiness\",\"ready\":true,\"evidence\":\"retry_recovery_harness_ready\"},{\"id\":\"rollback_flag_plan\",\"label\":\"Rollback flag plan\",\"ready\":true,\"evidence\":{\"owner\":\"server_deployment_flags\",\"action\":\"disable_server_flags_before_any_retry\",\"flagsToDisable\":[\"CREATE_ENABLED\",\"GOVERNED_SANDBOX_WRITE_ENABLED\",\"QUEUE_SUBMIT_ENABLED\"]}},{\"id\":\"w151_result_import_guard\",\"label\":\"W151 result import guard\",\"ready\":true,\"evidence\":{\"malformedCompleted\":{\"status\":\"completed_runner_result_required\",\"valid\":false,\"rejectedByW151\":true},\"correctedCompleted\":{\"status\":\"completed_runner_result_accepted\",\"valid\":true,\"importReadyAfterW151\":true},\"handoff\":{\"status\":\"handoff_packet_rejected\",\"rejected\":true},\"activeOpenLinksBeforeImport\":0}}]"
+    },
+    {
+      "name": "w169_ready_without_request",
+      "pass": true,
+      "detail": "{\"liveRequestSent\":false,\"transportInvoked\":false,\"requestBodyConstructedForSend\":false,\"wouldAllowRequestConstructionAfterExplicitUnlock\":true,\"reason\":\"All prerequisites are present, but W169 is still live-disabled and does not send a request.\"}"
+    },
+    {
+      "name": "w169_blocked_cases_prove_no_request",
+      "pass": true,
+      "detail": "{\"endpoint\":[\"approved_endpoint_url\"],\"flags\":[\"deployment_flags\"],\"operator\":[\"operator_approval_evidence\"]}"
+    },
+    {
+      "name": "w169_no_names_or_links_mutated",
+      "pass": true,
+      "detail": "{\"finalGeneratedNamesBefore\":\"\",\"finalGeneratedNamesAfter\":\"\",\"finalGeneratedNamesUnchanged\":true,\"activeOpenLinks\":0,\"writesAttempted\":false}"
+    },
+    {
+      "name": "w169_rollback_and_w151_import_guard_ready",
+      "pass": true,
+      "detail": "{\"rollback\":{\"owner\":\"server_deployment_flags\",\"action\":\"disable_server_flags_before_any_retry\",\"flagsToDisable\":[\"CREATE_ENABLED\",\"GOVERNED_SANDBOX_WRITE_ENABLED\",\"QUEUE_SUBMIT_ENABLED\"]},\"guards\":[{\"id\":\"approved_endpoint_url\",\"label\":\"Approved endpoint URL\",\"ready\":true,\"evidence\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\"},{\"id\":\"deployment_flags\",\"label\":\"Deployment flags\",\"ready\":true,\"evidence\":{\"CREATE_ENABLED\":true,\"GOVERNED_SANDBOX_WRITE_ENABLED\":true,\"QUEUE_SUBMIT_ENABLED\":true}},{\"id\":\"sandbox_allowlist\",\"label\":\"Sandbox allowlist\",\"ready\":true,\"evidence\":\"sandbox_account_allowlist_present\"},{\"id\":\"operator_approval_evidence\",\"label\":\"Operator approval evidence\",\"ready\":true,\"evidence\":{\"operatorName\":\"Operator QA\",\"reviewedAt\":\"2026-05-16T22:30:00.000Z\",\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedSandboxAccount\":true,\"confirmedNoSubmit\":true,\"notes\":\"Readiness gate only. Do not invoke live transport.\"}},{\"id\":\"idempotency_token\",\"label\":\"Idempotency token\",\"ready\":true,\"evidence\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\"},{\"id\":\"retry_recovery_readiness\",\"label\":\"Retry recovery readiness\",\"ready\":true,\"evidence\":\"retry_recovery_harness_ready\"},{\"id\":\"rollback_flag_plan\",\"label\":\"Rollback flag plan\",\"ready\":true,\"evidence\":{\"owner\":\"server_deployment_flags\",\"action\":\"disable_server_flags_before_any_retry\",\"flagsToDisable\":[\"CREATE_ENABLED\",\"GOVERNED_SANDBOX_WRITE_ENABLED\",\"QUEUE_SUBMIT_ENABLED\"]}},{\"id\":\"w151_result_import_guard\",\"label\":\"W151 result import guard\",\"ready\":true,\"evidence\":{\"malformedCompleted\":{\"status\":\"completed_runner_result_required\",\"valid\":false,\"rejectedByW151\":true},\"correctedCompleted\":{\"status\":\"completed_runner_result_accepted\",\"valid\":true,\"importReadyAfterW151\":true},\"handoff\":{\"status\":\"handoff_packet_rejected\",\"rejected\":true},\"activeOpenLinksBeforeImport\":0}}]}"
+    },
+    {
+      "name": "w169_trace_samples_ready",
+      "pass": true,
+      "detail": "[{\"event\":\"w169_approved_endpoint_url\",\"gate\":\"approved_endpoint_url\",\"ready\":true,\"evidence\":\"https://YOUR_ACCOUNT_ID.app.netsuite.com/app/site/hosting/scriptlet.nl?script=SCRIPT_ID&deploy=DEPLOY_ID\",\"liveRequestSent\":false,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"event\":\"w169_deployment_flags\",\"gate\":\"deployment_flags\",\"ready\":true,\"evidence\":{\"CREATE_ENABLED\":true,\"GOVERNED_SANDBOX_WRITE_ENABLED\":true,\"QUEUE_SUBMIT_ENABLED\":true},\"liveRequestSent\":false,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"event\":\"w169_sandbox_allowlist\",\"gate\":\"sandbox_allowlist\",\"ready\":true,\"evidence\":\"sandbox_account_allowlist_present\",\"liveRequestSent\":false,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"event\":\"w169_operator_approval_evidence\",\"gate\":\"operator_approval_evidence\",\"ready\":true,\"evidence\":{\"operatorName\":\"Operator QA\",\"reviewedAt\":\"2026-05-16T22:30:00.000Z\",\"reviewDecision\":\"operator_approved_queue_submit\",\"typeToConfirm\":\"QUEUE GOVERNED SANDBOX RUNNER\",\"confirmedSandboxAccount\":true,\"confirmedNoSubmit\":true,\"notes\":\"Readiness gate only. Do not invoke live transport.\"},\"liveRequestSent\":false,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"event\":\"w169_idempotency_token\",\"gate\":\"idempotency_token\",\"ready\":true,\"evidence\":\"idb-build-ariat-international-apparel-accessories-apparelaccessories\",\"liveRequestSent\":false,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"event\":\"w169_retry_recovery_readiness\",\"gate\":\"retry_recovery_readiness\",\"ready\":true,\"evidence\":\"retry_recovery_harness_ready\",\"liveRequestSent\":false,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"event\":\"w169_rollback_flag_plan\",\"gate\":\"rollback_flag_plan\",\"ready\":true,\"evidence\":{\"owner\":\"server_deployment_flags\",\"action\":\"disable_server_flags_before_any_retry\",\"flagsToDisable\":[\"CREATE_ENABLED\",\"GOVERNED_SANDBOX_WRITE_ENABLED\",\"QUEUE_SUBMIT_ENABLED\"]},\"liveRequestSent\":false,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0},{\"event\":\"w169_w151_result_import_guard\",\"gate\":\"w151_result_import_guard\",\"ready\":true,\"evidence\":{\"malformedCompleted\":{\"status\":\"completed_runner_result_required\",\"valid\":false,\"rejectedByW151\":true},\"correctedCompleted\":{\"status\":\"completed_runner_result_accepted\",\"valid\":true,\"importReadyAfterW151\":true},\"handoff\":{\"status\":\"handoff_packet_rejected\",\"rejected\":true},\"activeOpenLinksBeforeImport\":0},\"liveRequestSent\":false,\"mutatesFinalGeneratedNames\":false,\"activeOpenLinks\":0}]"
+    },
+    {
+      "name": "w169_visual_testing_blocked",
+      "pass": true,
+      "detail": "W169 is a go/no-go readiness gate only. It does not send a live request, write records, import final names, or create Open links."
+    },
+    {
+      "name": "w169_no_regression_boundaries_preserved",
+      "pass": true,
+      "detail": "{\"noDrawerWrites\":true,\"noDrawerTransactionWrites\":true,\"noDrawerSuiteScriptInvocationOutsideApprovedServerAdapterPath\":true,\"consultantConfirmationRequired\":true,\"stateAuthorityAndHandoffParityPreserved\":true,\"idempotencyPreserved\":true,\"internalRunnerOwnership\":true,\"rollbackByDisablingServerFlags\":true,\"w151CompletedResultImportGuardPreserved\":true,\"noActiveOpenLinksWithoutRealUrls\":true,\"noLiveInvocation\":true}"
+    }
+  ]
+}

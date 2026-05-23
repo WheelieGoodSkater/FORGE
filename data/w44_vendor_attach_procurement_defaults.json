@@ -1,0 +1,111 @@
+{
+  "schema": "idb.w44-vendor-attach-procurement-defaults.v1",
+  "status": "complete_vendor_attach_guard_ready",
+  "objective": "Port the DCC vendor/procurement lesson into the governed IDB Proof Item write path without expanding transaction writes.",
+  "goal": "Allow a Proof Item to carry a configured or reviewed preferred-vendor relationship and optional purchase price, while blocking cleanly before any write if vendor attach is required but unresolved or ambiguous.",
+  "roles": [
+    {
+      "name": "DCC Pattern Translator Agent",
+      "responsibility": "Translate the prior DCC vendor attach behavior into IDB guardrails: vendor must be configured or resolved, never silently created."
+    },
+    {
+      "name": "SuiteScript Item Worker Agent",
+      "responsibility": "Implement vendor context resolution, preferred vendor attach, purchase price defaulting, and JSON blockers in the W24 pilot Suitelet."
+    },
+    {
+      "name": "Packet Contract Agent",
+      "responsibility": "Expose vendor attach readiness, required parameters, blocked states, and no-regression evidence in the write result contract."
+    },
+    {
+      "name": "Regression Guard Agent",
+      "responsibility": "Keep the main Suitelet create-disabled, keep transaction writes disabled, and prove Customer still writes before Proof Item."
+    }
+  ],
+  "runtimeParameters": {
+    "optional": [
+      "custscript_idb_default_vendor",
+      "custscript_idb_require_vendor_attach",
+      "custscript_idb_default_purchase_price"
+    ],
+    "requiredWhenVendorAttachIsMandatory": [
+      "custscript_idb_default_vendor"
+    ],
+    "inheritedAccountContext": [
+      "custscript_idb_default_subsidiary",
+      "custscript_idb_default_location",
+      "custscript_idb_default_taxschedule",
+      "custscript_idb_default_currency",
+      "custscript_idb_default_terms",
+      "custscript_idb_default_department",
+      "custscript_idb_default_class"
+    ]
+  },
+  "vendorResolution": {
+    "schema": "idb.vendor-context-resolver.v1",
+    "allowedSources": [
+      "custscript_idb_default_vendor",
+      "reviewed_packet_vendor_id",
+      "reviewed_packet_vendor_lookup"
+    ],
+    "optionalNoVendorStatus": "vendor_context_optional_not_configured",
+    "readyStatus": "vendor_context_ready",
+    "blockedMissingStatus": "blocked_missing_vendor_context",
+    "blockedAmbiguousStatus": "blocked_ambiguous_vendor_context",
+    "lookupPolicy": {
+      "lookupByEntityIdOrCompanyName": true,
+      "singleMatchRequired": true,
+      "multipleMatchesBlock": true,
+      "notFoundBlocksOnlyWhenRequired": true,
+      "silentVendorCreationAllowed": false
+    }
+  },
+  "writeBehavior": {
+    "customerWrite": "unchanged_customer_first",
+    "proofItemWrite": "attach preferred vendor and optional purchase price only after customer result exists",
+    "transactionWrite": "disabled",
+    "vendorWrite": "never_create_vendor",
+    "blockedBeforeAnyWriteWhenRequiredVendorMissing": true
+  },
+  "traceContract": {
+    "vendorContext": true,
+    "vendorAttachPilotPlan": true,
+    "requiredFields": [
+      "status",
+      "vendorAttachRequired",
+      "missingRuntimeParameters",
+      "values.vendorId",
+      "procurementDefaults.noSilentVendorCreation",
+      "writeBehavior",
+      "blockedReason"
+    ],
+    "resultEvidence": [
+      "customer record id and url",
+      "proof item record id and url",
+      "vendor context source",
+      "purchase price source when configured",
+      "transaction context remains blocked"
+    ]
+  },
+  "harnessCoverage": [
+    "Required vendor attach blocks before any write when vendor context is missing.",
+    "Configured vendor attach creates/updates Customer and Proof Item without expanding transaction writes."
+  ],
+  "noRegression": {
+    "mainSuiteletCreateEnabled": false,
+    "mainDrawerAutoWriteEnabled": false,
+    "w24PilotOnly": true,
+    "customerWritesBeforeProofItem": true,
+    "proofItemRequiresCustomerResult": true,
+    "transactionWriteEnabled": false,
+    "noSilentVendorCreation": true,
+    "noAmbiguousVendorAttach": true,
+    "noSilentRetry": true,
+    "noSilentDeletion": true,
+    "llmAdvisoryOnly": true
+  },
+  "nextBlock": {
+    "id": "W45",
+    "name": "Planning Control Rail",
+    "objective": "Port the DCC planning-control behavior into explicit reviewed item setup defaults before expanding transaction context."
+  }
+}

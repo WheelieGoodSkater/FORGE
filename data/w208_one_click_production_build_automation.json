@@ -1,0 +1,167 @@
+{
+  "schema": "idb.w208-one-click-production-build-automation-hidden-admin-config.report.v1",
+  "status": "PASS_W208_ONE_CLICK_PRODUCTION_BUILD_AUTOMATION",
+  "oneClickProductionBuildContract": {
+    "consultantInputs": [
+      "Customer / Prospect Name",
+      "Website",
+      "Conversation Notes"
+    ],
+    "consultantToggles": [
+      "Create new item",
+      "Manufacturing",
+      "WIP"
+    ],
+    "primaryButton": "Build demo records",
+    "visibleStatuses": [
+      "Ready to build",
+      "Building records",
+      "Still building",
+      "Records ready",
+      "Build needs admin setup",
+      "Build failed, ask admin"
+    ],
+    "hiddenAdminConfig": true,
+    "automationPath": [
+      "Generate the confirmed build request from customer name, website, notes, and selected toggles.",
+      "Use saved admin configuration for the approved server adapter.",
+      "Start one governed record build.",
+      "Wait for generated records to finish.",
+      "Validate and import the completed runner result internally.",
+      "Show final names and Open links only after real NetSuite URLs exist."
+    ]
+  },
+  "consultantSafeStatusCopy": {
+    "ready": "Ready to build demo records",
+    "building": "Still building",
+    "completedAwaitingFinish": "Records ready",
+    "imported": "Records ready"
+  },
+  "adminDebugFallbackContract": {
+    "availableWhenSetupEditMode": true,
+    "includesEndpointAndFlags": true,
+    "includesManualCompletedResultImport": true,
+    "exportDebugHandoffOnly": true
+  },
+  "passFailChecklist": [
+    {
+      "id": "normal_build_surface_has_only_consultant_controls",
+      "pass": true,
+      "evidence": "Ready Build surface exposes one button and hides adapter details."
+    },
+    {
+      "id": "fresh_session_uses_hidden_saved_admin_config",
+      "pass": true,
+      "evidence": "ready_to_build"
+    },
+    {
+      "id": "normal_build_surface_shows_simple_toggles",
+      "pass": true,
+      "evidence": "Normal Build includes consultant build toggles."
+    },
+    {
+      "id": "normal_trace_hides_handoff_and_manual_import",
+      "pass": true,
+      "evidence": "Trace normal mode is support evidence only."
+    },
+    {
+      "id": "admin_debug_keeps_fallback_controls",
+      "pass": true,
+      "evidence": "Admin/debug mode retains endpoint, submit, and manual import fallback."
+    },
+    {
+      "id": "w208_model_has_consultant_safe_statuses",
+      "pass": true,
+      "evidence": "[\"Ready to build\",\"Building records\",\"Still building\",\"Records ready\",\"Build needs admin setup\",\"Build failed, ask admin\"]"
+    },
+    {
+      "id": "building_state_shows_check_status_without_raw_runner_task",
+      "pass": true,
+      "evidence": "still_building"
+    },
+    {
+      "id": "completed_status_only_without_payload_waits_for_links",
+      "pass": true,
+      "evidence": "records_waiting_for_links"
+    },
+    {
+      "id": "run_blocks_provisional_live_record_script_until_links_import",
+      "pass": true,
+      "evidence": "Run waits for imported links before live record coaching."
+    },
+    {
+      "id": "completed_state_finishes_build_before_links",
+      "pass": true,
+      "evidence": "records_ready_to_finish"
+    },
+    {
+      "id": "w151_guard_still_accepts_only_completed_result",
+      "pass": true,
+      "evidence": "completed_runner_result_accepted"
+    },
+    {
+      "id": "imported_build_and_run_show_real_open_links",
+      "pass": true,
+      "evidence": "{\"verified_openable\":5}"
+    },
+    {
+      "id": "boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedServerAdapterPath\":true,\"approvedServerAdapterOwnsInvocation\":true,\"runnerOwnsGeneratedRecords\":true,\"w151ImportGuardPreservedInternally\":true,\"openLinksOnlyAfterRealUrls\":true,\"handoffJsonRejectedAsResultImport\":true,\"existingW144W190W151PathPreserved\":true}"
+    }
+  ],
+  "traceSamples": [
+    {
+      "event": "w208_one_click_build_ready",
+      "status": "ready_to_build",
+      "visibleButton": "Build demo records",
+      "hiddenAdminConfig": true
+    },
+    {
+      "event": "w208_one_click_build_submitted",
+      "status": "building_records",
+      "drawerCreatesRecords": false,
+      "serverAdapterOwnsInvocation": true
+    },
+    {
+      "event": "w208_one_click_build_records_ready",
+      "status": "waiting_for_completed_result_import",
+      "openLinksVisible": false
+    },
+    {
+      "event": "w208_one_click_build_ready",
+      "status": "still_building",
+      "visibleButton": "",
+      "hiddenAdminConfig": true
+    },
+    {
+      "event": "w208_one_click_build_submitted",
+      "status": "building_records",
+      "drawerCreatesRecords": false,
+      "serverAdapterOwnsInvocation": true
+    },
+    {
+      "event": "w208_one_click_build_records_ready",
+      "status": "waiting_for_completed_result_import",
+      "openLinksVisible": false
+    },
+    {
+      "event": "w208_one_click_build_ready",
+      "status": "records_ready_to_finish",
+      "visibleButton": "",
+      "hiddenAdminConfig": true
+    },
+    {
+      "event": "w208_one_click_build_submitted",
+      "status": "building_records",
+      "drawerCreatesRecords": false,
+      "serverAdapterOwnsInvocation": true
+    },
+    {
+      "event": "w208_one_click_build_records_ready",
+      "status": "waiting_for_completed_result_import",
+      "openLinksVisible": false
+    }
+  ],
+  "releaseDecision": "release_ready_for_one_click_production_build_pilot"
+}

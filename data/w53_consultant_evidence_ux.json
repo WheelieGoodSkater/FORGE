@@ -1,0 +1,48 @@
+{
+  "schema": "idb.w53-consultant-evidence-ux.v1",
+  "status": "complete_consultant_evidence_ux_ready",
+  "objective": "Make the website intelligence visible and usable inside Plan and Review.",
+  "goal": "The consultant can see what IDB saw, why it classified the prospect, what is uncertain, what evidence is missing, and what they need to confirm before ROI, competitive, or write preparation proceeds.",
+  "implemented": {
+    "whatIdbSawEvidencePanel": true,
+    "whyThisClassificationSummary": true,
+    "confidenceAndUncertaintyDisplay": true,
+    "competingCandidatesForAmbiguousSites": true,
+    "missingEvidenceConfirmationPromptUi": true,
+    "planSurface": true,
+    "reviewSurface": true,
+    "traceExportCoverage": true
+  },
+  "runtimeModel": {
+    "functionName": "websiteEvidenceUxModel",
+    "schema": "idb.w53-consultant-evidence-ux.v1",
+    "sourceInputs": [
+      "websiteSignalProfile",
+      "websiteConfidenceModel",
+      "websitePackageClassifier",
+      "normalizedIntake"
+    ],
+    "traceFields": [
+      "whatIdbSaw",
+      "whyThisClassification",
+      "confidence",
+      "competingCandidates",
+      "missingEvidence",
+      "confirmationPrompt",
+      "traceExportCoverage"
+    ]
+  },
+  "uxPlacement": {
+    "plan": "rendered after setup intake and before lane selector",
+    "review": "rendered after live review summary and before execution plan preview"
+  },
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "noSuiteScriptInvocationFromUx": true
+  },
+  "nextBlock": "W54: ROI / Competitive Intelligence From Grounded Website Evidence"
+}

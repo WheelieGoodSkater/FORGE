@@ -1,0 +1,333 @@
+{
+  "schema": "idb.w67-resolver-production-readiness-trace.v1",
+  "generated": "2026-05-17T21:41:01.835Z",
+  "decision": "PASS",
+  "readinessDecision": "plan_ready_not_production_go",
+  "hostedEndpointPlan": {
+    "serviceName": "websiteResolverServiceV1",
+    "path": "/idb/website-resolver/v1/resolve",
+    "method": "POST",
+    "runtime": "Node.js service or serverless function with controlled egress",
+    "deploymentShape": [
+      "Dedicated no-write resolver service outside Tampermonkey and outside SuiteScript.",
+      "Drawer calls endpoint through W64 adapter using window/localStorage endpoint toggle during pilot.",
+      "Resolver returns idb.website-evidence.v1 only.",
+      "No NetSuite credentials, no NetSuite cookies, no SuiteScript URLs, no record IDs, and no write tokens accepted."
+    ],
+    "environmentTiers": [
+      "local deterministic harness",
+      "staging resolver endpoint with approved live smoke",
+      "pilot resolver endpoint allowlisted for five consultants",
+      "production resolver endpoint after go/no-go"
+    ]
+  },
+  "endpointAuthAndCors": {
+    "auth": [
+      "Require short-lived resolver API token or signed request header for pilot.",
+      "Rotate pilot token before broader rollout.",
+      "Reject requests with NetSuite session cookies or authorization headers from NetSuite.",
+      "Do not use N/LLM credentials or NetSuite credentials in resolver."
+    ],
+    "cors": [
+      "Allow only approved NetSuite account origins during pilot.",
+      "Reject wildcard production CORS.",
+      "Allow local preview origin only in development.",
+      "Respond to preflight with POST and Content-Type only."
+    ],
+    "requestRedaction": [
+      "Do not log cookies.",
+      "Do not log authorization headers.",
+      "Do not log tenant secrets.",
+      "Store only manualEvidence excerpt hashes and short trace-safe excerpts."
+    ]
+  },
+  "cacheStrategy": {
+    "cacheKey": "sha256(normalizedUrl + resolverVersion + extractionPolicyVersion)",
+    "ttlSeconds": 86400,
+    "staleWhileRevalidateSeconds": 3600,
+    "cacheScope": "public website evidence only",
+    "doNotCache": [
+      "cookies",
+      "authorization headers",
+      "NetSuite tenant data",
+      "manualEvidence full text",
+      "blocked-domain security decisions beyond aggregate metrics"
+    ],
+    "cacheInvalidation": [
+      "resolverVersion change",
+      "extractionPolicyVersion change",
+      "explicit pilot refresh",
+      "cache corruption or bad extraction rollback"
+    ]
+  },
+  "rateLimitsAndTimeouts": {
+    "perDomainPerMinute": 6,
+    "perConsultantPerMinute": 12,
+    "maxPages": 5,
+    "defaultPages": 4,
+    "maxPageBytes": 350000,
+    "maxTotalBytes": 1200000,
+    "connectTimeoutMs": 6000,
+    "overallTimeoutMs": 12000,
+    "maxOverallTimeoutMs": 15000,
+    "retryPolicy": [
+      "No automatic retry for blocked/403/401/407/429/451.",
+      "One delayed retry for transient 5xx or network reset.",
+      "No retry after timeout inside live consultant flow; return timeout and allow manual retry.",
+      "Retry never changes write authority or confidence state."
+    ]
+  },
+  "observability": {
+    "requiredTraceFields": [
+      "requestId",
+      "normalizedUrl",
+      "domain",
+      "resolverVersion",
+      "extractionPolicyVersion",
+      "fetchStatus",
+      "failureState",
+      "pagesSampled",
+      "sourceUrls",
+      "confidence",
+      "leadingLaneId",
+      "cacheHit",
+      "latencyMs",
+      "writeAuthority",
+      "nllmAdvisoryOnly"
+    ],
+    "metrics": [
+      "request count",
+      "cache hit rate",
+      "p50/p95 latency",
+      "blocked/thin/unavailable/timeout rates",
+      "recommended/needs_confirmation/insufficient_evidence rates",
+      "false-confident-wrong count from labeled smoke",
+      "unsupported-claim count from labeled smoke"
+    ],
+    "alerts": [
+      "false-confident-wrong greater than zero",
+      "unsupported claims greater than zero",
+      "timeout rate above 20 percent during pilot",
+      "blocked/thin rate spike after deployment",
+      "p95 latency above 12 seconds"
+    ]
+  },
+  "manualEvidenceFallback": {
+    "whenUsed": [
+      "blocked",
+      "thin",
+      "unavailable",
+      "timeout",
+      "consultant has copied homepage/category/product text",
+      "approved live site drift prevents sufficient public extraction"
+    ],
+    "rules": [
+      "Manual evidence may improve extraction and confidence but must be displayed as consultant-supplied.",
+      "Manual evidence cannot authorize writes.",
+      "Manual evidence cannot hide blocked/timeout fetch status.",
+      "Manual evidence must be included in trace as excerpt/hash, not full sensitive notes."
+    ]
+  },
+  "pilotRolloutToggles": {
+    "drawerEndpointToggle": "window.IDB_WEBSITE_RESOLVER_ENDPOINT or localStorage:idb.websiteResolver.endpoint.v1",
+    "drawerFallbackToggle": "window.IDB_WEBSITE_RESOLVER_LOCAL_FALLBACK or localStorage:idb.websiteResolver.localFallback.v1",
+    "pilotAllowlist": [
+      "approved NetSuite account origins",
+      "five named consultant browsers",
+      "approved resolver staging endpoint"
+    ],
+    "killSwitches": [
+      "disable resolver endpoint and return to local fallback",
+      "disable local fallback and force manual evidence confirmation",
+      "pause pilot endpoint on false-confident-wrong",
+      "pause endpoint on auth/CORS anomaly"
+    ]
+  },
+  "deploymentChecklist": [
+    "Deploy staging no-write resolver endpoint.",
+    "Configure strict CORS for approved NetSuite account origins.",
+    "Configure pilot API token or signed request header.",
+    "Enable cache with resolverVersion/extractionPolicyVersion key.",
+    "Enable metrics and trace logging with redaction.",
+    "Run W65 approved live smoke from staging.",
+    "Run W66 extraction gap closure harness against staging trace.",
+    "Configure drawer endpoint toggle for pilot users only.",
+    "Verify Plan/Review failure-state UX for blocked, thin, unavailable, timeout.",
+    "Verify no SuiteScript invocation and no write fields accepted.",
+    "Capture rollback baseline and endpoint kill switch."
+  ],
+  "rollbackPlan": [
+    "Clear drawer resolver endpoint toggle.",
+    "Set local fallback toggle according to pilot stop condition.",
+    "Disable hosted endpoint token.",
+    "Preserve trace exports for failed runs.",
+    "Revert resolverVersion/extractionPolicyVersion if bad extraction shipped.",
+    "Do not retry writes because resolver has no write authority."
+  ],
+  "goNoGoForPilot": {
+    "goIf": [
+      "W65/W66 staging smoke has zero false-confident-wrong.",
+      "Unsupported claims remain zero.",
+      "Failure states are visible in Plan and Review.",
+      "Consultants can provide manual evidence for blocked/thin sites.",
+      "Endpoint can be killed without changing drawer code."
+    ],
+    "noGoIf": [
+      "Any false-confident-wrong result appears.",
+      "Resolver accepts write/auth/SuiteScript fields.",
+      "CORS allows unapproved origins.",
+      "Blocked/thin/unavailable/timeout generates a confident lane.",
+      "Trace omits resolver failure state or source URLs."
+    ]
+  },
+  "evidenceFromW65W66": {
+    "w65Metrics": {
+      "mode": "approved_live_fetch",
+      "total": 4,
+      "correctOrHonestCount": 4,
+      "falseConfidentWrongCount": 0,
+      "unsupportedClaimCount": 0,
+      "evidenceCoverageScore": 0.5,
+      "recommendedCount": 1,
+      "needsConfirmationCount": 0,
+      "insufficientEvidenceCount": 3,
+      "correctOrHonestRate": 1
+    },
+    "trekAfterW66": {
+      "actualState": "recommended",
+      "actualLaneId": "dealer_hardgoods",
+      "driftType": "stable",
+      "sourceUrlCount": 3,
+      "extractionGaps": []
+    },
+    "remainingHonestFailures": [
+      {
+        "id": "w65_live_patagonia",
+        "actualState": "insufficient_evidence",
+        "actualLaneId": "",
+        "failureState": "thin",
+        "extractionGaps": [
+          "Live state is insufficient_evidence; expected recommended.",
+          "Fewer than two source URLs; keep needs confirmation.",
+          "Resolver returned thin; do not classify confidently."
+        ]
+      },
+      {
+        "id": "w65_live_grainger",
+        "actualState": "insufficient_evidence",
+        "actualLaneId": "",
+        "failureState": "thin",
+        "extractionGaps": [
+          "Live state is insufficient_evidence; expected needs_confirmation.",
+          "Fewer than two source URLs; keep needs confirmation.",
+          "No product/category or industry terms extracted.",
+          "Resolver returned thin; do not classify confidently."
+        ]
+      },
+      {
+        "id": "w65_live_lincoln_electric",
+        "actualState": "insufficient_evidence",
+        "actualLaneId": "",
+        "failureState": "blocked",
+        "extractionGaps": [
+          "Live state is insufficient_evidence; expected recommended.",
+          "No source URLs captured.",
+          "Fewer than two source URLs; keep needs confirmation.",
+          "No product/category or industry terms extracted.",
+          "Resolver returned blocked; do not classify confidently."
+        ]
+      }
+    ]
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W68: Staging Resolver Endpoint Smoke Pack",
+    "prompt": "Move through W68: Staging Resolver Endpoint Smoke Pack. Build the staging smoke package for the hosted no-write websiteResolverServiceV1 endpoint: environment variables, endpoint health check, auth/CORS test cases, cache validation, approved live-site smoke command, failure-state samples, manual-evidence fallback samples, observability checklist, and pilot toggle instructions. Keep the drawer and SuiteScript write-disabled, preserve N/LLM advisory-only, notes story-only, and blocked/thin/unavailable/timeout as insufficient evidence with no confident guesses. Output staging smoke pack, runnable harness, trace samples, W68 report, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w67_contract_schema_present",
+      "pass": true,
+      "detail": "idb.w67-resolver-production-readiness-hosted-endpoint-plan.v1"
+    },
+    {
+      "name": "w67_decision_is_plan_ready_not_prod_go",
+      "pass": true,
+      "detail": "plan_ready_not_production_go"
+    },
+    {
+      "name": "w67_hosting_shape_present",
+      "pass": true,
+      "detail": "{\"serviceName\":\"websiteResolverServiceV1\",\"path\":\"/idb/website-resolver/v1/resolve\",\"method\":\"POST\",\"runtime\":\"Node.js service or serverless function with controlled egress\",\"deploymentShape\":[\"Dedicated no-write resolver service outside Tampermonkey and outside SuiteScript.\",\"Drawer calls endpoint through W64 adapter using window/localStorage endpoint toggle during pilot.\",\"Resolver returns idb.website-evidence.v1 only.\",\"No NetSuite credentials, no NetSuite cookies, no SuiteScript URLs, no record IDs, and no write tokens accepted.\"],\"environmentTiers\":[\"local deterministic harness\",\"staging resolver endpoint with approved live smoke\",\"pilot resolver endpoint allowlisted for five consultants\",\"production resolver endpoint after go/no-go\"]}"
+    },
+    {
+      "name": "w67_auth_and_cors_locked_down",
+      "pass": true,
+      "detail": "{\"auth\":[\"Require short-lived resolver API token or signed request header for pilot.\",\"Rotate pilot token before broader rollout.\",\"Reject requests with NetSuite session cookies or authorization headers from NetSuite.\",\"Do not use N/LLM credentials or NetSuite credentials in resolver.\"],\"cors\":[\"Allow only approved NetSuite account origins during pilot.\",\"Reject wildcard production CORS.\",\"Allow local preview origin only in development.\",\"Respond to preflight with POST and Content-Type only.\"],\"requestRedaction\":[\"Do not log cookies.\",\"Do not log authorization headers.\",\"Do not log tenant secrets.\",\"Store only manualEvidence excerpt hashes and short trace-safe excerpts.\"]}"
+    },
+    {
+      "name": "w67_cache_strategy_present",
+      "pass": true,
+      "detail": "{\"cacheKey\":\"sha256(normalizedUrl + resolverVersion + extractionPolicyVersion)\",\"ttlSeconds\":86400,\"staleWhileRevalidateSeconds\":3600,\"cacheScope\":\"public website evidence only\",\"doNotCache\":[\"cookies\",\"authorization headers\",\"NetSuite tenant data\",\"manualEvidence full text\",\"blocked-domain security decisions beyond aggregate metrics\"],\"cacheInvalidation\":[\"resolverVersion change\",\"extractionPolicyVersion change\",\"explicit pilot refresh\",\"cache corruption or bad extraction rollback\"]}"
+    },
+    {
+      "name": "w67_rate_timeout_retry_policy_present",
+      "pass": true,
+      "detail": "{\"perDomainPerMinute\":6,\"perConsultantPerMinute\":12,\"maxPages\":5,\"defaultPages\":4,\"maxPageBytes\":350000,\"maxTotalBytes\":1200000,\"connectTimeoutMs\":6000,\"overallTimeoutMs\":12000,\"maxOverallTimeoutMs\":15000,\"retryPolicy\":[\"No automatic retry for blocked/403/401/407/429/451.\",\"One delayed retry for transient 5xx or network reset.\",\"No retry after timeout inside live consultant flow; return timeout and allow manual retry.\",\"Retry never changes write authority or confidence state.\"]}"
+    },
+    {
+      "name": "w67_domain_policy_preserves_ssrf_controls",
+      "pass": true,
+      "detail": "{\"allowedSchemes\":[\"https\"],\"blockedSchemes\":[\"file:\",\"data:\",\"javascript:\",\"mailto:\",\"tel:\",\"ftp:\",\"gopher:\"],\"blockedTargets\":[\"localhost\",\"loopback\",\"RFC1918 private networks\",\"link-local\",\"metadata IPs\",\"internal host suffixes\"],\"redirectPolicy\":[\"Maximum five redirects.\",\"Re-check scheme and DNS after every redirect.\",\"Reject redirects into private/internal networks.\",\"Capture final URL in trace.\"]}"
+    },
+    {
+      "name": "w67_observability_trace_metrics_alerts_present",
+      "pass": true,
+      "detail": "{\"requiredTraceFields\":[\"requestId\",\"normalizedUrl\",\"domain\",\"resolverVersion\",\"extractionPolicyVersion\",\"fetchStatus\",\"failureState\",\"pagesSampled\",\"sourceUrls\",\"confidence\",\"leadingLaneId\",\"cacheHit\",\"latencyMs\",\"writeAuthority\",\"nllmAdvisoryOnly\"],\"metrics\":[\"request count\",\"cache hit rate\",\"p50/p95 latency\",\"blocked/thin/unavailable/timeout rates\",\"recommended/needs_confirmation/insufficient_evidence rates\",\"false-confident-wrong count from labeled smoke\",\"unsupported-claim count from labeled smoke\"],\"alerts\":[\"false-confident-wrong greater than zero\",\"unsupported claims greater than zero\",\"timeout rate above 20 percent during pilot\",\"blocked/thin rate spike after deployment\",\"p95 latency above 12 seconds\"]}"
+    },
+    {
+      "name": "w67_manual_evidence_fallback_safe",
+      "pass": true,
+      "detail": "{\"whenUsed\":[\"blocked\",\"thin\",\"unavailable\",\"timeout\",\"consultant has copied homepage/category/product text\",\"approved live site drift prevents sufficient public extraction\"],\"rules\":[\"Manual evidence may improve extraction and confidence but must be displayed as consultant-supplied.\",\"Manual evidence cannot authorize writes.\",\"Manual evidence cannot hide blocked/timeout fetch status.\",\"Manual evidence must be included in trace as excerpt/hash, not full sensitive notes.\"]}"
+    },
+    {
+      "name": "w67_rollout_toggles_and_kill_switches_present",
+      "pass": true,
+      "detail": "{\"drawerEndpointToggle\":\"window.IDB_WEBSITE_RESOLVER_ENDPOINT or localStorage:idb.websiteResolver.endpoint.v1\",\"drawerFallbackToggle\":\"window.IDB_WEBSITE_RESOLVER_LOCAL_FALLBACK or localStorage:idb.websiteResolver.localFallback.v1\",\"pilotAllowlist\":[\"approved NetSuite account origins\",\"five named consultant browsers\",\"approved resolver staging endpoint\"],\"killSwitches\":[\"disable resolver endpoint and return to local fallback\",\"disable local fallback and force manual evidence confirmation\",\"pause pilot endpoint on false-confident-wrong\",\"pause endpoint on auth/CORS anomaly\"]}"
+    },
+    {
+      "name": "w67_deployment_and_rollback_checklists_present",
+      "pass": true,
+      "detail": "{\"deploy\":[\"Deploy staging no-write resolver endpoint.\",\"Configure strict CORS for approved NetSuite account origins.\",\"Configure pilot API token or signed request header.\",\"Enable cache with resolverVersion/extractionPolicyVersion key.\",\"Enable metrics and trace logging with redaction.\",\"Run W65 approved live smoke from staging.\",\"Run W66 extraction gap closure harness against staging trace.\",\"Configure drawer endpoint toggle for pilot users only.\",\"Verify Plan/Review failure-state UX for blocked, thin, unavailable, timeout.\",\"Verify no SuiteScript invocation and no write fields accepted.\",\"Capture rollback baseline and endpoint kill switch.\"],\"rollback\":[\"Clear drawer resolver endpoint toggle.\",\"Set local fallback toggle according to pilot stop condition.\",\"Disable hosted endpoint token.\",\"Preserve trace exports for failed runs.\",\"Revert resolverVersion/extractionPolicyVersion if bad extraction shipped.\",\"Do not retry writes because resolver has no write authority.\"]}"
+    },
+    {
+      "name": "w67_go_no_go_criteria_present",
+      "pass": true,
+      "detail": "{\"goIf\":[\"W65/W66 staging smoke has zero false-confident-wrong.\",\"Unsupported claims remain zero.\",\"Failure states are visible in Plan and Review.\",\"Consultants can provide manual evidence for blocked/thin sites.\",\"Endpoint can be killed without changing drawer code.\"],\"noGoIf\":[\"Any false-confident-wrong result appears.\",\"Resolver accepts write/auth/SuiteScript fields.\",\"CORS allows unapproved origins.\",\"Blocked/thin/unavailable/timeout generates a confident lane.\",\"Trace omits resolver failure state or source URLs.\"]}"
+    },
+    {
+      "name": "w67_uses_w65_w66_readiness_evidence",
+      "pass": true,
+      "detail": "{\"w65\":{\"mode\":\"approved_live_fetch\",\"total\":4,\"correctOrHonestCount\":4,\"falseConfidentWrongCount\":0,\"unsupportedClaimCount\":0,\"evidenceCoverageScore\":0.5,\"recommendedCount\":1,\"needsConfirmationCount\":0,\"insufficientEvidenceCount\":3,\"correctOrHonestRate\":1},\"trek\":{\"actualState\":\"recommended\",\"actualLaneId\":\"dealer_hardgoods\",\"driftType\":\"stable\",\"sourceUrlCount\":3,\"extractionGaps\":[]}}"
+    },
+    {
+      "name": "w67_no_regression_boundaries_present",
+      "pass": true,
+      "detail": "{\"writeAuthority\":\"none\",\"suiteScriptInvocation\":false,\"nllmAdvisoryOnly\":true,\"notesCannotOwnIdentification\":true,\"blockedThinUnavailableTimeoutDoNotGuess\":true,\"transactionWriteEnabled\":false,\"mainDrawerCreateEnabled\":false,\"mainSuiteletCreateEnabled\":false}"
+    },
+    {
+      "name": "w67_best_next_prompt_present",
+      "pass": true,
+      "detail": "W68: Staging Resolver Endpoint Smoke Pack"
+    }
+  ]
+}

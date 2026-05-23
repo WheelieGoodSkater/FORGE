@@ -1,0 +1,220 @@
+{
+  "schema": "idb.w229-forge-post-install-operator-evidence-intake-harness.v1",
+  "status": "pass",
+  "passCount": 8,
+  "total": 8,
+  "results": [
+    {
+      "id": "evidence_fields_match_w228_acceptance_checks",
+      "pass": true,
+      "evidence": "railButtonVisible:FORGE rail button appears. | railLabelNotClipped:FORGE rail label is not clipped. | drawerOpens:Drawer opens. | largerForgeHeaderLogoVisible:Larger responsive FORGE header logo appears. | logoDoesNotOverlapCloseButtonOnNarrowerWindow:Logo scales without overlapping the close button on a narrower window. | closeButtonWorks:Close button works. | copyOperatorSummaryVisibleInTraceImportStatusSurface:Copy operator summary appears in the Trace/import-status surface. | optionalScreenshotOrReferenceNote:optional"
+    },
+    {
+      "id": "classification_rules_present",
+      "pass": true,
+      "evidence": "{\"accepted\":\"accept\",\"visualFollowUp\":\"accept_with_visual_follow_up\",\"blocked\":\"block_install\"}"
+    },
+    {
+      "id": "block_conditions_match_w228",
+      "pass": true,
+      "evidence": "Rail label clipped. | Header logo missing. | Close button inaccessible. | Old visible header text appears. | Operator summary copy control missing."
+    },
+    {
+      "id": "targeted_follow_up_routing_is_limited_to_surface_fixes",
+      "pass": true,
+      "evidence": "Rail label fit polish | Header logo sizing polish | Close-button accessibility fix | Copy-summary placement fix | Old-branding removal fix"
+    },
+    {
+      "id": "normal_evidence_intake_copy_hides_forbidden_internal_terms",
+      "pass": true,
+      "evidence": "Record the post-install FORGE checks after updating the Tampermonkey drawer script.\nClassify the result as accept, accept with visual follow-up, or block install.\nRoute only the specific rail, header, close-button, copy-summary, or old-branding follow-up that the evidence supports."
+    },
+    {
+      "id": "w228_acceptance_packet_remains_unchanged",
+      "pass": true,
+      "evidence": "post_install_acceptance_packet_ready"
+    },
+    {
+      "id": "install_exclusions_remain_explicit",
+      "pass": true,
+      "evidence": "{\"noW144AdapterUpdate\":true,\"noRunnerUpdate\":true,\"noSuiteScriptDeploymentUpdate\":true,\"noImageLookupChange\":true}"
+    },
+    {
+      "id": "w214_to_w228_boundaries_preserved",
+      "pass": true,
+      "evidence": "{\"w151ImportGuardPreserved\":true,\"semanticRoleMappingPreserved\":true,\"modeAwareNamingGuardrailsPreserved\":true,\"dynamicRecordDisplayPreserved\":true,\"consultantPartialResultLanguagePreserved\":true,\"operatorReadableSmokePacketPreserved\":true,\"frozenReviewRunWordingPreserved\":true,\"importFailureRecoveryCopyPreserved\":true,\"recoveryUiSurfaceWiringPreserved\":true,\"endToEndOperatorPacketPreserved\":true,\"exportableOperatorSummaryPreserved\":true,\"consultantCopyExportActionPreserved\":true,\"forgeBrandingPreserved\":true,\"targetedLiveHeaderSmokePreserved\":true,\"forgeRailFontFitCorrectionPreserved\":true,\"responsiveForgeHeaderLogoPolishPreserved\":true,\"installCutoverPacketPreserved\":true,\"finalInstallPacketPreserved\":true,\"noDrawerCreatedRecords\":true,\"noDrawerTransactionWrites\":true,\"noDirectSuiteScriptOutsideApprovedW144AdapterPath\":true,\"runnerOwnsGeneratedRecords\":true,\"imageLookupDisabledByDefault\":true,\"nllmAdvisoryOnly\":true,\"postInstallAcceptancePacketPreserved\":true}"
+    }
+  ],
+  "evidenceIntakePacket": {
+    "schema": "idb.w229-forge-post-install-operator-evidence-intake.v1",
+    "status": "post_install_operator_evidence_intake_ready",
+    "expectedInstalledScript": "idb-drawer.user.js",
+    "evidenceFields": [
+      {
+        "id": "railButtonVisible",
+        "label": "Rail button visible",
+        "acceptanceCheck": "FORGE rail button appears."
+      },
+      {
+        "id": "railLabelNotClipped",
+        "label": "Rail label not clipped",
+        "acceptanceCheck": "FORGE rail label is not clipped."
+      },
+      {
+        "id": "drawerOpens",
+        "label": "Drawer opens",
+        "acceptanceCheck": "Drawer opens."
+      },
+      {
+        "id": "largerForgeHeaderLogoVisible",
+        "label": "Larger FORGE header logo visible",
+        "acceptanceCheck": "Larger responsive FORGE header logo appears."
+      },
+      {
+        "id": "logoDoesNotOverlapCloseButtonOnNarrowerWindow",
+        "label": "Logo does not overlap close button on narrower window",
+        "acceptanceCheck": "Logo scales without overlapping the close button on a narrower window."
+      },
+      {
+        "id": "closeButtonWorks",
+        "label": "Close button works",
+        "acceptanceCheck": "Close button works."
+      },
+      {
+        "id": "copyOperatorSummaryVisibleInTraceImportStatusSurface",
+        "label": "Copy operator summary visible in Trace/import-status surface",
+        "acceptanceCheck": "Copy operator summary appears in the Trace/import-status surface."
+      },
+      {
+        "id": "optionalScreenshotOrReferenceNote",
+        "label": "Optional screenshot/reference note",
+        "optional": true
+      }
+    ],
+    "classificationRules": [
+      {
+        "id": "accept",
+        "label": "Accept",
+        "when": "All required evidence fields pass and no block condition is present."
+      },
+      {
+        "id": "accept_with_visual_follow_up",
+        "label": "Accept with visual follow-up",
+        "when": "Core drawer controls work, but rail label fit or responsive logo spacing needs minor polish."
+      },
+      {
+        "id": "block_install",
+        "label": "Block install",
+        "when": "A required FORGE brand element, close control, drawer open action, or copy-summary control is missing or unusable."
+      }
+    ],
+    "blockConditions": [
+      "Rail label clipped.",
+      "Header logo missing.",
+      "Close button inaccessible.",
+      "Old visible header text appears.",
+      "Operator summary copy control missing."
+    ],
+    "targetedFollowUpRouting": [
+      {
+        "id": "rail_label_fit_polish",
+        "label": "Rail label fit polish",
+        "trigger": "Rail label clipped."
+      },
+      {
+        "id": "header_logo_sizing_polish",
+        "label": "Header logo sizing polish",
+        "trigger": "Logo overlaps the close button or needs spacing polish."
+      },
+      {
+        "id": "close_button_accessibility_fix",
+        "label": "Close-button accessibility fix",
+        "trigger": "Close button inaccessible."
+      },
+      {
+        "id": "copy_summary_placement_fix",
+        "label": "Copy-summary placement fix",
+        "trigger": "Operator summary copy control missing."
+      },
+      {
+        "id": "old_branding_removal_fix",
+        "label": "Old-branding removal fix",
+        "trigger": "Old visible header text appears."
+      }
+    ],
+    "sampleClassifications": {
+      "accepted": "accept",
+      "visualFollowUp": "accept_with_visual_follow_up",
+      "blocked": "block_install"
+    },
+    "sampleEvidence": {
+      "accepted": {
+        "railButtonVisible": true,
+        "railLabelNotClipped": true,
+        "drawerOpens": true,
+        "largerForgeHeaderLogoVisible": true,
+        "logoDoesNotOverlapCloseButtonOnNarrowerWindow": true,
+        "closeButtonWorks": true,
+        "copyOperatorSummaryVisibleInTraceImportStatusSurface": true,
+        "optionalScreenshotOrReferenceNote": ""
+      },
+      "visualFollowUp": {
+        "railButtonVisible": true,
+        "railLabelNotClipped": false,
+        "drawerOpens": true,
+        "largerForgeHeaderLogoVisible": true,
+        "logoDoesNotOverlapCloseButtonOnNarrowerWindow": true,
+        "closeButtonWorks": true,
+        "copyOperatorSummaryVisibleInTraceImportStatusSurface": true,
+        "optionalScreenshotOrReferenceNote": "Rail label needs a fit check."
+      },
+      "blocked": {
+        "railButtonVisible": true,
+        "railLabelNotClipped": true,
+        "drawerOpens": true,
+        "largerForgeHeaderLogoVisible": false,
+        "logoDoesNotOverlapCloseButtonOnNarrowerWindow": true,
+        "closeButtonWorks": true,
+        "copyOperatorSummaryVisibleInTraceImportStatusSurface": true,
+        "headerLogoMissing": true,
+        "optionalScreenshotOrReferenceNote": "Header logo did not render."
+      }
+    },
+    "normalEvidenceIntakeCopy": "Record the post-install FORGE checks after updating the Tampermonkey drawer script.\nClassify the result as accept, accept with visual follow-up, or block install.\nRoute only the specific rail, header, close-button, copy-summary, or old-branding follow-up that the evidence supports.",
+    "normalEvidenceIntakeCopyHidesForbiddenTerms": true,
+    "installExclusions": {
+      "noW144AdapterUpdate": true,
+      "noRunnerUpdate": true,
+      "noSuiteScriptDeploymentUpdate": true,
+      "noImageLookupChange": true
+    },
+    "noRegressionBoundarySummary": {
+      "w151ImportGuardPreserved": true,
+      "semanticRoleMappingPreserved": true,
+      "modeAwareNamingGuardrailsPreserved": true,
+      "dynamicRecordDisplayPreserved": true,
+      "consultantPartialResultLanguagePreserved": true,
+      "operatorReadableSmokePacketPreserved": true,
+      "frozenReviewRunWordingPreserved": true,
+      "importFailureRecoveryCopyPreserved": true,
+      "recoveryUiSurfaceWiringPreserved": true,
+      "endToEndOperatorPacketPreserved": true,
+      "exportableOperatorSummaryPreserved": true,
+      "consultantCopyExportActionPreserved": true,
+      "forgeBrandingPreserved": true,
+      "targetedLiveHeaderSmokePreserved": true,
+      "forgeRailFontFitCorrectionPreserved": true,
+      "responsiveForgeHeaderLogoPolishPreserved": true,
+      "installCutoverPacketPreserved": true,
+      "finalInstallPacketPreserved": true,
+      "noDrawerCreatedRecords": true,
+      "noDrawerTransactionWrites": true,
+      "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+      "runnerOwnsGeneratedRecords": true,
+      "imageLookupDisabledByDefault": true,
+      "nllmAdvisoryOnly": true,
+      "postInstallAcceptancePacketPreserved": true
+    },
+    "visualTestingDecision": "No broad visual testing for W229. Evidence intake records targeted post-install operator observations only."
+  }
+}

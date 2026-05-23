@@ -1,0 +1,23 @@
+{
+  "schema": "idb.w135-internal-build-engine-real-record-existence-trace.v1",
+  "decision": "PASS_CONTRACT_READY__OPERATOR_REAL_RECORD_VISUAL_REQUIRED",
+  "status": "real_record_existence_pilot_ready_for_operator_run",
+  "importedResultSchema": "idb.internal-build-engine.real-record-result.v1",
+  "openAnchorCount": 9,
+  "recordExistenceProvenInThisHarness": false,
+  "operatorVisualRequired": true,
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W135R: Review Real Record Existence Evidence",
+    "prompt": "Move through W135R: Review Real Record Existence Evidence. Use the operator-provided W135 real build-engine final generated names JSON, drawer trace export, and screenshots showing Customer, demo transaction, hero item, matrix/proof item, and component Open links loading actual NetSuite record pages. Grade whether every required record exists, whether any URL showed “That record does not exist,” and whether Build/Run remain consultant-usable. Preserve no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, consultant confirmation required, state authority and handoff parity, no-submit rollback, and internal build engine ownership of generated records. Output graded evidence, pass/fail decision, remediation if any record is missing, W135R report, whether broader visual NetSuite testing is required, and the best next Codex prompt."
+  }
+}

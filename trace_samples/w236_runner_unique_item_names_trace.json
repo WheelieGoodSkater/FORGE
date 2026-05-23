@@ -1,0 +1,46 @@
+{
+  "schema": "idb.w236-runner-unique-item-names.trace.v1",
+  "generatedAt": "2026-05-20T14:35:21.185Z",
+  "diagnosis": "NetSuite DUP_ITEM was caused by repeat runs reusing deterministic item names for fresh generated items.",
+  "fix": "Generated runner items now receive a per-execution suffix on external IDs, item IDs, and display names.",
+  "resultCount": 7,
+  "passCount": 7,
+  "results": [
+    {
+      "id": "w236_runner_creates_per_execution_uniqueness_token",
+      "pass": true,
+      "evidence": "Runner creates one short per-execution suffix for generated item names."
+    },
+    {
+      "id": "w236_fresh_hero_external_id_and_names_are_unique_per_run",
+      "pass": true,
+      "evidence": "Fresh hero creation now carries the per-run suffix through external ID, itemid, and displayname."
+    },
+    {
+      "id": "w236_apply_naming_keeps_suffix_after_fresh_item_create",
+      "pass": true,
+      "evidence": "The later naming pass no longer strips the unique suffix from generated item names."
+    },
+    {
+      "id": "w236_sidecar_support_items_are_unique_per_run",
+      "pass": true,
+      "evidence": "IDB sidecar proof and component item records also use per-run names and external IDs."
+    },
+    {
+      "id": "w236_sidecar_items_retry_on_netsuite_dup_item",
+      "pass": true,
+      "evidence": "Sidecar item creation retries with distinct item names/external IDs if NetSuite still reports DUP_ITEM."
+    },
+    {
+      "id": "w236_master_runner_copy_is_synced",
+      "pass": true,
+      "evidence": "Root runner and Demo Command Center V4 Master runner are byte-for-byte identical after the DUP_ITEM fix."
+    },
+    {
+      "id": "w236_no_drawer_write_boundary_changed",
+      "pass": true,
+      "evidence": "Fix stays inside the governed runner naming/create path and preserves drawer no-write boundaries."
+    }
+  ],
+  "visualTestingDecision": "No broad visual testing. This is a runner-side item uniqueness regression harness."
+}

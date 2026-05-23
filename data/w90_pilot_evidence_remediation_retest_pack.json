@@ -1,0 +1,122 @@
+{
+  "schema": "idb.w90-pilot-evidence-remediation-retest-pack.v1",
+  "status": "pilot_evidence_remediation_ready_for_one_run_retest",
+  "objective": "Fix the evidence flow before a broader consultant pilot and prepare one controlled retest.",
+  "uiTraceRemediation": {
+    "schema": "idb.w90-ui-trace-remediation.v1",
+    "fixes": [
+      {
+        "area": "DCC handoff export",
+        "status": "implemented",
+        "detail": "Review and Trace make Export DCC handoff the primary evidence action and label the required idb-dcc-runner-handoff-packet file."
+      },
+      {
+        "area": "Trace evidence checklist",
+        "status": "implemented",
+        "detail": "Trace now shows required screenshots, DCC handoff JSON, trace JSON, operator notes, and secondary legacy packet status."
+      },
+      {
+        "area": "Non-submit language",
+        "status": "implemented",
+        "detail": "SuiteScript review packet uses review_only_export_only / not_submitted_from_idb language while preserving create-disabled SuiteScript contract boundaries."
+      },
+      {
+        "area": "Trace ownership language",
+        "status": "implemented",
+        "detail": "lane_recommended trace source now identifies website_evidence_v1 as identity authority and notes as story-only."
+      }
+    ]
+  },
+  "oneRunRetestPacket": {
+    "schema": "idb.w90-one-run-retest-packet.v1",
+    "status": "ready_for_single_retest_no_submit",
+    "objective": "Retest exactly one consultant-to-operator flow and prove the correct DCC handoff evidence is captured.",
+    "fileToLoad": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+    "testData": {
+      "customer": "Ariat International",
+      "website": "https://www.ariat.com/",
+      "notes": "Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Current process relies on spreadsheets and disconnected inventory views.",
+      "scObjective": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise for a seasonal boot and apparel launch.",
+      "knownCompetitor": "Current spreadsheets and existing inventory tools; broader ERP options under comparison.",
+      "decisionCriteria": "Must show style/SKU matrix fit, size/color visibility, channel availability, replenishment timing, and customer-to-order impact."
+    },
+    "requiredEvidence": [
+      "Plan screenshot after intake.",
+      "Review screenshot showing DCC handoff export card.",
+      "Trace screenshot showing Pilot evidence checklist.",
+      "Export idb-dcc-runner-handoff-packet-*.json.",
+      "Export intelligent-demo-builder-trace-*.json.",
+      "Operator comparison notes marking Suitelet form params, DCC config params, and runner preview params as match/missing/unclear."
+    ],
+    "stopGo": {
+      "goIf": [
+        "DCC handoff JSON is attached.",
+        "Trace JSON is attached.",
+        "Plan, Review DCC handoff, and Trace evidence checklist screenshots are attached.",
+        "Operator maps handoff params in under 5 minutes.",
+        "No IDB SuiteScript invocation, queue action, or transaction write occurs."
+      ],
+      "noGoIf": [
+        "Only the legacy SuiteScript review packet is exported.",
+        "Operator cannot identify Suitelet form params or runner preview params.",
+        "Trace source suggests notes own identity.",
+        "Any IDB path appears to submit, queue, or write records."
+      ]
+    }
+  },
+  "validatorResults": [
+    {
+      "name": "w90_inherits_w89r_no_go_findings",
+      "pass": true,
+      "detail": "{\"status\":\"graded_partial_real_evidence_no_go\",\"decision\":\"no_go_broader_consultant_pilot_partial_evidence\"}"
+    },
+    {
+      "name": "w90_dcc_handoff_primary_in_review_and_trace",
+      "pass": true,
+      "detail": "primary handoff evidence labels"
+    },
+    {
+      "name": "w90_trace_evidence_checklist_present",
+      "pass": true,
+      "detail": "pilot evidence checklist model and UI"
+    },
+    {
+      "name": "w90_suitescript_packet_language_review_only",
+      "pass": true,
+      "detail": "review-only export language"
+    },
+    {
+      "name": "w90_trace_ownership_normalized",
+      "pass": true,
+      "detail": "website owns identity, notes own story"
+    },
+    {
+      "name": "w90_trace_export_covers_checklist",
+      "pass": true,
+      "detail": "trace and handoff export coverage"
+    },
+    {
+      "name": "w90_no_write_boundaries_preserved",
+      "pass": true,
+      "detail": "no submit/write boundaries"
+    },
+    {
+      "name": "w90_retest_packet_complete",
+      "pass": true,
+      "detail": "[\"Plan screenshot after intake.\",\"Review screenshot showing DCC handoff export card.\",\"Trace screenshot showing Pilot evidence checklist.\",\"Export idb-dcc-runner-handoff-packet-*.json.\",\"Export intelligent-demo-builder-trace-*.json.\",\"Operator comparison notes marking Suitelet form params, DCC config params, and runner preview params as match/missing/unclear.\"]"
+    }
+  ],
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noDccRunnerRewrite": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "consultantConfirmationRequired": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W91: Execute One-Run Retest And Grade Pilot Unlock",
+    "prompt": "Move through W91: Execute One-Run Retest And Grade Pilot Unlock. Use the W90 retest packet to run one hands-on consultant-to-operator test. Require Plan, Review DCC handoff, and Trace evidence-checklist screenshots; idb-dcc-runner-handoff-packet JSON; intelligent-demo-builder trace JSON; and operator comparison notes. Grade against the W88/W90 rubric, verify no IDB writes, no DCC runner rewrite, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, consultant confirmation required, and DCC ownership of object generation. Output scored results, pilot unlock/no-go decision, exact remediation, W91 report, validator gates, and best next Codex prompt."
+  }
+}

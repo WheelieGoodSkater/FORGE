@@ -1,0 +1,354 @@
+{
+  "schema": "idb.w108-one-real-operator-preview-retest-packet.v1",
+  "status": "ready_for_user_and_operator_retest",
+  "objective": "Run one real review-only consultant-to-operator preview test before any DCC invocation design proceeds.",
+  "fileToUpload": {
+    "absolutePath": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+    "sha256": "30f73ccc903fffc59a6210f064153b7382c6a77b517332f64212a2ff13d3f2ec",
+    "modifiedAt": "2026-05-17T17:48:39.947Z",
+    "tampermonkeyName": "Intelligent Demo Builder Drawer",
+    "installInstruction": "Open Tampermonkey, edit Intelligent Demo Builder Drawer, replace the full script with this file, save, refresh NetSuite, and confirm exactly one IDB launcher appears."
+  },
+  "salesRequest": {
+    "prospect": "Ariat International",
+    "website": "https://www.ariat.com/",
+    "conversationNotes": "Buyer says seasonal boot and apparel launches are hard to coordinate because style, size, color, replenishment timing, and channel availability live in separate spreadsheets and order views. They need a concise proof path that shows customer promise confidence before demand shifts close to launch.",
+    "scObjective": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise for a seasonal boot and apparel launch.",
+    "knownCompetitorOrIncumbent": "Spreadsheets, disconnected inventory reports, and existing order tools. They are also comparing broader ERP options.",
+    "decisionCriteria": "Must show a clear path from customer record to order/proof context; must connect style/SKU matrix, size/color availability, channel availability, replenishment timing, and customer promise.",
+    "timelineUrgency": "Internal proof review needed within 2-4 weeks.",
+    "bantMeddicc": {
+      "budget": "Budget is not finalized; value proof must justify scope.",
+      "authority": "VP Operations and merchandising operations influence; finance signs off after value story is clear.",
+      "need": "Reduce seasonal launch risk and avoid inventory/customer promise surprises across apparel and footwear variants.",
+      "timeline": "Proof path needed in the current evaluation cycle, ideally ready for internal review in 2-4 weeks.",
+      "metrics": "Fewer spreadsheet handoffs, faster launch readiness review, clearer available-to-promise confidence by style/size/color/channel.",
+      "economicBuyer": "Operations leadership with finance review.",
+      "decisionProcess": "SC proof, DCC preview/operator review, internal stakeholder readout, sandbox/pilot decision.",
+      "decisionCriteria": "Clear proof path, credible object naming, no forced generic manufacturing/distribution language.",
+      "identifyPain": "Variant availability and replenishment uncertainty create launch and promise risk.",
+      "champion": "Merchandising operations lead pushing for cleaner launch readiness."
+    }
+  },
+  "exactInstructions": {
+    "schema": "idb.w108-exact-operator-preview-test-instructions.v1",
+    "status": "ready_for_one_real_operator_preview_retest",
+    "fileToUpload": {
+      "absolutePath": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+      "sha256": "30f73ccc903fffc59a6210f064153b7382c6a77b517332f64212a2ff13d3f2ec",
+      "modifiedAt": "2026-05-17T17:48:39.947Z",
+      "tampermonkeyName": "Intelligent Demo Builder Drawer",
+      "installInstruction": "Open Tampermonkey, edit Intelligent Demo Builder Drawer, replace the full script with this file, save, refresh NetSuite, and confirm exactly one IDB launcher appears."
+    },
+    "salesRequest": {
+      "prospect": "Ariat International",
+      "website": "https://www.ariat.com/",
+      "conversationNotes": "Buyer says seasonal boot and apparel launches are hard to coordinate because style, size, color, replenishment timing, and channel availability live in separate spreadsheets and order views. They need a concise proof path that shows customer promise confidence before demand shifts close to launch.",
+      "scObjective": "Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise for a seasonal boot and apparel launch.",
+      "knownCompetitorOrIncumbent": "Spreadsheets, disconnected inventory reports, and existing order tools. They are also comparing broader ERP options.",
+      "decisionCriteria": "Must show a clear path from customer record to order/proof context; must connect style/SKU matrix, size/color availability, channel availability, replenishment timing, and customer promise.",
+      "timelineUrgency": "Internal proof review needed within 2-4 weeks.",
+      "bantMeddicc": {
+        "budget": "Budget is not finalized; value proof must justify scope.",
+        "authority": "VP Operations and merchandising operations influence; finance signs off after value story is clear.",
+        "need": "Reduce seasonal launch risk and avoid inventory/customer promise surprises across apparel and footwear variants.",
+        "timeline": "Proof path needed in the current evaluation cycle, ideally ready for internal review in 2-4 weeks.",
+        "metrics": "Fewer spreadsheet handoffs, faster launch readiness review, clearer available-to-promise confidence by style/size/color/channel.",
+        "economicBuyer": "Operations leadership with finance review.",
+        "decisionProcess": "SC proof, DCC preview/operator review, internal stakeholder readout, sandbox/pilot decision.",
+        "decisionCriteria": "Clear proof path, credible object naming, no forced generic manufacturing/distribution language.",
+        "identifyPain": "Variant availability and replenishment uncertainty create launch and promise risk.",
+        "champion": "Merchandising operations lead pushing for cleaner launch readiness."
+      }
+    },
+    "consultantSteps": [
+      "Upload/save the exact IDB file in Tampermonkey.",
+      "Disable any duplicate/old IDB userscript entries.",
+      "Refresh NetSuite and confirm exactly one IDB launcher appears.",
+      "Open IDB, go to Trace, clear session, then return to Plan.",
+      "Enter the sales request exactly as listed.",
+      "Use Prepare Brief / confirm lane only when Apparel & Accessories and Style-to-Availability Readiness are visible and reasonable.",
+      "Capture Plan first viewport screenshot.",
+      "Capture Review first viewport screenshot and export the DCC handoff JSON.",
+      "Capture ROI/Competitive first viewport screenshot.",
+      "Capture Run first viewport screenshot after trying at least two selector chips.",
+      "Capture Trace first viewport screenshot and export trace JSON.",
+      "Send the DCC handoff JSON and trace JSON to the operator for manual DCC preview comparison.",
+      "Paste the operator comparison evidence back into IDB Review operator evidence intake.",
+      "Export a final trace JSON after operator evidence is captured."
+    ],
+    "manualDccPreviewSteps": [
+      "In IDB Review, export idb-dcc-runner-handoff-packet-*.json.",
+      "In IDB Trace, export intelligent-demo-builder-trace-*.json.",
+      "Open the Demo Command Center Suitelet manually in the sandbox. Do not open it from IDB.",
+      "Compare the DCC handoff suiteletEntryPayload to the Suitelet form params.",
+      "Compare the DCC-owned config param list to the DCC deployment/config surface. Record only match/missing/unclear, not secret values.",
+      "Compare scheduledRunnerPreview params to the DCC runner preview. Do not click submit, queue, or write.",
+      "Return to IDB Review and paste operator evidence into the Operator evidence intake.",
+      "Mark preview approved only when Suitelet params, DCC config, runner preview, handoff filename, trace filename, and notes are captured.",
+      "If anything is missing or unclear, reject preview and capture the exact remediation note."
+    ],
+    "expectedScreenshots": {
+      "plan": [
+        "One active IDB drawer and one launcher only.",
+        "Ariat International appears as the prospect.",
+        "Classification is Apparel & Accessories or a clearly explained confirmation state.",
+        "Visible DCC pack/scenario is Apparel & Accessories / Style-to-Availability Readiness.",
+        "Primary action moves toward Review/DCC handoff after consultant confirmation."
+      ],
+      "review": [
+        "Build Control Center is the first major Review card.",
+        "DCC handoff export is visible.",
+        "Selected lane, DCC pack, scenario, and DCC-prepared objects agree.",
+        "Operator evidence intake is visible or reachable without hunting.",
+        "No submit/queue/write control is visible from IDB."
+      ],
+      "roiCompetitive": [
+        "Live Value Answer shows one ROI answer, one NetSuite answer, and one caution/blocker.",
+        "Value story uses notes and stated pain, not website-only blocking.",
+        "Audit detail is collapsed by default."
+      ],
+      "run": [
+        "Live controls selector chips are at the top.",
+        "Selected script updates the live Say/Show/Close guidance.",
+        "The script remains aligned to apparel/style/SKU readiness."
+      ],
+      "trace": [
+        "Trace Actions Only card is visible.",
+        "Export DCC handoff and Export JSON are visible.",
+        "Pilot evidence checklist calls out Plan, Review, DCC handoff JSON, trace JSON, and operator notes."
+      ]
+    },
+    "requiredExports": [
+      "idb-dcc-runner-handoff-packet-*.json",
+      "intelligent-demo-builder-trace-*.json after consultant flow",
+      "intelligent-demo-builder-trace-*.json after operator evidence intake"
+    ],
+    "operatorEvidenceFields": {
+      "schema": "idb.w108-operator-evidence-fields.v1",
+      "status": "required_for_w108_retest",
+      "fieldsToPasteIntoIdb": [
+        {
+          "field": "operatorName",
+          "required": true,
+          "expected": "Operator reviewer name."
+        },
+        {
+          "field": "suiteletParamReview",
+          "required": true,
+          "allowed": [
+            "match",
+            "missing",
+            "unclear"
+          ],
+          "expected": "Suitelet form params comparison result."
+        },
+        {
+          "field": "dccOwnedConfigReview",
+          "required": true,
+          "allowed": [
+            "match",
+            "missing",
+            "unclear"
+          ],
+          "expected": "DCC-owned config comparison result. Do not paste secrets."
+        },
+        {
+          "field": "runnerPreviewReview",
+          "required": true,
+          "allowed": [
+            "match",
+            "missing",
+            "unclear"
+          ],
+          "expected": "Scheduled runner preview comparison result."
+        },
+        {
+          "field": "handoffPacketFilename",
+          "required": true,
+          "expected": "idb-dcc-runner-handoff-packet-*.json."
+        },
+        {
+          "field": "traceFilename",
+          "required": true,
+          "expected": "intelligent-demo-builder-trace-*.json."
+        },
+        {
+          "field": "notes",
+          "required": true,
+          "expected": "What matched, what was missing, and what is unclear."
+        },
+        {
+          "field": "approvalStatus",
+          "required": true,
+          "allowed": [
+            "approved",
+            "rejected"
+          ],
+          "expected": "Mark preview approved or reject preview in IDB."
+        }
+      ],
+      "noSecretRules": [
+        "Do not paste tokens, passwords, internal deployment secrets, or private config values.",
+        "Record whether a config value exists and matches expectation, not the value itself."
+      ],
+      "previewOnlyBoundary": {
+        "idbCanSubmit": false,
+        "idbCanInvokeSuiteScript": false,
+        "idbCanWriteTransactions": false
+      }
+    }
+  },
+  "manualDccPreviewSteps": [
+    "In IDB Review, export idb-dcc-runner-handoff-packet-*.json.",
+    "In IDB Trace, export intelligent-demo-builder-trace-*.json.",
+    "Open the Demo Command Center Suitelet manually in the sandbox. Do not open it from IDB.",
+    "Compare the DCC handoff suiteletEntryPayload to the Suitelet form params.",
+    "Compare the DCC-owned config param list to the DCC deployment/config surface. Record only match/missing/unclear, not secret values.",
+    "Compare scheduledRunnerPreview params to the DCC runner preview. Do not click submit, queue, or write.",
+    "Return to IDB Review and paste operator evidence into the Operator evidence intake.",
+    "Mark preview approved only when Suitelet params, DCC config, runner preview, handoff filename, trace filename, and notes are captured.",
+    "If anything is missing or unclear, reject preview and capture the exact remediation note."
+  ],
+  "operatorEvidenceFields": {
+    "schema": "idb.w108-operator-evidence-fields.v1",
+    "status": "required_for_w108_retest",
+    "fieldsToPasteIntoIdb": [
+      {
+        "field": "operatorName",
+        "required": true,
+        "expected": "Operator reviewer name."
+      },
+      {
+        "field": "suiteletParamReview",
+        "required": true,
+        "allowed": [
+          "match",
+          "missing",
+          "unclear"
+        ],
+        "expected": "Suitelet form params comparison result."
+      },
+      {
+        "field": "dccOwnedConfigReview",
+        "required": true,
+        "allowed": [
+          "match",
+          "missing",
+          "unclear"
+        ],
+        "expected": "DCC-owned config comparison result. Do not paste secrets."
+      },
+      {
+        "field": "runnerPreviewReview",
+        "required": true,
+        "allowed": [
+          "match",
+          "missing",
+          "unclear"
+        ],
+        "expected": "Scheduled runner preview comparison result."
+      },
+      {
+        "field": "handoffPacketFilename",
+        "required": true,
+        "expected": "idb-dcc-runner-handoff-packet-*.json."
+      },
+      {
+        "field": "traceFilename",
+        "required": true,
+        "expected": "intelligent-demo-builder-trace-*.json."
+      },
+      {
+        "field": "notes",
+        "required": true,
+        "expected": "What matched, what was missing, and what is unclear."
+      },
+      {
+        "field": "approvalStatus",
+        "required": true,
+        "allowed": [
+          "approved",
+          "rejected"
+        ],
+        "expected": "Mark preview approved or reject preview in IDB."
+      }
+    ],
+    "noSecretRules": [
+      "Do not paste tokens, passwords, internal deployment secrets, or private config values.",
+      "Record whether a config value exists and matches expectation, not the value itself."
+    ],
+    "previewOnlyBoundary": {
+      "idbCanSubmit": false,
+      "idbCanInvokeSuiteScript": false,
+      "idbCanWriteTransactions": false
+    }
+  },
+  "scoringRubric": {
+    "schema": "idb.w108-operator-preview-scoring-rubric.v1",
+    "scale": "1-5",
+    "passingAverage": 4,
+    "noCategoryBelow": 3,
+    "categories": [
+      "One active drawer / no duplicate button",
+      "Intake and Plan are understandable in under 30 seconds",
+      "Lane, confirmed lane, DCC pack, and exported handoff agree",
+      "Review makes DCC handoff export primary and unmistakable",
+      "ROI / Competitive is useful without audit overload",
+      "Run selector chips update live script clearly",
+      "Trace evidence checklist is clear",
+      "Operator can compare Suitelet params, DCC config, and runner preview without confusion",
+      "Operator evidence can be pasted back into IDB and approved/rejected",
+      "No-submit/no-write safety is obvious"
+    ],
+    "automaticNoGoIf": [
+      "Two IDB launchers or duplicate drawers appear after refresh.",
+      "Plan/Review/exported handoff disagree on lane, pack, or scenario.",
+      "DCC handoff JSON is missing.",
+      "Trace JSON is missing.",
+      "Operator evidence is not captured in IDB.",
+      "Any IDB path appears to submit, queue, invoke SuiteScript, or write a transaction.",
+      "Operator cannot complete preview comparison without guessing."
+    ]
+  },
+  "stopGoCriteria": {
+    "goForW109If": [
+      "All five screenshots are provided: Plan, Review, ROI/Competitive, Run, Trace.",
+      "DCC handoff JSON is attached.",
+      "Trace JSON is attached.",
+      "Operator evidence fields are pasted back into IDB and captured in the trace.",
+      "Average score is 4 or higher and no category is below 3.",
+      "No no-go condition occurs."
+    ],
+    "noGoAndRemediateIf": [
+      "Two IDB launchers or duplicate drawers appear after refresh.",
+      "Plan/Review/exported handoff disagree on lane, pack, or scenario.",
+      "DCC handoff JSON is missing.",
+      "Trace JSON is missing.",
+      "Operator evidence is not captured in IDB.",
+      "Any IDB path appears to submit, queue, invoke SuiteScript, or write a transaction.",
+      "Operator cannot complete preview comparison without guessing."
+    ]
+  },
+  "inheritedReadiness": {
+    "w104InvocationReadiness": "dcc_invocation_readiness_defined_review_only",
+    "w105OperatorApprovalModel": "operator_approval_model_ready_preview_only",
+    "w106SandboxPreviewBridge": "sandbox_preview_bridge_ready_manual_no_submit",
+    "w107OperatorEvidenceIntake": "operator_preview_evidence_intake_ready"
+  },
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "w92StateAuthorityPreserved": true,
+    "w105W106W107PreviewOnlyBehavior": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W109: Consultant Intake Cleanup And Sales Request Mode",
+    "prompt": "Move through W109: Consultant Intake Cleanup And Sales Request Mode. Redesign Plan intake so a consultant enters a sales request surgically: prospect, website, business pain, requested proof, decision criteria, timeline/urgency, competitor/incumbent, and optional website/category evidence. Replace internal pack IDs with consultant-facing labels, reduce chips and audit language, require a clear Prepare Brief action before recommendations are treated as ready, and make website evidence supportive for identity/naming while notes drive value story. Preserve W92 state authority, W96-W98 compression, DCC handoff boundaries, no IDB writes, no SuiteScript invocation, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, consultant confirmation required, and DCC ownership of object generation. Output cleaned intake UI, trace coverage, validator gates, W109 report, and best next Codex prompt."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "forge.repo-ready-package.v1",
+  "generatedAt": "2026-05-23T15:20:13.241Z",
+  "sourceRoot": "/path/to/workspace/intelligent demo builder drawer",
+  "outputRoot": "/path/to/workspace/FORGE-repo-ready",
+  "repositoryUrl": "https://github.com/WheelieGoodSkater/FORGE.git",
+  "publicScrubApplied": true,
+  "fileCount": 1091,
+  "excluded": [
+    "*.zip",
+    ".DS_Store",
+    "node_modules",
+    ".git",
+    "w211_upload_packet"
+  ],
+  "primaryFiles": [
+    "idb-drawer.user.js",
+    "assets/FORGE.png",
+    "netsuite/idb_governed_runner_adapter_w144_suitelet.js",
+    "netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js"
+  ]
+}

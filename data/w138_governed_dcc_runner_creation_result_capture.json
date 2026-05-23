@@ -1,0 +1,263 @@
+{
+  "schema": "idb.w138-governed-dcc-runner-creation-result-capture.v1",
+  "status": "runner_creation_result_capture_ready_operator_only",
+  "decision": "PASS_CONTRACT_READY__RUNNER_EXECUTION_REQUIRED",
+  "sourceFinding": {
+    "w137rDecision": "NO_GO_REAL_RECORD_EXISTENCE__RUNNER_DCC_CREATION_REQUIRED",
+    "numericDrawerImportsCreateRecords": false,
+    "governedRunnerRequiredForRecordExistence": true
+  },
+  "runnerCreationResultContract": {
+    "owner": "governed_dcc_runner_internal_build_engine",
+    "drawerAuthority": "import_result_only",
+    "recordCreationAuthority": "dcc_runner_only",
+    "requiredRecords": [
+      "customer",
+      "demoTransaction",
+      "heroItem",
+      "matrixProofItem",
+      "componentItems"
+    ],
+    "requiredRules": [
+      "Runner must create or resolve every required record before returning a final result.",
+      "Runner output must include actual numeric NetSuite internal ids, not preview ids or hand-typed replacement tokens.",
+      "Runner output must include supported NetSuite record URLs whose id query matches the numeric internal id.",
+      "Drawer imports the final generated names and URLs only after operator review.",
+      "Drawer does not submit, queue, invoke SuiteScript, or create records."
+    ]
+  },
+  "operatorRunbook": [
+    "Export the confirmed drawer handoff packet from Trace.",
+    "Open the governed DCC runner/internal build engine surface as an operator.",
+    "Load the handoff packet and verify sales request complete, demo path confirmed, handoff exported, operator review ready, and no state mismatch.",
+    "Confirm the runner execution scope: Customer, demo transaction, hero item, matrix/proof item, and component item.",
+    "Start runner execution only from the governed DCC runner surface; the drawer does not submit, invoke, queue, or write.",
+    "Capture the runner result JSON after the runner creates or resolves records.",
+    "Import only the final generated names JSON into the drawer Trace tab.",
+    "Perform targeted visual NetSuite testing by clicking each Open link and confirming an actual record page, not a notice or error page.",
+    "Export the drawer trace, runner result JSON, and screenshots for W138R review."
+  ],
+  "resultJsonShape": {
+    "schema": "idb.dcc-runner.creation-result.v1",
+    "runnerStatus": "complete",
+    "runnerRunId": "DCC-RUN-ARIAT-STYLE-READY-001",
+    "runnerEnvironment": "NetSuite sandbox",
+    "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+    "drawerAuthority": "import_result_only",
+    "recordCreationAuthority": "dcc_runner_only",
+    "sourceHandoff": {
+      "handoffPacketId": "idb-dcc-runner-handoff-packet-operator-export",
+      "prospect": "Ariat International",
+      "laneId": "apparel_accessories",
+      "laneName": "Apparel & Accessories",
+      "demoPath": "Style-to-Availability Readiness",
+      "handoffParityStatus": "matched"
+    },
+    "records": {
+      "customer": {
+        "role": "customer",
+        "recordType": "customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "internalId": "91201",
+        "url": "/app/common/entity/custjob.nl?id=91201",
+        "createdOrResolvedBy": "dcc_runner",
+        "existenceProofRequired": true
+      },
+      "demoTransaction": {
+        "role": "sales_order",
+        "recordType": "salesorder",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "internalId": "91202",
+        "url": "/app/accounting/transactions/salesord.nl?id=91202",
+        "createdOrResolvedBy": "dcc_runner",
+        "existenceProofRequired": true
+      },
+      "heroItem": {
+        "role": "hero_item",
+        "recordType": "inventoryitem",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "internalId": "91203",
+        "url": "/app/common/item/item.nl?id=91203",
+        "createdOrResolvedBy": "dcc_runner",
+        "existenceProofRequired": true
+      },
+      "matrixProofItem": {
+        "role": "matrix_or_proof_item",
+        "recordType": "matrixitem",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "internalId": "91204",
+        "url": "/app/common/item/item.nl?id=91204",
+        "createdOrResolvedBy": "dcc_runner",
+        "existenceProofRequired": true
+      },
+      "componentItems": [
+        {
+          "role": "component_item",
+          "recordType": "inventoryitem",
+          "name": "Ariat Brown Leather Upper Component",
+          "internalId": "91205",
+          "url": "/app/common/item/item.nl?id=91205",
+          "createdOrResolvedBy": "dcc_runner",
+          "existenceProofRequired": true
+        }
+      ]
+    },
+    "finalGeneratedNamesImport": {
+      "schema": "idb.internal-build-engine.real-record-result.v1",
+      "runStatus": "run_complete",
+      "prospect": "Ariat International",
+      "familyKey": "apparelAccessories",
+      "scenario": "Style-to-Availability Readiness",
+      "generatedRecordOwner": "governed_dcc_runner_internal_build_engine",
+      "recordExistenceStatus": "runner_created_or_resolved_operator_visual_required",
+      "customer": {
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "91201",
+        "url": "/app/common/entity/custjob.nl?id=91201"
+      },
+      "salesOrder": {
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "91202",
+        "url": "/app/accounting/transactions/salesord.nl?id=91202"
+      },
+      "heroItem": {
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "91203",
+        "url": "/app/common/item/item.nl?id=91203"
+      },
+      "matrixItem": {
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "91204",
+        "url": "/app/common/item/item.nl?id=91204"
+      },
+      "componentItems": [
+        {
+          "name": "Ariat Brown Leather Upper Component",
+          "id": "91205",
+          "url": "/app/common/item/item.nl?id=91205"
+        }
+      ],
+      "warnings": [],
+      "errors": [],
+      "recoverableBlockers": []
+    },
+    "noSubmitRollback": {
+      "supported": true,
+      "behavior": "If the operator cancels before runner submission, no runner job starts and no drawer state is promoted beyond the exported handoff."
+    },
+    "warnings": [],
+    "errors": []
+  },
+  "drawerImportSmoke": {
+    "navigationStatus": "using_dcc_final_names",
+    "reviewHtml": " <div class=\"idb-cockpit-section\"> <div class=\"idb-card idb-accent idb-w83-dcc-handoff-operator-review idb-w114-review-handoff idb-w124-build-results\"> <div class=\"idb-section-title\">Build Results</div> <div class=\"idb-run-action-card idb-w114-request-summary\"> <div class=\"idb-status-key\">What the consultant requested</div> <div class=\"idb-strong\">Ariat International</div> <div class=\"idb-copy\">Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise.</div> </div> <div class=\"idb-status-strip\"> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">1. Result</div> <div class=\"idb-status-value\">Ready to export</div> <div class=\"idb-copy\">Final names are imported for the live demo.</div> </div> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">2. Demo path</div> <div class=\"idb-status-value\">Apparel &amp; Accessories</div> <div class=\"idb-copy\">Style-to-Availability Readiness</div> </div> <div class=\"idb-status-cell\"> <div class=\"idb-status-key\">3. Boundary</div> <div class=\"idb-status-value\">Export only</div> <div class=\"idb-copy\">The build engine owns generated records.</div> </div> </div> <div class=\"idb-chip-row\"> <span class=\"idb-chip idb-ready\">confirmed</span> <span class=\"idb-chip idb-ready\">Build results imported</span> <span class=\"idb-mini-chip\">Export lane: Apparel &amp; Accessories</span> <span class=\"idb-mini-chip\">Final generated names imported</span> </div> <div class=\"idb-run-action-card idb-w154-build-return-status\"> <div class=\"idb-status-key\">Integrated Build runner return</div> <div class=\"idb-strong\">Completed result imported</div> <div class=\"idb-copy\">Completed runner result JSON has passed the W151 import guard. Open links remain governed by real URL authority.</div> <div class=\"idb-chip-row\"> <span class=\"idb-chip idb-ready\">Completed Result Imported</span> <span class=\"idb-mini-chip\">Invocation from drawer: no</span> <span class=\"idb-mini-chip\">Toggle: disabled by default</span> <span class=\"idb-mini-chip\">Source: Drawer Client Boundary</span> <span class=\"idb-mini-chip\">Visual link test may start</span> </div> <div class=\"idb-record-group\"> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Build return</span> <span class=\"idb-build-statement\">Completed result imported</span> </span> <span class=\"idb-plan-role\">no call</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Runner task</span> <span class=\"idb-build-statement\">Not captured</span> </span> <span class=\"idb-plan-role\">no call</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Result capture</span> <span class=\"idb-build-statement\">Completed Result Imported</span> </span> <span class=\"idb-plan-role\">no call</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Open links</span> <span class=\"idb-build-statement\">Hidden until real URLs import</span> </span> <span class=\"idb-plan-role\">no call</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Invocation toggle</span> <span class=\"idb-build-statement\">Disabled By Default No Submit</span> </span> <span class=\"idb-plan-role\">no call</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Polling stub</span> <span class=\"idb-build-statement\">Polling Stub Not Started</span> </span> <span class=\"idb-plan-role\">no call</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Transport boundary</span> <span class=\"idb-build-statement\">Transport Request Not Constructed No Submit</span> </span> <span class=\"idb-plan-role\">no call</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Response normalization</span> <span class=\"idb-build-statement\">False Flag No Submit</span> </span> <span class=\"idb-plan-role\">no call</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Dry-run poll cycle</span> <span class=\"idb-build-statement\">Dry Run Fixture Poll Cycle Modeled</span> </span> <span class=\"idb-plan-role\">no call</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Build state machine</span> <span class=\"idb-build-statement\">Integrated Build Harness State Machine Ready</span> </span> <span class=\"idb-plan-role\">no call</span> </div> </div> <div class=\"idb-record-group\"> <div class=\"idb-status-key\">Build status path</div> <div class=\"idb-plan-row idb-compressed-row \"> <span> <span class=\"idb-build-label\">Blocked</span> <span class=\"idb-build-statement\">Confirmed request, approved endpoint, operator gate, and flags must be ready first.</span> </span> <span class=\"idb-plan-role\">seen</span> </div> <div class=\"idb-plan-row idb-compressed-row \"> <span> <span class=\"idb-build-label\">No-submit</span> <span class=\"idb-build-statement\">Flags or adapter response kept the runner in dry-run no-submit mode.</span> </span> <span class=\"idb-plan-role\">seen</span> </div> <div class=\"idb-plan-row idb-compressed-row \"> <span> <span class=\"idb-build-label\">Queued</span> <span class=\"idb-build-statement\">Runner task id captured by the adapter, with result capture still pending.</span> </span> <span class=\"idb-plan-role\">seen</span> </div> <div class=\"idb-plan-row idb-compressed-row \"> <span> <span class=\"idb-build-label\">Polling</span> <span class=\"idb-build-statement\">Polling remains pending; final generated names are not drawer state.</span> </span> <span class=\"idb-plan-role\">seen</span> </div> <div class=\"idb-plan-row idb-compressed-row \"> <span> <span class=\"idb-build-label\">Result ready</span> <span class=\"idb-build-statement\">Completed runner result JSON is ready for W151 validation.</span> </span> <span class=\"idb-plan-role\">seen</span> </div> <div class=\"idb-plan-row idb-compressed-row idb-selected-row\"> <span> <span class=\"idb-build-label\">Imported</span> <span class=\"idb-build-statement\">Completed runner result JSON passed W151 import and real URL authority.</span> </span> <span class=\"idb-plan-role\">current</span> </div> <div class=\"idb-plan-row idb-compressed-row \"> <span> <span class=\"idb-build-label\">Recoverable error</span> <span class=\"idb-build-statement\">No drawer state changes. Disable flags or retry after adapter review.</span> </span> <span class=\"idb-plan-role\">waiting</span> </div> </div> <div class=\"idb-run-action-card idb-w178-poll-refresh-control\"> <div class=\"idb-status-key\">Build return controls</div> <div class=\"idb-strong\">Imported Urls Ready For Targeted Link Testing</div> <div class=\"idb-copy\">Completed runner result has been imported; targeted Open-link testing may start.</div> <div class=\"idb-copy\">Build handoff JSON is a request package for the runner. It is not completed runner result JSON and cannot create Open links.</div> <div class=\"idb-actions\"> <button class=\"idb-secondary\" data-idb-build-return-action=\"targeted_open_link_test\" >Targeted Open-link test</button> </div> <div class=\"idb-chip-row\"> <span class=\"idb-mini-chip\">No runnerTaskId yet</span> <span class=\"idb-mini-chip\">No W151-valid result</span> <span class=\"idb-mini-chip\">Targeted links ready</span> </div> <div class=\"idb-build-detail\"> <span class=\"idb-detail-line\"><strong>Check runner result:</strong> Check runner result appears only after the approved server adapter captures a runnerTaskId.</span> <span class=\"idb-detail-line\"><strong>Import:</strong> Import completed runner result stays blocked until the approved server adapter returns W151-valid completed runner result JSON with numeric ids and supported NetSuite URLs.</span> <span class=\"idb-detail-line\"><strong>Next server response:</strong> The first server-owned response should be runnerTaskId plus pending result capture, or an adapter error. It should not return fake record URLs.</span> </div> </div> <details class=\"idb-w182-activation-readiness\"> <summary>Server adapter activation readiness</summary> <div class=\"idb-build-detail\"> <span class=\"idb-detail-line\"><strong>Blocked:</strong> Approved server adapter endpoint configured - Configure the approved NetSuite server adapter endpoint before Build can call the runner path.</span> <span class=\"idb-detail-line\"><strong>Blocked:</strong> Server flags confirmed - CREATE_ENABLED, GOVERNED_SANDBOX_WRITE_ENABLED, and QUEUE_SUBMIT_ENABLED must be confirmed on the server deployment.</span> <span class=\"idb-detail-line\"><strong>Blocked:</strong> Sandbox allowlist confirmed - The sandbox account must be allowlisted server-side.</span> <span class=\"idb-detail-line\"><strong>Blocked:</strong> Operator approval captured - Capture operator approval evidence before the first server-owned adapter call.</span> <span class=\"idb-detail-line\"><strong>Blocked:</strong> Idempotency token generated - Generate an idempotency token for the one-call server adapter request.</span> <span class=\"idb-detail-line\"><strong>Blocked:</strong> One-submit limit enforced - The next live block must enforce exactly one submit attempt.</span> <span class=\"idb-detail-line\"><strong>Ready:</strong> Rollback by disabling server flags</span> <span class=\"idb-detail-line\"><strong>Ready:</strong> Expected first response documented</span> </div> </details> <div class=\"idb-run-action-card idb-w189-real-adapter-setup\"> <div class=\"idb-status-key\">Real sandbox W144 adapter</div> <div class=\"idb-strong\">Configure W144 before real submit</div> <div class=\"idb-copy\">Use this only for the approved W144 sandbox adapter. The drawer sends the confirmed request and operator gate; W144 owns queue submit and generated records.</div> <label class=\"idb-field-label\">Approved W144 Suitelet endpoint</label> <input class=\"idb-input\" data-idb-real-adapter-field=\"endpointUrl\" value=\"\" placeholder=\"https://...app.netsuite.com/app/site/hosting/scriptlet.nl?script=...&deploy=...\"> <div class=\"idb-grid-two\"> <label class=\"idb-checkbox-line\"><input type=\"checkbox\" data-idb-real-adapter-field=\"adapterApproved\" > Approved endpoint mode</label> <label class=\"idb-checkbox-line\"><input type=\"checkbox\" data-idb-real-adapter-field=\"endpointConfirmed\" > Operator confirmed endpoint</label> <label class=\"idb-checkbox-line\"><input type=\"checkbox\" data-idb-real-adapter-field=\"CREATE_ENABLED\" > CREATE_ENABLED</label> <label class=\"idb-checkbox-line\"><input type=\"checkbox\" data-idb-real-adapter-field=\"GOVERNED_SANDBOX_WRITE_ENABLED\" > GOVERNED_SANDBOX_WRITE_ENABLED</label> <label class=\"idb-checkbox-line\"><input type=\"checkbox\" data-idb-real-adapter-field=\"QUEUE_SUBMIT_ENABLED\" > QUEUE_SUBMIT_ENABLED</label> <label class=\"idb-checkbox-line\"><input type=\"checkbox\" data-idb-real-adapter-field=\"confirmedSandboxAccount\" > Sandbox account confirmed</label> </div> <label class=\"idb-field-label\">Sandbox allowlist CSV</label> <input class=\"idb-input\" data-idb-real-adapter-field=\"sandboxAccountAllowlist\" value=\"\" placeholder=\"TD3021666\"> <label class=\"idb-field-label\">Current sandbox account</label> <input class=\"idb-input\" data-idb-real-adapter-field=\"currentSandboxAccount\" value=\"\" placeholder=\"TD3021666\"> <label class=\"idb-field-label\">Operator name</label> <input class=\"idb-input\" data-idb-real-adapter-field=\"operatorName\" value=\"\" placeholder=\"Operator name\"> <label class=\"idb-field-label\">Operator gate phrase</label> <input class=\"idb-input\" data-idb-real-adapter-field=\"typeToConfirm\" value=\"\" placeholder=\"QUEUE GOVERNED SANDBOX RUNNER\"> <label class=\"idb-field-label\">One-call authorization phrase</label> <input class=\"idb-input\" data-idb-real-adapter-field=\"operatorAuthorizationPhrase\" value=\"\" placeholder=\"AUTHORIZE ONE SANDBOX ADAPTER CALL\"> <div class=\"idb-chip-row\"> <span class=\"idb-mini-chip\">Ready: Confirmed Build request</span><span class=\"idb-mini-chip\">Blocked: Approved W144 endpoint URL</span><span class=\"idb-mini-chip\">Blocked: Server flags true</span><span class=\"idb-mini-chip\">Blocked: Sandbox account allowlist</span><span class=\"idb-mini-chip\">Blocked: Operator approval gate</span><span class=\"idb-mini-chip\">Blocked: One-call authorization phrase</span><span class=\"idb-mini-chip\">Ready: Idempotency token</span><span class=\"idb-mini-chip\">Ready: One-submit limit unused</span><span class=\"idb-mini-chip\">Ready: Rollback by disabling server flags</span><span class=\"idb-mini-chip\">Ready: W151 completed-result import guard</span> </div> <div class=\"idb-actions\"> <button class=\"idb-primary\" data-idb-real-adapter-action=\"submit_w144_once\" disabled>Submit W144 once</button> </div> <div class=\"idb-copy\">Expected first response: runnerTaskId or adapter error. Record URLs must wait for result capture and W151 import.</div> </div> </div> <div class=\"idb-record-group idb-w167-retry-ui-status\"> <div class=\"idb-status-key\">Retry and error status</div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Timeout retry</span> <span class=\"idb-build-statement\">Timeouts keep Build in drawer-safe retry mode and reuse the same idempotency token.</span> </span> <span class=\"idb-plan-role\">Retry Safe</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Duplicate idempotency</span> <span class=\"idb-build-statement\">Duplicate idempotency does not submit again. Build continues polling the existing runner task.</span> </span> <span class=\"idb-plan-role\">Poll Existing Task</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Adapter error</span> <span class=\"idb-build-statement\">Adapter errors stop the Build return path and leave final generated names untouched.</span> </span> <span class=\"idb-plan-role\">Stopped Drawer Safe</span> </div> <div class=\"idb-plan-row idb-compressed-row\"> <span> <span class=\"idb-build-label\">Malformed completed result</span> <span class=\"idb-build-statement\">Malformed completed results remain blocked by W151 and never become drawer navigation links.</span> </span> <span class=\"idb-plan-role\">W151 Rejected</span> </div> <div class=\"idb-chip-row\"> <span class=\"idb-mini-chip\">W151 completed runner result import guard</span> <span class=\"idb-mini-chip\">No generated-name mutation</span> <span class=\"idb-mini-chip\">Open links stay hidden</span> <span class=\"idb-mini-chip\">Rollback: disable flags</span> </div> <div class=\"idb-copy\">Capture operator evidence before retrying, continuing polling, stopping on adapter error, or requesting a corrected result JSON.</div> </div> <div class=\"idb-run-action-card\"> <div class=\"idb-status-key\">Completed result import</div> <div class=\"idb-strong\">Runner result imported</div> <div class=\"idb-copy\">The completed runner result has already been imported. Open links remain URL-authority gated.</div> <div class=\"idb-chip-row\"> <span class=\"idb-mini-chip\">W151 completed runner result import guard</span> <span class=\"idb-mini-chip\">Build handoff JSON rejected</span> <span class=\"idb-mini-chip\">Visual testing blocked</span> </div> <div class=\"idb-actions\"> <button class=\"idb-secondary\" data-idb-view=\"trace\" disabled>Runner result imported</button> </div> </div> </div> <div class=\"idb-run-action-card idb-w114-build-summary\"> <div class=\"idb-status-key\">Final generated NetSuite records</div> <div class=\"idb-copy\">These are the imported names from the completed build result. Use them for live navigation and script pivots.</div> <ul class=\"idb-tight-list idb-w124-final-records\"> <li> <span>Customer: <strong>Ariat International Outdoor Retail Account</strong></span> <a class=\"idb-inline-link\" href=\"/app/common/entity/custjob.nl?id=91201\" target=\"_blank\" rel=\"noreferrer\">Open</a> </li> <li> <span>Sales Order / demo transaction: <strong>Ariat Seasonal Footwear Availability Demo Order</strong></span> <a class=\"idb-inline-link\" href=\"/app/accounting/transactions/salesord.nl?id=91202\" target=\"_blank\" rel=\"noreferrer\">Open</a> </li> <li> <span>Hero item: <strong>Ariat Terrain H2O Work Boot Hero Item</strong></span> <a class=\"idb-inline-link\" href=\"/app/common/item/item.nl?id=91203\" target=\"_blank\" rel=\"noreferrer\">Open</a> </li> <li> <span>Matrix item / proof item: <strong>Ariat Core Boot Size Color Matrix</strong></span> <a class=\"idb-inline-link\" href=\"/app/common/item/item.nl?id=91204\" target=\"_blank\" rel=\"noreferrer\">Open</a> </li> <li> <span>Component item 1: <strong>Ariat Brown Leather Upper Component</strong></span> <a class=\"idb-inline-link\" href=\"/app/common/item/item.nl?id=91205\" target=\"_blank\" rel=\"noreferrer\">Open</a> </li> </ul> </div> <div class=\"idb-run-action-card idb-w124-navigation-pivots\"> <div class=\"idb-status-key\">Live navigation pivots</div> <div class=\"idb-copy\">Run will use these final generated names for the live story.</div> <ol class=\"idb-value-list\"> <li>Customer: Ariat International Outdoor Retail Account</li><li>Sales Order / demo transaction: Ariat Seasonal Footwear Availability Demo Order</li><li>Hero item: Ariat Terrain H2O Work Boot Hero Item</li><li>Matrix item / proof item: Ariat Core Boot Size Color Matrix</li> </ol> </div> <div class=\"idb-button-row\"> <button class=\"idb-primary\" data-idb-export-dcc-handoff >Export build handoff</button> <button class=\"idb-secondary\" data-idb-view=\"run\">Go to run</button> </div> <details class=\"idb-technical-details\"> <summary>Internal build details</summary> <div class=\"idb-copy\">Preview only. Operator approval evidence, preview fields, build setup fields, and result fields stay here. The drawer still cannot submit, queue, invoke scripts, or write.</div> <ul class=\"idb-tight-list\"> <li>Handoff export reviewed: Operator needs the exported handoff JSON.</li> <li>Suitelet form params reviewed: Operator must compare prospect, website, notes, family key, scenario, and review-only mode.</li> <li>Build-owned config reviewed: Operator must verify build-owned config params are present and not generated by the drawer.</li> <li>Runner preview reviewed: Operator must review scheduled runner preview params without submitting.</li> <li>Operator notes captured: Operator notes must describe match, missing, or unclear fields.</li> </ul> <div class=\"idb-copy\">Type-to-confirm placeholder: TYPE BUILD READY (disabled).</div> <div class=\"idb-section-title\">Operator evidence intake</div> <div class=\"idb-form-grid\"> <label> <span class=\"idb-status-key\">Operator name</span> <input class=\"idb-input\" data-idb-operator-approval=\"operatorName\" value=\"\" placeholder=\"Operator reviewer\"> </label> <label> <span class=\"idb-status-key\">Preview fields</span> <select class=\"idb-input\" data-idb-operator-approval=\"suiteletParamReview\"> <option value=\"not_reviewed\" selected>Not reviewed</option><option value=\"match\" >Matches</option><option value=\"missing\" >Missing</option><option value=\"unclear\" >Unclear</option> </select> </label> <label> <span class=\"idb-status-key\">Build setup</span> <select class=\"idb-input\" data-idb-operator-approval=\"dccOwnedConfigReview\"> <option value=\"not_reviewed\" selected>Not reviewed</option><option value=\"match\" >Matches</option><option value=\"missing\" >Missing</option><option value=\"unclear\" >Unclear</option> </select> </label> <label> <span class=\"idb-status-key\">Preview result</span> <select class=\"idb-input\" data-idb-operator-approval=\"runnerPreviewReview\"> <option value=\"not_reviewed\" selected>Not reviewed</option><option value=\"match\" >Matches</option><option value=\"missing\" >Missing</option><option value=\"unclear\" >Unclear</option> </select> </label> <label> <span class=\"idb-status-key\">Handoff file</span> <input class=\"idb-input\" data-idb-operator-approval=\"handoffPacketFilename\" value=\"\" placeholder=\"handoff packet JSON\"> </label> <label> <span class=\"idb-status-key\">Trace file</span> <input class=\"idb-input\" data-idb-operator-approval=\"traceFilename\" value=\"\" placeholder=\"intelligent-demo-builder-trace-*.json\"> </label> <label> <span class=\"idb-status-key\">Operator notes</span> <textarea class=\"idb-textarea\" data-idb-operator-approval=\"notes\" placeholder=\"What matched, what was missing, what is unclear\"></textarea> </label> </div> <div class=\"idb-chip-row\"> <span class=\"idb-mini-chip\">Status: Operator review needed</span> <span class=\"idb-mini-chip\">Preview bridge: Manual preview ready</span> <span class=\"idb-mini-chip\">Submit from drawer: no</span> </div> <div class=\"idb-button-row\"> <button class=\"idb-secondary\" data-idb-operator-approval-status=\"approved\">Mark preview approved</button> <button class=\"idb-secondary\" data-idb-operator-approval-status=\"rejected\">Reject preview</button> <button class=\"idb-secondary\" data-idb-clear-operator-approval>Clear operator evidence</button> </div> <div class=\"idb-section-title\">Internal preview bridge</div> <ol class=\"idb-tight-list\"> <li>Export the handoff JSON from the drawer.</li><li>Export the trace JSON.</li><li>Open the build preview manually in the sandbox.</li><li>Paste or compare the preview-only fields from the handoff packet.</li><li>Verify prospect, website, notes, family key, scenario, create-new-hero, manufacturing, WIP, and review-only mode.</li> </ol> <div class=\"idb-build-detail\"> <span class=\"idb-detail-line\"><strong>Suitelet base:</strong> BUILD_PREVIEW_URL_NOT_CONFIGURED</span> <span class=\"idb-detail-line\"><strong>Preview mode:</strong> manual_preview_no_submit</span> <span class=\"idb-detail-line\"><strong>Submit from drawer:</strong> no</span> </div> <div class=\"idb-section-title\">Internal preview copy</div> <div class=\"idb-build-detail\"> <span class=\"idb-detail-line\"><strong>Status:</strong> Preview copy ready</span> <span class=\"idb-detail-line\"><strong>Base URL:</strong> BUILD_PREVIEW_URL_NOT_CONFIGURED</span> <span class=\"idb-detail-line\"><strong>Preview URL text:</strong> BUILD_PREVIEW_URL_NOT_CONFIGURED?custpage_prospect=Ariat%20International&amp;custpage_website=https%3A%2F%2Fwww.ariat.com%2F&amp;custpage_notes=Buyer%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.&amp;custpage_newhero=T&amp;custpage_enablemfg=F&amp;custpage_enablewip=F&amp;custpage_evalmode=review_only&amp;custpage_actionmode=previewbrief</span> <span class=\"idb-detail-line\"><strong>Query params:</strong> custpage_prospect=Ariat%20International&amp;custpage_website=https%3A%2F%2Fwww.ariat.com%2F&amp;custpage_notes=Buyer%20needs%20style%2C%20size%2C%20color%2C%20replenishment%20timing%2C%20and%20channel%20availability%20connected%20for%20seasonal%20footwear%20and%20apparel%20launches.&amp;custpage_newhero=T&amp;custpage_enablemfg=F&amp;custpage_enablewip=F&amp;custpage_evalmode=review_only&amp;custpage_actionmode=previewbrief</span> </div> <pre class=\"idb-code-block\">custpage_prospect=Ariat International custpage_website=https://www.ariat.com/ custpage_notes=Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. custpage_newhero=T custpage_enablemfg=F custpage_enablewip=F custpage_evalmode=review_only custpage_actionmode=previewbrief</pre> <ol class=\"idb-tight-list\"> <li>Export the handoff JSON first.</li><li>Copy the preview URL text or parameter text from the drawer.</li><li>Open the build preview manually in the sandbox.</li><li>Paste or compare preview-only params against the build preview fields.</li><li>Do not submit, queue, invoke SuiteScript, or write from the drawer.</li> </ol> <div class=\"idb-section-title\">Future invocation readiness</div> <ul class=\"idb-tight-list\"> <li>Prepared brief: ready</li><li>Confirmed lane: ready</li><li>Confirmed demo path and scenario: ready</li><li>Exported handoff packet: Export the handoff packet for operator review.</li><li>Operator review status: Operator approval is not captured yet; keep this review-only.</li><li>Type-to-confirm: Future invocation must require typing TYPE BUILD READY.</li> </ul> <div class=\"idb-copy\">Future type-to-confirm phrase: TYPE BUILD READY.</div> <div class=\"idb-section-title\">Operator checklist</div> <ul class=\"idb-tight-list\"> <li>State authority is aligned.</li><li>Consultant confirmation is present.</li><li>Export the build handoff for operator review. This is the primary evidence JSON.</li><li>Operator verifies preview params and build-owned deployment config.</li><li>Submit only from the governed build surface; the drawer does not invoke scripts.</li> </ul> <div class=\"idb-section-title\">Internal preview fields</div> <div class=\"idb-build-detail\"> <span class=\"idb-detail-line\"><strong>custpage_prospect:</strong> Ariat International</span> <span class=\"idb-detail-line\"><strong>custpage_website:</strong> https://www.ariat.com/</span> <span class=\"idb-detail-line\"><strong>custpage_notes:</strong> Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches.</span> <span class=\"idb-detail-line\"><strong>custpage_newhero:</strong> T</span> <span class=\"idb-detail-line\"><strong>custpage_enablemfg:</strong> F</span> <span class=\"idb-detail-line\"><strong>custpage_enablewip:</strong> F</span> <span class=\"idb-detail-line\"><strong>custpage_evalmode:</strong> review_only</span> <span class=\"idb-detail-line\"><strong>custpage_actionmode:</strong> (blank)</span> </div> <div class=\"idb-section-title\">Internal build setup fields</div> <div class=\"idb-build-detail\"> <span class=\"idb-detail-line\"><strong>custscriptv3_reset_subsidiary:</strong> Build deployment/config owns value</span> <span class=\"idb-detail-line\"><strong>custscript_v3_reset_location:</strong> Build deployment/config owns value</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_script_id:</strong> Build deployment/config owns value</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_deploy_id:</strong> Build deployment/config owns value</span> <span class=\"idb-detail-line\"><strong>custscript_csv_mapping_id:</strong> Build deployment/config owns value</span> <span class=\"idb-detail-line\"><strong>custscript_csv_folder_id:</strong> Build deployment/config owns value</span> <span class=\"idb-detail-line\"><strong>custscript_so_savedsearch_id:</strong> Build deployment/config owns value</span> <span class=\"idb-detail-line\"><strong>custscript_wo_savedsearch_id:</strong> Build deployment/config owns value</span> </div> <div class=\"idb-section-title\">Internal preview result fields</div> <div class=\"idb-build-detail\"> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_prospect:</strong> Ariat International</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_website:</strong> https://www.ariat.com/</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_notes:</strong> Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel launches. Prepare a concise demo story showing how NetSuite supports style/SKU readiness, size/color availability, replenishment timing, and customer promise. Fetch status: runtime_resolved / Source URLs: 1 / Signals: website shows boots, footwear, apparel, workwear, outdoor gear, style, size, and retail ecommerce signals, Core Boot and Apparel Style Matrix, Apparel and Footwear Style</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_agenda:</strong> generated_by_dcc_suitelet</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_extid:</strong> generated_by_dcc_suitelet</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_mapping:</strong> dcc_config_required</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_folder:</strong> dcc_config_required</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_subsidiary:</strong> dcc_config_required</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_location:</strong> dcc_config_optional</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_enable_wip:</strong> F</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_enable_mfg:</strong> F</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_create_new_hero:</strong> T</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_hero_item:</strong> generated_by_dcc_suitelet_fresh_hero</span> <span class=\"idb-detail-line\"><strong>custscript_v3_runner_wc_search:</strong> dcc_config_optional</span> </div> </details> </div> </div> ",
+    "runHtml": " <div class=\"idb-card idb-accent idb-w97-run-selector\"> <div class=\"idb-section-title\">Live controls</div> <div class=\"idb-run-selector-chips\" role=\"group\" aria-label=\"Live script mode\"> <button class=\"idb-action-chip \" data-idb-action=\"open\" aria-pressed=\"false\" title=\"Open with buyer pain and set the NetSuite proof path.\" > Open </button> <button class=\"idb-action-chip idb-selected\" data-idb-action=\"prove\" aria-pressed=\"true\" title=\"Show the proof record and connect it to the business outcome.\" > Prove </button> <button class=\"idb-action-chip \" data-idb-action=\"handle_objection\" aria-pressed=\"false\" title=\"Handle risk, exception, or competitive doubt without leaving the proof path.\" > Handle objection </button> <button class=\"idb-action-chip \" data-idb-action=\"close_value\" aria-pressed=\"false\" title=\"Close on the operational decision and financial impact.\" > Close value </button> </div> <div class=\"idb-run-action-card\"> <div class=\"idb-status-key\">Selected script</div> <div class=\"idb-strong\">Prove the NetSuite path</div> <div class=\"idb-copy\">Use Ariat International Outdoor Retail Account to prove Style / SKU Matrix against the stated pain: Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel laun.... Tie the proof to The buyer can see Style / SKU Matrix, style, size, and channel availability, and the next operating decision in NetSuite. and show how NetSuite keeps the decision in one operating path.</div> </div> <div class=\"idb-run-action-card idb-w116-final-navigation\"> <div class=\"idb-status-key\">Use final build names</div> <div class=\"idb-copy\">Use imported final generated names for the next object pivot.</div> <ol class=\"idb-value-list\"> <li> <span>Customer: Ariat International Outdoor Retail Account</span> <a class=\"idb-inline-link\" href=\"/app/common/entity/custjob.nl?id=91201\" target=\"_blank\" rel=\"noreferrer\">Open</a> </li> <li> <span>Sales Order / demo transaction: Ariat Seasonal Footwear Availability Demo Order</span> <a class=\"idb-inline-link\" href=\"/app/accounting/transactions/salesord.nl?id=91202\" target=\"_blank\" rel=\"noreferrer\">Open</a> </li> <li> <span>Hero item: Ariat Terrain H2O Work Boot Hero Item</span> <a class=\"idb-inline-link\" href=\"/app/common/item/item.nl?id=91203\" target=\"_blank\" rel=\"noreferrer\">Open</a> </li> <li> <span>Matrix item / proof item: Ariat Core Boot Size Color Matrix</span> <a class=\"idb-inline-link\" href=\"/app/common/item/item.nl?id=91204\" target=\"_blank\" rel=\"noreferrer\">Open</a> </li> </ol> </div> </div> <div class=\"idb-card idb-accent idb-w56-run-script-first\"> <div class=\"idb-section-title\">Live script first</div> <div class=\"idb-run-guide\"> <div class=\"idb-run-move\">Prove the NetSuite path</div> <div class=\"idb-copy\">Customer Record / Style / SKU Matrix</div> </div> <div class=\"idb-script-grid\"> <div class=\"idb-script-cell\"> <div class=\"idb-status-key\">Say</div> <div>Use Ariat International Outdoor Retail Account to prove Style / SKU Matrix against the stated pain: Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel laun.... Tie the proof to The buyer can see Style / SKU Matrix, style, size, and channel availability, and the next operating decision in NetSuite. and show how NetSuite keeps the decision in one operating path.</div> </div> <div class=\"idb-script-cell\"> <div class=\"idb-status-key\">Show</div> <div>Use final generated names: Customer: Ariat International Outdoor Retail Account -&gt; Sales Order / demo transaction: Ariat Seasonal Footwear Availability Demo Order -&gt; Hero item: Ariat Terrain H2O Work Boot Hero Item.</div> </div> <div class=\"idb-script-cell\"> <div class=\"idb-status-key\">Close</div> <div>Ask whether this path is enough for Ariat International to trust style, size, and channel availability without a manual reconciliation.</div> </div> </div> <div class=\"idb-actions\"> <button class=\"idb-secondary\" data-idb-view=\"value\">ROI / Competitive</button> </div> </div> <details class=\"idb-technical-details\"> <summary>Audit: controls, moves, guardrails, and coaching</summary> <div class=\"idb-card idb-accent idb-live-control-first\"> <div class=\"idb-section-title\">Selected action detail</div> <div class=\"idb-run-action-card\"> <div class=\"idb-status-key\">Prove the NetSuite path</div> <div class=\"idb-copy\">Use Customer Record on NetSuite page; show Style / SKU Matrix, then explain that Use Style / SKU Matrix to show variant control without forcing apparel into generic manufacturing or distribution language.</div> </div> <div class=\"idb-run-action-card idb-decision-card\"> <div class=\"idb-status-key\">Decision to land</div> <div class=\"idb-copy\">Confirm Style / SKU Matrix readiness through Customer Record.</div> </div> </div> <div class=\"idb-card idb-accent\"> <div class=\"idb-section-title\">Live run</div> <div class=\"idb-run-guide\"> <div class=\"idb-run-move\">Customer Record</div> <div class=\"idb-copy\">Style / SKU Matrix proof / NetSuite page context</div> </div> <div class=\"idb-copy\">Validate style readiness, size/color availability, allocation, replenishment timing, and channel promise in one apparel path.</div> <div class=\"idb-run-action-card idb-live-story-v4\"> <div class=\"idb-status-key\">Top 3 live path</div> <ol class=\"idb-value-list\"> <li><strong>Open:</strong> Open with Ariat International&#39;s stated pain: Buyer needs style, size, color, replenishment timing, and channel availability connected for seasonal footwear and apparel laun...</li> <li><strong>Prove:</strong> Prove Style / SKU Matrix using Core Boot and Apparel Style Matrix and Customer Record.</li> <li><strong>Close:</strong> Use Customer Record to prove Style / SKU Matrix, then ask whether Ariat International can trust this NetSuite path for style, size, and channel availability.</li> </ol> </div> <details class=\"idb-technical-details\"> <summary>Coach detail and exceptions</summary> <div class=\"idb-build-detail\"> <span class=\"idb-detail-line\"><strong>Packet:</strong> idb-ariat-international-apparel-accessories-1779054070601</span> <span class=\"idb-detail-line\"><strong>Current page cue:</strong> Open Customer Record next. If you are on a dashboard or unrelated page, navigate to Customer Record for Ariat International, then pivot through Customer Record -&gt; Sales Order View -&gt; Style / SKU Matrix to prove Style / SKU Matrix.</span> <span class=\"idb-detail-line\"><strong>Website proof phrase:</strong> www.ariat.com points the story toward Core Boot and Apparel Style Matrix and Style / SKU Matrix.</span> <span class=\"idb-detail-line\"><strong>Pain-specific exception:</strong> How do we know style, size, and channel availability is current enough to trust?</span> <span class=\"idb-detail-line\"><strong>Value close cue:</strong> Close by confirming Ariat International can make the style, size, and channel availability decision from the NetSuite proof path.</span> <span class=\"idb-detail-line\"><strong>Summary:</strong> [object Object]</span> </div> <ol class=\"idb-value-list\"> <li>Size/color mix is constrained.</li><li>Collection launch allocation shifts by channel.</li><li>Variant availability changes the buyer promise.</li> </ol> </details> </div> <div class=\"idb-card\"> <div class=\"idb-section-title\">Today's moves</div> <div class=\"idb-grid\"> <button class=\"idb-move-button idb-selected\" data-idb-move=\"0\"> 1. Customer Record </button> <button class=\"idb-move-button \" data-idb-move=\"1\"> 2. Sales Order View </button> <button class=\"idb-move-button \" data-idb-move=\"2\"> 3. Style / SKU Matrix </button> </div> <div class=\"idb-copy\"><strong>Selected:</strong> Customer Record</div> </div> <div class=\"idb-card idb-guard-accent\"> <div class=\"idb-section-title\">Guardrails</div> <div class=\"idb-guardrail-row\"> <button class=\"idb-chip idb-guard\" data-idb-guardrail=\"0\">Do not collapse apparel and accessories into industrial equipment, generic branch distribution, food batching, or regulated release proof.</button> </div> </div> </details> ",
+    "links": [
+      {
+        "label": "Customer",
+        "role": "customer",
+        "name": "Ariat International Outdoor Retail Account",
+        "id": "91201",
+        "url": "/app/common/entity/custjob.nl?id=91201",
+        "status": "verified_openable",
+        "openable": true,
+        "openableUrl": "/app/common/entity/custjob.nl?id=91201"
+      },
+      {
+        "label": "Sales Order / demo transaction",
+        "role": "sales_order",
+        "name": "Ariat Seasonal Footwear Availability Demo Order",
+        "id": "91202",
+        "url": "/app/accounting/transactions/salesord.nl?id=91202",
+        "status": "verified_openable",
+        "openable": true,
+        "openableUrl": "/app/accounting/transactions/salesord.nl?id=91202"
+      },
+      {
+        "label": "Hero item",
+        "role": "hero_item",
+        "name": "Ariat Terrain H2O Work Boot Hero Item",
+        "id": "91203",
+        "url": "/app/common/item/item.nl?id=91203",
+        "status": "verified_openable",
+        "openable": true,
+        "openableUrl": "/app/common/item/item.nl?id=91203"
+      },
+      {
+        "label": "Matrix item / proof item",
+        "role": "matrix_or_proof_item",
+        "name": "Ariat Core Boot Size Color Matrix",
+        "id": "91204",
+        "url": "/app/common/item/item.nl?id=91204",
+        "status": "verified_openable",
+        "openable": true,
+        "openableUrl": "/app/common/item/item.nl?id=91204"
+      },
+      {
+        "label": "Component item 1",
+        "role": "component_item",
+        "name": "Ariat Brown Leather Upper Component",
+        "id": "91205",
+        "url": "/app/common/item/item.nl?id=91205",
+        "status": "verified_openable",
+        "openable": true,
+        "openableUrl": "/app/common/item/item.nl?id=91205"
+      }
+    ],
+    "openAnchorCount": 9,
+    "linkPendingCount": 0,
+    "buildResultsUseImportedNames": true,
+    "runUsesImportedNames": true
+  },
+  "traceSamples": {
+    "acceptedTraceStatus": "runner_result_capture_contract_ready",
+    "expectedPostRunnerEvidence": [
+      "runner result JSON with numeric ids",
+      "drawer trace after final generated names import",
+      "screenshots for each Open link landing on an actual record page"
+    ]
+  },
+  "noRegression": {
+    "noDrawerWrites": true,
+    "noSuiteScriptInvocationFromDrawer": true,
+    "noTransactionWritesFromDrawer": true,
+    "consultantConfirmationRequired": true,
+    "stateAuthorityPreserved": true,
+    "handoffParityPreserved": true,
+    "noSubmitRollbackPreserved": true,
+    "generatedRecordsOwnedByInternalBuildEngine": true
+  },
+  "targetedVisualNetSuiteTestingRequiredNow": true,
+  "broaderVisualNetSuiteTestingRequired": false,
+  "bestNextCodexPrompt": {
+    "block": "W138R: Review Governed Runner Creation Evidence",
+    "prompt": "Move through W138R: Review Governed Runner Creation Evidence. Use the operator-provided governed DCC runner result JSON, drawer trace export, and screenshots proving the runner-created or runner-resolved Customer, demo transaction, hero item, matrix/proof item, and component records open in NetSuite. Grade runner result completeness, handoff parity, record existence, no drawer writes, no drawer SuiteScript invocation, no drawer transaction writes, and consultant usability. Output pass/fail, remediation, W138R report, whether broader visual NetSuite testing is required, and best next Codex prompt."
+  },
+  "harnessResults": [
+    {
+      "name": "w138_starts_from_w137r_runner_creation_required",
+      "pass": true,
+      "detail": "NO_GO_REAL_RECORD_EXISTENCE__RUNNER_DCC_CREATION_REQUIRED"
+    },
+    {
+      "name": "w138_runner_result_json_shape_requires_runner_owned_records",
+      "pass": true,
+      "detail": "[{\"role\":\"customer\",\"recordType\":\"customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"internalId\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\",\"createdOrResolvedBy\":\"dcc_runner\",\"existenceProofRequired\":true},{\"role\":\"sales_order\",\"recordType\":\"salesorder\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"internalId\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\",\"createdOrResolvedBy\":\"dcc_runner\",\"existenceProofRequired\":true},{\"role\":\"hero_item\",\"recordType\":\"inventoryitem\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"internalId\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\",\"createdOrResolvedBy\":\"dcc_runner\",\"existenceProofRequired\":true},{\"role\":\"matrix_or_proof_item\",\"recordType\":\"matrixitem\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"internalId\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\",\"createdOrResolvedBy\":\"dcc_runner\",\"existenceProofRequired\":true},{\"role\":\"component_item\",\"recordType\":\"inventoryitem\",\"name\":\"Ariat Brown Leather Upper Component\",\"internalId\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\",\"createdOrResolvedBy\":\"dcc_runner\",\"existenceProofRequired\":true}]"
+    },
+    {
+      "name": "w138_import_smoke_accepts_runner_result_only",
+      "pass": true,
+      "detail": "[{\"label\":\"Customer\",\"role\":\"customer\",\"name\":\"Ariat International Outdoor Retail Account\",\"id\":\"91201\",\"url\":\"/app/common/entity/custjob.nl?id=91201\",\"status\":\"verified_openable\",\"openable\":true,\"openableUrl\":\"/app/common/entity/custjob.nl?id=91201\"},{\"label\":\"Sales Order / demo transaction\",\"role\":\"sales_order\",\"name\":\"Ariat Seasonal Footwear Availability Demo Order\",\"id\":\"91202\",\"url\":\"/app/accounting/transactions/salesord.nl?id=91202\",\"status\":\"verified_openable\",\"openable\":true,\"openableUrl\":\"/app/accounting/transactions/salesord.nl?id=91202\"},{\"label\":\"Hero item\",\"role\":\"hero_item\",\"name\":\"Ariat Terrain H2O Work Boot Hero Item\",\"id\":\"91203\",\"url\":\"/app/common/item/item.nl?id=91203\",\"status\":\"verified_openable\",\"openable\":true,\"openableUrl\":\"/app/common/item/item.nl?id=91203\"},{\"label\":\"Matrix item / proof item\",\"role\":\"matrix_or_proof_item\",\"name\":\"Ariat Core Boot Size Color Matrix\",\"id\":\"91204\",\"url\":\"/app/common/item/item.nl?id=91204\",\"status\":\"verified_openable\",\"openable\":true,\"openableUrl\":\"/app/common/item/item.nl?id=91204\"},{\"label\":\"Component item 1\",\"role\":\"component_item\",\"name\":\"Ariat Brown Leather Upper Component\",\"id\":\"91205\",\"url\":\"/app/common/item/item.nl?id=91205\",\"status\":\"verified_openable\",\"openable\":true,\"openableUrl\":\"/app/common/item/item.nl?id=91205\"}]"
+    },
+    {
+      "name": "w138_operator_path_keeps_drawer_no_write",
+      "pass": true,
+      "detail": "no drawer write/invocation signatures present"
+    },
+    {
+      "name": "w138_visual_record_existence_required_after_runner",
+      "pass": true,
+      "detail": "Harness validates result capture shape; actual record pages still require targeted NetSuite visual proof after the DCC runner executes."
+    }
+  ]
+}

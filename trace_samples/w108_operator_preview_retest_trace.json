@@ -1,0 +1,52 @@
+{
+  "schema": "idb.w108-operator-preview-retest-trace.v1",
+  "decision": "PASS",
+  "pass": true,
+  "userVisualFeedbackRequiredNow": true,
+  "fileToUpload": {
+    "absolutePath": "/path/to/workspace/intelligent demo builder drawer/idb-drawer.user.js",
+    "sha256": "30f73ccc903fffc59a6210f064153b7382c6a77b517332f64212a2ff13d3f2ec",
+    "modifiedAt": "2026-05-17T17:48:39.947Z",
+    "tampermonkeyName": "Intelligent Demo Builder Drawer",
+    "installInstruction": "Open Tampermonkey, edit Intelligent Demo Builder Drawer, replace the full script with this file, save, refresh NetSuite, and confirm exactly one IDB launcher appears."
+  },
+  "requiredEvidence": {
+    "screenshots": [
+      "plan",
+      "review",
+      "roiCompetitive",
+      "run",
+      "trace"
+    ],
+    "exports": [
+      "idb-dcc-runner-handoff-packet-*.json",
+      "intelligent-demo-builder-trace-*.json after consultant flow",
+      "intelligent-demo-builder-trace-*.json after operator evidence intake"
+    ],
+    "operatorEvidenceFields": [
+      "operatorName",
+      "suiteletParamReview",
+      "dccOwnedConfigReview",
+      "runnerPreviewReview",
+      "handoffPacketFilename",
+      "traceFilename",
+      "notes",
+      "approvalStatus"
+    ]
+  },
+  "noRegression": {
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWrites": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "notesStoryOnly": true,
+    "consultantConfirmationRequired": true,
+    "w92StateAuthorityPreserved": true,
+    "w105W106W107PreviewOnlyBehavior": true,
+    "dccOwnsObjectGeneration": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W109: Consultant Intake Cleanup And Sales Request Mode",
+    "prompt": "Move through W109: Consultant Intake Cleanup And Sales Request Mode. Redesign Plan intake so a consultant enters a sales request surgically: prospect, website, business pain, requested proof, decision criteria, timeline/urgency, competitor/incumbent, and optional website/category evidence. Replace internal pack IDs with consultant-facing labels, reduce chips and audit language, require a clear Prepare Brief action before recommendations are treated as ready, and make website evidence supportive for identity/naming while notes drive value story. Preserve W92 state authority, W96-W98 compression, DCC handoff boundaries, no IDB writes, no SuiteScript invocation, no transaction writes, hosted resolver optional until remoteSmokeExecuted=true, consultant confirmation required, and DCC ownership of object generation. Output cleaned intake UI, trace coverage, validator gates, W109 report, and best next Codex prompt."
+  }
+}

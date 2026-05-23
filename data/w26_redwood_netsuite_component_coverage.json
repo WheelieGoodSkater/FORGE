@@ -1,0 +1,52 @@
+{
+  "schema": "idb.w26-redwood-netsuite-component-coverage.v1",
+  "status": "complete_create_still_disabled",
+  "generated": "2026-05-10",
+  "sourceDesignFiles": [
+    "/path/to/downloads/DESIGN - Redwood.md",
+    "/path/to/downloads/netsuite-redwood-design-guide.md"
+  ],
+  "objective": "Expand W25 Redwood token alignment with NetSuite-specific component coverage and live-demo readability guidance.",
+  "goal": "Make IDB feel more like a compact Redwood operational surface: clearer action hierarchy, stronger scanability, visible status semantics, and less ad hoc component styling.",
+  "ownerAgents": [
+    "Consultant UX Director Agent",
+    "Redwood Token Steward Agent",
+    "NetSuite Component Pattern Agent",
+    "Accessibility Sentinel Agent",
+    "Validation And Evidence Agent"
+  ],
+  "netSuiteGuideSignalsApplied": [
+    "human-centered quick decision-making",
+    "Oracle Sans fallback stack",
+    "semantic success, warning, danger, info, and neutral backgrounds",
+    "compact cards and condensed operational rows",
+    "card elevation and hover affordance",
+    "tabular number treatment for operational values",
+    "data visualization series tokens for workflow progress"
+  ],
+  "implementedCoverage": [
+    "tabs and progress rail",
+    "story bar",
+    "guided step",
+    "review packet rows",
+    "ROI and competitive cards",
+    "run coach cards",
+    "status chips",
+    "inputs and action buttons"
+  ],
+  "deferred": [
+    "full chart component tokenization",
+    "data table component build",
+    "dark mode",
+    "pseudo-locale visual screenshots",
+    "raw CSS value elimination",
+    "validated Oracle-hosted reference tokens"
+  ],
+  "noRegression": {
+    "mainDrawerDirectWrites": false,
+    "mainSuiteletCreateEnabled": false,
+    "w24PilotBranchBehaviorChanged": false,
+    "noSalesOrderWrite": true,
+    "llmAdvisoryOnly": true
+  }
+}

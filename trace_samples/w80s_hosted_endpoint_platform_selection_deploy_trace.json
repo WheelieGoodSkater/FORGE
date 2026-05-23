@@ -1,0 +1,119 @@
+{
+  "schema": "idb.w80s-hosted-endpoint-platform-selection-deploy-trace.v1",
+  "generated": "2026-05-17T21:41:03.960Z",
+  "decision": "PASS",
+  "pilotDecision": "no_go_until_real_https_endpoint_and_secret_env_configured",
+  "remoteSmokeExecuted": false,
+  "selectedPlatform": {
+    "id": "container_https_staging_host",
+    "selected": true,
+    "reason": "W79A already packages websiteResolverServiceV1 as a portable Node container; the staging host must provide managed HTTPS, secret-backed environment variables, exact CORS origins, logs, and rollback.",
+    "requirements": [
+      "Public HTTPS endpoint for /health and /idb/website-resolver/v1/resolve.",
+      "Secret-managed IDB_RESOLVER_TOKEN and IDB_RESOLVER_ALLOWED_ORIGINS.",
+      "No wildcard CORS and no browser cookies accepted by resolver endpoint.",
+      "Configurable request timeout, rate limit, cache setting, and redacted observability.",
+      "One-command rollback or environment toggle that disables drawer hosted-only mode."
+    ],
+    "candidateExamples": [
+      "Any container-capable staging host with managed HTTPS and secret env settings.",
+      "A serverless container service is acceptable if it preserves timeout and outbound fetch controls."
+    ]
+  },
+  "secretSafeHandoff": {
+    "endpointUrl": "not_configured",
+    "approvedOrigin": "not_configured",
+    "blockedOrigin": "not_configured",
+    "tokenHandoffPath": "platform secret manager and protected shell only; never repo files, traces, reports, screenshots, or chat",
+    "protectedShellTemplate": "deploy/hosted-resolver/protected-shell.template.sh",
+    "tokenConfigured": false,
+    "noSecretValuesStored": true
+  },
+  "observedEnvironment": {
+    "remoteSmokeOptIn": false,
+    "remoteBaseUrlConfigured": false,
+    "tokenConfigured": false,
+    "allowedOriginConfigured": false,
+    "blockedOriginConfigured": false,
+    "platformAllowedOriginsConfigured": false,
+    "nonSecretEndpointUrl": "not_configured",
+    "approvedOrigin": "not_configured",
+    "blockedOrigin": "not_configured",
+    "platformAllowedOrigins": [
+      "not_configured"
+    ],
+    "rawSecretsIncluded": false,
+    "missing": [
+      "IDB_REMOTE_RESOLVER_SMOKE=1",
+      "IDB_REMOTE_RESOLVER_BASE_URL",
+      "IDB_REMOTE_RESOLVER_TOKEN or IDB_RESOLVER_TOKEN",
+      "IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN",
+      "IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN"
+    ],
+    "readyForW80R": false,
+    "tokenValueStored": false
+  },
+  "provisioningDecision": {
+    "readyForW80R": false,
+    "remoteSmokeExecuted": false,
+    "hostedResolverPilotEnabled": false,
+    "consultantSmokeEligible": false,
+    "noGoReason": "Real HTTPS endpoint/token/origin values are not configured in this shell.",
+    "nextAction": "Deploy W79A package to a real HTTPS staging host and configure protected shell values from the platform secret manager."
+  },
+  "noRegression": {
+    "writeAuthority": "none",
+    "suiteScriptInvocation": false,
+    "nllmAdvisoryOnly": true,
+    "notesCannotOwnIdentification": true,
+    "blockedThinUnavailableTimeoutDoNotGuess": true,
+    "transactionWriteEnabled": false,
+    "hostedResolverPilotEnabled": false
+  },
+  "bestNextCodexPrompt": {
+    "block": "W80T: Operator Deploy Hosted Resolver Endpoint",
+    "prompt": "Move through W80T: Operator Deploy Hosted Resolver Endpoint. Using the W80S platform selection and W79A deployment package, deploy websiteResolverServiceV1 to a real public HTTPS staging host, set IDB_RESOLVER_TOKEN and IDB_RESOLVER_ALLOWED_ORIGINS in platform secret/env settings, place only endpoint URL plus approved/blocked origins in the protected shell, and keep the resolver token out of repo files, traces, reports, screenshots, and chat. Do not enable hosted consultant pilot. Output non-secret endpoint/origin handoff, deployment evidence, W80T report, validator gates, and best next Codex prompt."
+  },
+  "results": [
+    {
+      "name": "w80s_inherits_w79a_deployment_package",
+      "pass": true,
+      "detail": "{\"schema\":\"idb.w79a-hosted-resolver-deployment-package.v1\",\"pilot\":{\"hostedResolverPilotEnabled\":false,\"consultantSmokeEligible\":false,\"reason\":\"Deployment package is ready, but no real remote hosted endpoint has executed smoke with remoteSmokeExecuted=true.\"}}"
+    },
+    {
+      "name": "w80s_inherits_w80r_no_unlock",
+      "pass": true,
+      "detail": "{\"remoteSmokeExecuted\":false,\"pilotDecision\":\"no_go_real_https_endpoint_not_configured\",\"hostedResolverPilotEnabled\":false,\"consultantSmokeEligible\":false,\"exactNoGoRemediation\":[\"Deploy W79A package to a real HTTPS staging host.\",\"Set IDB_REMOTE_RESOLVER_SMOKE=1 in protected shell.\",\"Set IDB_REMOTE_RESOLVER_BASE_URL to the real public HTTPS endpoint.\",\"Set IDB_REMOTE_RESOLVER_TOKEN from secret manager or protected shell only.\",\"Set IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN to the exact NetSuite staging origin.\",\"Set IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN to an HTTPS origin that is not allowed by CORS.\",\"Rerun npm run harness:hosted-resolver-remote-smoke-w80.\",\"Then rerun npm run preflight.\"]}"
+    },
+    {
+      "name": "w80s_platform_selected_container_https",
+      "pass": true,
+      "detail": "{\"id\":\"container_https_staging_host\",\"selected\":true,\"reason\":\"W79A already packages websiteResolverServiceV1 as a portable Node container; the staging host must provide managed HTTPS, secret-backed environment variables, exact CORS origins, logs, and rollback.\",\"requirements\":[\"Public HTTPS endpoint for /health and /idb/website-resolver/v1/resolve.\",\"Secret-managed IDB_RESOLVER_TOKEN and IDB_RESOLVER_ALLOWED_ORIGINS.\",\"No wildcard CORS and no browser cookies accepted by resolver endpoint.\",\"Configurable request timeout, rate limit, cache setting, and redacted observability.\",\"One-command rollback or environment toggle that disables drawer hosted-only mode.\"],\"candidateExamples\":[\"Any container-capable staging host with managed HTTPS and secret env settings.\",\"A serverless container service is acceptable if it preserves timeout and outbound fetch controls.\"]}"
+    },
+    {
+      "name": "w80s_w79a_artifacts_deployable",
+      "pass": true,
+      "detail": "deploy/hosted-resolver"
+    },
+    {
+      "name": "w80s_protected_shell_template_no_real_secret",
+      "pass": true,
+      "detail": "deploy/hosted-resolver/protected-shell.template.sh"
+    },
+    {
+      "name": "w80s_secret_safe_env_observation",
+      "pass": true,
+      "detail": "{\"remoteSmokeOptIn\":false,\"remoteBaseUrlConfigured\":false,\"tokenConfigured\":false,\"allowedOriginConfigured\":false,\"blockedOriginConfigured\":false,\"platformAllowedOriginsConfigured\":false,\"nonSecretEndpointUrl\":\"not_configured\",\"approvedOrigin\":\"not_configured\",\"blockedOrigin\":\"not_configured\",\"platformAllowedOrigins\":[\"not_configured\"],\"rawSecretsIncluded\":false,\"missing\":[\"IDB_REMOTE_RESOLVER_SMOKE=1\",\"IDB_REMOTE_RESOLVER_BASE_URL\",\"IDB_REMOTE_RESOLVER_TOKEN or IDB_RESOLVER_TOKEN\",\"IDB_REMOTE_RESOLVER_ALLOWED_ORIGIN\",\"IDB_REMOTE_RESOLVER_BLOCKED_ORIGIN\"],\"readyForW80R\":false,\"tokenValueStored\":false}"
+    },
+    {
+      "name": "w80s_secret_safe_handoff_complete",
+      "pass": true,
+      "detail": "{\"endpointUrl\":\"not_configured\",\"approvedOrigin\":\"not_configured\",\"blockedOrigin\":\"not_configured\",\"tokenHandoffPath\":\"platform secret manager and protected shell only; never repo files, traces, reports, screenshots, or chat\",\"protectedShellTemplate\":\"deploy/hosted-resolver/protected-shell.template.sh\",\"tokenConfigured\":false,\"noSecretValuesStored\":true}"
+    },
+    {
+      "name": "w80s_no_pilot_unlock_before_w80r_remote_smoke",
+      "pass": true,
+      "detail": "{\"readyForW80R\":false,\"pilot\":false}"
+    }
+  ]
+}

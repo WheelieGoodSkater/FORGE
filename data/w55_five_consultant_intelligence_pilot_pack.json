@@ -1,0 +1,118 @@
+{
+  "schema": "idb.w55-five-consultant-intelligence-pilot-pack.v1",
+  "status": "complete_pilot_pack_ready",
+  "objective": "Package website intelligence, evidence UX, ROI / Competitive, trace export, and governed write safety into a real consultant testing script.",
+  "goal": "Five consultants test real unknown websites and score whether IDB identifies the business correctly, shows honest confidence, gives useful value guidance, and keeps writes safe.",
+  "pilotInstallUseSteps": [
+    "Install or refresh the Intelligent Demo Builder Tampermonkey drawer in the consultant browser.",
+    "Open any NetSuite page in the approved demo account.",
+    "Open the IDB rail and clear the current session before each run.",
+    "Enter prospect name, website, conversation notes, and SC objective when available.",
+    "Review Plan, Review, ROI / Competitive, Run, and Trace before scoring.",
+    "Only test governed Customer + Proof Item write path when explicitly assigned; transaction writes remain blocked."
+  ],
+  "consultantTestingScript": [
+    "Start from a real inbound prospect request.",
+    "Enter only the website and notes you would realistically have before a discovery or demo-prep conversation.",
+    "Do not correct IDB immediately unless it asks for confirmation.",
+    "Capture what IDB saw and why it classified the prospect.",
+    "Score whether the lane, proof anchor, product seed, product family, and demand moment are correct or honestly uncertain.",
+    "Review ROI / Competitive for usefulness and unsupported claims.",
+    "Export Trace JSON and reviewed packet before ending the run.",
+    "Record what felt wrong, slow, unclear, or impressive."
+  ],
+  "unknownSiteTestMix": [
+    "product_brand",
+    "distributor_dealer",
+    "apparel_accessories",
+    "manufacturing_heavy",
+    "ambiguous_multi_category",
+    "weak_thin_website"
+  ],
+  "scorecardRubric": [
+    {
+      "metric": "lane_accuracy",
+      "scale": "1-5",
+      "definition": "Correct lane or honestly marked needs confirmation / insufficient evidence."
+    },
+    {
+      "metric": "object_naming_quality",
+      "scale": "1-5",
+      "definition": "Names feel prospect-specific and website-grounded, not generic or embarrassing."
+    },
+    {
+      "metric": "proof_anchor_fit",
+      "scale": "1-5",
+      "definition": "Proof anchor fits the prospect's business and website evidence."
+    },
+    {
+      "metric": "evidence_ux_clarity",
+      "scale": "1-5",
+      "definition": "Consultant can tell what IDB saw, why it decided, and what is uncertain."
+    },
+    {
+      "metric": "roi_usefulness",
+      "scale": "1-5",
+      "definition": "ROI helps value selling without making unsupported savings claims."
+    },
+    {
+      "metric": "competitive_usefulness",
+      "scale": "1-5",
+      "definition": "Competitive guidance is useful without invented competitor facts."
+    },
+    {
+      "metric": "write_safety_clarity",
+      "scale": "1-5",
+      "definition": "Consultant can tell what can write, what is blocked, and why."
+    },
+    {
+      "metric": "reset_recovery_clarity",
+      "scale": "1-5",
+      "definition": "Consultant knows how to recover, reset, export trace, or add evidence."
+    }
+  ],
+  "evidenceChecklist": [
+    "prospect website",
+    "customer/prospect name",
+    "conversation notes",
+    "SC objective when available",
+    "Plan screenshot",
+    "Review screenshot",
+    "ROI / Competitive screenshot",
+    "Run screenshot",
+    "Trace screenshot",
+    "Trace JSON export",
+    "reviewed packet export",
+    "Suitelet response if write tested",
+    "consultant notes"
+  ],
+  "stopGoCriteria": {
+    "go": [
+      "80%+ lane/proof selections are correct or honestly uncertain.",
+      "False-confident-wrong classifications remain under 5%.",
+      "Consultants understand Review in under 30 seconds.",
+      "ROI / Competitive helps value selling without unsupported claims.",
+      "Write result UX is clear.",
+      "No transaction writes occur unexpectedly.",
+      "Reset and trace export work reliably."
+    ],
+    "noGo": [
+      "Unknown websites regularly force wrong lanes.",
+      "Naming feels generic or embarrassing.",
+      "Consultants cannot tell what will be written.",
+      "Write blockers are confusing.",
+      "Unsupported ROI or competitor claims appear.",
+      "Any write occurs outside explicit governed flow."
+    ]
+  },
+  "virtualConsultantRun": "trace_samples/w55_virtual_consultant_run.json",
+  "noRegression": {
+    "mainDrawerCreateEnabled": false,
+    "mainSuiteletCreateEnabled": false,
+    "transactionWriteEnabled": false,
+    "nllmAdvisoryOnly": true,
+    "websiteEvidenceOwnsIdentification": true,
+    "notesDriveStoryOnly": true
+  },
+  "nextBlock": "W56: Consultant UX Compression"
+}

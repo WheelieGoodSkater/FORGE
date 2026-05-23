@@ -1,0 +1,279 @@
+{
+  "schema": "idb.w118-dcc-final-result-export-bridge.v1",
+  "status": "dcc_final_result_export_bridge_ready",
+  "generatedAt": "2026-05-17T21:41:07.724Z",
+  "dccExportHelper": {
+    "file": "tools/dcc_final_result_export_bridge_v1.js",
+    "runnerPatch": "Demo Command Center V5/netsuite_upload/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+    "savedArtifactName": "dcc_final_naming_result_v1.json",
+    "schema": "idb.dcc-result-export-shape.v1",
+    "source": "demo_command_center_final_result_export_bridge_v1",
+    "namingMechanicsChanged": false
+  },
+  "sampleExport": {
+    "schema": "idb.dcc-result-export-shape.v1",
+    "source": "demo_command_center_final_result_export_bridge_v1",
+    "runStatus": "run_complete",
+    "prospect": "Ariat International",
+    "familyKey": "apparelAccessories",
+    "scenario": "Style-to-Availability Readiness",
+    "generatedExtId": "ARIATSTYLE20260514",
+    "generatedAgenda": "Show style/SKU readiness, size/color availability, replenishment timing, and customer promise.",
+    "customer": {
+      "role": "customer",
+      "name": "Ariat International",
+      "internalName": "",
+      "id": "321",
+      "url": "",
+      "externalId": "SCAI_ANCHOR_CUSTOMER",
+      "status": "returned"
+    },
+    "salesOrder": {
+      "role": "sales_order",
+      "name": "Sales Order CSV import for ARIATSTYLE20260514",
+      "internalName": "",
+      "id": "",
+      "url": "",
+      "externalId": "ARIATSTYLE20260514",
+      "status": "csv_import_submitted_pending_transaction_id"
+    },
+    "heroItem": {
+      "role": "hero_item",
+      "name": "Ariat Core Boot and Apparel Style Matrix",
+      "internalName": "",
+      "id": "987",
+      "url": "",
+      "externalId": "",
+      "status": "returned"
+    },
+    "matrixItem": {
+      "role": "matrix_or_proof_item",
+      "name": "Ariat Core Boot and Apparel Style Matrix",
+      "internalName": "",
+      "id": "",
+      "url": "",
+      "externalId": "",
+      "status": "returned"
+    },
+    "proofItem": {
+      "role": "proof_item",
+      "name": "Ariat Core Boot and Apparel Style Matrix",
+      "internalName": "",
+      "id": "",
+      "url": "",
+      "externalId": "",
+      "status": "returned"
+    },
+    "componentItems": [
+      {
+        "role": "component_item",
+        "name": "Ariat Width Size Color Variant Control",
+        "internalName": "",
+        "id": "992",
+        "url": "",
+        "externalId": "",
+        "status": "returned"
+      },
+      {
+        "role": "component_item",
+        "name": "Ariat Channel Availability Commitment",
+        "internalName": "",
+        "id": "993",
+        "url": "",
+        "externalId": "",
+        "status": "returned"
+      },
+      {
+        "role": "component_item",
+        "name": "Ariat Seasonal Replenishment Signal",
+        "internalName": "",
+        "id": "994",
+        "url": "",
+        "externalId": "",
+        "status": "returned"
+      }
+    ],
+    "assembly": {
+      "role": "assembly",
+      "name": "Ariat Seasonal Style Availability Flow",
+      "internalName": "",
+      "id": "989",
+      "url": "",
+      "externalId": "",
+      "status": "returned"
+    },
+    "bom": {
+      "role": "bom",
+      "name": "Ariat Style Availability Structure",
+      "internalName": "",
+      "id": "990",
+      "url": "",
+      "externalId": "",
+      "status": "returned"
+    },
+    "bomRevision": {
+      "role": "bom_revision",
+      "name": "Ariat Launch Readiness Revision",
+      "internalName": "",
+      "id": "991",
+      "url": "",
+      "externalId": "",
+      "status": "returned"
+    },
+    "locationPlanningRecords": [],
+    "csvSalesOrderArtifacts": [
+      {
+        "label": "Sales Order CSV",
+        "name": "scai_so_ARIATSTYLE20260514.csv",
+        "id": "file-42",
+        "url": "",
+        "status": "csv_import_submitted"
+      }
+    ],
+    "warnings": [],
+    "errors": [],
+    "recoverableBlockers": [],
+    "exportMeta": {
+      "generatedAt": "2026-05-17T21:41:07.717Z",
+      "noSecrets": true,
+      "idbImportOnly": true,
+      "dccOwnsObjectGeneration": true,
+      "namingMechanicsChanged": false,
+      "enableManufacturing": true,
+      "enableWip": false
+    }
+  },
+  "idbImportVerification": {
+    "beforeReviewStatus": "Final generated names not imported yet",
+    "importStatus": "Final generated names imported",
+    "afterReviewStatus": "Final generated names imported",
+    "runUsesFinalNavigation": true,
+    "finalScriptPivotObjects": [
+      {
+        "role": "customer",
+        "label": "Customer",
+        "name": "Ariat International",
+        "internalName": "",
+        "id": "321",
+        "url": "",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "missing_url",
+          "openable": false,
+          "displayLabel": "Needs real URL",
+          "reason": "The build result did not return a NetSuite record URL.",
+          "url": ""
+        },
+        "openableUrl": ""
+      },
+      {
+        "role": "sales_order",
+        "label": "Sales Order / demo transaction",
+        "name": "Sales Order CSV import for ARIATSTYLE20260514",
+        "internalName": "",
+        "id": "",
+        "url": "",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "missing_url",
+          "openable": false,
+          "displayLabel": "Needs real URL",
+          "reason": "The build result did not return a NetSuite record URL.",
+          "url": ""
+        },
+        "openableUrl": ""
+      },
+      {
+        "role": "hero_item",
+        "label": "Hero item",
+        "name": "Ariat Core Boot and Apparel Style Matrix",
+        "internalName": "",
+        "id": "987",
+        "url": "",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "missing_url",
+          "openable": false,
+          "displayLabel": "Needs real URL",
+          "reason": "The build result did not return a NetSuite record URL.",
+          "url": ""
+        },
+        "openableUrl": ""
+      },
+      {
+        "role": "matrix_or_proof_item",
+        "label": "Matrix item / proof item",
+        "name": "Ariat Core Boot and Apparel Style Matrix",
+        "internalName": "",
+        "id": "",
+        "url": "",
+        "source": "dcc_final",
+        "linkAuthority": {
+          "schema": "idb.verified-record-link-authority.v1",
+          "status": "missing_url",
+          "openable": false,
+          "displayLabel": "Needs real URL",
+          "reason": "The build result did not return a NetSuite record URL.",
+          "url": ""
+        },
+        "openableUrl": ""
+      }
+    ]
+  },
+  "validatorGates": [
+    {
+      "name": "w118_dcc_helper_outputs_w117_shape",
+      "pass": true,
+      "detail": "idb.dcc-result-export-shape.v1"
+    },
+    {
+      "name": "w118_uses_real_differentiated_consultant_facing_names",
+      "pass": true,
+      "detail": "{\"hero\":\"Ariat Core Boot and Apparel Style Matrix\",\"assembly\":\"Ariat Seasonal Style Availability Flow\",\"components\":3}"
+    },
+    {
+      "name": "w118_sales_order_csv_artifact_returned",
+      "pass": true,
+      "detail": "[{\"label\":\"Sales Order CSV\",\"name\":\"scai_so_ARIATSTYLE20260514.csv\",\"id\":\"file-42\",\"url\":\"\",\"status\":\"csv_import_submitted\"}]"
+    },
+    {
+      "name": "w118_secret_redaction",
+      "pass": true,
+      "detail": "{\"generatedAt\":\"2026-05-17T21:41:07.717Z\",\"noSecrets\":true,\"idbImportOnly\":true,\"dccOwnsObjectGeneration\":true,\"namingMechanicsChanged\":false,\"enableManufacturing\":true,\"enableWip\":false}"
+    },
+    {
+      "name": "w118_idb_import_switches_review_and_run_to_final_names",
+      "pass": true,
+      "detail": "{\"before\":\"using_provisional_preview_names\",\"imported\":\"dcc_final_names_imported\",\"after\":\"using_dcc_final_names\"}"
+    },
+    {
+      "name": "w118_dcc_runner_patch_present_without_naming_mechanics_change",
+      "pass": true,
+      "detail": "DCC runner bridge helper present"
+    },
+    {
+      "name": "w118_no_idb_invocation_or_write_boundary",
+      "pass": true,
+      "detail": "{\"importOnly\":true,\"noIdbWrites\":true,\"noSuiteScriptInvocationFromIdb\":true,\"noTransactionWritesFromIdb\":true,\"dccOwnsObjectGeneration\":true,\"provisionalNamesCannotBeMarkedFinal\":true,\"w92StateAuthorityPreserved\":true,\"w110HandoffParityPreserved\":true}"
+    }
+  ],
+  "noRegression": {
+    "w92StateAuthorityPreserved": true,
+    "w110ParityLockPreserved": true,
+    "consultantConfirmationRequired": true,
+    "noIdbWrites": true,
+    "noSuiteScriptInvocationFromIdb": true,
+    "noTransactionWritesFromIdb": true,
+    "hostedResolverOptionalUntilRemoteSmokeExecuted": true,
+    "dccOwnsObjectGeneration": true,
+    "idbImportOnly": true,
+    "idbCannotMarkProvisionalNamesAsFinal": true
+  },
+  "bestNextCodexPrompt": {
+    "block": "W119: DCC Result Import Visual Retest With Final Names",
+    "prompt": "Move through W119: Final Generated Names Import Visual Retest. Use the W118 final result export bridge sample and the drawer import-only path to produce the exact hands-on retest: run or preview the build, export dcc_final_naming_result_v1.json, import it into Trace, verify Review switches from provisional labels to final generated names, verify Run uses final names for navigation pivots, and confirm no drawer writes, no SuiteScript invocation from the drawer, no transaction writes from the drawer, W92/W110 state authority, consultant confirmation, and build-engine ownership of object generation. Output retest packet, expected screenshots, validator gates, W119 report, and best next Codex prompt."
+  }
+}

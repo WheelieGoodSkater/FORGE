@@ -15,13 +15,13 @@ Status: PASS (8/8)
 - Copy failed. Use export from admin/debug.
 
 ## Validation
-- PASS copy_export_model_returns_w222_normal_export_text: 1521 copied row chars
+- PASS copy_export_model_returns_w222_normal_export_text: 1544 copied row chars
 - PASS export_content_includes_required_summary_sections: {"summaryTitle":true,"generatedTimestamp":true,"caseCounts":true,"compactCaseRows":true,"noRegressionBoundarySummary":true,"visualTestingDecision":true}
 - PASS normal_copy_hides_forbidden_internal_terms: IDB Import Operator Summary
-Generated: 2026-05-24T21:51:44.146Z
+Generated: 2026-05-24T22:29:21.053Z
 Cases: 7 | Ready: 2 | Partial: 1 | Recovery: 4
 
-Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability Flow, Channel Context | Hidden
+Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability/Replenishment Flow, Channel/Location Context | Hidden
 Complete Manufacturing Import | Ready | discrete_manufacturing | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Finished/Assembly Item, BOM or Assembly Structure, Component Item | Hidden
 Partial Food Batch WIP Import | Partial | food_batch_manufacturing | Food batch records are ready. WIP detail was not returned. | Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned | Customer, Sales Order, Finished Food/Batch Item, Formula or Batch Structure, Ingredient Item, Lot Context | Hidden
 Blank Import Recovery | Recovery | retail_availability | Paste the completed build result. | Use the latest completed runner result. | No Open links yet | Hidden

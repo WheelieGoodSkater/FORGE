@@ -1,0 +1,38 @@
+{
+  "schema": "forge.w243-contract-generated-role-contract-lookup-slice.v1",
+  "status": "contract_generated_role_lookup_slice_ready",
+  "scope": {
+    "migratedConsumers": [
+      "required record role lookup",
+      "expected record role lookup",
+      "optional record role lookup",
+      "invalid record role lookup",
+      "resolved operating-mode record contract role arrays"
+    ],
+    "unchangedConsumers": [
+      "resolveBuildOperatingModeW214 mode selection",
+      "W211/W214 naming guards",
+      "W237 completed-result import guard",
+      "W144 adapter bridge",
+      "runner behavior",
+      "consultant copy"
+    ]
+  },
+  "fallbackBehavior": {
+    "missingSnapshotFallsBackToEmbeddedRoleArrays": true,
+    "mergedContractPreservesEmbeddedNamingTerms": true,
+    "missingModeFallsBackToDistributionContract": true
+  },
+  "noRegressionBoundaries": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+    "runnerOwnsGeneratedRecords": true,
+    "imageLookupDisabledByDefault": true,
+    "nllmAdvisoryOnly": true,
+    "w218FrozenSuccessWordingPreserved": true,
+    "w220RecoveryWordingPreserved": true,
+    "w237FoodBatchCompletedImportGuardPreserved": true,
+    "w242LabelSlicePreserved": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "forge.w243-contract-generated-role-contract-lookup-slice-trace.v1",
+  "generatedAt": "2026-05-24T00:00:00.000Z",
+  "events": [
+    {
+      "step": "role_lookup_helpers_added",
+      "evidence": "Drawer exposes generated snapshot helpers for required, expected, optional, and invalid role arrays."
+    },
+    {
+      "step": "merged_contract_preserves_guard_terms",
+      "evidence": "Snapshot role arrays are merged onto embedded contracts without dropping allowed nouns or invalid terms."
+    },
+    {
+      "step": "resolver_behavior_preserved",
+      "evidence": "Six W214 fixture outcomes remain unchanged."
+    },
+    {
+      "step": "import_guards_preserved",
+      "evidence": "W237 food batch completed-result import behavior remains unchanged."
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 Status: PASS (7/7)
 
 ## Final FORGE Install Packet
-- idb-drawer.user.js (3039752 bytes)
+- idb-drawer.user.js (3042364 bytes)
 - W226_UPLOAD_MANIFEST.md (610 bytes)
 - reports/w226_forge_header_install_cutover_packet.md (4745 bytes)
 - trace_samples/w226_forge_header_install_cutover_packet_trace.json (1561 bytes)
@@ -29,7 +29,7 @@ Confirm Copy operator summary appears in the Trace/import-status surface.
 - No image lookup change.
 
 ## Validation
-- PASS final_install_packet_includes_expected_w226_artifacts: idb-drawer.user.js:3039752, W226_UPLOAD_MANIFEST.md:610, reports/w226_forge_header_install_cutover_packet.md:4745, trace_samples/w226_forge_header_install_cutover_packet_trace.json:1561, data/w226_forge_header_install_cutover_packet.json:7661
+- PASS final_install_packet_includes_expected_w226_artifacts: idb-drawer.user.js:3042364, W226_UPLOAD_MANIFEST.md:610, reports/w226_forge_header_install_cutover_packet.md:4745, trace_samples/w226_forge_header_install_cutover_packet_trace.json:1561, data/w226_forge_header_install_cutover_packet.json:7661
 - PASS operator_install_note_compact_and_complete: Update Tampermonkey drawer script only.
 Refresh the NetSuite page.
 Confirm the FORGE rail button appears.

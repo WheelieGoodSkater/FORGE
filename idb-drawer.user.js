@@ -11045,7 +11045,8 @@
       resolvedOperatingMode = foodEvidence ? 'retail_availability' : 'distribution_replenishment';
       evidence.push('food nouns observed but Manufacturing=false, so batch/manufacturing mode blocked');
     }
-    const contract = W214_BUILD_OPERATING_MODES[resolvedOperatingMode] || W214_BUILD_OPERATING_MODES.distribution_replenishment;
+    const fallbackContract = W214_BUILD_OPERATING_MODES[resolvedOperatingMode] || W214_BUILD_OPERATING_MODES.distribution_replenishment;
+    const contract = operatingModeRoleContractFromSnapshotW243(resolvedOperatingMode, fallbackContract);
     const modeConfidence = knownMode || apparelEvidence || dealerEvidence || retailEvidence || distributionEvidence || foodEvidence
       ? 'high'
       : 'needs_confirmation';
@@ -12898,6 +12899,48 @@
 
   function contractRecordRoleLabelW242(role, fallback, options) {
     return recordRoleLabelFromSnapshotW242(role, fallback, options);
+  }
+
+  function roleListFromSnapshotW243(mode, listName, fallback, options) {
+    const snapshot = generatedContractSnapshotW242(options);
+    const key = String(mode || '').trim();
+    const contract = snapshot && snapshot.operatingModes && snapshot.operatingModes[key]
+      ? snapshot.operatingModes[key]
+      : null;
+    const list = contract && Array.isArray(contract[listName]) ? contract[listName] : null;
+    return (list || arrayValue(fallback)).slice();
+  }
+
+  function operatingModeRoleContractFromSnapshotW243(mode, fallbackContract, options) {
+    const fallback = fallbackContract || W214_BUILD_OPERATING_MODES[mode] || W214_BUILD_OPERATING_MODES.distribution_replenishment || {};
+    const snapshot = generatedContractSnapshotW242(options);
+    const key = String(mode || '').trim();
+    const snapshotContract = snapshot && snapshot.operatingModes && snapshot.operatingModes[key]
+      ? snapshot.operatingModes[key]
+      : null;
+    return Object.assign({}, fallback, {
+      label: snapshotContract && snapshotContract.label || fallback.label || String(mode || '').replace(/_/g, ' '),
+      requiredRecordRoles: roleListFromSnapshotW243(mode, 'requiredRecordRoles', fallback.requiredRecordRoles, options),
+      expectedRecordRoles: roleListFromSnapshotW243(mode, 'expectedRecordRoles', fallback.expectedRecordRoles, options),
+      optionalRecordRoles: roleListFromSnapshotW243(mode, 'optionalRecordRoles', fallback.optionalRecordRoles, options),
+      invalidRecordRoles: roleListFromSnapshotW243(mode, 'invalidRecordRoles', fallback.invalidRecordRoles, options)
+    });
+  }
+
+  function requiredRecordRolesFromSnapshotW243(mode, fallback, options) {
+    return roleListFromSnapshotW243(mode, 'requiredRecordRoles', fallback, options);
+  }
+
+  function expectedRecordRolesFromSnapshotW243(mode, fallback, options) {
+    return roleListFromSnapshotW243(mode, 'expectedRecordRoles', fallback, options);
+  }
+
+  function optionalRecordRolesFromSnapshotW243(mode, fallback, options) {
+    return roleListFromSnapshotW243(mode, 'optionalRecordRoles', fallback, options);
+  }
+
+  function invalidRecordRolesFromSnapshotW243(mode, fallback, options) {
+    return roleListFromSnapshotW243(mode, 'invalidRecordRoles', fallback, options);
   }
 
   function drawerContractSourceAlignmentW240V1(state, options) {
@@ -20599,6 +20642,12 @@
       operatingModeLabelFromSnapshotW242,
       recordRoleLabelFromSnapshotW242,
       legacySlotRoleFromSnapshotW242,
+      roleListFromSnapshotW243,
+      operatingModeRoleContractFromSnapshotW243,
+      requiredRecordRolesFromSnapshotW243,
+      expectedRecordRolesFromSnapshotW243,
+      optionalRecordRolesFromSnapshotW243,
+      invalidRecordRolesFromSnapshotW243,
       drawerContractSourceAlignmentW240V1,
       dynamicRecordRenderingPrepModelW240,
       dccHandoffParityLockV1: dccHandoffParityLockV1,

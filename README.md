@@ -2,43 +2,26 @@
 
 FORGE is a Tampermonkey-based NetSuite companion drawer for consultant-led demo creation. It classifies a prospect from website evidence and consultant notes, submits a governed NetSuite runner through an approved adapter, waits for completed runner output, imports verified record names and Open links, and gives the consultant concise Review/Run guidance.
 
-## Repo Orientation
+## What You Need
 
-FORGE includes both the runnable product files and the sanitized evidence/history used to validate the product path.
-
-For day-to-day install or updates, most operators only need:
-
-- `idb-drawer.user.js`
-- `assets/`
-- `netsuite/idb_governed_runner_adapter_w144_suitelet.js`
-- `netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js`
-- `INSTALL.md`
-
-The `data/`, `reports/`, `trace_samples/`, `tools/`, and historical planning docs are included for regression proof, validation, and continuity. They are not all required for a Tampermonkey-only update.
-
-## Repository Contents
+The active install/runtime surface is intentionally small:
 
 - `idb-drawer.user.js` - Tampermonkey drawer userscript.
-- `assets/FORGE.png` - FORGE brand mark used by the drawer header.
+- `assets/` - FORGE brand assets used by the drawer.
 - `netsuite/idb_governed_runner_adapter_w144_suitelet.js` - approved governed runner adapter Suitelet.
 - `netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js` - governed DCC runner script used to create demo records.
-- `tools/` - regression harnesses and validation utilities.
-- `data/`, `reports/`, `trace_samples/` - contract fixtures, reports, and sanitized trace samples.
-- `docs/` - historical plans, upload manifests, and implementation notes.
+- `src/contracts/` - runtime contract modules used by the drawer and compatibility checks.
+- `INSTALL.md` - install and deployment notes.
 
-For continuity with the existing project validator, this public package keeps the historical planning documents `PRODUCTIZED_CREATION_AND_CONSULTANT_UX_ARCHITECTURE.md` and `VISUAL_VALUE_AND_ENRICHED_PREVIEW_ARCHITECTURE.md`. Those plans include the Seven authorized V5 lanes and Prompt M12-M16 design history.
+Everything else from the build history, validation trail, old plans, upload manifests, hosted resolver experiments, reports, traces, and harnesses lives in `archive/`.
 
-## Public Scrub
-
-This package was prepared for a public repository. Sandbox account hostnames, local filesystem paths, operator names, and scheduled runner task IDs have been replaced with placeholders. Configure your own NetSuite account, Suitelet deployment, script IDs, folder IDs, subsidiary, location, and saved search IDs in NetSuite/admin setup before live use.
-
-## Quick Local Validation
+## Quick Validation
 
 ```bash
 npm run check
-npm run validate
-npm run harness:food-batch-completed-import-guard-w237
 ```
+
+This checks the active userscript, NetSuite scripts, and contract modules for JavaScript syntax errors.
 
 ## Install Summary
 
@@ -48,3 +31,7 @@ npm run harness:food-batch-completed-import-guard-w237
 4. Configure the drawer admin/debug setup with your account-specific Suitelet URL and NetSuite script parameters.
 
 FORGE preserves the no-drawer-write boundary: the drawer does not create records, does not write transactions, and does not invoke SuiteScript outside the approved adapter path. The governed runner owns generated records.
+
+## Public Scrub
+
+This package was prepared for a public repository. Sandbox account hostnames, local filesystem paths, operator names, and scheduled runner task IDs have been replaced with placeholders. Configure your own NetSuite account, Suitelet deployment, script IDs, folder IDs, subsidiary, location, and saved search IDs in NetSuite/admin setup before live use.

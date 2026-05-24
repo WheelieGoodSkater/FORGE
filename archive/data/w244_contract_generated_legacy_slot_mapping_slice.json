@@ -1,0 +1,38 @@
+{
+  "schema": "forge.w244-contract-generated-legacy-slot-mapping-slice.v1",
+  "status": "contract_generated_legacy_slot_mapping_ready",
+  "scope": {
+    "migratedConsumers": [
+      "legacy slot to canonical role lookup",
+      "canonical role to legacy slot fallback",
+      "mode-aware legacy slot interpretation",
+      "legacy five-record object normalization"
+    ],
+    "unchangedConsumers": [
+      "resolveBuildOperatingModeW214 mode selection",
+      "W211/W214 naming guards",
+      "W237 completed-result import guard",
+      "W218/W220 frozen copy",
+      "W144 adapter bridge",
+      "runner behavior",
+      "consultant UI copy"
+    ]
+  },
+  "fallbackBehavior": {
+    "missingSnapshotMappingFallsBackToRequestedSlot": true,
+    "canonicalRoleWithoutLegacySlotFallsBackToRoleName": true,
+    "modeAwareAliasesRemainAdvisoryForLegacySlotInterpretation": true
+  },
+  "noRegressionBoundaries": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+    "runnerOwnsGeneratedRecords": true,
+    "imageLookupDisabledByDefault": true,
+    "nllmAdvisoryOnly": true,
+    "w151NumericIdAndUrlGuardPreserved": true,
+    "w218FrozenSuccessWordingPreserved": true,
+    "w220RecoveryWordingPreserved": true,
+    "w237FoodBatchCompletedImportGuardPreserved": true
+  }
+}

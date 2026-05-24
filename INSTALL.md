@@ -28,11 +28,6 @@ Run:
 
 ```bash
 npm run check
-npm run validate
 ```
 
-For the latest food batch completed-result import fix:
-
-```bash
-npm run harness:food-batch-completed-import-guard-w237
-```
+The archived historical harnesses, traces, reports, and packaging checklists are retained under `archive/` for reference.

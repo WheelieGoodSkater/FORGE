@@ -1,0 +1,22 @@
+{
+  "schema": "forge.w244-contract-generated-legacy-slot-mapping-slice-trace.v1",
+  "generatedAt": "2026-05-24T00:00:00.000Z",
+  "events": [
+    {
+      "step": "legacy_slot_helpers_added",
+      "evidence": "Drawer exposes generated snapshot helpers for legacy slot to canonical role mapping."
+    },
+    {
+      "step": "legacy_normalization_migrated",
+      "evidence": "Legacy five-record object normalization uses snapshot-backed role lookup with fallback."
+    },
+    {
+      "step": "accepted_payload_behavior_preserved",
+      "evidence": "Legacy five-record and canonical records[] payloads still import and render openable records."
+    },
+    {
+      "step": "import_guards_preserved",
+      "evidence": "W237 food batch completed-result import behavior remains unchanged."
+    }
+  ]
+}

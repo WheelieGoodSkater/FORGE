@@ -251,7 +251,7 @@ function main() {
       exactArray(foodPartial.runActions, ['Open Customer', 'Open Sales Order', 'Open Item', 'Use available records', 'WIP detail not returned']),
     foodPartial.runActions.join(' / '));
   assertCase(results, 'exact_mode_aware_labels_frozen',
-    exactArray(retail.visibleRecordLabels, ['Customer', 'Sales Order', 'Product SKU', 'Availability Flow', 'Channel Context']) &&
+    exactArray(retail.visibleRecordLabels, ['Customer', 'Sales Order', 'Product SKU', 'Availability/Replenishment Flow', 'Channel/Location Context']) &&
       exactArray(manufacturing.visibleRecordLabels, ['Customer', 'Sales Order', 'Finished/Assembly Item', 'BOM or Assembly Structure', 'Component Item']) &&
       exactArray(foodPartial.visibleRecordLabels, ['Customer', 'Sales Order', 'Finished Food/Batch Item', 'Formula or Batch Structure', 'Ingredient Item', 'Lot Context']),
     foodPartial.visibleRecordLabels.join(', '));

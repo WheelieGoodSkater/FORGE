@@ -284,7 +284,7 @@ function main() {
   assertCase(results, 'success_cases_preserve_w218_frozen_wording',
     byType.complete_non_manufacturing.consultantReviewHeadline === 'Build results are ready.' &&
       byType.complete_manufacturing.consultantReviewHeadline === 'Build results are ready.' &&
-      exact(byType.complete_non_manufacturing.visibleRecordLabels, ['Customer', 'Sales Order', 'Product SKU', 'Availability Flow', 'Channel Context']) &&
+      exact(byType.complete_non_manufacturing.visibleRecordLabels, ['Customer', 'Sales Order', 'Product SKU', 'Availability/Replenishment Flow', 'Channel/Location Context']) &&
       exact(byType.complete_manufacturing.visibleRecordLabels, ['Customer', 'Sales Order', 'Finished/Assembly Item', 'BOM or Assembly Structure', 'Component Item']),
     `${byType.complete_non_manufacturing.consultantReviewHeadline}; ${byType.complete_manufacturing.visibleRecordLabels.join(', ')}`);
   assertCase(results, 'partial_food_wip_preserves_w216_w218_wording',

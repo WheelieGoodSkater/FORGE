@@ -1,0 +1,43 @@
+{
+  "schema": "forge.w242-contract-generated-drawer-resolver-slice.v1",
+  "status": "contract_generated_label_slice_ready",
+  "scope": {
+    "migratedConsumers": [
+      "operating-mode label lookup",
+      "record-role label lookup",
+      "legacy slot-to-role lookup",
+      "mode-aware consultant display labels"
+    ],
+    "unchangedConsumers": [
+      "resolveBuildOperatingModeW214 mode selection",
+      "dccFinalNamingResultV1 internal semantic labels",
+      "W211/W214 naming guards",
+      "W237 saved completed-result repair",
+      "W144 adapter bridge",
+      "runner behavior"
+    ]
+  },
+  "fallbackBehavior": {
+    "missingSnapshotFallsBackToEmbeddedConstants": true,
+    "missingRoleLabelFallsBackToConsultantLabel": true,
+    "missingLegacySlotFallsBackToSlotName": true
+  },
+  "normalConsultantUi": {
+    "contractDiagnosticsHidden": true,
+    "rawJsonHidden": true,
+    "copyUnchangedExceptLabelSource": true
+  },
+  "noRegressionBoundaries": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+    "runnerOwnsGeneratedRecords": true,
+    "imageLookupDisabledByDefault": true,
+    "nllmAdvisoryOnly": true,
+    "w218FrozenSuccessWordingPreserved": true,
+    "w220RecoveryWordingPreserved": true,
+    "w237FoodBatchCompletedImportGuardPreserved": true,
+    "w240RunPivotNoDropGuardPreserved": true,
+    "w241GeneratedSnapshotSyncPreserved": true
+  }
+}

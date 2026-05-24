@@ -33,10 +33,10 @@ Status: PASS (11/11)
 - PASS admin_debug_appendix_toggle_visible_only_in_admin_debug: normal=-1, admin=1121
 - PASS diagnostics_appendix_default_off: default=false, explicit=true
 - PASS normal_copy_export_hides_forbidden_internal_terms: IDB Import Operator Summary
-Generated: 2026-05-24T20:45:19.472Z
+Generated: 2026-05-24T21:54:22.551Z
 Cases: 7 | Ready: 2 | Partial: 1 | Recovery: 4
 
-Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability Flow, Channel Context | Hidden
+Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability/Replenishment Flow, Channel/Location Context | Hidden
 Complete Manufacturing Import | Ready | discrete_manufacturing | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Finished/Assembly Item, BOM or Assembly Structure, Component Item | Hidden
 Partial Food Batch WIP Import | Partial | food_batch_manufacturing | Food batch records are ready. WIP detail was not returned. | Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned | Customer, Sales Order, Finished Food/Batch Item, Formula or Batch Structure, Ingredient Item, Lot Context | Hidden
 Blank Import Recovery | Recovery | retail_availability | Paste the completed build result. | Use the latest completed runner result. | No Open links yet | Hidden

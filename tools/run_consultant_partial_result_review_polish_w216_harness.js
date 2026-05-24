@@ -287,7 +287,7 @@ function main() {
   const results = [];
   assertCase(results, 'complete_retail_review_ready_clean',
     models.retail.w216.consultantReview.headline === 'Build results are ready.' &&
-      includesAll(models.retail.reviewHtml, ['Product SKU', 'Availability Flow']) &&
+      includesAll(models.retail.reviewHtml, ['Product SKU', 'Availability/Replenishment Flow', 'Channel/Location Context']) &&
       cleanUi(models.retail.reviewHtml),
     models.retail.w216.consultantReview.headline);
   assertCase(results, 'complete_apparel_labels_clean',

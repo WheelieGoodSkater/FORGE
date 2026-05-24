@@ -22,8 +22,8 @@
         "Customer",
         "Sales Order",
         "Product SKU",
-        "Availability Flow",
-        "Channel Context"
+        "Availability/Replenishment Flow",
+        "Channel/Location Context"
       ],
       "openableRecordCount": 5,
       "adminDebugVisible": false,

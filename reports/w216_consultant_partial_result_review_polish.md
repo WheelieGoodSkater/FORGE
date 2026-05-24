@@ -23,7 +23,7 @@ Status: PASS (13/13)
 - PASS partial_food_batch_uses_food_language_only: Food batch records are ready. WIP detail was not returned.
 - PASS invalid_fallback_names_remain_rejected: toggle_vocabulary_guardrail_failed; mode_record_contract_partial
 - PASS handoff_json_still_rejected: This is the Build handoff JSON. It requests runner work but does not contain completed runner result records, ids, or URLs.
-- PASS normal_run_copy_uses_returned_records_only_after_valid_import: Build results are ready.: Customer: Northstar Trail Outfitters Customer Account -> Sales Order: Northstar Trail Outfitters SO216 -> Product SKU: Northstar Trail Outfitters Product Availability SKU -> Availability Flow: Northstar Trail Outfitters Retail Replenishment Flow.
+- PASS normal_run_copy_uses_returned_records_only_after_valid_import: Build results are ready.: Customer: Northstar Trail Outfitters Customer Account -> Sales Order: Northstar Trail Outfitters SO216 -> Product SKU: Northstar Trail Outfitters Product Availability SKU -> Availability/Replenishment Flow: Northstar Trail Outfitters Retail Replenishment Flow.
 - PASS admin_debug_only_terms_are_hidden_when_off: normal Review/Run copy is clean
 - PASS boundaries_preserved: {"noDrawerWrites":true,"noDrawerCreatedRecords":true,"noDrawerTransactionWrites":true,"noDirectSuiteScriptOutsideApprovedW144AdapterPath":true,"runnerOwnsGeneratedRecords":true,"nllmAdvisoryOnly":true,"imageLookupDisabledByDefault":true,"adminDebugDiagnosticsHiddenWhenOff":true}
 

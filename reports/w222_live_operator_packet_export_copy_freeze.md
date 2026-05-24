@@ -8,7 +8,7 @@ Status: PASS (9/9)
   - Mode: retail_availability
   - Headline: Build results are ready.
   - Next: Open Customer / Open Sales Order / Open Item
-  - Labels: Customer, Sales Order, Product SKU, Availability Flow, Channel Context
+  - Labels: Customer, Sales Order, Product SKU, Availability/Replenishment Flow, Channel/Location Context
   - Admin/debug: Hidden
 - Complete Manufacturing Import
   - Status: Ready
@@ -64,7 +64,7 @@ Status: PASS (9/9)
 - PASS case_counts_are_correct: ready=2, partial=1, recovery=4
 - PASS row_statuses_are_frozen: Complete Non-Manufacturing Import:Ready, Complete Manufacturing Import:Ready, Partial Food Batch WIP Import:Partial, Blank Import Recovery:Recovery, Handoff JSON Recovery:Recovery, Invalid Role/Name Recovery:Recovery, Missing ID / Unsupported URL Recovery:Recovery
 - PASS frozen_success_and_recovery_copy_remains_exact: Missing ID / Unsupported URL Recovery | Recovery | retail_availability | Ask the runner to return real NetSuite links. | Use available records only after import succeeds. | No Open links yet | Available
-- PASS normal_export_hides_forbidden_terms: Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability Flow, Channel Context | Hidden
+- PASS normal_export_hides_forbidden_terms: Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability/Replenishment Flow, Channel/Location Context | Hidden
 Complete Manufacturing Import | Ready | discrete_manufacturing | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Finished/Assembly Item, BOM or Assembly Structure, Component Item | Hidden
 Partial Food Batch WIP Import | Partial | food_batch_manufacturing | Food batch records are ready. WIP detail was not returned. | Open Customer / Open Sales Order / Open Item / Use available records / WIP detail not returned | Customer, Sales Order, Finished Food/Batch Item, Formula or Batch Structure, Ingredient Item, Lot Context | Hidden
 Blank Import Recovery | Recovery | retail_availability | Paste the completed build result. | Use the latest completed runner result. | No Open links yet | Hidden

@@ -11052,6 +11052,7 @@
     return {
       schema: 'idb.w214-operating-mode-resolver.v1',
       resolvedOperatingMode,
+      resolvedOperatingModeLabel: operatingModeLabelFromSnapshotW242(resolvedOperatingMode, contract.label),
       modeConfidence,
       selectedToggles: toggles,
       namingAuthority: {
@@ -11390,6 +11391,7 @@
   function modeAwareRecordLabelW216(mappedRole, mode) {
     const role = String(mappedRole || '').toLowerCase();
     const modeKey = String(mode || '').toLowerCase();
+    const snapshotLabel = contractRecordRoleLabelW242(role, '');
     const labels = {
       customer: 'Customer',
       sales_order: 'Sales Order',
@@ -11417,7 +11419,7 @@
     if (modeKey === 'food_batch_manufacturing' && role === 'bom_or_assembly_structure') return 'Formula or Batch Structure';
     if (modeKey === 'food_batch_manufacturing' && role === 'location_planning_context') return 'Lot Context';
     if (modeKey === 'wip_manufacturing' && role === 'bom_or_assembly_structure') return 'BOM or Assembly Structure';
-    return labels[role] || consultantLabel(mappedRole);
+    return snapshotLabel || labels[role] || consultantLabel(mappedRole);
   }
 
   function returnedOpenableMappedRecordsW216(mapping) {
@@ -11636,7 +11638,7 @@
       complete_non_manufacturing: {
         reviewHeadline: 'Build results are ready.',
         runActions: ['Open Customer', 'Open Sales Order', 'Open Item'],
-        labels: ['Customer', 'Sales Order', 'Product SKU', 'Availability Flow', 'Channel Context'],
+        labels: ['Customer', 'Sales Order', 'Product SKU', 'Availability/Replenishment Flow', 'Channel/Location Context'],
         forbiddenClaims: ['Manufacturing detail not returned', 'WIP detail not returned', 'Open Work Order', 'Open Routing', 'Open Work Center']
       },
       complete_manufacturing: {
@@ -12860,6 +12862,43 @@
 
   const FORGE_W240_CONTRACT_SNAPSHOT_VERSION = 'forge.contract-snapshot.w240.v1';
   const FORGE_W240_EMBEDDED_CONTRACT_VERSION = 'forge.drawer-embedded-contract.w240.v1';
+
+  function generatedContractSnapshotW242(options) {
+    const opts = options || {};
+    if (opts.snapshot && typeof opts.snapshot === 'object') return opts.snapshot;
+    return FORGE_GENERATED_CONTRACT_SNAPSHOT_W241 || {};
+  }
+
+  function operatingModeContractFromSnapshotW242(mode, options) {
+    const snapshot = generatedContractSnapshotW242(options);
+    const key = String(mode || '').trim();
+    return snapshot && snapshot.operatingModes && snapshot.operatingModes[key]
+      ? snapshot.operatingModes[key]
+      : (W214_BUILD_OPERATING_MODES[key] || W214_BUILD_OPERATING_MODES.distribution_replenishment || {});
+  }
+
+  function operatingModeLabelFromSnapshotW242(mode, fallback, options) {
+    const contract = operatingModeContractFromSnapshotW242(mode, options);
+    return contract && contract.label || fallback || String(mode || '').replace(/_/g, ' ');
+  }
+
+  function recordRoleLabelFromSnapshotW242(role, fallback, options) {
+    const snapshot = generatedContractSnapshotW242(options);
+    const key = String(role || '').trim();
+    const labels = snapshot && snapshot.recordRoles && snapshot.recordRoles.labels || {};
+    return labels[key] || fallback || consultantLabel(key);
+  }
+
+  function legacySlotRoleFromSnapshotW242(slot, fallback, options) {
+    const snapshot = generatedContractSnapshotW242(options);
+    const key = String(slot || '').trim();
+    const legacyMap = snapshot && snapshot.recordRoles && snapshot.recordRoles.legacySlotToRole || {};
+    return legacyMap[key] || fallback || key;
+  }
+
+  function contractRecordRoleLabelW242(role, fallback, options) {
+    return recordRoleLabelFromSnapshotW242(role, fallback, options);
+  }
 
   function drawerContractSourceAlignmentW240V1(state, options) {
     const opts = options || {};
@@ -20555,6 +20594,11 @@
       completedRunnerResultImportCommitOperatorFlowV1,
       completedRunnerResultImportCtaFromPollHandoffV1,
       completedRunnerResultImportCommitFromPollCtaV1,
+      generatedContractSnapshotW242,
+      operatingModeContractFromSnapshotW242,
+      operatingModeLabelFromSnapshotW242,
+      recordRoleLabelFromSnapshotW242,
+      legacySlotRoleFromSnapshotW242,
       drawerContractSourceAlignmentW240V1,
       dynamicRecordRenderingPrepModelW240,
       dccHandoffParityLockV1: dccHandoffParityLockV1,

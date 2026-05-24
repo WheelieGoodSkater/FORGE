@@ -14,10 +14,10 @@
       "mode": "retail_availability",
       "consultantHeadline": "Build results are ready.",
       "nextAction": "Open Customer / Open Sales Order / Open Item",
-      "visibleLabels": "Customer, Sales Order, Product SKU, Availability Flow, Channel Context",
+      "visibleLabels": "Customer, Sales Order, Product SKU, Availability/Replenishment Flow, Channel/Location Context",
       "adminDebugAvailability": "Hidden",
       "openLinkReadiness": "Ready",
-      "normalCopy": "Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability Flow, Channel Context | Hidden"
+      "normalCopy": "Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability/Replenishment Flow, Channel/Location Context | Hidden"
     },
     {
       "scenarioLabel": "Complete Manufacturing Import",

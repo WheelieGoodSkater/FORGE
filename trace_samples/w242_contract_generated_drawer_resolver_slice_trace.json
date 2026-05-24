@@ -1,0 +1,22 @@
+{
+  "schema": "forge.w242-contract-generated-drawer-resolver-slice-trace.v1",
+  "generatedAt": "2026-05-24T00:00:00.000Z",
+  "events": [
+    {
+      "step": "snapshot_helpers_added",
+      "evidence": "Drawer exposes generated contract snapshot access helpers through test hooks."
+    },
+    {
+      "step": "label_consumers_migrated",
+      "evidence": "Operating-mode and record-role labels read generated snapshot values before fallback."
+    },
+    {
+      "step": "resolver_behavior_preserved",
+      "evidence": "Six W214 fixture outcomes remain unchanged."
+    },
+    {
+      "step": "normal_ui_clean",
+      "evidence": "Normal consultant UI hides contract diagnostics and raw JSON."
+    }
+  ]
+}

@@ -10312,9 +10312,17 @@
     const payload = redactDccFinalNamingSecrets(input.dccFinalNamingResultV1 || input.dccFinalNamingResult || input.result || input);
     const generated = payload.generated || payload.dccGenerated || {};
     const records = payload.records || payload.createdRecords || {};
+    const payloadMode = firstNonBlank(payload.resolvedOperatingMode, payload.operatingMode, payload.buildOperatingMode, payload.mode);
     const byRole = (role) => {
-      if (Array.isArray(records)) return records.find((record) => record && (record.role === role || record.type === role || record.label === role)) || {};
-      return records[role] || {};
+      const targetRole = canonicalRoleFromSnapshotW244(role, payloadMode, role);
+      if (Array.isArray(records)) {
+        return records.find((record) => {
+          if (!(record && typeof record === 'object')) return false;
+          const rawRole = firstNonBlank(record.role, record.type, record.label);
+          return rawRole === role || canonicalRoleFromSnapshotW244(rawRole, payloadMode, rawRole) === targetRole;
+        }) || {};
+      }
+      return records[role] || legacyRecordByCanonicalRoleW244(records, targetRole, payloadMode, [role]);
     };
     const rootCustomer = firstReturnedRunnerObjectW215(payload.customer, payload.customerRecord, records.customer, byRole('customer'));
     const rootSalesOrder = firstReturnedRunnerObjectW215(payload.salesOrder, payload.demoTransaction, payload.transaction, records.demoTransaction, records.salesOrder, byRole('sales_order'), byRole('transaction'));
@@ -12941,6 +12949,45 @@
 
   function invalidRecordRolesFromSnapshotW243(mode, fallback, options) {
     return roleListFromSnapshotW243(mode, 'invalidRecordRoles', fallback, options);
+  }
+
+  function canonicalRoleFromSnapshotW244(role, mode, fallback, options) {
+    const snapshot = generatedContractSnapshotW242(options);
+    const key = String(role || '').trim();
+    const aliases = snapshot && snapshot.recordRoles && snapshot.recordRoles.aliases || {};
+    const modeAliases = snapshot && snapshot.recordRoles && snapshot.recordRoles.modePrimaryRoleAliases && snapshot.recordRoles.modePrimaryRoleAliases[String(mode || '').trim()] || {};
+    const base = aliases[key] || key || fallback || '';
+    return modeAliases[base] || base || fallback || '';
+  }
+
+  function legacySlotModeAwareRoleFromSnapshotW244(slot, mode, fallback, options) {
+    const baseRole = legacySlotRoleFromSnapshotW242(slot, fallback || slot, options);
+    return canonicalRoleFromSnapshotW244(baseRole, mode, baseRole, options);
+  }
+
+  function legacySlotsForCanonicalRoleFromSnapshotW244(role, mode, fallbackSlots, options) {
+    const snapshot = generatedContractSnapshotW242(options);
+    const legacyMap = snapshot && snapshot.recordRoles && snapshot.recordRoles.legacySlotToRole || {};
+    const targetRole = canonicalRoleFromSnapshotW244(role, mode, role, options);
+    const slots = Object.keys(legacyMap).filter((slot) => legacySlotModeAwareRoleFromSnapshotW244(slot, mode, '', options) === targetRole);
+    arrayValue(fallbackSlots).forEach((slot) => {
+      if (slot && slots.indexOf(slot) === -1) slots.push(slot);
+    });
+    return slots;
+  }
+
+  function canonicalRoleToLegacySlotFallbackW244(role, mode, fallbackSlot, options) {
+    return legacySlotsForCanonicalRoleFromSnapshotW244(role, mode, fallbackSlot ? [fallbackSlot] : [], options)[0] || fallbackSlot || String(role || '');
+  }
+
+  function legacyRecordByCanonicalRoleW244(records, role, mode, fallbackSlots, options) {
+    if (!(records && typeof records === 'object') || Array.isArray(records)) return {};
+    const slots = legacySlotsForCanonicalRoleFromSnapshotW244(role, mode, fallbackSlots, options);
+    for (let index = 0; index < slots.length; index += 1) {
+      const record = records[slots[index]];
+      if (hasReturnedRunnerObjectW215(record)) return record;
+    }
+    return {};
   }
 
   function drawerContractSourceAlignmentW240V1(state, options) {
@@ -20648,6 +20695,11 @@
       expectedRecordRolesFromSnapshotW243,
       optionalRecordRolesFromSnapshotW243,
       invalidRecordRolesFromSnapshotW243,
+      canonicalRoleFromSnapshotW244,
+      legacySlotModeAwareRoleFromSnapshotW244,
+      legacySlotsForCanonicalRoleFromSnapshotW244,
+      canonicalRoleToLegacySlotFallbackW244,
+      legacyRecordByCanonicalRoleW244,
       drawerContractSourceAlignmentW240V1,
       dynamicRecordRenderingPrepModelW240,
       dccHandoffParityLockV1: dccHandoffParityLockV1,

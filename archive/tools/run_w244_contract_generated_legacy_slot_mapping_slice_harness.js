@@ -4,11 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(__dirname, '..', '..');
 const userscriptPath = path.join(root, 'idb-drawer.user.js');
-const dataPath = path.join(root, 'data', 'w244_contract_generated_legacy_slot_mapping_slice.json');
-const reportPath = path.join(root, 'reports', 'w244_contract_generated_legacy_slot_mapping_slice.md');
-const tracePath = path.join(root, 'trace_samples', 'w244_contract_generated_legacy_slot_mapping_slice_trace.json');
+const dataPath = path.join(root, 'archive', 'data', 'w244_contract_generated_legacy_slot_mapping_slice.json');
+const reportPath = path.join(root, 'archive', 'reports', 'w244_contract_generated_legacy_slot_mapping_slice.md');
+const tracePath = path.join(root, 'archive', 'trace_samples', 'w244_contract_generated_legacy_slot_mapping_slice_trace.json');
 
 function read(file) {
   return fs.readFileSync(file, 'utf8');

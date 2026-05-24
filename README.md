@@ -2,6 +2,20 @@
 
 FORGE is a Tampermonkey-based NetSuite companion drawer for consultant-led demo creation. It classifies a prospect from website evidence and consultant notes, submits a governed NetSuite runner through an approved adapter, waits for completed runner output, imports verified record names and Open links, and gives the consultant concise Review/Run guidance.
 
+## Repo Orientation
+
+FORGE includes both the runnable product files and the sanitized evidence/history used to validate the product path.
+
+For day-to-day install or updates, most operators only need:
+
+- `idb-drawer.user.js`
+- `assets/`
+- `netsuite/idb_governed_runner_adapter_w144_suitelet.js`
+- `netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js`
+- `INSTALL.md`
+
+The `data/`, `reports/`, `trace_samples/`, `tools/`, and historical planning docs are included for regression proof, validation, and continuity. They are not all required for a Tampermonkey-only update.
+
 ## Repository Contents
 
 - `idb-drawer.user.js` - Tampermonkey drawer userscript.

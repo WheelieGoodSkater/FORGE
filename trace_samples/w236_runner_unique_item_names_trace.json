@@ -1,6 +1,6 @@
 {
   "schema": "idb.w236-runner-unique-item-names.trace.v1",
-  "generatedAt": "2026-05-24T20:59:46.047Z",
+  "generatedAt": "2026-05-24T21:21:47.914Z",
   "diagnosis": "NetSuite DUP_ITEM was caused by repeat runs reusing deterministic item names for fresh generated items.",
   "fix": "Generated runner items now receive a per-execution suffix on external IDs, item IDs, and display names.",
   "resultCount": 7,

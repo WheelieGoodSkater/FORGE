@@ -11,7 +11,7 @@ const contractPath = path.join(root, 'data', 'w240_drawer_contract_source_alignm
 const reportPath = path.join(root, 'reports', 'w240_drawer_contract_source_alignment.md');
 const tracePath = path.join(root, 'trace_samples', 'w240_drawer_contract_source_alignment_trace.json');
 
-const { buildContractSnapshot, SNAPSHOT_VERSION } = require('../src/contracts/snapshot');
+const { buildContractSnapshot } = require('../src/contracts/snapshot');
 
 function read(file) {
   return fs.readFileSync(file, 'utf8');
@@ -180,7 +180,7 @@ function importedStateFor(hooks, payload) {
 function main() {
   const results = [];
   const hooks = loadHooks();
-  const generatedSnapshot = buildContractSnapshot();
+  const generatedSnapshot = buildContractSnapshot({ snapshotVersion: 'forge.contract-snapshot.w240.v1' });
   const staticSnapshot = readJson(snapshotPath);
   const contract = readJson(contractPath);
   const drawer = read(userscriptPath);
@@ -198,7 +198,7 @@ function main() {
   const forbiddenNormalUi = /(raw JSON|W151|semantic guard|mode contract|internal role arrays|stack trace|raw guard messages|canonical contract snapshot|embedded contract version)/i;
 
   assertCase(results, 'w240_canonical_snapshot_produced_from_src_contracts',
-    generatedSnapshot.snapshotVersion === SNAPSHOT_VERSION &&
+    generatedSnapshot.snapshotVersion === 'forge.contract-snapshot.w240.v1' &&
       generatedSnapshot.operatingModes.food_batch_manufacturing.requiredRecordRoles.includes('finished_food_or_batch_item') &&
       generatedSnapshot.recordRoles.labels.ingredient_or_component_item === 'Ingredient Item',
     generatedSnapshot.snapshotVersion);

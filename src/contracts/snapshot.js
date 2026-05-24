@@ -5,12 +5,13 @@ const recordRoles = require('./recordRoles');
 const importStates = require('./importStates');
 const netSuiteLinks = require('./netSuiteLinks');
 
-const SNAPSHOT_VERSION = 'forge.contract-snapshot.w240.v1';
+const SNAPSHOT_VERSION = 'forge.contract-snapshot.w241.v1';
 
-function buildContractSnapshot() {
+function buildContractSnapshot(options) {
+  const opts = options || {};
   return {
     schema: 'forge.canonical-runtime-contract-snapshot.v1',
-    snapshotVersion: SNAPSHOT_VERSION,
+    snapshotVersion: opts.snapshotVersion || SNAPSHOT_VERSION,
     generatedFrom: [
       'src/contracts/operatingModes.js',
       'src/contracts/recordRoles.js',

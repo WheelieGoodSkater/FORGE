@@ -1,0 +1,36 @@
+{
+  "schema": "forge.w241-userscript-contract-injection.v1",
+  "status": "generated_userscript_contract_injection_ready",
+  "sourceOfTruth": "src/contracts/*",
+  "snapshotBuilder": "src/contracts/snapshot.js",
+  "injectionUtility": "tools/inject_userscript_contract_snapshot_w241.js",
+  "userscriptTarget": "idb-drawer.user.js",
+  "beginMarker": "BEGIN GENERATED FORGE CONTRACT SNAPSHOT W241",
+  "endMarker": "END GENERATED FORGE CONTRACT SNAPSHOT W241",
+  "embeddedSnapshotVersion": "forge.contract-snapshot.w241.v1",
+  "embeddedSnapshotArtifact": "data/w241_embedded_contract_snapshot.json",
+  "deterministicOutput": true,
+  "normalConsultantUi": {
+    "contractDiagnosticsHidden": true,
+    "rawJsonHidden": true,
+    "fakeOpenLinksBlocked": true
+  },
+  "compatibility": {
+    "legacyFiveRecordCompletedResultImports": true,
+    "canonicalRecordsArrayCompletedResultImports": true,
+    "w144BridgeBackwardCompatible": true,
+    "runnerUpdateRequired": false
+  },
+  "noRegressionBoundaries": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+    "runnerOwnsGeneratedRecords": true,
+    "imageLookupDisabledByDefault": true,
+    "nllmAdvisoryOnly": true,
+    "w218FrozenSuccessWordingPreserved": true,
+    "w220RecoveryWordingPreserved": true,
+    "w237FoodBatchCompletedImportGuardPreserved": true,
+    "w240RunPivotNoDropGuardPreserved": true
+  }
+}

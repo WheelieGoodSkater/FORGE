@@ -53,7 +53,7 @@
   "packet": {
     "schema": "idb.w217-mode-aware-live-review-smoke-packet.v1",
     "status": "mode_aware_live_review_smoke_packet_ready",
-    "generatedAt": "2026-05-24T21:00:51.598Z",
+    "generatedAt": "2026-05-24T21:22:11.545Z",
     "purpose": "Targeted operator smoke packet for W214/W215/W216 Review and Run behavior.",
     "smokeCases": [
       {

@@ -1,0 +1,22 @@
+{
+  "schema": "forge.w241-userscript-contract-injection-trace.v1",
+  "generatedAt": "2026-05-24T00:00:00.000Z",
+  "events": [
+    {
+      "step": "injector_added",
+      "evidence": "tools/inject_userscript_contract_snapshot_w241.js builds a stable snapshot from src/contracts/snapshot.js."
+    },
+    {
+      "step": "userscript_markers_added",
+      "evidence": "idb-drawer.user.js contains BEGIN/END GENERATED FORGE CONTRACT SNAPSHOT W241 markers."
+    },
+    {
+      "step": "checksum_added",
+      "evidence": "Embedded snapshot carries sha256-stable-json checksum."
+    },
+    {
+      "step": "diagnostics_gated",
+      "evidence": "Drawer diagnostics expose sync status through hooks/admin paths, not normal consultant UI."
+    }
+  ]
+}

@@ -1,0 +1,323 @@
+{
+  "checksum": "43dea3cab2d452939a610402e3d80a5526b9fb9936b476b2819421db40ad99e6",
+  "checksumAlgorithm": "sha256-stable-json",
+  "compatibility": {
+    "canonicalRecordsArrayAccepted": true,
+    "fakeOpenLinksBlockedBeforeValidImport": true,
+    "legacyFiveRecordShapeAccepted": true,
+    "normalConsultantUiHidesDiagnostics": true
+  },
+  "embeddedForUserscript": true,
+  "frozenRecoveryCopy": {
+    "latestCompleted": "Use the latest completed runner result.",
+    "modeMismatch": "This result does not match the selected operating mode.",
+    "pasteCompleted": "Paste the completed build result.",
+    "realLinks": "Ask the runner to return real NetSuite links.",
+    "waitForImport": "Use available records only after import succeeds."
+  },
+  "frozenSuccessCopy": {
+    "complete": "Build results are ready.",
+    "partialFoodWip": "Food batch records are ready. WIP detail was not returned."
+  },
+  "generatedBy": "tools/inject_userscript_contract_snapshot_w241.js",
+  "generatedFrom": [
+    "src/contracts/operatingModes.js",
+    "src/contracts/recordRoles.js",
+    "src/contracts/importStates.js",
+    "src/contracts/netSuiteLinks.js",
+    "src/contracts/runnerResultCompatibility.js"
+  ],
+  "importStates": {
+    "completed_result_found": {
+      "allowedAction": "Bring back records",
+      "consultantCopy": "Records are ready to import."
+    },
+    "failed_recoverable": {
+      "allowedAction": "Ask admin to review and retry",
+      "consultantCopy": "Build stopped safely."
+    },
+    "imported": {
+      "allowedAction": "Open returned records",
+      "consultantCopy": "Build results are ready."
+    },
+    "partial": {
+      "allowedAction": "Use available records",
+      "consultantCopy": "Core build records are ready. Some detail was not returned."
+    },
+    "ready_to_build": {
+      "allowedAction": "Build records",
+      "consultantCopy": "Ready to build."
+    },
+    "submitted": {
+      "allowedAction": "Wait for records",
+      "consultantCopy": "Build submitted."
+    },
+    "waiting_for_runner": {
+      "allowedAction": "Check status",
+      "consultantCopy": "Records are being prepared."
+    }
+  },
+  "knownDomainModeHints": {
+    "ariat.com": "apparel_style_matrix",
+    "ariens.com": "discrete_manufacturing",
+    "grainger.com": "distribution_replenishment",
+    "guayaki.com": "food_batch_manufacturing",
+    "liquiddeath.com": "food_batch_manufacturing",
+    "mccormick.com": "food_batch_manufacturing",
+    "patagonia.com": "apparel_style_matrix",
+    "rei.com": "retail_availability",
+    "trekbikes.com": "dealer_hardgoods_replenishment",
+    "yerbamadre.com": "food_batch_manufacturing"
+  },
+  "netSuiteLinks": {
+    "numericInternalIdRequired": true,
+    "supportedNetSuiteUrlRequired": true,
+    "supportedRecordPaths": {
+      "assemblyitem": "/app/common/item/item.nl",
+      "customer": "/app/common/entity/custjob.nl",
+      "inventoryitem": "/app/common/item/item.nl",
+      "item": "/app/common/item/item.nl",
+      "matrixitem": "/app/common/item/item.nl",
+      "salesorder": "/app/accounting/transactions/salesord.nl"
+    }
+  },
+  "operatingModes": {
+    "apparel_style_matrix": {
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": [
+        "finished_good",
+        "assembly",
+        "bom",
+        "work_order",
+        "routing"
+      ],
+      "label": "Apparel Style Matrix",
+      "optionalRecordRoles": [
+        "supporting_style_or_color_sku"
+      ],
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "style_sku",
+        "style_matrix_or_availability_flow"
+      ]
+    },
+    "dealer_hardgoods_replenishment": {
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": [
+        "ingredient",
+        "batch",
+        "bom",
+        "assembly",
+        "work_order",
+        "routing",
+        "wip"
+      ],
+      "label": "Dealer Hardgoods Replenishment",
+      "optionalRecordRoles": [
+        "allocation_support_sku",
+        "channel_context"
+      ],
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "product_sku",
+        "dealer_availability_or_replenishment_flow"
+      ]
+    },
+    "discrete_manufacturing": {
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": [
+        "food_ingredient_batch_terms_without_food_mode"
+      ],
+      "label": "Discrete Manufacturing",
+      "optionalRecordRoles": [
+        "bom_or_assembly_structure",
+        "production_planning_context"
+      ],
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_or_assembly_item",
+        "component_item"
+      ]
+    },
+    "distribution_replenishment": {
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": [
+        "finished_good",
+        "assembly",
+        "ingredient",
+        "batch",
+        "work_order",
+        "routing",
+        "wip"
+      ],
+      "label": "Distribution Replenishment",
+      "optionalRecordRoles": [
+        "supporting_sku",
+        "location_planning_context"
+      ],
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "branch_or_product_sku",
+        "replenishment_or_availability_flow"
+      ]
+    },
+    "food_batch_manufacturing": {
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": [
+        "apparel_style_matrix_without_apparel_evidence"
+      ],
+      "label": "Food Batch Manufacturing",
+      "optionalRecordRoles": [
+        "formula_or_batch_structure",
+        "lot_or_availability_context",
+        "work_order_or_wip_object"
+      ],
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_food_or_batch_item",
+        "ingredient_or_component_item"
+      ]
+    },
+    "retail_availability": {
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": [
+        "bom",
+        "assembly_structure",
+        "work_order",
+        "routing",
+        "wip_object"
+      ],
+      "label": "Retail Availability",
+      "optionalRecordRoles": [
+        "supporting_sku",
+        "location_or_channel_context"
+      ],
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "hero_sku",
+        "availability_or_replenishment_flow"
+      ]
+    },
+    "wip_manufacturing": {
+      "expectedRecordRoles": [
+        "bom_or_assembly_structure",
+        "work_order_or_wip_object"
+      ],
+      "invalidRecordRoles": [],
+      "label": "WIP Manufacturing",
+      "optionalRecordRoles": [
+        "routing",
+        "work_center"
+      ],
+      "requiredRecordRoles": [
+        "customer",
+        "sales_order",
+        "finished_or_assembly_item",
+        "component_item"
+      ]
+    }
+  },
+  "recordRoles": {
+    "aliases": {
+      "availability_or_replenishment_flow": "availability_or_replenishment_flow",
+      "bom_or_assembly_structure": "bom_or_assembly_structure",
+      "branch_or_product_sku": "branch_or_product_sku",
+      "componentItem": "component_item",
+      "component_item": "component_item",
+      "customer": "customer",
+      "dealer_availability_or_replenishment_flow": "dealer_availability_or_replenishment_flow",
+      "demoTransaction": "sales_order",
+      "demo_transaction": "sales_order",
+      "finished_food_or_batch_item": "finished_food_or_batch_item",
+      "finished_good": "finished_or_assembly_item",
+      "finished_or_assembly_item": "finished_or_assembly_item",
+      "formula_or_batch_structure": "formula_or_batch_structure",
+      "heroItem": "finished_or_assembly_item",
+      "hero_item": "finished_or_assembly_item",
+      "hero_sku": "hero_sku",
+      "ingredient_or_component_item": "ingredient_or_component_item",
+      "location_or_channel_context": "location_or_channel_context",
+      "location_planning_context": "location_planning_context",
+      "lot_or_availability_context": "lot_or_availability_context",
+      "matrixProofItem": "formula_or_batch_structure",
+      "matrix_or_proof_item": "formula_or_batch_structure",
+      "matrix_proof_item": "formula_or_batch_structure",
+      "product_sku": "product_sku",
+      "replenishment_or_availability_flow": "replenishment_or_availability_flow",
+      "routing": "routing",
+      "salesOrder": "sales_order",
+      "sales_order": "sales_order",
+      "style_matrix_or_availability_flow": "style_matrix_or_availability_flow",
+      "style_sku": "style_sku",
+      "work_center": "work_center",
+      "work_order_or_wip_object": "work_order_or_wip_object"
+    },
+    "labels": {
+      "availability_or_replenishment_flow": "Availability/Replenishment Flow",
+      "bom_or_assembly_structure": "BOM or Assembly Structure",
+      "branch_or_product_sku": "Product SKU",
+      "component_item": "Component Item",
+      "customer": "Customer",
+      "dealer_availability_or_replenishment_flow": "Availability/Replenishment Flow",
+      "finished_food_or_batch_item": "Finished Food/Batch Item",
+      "finished_or_assembly_item": "Finished/Assembly Item",
+      "formula_or_batch_structure": "Formula or Batch Structure",
+      "hero_sku": "Product SKU",
+      "ingredient_or_component_item": "Ingredient Item",
+      "location_or_channel_context": "Channel/Location Context",
+      "location_planning_context": "Channel/Location Context",
+      "lot_or_availability_context": "Lot Context",
+      "product_sku": "Product SKU",
+      "replenishment_or_availability_flow": "Availability/Replenishment Flow",
+      "routing": "Routing",
+      "sales_order": "Sales Order",
+      "style_matrix_or_availability_flow": "Style Matrix",
+      "style_sku": "Style SKU",
+      "work_center": "Work Center",
+      "work_order_or_wip_object": "Work Order"
+    },
+    "legacySlotToRole": {
+      "componentItem": "component_item",
+      "customer": "customer",
+      "demoTransaction": "sales_order",
+      "heroItem": "finished_or_assembly_item",
+      "matrixItem": "formula_or_batch_structure",
+      "matrixProofItem": "formula_or_batch_structure",
+      "salesOrder": "sales_order"
+    },
+    "modePrimaryRoleAliases": {
+      "apparel_style_matrix": {
+        "component_item": "supporting_style_or_color_sku",
+        "finished_or_assembly_item": "style_sku",
+        "formula_or_batch_structure": "style_matrix_or_availability_flow"
+      },
+      "dealer_hardgoods_replenishment": {
+        "component_item": "allocation_support_sku",
+        "finished_or_assembly_item": "product_sku",
+        "formula_or_batch_structure": "dealer_availability_or_replenishment_flow"
+      },
+      "distribution_replenishment": {
+        "component_item": "supporting_sku",
+        "finished_or_assembly_item": "branch_or_product_sku",
+        "formula_or_batch_structure": "replenishment_or_availability_flow"
+      },
+      "food_batch_manufacturing": {
+        "component_item": "ingredient_or_component_item",
+        "finished_or_assembly_item": "finished_food_or_batch_item"
+      },
+      "retail_availability": {
+        "component_item": "supporting_sku",
+        "finished_or_assembly_item": "hero_sku",
+        "formula_or_batch_structure": "availability_or_replenishment_flow"
+      }
+    }
+  },
+  "schema": "forge.canonical-runtime-contract-snapshot.v1",
+  "snapshotVersion": "forge.contract-snapshot.w241.v1"
+}

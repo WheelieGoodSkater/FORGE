@@ -1,0 +1,22 @@
+{
+  "schema": "forge.w240-drawer-contract-source-alignment-trace.v1",
+  "generatedAt": "2026-05-24T00:00:00.000Z",
+  "events": [
+    {
+      "step": "canonical_snapshot_ready",
+      "evidence": "data/w240_canonical_contract_snapshot.json mirrors src/contracts operating modes, record roles, import states, and URL guard rules."
+    },
+    {
+      "step": "drawer_sync_diagnostics_added",
+      "evidence": "drawerContractSourceAlignmentW240V1 reports canonical snapshot version, embedded contract version, sync status, and no-write boundaries."
+    },
+    {
+      "step": "run_pivot_no_drop_guard_added",
+      "evidence": "dccFinalNavigationModel uses all openable imported final records for Run pivots instead of slicing imported records to four."
+    },
+    {
+      "step": "normal_ui_stays_plain",
+      "evidence": "Contract diagnostics remain hidden from normal consultant UI."
+    }
+  ]
+}

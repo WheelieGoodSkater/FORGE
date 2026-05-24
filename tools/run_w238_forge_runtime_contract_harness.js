@@ -93,9 +93,12 @@ function main() {
 
   assertCase(
     results,
-    'w238_drawer_run_slice_risk_detected',
-    /scriptPivotObjects:\s*activeObjects\.slice\(0,\s*4\)/.test(drawer),
-    'Run pivot slice risk detected.'
+    'w238_drawer_run_slice_risk_tracked_or_resolved',
+    /scriptPivotObjects:\s*activeObjects\.slice\(0,\s*4\)/.test(drawer) ||
+      /w240NoDropGuard/.test(drawer),
+    /w240NoDropGuard/.test(drawer)
+      ? 'Run pivot slice risk resolved by W240 no-drop guard for imported final records.'
+      : 'Run pivot slice risk detected.'
   );
 
   assertCase(

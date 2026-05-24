@@ -393,7 +393,7 @@
     {
       "id": "bring_back_records_commit_creates_forge_final_names",
       "pass": true,
-      "evidence": "{\"commitAllowed\":true,\"openLinks\":9}"
+      "evidence": "{\"commitAllowed\":true,\"openLinks\":10}"
     },
     {
       "id": "build_and_run_show_plain_record_names_and_open_links",

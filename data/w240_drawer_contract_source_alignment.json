@@ -1,0 +1,35 @@
+{
+  "schema": "forge.w240-drawer-contract-source-alignment.v1",
+  "status": "drawer_contract_source_alignment_ready",
+  "sourceOfTruth": "src/contracts/*",
+  "installedUserscriptTarget": "idb-drawer.user.js",
+  "canonicalSnapshot": "data/w240_canonical_contract_snapshot.json",
+  "embeddedContractVersion": "forge.drawer-embedded-contract.w240.v1",
+  "dynamicRecordRenderingPrep": {
+    "canonicalRecordsArrayAccepted": true,
+    "legacyFiveRecordCompatible": true,
+    "allOpenableRecordsReturned": true,
+    "fixedFourRecordSliceRemovedForImportedFinalRecords": true,
+    "nonOpenableRecordsHiddenFromNormalConsultantUi": true
+  },
+  "normalConsultantUi": {
+    "showsContractSyncDiagnostics": false,
+    "showsRawJson": false,
+    "showsFakeOpenLinks": false
+  },
+  "adminDebug": {
+    "mayShowContractSyncDiagnostics": true,
+    "defaultVisible": false
+  },
+  "noRegressionBoundaries": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+    "runnerOwnsGeneratedRecords": true,
+    "imageLookupDisabledByDefault": true,
+    "nllmAdvisoryOnly": true,
+    "w218FrozenSuccessWordingPreserved": true,
+    "w220RecoveryWordingPreserved": true,
+    "w237FoodBatchCompletedImportGuardPreserved": true
+  }
+}

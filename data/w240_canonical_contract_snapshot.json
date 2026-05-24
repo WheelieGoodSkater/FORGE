@@ -1,0 +1,103 @@
+{
+  "schema": "forge.canonical-runtime-contract-snapshot.v1",
+  "snapshotVersion": "forge.contract-snapshot.w240.v1",
+  "generatedFrom": [
+    "src/contracts/operatingModes.js",
+    "src/contracts/recordRoles.js",
+    "src/contracts/importStates.js",
+    "src/contracts/netSuiteLinks.js",
+    "src/contracts/runnerResultCompatibility.js"
+  ],
+  "operatingModes": {
+    "retail_availability": {
+      "label": "Retail Availability",
+      "requiredRecordRoles": ["customer", "sales_order", "hero_sku", "availability_or_replenishment_flow"],
+      "optionalRecordRoles": ["supporting_sku", "location_or_channel_context"],
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": ["bom", "assembly_structure", "work_order", "routing", "wip_object"]
+    },
+    "apparel_style_matrix": {
+      "label": "Apparel Style Matrix",
+      "requiredRecordRoles": ["customer", "sales_order", "style_sku", "style_matrix_or_availability_flow"],
+      "optionalRecordRoles": ["supporting_style_or_color_sku"],
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": ["finished_good", "assembly", "bom", "work_order", "routing"]
+    },
+    "dealer_hardgoods_replenishment": {
+      "label": "Dealer Hardgoods Replenishment",
+      "requiredRecordRoles": ["customer", "sales_order", "product_sku", "dealer_availability_or_replenishment_flow"],
+      "optionalRecordRoles": ["allocation_support_sku", "channel_context"],
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": ["ingredient", "batch", "bom", "assembly", "work_order", "routing", "wip"]
+    },
+    "distribution_replenishment": {
+      "label": "Distribution Replenishment",
+      "requiredRecordRoles": ["customer", "sales_order", "branch_or_product_sku", "replenishment_or_availability_flow"],
+      "optionalRecordRoles": ["supporting_sku", "location_planning_context"],
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": ["finished_good", "assembly", "ingredient", "batch", "work_order", "routing", "wip"]
+    },
+    "discrete_manufacturing": {
+      "label": "Discrete Manufacturing",
+      "requiredRecordRoles": ["customer", "sales_order", "finished_or_assembly_item", "component_item"],
+      "optionalRecordRoles": ["bom_or_assembly_structure", "production_planning_context"],
+      "expectedRecordRoles": [],
+      "invalidRecordRoles": ["food_ingredient_batch_terms_without_food_mode"]
+    },
+    "wip_manufacturing": {
+      "label": "WIP Manufacturing",
+      "requiredRecordRoles": ["customer", "sales_order", "finished_or_assembly_item", "component_item"],
+      "expectedRecordRoles": ["bom_or_assembly_structure", "work_order_or_wip_object"],
+      "optionalRecordRoles": ["routing", "work_center"],
+      "invalidRecordRoles": []
+    },
+    "food_batch_manufacturing": {
+      "label": "Food Batch Manufacturing",
+      "requiredRecordRoles": ["customer", "sales_order", "finished_food_or_batch_item", "ingredient_or_component_item"],
+      "expectedRecordRoles": [],
+      "optionalRecordRoles": ["formula_or_batch_structure", "lot_or_availability_context", "work_order_or_wip_object"],
+      "invalidRecordRoles": ["apparel_style_matrix_without_apparel_evidence"]
+    }
+  },
+  "recordRoles": {
+    "labels": {
+      "customer": "Customer",
+      "sales_order": "Sales Order",
+      "finished_food_or_batch_item": "Finished Food/Batch Item",
+      "ingredient_or_component_item": "Ingredient Item",
+      "formula_or_batch_structure": "Formula or Batch Structure",
+      "work_order_or_wip_object": "Work Order",
+      "routing": "Routing",
+      "work_center": "Work Center"
+    },
+    "legacySlotToRole": {
+      "customer": "customer",
+      "demoTransaction": "sales_order",
+      "salesOrder": "sales_order",
+      "heroItem": "finished_or_assembly_item",
+      "matrixProofItem": "formula_or_batch_structure",
+      "matrixItem": "formula_or_batch_structure",
+      "componentItem": "component_item"
+    }
+  },
+  "importStates": {
+    "imported": {
+      "consultantCopy": "Build results are ready.",
+      "allowedAction": "Open returned records"
+    },
+    "partial": {
+      "consultantCopy": "Core build records are ready. Some detail was not returned.",
+      "allowedAction": "Use available records"
+    }
+  },
+  "netSuiteLinks": {
+    "numericInternalIdRequired": true,
+    "supportedNetSuiteUrlRequired": true
+  },
+  "compatibility": {
+    "legacyFiveRecordShapeAccepted": true,
+    "canonicalRecordsArrayAccepted": true,
+    "fakeOpenLinksBlockedBeforeValidImport": true,
+    "normalConsultantUiHidesDiagnostics": true
+  }
+}

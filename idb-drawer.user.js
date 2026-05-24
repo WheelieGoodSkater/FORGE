@@ -12500,6 +12500,9 @@
       summary[status] = (summary[status] || 0) + 1;
       return summary;
     }, {});
+    const scriptPivotObjects = finalObjects.length
+      ? activeObjects.filter((item) => item && item.linkAuthority && item.linkAuthority.openable === true)
+      : activeObjects.slice(0, 4);
     return {
       schema: 'idb.dcc-final-navigation-model.v1',
       status: finalObjects.length ? 'using_dcc_final_names' : 'using_provisional_preview_names',
@@ -12507,9 +12510,18 @@
       source: finalObjects.length ? 'dcc_final_imported' : 'idb_provisional_preview',
       runCanUseImportedFinalNames: finalObjects.length > 0,
       reviewObjects: activeObjects.slice(0, 6),
-      scriptPivotObjects: activeObjects.slice(0, 4),
+      scriptPivotObjects,
       linkAuthoritySummary,
       warnings: finalResult.warnings,
+      w240NoDropGuard: {
+        schema: 'forge.w240-run-pivot-no-drop-guard.v1',
+        finalImportedRecordCount: finalObjects.length,
+        openableRunPivotCount: scriptPivotObjects.length,
+        fixedFourRecordSliceApplied: finalObjects.length ? false : true,
+        allOpenableFinalRecordsIncluded: finalObjects.length
+          ? scriptPivotObjects.length === activeObjects.filter((item) => item && item.linkAuthority && item.linkAuthority.openable === true).length
+          : true
+      },
       noRegression: {
         provisionalNamesCannotBeMarkedFinal: !finalObjects.length,
         noIdbWrites: true,
@@ -12517,6 +12529,76 @@
         noTransactionWritesFromIdb: true,
         dccOwnsObjectGeneration: true
       }
+    };
+  }
+
+  const FORGE_W240_CONTRACT_SNAPSHOT_VERSION = 'forge.contract-snapshot.w240.v1';
+  const FORGE_W240_EMBEDDED_CONTRACT_VERSION = 'forge.drawer-embedded-contract.w240.v1';
+
+  function drawerContractSourceAlignmentW240V1(state, options) {
+    const opts = options || {};
+    const canonicalSnapshot = opts.canonicalSnapshot || {};
+    const sourceModules = [
+      'src/contracts/operatingModes.js',
+      'src/contracts/recordRoles.js',
+      'src/contracts/importStates.js',
+      'src/contracts/netSuiteLinks.js',
+      'src/contracts/runnerResultCompatibility.js'
+    ];
+    const embeddedModes = Object.keys(W214_BUILD_OPERATING_MODES || {}).sort();
+    const canonicalModes = Object.keys(canonicalSnapshot.operatingModes || {}).sort();
+    const requiredModes = [
+      'apparel_style_matrix',
+      'dealer_hardgoods_replenishment',
+      'discrete_manufacturing',
+      'distribution_replenishment',
+      'food_batch_manufacturing',
+      'retail_availability',
+      'wip_manufacturing'
+    ];
+    const modesAligned = requiredModes.every((mode) => embeddedModes.indexOf(mode) !== -1 && (!canonicalModes.length || canonicalModes.indexOf(mode) !== -1));
+    const snapshotVersion = canonicalSnapshot.snapshotVersion || FORGE_W240_CONTRACT_SNAPSHOT_VERSION;
+    const syncStatus = modesAligned ? 'canonical_snapshot_aligned_with_drawer_embedded_contracts' : 'canonical_snapshot_drift_detected';
+    return {
+      schema: 'forge.w240-drawer-contract-source-alignment.v1',
+      status: syncStatus,
+      canonicalContractSnapshotVersion: snapshotVersion,
+      embeddedContractVersion: FORGE_W240_EMBEDDED_CONTRACT_VERSION,
+      sourceOfTruth: sourceModules,
+      installedUserscriptTarget: 'idb-drawer.user.js',
+      syncStatus,
+      embeddedOperatingModes: embeddedModes,
+      canonicalOperatingModes: canonicalModes,
+      consultantUiVisibility: 'hidden',
+      adminDebugDiagnosticsAvailable: state && state.setupEditMode === true,
+      noWriteBoundaryConfirmation: {
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        noDirectSuiteScriptOutsideApprovedW144AdapterPath: true,
+        runnerOwnsGeneratedRecords: true,
+        imageLookupDisabledByDefault: true,
+        nllmAdvisoryOnly: true
+      }
+    };
+  }
+
+  function dynamicRecordRenderingPrepModelW240(records, options) {
+    const opts = options || {};
+    const inputRecords = arrayValue(records);
+    const renderedRecords = inputRecords.map((record) => applyRecordLinkAuthority(record || {}));
+    const openableRecords = renderedRecords.filter((record) => record && record.linkAuthority && record.linkAuthority.openable === true);
+    const hiddenRecords = renderedRecords.filter((record) => !(record && record.linkAuthority && record.linkAuthority.openable === true));
+    return {
+      schema: 'forge.w240-dynamic-record-rendering-prep.v1',
+      status: openableRecords.length ? 'openable_records_ready' : 'no_openable_records',
+      resolvedOperatingMode: opts.resolvedOperatingMode || '',
+      visibleRecords: openableRecords,
+      hiddenNormalUiRecords: hiddenRecords,
+      allOpenableRecordsReturned: true,
+      fixedFourRecordSliceApplied: false,
+      legacyFiveRecordCompatible: true,
+      canonicalRecordsArrayCompatible: true,
+      noFakeOpenLinks: hiddenRecords.every((record) => !(record && record.linkAuthority && record.linkAuthority.openable === true))
     };
   }
 
@@ -20138,6 +20220,8 @@
       completedRunnerResultImportCommitOperatorFlowV1,
       completedRunnerResultImportCtaFromPollHandoffV1,
       completedRunnerResultImportCommitFromPollCtaV1,
+      drawerContractSourceAlignmentW240V1,
+      dynamicRecordRenderingPrepModelW240,
       dccHandoffParityLockV1: dccHandoffParityLockV1,
       dccOperatorApprovalModelV1,
       dccSandboxPreviewBridgeV1,

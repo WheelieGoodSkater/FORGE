@@ -33,7 +33,7 @@ Status: PASS (11/11)
 - PASS admin_debug_appendix_toggle_visible_only_in_admin_debug: normal=-1, admin=1121
 - PASS diagnostics_appendix_default_off: default=false, explicit=true
 - PASS normal_copy_export_hides_forbidden_internal_terms: IDB Import Operator Summary
-Generated: 2026-05-19T23:03:50.391Z
+Generated: 2026-05-24T20:45:19.472Z
 Cases: 7 | Ready: 2 | Partial: 1 | Recovery: 4
 
 Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability Flow, Channel Context | Hidden

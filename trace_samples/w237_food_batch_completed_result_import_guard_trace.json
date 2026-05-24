@@ -1,6 +1,6 @@
 {
   "schema": "idb.w237-food-batch-completed-result-import-guard.trace.v1",
-  "generatedAt": "2026-05-23T15:20:28.312Z",
+  "generatedAt": "2026-05-24T20:37:30.545Z",
   "reviewedTrace": "/path/to/downloads/intelligent-demo-builder-trace-1779288967945.json",
   "conclusion": "The runner completed and returned valid record IDs and URLs; FORGE rejected import because W211 forgot selected toggles when validating the completed result. The guard now reads the saved confirmed build request JSON before applying vocabulary rules and repairs stale rejected completed-result state on load.",
   "acceptedStatus": "completed_runner_result_accepted",

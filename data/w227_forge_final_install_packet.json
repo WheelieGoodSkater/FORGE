@@ -7,7 +7,7 @@
     {
       "id": "final_install_packet_includes_expected_w226_artifacts",
       "pass": true,
-      "evidence": "idb-drawer.user.js:3000183, W226_UPLOAD_MANIFEST.md:3515, reports/w226_forge_header_install_cutover_packet.md:4745, trace_samples/w226_forge_header_install_cutover_packet_trace.json:1561, data/w226_forge_header_install_cutover_packet.json:7661"
+      "evidence": "idb-drawer.user.js:3020656, W226_UPLOAD_MANIFEST.md:610, reports/w226_forge_header_install_cutover_packet.md:4745, trace_samples/w226_forge_header_install_cutover_packet_trace.json:1561, data/w226_forge_header_install_cutover_packet.json:7661"
     },
     {
       "id": "operator_install_note_compact_and_complete",
@@ -46,12 +46,12 @@
     "artifacts": [
       {
         "path": "idb-drawer.user.js",
-        "bytes": 3000183,
+        "bytes": 3020656,
         "present": true
       },
       {
         "path": "W226_UPLOAD_MANIFEST.md",
-        "bytes": 3515,
+        "bytes": 610,
         "present": true
       },
       {

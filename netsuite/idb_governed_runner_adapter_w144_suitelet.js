@@ -187,8 +187,14 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (!request.stateAuthority || request.stateAuthority.handoffParityStatus !== 'matched' || request.stateAuthority.noStateMismatch !== true) errors.push('state authority and handoff parity must be matched.');
     if (!request.prospect || !request.prospect.name) errors.push('prospect.name is required.');
     if (!request.demoPath || !request.demoPath.laneId || !request.demoPath.scenario) errors.push('demoPath lane and scenario are required.');
-    if (!Array.isArray(request.requiredRecords) || !['customer', 'demoTransaction', 'heroItem', 'matrixProofItem', 'componentItem'].every((role) => request.requiredRecords.indexOf(role) !== -1)) {
-      errors.push('requiredRecords must include customer, demoTransaction, heroItem, matrixProofItem, and componentItem.');
+    const legacyRequiredRecordsValid = Array.isArray(request.requiredRecords) &&
+      ['customer', 'demoTransaction', 'heroItem', 'matrixProofItem', 'componentItem'].every((role) => request.requiredRecords.indexOf(role) !== -1);
+    const canonicalRequiredRolesValid = Array.isArray(request.requiredRecordRoles) &&
+      request.requiredRecordRoles.indexOf('customer') !== -1 &&
+      request.requiredRecordRoles.indexOf('sales_order') !== -1 &&
+      request.requiredRecordRoles.length >= 4;
+    if (!legacyRequiredRecordsValid && !canonicalRequiredRolesValid) {
+      errors.push('request must include legacy requiredRecords or canonical requiredRecordRoles with customer, sales_order, and mode-specific records.');
     }
     return { valid: errors.length === 0, errors };
   }
@@ -303,6 +309,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       invalidRecordRoles: request.invalidRecordRoles || [],
       resultValidationExpectations: request.resultValidationExpectations || {},
       requiredRecords: request.requiredRecords || [],
+      canonicalRuntimeContract: {
+        schema: 'forge.runtime-contract.v1',
+        compatibility: 'legacy-five-record-fields-plus-canonical-role-metadata',
+        recordsArrayAccepted: true,
+        legacyFiveRecordFieldsPreserved: true
+      },
       idempotencyToken
     };
   }
@@ -428,20 +440,119 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     };
   }
 
+  function canonicalRoleForAdapter(role, operatingMode) {
+    const value = String(role || '').trim();
+    const mode = String(operatingMode || '').trim();
+    const aliases = {
+      customer: 'customer',
+      demoTransaction: 'sales_order',
+      salesOrder: 'sales_order',
+      sales_order: 'sales_order',
+      heroItem: 'finished_or_assembly_item',
+      hero_item: 'finished_or_assembly_item',
+      matrixProofItem: 'formula_or_batch_structure',
+      matrixItem: 'formula_or_batch_structure',
+      matrix_or_proof_item: 'formula_or_batch_structure',
+      componentItem: 'component_item',
+      component_item: 'component_item',
+      finished_food_or_batch_item: 'finished_food_or_batch_item',
+      ingredient_or_component_item: 'ingredient_or_component_item',
+      formula_or_batch_structure: 'formula_or_batch_structure',
+      work_order_or_wip_object: 'work_order_or_wip_object',
+      routing: 'routing',
+      work_center: 'work_center'
+    };
+    const base = aliases[value] || value;
+    if (mode === 'food_batch_manufacturing') {
+      if (base === 'finished_or_assembly_item') return 'finished_food_or_batch_item';
+      if (base === 'component_item') return 'ingredient_or_component_item';
+    }
+    if (mode === 'retail_availability' && base === 'finished_or_assembly_item') return 'hero_sku';
+    if (mode === 'apparel_style_matrix' && base === 'finished_or_assembly_item') return 'style_sku';
+    if (mode === 'dealer_hardgoods_replenishment' && base === 'finished_or_assembly_item') return 'product_sku';
+    if (mode === 'distribution_replenishment' && base === 'finished_or_assembly_item') return 'branch_or_product_sku';
+    return base;
+  }
+
+  function canonicalLabelForAdapter(role) {
+    const labels = {
+      customer: 'Customer',
+      sales_order: 'Sales Order',
+      hero_sku: 'Product SKU',
+      style_sku: 'Style SKU',
+      product_sku: 'Product SKU',
+      branch_or_product_sku: 'Product SKU',
+      finished_or_assembly_item: 'Finished/Assembly Item',
+      finished_food_or_batch_item: 'Finished Food/Batch Item',
+      component_item: 'Component Item',
+      ingredient_or_component_item: 'Ingredient Item',
+      formula_or_batch_structure: 'Formula or Batch Structure',
+      work_order_or_wip_object: 'Work Order',
+      routing: 'Routing',
+      work_center: 'Work Center'
+    };
+    return labels[role] || String(role || '').replace(/_/g, ' ');
+  }
+
+  function normalizeCanonicalRecordForAdapter(record, role, operatingMode, fallbackType) {
+    const normalized = normalizeRecord(record, fallbackType);
+    const canonicalRole = canonicalRoleForAdapter(record && record.role || role, operatingMode);
+    return Object.assign({}, normalized, {
+      role: canonicalRole,
+      legacyRole: role || record && record.legacyRole || '',
+      label: record && record.label || canonicalLabelForAdapter(canonicalRole),
+      recordType: normalized.type
+    });
+  }
+
+  function canonicalRecordsFromCompletedSource(source, operatingMode) {
+    if (Array.isArray(source && source.records)) {
+      return source.records.map((record) => normalizeCanonicalRecordForAdapter(record, record && record.role, operatingMode, record && (record.recordType || record.type)));
+    }
+    const records = source && source.records || {};
+    const output = [];
+    [
+      ['customer', records.customer || source && source.customer, 'customer'],
+      ['demoTransaction', records.demoTransaction || records.salesOrder || source && (source.demoTransaction || source.salesOrder), 'salesorder'],
+      ['heroItem', records.heroItem || source && source.heroItem, 'inventoryitem'],
+      ['matrixProofItem', records.matrixProofItem || records.matrixItem || source && (source.matrixProofItem || source.matrixItem), 'matrixitem'],
+      ['componentItem', records.componentItem || records.componentItems && records.componentItems[0] || source && (source.componentItem || source.componentItems && source.componentItems[0]), 'inventoryitem']
+    ].forEach((item) => {
+      if (item[1]) output.push(normalizeCanonicalRecordForAdapter(item[1], item[0], operatingMode, item[2]));
+    });
+    const componentItems = records.componentItems || source && source.componentItems;
+    if (Array.isArray(componentItems)) {
+      componentItems.slice(1).forEach((record) => output.push(normalizeCanonicalRecordForAdapter(record, 'component_item', operatingMode, 'inventoryitem')));
+    }
+    return output;
+  }
+
+  function firstCanonicalRecord(canonicalRecords, roles) {
+    const wanted = roles || [];
+    return canonicalRecords.find((record) => wanted.indexOf(record.role) !== -1 || wanted.indexOf(record.legacyRole) !== -1) || null;
+  }
+
   function normalizeCompletedRunnerResult(raw) {
     const source = raw && raw.finalGeneratedNamesJson ? raw.finalGeneratedNamesJson : raw;
-    const records = source && source.records || {};
-    const customer = normalizeRecord(records.customer || source && source.customer, 'customer');
-    const demoTransaction = normalizeRecord(records.demoTransaction || records.salesOrder || source && (source.demoTransaction || source.salesOrder), 'salesorder');
-    const heroItem = normalizeRecord(records.heroItem || source && source.heroItem, 'inventoryitem');
-    const matrixProofItem = normalizeRecord(records.matrixProofItem || records.matrixItem || source && (source.matrixProofItem || source.matrixItem), 'matrixitem');
-    const componentSource = records.componentItem || records.componentItems && records.componentItems[0] || source && (source.componentItem || source.componentItems && source.componentItems[0]);
-    const componentItem = normalizeRecord(componentSource, 'inventoryitem');
+    const operatingMode = String(source && source.resolvedOperatingMode || raw && raw.resolvedOperatingMode || '').trim();
+    const canonicalRecords = canonicalRecordsFromCompletedSource(source, operatingMode);
+    const customer = firstCanonicalRecord(canonicalRecords, ['customer']) || normalizeRecord(null, 'customer');
+    const demoTransaction = firstCanonicalRecord(canonicalRecords, ['sales_order', 'demoTransaction', 'salesOrder']) || normalizeRecord(null, 'salesorder');
+    const heroItem = firstCanonicalRecord(canonicalRecords, ['finished_food_or_batch_item', 'finished_or_assembly_item', 'hero_sku', 'style_sku', 'product_sku', 'branch_or_product_sku', 'heroItem']) || normalizeRecord(null, 'inventoryitem');
+    const matrixProofItem = firstCanonicalRecord(canonicalRecords, ['formula_or_batch_structure', 'availability_or_replenishment_flow', 'style_matrix_or_availability_flow', 'dealer_availability_or_replenishment_flow', 'replenishment_or_availability_flow', 'matrixProofItem', 'matrixItem']) || normalizeRecord(null, 'matrixitem');
+    const componentItem = firstCanonicalRecord(canonicalRecords, ['ingredient_or_component_item', 'component_item', 'componentItem']) || normalizeRecord(null, 'inventoryitem');
     const completed = {
       schema: 'idb.completed-runner-result-json.v1',
       status: 'completed',
       runStatus: 'completed',
       generatedRecordOwner: 'governed_runner_internal_build_engine',
+      canonicalRuntimeContract: {
+        schema: 'forge.completed-runner-result.compatibility.v1',
+        recordsArrayAccepted: true,
+        legacyFiveRecordFieldsPreserved: true,
+        resolvedOperatingMode: operatingMode
+      },
+      canonicalRecords,
       records: {
         customer,
         demoTransaction,

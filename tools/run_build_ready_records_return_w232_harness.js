@@ -376,7 +376,7 @@ function main() {
   assertCase(results, 'completed_json_has_all_required_real_links',
     ['customer', 'demoTransaction', 'heroItem', 'matrixProofItem', 'componentItem'].every((role) => {
       const record = completedJson && completedJson.records && completedJson.records[role];
-      return record && /^\d+$/.test(String(record.internalId || '')) && /^https:\/\/SANDBOX_ACCOUNT_ID\.app\.netsuite\.com\//.test(record.url || '');
+      return record && /^\d+$/.test(String(record.internalId || '')) && /^https:\/\/[^/]+\.app\.netsuite\.com\/app\/(common\/entity\/custjob\.nl|accounting\/transactions\/salesord\.nl|common\/item\/item\.nl)\?id=\d+/i.test(record.url || '');
     }),
     JSON.stringify(completedJson && completedJson.records));
   assertCase(results, 'w151_guard_accepts_adapter_completed_json',

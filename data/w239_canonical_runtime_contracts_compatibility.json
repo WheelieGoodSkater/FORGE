@@ -1,0 +1,45 @@
+{
+  "schema": "forge.w239-canonical-runtime-contracts.v1",
+  "status": "canonical_contract_modules_ready",
+  "sourceModules": [
+    "src/contracts/operatingModes.js",
+    "src/contracts/recordRoles.js",
+    "src/contracts/importStates.js",
+    "src/contracts/netSuiteLinks.js",
+    "src/contracts/runnerResultCompatibility.js"
+  ],
+  "compatibilityLayer": {
+    "acceptsLegacyFiveRecordShape": true,
+    "acceptsCanonicalRecordsArray": true,
+    "preservesLegacyFiveRecordFields": true,
+    "addsCanonicalRecordsArray": true,
+    "numericInternalIdRequired": true,
+    "supportedNetSuiteUrlRequired": true,
+    "fakeOpenLinksBlockedBeforeValidImport": true
+  },
+  "adapterCompatibility": {
+    "requestValidationAcceptsLegacyRequiredRecords": true,
+    "requestValidationAcceptsCanonicalRequiredRecordRoles": true,
+    "runnerRequestContextCarriesCanonicalRuntimeContract": true,
+    "completedResultNormalizationPreservesLegacyFields": true,
+    "completedResultNormalizationAddsCanonicalRecords": true,
+    "runnerChangesRequiredForExistingSuccessfulPath": false
+  },
+  "drawerCompatibility": {
+    "existingEmbeddedW214ContractsPreserved": true,
+    "canonicalSourceModulesDoNotChangeTampermonkeyInstallPath": true,
+    "nextStep": "Generate or manually align userscript contract constants from src/contracts after W239 proves compatibility."
+  },
+  "noRegressionBoundaries": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+    "runnerOwnsGeneratedRecords": true,
+    "imageLookupDisabledByDefault": true,
+    "nllmAdvisoryOnly": true,
+    "adminDebugSeparationPreserved": true,
+    "w218FrozenSuccessWordingPreserved": true,
+    "w220RecoveryWordingPreserved": true,
+    "w237FoodBatchCompletedImportGuardPreserved": true
+  }
+}

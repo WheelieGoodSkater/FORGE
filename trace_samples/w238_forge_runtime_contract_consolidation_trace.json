@@ -1,0 +1,25 @@
+{
+  "schema": "forge.w238-runtime-contract-consolidation-trace.v1",
+  "events": [
+    {
+      "event": "legacy_five_record_inventory_recorded",
+      "status": "pass",
+      "detail": "W144 adapter still contains fixed customer/demoTransaction/heroItem/matrixProofItem/componentItem validation and normalization."
+    },
+    {
+      "event": "dynamic_contract_target_recorded",
+      "status": "pass",
+      "detail": "W238 target result shape uses a records array with mode-aware roles."
+    },
+    {
+      "event": "build_lifecycle_state_machine_recorded",
+      "status": "pass",
+      "detail": "Ready, submitted, waiting, completed_result_found, imported, partial, and failed_recoverable states are documented."
+    },
+    {
+      "event": "no_regression_boundaries_recorded",
+      "status": "pass",
+      "detail": "No drawer writes, no transaction writes, approved adapter path, runner ownership, URL guard, admin/debug separation, and image lookup default are preserved."
+    }
+  ]
+}

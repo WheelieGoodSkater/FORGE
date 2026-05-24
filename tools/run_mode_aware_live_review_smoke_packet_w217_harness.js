@@ -284,7 +284,7 @@ function main() {
       !partialCase.consultantRunNextSteps.includes('Open Work Order'),
     partialCase.consultantRunNextSteps.join(' / '));
   assertCase(results, 'visible_records_are_openable_only',
-    cases.every((item) => item.visibleRecords.every((record) => record.openable === true && /^https:\/\/SANDBOX_ACCOUNT_ID\.app\.netsuite\.com\//.test(record.url))),
+    cases.every((item) => item.visibleRecords.every((record) => record.openable === true && /^https:\/\/[^/]+\.app\.netsuite\.com\/app\/(common\/entity\/custjob\.nl|accounting\/transactions\/salesord\.nl|common\/item\/item\.nl)\?id=\d+/i.test(record.url))),
     cases.map((item) => `${item.caseType}:${item.visibleRecords.length}`).join(', '));
   assertCase(results, 'w214_w215_w216_boundaries_preserved',
     packet.noRegression.w151ImportGuardPreserved === true &&

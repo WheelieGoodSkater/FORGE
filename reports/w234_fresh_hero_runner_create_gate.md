@@ -1,6 +1,6 @@
 # W234 Fresh Hero Runner Create Gate
 
-Generated: 2026-05-20T14:13:13.532Z
+Generated: 2026-05-24T20:37:46.277Z
 
 ## Diagnosis
 The W144 adapter now correctly passes Create new item to the DCC runner. The runner still had an old pre-create guard that rejected fresh hero mode when no hero item id was passed, even though the runner owns a createFreshHeroItem path.

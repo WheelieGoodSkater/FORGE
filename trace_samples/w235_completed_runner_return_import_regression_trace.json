@@ -1,6 +1,6 @@
 {
   "schema": "idb.w235-completed-runner-return-import-regression.trace.v1",
-  "generatedAt": "2026-05-20T15:02:01.975Z",
+  "generatedAt": "2026-05-24T20:37:46.266Z",
   "reviewedTrace": "/path/to/downloads/intelligent-demo-builder-trace-1779280924087.json",
   "conclusion": "Runner submit completed, but FORGE collapsed a non-importable poll response into completed UI state while retaining the old empty placeholder resultCapture.",
   "passCount": 6,

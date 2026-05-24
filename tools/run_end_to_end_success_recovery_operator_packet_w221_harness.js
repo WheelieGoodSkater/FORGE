@@ -303,7 +303,7 @@ function main() {
     packet.cases.filter((item) => item.surface === 'recovery').every((item) => item.openLinkReadiness.noFakeOpenLinksBeforeValidImport === true && item.visibleRecordLabels.length === 0),
     'recovery cases have no visible record labels or Open links');
   assertCase(results, 'valid_imports_show_only_real_open_links',
-    packet.cases.filter((item) => item.surface === 'success_or_partial_import').every((item) => item.openLinkReadiness.realOpenLinksReady === true && item.visibleRecords.every((record) => record.openable === true && /^https:\/\/SANDBOX_ACCOUNT_ID\.app\.netsuite\.com\//.test(record.url))),
+    packet.cases.filter((item) => item.surface === 'success_or_partial_import').every((item) => item.openLinkReadiness.realOpenLinksReady === true && item.visibleRecords.every((record) => record.openable === true && /^https:\/\/[^/]+\.app\.netsuite\.com\/app\/(common\/entity\/custjob\.nl|accounting\/transactions\/salesord\.nl|common\/item\/item\.nl)\?id=\d+/i.test(record.url))),
     packet.cases.filter((item) => item.surface === 'success_or_partial_import').map((item) => `${item.caseType}:${item.visibleRecords.length}`).join(', '));
   assertCase(results, 'normal_packet_copy_hides_forbidden_terms',
     packet.cases.every((item) => item.forbiddenNormalUiTermsCheck === true),

@@ -1,0 +1,153 @@
+{
+  "schema": "forge.w238-runtime-contract-consolidation.v1",
+  "status": "planning_contract_ready",
+  "goal": "Future-proof FORGE by separating canonical contracts, dynamic runner result roles, import state, and consultant UI copy before adding more feature work.",
+  "principles": [
+    "Keep the Tampermonkey install simple, but stop treating the userscript source as the only system boundary.",
+    "Use one canonical role vocabulary across drawer, W144 adapter, runner result capture, import guard, display, and harnesses.",
+    "Let operating mode define required, optional, expected, partial, and invalid records.",
+    "Treat website evidence as the naming authority, toggles as operating-model authority, and notes as story/ROI/coaching authority.",
+    "Keep drawer no-write boundaries intact while making runner-created records easier to inspect and trust."
+  ],
+  "canonicalContractFilesToIntroduce": [
+    {
+      "path": "src/contracts/operatingModes.js",
+      "purpose": "Define retail_availability, apparel_style_matrix, dealer_hardgoods_replenishment, distribution_replenishment, discrete_manufacturing, wip_manufacturing, and food_batch_manufacturing record contracts."
+    },
+    {
+      "path": "src/contracts/recordRoles.js",
+      "purpose": "Define canonical runner/import/display roles such as customer, sales_order, finished_food_or_batch_item, ingredient_or_component_item, formula_or_batch_structure, work_order_or_wip_object, routing, and work_center."
+    },
+    {
+      "path": "src/contracts/importStates.js",
+      "purpose": "Define Build lifecycle states and consultant/admin copy for ready, submitted, waiting, completed_result_found, imported, partial, failed, and recovery."
+    },
+    {
+      "path": "src/contracts/netSuiteLinks.js",
+      "purpose": "Centralize numeric internal id and supported NetSuite URL validation."
+    }
+  ],
+  "legacyFiveRecordAssumptionInventory": [
+    {
+      "id": "w144-request-validation-fixed-five",
+      "file": "netsuite/idb_governed_runner_adapter_w144_suitelet.js",
+      "lineHint": "validateConfirmedRequest requires customer, demoTransaction, heroItem, matrixProofItem, and componentItem.",
+      "risk": "Adapter can reject or misread valid dynamic-mode requests that do not fit the old five-record shape."
+    },
+    {
+      "id": "w144-result-normalization-fixed-five",
+      "file": "netsuite/idb_governed_runner_adapter_w144_suitelet.js",
+      "lineHint": "normalizeCompletedRunnerResult maps only customer, demoTransaction, heroItem, matrixProofItem, and first componentItem.",
+      "risk": "Returned formula, lot, routing, work center, work order, or extra manufacturing records can be dropped before FORGE sees them."
+    },
+    {
+      "id": "drawer-run-pivots-sliced",
+      "file": "idb-drawer.user.js",
+      "lineHint": "dccFinalNavigationModel uses scriptPivotObjects derived from a sliced object list.",
+      "risk": "Build can show a returned record while Run omits it from consultant guidance."
+    },
+    {
+      "id": "drawer-monolith",
+      "file": "idb-drawer.user.js",
+      "lineHint": "Userscript contains contracts, resolver, UI, trace, import guards, branding, and state machine in one large file.",
+      "risk": "Small wording or UI changes can accidentally affect runner/import behavior."
+    },
+    {
+      "id": "runner-deterministic-fallback-language",
+      "file": "netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+      "lineHint": "Runner still contains fallback naming and generic-mode branches.",
+      "risk": "Website/toggle authority can be diluted by generic fallback terms if the completed result is not role-validated."
+    }
+  ],
+  "dynamicRunnerResultShapeTarget": {
+    "schema": "forge.completed-runner-result.v2",
+    "requiredEnvelopeFields": [
+      "schema",
+      "status",
+      "runStatus",
+      "generatedRecordOwner",
+      "resolvedOperatingMode",
+      "modeConfidence",
+      "selectedToggles",
+      "records"
+    ],
+    "recordsShape": [
+      {
+        "role": "customer",
+        "name": "Customer name",
+        "recordType": "customer",
+        "internalId": "numeric id",
+        "url": "supported NetSuite URL"
+      },
+      {
+        "role": "sales_order",
+        "name": "Sales order or demo transaction",
+        "recordType": "salesorder",
+        "internalId": "numeric id",
+        "url": "supported NetSuite URL"
+      },
+      {
+        "role": "mode_specific_record_role",
+        "name": "Website-grounded record name",
+        "recordType": "NetSuite record type",
+        "internalId": "numeric id",
+        "url": "supported NetSuite URL"
+      }
+    ],
+    "rule": "FORGE imports by role array and mode contract, not by fixed legacy slots."
+  },
+  "buildLifecycleStateMachine": [
+    {
+      "state": "ready_to_build",
+      "consultantCopy": "Ready to build.",
+      "allowedAction": "Build records"
+    },
+    {
+      "state": "submitted",
+      "consultantCopy": "Build submitted.",
+      "allowedAction": "Wait for records"
+    },
+    {
+      "state": "waiting_for_runner",
+      "consultantCopy": "Records are being prepared.",
+      "allowedAction": "Check status"
+    },
+    {
+      "state": "completed_result_found",
+      "consultantCopy": "Records are ready to import.",
+      "allowedAction": "Bring back records"
+    },
+    {
+      "state": "imported",
+      "consultantCopy": "Build results are ready.",
+      "allowedAction": "Open returned records"
+    },
+    {
+      "state": "partial",
+      "consultantCopy": "Core build records are ready. Some detail was not returned.",
+      "allowedAction": "Use available records"
+    },
+    {
+      "state": "failed_recoverable",
+      "consultantCopy": "Build stopped safely.",
+      "allowedAction": "Ask admin to review and retry"
+    }
+  ],
+  "recommendedRefactorSequence": [
+    "Add source modules while preserving generated idb-drawer.user.js output.",
+    "Move contracts and copy matrices into src/contracts first.",
+    "Teach W144 adapter to validate requiredRecordRoles instead of fixed five requiredRecords.",
+    "Teach adapter normalization to preserve a dynamic records array and map legacy fields into roles only as compatibility input.",
+    "Teach Run and Build to render all openable returned records by role, without slicing away mode-required records.",
+    "Keep reports, trace samples, and older data as archive/evidence rather than runtime authority."
+  ],
+  "noRegressionBoundaries": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noDirectSuiteScriptOutsideApprovedW144AdapterPath": true,
+    "runnerOwnsGeneratedRecords": true,
+    "w151StyleNumericIdAndUrlGuardPreserved": true,
+    "adminDebugSeparationPreserved": true,
+    "imageLookupDisabledByDefault": true
+  }
+}

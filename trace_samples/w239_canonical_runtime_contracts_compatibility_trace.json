@@ -1,0 +1,26 @@
+{
+  "schema": "forge.w239-canonical-runtime-contracts-trace.v1",
+  "generatedAt": "2026-05-24T00:00:00.000Z",
+  "events": [
+    {
+      "step": "source_modules_added",
+      "evidence": "Canonical operating mode, record role, import state, NetSuite link, and runner-result compatibility modules added under src/contracts."
+    },
+    {
+      "step": "legacy_result_normalized",
+      "evidence": "Legacy five-record completed result normalizes into canonical records while preserving old slots."
+    },
+    {
+      "step": "canonical_result_normalized",
+      "evidence": "Canonical records[] completed result normalizes into legacy customer, transaction, item, formula, and component fields for current consumers."
+    },
+    {
+      "step": "adapter_compatibility_added",
+      "evidence": "W144 request validation accepts canonical requiredRecordRoles and completed result normalization adds canonicalRecords metadata."
+    },
+    {
+      "step": "no_regression_boundaries_preserved",
+      "evidence": "No drawer writes, transaction writes, runner invocation, SuiteScript deployment update, or image lookup changes."
+    }
+  ]
+}

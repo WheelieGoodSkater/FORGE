@@ -18,7 +18,7 @@ Status: PASS (8/8)
 - PASS copy_export_model_returns_w222_normal_export_text: 1521 copied row chars
 - PASS export_content_includes_required_summary_sections: {"summaryTitle":true,"generatedTimestamp":true,"caseCounts":true,"compactCaseRows":true,"noRegressionBoundarySummary":true,"visualTestingDecision":true}
 - PASS normal_copy_hides_forbidden_internal_terms: IDB Import Operator Summary
-Generated: 2026-05-19T22:47:25.212Z
+Generated: 2026-05-24T20:44:54.329Z
 Cases: 7 | Ready: 2 | Partial: 1 | Recovery: 4
 
 Complete Non-Manufacturing Import | Ready | retail_availability | Build results are ready. | Open Customer / Open Sales Order / Open Item | Customer, Sales Order, Product SKU, Availability Flow, Channel Context | Hidden

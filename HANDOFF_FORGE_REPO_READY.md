@@ -62,6 +62,7 @@ npm run harness:consultant-story-surface-ui-w248
 npm run harness:lane-pack-expansion-qa-w249
 npm run harness:lane-aware-record-label-semantics-w250
 npm run harness:lane-pack-authoring-diff-review-w251
+npm run harness:lane-pack-review-ui-install-smoke-w252
 npm run check
 npm run validate
 ```
@@ -76,12 +77,31 @@ Current expected result:
 - W249 harness passes `12/12`.
 - W250 harness passes `10/10`.
 - W251 harness passes `11/11`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, and W251 harness.
+- W252 harness passes `9/9`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, and W252 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W252: Lane Pack Review UI Wiring, Install Smoke Acceptance, And Suitelet Header Polish
+
+What changed:
+
+- Wires the W251 proposed lane-pack diff/review output into a compact admin-safe trace review surface.
+- Shows reviewed sections for evidence, record roles, vocabulary, story/ROI/competitive copy, and N/LLM authority/uncertainty limits.
+- Keeps proposals review-only with no install button, no contract mutation, no drawer-created records, and no normal consultant UI diagnostics.
+- Adds an install smoke acceptance checklist for launcher icon visibility, click target/position, Review/Run story gating, returned names and lane-aware labels, weak-evidence confirmation, and compact Suitelet/header balance.
+- Reduces the FORGE header logo size so it stays crisp and recognizable without dominating the first viewport.
+
+Important W252 artifacts:
+
+- `archive/tools/run_w252_lane_pack_review_ui_install_smoke_harness.js`
+- `archive/reports/w252_lane_pack_review_ui_install_smoke_acceptance.md`
+- `archive/trace_samples/w252_lane_pack_review_ui_install_smoke_trace.json`
+
+Previous completed block:
 
 - W251: Lane Pack Authoring Diff Review, N/LLM Draft Intake Hardening, And Launcher Icon Visibility Polish
 
@@ -254,27 +274,30 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W252: Lane Pack Review UI Wiring And Install Smoke Acceptance
+W253: Post-Install Visual Acceptance, Header Density QA, And Consultant Story Trust Polish
 
 Goal:
-Wire the W251 lane-pack diff/review output into a compact admin-safe review surface and make the targeted launcher/story install smoke acceptance easier to run after Tampermonkey update.
+Turn the W252 smoke checklist into an easy post-install acceptance packet and tighten the visual trust cues around the launcher, Suitelet header, and compact Review/Run story surface without changing runtime authority.
 
 Build:
-- Add a compact review renderer for W251 proposed lane-pack diffs.
-- Show safe/admin-facing review sections for:
-  - evidence changes
-  - record-role changes
-  - vocabulary changes
-  - story/ROI/competitive copy changes
-  - N/LLM authority and uncertainty limits
-- Hide raw JSON, stack traces, internal arrays beyond reviewed diff rows, and any install-like action from normal consultant UI.
-- Keep proposals review-only; no install button, no contract mutation, no drawer-created records.
-- Add an install smoke acceptance checklist that records pass/fail evidence for:
-  - launcher icon is more pronounced at standard zoom
-  - click target and position are unchanged
-  - Review/Run story card appears only after valid import
-  - returned record names and lane-aware labels remain visible
-  - weak evidence still asks for lane confirmation
+- Add a compact post-install acceptance packet that a consultant/admin can use after updating Tampermonkey.
+- Include pass/fail capture fields for:
+  - launcher icon readability at standard browser zoom
+  - launcher click target and placement
+  - Suitelet/header logo size and first-viewport balance
+  - close button, tab row, and first content card reachability
+  - Review/Run story card gating after valid import
+  - returned record names and lane-aware labels
+  - weak/conflicting evidence confirmation behavior
+- Add a small visual density QA helper for the Suitelet/header that checks logo max dimensions, header spacing, tab reachability, and first-card visibility.
+- Tighten consultant story trust copy where it can be more concrete without overclaiming:
+  - proof move
+  - safe claim
+  - do-not-claim guardrail
+  - buyer-facing so what
+  - uncertainty note
+- Keep W252 lane-pack proposal review admin-only and review-only.
+- Hide raw JSON, stack traces, internal arrays, install-like actions, and admin diagnostics from normal consultant UI.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
 - Preserve fake Open-link blocking before valid import.
@@ -282,16 +305,17 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W252 harness covering:
-  - review renderer shows required diff sections
-  - unsafe proposal review does not render as installable
-  - normal UI hides raw diagnostics and install actions
-  - install smoke acceptance checklist includes launcher/story/weak-evidence checks
+- Add archived W253 harness covering:
+  - post-install acceptance packet includes all launcher/header/story/weak-evidence checks
+  - Suitelet/header density helper flags oversized logo/header states
+  - compact header state keeps close button, tab row, and first content card reachable
+  - Review/Run story trust copy remains concrete and non-overclaiming
+  - W252 proposal review remains admin-only and non-installable
   - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W252 harnesses, check, and validate.
+- Run W244 through W253 harnesses, check, and validate.
 
 Output:
-- Summary of review UI wiring, smoke acceptance packet, and guardrails.
+- Summary of acceptance packet, header density QA, consultant story copy polish, and guardrails.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

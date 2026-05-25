@@ -1,0 +1,18 @@
+{
+  "schema": "forge.w252.lane-pack-review-ui-install-smoke.trace.v1",
+  "workItem": "W252",
+  "purpose": "Prove W251 diff review renders safely, install smoke acceptance is actionable, and Suitelet header logo is proportionate.",
+  "assertions": [
+    "review renderer shows evidence, role, vocabulary, story, and N/LLM sections",
+    "unsafe proposal review does not render as installable",
+    "normal consultant UI hides raw diagnostics and install actions",
+    "install smoke acceptance checklist includes launcher, story, labels, weak evidence, and header checks",
+    "Suitelet/header logo is compact enough not to dominate the first viewport",
+    "close button, tab row, and first content card remain reachable and visually balanced",
+    "weak evidence remains confirmation-gated"
+  ],
+  "visualTestingDecision": {
+    "targetedInstallSmokeRecommended": true,
+    "broadNetSuiteVisualRegressionRequired": false
+  }
+}

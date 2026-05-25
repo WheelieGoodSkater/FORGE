@@ -17110,11 +17110,11 @@
       .idb-forge-brand {
         display: flex;
         align-items: center;
-        width: min(420px, calc(100% - 72px));
+        width: min(300px, calc(100% - 76px));
         max-width: calc(100% - 72px);
         min-width: 0;
         aspect-ratio: 1370 / 515;
-        max-height: 158px;
+        max-height: 108px;
         overflow: hidden;
       }
       .idb-forge-logo {
@@ -18229,6 +18229,85 @@
         ${escapeHtml(action.label)}
       </button>
     `).join('');
+  }
+
+  function formatLanePackDiffValueW252(value) {
+    if (Array.isArray(value)) return value.join(', ');
+    if (value === true) return 'true';
+    if (value === false) return 'false';
+    return String(value == null ? '' : value);
+  }
+
+  function renderLanePackDiffRowsW252(diff, area) {
+    const rows = arrayValue(diff && diff.changes).filter((change) => change.area === area);
+    if (!rows.length) return '<div class="idb-footer-note">No reviewed changes in this section.</div>';
+    return rows.map((change) => {
+      const added = arrayValue(change.added);
+      const removed = arrayValue(change.removed);
+      const fromTo = Object.prototype.hasOwnProperty.call(change, 'from') || Object.prototype.hasOwnProperty.call(change, 'to');
+      return `
+        <div class="idb-plan-row idb-compressed-row">
+          <span>
+            <span class="idb-build-label">${escapeHtml(consultantLabel(change.field))}</span>
+            <span class="idb-build-statement">${escapeHtml(fromTo
+              ? `${formatLanePackDiffValueW252(change.from)} -> ${formatLanePackDiffValueW252(change.to)}`
+              : `Added: ${formatLanePackDiffValueW252(added)}${removed.length ? `; Removed: ${formatLanePackDiffValueW252(removed)}` : ''}`)}</span>
+          </span>
+          <span class="idb-plan-role">Review</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderLanePackDiffReviewW252(review) {
+    const diff = review && review.proposedChangeDiff || { changes: [] };
+    const copy = review && review.reviewCopy || {};
+    const rejected = review && review.status === 'rejected';
+    const sections = [
+      ['websiteSignals', 'Evidence changes'],
+      ['recordRoles', 'Record-role changes'],
+      ['vocabulary', 'Vocabulary changes'],
+      ['liveDemo', 'Story, ROI, and competitive copy'],
+      ['nllmAdvisory', 'N/LLM authority and uncertainty']
+    ];
+    return `
+      <div class="idb-card idb-accent idb-w252-lane-pack-review">
+        <div class="idb-section-title">Lane-pack review</div>
+        <div class="idb-strong">${escapeHtml(copy.headline || (rejected ? 'Lane-pack proposal rejected.' : 'Lane-pack proposal review.'))}</div>
+        <div class="idb-copy">${escapeHtml(copy.summary || 'Review evidence changes before any contract source update.')}</div>
+        <div class="idb-chip-row">
+          <span class="idb-mini-chip">${escapeHtml(rejected ? 'Rejected' : 'Review only')}</span>
+          <span class="idb-mini-chip">No install action</span>
+          <span class="idb-mini-chip">N/LLM advisory only</span>
+        </div>
+        ${sections.map(([area, label]) => `
+          <details class="idb-technical-details" open>
+            <summary>${escapeHtml(label)}</summary>
+            <div class="idb-record-group">${renderLanePackDiffRowsW252(diff, area)}</div>
+          </details>
+        `).join('')}
+        <div class="idb-footer-note">${escapeHtml(copy.installGuidance || 'Keep proposal archived until human review updates contract source.')}</div>
+      </div>
+    `;
+  }
+
+  function installSmokeAcceptanceChecklistW252() {
+    return {
+      schema: 'forge.w252.install-smoke-acceptance-checklist.v1',
+      status: 'targeted_install_smoke_recommended',
+      items: [
+        { id: 'launcher_icon_visible', label: 'Launcher icon is more pronounced at standard zoom', expected: 'Icon reads clearly without increasing the click target.' },
+        { id: 'launcher_click_target_unchanged', label: 'Click target and position are unchanged', expected: 'Floating launcher remains 48px and right-aligned.' },
+        { id: 'story_card_gated', label: 'Review/Run story card appears only after valid import', expected: 'Pre-import fake Open links remain blocked.' },
+        { id: 'returned_names_labels_visible', label: 'Returned record names and lane-aware labels remain visible', expected: 'Open target uses returned names and lane-appropriate labels.' },
+        { id: 'weak_evidence_confirmation', label: 'Weak evidence asks for lane confirmation', expected: 'No unsupported lane claim is shown.' },
+        { id: 'suitelet_header_compact', label: 'Suitelet header logo is compact and balanced', expected: 'Logo no longer dominates the first viewport; close button, tabs, and first card remain reachable.' }
+      ],
+      visualTestingDecision: {
+        targetedInstallSmokeRecommended: true,
+        broadNetSuiteVisualRegressionRequired: false
+      }
+    };
   }
 
   function renderRunActionChips(state) {
@@ -20478,6 +20557,9 @@
     const evidenceChecklist = pilotEvidenceChecklistModel(state, lane, page, recommendation);
     const finalNaming = dccFinalNamingResultV1(state.dccFinalNamingResult, state, lane, page, recommendation);
     const showAdminResultImport = state && state.setupEditMode;
+    const lanePackProposalReview = showAdminResultImport && state.lanePackProposalW251
+      ? reviewProposedLanePackChangeW247(state.lanePackProposalW251)
+      : null;
     const copyStatus = state && state.operatorSummaryCopyStatus || null;
     return `
       <div class="idb-card">
@@ -20517,6 +20599,7 @@
           <button class="idb-secondary" data-idb-clear-dcc-final-naming ${state.dccFinalNamingResult ? '' : 'disabled'}>Clear imported names</button>
         </div>
       </div>` : ''}
+      ${lanePackProposalReview ? renderLanePackDiffReviewW252(lanePackProposalReview) : ''}
       ${showAdminResultImport ? `<div class="idb-card idb-accent idb-w90-evidence-checklist">
         <div class="idb-section-title">Pilot evidence checklist</div>
         <div class="idb-strong">${escapeHtml(consultantLabel(evidenceChecklist.status))}</div>
@@ -22111,6 +22194,8 @@
       completedRunnerResultImportCtaFromPollHandoffV1,
       completedRunnerResultImportCommitFromPollCtaV1,
       lanePackProposedChangeDiffW251,
+      renderLanePackDiffReviewW252,
+      installSmokeAcceptanceChecklistW252,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,

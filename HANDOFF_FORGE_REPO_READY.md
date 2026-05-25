@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W283 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, and the connected-build response-shape contract extraction point.
+  - W250-W284 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, the connected-build response-shape contract extraction point, and the connected-build response-shape bridge.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -49,6 +49,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
 - `src/contracts/lanePackExpansionWorkflow.js`
 - `src/contracts/lanePackReviewBridge.js`
 - `src/contracts/connectedBuildResponseShapes.js`
+- `src/contracts/connectedBuildResponseShapeBridge.js`
   - Canonical runtime contract source modules introduced so the drawer, W144 adapter, and runner can converge on the same mode/role/link language.
   - `lanePacks.js` defines the first versioned industry/sub-industry pack contract for future expansion.
   - `adapterProfiles.js` mirrors the W263 released W144 adapter profile and W262 readiness states as a parity-backed extraction point.
@@ -60,6 +61,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - `lanePackExpansionWorkflow.js` mirrors W247/W251/W252/W255 lane-pack authoring, diff review, admin review, receipt-driven QA, and review-only proposed-pack shapes as a parity-backed extraction point.
   - `lanePackReviewBridge.js` adds the W277 admin-only bridge that validates and normalizes W247/W251/W252/W255 lane-pack review workflow packets against `lanePackExpansionWorkflow.js`.
   - `connectedBuildResponseShapes.js` mirrors W265 connected-build submit/refresh response-shape aliases and safe status/copy handling as a parity-backed extraction point while leaving W151/W214/W245 import validity outside the module.
+  - `connectedBuildResponseShapeBridge.js` adds the W284 bridge that validates drawer-produced W265 submit/refresh response-shape outputs against `connectedBuildResponseShapes.js` while keeping W151/W214/W245 import validity outside the bridge.
 
 - `netsuite/idb_governed_runner_adapter_w144_suitelet.js`
   - Approved W144 adapter path.
@@ -113,6 +115,7 @@ npm run harness:contract-bridge-closure-runtime-extraction-readiness-w280
 npm run harness:adapter-profile-readiness-contract-migration-w281
 npm run harness:connected-build-boundary-inventory-w282
 npm run harness:connected-build-response-shape-contract-w283
+npm run harness:connected-build-response-shape-bridge-w284
 npm run check
 npm run validate
 ```
@@ -159,12 +162,34 @@ Current expected result:
 - W281 harness passes `16/16`.
 - W282 harness passes `12/12`.
 - W283 harness passes `16/16`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, adapter readiness bridge, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, connected build response-shape contract, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, W278 harness, W279 harness, W280 harness, W281 harness, W282 harness, and W283 harness.
+- W284 harness passes `15/15`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, adapter readiness bridge, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, connected build response-shape contract, connected build response-shape bridge, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, W278 harness, W279 harness, W280 harness, W281 harness, W282 harness, W283 harness, and W284 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W284: Connected Build Response Shape Bridge Without Submit Behavior Change
+
+What changed:
+
+- Adds `src/contracts/connectedBuildResponseShapeBridge.js` as the W284 connected-build response-shape bridge.
+- Validates drawer-produced W265 submit, pending refresh, completed refresh, and malformed/error response-shape outputs against W283 `connectedBuildResponseShapes.js` contract-normalized outputs.
+- Compares status, phase, runnerTaskId, idempotency token, result capture status, completed JSON location/readiness, adapter-safe error copy, normal consultant copy, raw evidence admin/archive-only policy, and the guardrails requiring W245/W151 validation.
+- Keeps W151/W214/W245 validation outside the bridge; W284 can prove shape parity but cannot declare a completed result import-valid.
+- Keeps actual submit execution and refresh/poll execution in the drawer-owned W264/W265 runtime path and does not wire the bridge into `idb-drawer.user.js`.
+- Keeps the drawer self-contained with no runtime `require`, external dependency, bundler requirement, network dependency, or storage write for bridge/contract loading.
+- Adds W284 archived report, trace, and harness proving W283/W282/W281 continuity, W264 submit/refresh/import continuity, W265 retry safety, W245/W151 validation continuity, returned records/Open links, fake-link blocking, hidden diagnostics, and no runtime authority changes.
+
+Important W284 artifacts:
+
+- `src/contracts/connectedBuildResponseShapeBridge.js`
+- `archive/tools/run_w284_connected_build_response_shape_bridge_harness.js`
+- `archive/reports/w284_connected_build_response_shape_bridge.md`
+- `archive/trace_samples/w284_connected_build_response_shape_bridge_trace.json`
+
+Previous completed block:
 
 - W283: Connected Build Response Shape Contract Extraction Without Submit Behavior Change
 
@@ -916,36 +941,28 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W284: Connected Build Response Shape Bridge Without Submit Behavior Change
+W285: Connected Build Response Shape Runtime Migration Without Submit Behavior Change
 
 Goal:
-Continue the connected-build optimization phase by adding a behavior-preserving bridge between drawer-produced W265 submit/refresh response-shape outputs and the W283 connected build response-shape contract module, while keeping actual Build records submit execution, runner refresh/poll execution, completed-result validation, Finish build import, consultant UI, endpoint behavior, dataset switching, retry safety, and runtime authority unchanged.
+Execute the next connected-build optimization micro-slice by migrating only safe drawer-owned W265 response-shape helper logic toward the W283 response-shape contract and W284 bridge shape, while keeping actual Build records submit execution, runner refresh/poll execution, completed-result validation, Finish build import, consultant UI, endpoint behavior, dataset switching, retry safety, and runtime authority unchanged.
 
 Build:
-- Add a focused bridge/helper module under `src/contracts/connectedBuildResponseShapeBridge.js`.
-- Keep the bridge limited to shape validation and parity normalization for:
-  - submit response shape
-  - pending refresh response shape
-  - completed refresh response shape
-  - malformed/error refresh response shape
-- Use `src/contracts/connectedBuildResponseShapes.js` where parity is straightforward.
-- Compare drawer-produced W265 outputs against W283 contract-normalized outputs for:
-  - status
-  - phase
-  - runnerTaskId
-  - idempotency token
-  - result capture status
-  - finalGeneratedNamesJson location
-  - finalGeneratedNamesJson readiness
-  - adapter-safe error copy
-  - normal consultant copy
-  - raw evidence admin/archive-only policy
-  - guardrails requiring W245/W151 validation
-- Keep W151/W214/W245 validation outside this response-shape bridge; the bridge may prove shape parity, but it cannot declare the result import-valid.
+- Review the drawer helper anchors selected by W282/W283/W284:
+  - `actualAdapterResponseShapeW265`
+  - `normalizeApprovedServerAdapterTransportResponseV1`
+  - `connectedBuildRetryPolicyW265`
+  - `connectedBuildSubmitRefreshImportW264`
+  - completed-result JSON location handling
+  - adapter-safe normal consultant copy states
+- Migrate only pure alias/status/copy response-shape logic that can preserve exact behavior.
+- Use the W283/W284 contract shape as the authority:
+  - `src/contracts/connectedBuildResponseShapes.js`
+  - `src/contracts/connectedBuildResponseShapeBridge.js`
+- If the Tampermonkey userscript cannot directly import Node/CommonJS modules at runtime, keep the drawer self-contained by using contract-shaped pure helper parity in `idb-drawer.user.js`; do not add a runtime `require`, external dependency, bundler requirement, network dependency, or storage write.
+- Keep W151/W214/W245 validation outside response-shape migration; migrated helpers may locate completed JSON but cannot declare a result import-valid.
 - Keep actual submit execution and actual refresh/poll execution in the drawer-owned W264/W265 runtime path.
-- Do not wire the bridge into `idb-drawer.user.js` runtime in this block.
-- Keep the drawer self-contained; do not add a runtime `require`, external dependency, bundler requirement, network dependency, or storage write for bridge/contract loading.
 - Use W282 as the governing inventory and W283 as the governing response-shape contract.
+- Add an archived W285 migration parity report explaining what helper logic moved or was reshaped, what stayed drawer-owned, and why.
 - Do not change normal consultant UI.
 - Do not change normal Build tab copy, buttons, or layout.
 - Do not change connected W264 submit/refresh/import behavior.
@@ -957,7 +974,7 @@ Build:
 - Do not change adapter endpoint/profile behavior.
 - Do not change dataset/account switching behavior.
 - Do not change record creation authority.
-- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, W264 submit/refresh/import flow, W265 retry safety, W270 shared harness utilities, W271 adapter profile/readiness contract, W272 live evidence/signoff contract, W273 story coaching contract, W274 lane-pack expansion workflow contract, W276 live evidence/signoff bridge, W277 lane-pack review bridge, W278 story coaching bridge, W279 adapter readiness bridge, W280 bridge closure/readiness packet, W281 adapter profile/readiness migration, W282 connected-build boundary inventory, and W283 connected build response-shape contract.
+- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, W264 submit/refresh/import flow, W265 retry safety, W270 shared harness utilities, W271 adapter profile/readiness contract, W272 live evidence/signoff contract, W273 story coaching contract, W274 lane-pack expansion workflow contract, W276 live evidence/signoff bridge, W277 lane-pack review bridge, W278 story coaching bridge, W279 adapter readiness bridge, W280 bridge closure/readiness packet, W281 adapter profile/readiness migration, W282 connected-build boundary inventory, W283 connected build response-shape contract, and W284 connected build response-shape bridge.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Keep harnesses, reports, and traces under `archive/`.
 - Keep repo front clean.
@@ -967,15 +984,17 @@ Build:
 - Do not update W144 deployment in this block.
 
 Validation:
-- Add W284 harness covering:
-  - `src/contracts/connectedBuildResponseShapeBridge.js` exists
-  - bridge validates against `src/contracts/connectedBuildResponseShapes.js`
-  - submit, pending refresh, completed refresh, and malformed/error W265 drawer outputs remain field-compatible with W283 contract outputs
-  - runnerTaskId/idempotency/finalGeneratedNamesJson aliases remain field-compatible
+- Add W285 harness covering:
+  - W282/W283/W284 selected source anchors remain present or are explicitly mapped to migrated equivalents
+  - W265 submit response aliases still normalize to the same runnerTaskId/idempotency behavior
+  - W265 pending refresh aliases still normalize to waiting/refresh behavior
+  - W265 completed refresh aliases still locate finalGeneratedNamesJson without declaring import validity
+  - W265 malformed/error aliases still produce adapter-safe stop copy and no fake Open links
+  - W284 bridge remains field-compatible with drawer-produced W265 response-shape outputs after migration
   - completed response shape parity does not bypass W151/W214/W245 validation
-  - malformed/error response parity keeps adapter-safe copy and no fake Open links
-  - raw response evidence remains archived/admin-only and hidden from normal consultant UI
-  - drawer remains self-contained with no runtime `require`, external dependency, bundler requirement, network dependency, or storage write added for bridge/contract loading
+  - actual submit execution and actual refresh/poll execution remain drawer-owned and unchanged
+  - drawer remains self-contained with no runtime `require`, external dependency, bundler requirement, network dependency, or storage write added for contract/bridge loading
+  - W284 response-shape bridge remains available and unchanged
   - W283 response-shape contract remains available and unchanged
   - W282 boundary inventory remains available and unchanged
   - W281 adapter profile/readiness migration remains available and unchanged
@@ -987,10 +1006,10 @@ Validation:
   - normal consultant UI hides endpoint/profile/raw/admin diagnostics
   - no runtime authority changes are introduced
   - no drawer-created records or drawer transaction writes are introduced
-- Run W244 through W284 harnesses, check, and validate.
+- Run W244 through W285 harnesses, check, and validate.
 
 Output:
-- Summary of connected build response-shape bridge, files touched, parity guardrails, and validation.
+- Summary of connected build response-shape runtime migration, files touched, parity guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

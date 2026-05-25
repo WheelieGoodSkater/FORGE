@@ -1,0 +1,70 @@
+{
+  "schema": "forge.w284.connected-build-response-shape-bridge.trace.v1",
+  "status": "bridge_ready",
+  "bridgeModule": "src/contracts/connectedBuildResponseShapeBridge.js",
+  "governingContract": "src/contracts/connectedBuildResponseShapes.js",
+  "validatedShapes": [
+    "submit_response_shape",
+    "pending_refresh_response_shape",
+    "completed_refresh_response_shape",
+    "malformed_error_refresh_response_shape"
+  ],
+  "comparedFields": [
+    "schema",
+    "phase",
+    "status",
+    "runnerTaskId",
+    "idempotencyToken",
+    "resultCaptureStatus",
+    "finalGeneratedNamesJsonLocation",
+    "finalGeneratedNamesJsonReady",
+    "adapterSafeErrorCopy",
+    "normalUiCopy",
+    "normalizedResponse.status"
+  ],
+  "validationBoundary": {
+    "w151OwnsImportValidity": true,
+    "w214OwnsSemanticGuard": true,
+    "w245OwnsCanonicalImportNormalization": true,
+    "bridgeCannotDeclareImportValid": true
+  },
+  "rawEvidencePolicy": {
+    "archiveOnly": true,
+    "adminDebugOnly": true,
+    "hiddenFromNormalConsultantUi": true
+  },
+  "runtimeBoundary": {
+    "bridgeNotWiredIntoDrawerRuntime": true,
+    "drawerSelfContained": true,
+    "noRuntimeRequireAdded": true,
+    "noExternalDependencyAdded": true,
+    "noBundlerRequirementAdded": true,
+    "noNetworkDependencyAdded": true,
+    "noStorageWriteAddedForBridgeLoading": true
+  },
+  "continuity": {
+    "w283ResponseShapeContractAvailable": true,
+    "w282BoundaryInventoryAvailable": true,
+    "w281AdapterProfileReadinessMigrationPreserved": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordsOpenLinksChanged": false,
+    "fakeLinkBlockingChanged": false,
+    "normalConsultantUiChanged": false,
+    "endpointProfileBehaviorChanged": false,
+    "datasetSwitchingChanged": false
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "normalConsultantUiHidesEndpointRawTaskSchemaStackAdminDiagnostics": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "noW144DeploymentUpdateInThisBlock": true
+  }
+}

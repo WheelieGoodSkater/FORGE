@@ -5557,19 +5557,79 @@
     const opts = options || {};
     const result = transportResult || {};
     const resultCapture = result.resultCapture || {};
-    const rawStatus = firstNonBlank(result.status, resultCapture.status, opts.status, 'transport_not_executed_no_submit');
-    const runnerTaskId = firstNonBlank(result.runnerTaskId, resultCapture.runnerTaskId, opts.runnerTaskId);
+    const nestedResult = result.result || result.payload || result.data || result.response || {};
+    const nestedCapture = nestedResult.resultCapture || {};
+    const rawStatus = firstNonBlank(
+      result.status,
+      result.adapterStatus,
+      result.runnerStatus,
+      resultCapture.status,
+      nestedResult.status,
+      nestedResult.adapterStatus,
+      nestedCapture.status,
+      opts.status,
+      'transport_not_executed_no_submit'
+    );
+    const runnerTaskId = firstNonBlank(
+      result.runnerTaskId,
+      result.runner_task_id,
+      result.taskId,
+      result.task_id,
+      result.queueTaskId,
+      resultCapture.runnerTaskId,
+      resultCapture.runner_task_id,
+      nestedResult.runnerTaskId,
+      nestedResult.runner_task_id,
+      nestedResult.taskId,
+      nestedResult.task_id,
+      nestedResult.queueTaskId,
+      nestedCapture.runnerTaskId,
+      nestedCapture.runner_task_id,
+      opts.runnerTaskId
+    );
     const normalizedRunnerTaskId = firstNonBlank(
       runnerTaskId,
       result.taskId,
       result.runnerTask && result.runnerTask.id,
       result.task && result.task.id,
-      resultCapture.taskId
+      result.queue && result.queue.taskId,
+      resultCapture.taskId,
+      nestedResult.taskId,
+      nestedResult.runnerTask && nestedResult.runnerTask.id,
+      nestedResult.task && nestedResult.task.id,
+      nestedResult.queue && nestedResult.queue.taskId,
+      nestedCapture.taskId
     );
-    const hasError = result.error === true || resultCapture.error === true || /error|failed|rejected|exception/i.test(rawStatus);
-    const hasCompletedResultJson = !!(result.finalGeneratedNamesJson || resultCapture.finalGeneratedNamesJson);
-    const queueSubmitted = result.queueSubmitted === true || resultCapture.queueSubmitted === true;
-    const captureStatus = firstNonBlank(resultCapture.status, opts.resultCaptureStatus, normalizedRunnerTaskId ? 'pending_runner_completion' : 'not_started_no_submit');
+    const hasError = result.error === true ||
+      resultCapture.error === true ||
+      nestedResult.error === true ||
+      nestedCapture.error === true ||
+      /error|failed|rejected|exception/i.test(rawStatus);
+    const completedResultJsonCandidates = [
+      result.finalGeneratedNamesJson,
+      result.completedResultJson,
+      result.generatedNamesJson,
+      result.finalNamesJson,
+      resultCapture.finalGeneratedNamesJson,
+      resultCapture.completedResultJson,
+      resultCapture.generatedNamesJson,
+      nestedResult.finalGeneratedNamesJson,
+      nestedResult.completedResultJson,
+      nestedResult.generatedNamesJson,
+      nestedResult.finalNamesJson,
+      nestedCapture.finalGeneratedNamesJson,
+      nestedCapture.completedResultJson,
+      nestedCapture.generatedNamesJson
+    ];
+    const completedResultJson = completedResultJsonCandidates.find((value) => value !== undefined && value !== null && (typeof value !== 'string' || value.trim()));
+    const hasCompletedResultJson = !!completedResultJson;
+    const queueSubmitted = result.queueSubmitted === true ||
+      result.queued === true ||
+      resultCapture.queueSubmitted === true ||
+      nestedResult.queueSubmitted === true ||
+      nestedResult.queued === true ||
+      nestedCapture.queueSubmitted === true;
+    const captureStatus = firstNonBlank(resultCapture.status, nestedCapture.status, opts.resultCaptureStatus, normalizedRunnerTaskId ? 'pending_runner_completion' : 'not_started_no_submit');
     const normalizedStatus = hasError
       ? 'adapter_transport_error_drawer_safe'
       : hasCompletedResultJson
@@ -5606,11 +5666,11 @@
         status: normalizedStatus === 'false_flag_no_submit' ? 'not_started_no_submit' : captureStatus,
         runnerTaskId: normalizedRunnerTaskId || resultCapture.runnerTaskId || '',
         finalGeneratedNamesReady: hasCompletedResultJson && normalizedStatus === 'completed_result_awaiting_w151_import',
-        finalGeneratedNamesJson: hasCompletedResultJson ? (result.finalGeneratedNamesJson || resultCapture.finalGeneratedNamesJson) : null
+        finalGeneratedNamesJson: hasCompletedResultJson ? completedResultJson : null
       }),
       pollAttempted: opts.pollAttempted === true,
       finalGeneratedNamesJsonReady: hasCompletedResultJson && normalizedStatus === 'completed_result_awaiting_w151_import',
-      finalGeneratedNamesJson: hasCompletedResultJson ? (result.finalGeneratedNamesJson || resultCapture.finalGeneratedNamesJson) : null,
+      finalGeneratedNamesJson: hasCompletedResultJson ? completedResultJson : null,
       importGuard: 'W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.',
       activeOpenLinks: 0,
       visualTestingBlocked: true,
@@ -15615,6 +15675,259 @@
     };
   }
 
+  function actualAdapterResponseShapeW265(rawResponse, options) {
+    const opts = options || {};
+    const raw = rawResponse || {};
+    const body = raw.body || raw.payload || raw.data || raw.result || raw.response || {};
+    const resultCapture = raw.resultCapture || body.resultCapture || {};
+    const nestedCapture = body.resultCapture || {};
+    const completedJsonCandidates = [
+      raw.finalGeneratedNamesJson,
+      raw.completedResultJson,
+      raw.generatedNamesJson,
+      raw.finalNamesJson,
+      resultCapture.finalGeneratedNamesJson,
+      resultCapture.completedResultJson,
+      resultCapture.generatedNamesJson,
+      body.finalGeneratedNamesJson,
+      body.completedResultJson,
+      body.generatedNamesJson,
+      body.finalNamesJson,
+      nestedCapture.finalGeneratedNamesJson,
+      nestedCapture.completedResultJson,
+      nestedCapture.generatedNamesJson
+    ];
+    const completedJsonIndex = completedJsonCandidates.findIndex((value) => value !== undefined && value !== null && (typeof value !== 'string' || value.trim()));
+    const completedJsonLocations = [
+      'finalGeneratedNamesJson',
+      'completedResultJson',
+      'generatedNamesJson',
+      'finalNamesJson',
+      'resultCapture.finalGeneratedNamesJson',
+      'resultCapture.completedResultJson',
+      'resultCapture.generatedNamesJson',
+      'body.finalGeneratedNamesJson',
+      'body.completedResultJson',
+      'body.generatedNamesJson',
+      'body.finalNamesJson',
+      'body.resultCapture.finalGeneratedNamesJson',
+      'body.resultCapture.completedResultJson',
+      'body.resultCapture.generatedNamesJson'
+    ];
+    const completedJson = completedJsonIndex >= 0 ? completedJsonCandidates[completedJsonIndex] : null;
+    const flattened = Object.assign({}, body, raw, {
+      resultCapture,
+      runnerTaskId: firstNonBlank(
+        raw.runnerTaskId,
+        raw.runner_task_id,
+        raw.taskId,
+        raw.task_id,
+        raw.queueTaskId,
+        raw.runnerTask && raw.runnerTask.id,
+        raw.task && raw.task.id,
+        raw.queue && raw.queue.taskId,
+        resultCapture.runnerTaskId,
+        resultCapture.runner_task_id,
+        body.runnerTaskId,
+        body.runner_task_id,
+        body.taskId,
+        body.task_id,
+        body.queueTaskId,
+        body.runnerTask && body.runnerTask.id,
+        body.task && body.task.id,
+        body.queue && body.queue.taskId,
+        nestedCapture.runnerTaskId,
+        nestedCapture.runner_task_id,
+        opts.runnerTaskId
+      ),
+      finalGeneratedNamesJson: completedJson
+    });
+    const normalized = normalizeApprovedServerAdapterTransportResponseV1(flattened, {
+      pollAttempted: opts.phase === 'refresh' || opts.pollAttempted === true,
+      runnerTaskId: opts.runnerTaskId,
+      resultCaptureStatus: opts.resultCaptureStatus
+    });
+    const phase = opts.phase || 'unknown';
+    const hasError = normalized.status === 'adapter_transport_error_drawer_safe';
+    const status = hasError
+      ? 'adapter_error_safe_stop'
+      : normalized.finalGeneratedNamesJsonReady
+        ? 'completed_result_shape_ready'
+        : normalized.runnerTaskId
+          ? phase === 'submit'
+            ? 'submit_task_captured'
+            : 'refresh_pending'
+          : 'no_task_or_result_shape';
+    const idempotencyToken = firstNonBlank(
+      opts.idempotencyToken,
+      raw.idempotencyToken,
+      raw.idempotency_key,
+      body.idempotencyToken,
+      body.idempotency_key,
+      resultCapture.idempotencyToken
+    );
+    const normalCopyByStatus = {
+      submit_task_captured: 'Build submitted.',
+      refresh_pending: 'Still building.',
+      completed_result_shape_ready: 'Records ready.',
+      adapter_error_safe_stop: 'Build stopped safely, ask admin.',
+      no_task_or_result_shape: 'Build stopped safely, ask admin.'
+    };
+    return {
+      schema: 'forge.w265.actual-adapter-response-shape.v1',
+      phase,
+      status,
+      http: {
+        status: firstNonBlank(raw.httpStatus, raw.statusCode, raw.code, opts.httpStatus),
+        ok: raw.ok === true || raw.success === true || body.ok === true
+      },
+      adapterStatus: firstNonBlank(raw.status, raw.adapterStatus, raw.runnerStatus, resultCapture.status, body.status, body.adapterStatus, nestedCapture.status),
+      runnerTaskId: normalized.runnerTaskId || null,
+      idempotencyToken: idempotencyToken || '',
+      resultCaptureStatus: normalized.resultCaptureStatus || '',
+      finalGeneratedNamesJsonLocation: completedJsonIndex >= 0 ? completedJsonLocations[completedJsonIndex] : '',
+      finalGeneratedNamesJsonReady: normalized.finalGeneratedNamesJsonReady === true,
+      finalGeneratedNamesJson: normalized.finalGeneratedNamesJson || null,
+      adapterSafeErrorCopy: hasError ? 'Build stopped safely, ask admin.' : '',
+      normalUiCopy: normalCopyByStatus[status] || 'Build stopped safely, ask admin.',
+      normalizedResponse: normalized,
+      rawEvidence: {
+        adminOnly: true,
+        archivedOnly: true,
+        rawStatus: normalized.rawStatus,
+        responseKeys: Object.keys(raw),
+        bodyKeys: body && typeof body === 'object' ? Object.keys(body) : [],
+        resultCaptureKeys: resultCapture && typeof resultCapture === 'object' ? Object.keys(resultCapture) : []
+      },
+      guardrails: {
+        normalUiHidesRawEvidence: true,
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        noW144DeploymentUpdateInThisBlock: true,
+        w245W151ValidationStillRequired: true
+      }
+    };
+  }
+
+  function connectedBuildRetryPolicyW265(options) {
+    const opts = options || {};
+    const runnerTaskId = firstNonBlank(opts.runnerTaskId);
+    const idempotencyToken = firstNonBlank(opts.idempotencyToken);
+    const adapterError = opts.adapterError === true;
+    const completedResultAccepted = opts.completedResultAccepted === true;
+    return {
+      schema: 'forge.w265.connected-build-retry-policy.v1',
+      duplicateSubmit: {
+        allowed: false,
+        action: runnerTaskId && idempotencyToken ? 'use_existing_build_and_refresh_status' : 'block_until_new_confirmed_request',
+        createsSecondBuild: false,
+        idempotencyPreserved: !!idempotencyToken
+      },
+      afterAdapterError: {
+        allowedAutomatically: false,
+        action: adapterError ? 'requires_new_explicit_consultant_or_admin_action' : 'not_applicable'
+      },
+      refreshWhilePending: {
+        allowed: !!runnerTaskId && adapterError !== true,
+        action: 'repeat_refresh_build_status'
+      },
+      finishBuild: {
+        allowed: completedResultAccepted === true,
+        action: completedResultAccepted ? 'finish_build' : 'wait_for_w151_valid_completed_result'
+      },
+      normalUiCopy: adapterError
+        ? 'Build stopped safely, ask admin.'
+        : completedResultAccepted
+          ? 'Records ready.'
+          : runnerTaskId
+            ? 'Still building.'
+            : 'Build submitted.',
+      guardrails: {
+        noSecondBuildFromDuplicateSubmit: true,
+        retryAfterErrorIsExplicitOnly: true,
+        finishRequiresW151ValidResult: true,
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true
+      }
+    };
+  }
+
+  function liveAdapterSmokeEvidencePacketW265(state, lane, pageContext, recommendation, options) {
+    const opts = options || {};
+    const workingState = Object.assign({}, state || {});
+    ensureProductionBuildSavedAdminConfig(workingState);
+    const adapterConfig = applySelectedAdapterProfileToConfigW263(workingState.integratedBuildAdapterConfig || {}, pageContext);
+    const submitShape = actualAdapterResponseShapeW265(opts.submitResponse || {}, {
+      phase: 'submit',
+      idempotencyToken: opts.idempotencyToken
+    });
+    const pendingRefreshShape = actualAdapterResponseShapeW265(opts.pendingRefreshResponse || {}, {
+      phase: 'refresh',
+      runnerTaskId: submitShape.runnerTaskId,
+      idempotencyToken: submitShape.idempotencyToken
+    });
+    const completedRefreshShape = actualAdapterResponseShapeW265(opts.completedRefreshResponse || {}, {
+      phase: 'refresh',
+      runnerTaskId: submitShape.runnerTaskId,
+      idempotencyToken: submitShape.idempotencyToken
+    });
+    const malformedRefreshShape = actualAdapterResponseShapeW265(opts.malformedRefreshResponse || { status: 'adapter_error', error: true }, {
+      phase: 'refresh',
+      runnerTaskId: submitShape.runnerTaskId,
+      idempotencyToken: submitShape.idempotencyToken
+    });
+    const completedGuard = validateDccFinalNamingImportPayload(completedRefreshShape.finalGeneratedNamesJson, workingState, lane, pageContext, recommendation);
+    const retryPolicy = connectedBuildRetryPolicyW265({
+      runnerTaskId: submitShape.runnerTaskId || pendingRefreshShape.runnerTaskId || completedRefreshShape.runnerTaskId,
+      idempotencyToken: submitShape.idempotencyToken,
+      adapterError: malformedRefreshShape.status === 'adapter_error_safe_stop',
+      completedResultAccepted: completedGuard.valid === true
+    });
+    return {
+      schema: 'forge.w265.live-adapter-smoke-evidence-packet.v1',
+      status: completedGuard.valid === true ? 'smoke_shape_ready_for_controlled_live_review' : 'smoke_shape_needs_attention',
+      selectedAdapterProfile: adapterConfig.selectedAdapterProfile || null,
+      endpointConfigured: !!adapterConfig.endpointUrl,
+      endpointPath: adapterConfig.suiteletPath || '',
+      liveNetworkCallPerformedByHarness: false,
+      submitShape,
+      refreshShapes: {
+        pending: pendingRefreshShape,
+        completed: completedRefreshShape,
+        malformedOrError: malformedRefreshShape
+      },
+      completedResultGuard: {
+        completedResultPresent: !!completedRefreshShape.finalGeneratedNamesJson,
+        completedResultAcceptedByW151: completedGuard.valid === true,
+        status: completedGuard.status,
+        message: completedGuard.message || ''
+      },
+      retryPolicy,
+      normalConsultantCopy: [
+        'Build submitted',
+        'Refresh build status',
+        'Still building',
+        'Records ready',
+        'Finish build',
+        'Build stopped safely, ask admin'
+      ],
+      rawEvidencePolicy: {
+        archiveOnly: true,
+        adminDebugOnly: true,
+        hiddenFromNormalConsultantUi: true
+      },
+      guardrails: {
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        approvedServerAdapterPathOnly: true,
+        noW144DeploymentUpdateInThisBlock: true,
+        w264SubmitRefreshImportPreserved: true,
+        w245W151ValidationPreserved: true,
+        fakeOpenLinksBlockedBeforeImport: true
+      }
+    };
+  }
+
   function productionFlowHardeningConsultantToggleImageRemovalW209V1(state, lane, pageContext, recommendation, options) {
     const opts = options || {};
     ensureProductionBuildSavedAdminConfig(state);
@@ -23403,6 +23716,9 @@
       applySelectedAdapterProfileToConfigW263,
       deployedAdapterReadinessTraceW263,
       connectedBuildSubmitRefreshImportW264,
+      actualAdapterResponseShapeW265,
+      connectedBuildRetryPolicyW265,
+      liveAdapterSmokeEvidencePacketW265,
       productionFlowHardeningConsultantToggleImageRemovalW209V1,
       consultantFirstUiCleanupAdminDebugSeparationW210V1,
       toggleAwareNamingGuardrailContractW211V1,

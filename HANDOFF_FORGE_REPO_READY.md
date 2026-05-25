@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W264 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, and the connected submit/refresh/import flow.
+  - W250-W265 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, and live adapter response-shape/retry safety.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -76,6 +76,7 @@ npm run harness:post-install-smoke-evidence-capture-w261
 npm run harness:real-build-path-clarity-w262
 npm run harness:deployed-adapter-profile-readiness-trace-w263
 npm run harness:connected-build-submit-refresh-import-w264
+npm run harness:live-adapter-smoke-retry-safety-w265
 npm run check
 npm run validate
 ```
@@ -103,12 +104,32 @@ Current expected result:
 - W262 harness passes `11/11`.
 - W263 harness passes `12/12`.
 - W264 harness passes `15/15`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, and W264 harness.
+- W265 harness passes `11/11`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, and W265 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W265: Live Adapter Smoke Evidence, Result Shape Reconciliation, And Retry Safety
+
+What changed:
+
+- Adds a W265 response-shape normalizer for actual/fixture submit and refresh aliases without weakening W245/W151 completed-result import validation.
+- Extends approved adapter response normalization to recognize common task/result aliases such as `task.id`, `runnerTask.id`, `runner_task_id`, `queueTaskId`, `completedResultJson`, `generatedNamesJson`, and nested `resultCapture.finalGeneratedNamesJson`.
+- Adds a live adapter smoke evidence packet that captures submit shape, pending refresh shape, completed refresh shape, malformed/error shape, raw-evidence archive policy, and consultant-safe status copy.
+- Adds retry safety policy: duplicate submit reuses the existing captured build and refresh path, retry after adapter error requires a new explicit action, refresh may repeat while pending, and Finish build requires a W151-valid completed result.
+- Keeps raw response evidence archived/admin-only and hidden from normal consultant UI.
+- Preserves W264 connected submit/refresh/import, no drawer-created records, no drawer transaction writes, and no W144 deployment update.
+
+Important W265 artifacts:
+
+- `archive/tools/run_w265_live_adapter_smoke_retry_safety_harness.js`
+- `archive/reports/w265_live_adapter_smoke_retry_safety.md`
+- `archive/trace_samples/w265_live_adapter_smoke_retry_safety_trace.json`
+
+Previous completed block:
 
 - W264: Connected Build Submit, Runner Refresh, And Completed Import
 
@@ -539,31 +560,36 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W265: Live Adapter Smoke Evidence, Result Shape Reconciliation, And Retry Safety
+W266: Controlled Live Build Run Evidence And Result Import QA
 
 Goal:
-Run and harden the first controlled live connected adapter smoke against the released W144 profile, capture the actual adapter response/result shape, and make retry/error handling safe and consultant-clear without changing runtime authority.
+Use the W265 response-shape and retry safety layer to guide one controlled live Motion-style build run, capture the actual submit/refresh/import evidence, and reconcile any real W144 response differences while keeping consultant UI simple and runtime authority unchanged.
 
 Build:
-- Add an archived live adapter smoke evidence packet for one Motion-style run through the released W144 profile.
-- Capture and normalize the actual submit response shape:
-  - HTTP status / ok
-  - adapter status
-  - runnerTaskId or supported task id alias
+- Add a controlled live build run evidence packet for one Motion Industries run through the released W144 profile.
+- Use the normal consultant workflow only:
+  - prospect name
+  - website
+  - notes
+  - toggles/lane
+  - Build records
+  - Refresh build status
+  - Finish build after records are ready
+  - Review/Run returned records
+- Capture live evidence in archive/admin-only surfaces:
+  - selected adapter profile
+  - endpoint path, not as normal UI copy
+  - submit timestamp
   - idempotency token
-  - result capture status
-  - adapter-safe error copy
-- Capture and normalize the actual refresh/poll response shape:
-  - pending response
-  - completed response
-  - malformed/error response
+  - actual submit response shape
+  - captured runner task id or supported alias
+  - actual pending refresh response shape
+  - actual completed refresh response shape
   - finalGeneratedNamesJson location
-- Reconcile any actual W144 response aliases with W264 normalization without weakening W245/W151 import validation.
-- Add safe retry policy:
-  - duplicate submit uses existing runnerTaskId/idempotency token and does not create a second build
-  - retry after adapter error requires a new explicit consultant/admin action
-  - refresh can be repeated while pending
-  - Finish build is allowed only after W151-valid completed result
+  - W245/W151 validation result
+  - imported returned record names, labels, types, ids, and supported Open URLs
+- Reconcile actual response differences into W265 normalization only if they are safe aliases.
+- Do not weaken validation to accept incomplete ids, unsupported URLs, wrong owner, fake links, or handoff-only JSON.
 - Keep normal consultant UI simple:
   - `Build submitted`
   - `Refresh build status`
@@ -571,31 +597,35 @@ Build:
   - `Records ready`
   - `Finish build`
   - `Build stopped safely, ask admin`
-- Do not expose endpoint, raw JSON, runner task ids, stack traces, schema names, or admin diagnostics in normal consultant UI.
+- Add a live-run decision helper:
+  - `ready_to_keep` when live submit, refresh, validation, import, and Open-link checks pass
+  - `needs_attention` when result shape is new but safe to reconcile
+  - `rollback_recommended` when authority boundaries, fake links, unsupported URLs, or invalid completed result behavior appear
+- Preserve duplicate-submit safety and explicit retry-after-error gating from W265.
 - Keep raw response evidence only in archived reports/traces/admin debug surfaces.
 - Do not create records from the drawer client directly.
 - Do not add transaction writes outside approved adapter path.
 - Do not update W144 deployment in this block.
-- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, and W264 submit/refresh/import flow.
+- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, W264 submit/refresh/import flow, and W265 retry safety.
 - Keep harnesses, reports, and traces under archive/.
 - Keep repo front clean.
 
 Validation:
-- Add W265 harness covering:
-  - actual/fixture submit aliases normalize to captured runnerTaskId
-  - pending refresh stays waiting and shows `Refresh build status`
-  - completed refresh shows `Finish build` but does not auto-import
-  - `Finish build` imports only W151-valid completed results
-  - malformed/error refresh shows W220 recovery or ask-admin copy without fake links
-  - duplicate submit does not create a second build and preserves idempotency
-  - retry after adapter error is gated
-  - raw response evidence remains archived/admin-only, not normal consultant UI
-  - W264 Motion connected path still passes
+- Add W266 harness covering:
+  - live evidence packet includes submit, pending refresh, completed refresh, validation, import, and Open-link capture fields
+  - live-run decision helper returns `ready_to_keep`, `needs_attention`, and `rollback_recommended` for the right conditions
+  - actual response aliases continue to normalize through W265
+  - completed result imports only after W151-valid result
+  - returned Motion distribution records keep Product SKU / availability labels
+  - normal consultant UI hides endpoint, raw JSON, task ids, schema names, stack traces, and admin diagnostics
+  - duplicate submit and retry-after-error rules remain enforced
+  - fake Open links remain blocked before import
+  - W264 and W265 harnesses still pass
   - no drawer-created records or drawer transaction writes are introduced
-- Run W244 through W265 harnesses, check, and validate.
+- Run W244 through W266 harnesses, check, and validate.
 
 Output:
-- Summary of live adapter smoke evidence, response-shape reconciliation, retry safety, guardrails, and validation.
+- Summary of controlled live run evidence packet, response reconciliation, import QA, rollback decision logic, guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

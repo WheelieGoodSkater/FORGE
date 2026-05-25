@@ -1,0 +1,40 @@
+{
+  "schema": "forge.w265.live-adapter-smoke-retry-safety.trace.v1",
+  "profileId": "td3021666-released-governed-runner-adapter",
+  "endpointPath": "/app/site/hosting/scriptlet.nl?script=6702&deploy=2",
+  "liveNetworkCallPerformedByHarness": false,
+  "submitShape": {
+    "phase": "submit",
+    "status": "submit_task_captured",
+    "runnerTaskId": "runner-w265-motion-001",
+    "idempotencyToken": "motion-w265-token",
+    "resultCaptureStatus": "pending_runner_completion"
+  },
+  "refreshShapes": {
+    "pending": {
+      "status": "refresh_pending",
+      "normalUiCopy": "Still building."
+    },
+    "completed": {
+      "status": "completed_result_shape_ready",
+      "finalGeneratedNamesJsonLocation": "body.resultCapture.finalGeneratedNamesJson",
+      "normalUiCopy": "Records ready."
+    },
+    "malformedOrError": {
+      "status": "adapter_error_safe_stop",
+      "normalUiCopy": "Build stopped safely, ask admin."
+    }
+  },
+  "retryPolicy": {
+    "duplicateSubmitCreatesSecondBuild": false,
+    "retryAfterAdapterErrorRequiresExplicitAction": true,
+    "finishRequiresW151ValidResult": true
+  },
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "noW144DeploymentUpdateInThisBlock": true,
+    "rawEvidenceArchiveOnly": true
+  }
+}

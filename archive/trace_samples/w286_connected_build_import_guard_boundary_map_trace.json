@@ -1,0 +1,107 @@
+{
+  "schema": "forge.w286.connected-build-import-guard-boundary-map.trace.v1",
+  "status": "import_guard_boundary_mapped",
+  "boundaryMap": "archive/reports/w286_connected_build_import_guard_boundary_map.md",
+  "postRefreshImportBoundaries": [
+    "completed_result_json_presence",
+    "w151_payload_validation",
+    "w214_semantic_guard",
+    "w245_canonical_display_ready_import_normalization",
+    "finish_build_operator_action",
+    "synthetic_poll_control_creation",
+    "imported_returned_records",
+    "lane_aware_labels_and_supported_open_links",
+    "w218_w220_consultant_wording",
+    "admin_only_raw_evidence"
+  ],
+  "sourceAnchors": [
+    "connectedBuildSubmitRefreshImportW264",
+    "validateDccFinalNamingImportPayload",
+    "completedRunnerResultSemanticGuardW214",
+    "canonicalImportResultNormalizationW245",
+    "completedRunnerResultImportCommitOperatorFlowV1",
+    "syntheticPollControl",
+    "returned record names/labels/Open-link authority"
+  ],
+  "selectedFutureMicroSlice": {
+    "id": "completed_result_import_eligibility_contract_w287",
+    "targetContract": "src/contracts/completedResultImportEligibility.js",
+    "proposedBridge": "src/contracts/completedResultImportEligibilityBridge.js",
+    "movesFinishBuildStateMutation": false,
+    "scope": "contract and bridge around completed-result import eligibility shape only",
+    "sourceAnchors": [
+      "connectedBuildSubmitRefreshImportW264",
+      "validateDccFinalNamingImportPayload",
+      "completedRunnerResultSemanticGuardW214",
+      "canonicalImportResultNormalizationW245",
+      "completedRunnerResultImportCommitOperatorFlowV1",
+      "adapterResultIndicatesCompletedResultReady",
+      "W285 completed JSON location helpers"
+    ],
+    "parityBehavior": [
+      "Finish build appears only after W151-valid completed result",
+      "W214 semantic guard remains required",
+      "W245 canonical returned-record normalization remains required before Review/Run Open links",
+      "W218 success wording remains unchanged",
+      "W220 recovery wording remains unchanged",
+      "fake Open links remain blocked before valid import",
+      "normal consultant UI hides raw diagnostics",
+      "no drawer-created records",
+      "no drawer transaction writes"
+    ],
+    "requiredHarnesses": [
+      "W244-W286",
+      "W264",
+      "W265",
+      "W283",
+      "W284",
+      "W285",
+      "future W287"
+    ],
+    "manualReviewNotes": [
+      "Do not move Finish build state mutation",
+      "Do not weaken validateDccFinalNamingImportPayload",
+      "Do not imply Open links are safe before W245 normalization",
+      "Do not expose W151/W214/W245 schema names in normal consultant UI"
+    ],
+    "rollbackPlan": "Remove future eligibility module or bridge usage and keep existing drawer-owned W264/W151/W214/W245 flow."
+  },
+  "safeToExtractLater": [
+    "completed result import eligibility shape",
+    "admin-only eligibility evidence packet",
+    "field parity bridge between drawer eligibility output and contract"
+  ],
+  "protectedRuntimeSurfaceForNow": [
+    "Finish build state mutation",
+    "W151 payload validation logic",
+    "W214 semantic guard logic",
+    "W245 canonical import normalization logic",
+    "actual submit execution",
+    "actual refresh/poll execution"
+  ],
+  "continuity": {
+    "w285ResponseShapeRuntimeMigrationAvailable": true,
+    "w284ResponseShapeBridgeAvailable": true,
+    "w283ResponseShapeContractAvailable": true,
+    "w282BoundaryInventoryAvailable": true,
+    "w281AdapterProfileReadinessMigrationPreserved": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordsOpenLinksChanged": false,
+    "fakeLinkBlockingChanged": false,
+    "normalConsultantUiChanged": false
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "normalConsultantUiHidesEndpointRawTaskSchemaStackAdminDiagnostics": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "noW144DeploymentUpdateInThisBlock": true
+  }
+}

@@ -1,0 +1,252 @@
+{
+  "schema": "forge.w275.extraction-closure-runtime-inventory.trace.v1",
+  "workstream": "W275",
+  "title": "Extraction Closure Map, Runtime Helper Dependency Inventory, And First Optimization Slice",
+  "extractionClosureMap": {
+    "schema": "forge.w275.extraction-closure-map.v1",
+    "status": "extraction_phase_closed_for_review",
+    "blocks": [
+      {
+        "id": "W270",
+        "artifact": "archive/tools/lib/forge_harness_fixtures.js",
+        "purpose": "Shared archived harness fixture utilities for VM hook loading, Motion connected-build fixtures, W266 response fixtures, assertions, and archive reads.",
+        "runtimeBehaviorChanged": false
+      },
+      {
+        "id": "W271",
+        "artifact": "src/contracts/adapterProfiles.js",
+        "purpose": "Adapter profile and W262 readiness contract extraction point.",
+        "runtimeBehaviorChanged": false
+      },
+      {
+        "id": "W272",
+        "artifact": "src/contracts/liveEvidencePackets.js",
+        "purpose": "Review-only live evidence, smoke evidence, screenshot reconciliation, Open-link verification, release keep, and signoff packet contract extraction point.",
+        "runtimeBehaviorChanged": false
+      },
+      {
+        "id": "W273",
+        "artifact": "src/contracts/storyCoachingSurfaces.js",
+        "purpose": "Consultant-safe W254 receipt, W255 first-glance story, W256 live script, and W257 guided sequence contract extraction point.",
+        "runtimeBehaviorChanged": false
+      },
+      {
+        "id": "W274",
+        "artifact": "src/contracts/lanePackExpansionWorkflow.js",
+        "purpose": "Lane-pack authoring, proposed-pack review, diff, admin review, receipt-driven QA, and review-only proposed-pack contract extraction point.",
+        "runtimeBehaviorChanged": false
+      }
+    ]
+  },
+  "runtimeHelperDependencyInventory": {
+    "schema": "forge.w275.runtime-helper-dependency-inventory.v1",
+    "sourceFile": "idb-drawer.user.js",
+    "groups": [
+      {
+        "id": "adapter_profile_readiness",
+        "label": "Adapter profile/readiness",
+        "anchors": [
+          "releasedAdapterProfileW263",
+          "adapterProfileEndpointW263",
+          "adapterProfilesFromConfigW263",
+          "selectedAdapterProfileW263",
+          "applySelectedAdapterProfileToConfigW263",
+          "adapterReadyRecordCreationUxW262",
+          "deployedAdapterReadinessTraceW263"
+        ],
+        "governingContract": "src/contracts/adapterProfiles.js",
+        "protectedSurfaces": [
+          "W262 real-build path clarity",
+          "W263 deployed profile/readiness trace",
+          "W264 connected submit endpoint"
+        ],
+        "firstSafeOpportunity": "Create a parity adapter-profile bridge so drawer helpers can call the contract module in a future block after endpoint/readiness fixtures prove equality.",
+        "rollbackBoundary": "Restore drawer-owned W262/W263 helper implementations and keep contract module as review-only mirror."
+      },
+      {
+        "id": "connected_submit_refresh_import",
+        "label": "Connected submit/refresh/import",
+        "anchors": [
+          "connectedBuildSubmitRefreshImportW264",
+          "actualAdapterResponseShapeW265",
+          "connectedBuildRetryPolicyW265",
+          "adapterReadyRecordCreationUxW262",
+          "canonicalImportResultNormalizationW245"
+        ],
+        "governingContract": "protected runtime surface",
+        "protectedSurfaces": [
+          "W245 canonical import",
+          "W264 submit/refresh/import",
+          "W265 retry safety",
+          "W266 controlled live evidence"
+        ],
+        "firstSafeOpportunity": "Do not extract first; keep this path stable until review-only/admin packet helpers are isolated.",
+        "rollbackBoundary": "Any future edit must restore W264/W265 behavior and preserve fake-link blocking plus W151-valid import gating."
+      },
+      {
+        "id": "live_evidence_signoff_packets",
+        "label": "Live evidence/signoff packets",
+        "anchors": [
+          "liveAdapterSmokeEvidencePacketW265",
+          "liveRunDecisionHelperW266",
+          "controlledLiveBuildRunEvidencePacketW266",
+          "postLiveRunScreenshotEvidencePacketW267",
+          "openLinkVerificationCaptureW267",
+          "liveRunScreenshotSignoffHelperW267",
+          "installedDrawerLiveEvidenceIntakeTemplateW268",
+          "releaseKeepPacketV100W268"
+        ],
+        "governingContract": "src/contracts/liveEvidencePackets.js",
+        "protectedSurfaces": [
+          "W260 release packet",
+          "W261 signoff",
+          "W266 live evidence",
+          "W267 screenshot/Open-link signoff",
+          "W268 release keep packet"
+        ],
+        "firstSafeOpportunity": "First optimization slice: isolate review-only live evidence/signoff packet shape builders behind a parity wrapper while keeping normal consultant UI untouched.",
+        "rollbackBoundary": "Review-only packet generation can be restored to drawer-local helpers without affecting Build/Run or adapter submit."
+      },
+      {
+        "id": "story_receipt_script_sequence",
+        "label": "Story receipt/script/sequence surfaces",
+        "anchors": [
+          "storyEvidenceReceiptTrailW254",
+          "receiptDrivenLaneExpansionQaW255",
+          "consultantStoryFirstGlanceW255",
+          "consultantLiveDemoScriptW256",
+          "guidedDemoStepSequenceW257",
+          "consultantStorySurfaceFromLanePackW247",
+          "renderConsultantStorySurfaceW248"
+        ],
+        "governingContract": "src/contracts/storyCoachingSurfaces.js",
+        "protectedSurfaces": [
+          "W254 evidence receipt",
+          "W255 first glance",
+          "W256 live script",
+          "W257 guided sequence",
+          "W258 compact story density"
+        ],
+        "firstSafeOpportunity": "Defer until after review-only packets; these are visible consultant surfaces and need screenshot-style parity.",
+        "rollbackBoundary": "Restore drawer-owned story helpers and rerun W254-W258 plus W273."
+      },
+      {
+        "id": "lane_pack_authoring_diff_review_qa",
+        "label": "Lane-pack authoring/diff/review/QA",
+        "anchors": [
+          "reviewProposedLanePackChangeW247",
+          "lanePackProposedChangeDiffW251",
+          "renderLanePackDiffReviewW252",
+          "receiptDrivenLaneExpansionQaW255"
+        ],
+        "governingContract": "src/contracts/lanePackExpansionWorkflow.js",
+        "protectedSurfaces": [
+          "W247 authoring",
+          "W251 diff review",
+          "W252 admin review",
+          "W255 receipt-driven QA",
+          "W274 expansion workflow"
+        ],
+        "firstSafeOpportunity": "Possible second optimization slice: move admin/review-only render expectations before any lane resolution changes.",
+        "rollbackBoundary": "Restore drawer-owned proposal review helpers and keep source pack in src/contracts/lanePacks.js."
+      },
+      {
+        "id": "normal_consultant_ui_renderers",
+        "label": "Normal consultant UI renderers",
+        "anchors": [
+          "renderDrawer",
+          "renderPlanView",
+          "renderBuildView",
+          "renderReviewView",
+          "renderRunView",
+          "renderConsultantStorySurfaceW248",
+          "renderCreateReadinessCard"
+        ],
+        "governingContract": "protected runtime surface",
+        "protectedSurfaces": [
+          "V1.0.0 header",
+          "Build records path",
+          "Review/Run story surface",
+          "fake Open-link blocking"
+        ],
+        "firstSafeOpportunity": "Do not extract in the first runtime cleanup; visible UI needs a dedicated visual parity packet.",
+        "rollbackBoundary": "Restore exact renderer copy/layout and rerun W248/W258/W262 plus targeted visual smoke."
+      },
+      {
+        "id": "admin_debug_only_renderers",
+        "label": "Admin/debug-only renderers",
+        "anchors": [
+          "renderLanePackDiffReviewW252",
+          "deployedAdapterReadinessTraceW263",
+          "trace export helpers",
+          "admin/debug legacy intake fields"
+        ],
+        "governingContract": "src/contracts/lanePackExpansionWorkflow.js and src/contracts/liveEvidencePackets.js",
+        "protectedSurfaces": [
+          "admin-only proposal review",
+          "readiness trace/export",
+          "review-only evidence packets"
+        ],
+        "firstSafeOpportunity": "Good early cleanup candidate after the live evidence/signoff packet wrapper because it is admin/review-only and hidden from normal consultant UI.",
+        "rollbackBoundary": "Restore admin renderer helpers and prove normal consultant UI remains hidden from diagnostics."
+      }
+    ]
+  },
+  "selectedFirstOptimizationSlice": {
+    "schema": "forge.w275.first-optimization-slice.v1",
+    "id": "review_only_live_evidence_signoff_bridge",
+    "label": "Review-only live evidence/signoff bridge",
+    "whyFirst": "It is review-only/admin-only, has a focused W272 contract, does not alter normal consultant UI, and does not sit directly on the record creation submit path.",
+    "targetHelperArea": "W265-W268 live evidence/signoff packet helpers in idb-drawer.user.js",
+    "targetContract": "src/contracts/liveEvidencePackets.js",
+    "futureBlockScope": [
+      "add parity bridge helpers",
+      "route review-only packet shape checks through contract helpers where straightforward",
+      "keep connected submit/refresh/import unchanged",
+      "keep normal consultant UI unchanged"
+    ],
+    "parityHarnesses": [
+      "W260",
+      "W261",
+      "W266",
+      "W267",
+      "W268",
+      "W272",
+      "W275"
+    ],
+    "rollbackBoundary": "If any review-only packet field changes unexpectedly, restore drawer-local W265-W268 helpers and leave src/contracts/liveEvidencePackets.js as a mirror."
+  },
+  "optimizationReadinessPacket": {
+    "schema": "forge.w275.optimization-readiness-packet.v1",
+    "futureRuntimeExtractionAcceptedOnlyIf": [
+      "W244-W275 harnesses pass",
+      "npm run check passes",
+      "npm run validate passes",
+      "normal consultant UI unchanged",
+      "connected build flow unchanged",
+      "lane resolution unchanged",
+      "no drawer-created records",
+      "no drawer transaction writes",
+      "weak/conflicting evidence remains confirmation-first"
+    ],
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "connectedBuildFlowChanged": false,
+    "laneResolutionChanged": false,
+    "recordCreationAuthorityChanged": false
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "connectedBuildFlowChanged": false,
+    "laneResolutionChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "weakEvidenceConfirmationFirst": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRegressionRequired": false,
+    "reason": "Review-only inventory and planning artifacts; no UI or runtime behavior changes."
+  }
+}

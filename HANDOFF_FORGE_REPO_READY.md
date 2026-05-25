@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W274 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, and the lane-pack expansion workflow contract extraction point.
+  - W250-W275 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, and the extraction closure/runtime helper dependency inventory with the first optimization slice selected.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -94,6 +94,7 @@ npm run harness:adapter-profile-readiness-contract-w271
 npm run harness:live-evidence-signoff-contract-w272
 npm run harness:story-coaching-contract-w273
 npm run harness:lane-pack-expansion-workflow-contract-w274
+npm run harness:extraction-closure-runtime-inventory-w275
 npm run check
 npm run validate
 ```
@@ -131,12 +132,32 @@ Current expected result:
 - W272 harness passes `12/12`.
 - W273 harness passes `12/12`.
 - W274 harness passes `14/14`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, live evidence/signoff contract, story coaching contract, lane-pack expansion workflow contract, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, and W274 harness.
+- W275 harness passes `15/15`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, live evidence/signoff contract, story coaching contract, lane-pack expansion workflow contract, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, and W275 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W275: Extraction Closure Map, Runtime Helper Dependency Inventory, And First Optimization Slice
+
+What changed:
+
+- Adds an archived extraction-closure map summarizing W270-W274 outputs: shared archived harness fixture utilities, adapter profile/readiness contract, live evidence/signoff contract, story coaching contract, and lane-pack expansion workflow contract.
+- Adds a runtime helper dependency inventory for `idb-drawer.user.js` grouped by adapter profile/readiness, connected submit/refresh/import, live evidence/signoff packets, story receipt/script/sequence surfaces, lane-pack authoring/diff/review/QA, normal consultant UI renderers, and admin/debug-only renderers.
+- Maps each helper group to its governing extracted contract module or protected runtime surface, protected behavior surfaces, first safe extraction/migration opportunity, and rollback boundary.
+- Selects the first optimization slice: `review_only_live_evidence_signoff_bridge`, targeting review-only W265-W268 evidence/signoff helpers governed by `src/contracts/liveEvidencePackets.js`.
+- Adds an optimization readiness packet requiring W244-W275 harnesses, `npm run check`, `npm run validate`, unchanged normal consultant UI, unchanged connected build flow, unchanged lane resolution, no drawer-created records, no drawer transaction writes, and weak/conflicting evidence confirmation-first behavior before any future runtime extraction is accepted.
+- Keeps W275 archived/review-only with no runtime behavior, normal consultant UI, lane resolution, connected submit/refresh/import, or record creation authority changes.
+
+Important W275 artifacts:
+
+- `archive/tools/run_w275_extraction_closure_runtime_inventory_harness.js`
+- `archive/reports/w275_extraction_closure_runtime_inventory.md`
+- `archive/trace_samples/w275_extraction_closure_runtime_inventory_trace.json`
+
+Previous completed block:
 
 - W274: Lane Pack Authoring Expansion Workflow Contract Extraction Without Runtime Behavior Change
 
@@ -741,43 +762,29 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W275: Extraction Closure Map, Runtime Helper Dependency Inventory, And First Optimization Slice
+W276: Review-Only Live Evidence Signoff Bridge Without Runtime Behavior Change
 
 Goal:
-Close the W270-W274 extraction phase by mapping the extracted contracts back to the current runtime helper areas, then choose the first low-risk optimization slice for `idb-drawer.user.js` without changing consultant UI, lane behavior, connected build behavior, or runtime authority.
+Execute the W275 selected first optimization slice by adding a behavior-preserving bridge between the W265-W268 drawer live evidence/signoff helpers and the W272 live evidence/signoff contract module, while keeping normal consultant UI, connected build submit/refresh/import, lane resolution, and runtime authority unchanged.
 
 Build:
-- Add an archived extraction-closure map that summarizes W270-W274:
-  - shared archived harness fixture utilities
-  - adapter profile/readiness contract
-  - live evidence/signoff contract
-  - story coaching surface contract
-  - lane-pack expansion workflow contract
-- Add a runtime helper dependency inventory for `idb-drawer.user.js` that groups helpers by:
-  - adapter profile/readiness
-  - connected submit/refresh/import
-  - live evidence/signoff packets
-  - story receipt/script/sequence surfaces
-  - lane-pack authoring/diff/review/QA
-  - normal consultant UI renderers
-  - admin/debug-only renderers
-- For each group, list:
-  - current helper names or detectable anchors
-  - extracted contract module that should govern it
-  - behavior surfaces protected by harnesses
-  - first safe extraction/migration opportunity
-  - rollback boundary
-- Choose the first optimization slice and make it explicit.
-- Prefer a low-risk slice that reduces duplication or isolates admin/review-only logic without changing normal consultant UI.
-- Do not perform the selected runtime refactor yet unless it is limited to adding review-only inventory helpers under `archive/`.
-- Add an optimization readiness packet that says what must pass before any future runtime extraction is accepted.
-- Keep weak/conflicting evidence confirmation-first behavior.
+- Add a focused bridge/helper layer for review-only live evidence/signoff packets.
+- Keep the bridge limited to review-only/admin-only packet shape validation and normalization:
+  - W260 install-ready release packet
+  - W261 smoke evidence/signoff
+  - W266 controlled live build evidence
+  - W267 screenshot/Open-link reconciliation
+  - W268 installed-drawer evidence intake and release keep packet
+- Use `src/contracts/liveEvidencePackets.js` where parity is straightforward.
+- Do not change the connected submit/refresh/import path.
+- Do not change returned record import behavior.
 - Do not change normal consultant UI.
 - Do not change lane resolution behavior.
-- Do not change connected submit/refresh/import behavior.
+- Do not change adapter endpoint/profile behavior.
 - Do not change record creation authority.
-- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W246 lane-pack contract, W247 authoring surface, W251 diff review, W252 review UI, W255 receipt-driven QA, W262 readiness, W263/W271 adapter profile contract, W264 submit/refresh/import flow, W265 retry safety, W266 evidence packet, W267 signoff, W268 release keep packet, W269 optimization guardrails, W270 shared harness utilities, W272 live evidence/signoff contract, W273 story coaching contract, and W274 lane-pack expansion workflow contract.
-- Use W270 shared harness utilities in the W275 harness.
+- Keep raw evidence archived/admin-only and hidden from normal consultant UI.
+- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263/W271 adapter profile contract, W264 submit/refresh/import flow, W265 retry safety, W266 evidence packet, W267 signoff, W268 release keep packet, W270 shared harness utilities, W272 live evidence/signoff contract, W273 story coaching contract, W274 lane-pack expansion workflow contract, and W275 optimization readiness packet.
+- Keep weak/conflicting evidence confirmation-first behavior.
 - Keep harnesses, reports, and traces under `archive/`.
 - Keep repo front clean.
 - Keep normal consultant UI free of raw JSON, task ids, schema names, stack traces, admin diagnostics, and internal contract arrays.
@@ -786,25 +793,23 @@ Build:
 - Do not update W144 deployment in this block.
 
 Validation:
-- Add W275 harness covering:
-  - extraction-closure map includes W270-W274 outputs
-  - runtime helper dependency inventory includes all required helper groups
-  - each group maps to an extracted contract module or protected runtime surface
-  - first optimization slice is selected with behavior surfaces, parity harnesses, and rollback boundary
-  - optimization readiness packet requires W244-W275, check, and validate before future runtime extraction acceptance
-  - normal consultant UI, connected build flow, and lane resolution are marked unchanged
+- Add W276 harness covering:
+  - review-only live evidence/signoff bridge exists
+  - bridge uses or validates against `src/contracts/liveEvidencePackets.js`
+  - W260/W261/W266/W267/W268 packet outputs remain field-compatible
+  - W272 decision/status and review-only policy helpers remain authoritative
+  - normal consultant UI hides raw evidence/admin diagnostics
+  - connected W264 submit/refresh/import path remains unchanged
+  - W265 retry safety remains unchanged
+  - W266/W267/W268 outputs remain parity-compatible
+  - W275 selected optimization slice/readiness packet remains available
   - weak/conflicting evidence remains confirmation-first
-  - W274 lane-pack expansion workflow contract remains available
-  - W273 story coaching contract remains available
-  - W272 live evidence/signoff contract remains available
-  - W264 connected build still imports only W151-valid completed results
-  - W270 shared harness utilities remain available
-  - no runtime file behavior changes are introduced
+  - no runtime authority changes are introduced
   - no drawer-created records or drawer transaction writes are introduced
-- Run W244 through W275 harnesses, check, and validate.
+- Run W244 through W276 harnesses, check, and validate.
 
 Output:
-- Summary of extraction closure map, runtime helper dependency inventory, selected first optimization slice, guardrails, and validation.
+- Summary of live evidence/signoff bridge, files touched, parity guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

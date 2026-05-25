@@ -1,0 +1,44 @@
+{
+  "schema": "forge.w271.adapter-profile-readiness-contract.trace.v1",
+  "date": "2026-05-25",
+  "contractModule": "src/contracts/adapterProfiles.js",
+  "releasedProfile": {
+    "profileId": "td3021666-released-governed-runner-adapter",
+    "scriptName": "IDB W144 Customer Proof Pilot Suitelet",
+    "title": "IDB W24 Customer Proof Pilot Suitelet",
+    "deploymentScriptId": "customdeployidb_governed_runner_adapter",
+    "deploymentStatus": "Released",
+    "deployed": true,
+    "executeAsRole": "Current Role",
+    "logLevel": "Error",
+    "suiteletPath": "/app/site/hosting/scriptlet.nl?script=6702&deploy=2",
+    "scriptId": "6702",
+    "deploymentId": "2",
+    "defaultAccountHost": "td3021666.app.netsuite.com",
+    "derivedEndpoint": "https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl?script=6702&deploy=2"
+  },
+  "readinessStates": [
+    "ready_to_build_records",
+    "smoke_preview_only",
+    "adapter_not_configured",
+    "build_submitted",
+    "waiting_for_runner_result",
+    "records_ready_to_import",
+    "records_imported"
+  ],
+  "parityGuardrails": [
+    "W262 readiness copy remains stable",
+    "W263 released adapter profile remains represented",
+    "W264 connected build endpoint remains script=6702&deploy=2",
+    "W270 shared harness utilities remain available",
+    "normal consultant UI hides endpoint/admin details"
+  ],
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedW144AdapterOnlyRecordCreation": true,
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false
+  },
+  "visualTestingDecision": "not_required_contract_extraction_no_ui_change"
+}

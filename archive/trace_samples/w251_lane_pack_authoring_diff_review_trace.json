@@ -1,0 +1,23 @@
+{
+  "schema": "forge.w251.lane-pack-authoring-diff-review.trace.v1",
+  "workItem": "W251",
+  "purpose": "Prove N/LLM-drafted lane-pack proposals produce visible review diffs, stay non-installable, and preserve launcher icon visibility polish.",
+  "assertions": [
+    "safe proposed lane-pack diff is review-ready but not installable",
+    "unsafe N/LLM proposal is rejected",
+    "evidence, role, vocabulary, story, and advisory changes are visible",
+    "proposal review does not mutate src/contracts/lanePacks.js",
+    "launcher icon remains repo-local, same click target, and more pronounced at standard zoom",
+    "weak evidence remains confirmation-gated"
+  ],
+  "nllmAuthority": {
+    "writeAuthority": "none",
+    "creationAllowed": false,
+    "autoInstallAllowed": false,
+    "uncertaintyVisible": true
+  },
+  "visualTestingDecision": {
+    "targetedInstallSmokeRecommended": true,
+    "broadNetSuiteVisualRegressionRequired": false
+  }
+}

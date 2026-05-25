@@ -1,0 +1,104 @@
+{
+  "schema": "forge.lane-pack-authoring-proposal.v1",
+  "proposedBy": "nllm_advisory",
+  "installRequested": true,
+  "autoInstall": false,
+  "basePackId": "industrial-distributor",
+  "proposalUse": "w251_diff_review_fixture_only",
+  "candidatePack": {
+    "schema": "forge.lane-pack.v1",
+    "packVersion": "1.0.1",
+    "nllmAdvisory": {
+      "allowedTasks": [
+        "summarizeWebsiteAndCategoryEvidence",
+        "proposeRecordNames",
+        "synthesizePainValueCompetitiveAndRoi",
+        "draftSoWhatAndWhyItMatters",
+        "draftLanePackSuggestionsForHumanReview"
+      ],
+      "hardLimits": [
+        "cannotCreateRecords",
+        "cannotInvokeSuiteScriptOrWriteTransactions",
+        "cannotSilentlyInstallTruth",
+        "cannotOverrideWebsiteEvidence",
+        "cannotOverrideConsultantToggles",
+        "cannotHideUncertainty",
+        "cannotInventVerifiedWebsiteFacts",
+        "cannotClaimMeasuredRoiWithoutBaseline"
+      ],
+      "writeAuthority": "none",
+      "creationAllowed": false,
+      "uncertaintyPolicy": "surface_uncertainty_and_request_confirmation"
+    },
+    "packId": "industrial-distributor",
+    "laneId": "industrial_distribution",
+    "subIndustryId": "industrial-distributor",
+    "label": "Industrial Distributor",
+    "operatingMode": "distribution_replenishment",
+    "websiteSignals": {
+      "domains": [
+        "grainger.com",
+        "uline.com",
+        "mcmaster.com",
+        "fastenal.com",
+        "ferguson.com"
+      ],
+      "categoryTerms": [
+        "industrial supply",
+        "branch",
+        "warehouse",
+        "MRO",
+        "distribution",
+        "stocking location",
+        "electrical components",
+        "switchgear"
+      ],
+      "evidenceTerms": [
+        "branch availability",
+        "supplier lead time",
+        "replenishment",
+        "transfer-aware inventory"
+      ]
+    },
+    "recordRoles": {
+      "required": [
+        "customer",
+        "sales_order",
+        "branch_or_product_sku",
+        "replenishment_or_availability_flow"
+      ],
+      "optional": [
+        "supporting_sku",
+        "location_planning_context",
+        "supplier_lead_time_context"
+      ],
+      "invalid": [
+        "assembly",
+        "work_order",
+        "ingredient",
+        "batch",
+        "style_matrix_or_availability_flow"
+      ]
+    },
+    "vocabulary": {
+      "allowed": [
+        "branch availability",
+        "replenishment",
+        "supplier lead time",
+        "fulfillment confidence",
+        "project fulfillment"
+      ],
+      "forbidden": [
+        "production routing",
+        "ingredient batch",
+        "fashion collection"
+      ]
+    },
+    "liveDemo": {
+      "proofMove": "Open the component SKU and prove branch availability, supplier timing, and replenishment confidence for the project promise.",
+      "storyAnchor": "The buyer needs to know which location can fulfill, when replenishment lands, and what exception needs action.",
+      "roiSoWhat": "Protect service levels and margin by catching supplier and branch exceptions before project fulfillment misses.",
+      "competitiveContrast": "NetSuite shows branch availability, supplier timing, and fulfillment control instead of a generic warehouse snapshot."
+    }
+  }
+}

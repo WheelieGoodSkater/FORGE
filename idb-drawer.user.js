@@ -3156,6 +3156,7 @@
     const errors = [];
     const warnings = [];
     const candidate = proposal && proposal.candidatePack;
+    const proposedChangeDiff = lanePackProposedChangeDiffW251(proposal);
     const validation = validateLanePackW246(candidate);
     validation.errors.forEach((error) => errors.push(error));
     if (!proposal || proposal.proposedBy !== 'nllm_advisory') errors.push('proposal.proposedBy must be nllm_advisory');
@@ -3177,6 +3178,9 @@
     if (candidate && W246_LIVE_DEMO_LANE_PACKS.some((lanePack) => lanePack.packId === candidate.packId)) {
       warnings.push('candidate pack id already exists and would require an explicit replacement review');
     }
+    if (candidate && candidate.nllmAdvisory && candidate.nllmAdvisory.uncertaintyPolicy !== 'surface_uncertainty_and_request_confirmation') {
+      errors.push('candidate cannot remove uncertainty visibility');
+    }
     return {
       schema: 'forge.lane-pack-authoring-review.v1',
       status: errors.length ? 'rejected' : 'review_ready',
@@ -3185,7 +3189,68 @@
       nllmAdvisoryOnly: true,
       errors,
       warnings,
-      candidatePackId: candidate && candidate.packId || ''
+      candidatePackId: candidate && candidate.packId || '',
+      proposedChangeDiff,
+      reviewCopy: {
+        headline: errors.length ? 'Lane-pack proposal rejected.' : 'Lane-pack proposal is ready for human review.',
+        summary: proposedChangeDiff.changes.length
+          ? `${proposedChangeDiff.changes.length} proposed changes require evidence and human confirmation before install.`
+          : 'No material lane-pack changes were detected.',
+        installGuidance: 'Do not install from N/LLM output automatically. Keep the proposal archived until a human-reviewed change updates the contract source.'
+      }
+    };
+  }
+
+  function arrayDiffW251(before, after) {
+    const oldValues = Array.isArray(before) ? before : [];
+    const newValues = Array.isArray(after) ? after : [];
+    return {
+      added: newValues.filter((value) => oldValues.indexOf(value) === -1),
+      removed: oldValues.filter((value) => newValues.indexOf(value) === -1)
+    };
+  }
+
+  function fieldDiffW251(before, after) {
+    return JSON.stringify(before || null) === JSON.stringify(after || null)
+      ? null
+      : { from: before, to: after };
+  }
+
+  function existingLanePackForProposalW251(proposal, candidate) {
+    const basePackId = proposal && (proposal.basePackId || proposal.replacesPackId);
+    return W246_LIVE_DEMO_LANE_PACKS.find((lanePack) => lanePack.packId === basePackId) ||
+      W246_LIVE_DEMO_LANE_PACKS.find((lanePack) => candidate && lanePack.packId === candidate.packId) ||
+      null;
+  }
+
+  function lanePackProposedChangeDiffW251(proposal) {
+    const candidate = proposal && proposal.candidatePack || null;
+    const base = existingLanePackForProposalW251(proposal, candidate);
+    const changes = [];
+    function addArray(area, field, before, after) {
+      const diff = arrayDiffW251(before, after);
+      if (diff.added.length || diff.removed.length) changes.push(Object.assign({ area, field }, diff));
+    }
+    function addField(area, field, before, after) {
+      const diff = fieldDiffW251(before, after);
+      if (diff) changes.push(Object.assign({ area, field }, diff));
+    }
+    if (!candidate) {
+      return { schema: 'forge.lane-pack-proposed-change-diff.v1', status: 'missing_candidate', basePackId: base && base.packId || '', candidatePackId: '', changes };
+    }
+    ['domains', 'categoryTerms', 'evidenceTerms'].forEach((field) => addArray('websiteSignals', field, base && base.websiteSignals && base.websiteSignals[field], candidate.websiteSignals && candidate.websiteSignals[field]));
+    ['required', 'optional', 'invalid'].forEach((field) => addArray('recordRoles', field, base && base.recordRoles && base.recordRoles[field], candidate.recordRoles && candidate.recordRoles[field]));
+    ['allowed', 'forbidden'].forEach((field) => addArray('vocabulary', field, base && base.vocabulary && base.vocabulary[field], candidate.vocabulary && candidate.vocabulary[field]));
+    ['proofMove', 'storyAnchor', 'roiSoWhat', 'competitiveContrast'].forEach((field) => addField('liveDemo', field, base && base.liveDemo && base.liveDemo[field], candidate.liveDemo && candidate.liveDemo[field]));
+    addArray('nllmAdvisory', 'allowedTasks', base && base.nllmAdvisory && base.nllmAdvisory.allowedTasks, candidate.nllmAdvisory && candidate.nllmAdvisory.allowedTasks);
+    addArray('nllmAdvisory', 'hardLimits', base && base.nllmAdvisory && base.nllmAdvisory.hardLimits, candidate.nllmAdvisory && candidate.nllmAdvisory.hardLimits);
+    ['writeAuthority', 'creationAllowed', 'uncertaintyPolicy'].forEach((field) => addField('nllmAdvisory', field, base && base.nllmAdvisory && base.nllmAdvisory[field], candidate.nllmAdvisory && candidate.nllmAdvisory[field]));
+    return {
+      schema: 'forge.lane-pack-proposed-change-diff.v1',
+      status: base ? 'compared_to_existing_pack' : 'new_pack_review',
+      basePackId: base && base.packId || '',
+      candidatePackId: candidate.packId || '',
+      changes
     };
   }
 
@@ -11383,6 +11448,8 @@
   function displayReadyRecordsFromFinalNamingW245(finalNaming, state, lane, pageContext, recommendation, payload) {
     const resolver = resolveBuildOperatingModeW214(state, lane, pageContext, recommendation, { payload });
     const mode = firstNonBlank(finalNaming && finalNaming.resolvedOperatingMode, resolver && resolver.resolvedOperatingMode);
+    const lanePackResolution = resolveLanePackFromEvidenceW246(state, {});
+    const lanePack = lanePackResolution.status === 'insufficient_evidence' ? null : lanePackResolution.lanePack;
     const seen = {};
     const records = finalNamingRecordsForSemanticGuardW214(finalNaming)
       .filter((record) => record && record.source === 'dcc_final' && record.name)
@@ -11390,7 +11457,7 @@
         const linked = applyRecordLinkAuthority(record);
         const rawRole = firstNonBlank(linked.w215MappedRole, linked.w214Role, linked.role);
         const canonicalRole = canonicalImportRoleW245(rawRole, mode);
-        const consultantRecordLabel = modeAwareRecordLabelW216(canonicalRole, mode);
+        const consultantRecordLabel = lanePackAwareRecordLabelW250(canonicalRole, mode, lanePack, rawRole);
         const key = [canonicalRole, linked.name, linked.id, linked.url].join('|');
         if (seen[key]) return null;
         seen[key] = true;
@@ -12693,6 +12760,23 @@
     if (modeKey === 'food_batch_manufacturing' && role === 'location_planning_context') return 'Lot Context';
     if (modeKey === 'wip_manufacturing' && role === 'bom_or_assembly_structure') return 'BOM or Assembly Structure';
     return snapshotLabel || labels[role] || consultantLabel(mappedRole);
+  }
+
+  function lanePackAwareRecordLabelW250(mappedRole, mode, lanePack, rawRole) {
+    const role = String(mappedRole || '').toLowerCase();
+    const raw = String(rawRole || '').toLowerCase();
+    const packId = String(lanePack && lanePack.packId || '').toLowerCase();
+    const operatingMode = String(lanePack && lanePack.operatingMode || mode || '').toLowerCase();
+    const evidence = `${role} ${raw}`;
+    const distributionPack = operatingMode === 'distribution_replenishment' ||
+      packId === 'industrial-distributor' ||
+      packId === 'cpg-distributor';
+    if (distributionPack) {
+      if (/finished_or_assembly_item|hero_sku|product_sku|branch_or_product_sku|heroitem|hero_item/.test(evidence)) return 'Product SKU';
+      if (/formula_or_batch_structure|availability_or_replenishment_flow|replenishment_or_availability_flow|matrixproofitem|matrix_or_proof_item/.test(evidence)) return 'Availability/Replenishment Flow';
+      if (/component_item|supporting_sku|componentitem/.test(evidence)) return 'Supporting SKU';
+    }
+    return modeAwareRecordLabelW216(mappedRole, mode);
   }
 
   function returnedOpenableMappedRecordsW216(mapping) {
@@ -16944,16 +17028,16 @@
         z-index: 999998;
         width: 48px;
         height: 48px;
-        border: 1px solid var(--rw-color-border-strong);
+        border: 1px solid rgba(255, 211, 66, .88);
         border-radius: var(--rw-radius-pill);
-        background: #061224;
+        background: #eef6ff;
         color: var(--rw-color-text-inverse);
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 0;
         overflow: hidden;
-        box-shadow: var(--rw-shadow-overlay);
+        box-shadow: 0 3px 10px rgba(14, 42, 71, .28), 0 0 0 2px rgba(255, 211, 66, .18);
         cursor: pointer;
         touch-action: none;
         user-select: none;
@@ -16964,10 +17048,11 @@
       }
       .idb-forge-launcher-icon {
         display: block;
-        width: 100%;
-        height: 100%;
+        width: 118%;
+        height: 118%;
         border-radius: var(--rw-radius-pill);
         object-fit: cover;
+        filter: saturate(1.14) brightness(1.12) contrast(1.08);
         pointer-events: none;
       }
       #idb-rail-button[data-launcher-position="top_right"] {
@@ -22025,6 +22110,7 @@
       completedRunnerResultImportCommitOperatorFlowV1,
       completedRunnerResultImportCtaFromPollHandoffV1,
       completedRunnerResultImportCommitFromPollCtaV1,
+      lanePackProposedChangeDiffW251,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,
@@ -22041,6 +22127,7 @@
       legacySlotsForCanonicalRoleFromSnapshotW244,
       canonicalRoleToLegacySlotFallbackW244,
       legacyRecordByCanonicalRoleW244,
+      lanePackAwareRecordLabelW250,
       displayReadyRecordsFromFinalNamingW245,
       canonicalImportResultNormalizationW245,
       versionedLanePacksW246,

@@ -393,10 +393,80 @@ function nllmAdvisoryPayloadForLanePack(input, lanePack) {
   };
 }
 
+function arrayDiff(before, after) {
+  const oldValues = Array.isArray(before) ? before : [];
+  const newValues = Array.isArray(after) ? after : [];
+  return {
+    added: newValues.filter((value) => oldValues.indexOf(value) === -1),
+    removed: oldValues.filter((value) => newValues.indexOf(value) === -1)
+  };
+}
+
+function fieldDiff(before, after) {
+  return JSON.stringify(before || null) === JSON.stringify(after || null)
+    ? null
+    : { from: before, to: after };
+}
+
+function existingLanePackForProposal(proposal, candidate) {
+  const basePackId = proposal && (proposal.basePackId || proposal.replacesPackId);
+  return LANE_PACKS.find((lanePack) => lanePack.packId === basePackId) ||
+    LANE_PACKS.find((lanePack) => candidate && lanePack.packId === candidate.packId) ||
+    null;
+}
+
+function lanePackProposedChangeDiff(proposal) {
+  const candidate = proposal && proposal.candidatePack || null;
+  const base = existingLanePackForProposal(proposal, candidate);
+  const changes = [];
+  function addArray(area, field, before, after) {
+    const diff = arrayDiff(before, after);
+    if (diff.added.length || diff.removed.length) changes.push(Object.assign({ area, field }, diff));
+  }
+  function addField(area, field, before, after) {
+    const diff = fieldDiff(before, after);
+    if (diff) changes.push(Object.assign({ area, field }, diff));
+  }
+  if (!candidate) {
+    return {
+      schema: 'forge.lane-pack-proposed-change-diff.v1',
+      status: 'missing_candidate',
+      basePackId: base && base.packId || '',
+      candidatePackId: '',
+      changes
+    };
+  }
+  ['domains', 'categoryTerms', 'evidenceTerms'].forEach((field) => {
+    addArray('websiteSignals', field, base && base.websiteSignals && base.websiteSignals[field], candidate.websiteSignals && candidate.websiteSignals[field]);
+  });
+  ['required', 'optional', 'invalid'].forEach((field) => {
+    addArray('recordRoles', field, base && base.recordRoles && base.recordRoles[field], candidate.recordRoles && candidate.recordRoles[field]);
+  });
+  ['allowed', 'forbidden'].forEach((field) => {
+    addArray('vocabulary', field, base && base.vocabulary && base.vocabulary[field], candidate.vocabulary && candidate.vocabulary[field]);
+  });
+  ['proofMove', 'storyAnchor', 'roiSoWhat', 'competitiveContrast'].forEach((field) => {
+    addField('liveDemo', field, base && base.liveDemo && base.liveDemo[field], candidate.liveDemo && candidate.liveDemo[field]);
+  });
+  addArray('nllmAdvisory', 'allowedTasks', base && base.nllmAdvisory && base.nllmAdvisory.allowedTasks, candidate.nllmAdvisory && candidate.nllmAdvisory.allowedTasks);
+  addArray('nllmAdvisory', 'hardLimits', base && base.nllmAdvisory && base.nllmAdvisory.hardLimits, candidate.nllmAdvisory && candidate.nllmAdvisory.hardLimits);
+  ['writeAuthority', 'creationAllowed', 'uncertaintyPolicy'].forEach((field) => {
+    addField('nllmAdvisory', field, base && base.nllmAdvisory && base.nllmAdvisory[field], candidate.nllmAdvisory && candidate.nllmAdvisory[field]);
+  });
+  return {
+    schema: 'forge.lane-pack-proposed-change-diff.v1',
+    status: base ? 'compared_to_existing_pack' : 'new_pack_review',
+    basePackId: base && base.packId || '',
+    candidatePackId: candidate.packId || '',
+    changes
+  };
+}
+
 function reviewProposedLanePackChange(proposal) {
   const errors = [];
   const warnings = [];
   const candidate = proposal && proposal.candidatePack;
+  const proposedChangeDiff = lanePackProposedChangeDiff(proposal);
   const validation = validateLanePack(candidate);
   validation.errors.forEach((error) => errors.push(error));
   if (!proposal || proposal.proposedBy !== 'nllm_advisory') errors.push('proposal.proposedBy must be nllm_advisory');
@@ -418,6 +488,9 @@ function reviewProposedLanePackChange(proposal) {
   if (candidate && LANE_PACKS.some((lanePack) => lanePack.packId === candidate.packId)) {
     warnings.push('candidate pack id already exists and would require an explicit replacement review');
   }
+  if (candidate && candidate.nllmAdvisory && candidate.nllmAdvisory.uncertaintyPolicy !== 'surface_uncertainty_and_request_confirmation') {
+    errors.push('candidate cannot remove uncertainty visibility');
+  }
   return {
     schema: 'forge.lane-pack-authoring-review.v1',
     status: errors.length ? 'rejected' : 'review_ready',
@@ -426,7 +499,15 @@ function reviewProposedLanePackChange(proposal) {
     nllmAdvisoryOnly: true,
     errors,
     warnings,
-    candidatePackId: candidate && candidate.packId || ''
+    candidatePackId: candidate && candidate.packId || '',
+    proposedChangeDiff,
+    reviewCopy: {
+      headline: errors.length ? 'Lane-pack proposal rejected.' : 'Lane-pack proposal is ready for human review.',
+      summary: proposedChangeDiff.changes.length
+        ? `${proposedChangeDiff.changes.length} proposed changes require evidence and human confirmation before install.`
+        : 'No material lane-pack changes were detected.',
+      installGuidance: 'Do not install from N/LLM output automatically. Keep the proposal archived until a human-reviewed change updates the contract source.'
+    }
   };
 }
 
@@ -488,6 +569,7 @@ module.exports = {
   resolveLanePackFromEvidence,
   nllmAdvisoryPayloadForLanePack,
   reviewProposedLanePackChange,
+  lanePackProposedChangeDiff,
   consultantStorySurfaceFromLanePack,
   domainFromWebsite
 };

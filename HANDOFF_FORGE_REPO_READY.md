@@ -60,6 +60,8 @@ npm run harness:versioned-lane-pack-contract-w246
 npm run harness:lane-pack-authoring-story-surface-w247
 npm run harness:consultant-story-surface-ui-w248
 npm run harness:lane-pack-expansion-qa-w249
+npm run harness:lane-aware-record-label-semantics-w250
+npm run harness:lane-pack-authoring-diff-review-w251
 npm run check
 npm run validate
 ```
@@ -72,21 +74,47 @@ Current expected result:
 - W247 harness passes `9/9`.
 - W248 harness passes `9/9`.
 - W249 harness passes `12/12`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, and W249 harness.
+- W250 harness passes `10/10`.
+- W251 harness passes `11/11`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, and W251 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
 
-- W249: Lane Pack Expansion QA, Consultant Copy Refinement, And FORGE Icon Update
+- W251: Lane Pack Authoring Diff Review, N/LLM Draft Intake Hardening, And Launcher Icon Visibility Polish
 
 What changed:
 
-- Tightens W246 live-demo story copy for industrial manufacturing, equipment manufacturing, industrial distributors, CPG distributors, CPG manufacturers, and food/beverage manufacturers.
-- Adds W249 QA fixtures proving each expanded lane can resolve its expected pack and render a W248 story surface using W245-style returned record names.
-- Copies `/Users/aaronsunshine/Downloads/FORGE ICON.png` into `assets/forge-icon.png` and wires the launcher button to the repo-local icon asset without referencing Downloads at runtime.
+- Adds structured lane-pack proposed-change diff review for N/LLM-drafted packs.
+- Shows changed website evidence, roles, vocabulary, live-demo story fields, and N/LLM advisory limits.
+- Keeps proposed packs review-only and non-installable until a human-reviewed contract source change is made.
+- Rejects proposals that try to grant write authority, allow creation, hide uncertainty, auto-install, or make guaranteed/measured ROI claims.
+- Polishes the launcher icon visibility at standard zoom while preserving the 48px click target and position.
 - Keeps N/LLM advisory-only, uncertainty-visible, and confirmation-gated when evidence is weak.
+
+Important W251 artifacts:
+
+- `archive/fixtures/w251_lane_pack_diff_review_fixture.json`
+- `archive/tools/run_w251_lane_pack_authoring_diff_review_harness.js`
+- `archive/reports/w251_lane_pack_authoring_diff_review.md`
+- `archive/trace_samples/w251_lane_pack_authoring_diff_review_trace.json`
+
+Previous completed block:
+
+- W250: Lane-Aware Record Label Semantics And Install-Ready Visual Smoke Packet
+
+Important W250 artifacts:
+
+- `archive/tools/run_w250_lane_aware_record_label_semantics_harness.js`
+- `archive/reports/w250_lane_aware_record_label_semantics.md`
+- `archive/reports/w250_install_ready_visual_smoke_packet.md`
+- `archive/trace_samples/w250_lane_aware_record_label_semantics_trace.json`
+
+Previous completed block:
+
+- W249: Lane Pack Expansion QA, Consultant Copy Refinement, And FORGE Icon Update
 
 Important W249 artifacts:
 
@@ -94,10 +122,6 @@ Important W249 artifacts:
 - `archive/tools/run_w249_lane_pack_expansion_qa_harness.js`
 - `archive/reports/w249_lane_pack_expansion_qa.md`
 - `archive/trace_samples/w249_lane_pack_expansion_qa_trace.json`
-
-Previous completed block:
-
-- W248: Consultant Story Surface UI Wiring And Evidence Confidence Copy
 
 Important W248 helper name:
 
@@ -230,21 +254,26 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W250: Lane-Aware Record Label Semantics And Install-Ready Visual Smoke Packet
+W252: Lane Pack Review UI Wiring And Install Smoke Acceptance
 
 Goal:
-Make the consultant story surface even more trustworthy by ensuring returned record labels match the resolved lane pack semantics, then prepare a tight install-ready visual smoke packet for the new launcher icon and compact Review/Run story surface.
+Wire the W251 lane-pack diff/review output into a compact admin-safe review surface and make the targeted launcher/story install smoke acceptance easier to run after Tampermonkey update.
 
 Build:
-- Review W245 display-ready record labeling where the same returned record role can mean different things by lane pack.
-- Ensure distribution lanes, including industrial distributors and CPG distributors, do not show manufacturing-flavored labels such as Finished/Assembly Item for product SKU or availability proof records.
-- Ensure manufacturing lanes still show honest manufacturing labels for assembly, component, WIP, formula, batch, and ingredient records.
-- Prefer lane-pack-aware label resolution over scattered special cases.
-- Keep W246 lane-pack source in `src/contracts/lanePacks.js` and keep drawer mirror aligned.
-- Add a compact install smoke packet that tells an operator exactly what to verify visually:
-  - launcher uses `assets/forge-icon.png` instead of the circular FORGE text button
+- Add a compact review renderer for W251 proposed lane-pack diffs.
+- Show safe/admin-facing review sections for:
+  - evidence changes
+  - record-role changes
+  - vocabulary changes
+  - story/ROI/competitive copy changes
+  - N/LLM authority and uncertainty limits
+- Hide raw JSON, stack traces, internal arrays beyond reviewed diff rows, and any install-like action from normal consultant UI.
+- Keep proposals review-only; no install button, no contract mutation, no drawer-created records.
+- Add an install smoke acceptance checklist that records pass/fail evidence for:
+  - launcher icon is more pronounced at standard zoom
+  - click target and position are unchanged
   - Review/Run story card appears only after valid import
-  - Open target uses returned record names and lane-appropriate labels
+  - returned record names and lane-aware labels remain visible
   - weak evidence still asks for lane confirmation
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
@@ -253,16 +282,16 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W250 harness covering:
-  - lane-aware labels for industrial distributor and CPG distributor returned records
-  - manufacturing labels remain correct for industrial, equipment, CPG manufacturing, and food/beverage lanes
-  - W248 story surface uses lane-appropriate labels with returned record names
-  - icon smoke packet references repo-local assets only
+- Add archived W252 harness covering:
+  - review renderer shows required diff sections
+  - unsafe proposal review does not render as installable
+  - normal UI hides raw diagnostics and install actions
+  - install smoke acceptance checklist includes launcher/story/weak-evidence checks
   - weak/conflicting evidence remains confirmation-gated
-- Run W244, W245, W246, W247, W248, W249, W250 harnesses, check, and validate.
+- Run W244 through W252 harnesses, check, and validate.
 
 Output:
-- Summary of label semantics, install smoke packet, and any UI copy changes.
+- Summary of review UI wiring, smoke acceptance packet, and guardrails.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

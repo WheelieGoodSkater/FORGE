@@ -1,0 +1,22 @@
+{
+  "schema": "forge.w250.lane-aware-record-label-semantics.trace.v1",
+  "workItem": "W250",
+  "purpose": "Prove lane-pack-aware display labels and install-ready visual smoke guidance.",
+  "assertions": [
+    "industrial distributor returned proof records use Product SKU or Availability/Replenishment Flow labels",
+    "CPG distributor returned proof records use Product SKU or Availability/Replenishment Flow labels",
+    "manufacturing lanes keep honest manufacturing labels",
+    "W248 story surface Open target includes returned record names and lane-appropriate labels",
+    "install smoke packet references the repo-local icon asset and avoids broad visual regression requirements",
+    "weak evidence remains lane-confirmation gated"
+  ],
+  "nllmAuthority": {
+    "writeAuthority": "none",
+    "creationAllowed": false,
+    "uncertaintyVisible": true
+  },
+  "visualTestingDecision": {
+    "targetedInstallSmokeRecommended": true,
+    "broadNetSuiteVisualRegressionRequired": false
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "forge.w276.live-evidence-signoff-bridge.trace.v1",
+  "workstream": "W276",
+  "title": "Review-Only Live Evidence Signoff Bridge Without Runtime Behavior Change",
+  "bridge": {
+    "schema": "forge.w276.live-evidence-signoff-bridge.v1",
+    "module": "src/contracts/liveEvidenceSignoffBridge.js",
+    "governingContract": "src/contracts/liveEvidencePackets.js",
+    "scope": "review_only_admin_only_packet_shape_validation_and_normalization",
+    "packetsCovered": [
+      "W260 install-ready release packet",
+      "W261 post-install smoke evidence/signoff",
+      "W266 controlled live build evidence",
+      "W267 screenshot/Open-link reconciliation",
+      "W268 installed-drawer evidence intake",
+      "W268 V1.0.0 release keep packet"
+    ],
+    "selectedOptimizationSliceFromW275": "review_only_live_evidence_signoff_bridge",
+    "runtimeBridgeImportedByDrawer": false
+  },
+  "fieldCompatibility": {
+    "w260InstallReadyReleasePacket": "validated_against_w272_contract_shape",
+    "w261PostInstallSmokeCapture": "validated_against_w272_contract_shape",
+    "w266ControlledLiveBuildRun": "validated_against_w272_contract_shape",
+    "w267ScreenshotReconciliation": "validated_against_w272_contract_shape",
+    "w268InstalledDrawerIntake": "validated_against_w272_contract_shape",
+    "w268ReleaseKeepPacket": "validated_against_w272_contract_shape"
+  },
+  "w272Authority": {
+    "decisionStatuses": [
+      "ready_to_keep",
+      "needs_attention",
+      "rollback_recommended"
+    ],
+    "reviewOnlyPolicyAuthoritative": true,
+    "externalUploadAllowed": false,
+    "networkCallAllowed": false,
+    "trackingAllowed": false,
+    "localStorageWriteAllowed": false,
+    "installActionAllowed": false,
+    "runtimeDependencyAdded": false
+  },
+  "continuity": {
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w266EvidencePacketChanged": false,
+    "w267SignoffChanged": false,
+    "w268ReleaseKeepPacketChanged": false,
+    "w275OptimizationReadinessPacketAvailable": true,
+    "weakEvidenceConfirmationFirst": true
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "connectedBuildFlowChanged": false,
+    "returnedRecordImportChanged": false,
+    "laneResolutionChanged": false,
+    "adapterEndpointProfileChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdateInThisBlock": true,
+    "rawEvidenceArchivedAdminOnly": true,
+    "normalConsultantUiHidesRawEvidence": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRegressionRequired": false,
+    "reason": "Contract bridge and archived evidence validation only; no visible UI changes."
+  }
+}

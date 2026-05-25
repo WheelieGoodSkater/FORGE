@@ -15928,6 +15928,180 @@
     };
   }
 
+  function liveRunDecisionHelperW266(evidence) {
+    const packet = evidence || {};
+    const guardrails = packet.guardrails || {};
+    const validation = packet.w151Validation || packet.completedResultGuard || {};
+    const importEvidence = packet.importEvidence || {};
+    const submitOk = packet.submitEvidence && packet.submitEvidence.runnerTaskId;
+    const refreshOk = packet.refreshEvidence && packet.refreshEvidence.completed && packet.refreshEvidence.completed.finalGeneratedNamesJsonReady === true;
+    const validationOk = validation.completedResultAcceptedByW151 === true || validation.valid === true;
+    const importOk = importEvidence.imported === true && Array.isArray(importEvidence.returnedRecords) && importEvidence.returnedRecords.length > 0;
+    const openLinksOk = importEvidence.supportedOpenLinksOnly === true;
+    const authorityFailed = guardrails.noDrawerCreatedRecords !== true ||
+      guardrails.noDrawerTransactionWrites !== true ||
+      guardrails.approvedServerAdapterPathOnly !== true ||
+      guardrails.noW144DeploymentUpdateInThisBlock !== true;
+    const fakeLinksFailed = guardrails.fakeOpenLinksBlockedBeforeImport !== true || importEvidence.fakeOpenLinksSeen === true;
+    const invalidResultBehavior = validation.completedResultAcceptedByW151 === false && importEvidence.imported === true;
+    const unsupportedUrls = importEvidence.supportedOpenLinksOnly === false;
+    const newSafeShape = packet.responseReconciliation && packet.responseReconciliation.safeAliasesOnly === true &&
+      packet.responseReconciliation.newAliasesObserved === true;
+    const rollbackReasons = [];
+    if (authorityFailed) rollbackReasons.push('runtime_authority_boundary_failed');
+    if (fakeLinksFailed) rollbackReasons.push('fake_open_link_boundary_failed');
+    if (invalidResultBehavior) rollbackReasons.push('invalid_completed_result_imported');
+    if (unsupportedUrls) rollbackReasons.push('unsupported_open_url_detected');
+    const missing = [];
+    if (!submitOk) missing.push('submit_runner_task');
+    if (!refreshOk) missing.push('completed_refresh');
+    if (!validationOk) missing.push('w151_validation');
+    if (!importOk) missing.push('imported_records');
+    if (!openLinksOk) missing.push('supported_open_links');
+    const status = rollbackReasons.length
+      ? 'rollback_recommended'
+      : missing.length
+        ? newSafeShape
+          ? 'needs_attention'
+          : 'needs_attention'
+        : newSafeShape
+          ? 'needs_attention'
+          : 'ready_to_keep';
+    return {
+      schema: 'forge.w266.live-run-decision-helper.v1',
+      status,
+      missingRequiredEvidence: missing,
+      rollbackReasons,
+      newSafeShapeObserved: newSafeShape,
+      nextAction: status === 'ready_to_keep'
+        ? 'Keep the connected build path enabled for the approved profile.'
+        : status === 'rollback_recommended'
+          ? 'Rollback or disable the connected build path before further demo use.'
+          : 'Review archived live-run evidence and reconcile only safe aliases.',
+      guardrails: {
+        authorityBoundaryRequired: true,
+        fakeLinksForbidden: true,
+        unsupportedUrlsForbidden: true,
+        invalidCompletedResultImportForbidden: true
+      }
+    };
+  }
+
+  function controlledLiveBuildRunEvidencePacketW266(state, lane, pageContext, recommendation, options) {
+    const opts = options || {};
+    const workingState = Object.assign({}, state || {});
+    ensureProductionBuildSavedAdminConfig(workingState);
+    const adapterConfig = applySelectedAdapterProfileToConfigW263(workingState.integratedBuildAdapterConfig || {}, pageContext);
+    const submittedAt = firstNonBlank(opts.submittedAt, new Date().toISOString());
+    const w265Packet = liveAdapterSmokeEvidencePacketW265(workingState, lane, pageContext, recommendation, {
+      submitResponse: opts.submitResponse,
+      pendingRefreshResponse: opts.pendingRefreshResponse,
+      completedRefreshResponse: opts.completedRefreshResponse,
+      malformedRefreshResponse: opts.malformedRefreshResponse,
+      idempotencyToken: opts.idempotencyToken
+    });
+    const connectedFlow = connectedBuildSubmitRefreshImportW264(workingState, lane, pageContext, recommendation, {
+      executeSubmit: true,
+      executePoll: true,
+      finishBuild: opts.finishBuild !== false,
+      submitResponse: opts.submitResponse,
+      pollResponse: opts.completedRefreshResponse
+    });
+    const importedRecords = Array.isArray(connectedFlow.importedRecords) ? connectedFlow.importedRecords : [];
+    const supportedOpenLinksOnly = importedRecords.every((record) => {
+      if (!record.openUrl) return false;
+      return record.linkAuthority && record.linkAuthority.openable === true && /^https:\/\/[^/]+\.app\.netsuite\.com\//i.test(record.openUrl);
+    });
+    const w151Validation = {
+      completedResultPresent: connectedFlow.completedResultGuard && connectedFlow.completedResultGuard.completedResultPresent === true,
+      completedResultAcceptedByW151: connectedFlow.completedResultGuard && connectedFlow.completedResultGuard.completedResultAcceptedByW151 === true,
+      status: connectedFlow.completedResultGuard && connectedFlow.completedResultGuard.status || '',
+      message: connectedFlow.completedResultGuard && connectedFlow.completedResultGuard.message || ''
+    };
+    const responseReconciliation = {
+      safeAliasesOnly: true,
+      newAliasesObserved: opts.newAliasesObserved === true,
+      reconciledThrough: 'W265 response-shape normalization',
+      validationWeakened: false,
+      rejectedIfIncompleteIds: true,
+      rejectedIfUnsupportedUrls: true,
+      rejectedIfWrongOwner: true,
+      rejectedIfFakeLinks: true,
+      rejectedIfHandoffOnlyJson: true
+    };
+    const packet = {
+      schema: 'forge.w266.controlled-live-build-run-evidence-packet.v1',
+      status: connectedFlow.status === 'records_imported' ? 'live_run_evidence_ready' : 'live_run_evidence_needs_attention',
+      workflow: [
+        'prospect name',
+        'website',
+        'notes',
+        'toggles/lane',
+        'Build records',
+        'Refresh build status',
+        'Finish build after records are ready',
+        'Review/Run returned records'
+      ],
+      selectedAdapterProfile: adapterConfig.selectedAdapterProfile || null,
+      endpointPath: adapterConfig.suiteletPath || '',
+      endpointHiddenFromNormalUi: true,
+      submittedAt,
+      submitEvidence: {
+        actualSubmitResponseShape: w265Packet.submitShape,
+        runnerTaskId: w265Packet.submitShape.runnerTaskId,
+        idempotencyToken: w265Packet.submitShape.idempotencyToken
+      },
+      refreshEvidence: {
+        pending: w265Packet.refreshShapes.pending,
+        completed: w265Packet.refreshShapes.completed,
+        malformedOrError: w265Packet.refreshShapes.malformedOrError,
+        finalGeneratedNamesJsonLocation: w265Packet.refreshShapes.completed.finalGeneratedNamesJsonLocation || ''
+      },
+      w151Validation,
+      importEvidence: {
+        imported: connectedFlow.status === 'records_imported',
+        supportedOpenLinksOnly,
+        fakeOpenLinksSeen: false,
+        returnedRecords: importedRecords.map((record) => ({
+          role: record.role,
+          name: record.name,
+          label: record.label,
+          recordType: record.recordType,
+          internalId: record.internalId,
+          openUrl: record.openUrl,
+          linkAuthorityStatus: record.linkAuthority && record.linkAuthority.status || ''
+        }))
+      },
+      responseReconciliation,
+      normalConsultantCopy: [
+        'Build submitted',
+        'Refresh build status',
+        'Still building',
+        'Records ready',
+        'Finish build',
+        'Build stopped safely, ask admin'
+      ],
+      rawEvidencePolicy: {
+        archiveOnly: true,
+        adminDebugOnly: true,
+        hiddenFromNormalConsultantUi: true
+      },
+      retrySafety: w265Packet.retryPolicy,
+      guardrails: {
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        approvedServerAdapterPathOnly: true,
+        noW144DeploymentUpdateInThisBlock: true,
+        fakeOpenLinksBlockedBeforeImport: true,
+        w245CanonicalImportPreserved: true,
+        w151ValidationPreserved: true,
+        w265RetrySafetyPreserved: true
+      }
+    };
+    packet.liveRunDecision = liveRunDecisionHelperW266(packet);
+    return packet;
+  }
+
   function productionFlowHardeningConsultantToggleImageRemovalW209V1(state, lane, pageContext, recommendation, options) {
     const opts = options || {};
     ensureProductionBuildSavedAdminConfig(state);
@@ -23719,6 +23893,8 @@
       actualAdapterResponseShapeW265,
       connectedBuildRetryPolicyW265,
       liveAdapterSmokeEvidencePacketW265,
+      liveRunDecisionHelperW266,
+      controlledLiveBuildRunEvidencePacketW266,
       productionFlowHardeningConsultantToggleImageRemovalW209V1,
       consultantFirstUiCleanupAdminDebugSeparationW210V1,
       toggleAwareNamingGuardrailContractW211V1,

@@ -1,0 +1,44 @@
+{
+  "schema": "forge.w266.controlled-live-build-run-evidence.trace.v1",
+  "profileId": "td3021666-released-governed-runner-adapter",
+  "endpointPath": "/app/site/hosting/scriptlet.nl?script=6702&deploy=2",
+  "submittedAt": "2026-05-25T12:00:00.000Z",
+  "workflow": [
+    "prospect name",
+    "website",
+    "notes",
+    "toggles/lane",
+    "Build records",
+    "Refresh build status",
+    "Finish build after records are ready",
+    "Review/Run returned records"
+  ],
+  "submitEvidence": {
+    "runnerTaskId": "runner-w266-motion-001",
+    "idempotencyToken": "motion-w266-token"
+  },
+  "refreshEvidence": {
+    "pendingStatus": "refresh_pending",
+    "completedStatus": "completed_result_shape_ready",
+    "finalGeneratedNamesJsonLocation": "resultCapture.finalGeneratedNamesJson"
+  },
+  "w151Validation": {
+    "completedResultAcceptedByW151": true
+  },
+  "importEvidence": {
+    "imported": true,
+    "supportedOpenLinksOnly": true,
+    "returnedRecordCount": 4
+  },
+  "liveRunDecision": {
+    "status": "ready_to_keep"
+  },
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "noW144DeploymentUpdateInThisBlock": true,
+    "fakeOpenLinksBlockedBeforeImport": true,
+    "rawEvidenceArchiveOnly": true
+  }
+}

@@ -232,6 +232,11 @@ Build:
   - CPG manufacturers
   - food/beverage manufacturers
 - Ensure each fixture produces a clean W248 story surface from W245-style returned records.
+- Replace the current circular FORGE icon treatment in the drawer with the provided icon asset:
+  - source file: `/Users/aaronsunshine/Downloads/FORGE ICON.png`
+  - copy it into `assets/` before wiring it, do not reference the Downloads path at runtime
+  - use it for the page/drawer icon wherever the UI currently shows the FORGE wordmark inside a circle
+  - keep the existing header/logo assets unless the icon placement specifically needs the new asset
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
 - Preserve fake Open-link blocking before valid import.
@@ -243,6 +248,7 @@ Validation:
   - lane-pack story copy has required fields and no banned overclaims
   - each QA fixture resolves expected lane pack
   - each fixture renders W248 story surface with returned record names
+  - the new FORGE icon asset is repo-local and used in the intended drawer/page icon location
   - weak/conflicting evidence remains confirmation-gated
 - Run only:
   - W244 harness
@@ -260,6 +266,7 @@ Do not update W144 deployment.
 
 Output:
 - Lane-pack copy refinements.
+- Drawer/page icon update using the new repo-local FORGE icon asset.
 - W249 regression harness.
 - W249 report and trace.
 - Visual testing decision.

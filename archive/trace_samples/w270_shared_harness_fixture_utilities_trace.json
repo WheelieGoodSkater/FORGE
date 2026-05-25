@@ -1,0 +1,45 @@
+{
+  "schema": "forge.w270.shared-harness-fixture-utilities.trace.v1",
+  "date": "2026-05-25",
+  "utility": {
+    "path": "archive/tools/lib/forge_harness_fixtures.js",
+    "scope": "archive-only harness utilities",
+    "exports": [
+      "loadHooks",
+      "motionState",
+      "motionContext",
+      "completedMotionResult",
+      "invalidMotionResult",
+      "submitResponse",
+      "pendingRefreshResponse",
+      "completedRefreshResponse",
+      "assertCase",
+      "printResults",
+      "readArchiveText",
+      "readArchiveJson"
+    ]
+  },
+  "refactoredHarnesses": [
+    "archive/tools/run_w264_connected_build_submit_refresh_import_harness.js",
+    "archive/tools/run_w265_live_adapter_smoke_retry_safety_harness.js",
+    "archive/tools/run_w266_controlled_live_build_run_evidence_harness.js",
+    "archive/tools/run_w267_live_run_screenshot_reconciliation_harness.js",
+    "archive/tools/run_w268_installed_drawer_live_evidence_release_prep_harness.js",
+    "archive/tools/run_w269_code_review_extraction_guardrails_harness.js"
+  ],
+  "parityGuardrails": [
+    "W264-W269 harnesses continue to pass after utility extraction",
+    "Motion distribution completed result remains W151-valid",
+    "W266/W267/W268/W269 packet outputs remain field-compatible",
+    "no normal consultant UI changes",
+    "no runtime authority changes"
+  ],
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedW144AdapterOnlyRecordCreation": true,
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false
+  },
+  "visualTestingDecision": "not_required_archive_only_harness_utility_extraction"
+}

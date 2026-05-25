@@ -1,99 +1,17 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const vm = require('vm');
-
-const root = path.resolve(__dirname, '..', '..');
-const userscriptPath = path.join(root, 'idb-drawer.user.js');
-const reportPath = path.join(root, 'archive', 'reports', 'w269_code_review_extraction_guardrails.md');
-const tracePath = path.join(root, 'archive', 'trace_samples', 'w269_code_review_extraction_guardrails_trace.json');
-
-function read(file) {
-  return fs.readFileSync(file, 'utf8');
-}
-
-function assertCase(results, id, pass, evidence) {
-  results.push({ id, pass: Boolean(pass), evidence: evidence || '' });
-}
-
-function loadHooks() {
-  const storage = new Map();
-  const localStorage = {
-    getItem: (key) => (storage.has(key) ? storage.get(key) : null),
-    setItem: (key, value) => storage.set(key, String(value)),
-    removeItem: (key) => storage.delete(key)
-  };
-  const sandbox = {
-    console,
-    Date,
-    JSON,
-    Math,
-    RegExp,
-    String,
-    Number,
-    Boolean,
-    Array,
-    Object,
-    Set,
-    Map,
-    URL,
-    URLSearchParams,
-    Promise,
-    Blob: function Blob() {},
-    fetch: () => Promise.reject(new Error('live fetch disabled in W269 harness')),
-    globalThis: null,
-    window: {
-      self: null,
-      top: null,
-      location: {
-        href: 'https://td3021666.app.netsuite.com/app/center/card.nl',
-        pathname: '/app/center/card.nl',
-        search: ''
-      },
-      localStorage,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      setInterval: () => 1,
-      clearInterval: () => {},
-      innerWidth: 1440
-    },
-    document: {
-      title: 'NetSuite Home',
-      readyState: 'loading',
-      body: { innerText: '', classList: { add: () => {}, remove: () => {} } },
-      documentElement: { style: { setProperty: () => {} } },
-      head: { appendChild: () => {} },
-      createElement: () => ({
-        setAttribute: () => {},
-        appendChild: () => {},
-        addEventListener: () => {},
-        remove: () => {},
-        classList: { toggle: () => {}, add: () => {}, remove: () => {} },
-        style: {}
-      }),
-      querySelectorAll: () => [],
-      getElementById: () => null,
-      addEventListener: () => {}
-    },
-    __IDB_ENABLE_TEST_HOOKS__: true
-  };
-  sandbox.globalThis = sandbox;
-  sandbox.window.self = sandbox.window;
-  sandbox.window.top = sandbox.window;
-  sandbox.window.window = sandbox.window;
-  sandbox.window.document = sandbox.document;
-  sandbox.window.globalThis = sandbox;
-  vm.createContext(sandbox);
-  vm.runInContext(read(userscriptPath), sandbox, { filename: userscriptPath });
-  if (!sandbox.__IDB_TEST_HOOKS__) throw new Error('Missing IDB test hooks.');
-  return sandbox.__IDB_TEST_HOOKS__;
-}
+const {
+  assertCase,
+  loadHooks,
+  printResults,
+  readArchiveJson,
+  readArchiveText
+} = require('./lib/forge_harness_fixtures');
 
 function main() {
-  const hooks = loadHooks();
-  const report = read(reportPath);
-  const trace = JSON.parse(read(tracePath));
+  const hooks = loadHooks({ fetchMessage: 'live fetch disabled in W269 harness' });
+  const report = readArchiveText('reports', 'w269_code_review_extraction_guardrails.md');
+  const trace = readArchiveJson('trace_samples', 'w269_code_review_extraction_guardrails_trace.json');
   const inventory = hooks.codeReviewPrepInventoryW268();
   const findings = hooks.codeReviewFindingsReportW269({ inventory });
   const plan = hooks.extractionPlanW269();
@@ -184,13 +102,7 @@ function main() {
       trace.guardrails.noDrawerCreatedRecords === true,
     JSON.stringify(trace));
 
-  const failed = results.filter((item) => !item.pass);
-  results.forEach((item) => {
-    console.log(`${item.pass ? 'PASS' : 'FAIL'} ${item.id}`);
-    if (!item.pass && item.evidence) console.log(item.evidence);
-  });
-  console.log(`W269 code review extraction guardrails harness: ${results.length - failed.length}/${results.length} passed`);
-  if (failed.length) process.exit(1);
+  printResults('W269 code review extraction guardrails harness', results);
 }
 
 main();

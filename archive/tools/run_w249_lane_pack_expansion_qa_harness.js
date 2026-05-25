@@ -202,7 +202,7 @@ function main() {
 
   const rendered = fixtures.fixtures.map((fixture) => Object.assign({ fixture }, storyHtmlFor(hooks, fixture)));
   assertCase(results, 'w248-story-surfaces-use-returned-record-names', rendered.every((item) => item.story && item.story.status === 'story_ready' && item.story.openTarget.includes(item.fixture.proofRecordName) && item.html.includes(item.fixture.proofRecordName)), rendered.map((item) => `${item.fixture.id}:${item.story && item.story.openTarget}`).join(' | '));
-  assertCase(results, 'w248-story-surfaces-stay-consultant-facing', rendered.every((item) => /Live demo talk track/.test(item.html) && /Safe to say/.test(item.html) && /Do not claim/.test(item.html) && !/writeAuthority|hardLimits|runnerTaskId|stack trace|raw JSON/i.test(item.html)), rendered.map((item) => item.html.slice(0, 300)).join('\n---\n'));
+  assertCase(results, 'w248-story-surfaces-stay-consultant-facing', rendered.every((item) => /Live proof CTA/.test(item.html) && /Safe claim/.test(item.html) && /Stop/.test(item.html) && /Evidence confidence/.test(item.html) && !/writeAuthority|hardLimits|runnerTaskId|stack trace|raw JSON/i.test(item.html)), rendered.map((item) => item.html.slice(0, 300)).join('\n---\n'));
   assertCase(results, 'nllm-remains-advisory-and-uncertainty-visible', rendered.every((item) => item.story.nllmAdvisory && item.story.nllmAdvisory.writeAuthority === 'none' && item.story.nllmAdvisory.creationAllowed === false && /uncertainty/i.test(item.story.nllmAdvisory.uncertainty)), rendered.map((item) => `${item.fixture.id}:${JSON.stringify(item.story.nllmAdvisory)}`).join(' | '));
 
   const weakState = {

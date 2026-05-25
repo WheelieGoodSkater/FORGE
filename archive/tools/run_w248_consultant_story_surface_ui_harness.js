@@ -162,12 +162,15 @@ function storyCard(html) {
 }
 
 function hasCompactStoryFields(card) {
-  return /Live demo talk track/.test(card) &&
+  return /Live proof CTA/.test(card) &&
     /Open Branch Fulfillment SKU/.test(card) &&
-    /Prove/.test(card) &&
-    /Safe to say/.test(card) &&
-    /Do not claim/.test(card) &&
+    /Proof action/.test(card) &&
+    /Safe claim/.test(card) &&
+    /Stop/.test(card) &&
     /Evidence confidence: High/.test(card) &&
+    /idb-w256-live-demo-script/.test(card) &&
+    /idb-w257-guided-demo-sequence/.test(card) &&
+    /idb-w254-evidence-receipt/.test(card) &&
     /N\/LLM: advisory only/.test(card) &&
     /Low uncertainty/.test(card);
 }

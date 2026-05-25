@@ -1,0 +1,26 @@
+{
+  "schema": "forge.w258.story-surface-density-header-polish.trace.v1",
+  "status": "ready",
+  "storySurface": {
+    "firstGlanceCta": true,
+    "scriptExpandable": true,
+    "guidedSequenceExpandable": true,
+    "receiptExpandable": true
+  },
+  "header": {
+    "layout": "compact_scout_style_top_bar",
+    "logoMaxWidthPx": 188,
+    "logoMaxHeightPx": 58,
+    "versionVisible": true,
+    "bugEnhancementPlaceholder": true,
+    "externalRuntimeDependency": false
+  },
+  "guardrails": {
+    "drawerCreatedRecords": false,
+    "drawerTransactionWrites": false,
+    "liveRunnerInvocation": false,
+    "w144DeploymentUpdate": false,
+    "nllmAuthority": "advisory_only",
+    "uncertaintyVisible": true
+  }
+}

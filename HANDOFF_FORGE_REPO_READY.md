@@ -1,6 +1,6 @@
 # FORGE Repo-Ready Handoff
 
-Date: 2026-05-24
+Date: 2026-05-25
 
 Workspace:
 
@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W257 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, and guided objection-safe demo sequencing from returned records.
+  - W250-W258 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, and SCOUT-style header polish from returned records.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -69,6 +69,7 @@ npm run harness:evidence-receipt-trail-w254
 npm run harness:receipt-driven-lane-expansion-qa-w255
 npm run harness:consultant-live-demo-script-w256
 npm run harness:guided-demo-step-sequence-w257
+npm run harness:story-density-header-polish-w258
 npm run check
 npm run validate
 ```
@@ -89,12 +90,32 @@ Current expected result:
 - W255 harness passes `8/8`.
 - W256 harness passes `9/9`.
 - W257 harness passes `9/9`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, and W257 harness.
+- W258 harness passes `13/13`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, and W258 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W258: Consultant Story Surface Density Pass And FORGE Assistant Header Polish
+
+What changed:
+
+- Compresses the Review/Run story surface into a first-glance `Live proof CTA` with open target, proof action, safe claim, stop guardrail, and evidence confidence.
+- Keeps W256 `Say this live` and W257 `Guided demo sequence` available behind expandable sections so the normal consultant view does not feel like duplicate coaching text.
+- Keeps the W254 evidence receipt expandable below the coaching surface and preserves returned record names, lane-aware labels, supported Open-link authority, and weak-evidence confirmation gates.
+- Polishes the FORGE assistant header into a compact SCOUT-style top bar with the FORGE logo on the left, running version to the right, a warm yellow `Bug / Enhancement` placeholder button, and the close button balanced on the right.
+- Shrinks the header logo to `188px` wide / `58px` max-height and updates W253 density QA defaults to match the new compact header.
+- Updates W248-W253 compatibility harness expectations so older acceptance checks validate the new W258 UI without weakening no-diagnostics, no-install, no-write, or no-overclaim guardrails.
+
+Important W258 artifacts:
+
+- `archive/tools/run_w258_story_surface_density_header_polish_harness.js`
+- `archive/reports/w258_story_surface_density_header_polish.md`
+- `archive/trace_samples/w258_story_surface_density_header_polish_trace.json`
+
+Previous completed block:
 
 - W257: Guided Demo Step Sequencing And Objection-Safe Talk Track QA
 
@@ -378,24 +399,28 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W258: Consultant Story Surface Density Pass And Live Proof CTA Polish
+W259: Header Feedback Placeholder Contract And Visual Acceptance Packet
 
 Goal:
-Make the Review/Run live-demo story surface easier to scan during a real buyer call by tightening the hierarchy between the W255 first glance, W256 script, W257 guided sequence, and W254 receipt, while preserving every trust and authority boundary.
+Make the new FORGE assistant header feedback entry point safe, reviewable, and future-ready while adding a targeted visual acceptance packet for the compact W258 header and live proof story surface.
 
 Build:
-- Review the rendered W248/W255/W256/W257 story surface for hierarchy and density.
-- Make the first glance show the live proof CTA clearly:
-  - open target
-  - one proof action
-  - one safe claim
-  - one stop guardrail
-  - evidence confidence
-- Keep W256 script and W257 guided sequence available, but avoid making the normal view feel like duplicate coaching text.
-- Prefer expandable sections, concise labels, and short rows over large repeated paragraphs.
-- Keep the W254 receipt expandable and consultant-safe below the coaching surface.
-- Preserve returned record names, lane-aware labels, and supported Open-link authority.
-- Preserve weak/conflicting evidence confirmation-first behavior.
+- Add a small feedback placeholder contract for the `Bug / Enhancement` header button.
+- Keep the button no-op/safe until a future URL is explicitly provided.
+- Add accessible button text/title/state that makes the future-link status clear without adding noise to the normal consultant UI.
+- Do not introduce any external URL, network call, tracking call, local storage write, install action, or runtime dependency for the placeholder.
+- Add a compact visual acceptance packet for:
+  - compact header logo size and readability
+  - version placement beside the logo
+  - `Bug / Enhancement` button visibility and no-op behavior
+  - close button reachability
+  - tab row and first content card reachability
+  - W258 first-glance `Live proof CTA` density
+  - W256/W257 expandable coaching availability
+  - W254 receipt placement below the coaching surface
+- Keep the W258 header colors/layout stable unless the acceptance packet exposes a concrete readability issue.
+- Keep the W248/W255/W256/W257 story hierarchy compact and avoid duplicate coaching text in the normal view.
+- Preserve returned record names, lane-aware labels, supported Open-link authority, and weak/conflicting evidence confirmation-first behavior.
 - Do not expose raw JSON, stack traces, internal arrays, runner task ids, schema names, admin diagnostics, or install-like actions in normal consultant UI.
 - Do not change runtime authority: no drawer-created records, no drawer transaction writes, no live runner invocation, and no W144 deployment update.
 - Keep W256 and W257 helpers available for harnesses and future expansion.
@@ -408,19 +433,21 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W258 harness covering:
-  - first-glance story surface contains open target, proof action, safe claim, stop guardrail, and evidence confidence
-  - normal consultant UI avoids duplicate coaching clutter
-  - W256 script and W257 guided sequence remain available behind compact/expandable surfaces
-  - W254 receipt remains expandable and below the coaching surface
-  - returned record names and lane-aware labels remain visible
+- Add archived W259 harness covering:
+  - feedback placeholder contract exists and is reviewable
+  - `Bug / Enhancement` button renders in the header with safe no-op behavior
+  - no external URL, fetch, tracking call, local storage write, or install action is introduced
+  - compact SCOUT-style header keeps logo, version, button, close control, tabs, and first content card reachable
+  - W258 first-glance story surface remains compact and contains open target, proof action, safe claim, stop guardrail, and evidence confidence
+  - W256 script and W257 guided sequence remain available behind expandable surfaces
+  - W254 receipt remains expandable below the coaching surface
   - raw diagnostics and admin-only proposal review remain hidden from normal UI
   - W255 receipt-driven QA remains available
   - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W258 harnesses, check, and validate.
+- Run W244 through W259 harnesses, check, and validate.
 
 Output:
-- Summary of story surface density changes, live proof CTA polish, trust guardrails, validation, and lane expansion continuity.
+- Summary of feedback placeholder contract, visual acceptance packet, header/story guardrails, validation, and lane expansion continuity.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

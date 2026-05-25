@@ -161,7 +161,7 @@ function main() {
       ['launcher_readability_standard_zoom', 'launcher_click_target_placement', 'suitelet_header_logo_balance', 'close_tabs_first_card_reachability', 'story_card_valid_import_gate', 'returned_names_lane_labels', 'weak_evidence_confirmation'].every((id) => packet.fields.some((field) => field.id === id)),
     JSON.stringify(packet));
   assertCase(results, 'header-density-helper-passes-compact-state',
-    density.status === 'pass' && density.checks.every((check) => check.pass) && /width:\s*min\(300px, calc\(100% - 76px\)\);/.test(userscript) && /max-height:\s*108px;/.test(userscript),
+    density.status === 'pass' && density.checks.every((check) => check.pass) && /width:\s*188px;/.test(userscript) && /max-width:\s*min\(188px, 48vw\);/.test(userscript) && /max-height:\s*58px;/.test(userscript) && /idb-header-meta/.test(userscript) && /idb-bug-button/.test(userscript),
     JSON.stringify(density));
   assertCase(results, 'header-density-helper-flags-oversized-state',
     oversized.status === 'needs_attention' && oversized.checks.some((check) => check.id === 'logo_width_compact' && !check.pass) && oversized.checks.some((check) => check.id === 'logo_height_compact' && !check.pass),

@@ -17321,23 +17321,23 @@
       }
       #idb-drawer * { box-sizing: border-box; }
       .idb-header {
-        background: var(--rw-color-background-surface-raised);
-        border-block-end: 1px solid var(--rw-color-border-default);
-        padding-block: var(--rw-space-200);
-        padding-inline: var(--rw-space-300);
+        background: #5a95a6;
+        border-block-end: 1px solid #3f7588;
+        padding-block: 8px;
+        padding-inline: 12px;
       }
-      .idb-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .idb-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; }
       .idb-kicker { color: var(--rw-color-text-muted); font-size: 10px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
       .idb-title { margin-top: 2px; font-size: var(--rw-font-size-heading); font-weight: 850; color: var(--rw-color-text-primary); }
       .idb-subtitle { margin-top: 2px; font-size: var(--rw-font-size-body-sm); color: var(--rw-color-text-muted); line-height: 1.3; }
       .idb-forge-brand {
         display: flex;
         align-items: center;
-        width: min(300px, calc(100% - 76px));
-        max-width: calc(100% - 72px);
+        width: 188px;
+        max-width: min(188px, 48vw);
         min-width: 0;
         aspect-ratio: 1370 / 515;
-        max-height: 108px;
+        max-height: 58px;
         overflow: hidden;
       }
       .idb-forge-logo {
@@ -17347,17 +17347,44 @@
         object-fit: contain;
         object-position: center center;
       }
+      .idb-header-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        min-width: 86px;
+        margin-inline-end: auto;
+      }
+      .idb-version-pill {
+        color: #eef7f9;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .04em;
+      }
+      .idb-bug-button {
+        border: 1px solid #e1bd56;
+        border-radius: 7px;
+        background: #efc85f;
+        color: #112435;
+        min-height: 30px;
+        padding: 0 12px;
+        font-size: 12px;
+        font-weight: 850;
+        cursor: pointer;
+      }
+      .idb-bug-button:hover { background: #f4d36f; }
       .idb-icon-button {
-        border: 1px solid var(--rw-color-border-strong);
+        border: 1px solid rgba(255,255,255,.76);
         border-radius: var(--rw-radius-xs);
-        background: var(--rw-color-background-surface);
-        color: var(--rw-color-text-primary);
-        min-width: 28px;
-        height: 28px;
+        background: transparent;
+        color: #fff;
+        min-width: 34px;
+        height: 34px;
         cursor: pointer;
         font-weight: 800;
+        font-size: 18px;
       }
-      .idb-body { height: calc(100vh - 80px); overflow: auto; padding-block: var(--rw-space-200); padding-inline: var(--rw-space-200); }
+      .idb-body { height: calc(100vh - 73px); overflow: auto; padding-block: var(--rw-space-200); padding-inline: var(--rw-space-200); }
       .idb-card {
         background: var(--rw-color-background-surface);
         border: 1px solid var(--rw-color-border-default);
@@ -18547,10 +18574,10 @@
 
   function suiteletHeaderDensityQaW253(metrics) {
     const values = Object.assign({
-      logoMaxWidthPx: 300,
-      logoMaxHeightPx: 108,
-      headerPaddingBlockToken: 'var(--rw-space-200)',
-      headerPaddingInlineToken: 'var(--rw-space-300)',
+      logoMaxWidthPx: 188,
+      logoMaxHeightPx: 58,
+      headerPaddingBlockToken: '8px',
+      headerPaddingInlineToken: '12px',
       closeButtonPresent: true,
       tabRowPresent: true,
       firstCardReachable: true
@@ -18559,19 +18586,19 @@
       {
         id: 'logo_width_compact',
         label: 'Logo max width is compact',
-        pass: Number(values.logoMaxWidthPx) <= 320,
+        pass: Number(values.logoMaxWidthPx) <= 220,
         evidence: `${values.logoMaxWidthPx}px`
       },
       {
         id: 'logo_height_compact',
         label: 'Logo max height is compact',
-        pass: Number(values.logoMaxHeightPx) <= 112,
+        pass: Number(values.logoMaxHeightPx) <= 72,
         evidence: `${values.logoMaxHeightPx}px`
       },
       {
         id: 'header_spacing_compact',
         label: 'Header spacing remains compact',
-        pass: values.headerPaddingBlockToken === 'var(--rw-space-200)' && values.headerPaddingInlineToken === 'var(--rw-space-300)',
+        pass: ['8px', 'var(--rw-space-200)'].includes(values.headerPaddingBlockToken) && ['12px', 'var(--rw-space-300)'].includes(values.headerPaddingInlineToken),
         evidence: `${values.headerPaddingBlockToken} / ${values.headerPaddingInlineToken}`
       },
       {
@@ -20178,6 +20205,7 @@
     const confidence = story.nllmAdvisory && story.nllmAdvisory.confidence ? consultantLabel(story.nllmAdvisory.confidence) : 'Unclear';
     const uncertainty = story.nllmAdvisory && story.nllmAdvisory.uncertainty ? story.nllmAdvisory.uncertainty : 'Ask for confirmation when evidence is weak.';
     const receipt = story.evidenceReceiptW254 && story.evidenceReceiptW254.status === 'receipt_ready' ? story.evidenceReceiptW254 : null;
+    const proofAction = sequence && sequence.steps && sequence.steps[2] ? sequence.steps[2].line : firstGlance.proveMove;
     const receiptHtml = receipt ? `
         <details class="idb-technical-details idb-w254-evidence-receipt">
           <summary>Evidence receipt</summary>
@@ -20196,23 +20224,39 @@
       ` : '';
     return `
       <div class="idb-run-action-card idb-w248-story-surface">
-        <div class="idb-status-key">Live demo talk track</div>
+        <div class="idb-status-key">Live proof CTA</div>
         <div class="idb-strong">${escapeHtml(firstGlance.openTarget)}</div>
-        <div class="idb-copy">${escapeHtml(story.buyerFacingSoWhat || '')}</div>
+        <div class="idb-status-strip idb-w258-first-glance-cta">
+          <div class="idb-status-cell">
+            <div class="idb-status-key">Proof action</div>
+            <div class="idb-copy">${escapeHtml(proofAction)}</div>
+          </div>
+          <div class="idb-status-cell">
+            <div class="idb-status-key">Safe claim</div>
+            <div class="idb-copy">${escapeHtml(firstGlance.safeClaim)}</div>
+          </div>
+          <div class="idb-status-cell">
+            <div class="idb-status-key">Stop</div>
+            <div class="idb-copy">${escapeHtml(firstGlance.doNotClaimGuardrail)}</div>
+          </div>
+        </div>
         <div class="idb-chip-row idb-w255-first-glance">
+          <span class="idb-mini-chip">Evidence confidence: ${escapeHtml(confidence)}</span>
           <span class="idb-mini-chip">Receipt: ${escapeHtml(firstGlance.receiptSummary)}</span>
           <span class="idb-mini-chip">Next: ${escapeHtml(firstGlance.nextAction)}</span>
         </div>
-        <div class="idb-run-action-card idb-w256-live-demo-script">
-          <div class="idb-status-key">Say this live</div>
-          <div class="idb-copy"><strong>Open:</strong> ${escapeHtml(script.lines.whatToOpen)}</div>
-          <div class="idb-copy"><strong>Say:</strong> ${escapeHtml(script.lines.openingLine)}</div>
-          <div class="idb-copy"><strong>Prove:</strong> ${escapeHtml(script.lines.whatToProve)}</div>
-          <div class="idb-copy"><strong>Claim:</strong> ${escapeHtml(script.lines.safeBuyerClaim)}</div>
-          <div class="idb-copy"><strong>So what:</strong> ${escapeHtml(script.lines.valueSoWhat)}</div>
-          <div class="idb-copy"><strong>Stop:</strong> ${escapeHtml(script.lines.stopGuardrail)}</div>
-          <div class="idb-copy"><strong>Uncertainty:</strong> ${escapeHtml(script.lines.uncertaintyLine)}</div>
-        </div>
+        <details class="idb-technical-details idb-w256-live-demo-script">
+          <summary>Say this live</summary>
+          <div class="idb-record-group">
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Open</span><span class="idb-build-statement">${escapeHtml(script.lines.whatToOpen)}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Say</span><span class="idb-build-statement">${escapeHtml(script.lines.openingLine)}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Prove</span><span class="idb-build-statement">${escapeHtml(script.lines.whatToProve)}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Claim</span><span class="idb-build-statement">${escapeHtml(script.lines.safeBuyerClaim)}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">So what</span><span class="idb-build-statement">${escapeHtml(script.lines.valueSoWhat)}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Stop</span><span class="idb-build-statement">${escapeHtml(script.lines.stopGuardrail)}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Uncertainty</span><span class="idb-build-statement">${escapeHtml(script.lines.uncertaintyLine)}</span></span><span class="idb-plan-role">Script</span></div>
+          </div>
+        </details>
         <details class="idb-technical-details idb-w257-guided-demo-sequence">
           <summary>Guided demo sequence</summary>
           <div class="idb-record-group">
@@ -20231,22 +20275,7 @@
           <div class="idb-copy"><strong>Stop:</strong> ${escapeHtml(sequence.stopCondition)}</div>
           <div class="idb-copy"><strong>Uncertainty:</strong> ${escapeHtml(sequence.uncertaintyResponse)}</div>
         </details>
-        <div class="idb-status-strip">
-          <div class="idb-status-cell">
-            <div class="idb-status-key">Prove</div>
-            <div class="idb-copy">${escapeHtml(firstGlance.proveMove)}</div>
-          </div>
-          <div class="idb-status-cell">
-            <div class="idb-status-key">Safe to say</div>
-            <div class="idb-copy">${escapeHtml(firstGlance.safeClaim)}</div>
-          </div>
-          <div class="idb-status-cell">
-            <div class="idb-status-key">Do not claim</div>
-            <div class="idb-copy">${escapeHtml(firstGlance.doNotClaimGuardrail)}</div>
-          </div>
-        </div>
         <div class="idb-chip-row">
-          <span class="idb-mini-chip">Evidence confidence: ${escapeHtml(confidence)}</span>
           <span class="idb-mini-chip">N/LLM: advisory only</span>
         </div>
         <div class="idb-copy">${escapeHtml(uncertainty)}</div>
@@ -21016,6 +21045,10 @@
         <div class="idb-title-row">
           <div class="idb-forge-brand">
             <img class="idb-forge-logo" src="${FORGE_BRAND_IMAGE_SRC}" alt="${escapeHtml(FORGE_BRAND_ALT_TEXT)}">
+          </div>
+          <div class="idb-header-meta">
+            <div class="idb-version-pill">v${escapeHtml(CONTRACT.product.version || '0.1.2')}</div>
+            <button class="idb-bug-button" type="button" title="Bug / Enhancement link coming soon">Bug / Enhancement</button>
           </div>
           <button class="idb-icon-button" data-idb-close title="Close drawer">×</button>
         </div>

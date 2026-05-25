@@ -208,7 +208,7 @@ function main() {
     equipmentManufacturing,
     cpgManufacturing,
     foodBeverage
-  ].every((item) => item.html.includes(item.story.openTarget.replace(/^Open /, '').replace(/\.$/, '')) && /Live demo talk track/.test(item.html));
+  ].every((item) => item.html.includes(item.story.openTarget.replace(/^Open /, '').replace(/\.$/, '')) && /Live proof CTA/.test(item.html) && /Evidence confidence/.test(item.html));
   assertCase(results, 'w248-story-surface-uses-returned-names-and-lane-labels', storyNamesAndLabels, [
     industrialDistributor.story.openTarget,
     cpgDistributor.story.openTarget,

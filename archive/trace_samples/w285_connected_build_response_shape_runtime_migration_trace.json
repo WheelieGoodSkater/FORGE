@@ -1,0 +1,79 @@
+{
+  "schema": "forge.w285.connected-build-response-shape-runtime-migration.trace.v1",
+  "status": "runtime_migration_parity_ready",
+  "runtimeFile": "idb-drawer.user.js",
+  "governingContract": "src/contracts/connectedBuildResponseShapes.js",
+  "governingBridge": "src/contracts/connectedBuildResponseShapeBridge.js",
+  "migratedHelperAnchors": [
+    "CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285",
+    "CONNECTED_BUILD_RESPONSE_SHAPE_STATUSES_W285",
+    "CONNECTED_BUILD_NORMAL_UI_COPY_BY_STATUS_W285",
+    "CONNECTED_BUILD_COMPLETED_JSON_LOCATION_CANDIDATES_W285",
+    "connectedBuildCompletedJsonFromActualResponseW285",
+    "connectedBuildRunnerTaskIdFromActualResponseW285",
+    "connectedBuildIdempotencyTokenFromActualResponseW285",
+    "connectedBuildResponseShapeStatusW285",
+    "connectedBuildNormalUiCopyForStatusW285"
+  ],
+  "reshapedLogic": {
+    "transportStatusTables": true,
+    "normalConsultantCopyTable": true,
+    "completedJsonAliasDetection": true,
+    "runnerTaskIdAliasDetection": true,
+    "idempotencyAliasDetection": true,
+    "responseShapeStatusDerivation": true
+  },
+  "stayedDrawerOwned": [
+    "connectedBuildSubmitRefreshImportW264",
+    "actual submit execution",
+    "actual refresh/poll execution",
+    "connectedBuildRetryPolicyW265",
+    "W151 completed-result validation",
+    "W214 semantic guard",
+    "W245 canonical import normalization",
+    "Finish build import"
+  ],
+  "validationBoundary": {
+    "w151OwnsImportValidity": true,
+    "w214OwnsSemanticGuard": true,
+    "w245OwnsCanonicalImportNormalization": true,
+    "migratedHelpersMayLocateCompletedJsonButCannotDeclareImportValid": true
+  },
+  "runtimeBoundary": {
+    "drawerSelfContained": true,
+    "noRuntimeRequireAdded": true,
+    "noExternalDependencyAdded": true,
+    "noBundlerRequirementAdded": true,
+    "noNetworkDependencyAdded": true,
+    "noStorageWriteAddedForContractOrBridgeLoading": true,
+    "actualSubmitExecutionMoved": false,
+    "actualRefreshExecutionMoved": false,
+    "finishBuildImportMoved": false
+  },
+  "continuity": {
+    "w284BridgeAvailable": true,
+    "w283ResponseShapeContractAvailable": true,
+    "w282BoundaryInventoryAvailable": true,
+    "w281AdapterProfileReadinessMigrationPreserved": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordsOpenLinksChanged": false,
+    "fakeLinkBlockingChanged": false,
+    "normalConsultantUiChanged": false,
+    "endpointProfileBehaviorChanged": false,
+    "datasetSwitchingChanged": false
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "normalConsultantUiHidesEndpointRawTaskSchemaStackAdminDiagnostics": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "noW144DeploymentUpdateInThisBlock": true
+  }
+}

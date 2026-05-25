@@ -5628,6 +5628,170 @@
     }, payload || {}));
   }
 
+  const CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285 = Object.freeze({
+    FALSE_FLAG_NO_SUBMIT: 'false_flag_no_submit',
+    QUEUED_PENDING: 'queued_pending',
+    POLLING_PENDING: 'polling_pending',
+    COMPLETED_RESULT_AWAITING_W151_IMPORT: 'completed_result_awaiting_w151_import',
+    ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE: 'adapter_transport_error_drawer_safe'
+  });
+
+  const CONNECTED_BUILD_RESPONSE_SHAPE_STATUSES_W285 = Object.freeze({
+    SUBMIT_TASK_CAPTURED: 'submit_task_captured',
+    REFRESH_PENDING: 'refresh_pending',
+    COMPLETED_RESULT_SHAPE_READY: 'completed_result_shape_ready',
+    ADAPTER_ERROR_SAFE_STOP: 'adapter_error_safe_stop',
+    NO_TASK_OR_RESULT_SHAPE: 'no_task_or_result_shape'
+  });
+
+  const CONNECTED_BUILD_TRANSPORT_LABELS_W285 = Object.freeze({
+    false_flag_no_submit: 'False flags: no submit',
+    queued_pending: 'Queued: result pending',
+    polling_pending: 'Polling: result pending',
+    completed_result_awaiting_w151_import: 'Completed result waiting for import',
+    adapter_transport_error_drawer_safe: 'Adapter response error'
+  });
+
+  const CONNECTED_BUILD_TRANSPORT_MESSAGES_W285 = Object.freeze({
+    false_flag_no_submit: 'Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.',
+    queued_pending: 'The approved adapter reports a runner task id, but result capture is still pending.',
+    polling_pending: 'Polling is still waiting for governed runner result capture.',
+    completed_result_awaiting_w151_import: 'Completed runner result JSON is present, but W151 import guard must validate it before Open links appear.',
+    adapter_transport_error_drawer_safe: 'The adapter response reported an error. The drawer keeps generated names and Open links unchanged.'
+  });
+
+  const CONNECTED_BUILD_NORMAL_UI_COPY_BY_STATUS_W285 = Object.freeze({
+    submit_task_captured: 'Build submitted.',
+    refresh_pending: 'Still building.',
+    completed_result_shape_ready: 'Records ready.',
+    adapter_error_safe_stop: 'Build stopped safely, ask admin.',
+    no_task_or_result_shape: 'Build stopped safely, ask admin.'
+  });
+
+  const CONNECTED_BUILD_COMPLETED_JSON_LOCATION_CANDIDATES_W285 = Object.freeze([
+    'finalGeneratedNamesJson',
+    'completedResultJson',
+    'generatedNamesJson',
+    'finalNamesJson',
+    'resultCapture.finalGeneratedNamesJson',
+    'resultCapture.completedResultJson',
+    'resultCapture.generatedNamesJson',
+    'body.finalGeneratedNamesJson',
+    'body.completedResultJson',
+    'body.generatedNamesJson',
+    'body.finalNamesJson',
+    'body.resultCapture.finalGeneratedNamesJson',
+    'body.resultCapture.completedResultJson',
+    'body.resultCapture.generatedNamesJson'
+  ]);
+
+  function connectedBuildNonBlankResultW285(value) {
+    return value !== undefined && value !== null && (typeof value !== 'string' || value.trim());
+  }
+
+  function connectedBuildCompletedJsonDetectionW285(candidates, locations) {
+    const index = (candidates || []).findIndex(connectedBuildNonBlankResultW285);
+    return {
+      index,
+      location: index >= 0 ? (locations || [])[index] || '' : '',
+      value: index >= 0 ? candidates[index] : null,
+      ready: index >= 0
+    };
+  }
+
+  function connectedBuildCompletedJsonFromTransportW285(result, resultCapture, nestedResult, nestedCapture) {
+    return connectedBuildCompletedJsonDetectionW285([
+      result && result.finalGeneratedNamesJson,
+      result && result.completedResultJson,
+      result && result.generatedNamesJson,
+      result && result.finalNamesJson,
+      resultCapture && resultCapture.finalGeneratedNamesJson,
+      resultCapture && resultCapture.completedResultJson,
+      resultCapture && resultCapture.generatedNamesJson,
+      nestedResult && nestedResult.finalGeneratedNamesJson,
+      nestedResult && nestedResult.completedResultJson,
+      nestedResult && nestedResult.generatedNamesJson,
+      nestedResult && nestedResult.finalNamesJson,
+      nestedCapture && nestedCapture.finalGeneratedNamesJson,
+      nestedCapture && nestedCapture.completedResultJson,
+      nestedCapture && nestedCapture.generatedNamesJson
+    ], CONNECTED_BUILD_COMPLETED_JSON_LOCATION_CANDIDATES_W285);
+  }
+
+  function connectedBuildCompletedJsonFromActualResponseW285(raw, resultCapture, body, nestedCapture) {
+    return connectedBuildCompletedJsonDetectionW285([
+      raw && raw.finalGeneratedNamesJson,
+      raw && raw.completedResultJson,
+      raw && raw.generatedNamesJson,
+      raw && raw.finalNamesJson,
+      resultCapture && resultCapture.finalGeneratedNamesJson,
+      resultCapture && resultCapture.completedResultJson,
+      resultCapture && resultCapture.generatedNamesJson,
+      body && body.finalGeneratedNamesJson,
+      body && body.completedResultJson,
+      body && body.generatedNamesJson,
+      body && body.finalNamesJson,
+      nestedCapture && nestedCapture.finalGeneratedNamesJson,
+      nestedCapture && nestedCapture.completedResultJson,
+      nestedCapture && nestedCapture.generatedNamesJson
+    ], CONNECTED_BUILD_COMPLETED_JSON_LOCATION_CANDIDATES_W285);
+  }
+
+  function connectedBuildRunnerTaskIdFromActualResponseW285(raw, resultCapture, body, nestedCapture, opts) {
+    return firstNonBlank(
+      raw && raw.runnerTaskId,
+      raw && raw.runner_task_id,
+      raw && raw.taskId,
+      raw && raw.task_id,
+      raw && raw.queueTaskId,
+      raw && raw.runnerTask && raw.runnerTask.id,
+      raw && raw.task && raw.task.id,
+      raw && raw.queue && raw.queue.taskId,
+      resultCapture && resultCapture.runnerTaskId,
+      resultCapture && resultCapture.runner_task_id,
+      body && body.runnerTaskId,
+      body && body.runner_task_id,
+      body && body.taskId,
+      body && body.task_id,
+      body && body.queueTaskId,
+      body && body.runnerTask && body.runnerTask.id,
+      body && body.task && body.task.id,
+      body && body.queue && body.queue.taskId,
+      nestedCapture && nestedCapture.runnerTaskId,
+      nestedCapture && nestedCapture.runner_task_id,
+      opts && opts.runnerTaskId
+    );
+  }
+
+  function connectedBuildIdempotencyTokenFromActualResponseW285(raw, resultCapture, body, opts) {
+    return firstNonBlank(
+      opts && opts.idempotencyToken,
+      raw && raw.idempotencyToken,
+      raw && raw.idempotency_key,
+      body && body.idempotencyToken,
+      body && body.idempotency_key,
+      resultCapture && resultCapture.idempotencyToken
+    );
+  }
+
+  function connectedBuildResponseShapeStatusW285(normalized, phase) {
+    if (normalized.status === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE) {
+      return CONNECTED_BUILD_RESPONSE_SHAPE_STATUSES_W285.ADAPTER_ERROR_SAFE_STOP;
+    }
+    if (normalized.finalGeneratedNamesJsonReady) return CONNECTED_BUILD_RESPONSE_SHAPE_STATUSES_W285.COMPLETED_RESULT_SHAPE_READY;
+    if (normalized.runnerTaskId) {
+      return phase === 'submit'
+        ? CONNECTED_BUILD_RESPONSE_SHAPE_STATUSES_W285.SUBMIT_TASK_CAPTURED
+        : CONNECTED_BUILD_RESPONSE_SHAPE_STATUSES_W285.REFRESH_PENDING;
+    }
+    return CONNECTED_BUILD_RESPONSE_SHAPE_STATUSES_W285.NO_TASK_OR_RESULT_SHAPE;
+  }
+
+  function connectedBuildNormalUiCopyForStatusW285(status) {
+    return CONNECTED_BUILD_NORMAL_UI_COPY_BY_STATUS_W285[status] ||
+      CONNECTED_BUILD_NORMAL_UI_COPY_BY_STATUS_W285.no_task_or_result_shape;
+  }
+
   function normalizeApprovedServerAdapterTransportResponseV1(transportResult, options) {
     const opts = options || {};
     const result = transportResult || {};
@@ -5680,24 +5844,9 @@
       nestedResult.error === true ||
       nestedCapture.error === true ||
       /error|failed|rejected|exception/i.test(rawStatus);
-    const completedResultJsonCandidates = [
-      result.finalGeneratedNamesJson,
-      result.completedResultJson,
-      result.generatedNamesJson,
-      result.finalNamesJson,
-      resultCapture.finalGeneratedNamesJson,
-      resultCapture.completedResultJson,
-      resultCapture.generatedNamesJson,
-      nestedResult.finalGeneratedNamesJson,
-      nestedResult.completedResultJson,
-      nestedResult.generatedNamesJson,
-      nestedResult.finalNamesJson,
-      nestedCapture.finalGeneratedNamesJson,
-      nestedCapture.completedResultJson,
-      nestedCapture.generatedNamesJson
-    ];
-    const completedResultJson = completedResultJsonCandidates.find((value) => value !== undefined && value !== null && (typeof value !== 'string' || value.trim()));
-    const hasCompletedResultJson = !!completedResultJson;
+    const completedResult = connectedBuildCompletedJsonFromTransportW285(result, resultCapture, nestedResult, nestedCapture);
+    const completedResultJson = completedResult.value;
+    const hasCompletedResultJson = completedResult.ready;
     const queueSubmitted = result.queueSubmitted === true ||
       result.queued === true ||
       resultCapture.queueSubmitted === true ||
@@ -5706,45 +5855,31 @@
       nestedCapture.queueSubmitted === true;
     const captureStatus = firstNonBlank(resultCapture.status, nestedCapture.status, opts.resultCaptureStatus, normalizedRunnerTaskId ? 'pending_runner_completion' : 'not_started_no_submit');
     const normalizedStatus = hasError
-      ? 'adapter_transport_error_drawer_safe'
+      ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE
       : hasCompletedResultJson
-        ? 'completed_result_awaiting_w151_import'
+        ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.COMPLETED_RESULT_AWAITING_W151_IMPORT
         : opts.pollAttempted === true && normalizedRunnerTaskId
-          ? 'polling_pending'
+          ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.POLLING_PENDING
           : queueSubmitted && normalizedRunnerTaskId
-            ? 'queued_pending'
-            : 'false_flag_no_submit';
-    const labels = {
-      false_flag_no_submit: 'False flags: no submit',
-      queued_pending: 'Queued: result pending',
-      polling_pending: 'Polling: result pending',
-      completed_result_awaiting_w151_import: 'Completed result waiting for import',
-      adapter_transport_error_drawer_safe: 'Adapter response error'
-    };
-    const messages = {
-      false_flag_no_submit: 'Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.',
-      queued_pending: 'The approved adapter reports a runner task id, but result capture is still pending.',
-      polling_pending: 'Polling is still waiting for governed runner result capture.',
-      completed_result_awaiting_w151_import: 'Completed runner result JSON is present, but W151 import guard must validate it before Open links appear.',
-      adapter_transport_error_drawer_safe: 'The adapter response reported an error. The drawer keeps generated names and Open links unchanged.'
-    };
+            ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.QUEUED_PENDING
+            : CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT;
     return {
       schema: 'idb.integrated-build-approved-server-adapter-response-normalization.v1',
       status: normalizedStatus,
-      label: labels[normalizedStatus],
-      message: messages[normalizedStatus],
+      label: CONNECTED_BUILD_TRANSPORT_LABELS_W285[normalizedStatus],
+      message: CONNECTED_BUILD_TRANSPORT_MESSAGES_W285[normalizedStatus],
       rawStatus,
-      queueSubmitted: normalizedStatus === 'adapter_transport_error_drawer_safe' ? false : queueSubmitted,
-      runnerTaskId: normalizedStatus === 'false_flag_no_submit' ? null : normalizedRunnerTaskId,
-      resultCaptureStatus: normalizedStatus === 'false_flag_no_submit' ? 'not_started_no_submit' : captureStatus,
+      queueSubmitted: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE ? false : queueSubmitted,
+      runnerTaskId: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT ? null : normalizedRunnerTaskId,
+      resultCaptureStatus: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT ? 'not_started_no_submit' : captureStatus,
       resultCapture: Object.assign({}, resultCapture, {
-        status: normalizedStatus === 'false_flag_no_submit' ? 'not_started_no_submit' : captureStatus,
+        status: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT ? 'not_started_no_submit' : captureStatus,
         runnerTaskId: normalizedRunnerTaskId || resultCapture.runnerTaskId || '',
-        finalGeneratedNamesReady: hasCompletedResultJson && normalizedStatus === 'completed_result_awaiting_w151_import',
+        finalGeneratedNamesReady: hasCompletedResultJson && normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.COMPLETED_RESULT_AWAITING_W151_IMPORT,
         finalGeneratedNamesJson: hasCompletedResultJson ? completedResultJson : null
       }),
       pollAttempted: opts.pollAttempted === true,
-      finalGeneratedNamesJsonReady: hasCompletedResultJson && normalizedStatus === 'completed_result_awaiting_w151_import',
+      finalGeneratedNamesJsonReady: hasCompletedResultJson && normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.COMPLETED_RESULT_AWAITING_W151_IMPORT,
       finalGeneratedNamesJson: hasCompletedResultJson ? completedResultJson : null,
       importGuard: 'W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.',
       activeOpenLinks: 0,
@@ -15719,66 +15854,11 @@
     const body = raw.body || raw.payload || raw.data || raw.result || raw.response || {};
     const resultCapture = raw.resultCapture || body.resultCapture || {};
     const nestedCapture = body.resultCapture || {};
-    const completedJsonCandidates = [
-      raw.finalGeneratedNamesJson,
-      raw.completedResultJson,
-      raw.generatedNamesJson,
-      raw.finalNamesJson,
-      resultCapture.finalGeneratedNamesJson,
-      resultCapture.completedResultJson,
-      resultCapture.generatedNamesJson,
-      body.finalGeneratedNamesJson,
-      body.completedResultJson,
-      body.generatedNamesJson,
-      body.finalNamesJson,
-      nestedCapture.finalGeneratedNamesJson,
-      nestedCapture.completedResultJson,
-      nestedCapture.generatedNamesJson
-    ];
-    const completedJsonIndex = completedJsonCandidates.findIndex((value) => value !== undefined && value !== null && (typeof value !== 'string' || value.trim()));
-    const completedJsonLocations = [
-      'finalGeneratedNamesJson',
-      'completedResultJson',
-      'generatedNamesJson',
-      'finalNamesJson',
-      'resultCapture.finalGeneratedNamesJson',
-      'resultCapture.completedResultJson',
-      'resultCapture.generatedNamesJson',
-      'body.finalGeneratedNamesJson',
-      'body.completedResultJson',
-      'body.generatedNamesJson',
-      'body.finalNamesJson',
-      'body.resultCapture.finalGeneratedNamesJson',
-      'body.resultCapture.completedResultJson',
-      'body.resultCapture.generatedNamesJson'
-    ];
-    const completedJson = completedJsonIndex >= 0 ? completedJsonCandidates[completedJsonIndex] : null;
+    const completedJson = connectedBuildCompletedJsonFromActualResponseW285(raw, resultCapture, body, nestedCapture);
     const flattened = Object.assign({}, body, raw, {
       resultCapture,
-      runnerTaskId: firstNonBlank(
-        raw.runnerTaskId,
-        raw.runner_task_id,
-        raw.taskId,
-        raw.task_id,
-        raw.queueTaskId,
-        raw.runnerTask && raw.runnerTask.id,
-        raw.task && raw.task.id,
-        raw.queue && raw.queue.taskId,
-        resultCapture.runnerTaskId,
-        resultCapture.runner_task_id,
-        body.runnerTaskId,
-        body.runner_task_id,
-        body.taskId,
-        body.task_id,
-        body.queueTaskId,
-        body.runnerTask && body.runnerTask.id,
-        body.task && body.task.id,
-        body.queue && body.queue.taskId,
-        nestedCapture.runnerTaskId,
-        nestedCapture.runner_task_id,
-        opts.runnerTaskId
-      ),
-      finalGeneratedNamesJson: completedJson
+      runnerTaskId: connectedBuildRunnerTaskIdFromActualResponseW285(raw, resultCapture, body, nestedCapture, opts),
+      finalGeneratedNamesJson: completedJson.value
     });
     const normalized = normalizeApprovedServerAdapterTransportResponseV1(flattened, {
       pollAttempted: opts.phase === 'refresh' || opts.pollAttempted === true,
@@ -15786,31 +15866,9 @@
       resultCaptureStatus: opts.resultCaptureStatus
     });
     const phase = opts.phase || 'unknown';
-    const hasError = normalized.status === 'adapter_transport_error_drawer_safe';
-    const status = hasError
-      ? 'adapter_error_safe_stop'
-      : normalized.finalGeneratedNamesJsonReady
-        ? 'completed_result_shape_ready'
-        : normalized.runnerTaskId
-          ? phase === 'submit'
-            ? 'submit_task_captured'
-            : 'refresh_pending'
-          : 'no_task_or_result_shape';
-    const idempotencyToken = firstNonBlank(
-      opts.idempotencyToken,
-      raw.idempotencyToken,
-      raw.idempotency_key,
-      body.idempotencyToken,
-      body.idempotency_key,
-      resultCapture.idempotencyToken
-    );
-    const normalCopyByStatus = {
-      submit_task_captured: 'Build submitted.',
-      refresh_pending: 'Still building.',
-      completed_result_shape_ready: 'Records ready.',
-      adapter_error_safe_stop: 'Build stopped safely, ask admin.',
-      no_task_or_result_shape: 'Build stopped safely, ask admin.'
-    };
+    const hasError = normalized.status === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE;
+    const status = connectedBuildResponseShapeStatusW285(normalized, phase);
+    const idempotencyToken = connectedBuildIdempotencyTokenFromActualResponseW285(raw, resultCapture, body, opts);
     return {
       schema: 'forge.w265.actual-adapter-response-shape.v1',
       phase,
@@ -15823,11 +15881,11 @@
       runnerTaskId: normalized.runnerTaskId || null,
       idempotencyToken: idempotencyToken || '',
       resultCaptureStatus: normalized.resultCaptureStatus || '',
-      finalGeneratedNamesJsonLocation: completedJsonIndex >= 0 ? completedJsonLocations[completedJsonIndex] : '',
+      finalGeneratedNamesJsonLocation: completedJson.location,
       finalGeneratedNamesJsonReady: normalized.finalGeneratedNamesJsonReady === true,
       finalGeneratedNamesJson: normalized.finalGeneratedNamesJson || null,
       adapterSafeErrorCopy: hasError ? 'Build stopped safely, ask admin.' : '',
-      normalUiCopy: normalCopyByStatus[status] || 'Build stopped safely, ask admin.',
+      normalUiCopy: connectedBuildNormalUiCopyForStatusW285(status),
       normalizedResponse: normalized,
       rawEvidence: {
         adminOnly: true,
@@ -24448,6 +24506,11 @@
       integratedBuildApprovedServerAdapterTransportBoundaryV1,
       executeApprovedServerAdapterTransportHarnessOnlyV1,
       normalizeApprovedServerAdapterTransportResponseV1,
+      connectedBuildCompletedJsonFromActualResponseW285,
+      connectedBuildRunnerTaskIdFromActualResponseW285,
+      connectedBuildIdempotencyTokenFromActualResponseW285,
+      connectedBuildResponseShapeStatusW285,
+      connectedBuildNormalUiCopyForStatusW285,
       approvedServerAdapterDryRunFixturePollCycleV1,
       integratedBuildHarnessStateMachineV1,
       integratedBuildStateMachineUiStatusAndImportCtaV1,

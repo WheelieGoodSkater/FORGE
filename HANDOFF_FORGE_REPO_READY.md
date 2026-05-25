@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W256 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, and live-demo script coaching from returned records.
+  - W250-W257 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, and guided objection-safe demo sequencing from returned records.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -68,6 +68,7 @@ npm run harness:post-install-visual-acceptance-w253
 npm run harness:evidence-receipt-trail-w254
 npm run harness:receipt-driven-lane-expansion-qa-w255
 npm run harness:consultant-live-demo-script-w256
+npm run harness:guided-demo-step-sequence-w257
 npm run check
 npm run validate
 ```
@@ -87,12 +88,32 @@ Current expected result:
 - W254 harness passes `8/8`.
 - W255 harness passes `8/8`.
 - W256 harness passes `9/9`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, and W256 harness.
+- W257 harness passes `9/9`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, and W257 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W257: Guided Demo Step Sequencing And Objection-Safe Talk Track QA
+
+What changed:
+
+- Adds a compact guided demo sequence helper sourced from W245 returned records, W246 lane packs, W254 receipts, W255 first-glance story data, and W256 live-demo script lines.
+- Renders an expandable `Guided demo sequence` block near the W256 script in Review/Run after valid import.
+- Sequence covers three live steps: frame the buyer problem, open the returned record, and prove the value/so-what.
+- Adds a likely buyer objection, safe objection response, stop condition, and uncertainty response.
+- Keeps responses short enough for live use and blocks invented facts, record-creation claims, write-action claims, measured ROI, guaranteed outcomes, and unsupported lane-fit claims.
+- Keeps W256 script, W254 evidence receipt, and W255 receipt-driven QA available.
+
+Important W257 artifacts:
+
+- `archive/tools/run_w257_guided_demo_step_sequence_harness.js`
+- `archive/reports/w257_guided_demo_step_sequence.md`
+- `archive/trace_samples/w257_guided_demo_step_sequence_trace.json`
+
+Previous completed block:
 
 - W256: Consultant Live Demo Script From Receipt Evidence And Returned Records
 
@@ -357,25 +378,27 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W257: Guided Demo Step Sequencing And Objection-Safe Talk Track QA
+W258: Consultant Story Surface Density Pass And Live Proof CTA Polish
 
 Goal:
-Turn the W256 live-demo script into a tiny step-by-step coaching sequence that helps consultants move through the demo, handle the most likely buyer objection, and know when to stop, while keeping every line grounded in returned records and evidence receipts.
+Make the Review/Run live-demo story surface easier to scan during a real buyer call by tightening the hierarchy between the W255 first glance, W256 script, W257 guided sequence, and W254 receipt, while preserving every trust and authority boundary.
 
 Build:
-- Add a guided demo sequence helper sourced from W245 returned records, W246 lane pack, W254 receipt, W255 first-glance story, and W256 live-demo script.
-- Sequence should include:
-  - Step 1: frame the buyer problem
-  - Step 2: open the returned record
-  - Step 3: prove the value/so-what
-  - stop condition / guardrail
-  - likely buyer objection
-  - safe response to the objection
-  - uncertainty response when evidence is weak or conflicting
-- Render the sequence in Review/Run as a compact optional coaching block near the W256 script.
-- Keep it concise enough for live use; do not crowd the normal consultant UI.
-- Ensure objection responses never invent facts, claim record creation, write actions, measured ROI, guaranteed outcomes, or unsupported lane fit.
-- Keep the W256 script and full W254 receipt available.
+- Review the rendered W248/W255/W256/W257 story surface for hierarchy and density.
+- Make the first glance show the live proof CTA clearly:
+  - open target
+  - one proof action
+  - one safe claim
+  - one stop guardrail
+  - evidence confidence
+- Keep W256 script and W257 guided sequence available, but avoid making the normal view feel like duplicate coaching text.
+- Prefer expandable sections, concise labels, and short rows over large repeated paragraphs.
+- Keep the W254 receipt expandable and consultant-safe below the coaching surface.
+- Preserve returned record names, lane-aware labels, and supported Open-link authority.
+- Preserve weak/conflicting evidence confirmation-first behavior.
+- Do not expose raw JSON, stack traces, internal arrays, runner task ids, schema names, admin diagnostics, or install-like actions in normal consultant UI.
+- Do not change runtime authority: no drawer-created records, no drawer transaction writes, no live runner invocation, and no W144 deployment update.
+- Keep W256 and W257 helpers available for harnesses and future expansion.
 - Keep W255 receipt-driven QA available for existing/proposed lane packs.
 - Keep W252 proposal review admin-only, W253 acceptance packet review-only, and W254 receipt consultant-safe.
 - Keep N/LLM advisory-only and uncertainty-visible.
@@ -385,19 +408,19 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W257 harness covering:
-  - guided sequence includes all required steps and objection fields
-  - sequence uses returned record names and lane-aware labels
-  - sequence remains short and consultant-facing
-  - objection response avoids banned overclaims, write/creation claims, and invented facts
-  - weak/conflicting evidence produces a confirmation-first sequence
-  - W256 script and W254 receipt remain available
+- Add archived W258 harness covering:
+  - first-glance story surface contains open target, proof action, safe claim, stop guardrail, and evidence confidence
+  - normal consultant UI avoids duplicate coaching clutter
+  - W256 script and W257 guided sequence remain available behind compact/expandable surfaces
+  - W254 receipt remains expandable and below the coaching surface
+  - returned record names and lane-aware labels remain visible
+  - raw diagnostics and admin-only proposal review remain hidden from normal UI
   - W255 receipt-driven QA remains available
   - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W257 harnesses, check, and validate.
+- Run W244 through W258 harnesses, check, and validate.
 
 Output:
-- Summary of guided sequence helper/UI, objection-safe trust guardrails, validation, and lane expansion continuity.
+- Summary of story surface density changes, live proof CTA polish, trust guardrails, validation, and lane expansion continuity.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

@@ -3425,6 +3425,56 @@
     };
   }
 
+  function guidedDemoStepSequenceW257(story) {
+    const script = consultantLiveDemoScriptW256(story || {});
+    const lines = script.lines || {};
+    const weak = !story || story.status === 'needs_lane_confirmation' || !story.openUrl || script.status === 'needs_confirmation_script';
+    const openTarget = lines.whatToOpen || 'Confirm lane before opening proof records.';
+    const soWhat = lines.valueSoWhat || 'Keep the value story tied to confirmed evidence.';
+    const steps = [
+      {
+        id: 'frame_buyer_problem',
+        label: '1',
+        title: 'Frame',
+        line: weak ? 'Frame this as a lane-confirmation moment before making a proof claim.' : lines.safeBuyerClaim
+      },
+      {
+        id: 'open_returned_record',
+        label: '2',
+        title: 'Open',
+        line: openTarget
+      },
+      {
+        id: 'prove_value_so_what',
+        label: '3',
+        title: 'Prove',
+        line: weak
+          ? 'Use returned names, supported Open links, and confirmed evidence only; do not turn uncertainty into a claim.'
+          : `Prove the receipt-backed move, then land this so what: ${soWhat}`
+      }
+    ];
+    const objection = weak
+      ? 'What if this is the wrong industry lane?'
+      : 'How do we know this is real enough to use in the demo?';
+    const safeResponse = weak
+      ? 'Confirm the lane first, then only use returned record names and supported Open links.'
+      : 'Use the returned record and evidence receipt; stop before adding unsupported facts.';
+    const uncertaintyResponse = weak
+      ? 'Say the evidence is not strong enough yet and ask for lane confirmation before continuing.'
+      : 'Keep uncertainty visible if buyer evidence changes.';
+    return {
+      schema: 'forge.w257.guided-demo-step-sequence.v1',
+      status: weak ? 'confirmation_first_sequence' : 'sequence_ready',
+      source: 'w245_records_w246_lane_pack_w254_receipt_w255_first_glance_w256_script',
+      steps,
+      stopCondition: lines.stopGuardrail || 'Stop before claiming ROI, record creation, writes, or unsupported lane fit.',
+      likelyBuyerObjection: objection,
+      safeObjectionResponse: safeResponse,
+      uncertaintyResponse,
+      scriptStatus: script.status
+    };
+  }
+
   function consultantStorySurfaceFromLanePackW247(state, lanePack, normalizedImport) {
     const resolution = resolveLanePackFromEvidenceW246(state);
     const selected = lanePack || (resolution.status === 'resolved' ? resolution.lanePack : null);
@@ -20124,6 +20174,7 @@
     if (!story || !story.openTarget || !story.proofMove) return '';
     const firstGlance = consultantStoryFirstGlanceW255(story);
     const script = consultantLiveDemoScriptW256(story);
+    const sequence = guidedDemoStepSequenceW257(story);
     const confidence = story.nllmAdvisory && story.nllmAdvisory.confidence ? consultantLabel(story.nllmAdvisory.confidence) : 'Unclear';
     const uncertainty = story.nllmAdvisory && story.nllmAdvisory.uncertainty ? story.nllmAdvisory.uncertainty : 'Ask for confirmation when evidence is weak.';
     const receipt = story.evidenceReceiptW254 && story.evidenceReceiptW254.status === 'receipt_ready' ? story.evidenceReceiptW254 : null;
@@ -20162,6 +20213,24 @@
           <div class="idb-copy"><strong>Stop:</strong> ${escapeHtml(script.lines.stopGuardrail)}</div>
           <div class="idb-copy"><strong>Uncertainty:</strong> ${escapeHtml(script.lines.uncertaintyLine)}</div>
         </div>
+        <details class="idb-technical-details idb-w257-guided-demo-sequence">
+          <summary>Guided demo sequence</summary>
+          <div class="idb-record-group">
+            ${sequence.steps.map((step) => `
+              <div class="idb-plan-row idb-compressed-row">
+                <span>
+                  <span class="idb-build-label">${escapeHtml(step.label)}. ${escapeHtml(step.title)}</span>
+                  <span class="idb-build-statement">${escapeHtml(step.line)}</span>
+                </span>
+                <span class="idb-plan-role">Live</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="idb-copy"><strong>Objection:</strong> ${escapeHtml(sequence.likelyBuyerObjection)}</div>
+          <div class="idb-copy"><strong>Safe response:</strong> ${escapeHtml(sequence.safeObjectionResponse)}</div>
+          <div class="idb-copy"><strong>Stop:</strong> ${escapeHtml(sequence.stopCondition)}</div>
+          <div class="idb-copy"><strong>Uncertainty:</strong> ${escapeHtml(sequence.uncertaintyResponse)}</div>
+        </details>
         <div class="idb-status-strip">
           <div class="idb-status-cell">
             <div class="idb-status-key">Prove</div>
@@ -22502,6 +22571,7 @@
       receiptDrivenLaneExpansionQaW255,
       consultantStoryFirstGlanceW255,
       consultantLiveDemoScriptW256,
+      guidedDemoStepSequenceW257,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,

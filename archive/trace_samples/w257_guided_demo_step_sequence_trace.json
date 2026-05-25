@@ -1,0 +1,24 @@
+{
+  "schema": "forge.w257.guided-demo-step-sequence.trace.v1",
+  "status": "ready",
+  "source": "w245_records_w246_lane_pack_w254_receipt_w255_first_glance_w256_script",
+  "renderSurface": "Review/Run consultant story surface",
+  "guardrails": {
+    "drawerCreatedRecords": false,
+    "drawerTransactionWrites": false,
+    "nllmAuthority": "advisory_only",
+    "uncertaintyVisible": true,
+    "proposalReviewAdminOnly": true,
+    "acceptancePacketReviewOnly": true,
+    "receiptConsultantSafe": true
+  },
+  "requiredSections": [
+    "frame_buyer_problem",
+    "open_returned_record",
+    "prove_value_so_what",
+    "stop_condition",
+    "likely_buyer_objection",
+    "safe_objection_response",
+    "uncertainty_response"
+  ]
+}

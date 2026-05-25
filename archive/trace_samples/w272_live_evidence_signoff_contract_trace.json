@@ -1,0 +1,54 @@
+{
+  "schema": "forge.w272.live-evidence-signoff-contract.trace.v1",
+  "status": "complete",
+  "contractSummary": {
+    "schema": "forge.w272.live-evidence-packets.v1",
+    "module": "src/contracts/liveEvidencePackets.js",
+    "representedPacketFamilies": [
+      "forge.w260.install-ready-release-packet.v1",
+      "forge.w261.post-install-smoke-evidence-capture-template.v1",
+      "forge.w266.controlled-live-build-run-evidence-packet.v1",
+      "forge.w267.post-live-run-screenshot-evidence-reconciliation.v1",
+      "forge.w268.installed-drawer-live-evidence-intake-template.v1",
+      "forge.w268.v1-release-keep-packet.v1"
+    ],
+    "decisionStatuses": [
+      "ready_to_keep",
+      "needs_attention",
+      "rollback_recommended"
+    ],
+    "reviewOnlyPolicy": {
+      "archiveOnly": true,
+      "externalUploadAllowed": false,
+      "networkCallAllowed": false,
+      "trackingAllowed": false,
+      "localStorageWriteAllowed": false,
+      "installActionAllowed": false,
+      "runtimeDependencyAdded": false
+    }
+  },
+  "parityGuardrails": [
+    "W260/W261/W266/W267/W268 packet shapes remain represented.",
+    "W266 live-run decision statuses remain ready/attention/rollback compatible.",
+    "W267 screenshot signoff statuses remain ready/attention/rollback compatible.",
+    "W268 release keep packet remains review-only and field-compatible.",
+    "W271 adapter profile contract remains available.",
+    "W270 shared harness utilities remain available."
+  ],
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "connectedSubmitRefreshImportChanged": false,
+    "adapterEndpointProfileChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "rawEvidenceArchivedAdminOnly": true,
+    "normalUiHidesRawDiagnostics": true,
+    "w151ValidationPreserved": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRequired": false,
+    "reason": "W272 extracts review-only contract shapes and parity harness coverage without changing runtime UI or connected build behavior."
+  }
+}

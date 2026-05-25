@@ -63,6 +63,7 @@ npm run harness:lane-pack-expansion-qa-w249
 npm run harness:lane-aware-record-label-semantics-w250
 npm run harness:lane-pack-authoring-diff-review-w251
 npm run harness:lane-pack-review-ui-install-smoke-w252
+npm run harness:post-install-visual-acceptance-w253
 npm run check
 npm run validate
 ```
@@ -78,12 +79,31 @@ Current expected result:
 - W250 harness passes `10/10`.
 - W251 harness passes `11/11`.
 - W252 harness passes `9/9`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, and W252 harness.
+- W253 harness passes `9/9`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, and W253 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W253: Post-Install Visual Acceptance, Header Density QA, And Consultant Story Trust Polish
+
+What changed:
+
+- Adds a compact post-install acceptance packet for Tampermonkey update smoke checks.
+- Adds Suitelet/header density QA for logo max dimensions, header spacing, close button reachability, tab reachability, and first-card visibility.
+- Tightens compact Review/Run story copy so proof moves reference returned records, supported Open links, visible uncertainty, and no-write/no-created-record guardrails.
+- Keeps W252 lane-pack proposal review admin-only, review-only, and non-installable.
+- Keeps runtime authority unchanged: no install action, contract mutation, drawer-created records, or drawer transaction writes.
+
+Important W253 artifacts:
+
+- `archive/tools/run_w253_post_install_visual_acceptance_harness.js`
+- `archive/reports/w253_post_install_visual_acceptance.md`
+- `archive/trace_samples/w253_post_install_visual_acceptance_trace.json`
+
+Previous completed block:
 
 - W252: Lane Pack Review UI Wiring, Install Smoke Acceptance, And Suitelet Header Polish
 
@@ -274,30 +294,25 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W253: Post-Install Visual Acceptance, Header Density QA, And Consultant Story Trust Polish
+W254: Evidence Receipt Trail For Consultant Story Trust And Lane Expansion
 
 Goal:
-Turn the W252 smoke checklist into an easy post-install acceptance packet and tighten the visual trust cues around the launcher, Suitelet header, and compact Review/Run story surface without changing runtime authority.
+Make the compact Review/Run story surface more trustworthy by attaching a concise evidence receipt trail that explains why the lane, proof move, safe claim, and uncertainty state are safe to use without exposing raw diagnostics.
 
 Build:
-- Add a compact post-install acceptance packet that a consultant/admin can use after updating Tampermonkey.
-- Include pass/fail capture fields for:
-  - launcher icon readability at standard browser zoom
-  - launcher click target and placement
-  - Suitelet/header logo size and first-viewport balance
-  - close button, tab row, and first content card reachability
-  - Review/Run story card gating after valid import
-  - returned record names and lane-aware labels
-  - weak/conflicting evidence confirmation behavior
-- Add a small visual density QA helper for the Suitelet/header that checks logo max dimensions, header spacing, tab reachability, and first-card visibility.
-- Tighten consultant story trust copy where it can be more concrete without overclaiming:
-  - proof move
-  - safe claim
-  - do-not-claim guardrail
-  - buyer-facing so what
-  - uncertainty note
-- Keep W252 lane-pack proposal review admin-only and review-only.
-- Hide raw JSON, stack traces, internal arrays, install-like actions, and admin diagnostics from normal consultant UI.
+- Add a compact evidence receipt model for the W248/W253 consultant story surface.
+- Include consultant-safe receipt rows for:
+  - resolved lane pack and confidence
+  - website/domain/category evidence used
+  - returned record name and lane-aware label used as the Open target
+  - conversation-note contribution to pain/value/ROI framing
+  - N/LLM advisory role and hard limits
+  - uncertainty or confirmation gate when evidence is weak/conflicting
+- Render the receipt as a small expandable consultant-facing section after valid import.
+- Keep the receipt buyer-facing and readable; do not show raw JSON, stack traces, internal arrays, contract schema names, runner task ids, or admin diagnostics.
+- Add receipt coverage for industrial manufacturing, equipment manufacturing, industrial distributors, CPG distributors, CPG manufacturers, and food/beverage manufacturers.
+- Keep lane-pack expansion future-friendly: receipts should come from structured lane-pack/normalization data, not scattered hardcoded story strings.
+- Keep W252 proposal review admin-only and W253 acceptance packet review-only.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
 - Preserve fake Open-link blocking before valid import.
@@ -305,17 +320,18 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W253 harness covering:
-  - post-install acceptance packet includes all launcher/header/story/weak-evidence checks
-  - Suitelet/header density helper flags oversized logo/header states
-  - compact header state keeps close button, tab row, and first content card reachable
-  - Review/Run story trust copy remains concrete and non-overclaiming
-  - W252 proposal review remains admin-only and non-installable
+- Add archived W254 harness covering:
+  - evidence receipt has all required consultant-safe rows
+  - receipt renders only after valid import
+  - receipt uses returned record names and lane-aware labels
+  - receipt covers the six priority industry lanes
+  - normal UI hides raw diagnostics and admin-only proposal review
+  - N/LLM remains advisory-only with hard limits visible
   - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W253 harnesses, check, and validate.
+- Run W244 through W254 harnesses, check, and validate.
 
 Output:
-- Summary of acceptance packet, header density QA, consultant story copy polish, and guardrails.
+- Summary of evidence receipt model/UI, lane coverage, trust guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

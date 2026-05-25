@@ -1,0 +1,19 @@
+{
+  "schema": "forge.w253.post-install-visual-acceptance.trace.v1",
+  "workItem": "W253",
+  "purpose": "Prove post-install acceptance capture, Suitelet/header density QA, and consultant story trust copy stay compact, concrete, and authority-safe.",
+  "assertions": [
+    "post-install acceptance packet includes launcher, header, story, labels, and weak-evidence capture fields",
+    "Suitelet/header density QA passes compact logo/header states",
+    "Suitelet/header density QA flags oversized logo/header states",
+    "close button, tab row, and first content card remain reachable",
+    "Review/Run story copy references returned records, supported Open links, and visible uncertainty",
+    "W252 proposal review remains admin-only and non-installable",
+    "normal consultant UI hides raw diagnostics and install actions",
+    "weak/conflicting evidence remains confirmation-gated"
+  ],
+  "visualTestingDecision": {
+    "targetedInstallSmokeRecommended": true,
+    "broadNetSuiteVisualRegressionRequired": false
+  }
+}

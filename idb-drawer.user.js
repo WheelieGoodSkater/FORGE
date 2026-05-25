@@ -3262,43 +3262,43 @@
     const firstProof = visibleRecords.find((recordItem) => recordItem && recordItem.canonicalRole && !/customer|sales_order/.test(recordItem.canonicalRole)) || visibleRecords[0] || null;
     const advisory = nllmAdvisoryPayloadForLanePackW246(state, selected, normalizedImport);
     if (!selected) {
-      return {
+      return consultantStoryTrustPolishW253({
         schema: 'forge.consultant-story-surface.v1',
         status: 'needs_lane_confirmation',
         openTarget: 'Confirm lane before opening proof records.',
-        proofMove: 'Prove only what the imported records and website evidence support.',
+        proofMove: 'Use only returned record names, supported Open links, and website evidence until the lane is confirmed.',
         safeClaim: 'Evidence is not strong enough for a lane claim yet.',
-        doNotClaim: 'Do not claim industry fit, ROI, record creation, or availability without confirmed evidence.',
+        doNotClaim: 'Do not claim industry fit, ROI, record creation, write actions, or availability without confirmed evidence.',
         buyerFacingSoWhat: 'Keep the buyer story grounded in confirmed evidence and visible uncertainty.',
         nllmAdvisory: {
           confidence: 'low',
-          uncertainty: 'Lane evidence is insufficient; ask for confirmation.',
+          uncertainty: 'Lane evidence is insufficient; ask for confirmation and keep uncertainty visible.',
           allowedTasks: advisory.allowedTasks,
           hardLimits: advisory.hardLimits
         }
-      };
+      });
     }
-    return {
+    return consultantStoryTrustPolishW253({
       schema: 'forge.consultant-story-surface.v1',
       status: firstProof ? 'story_ready' : 'story_ready_without_open_target',
       packId: selected.packId,
       laneLabel: selected.label,
       openTarget: firstProof ? `Open ${firstProof.name}${firstProof.consultantLabel ? ` (${firstProof.consultantLabel})` : ''}.` : selected.liveDemo.proofMove,
       openUrl: firstProof && firstProof.supportedOpenUrl || '',
-      proofMove: selected.liveDemo.proofMove,
+      proofMove: firstProof ? `${selected.liveDemo.proofMove} Anchor the proof on ${firstProof.name} and its supported Open link.` : selected.liveDemo.proofMove,
       safeClaim: selected.liveDemo.storyAnchor,
-      doNotClaim: `Do not claim ${selected.vocabulary.forbidden.join(', ')} or measured ROI without evidence.`,
+      doNotClaim: `Do not claim ${selected.vocabulary.forbidden.join(', ')}, created records, write actions, or measured ROI without evidence.`,
       buyerFacingSoWhat: selected.liveDemo.roiSoWhat,
       competitiveContrast: selected.liveDemo.competitiveContrast,
       nllmAdvisory: {
         confidence: resolution.confidence,
-        uncertainty: resolution.status === 'resolved' ? 'Low uncertainty: website evidence resolved the lane pack.' : 'Visible uncertainty: ask for confirmation before treating the pack as truth.',
+        uncertainty: resolution.status === 'resolved' ? 'Low uncertainty: website evidence resolved the lane pack; keep it visible if buyer evidence changes.' : 'Visible uncertainty: ask for confirmation before treating the pack as truth.',
         writeAuthority: 'none',
         creationAllowed: false,
         allowedTasks: advisory.allowedTasks,
         hardLimits: advisory.hardLimits
       }
-    };
+    });
   }
 
   function traceCount() {
@@ -18310,6 +18310,98 @@
     };
   }
 
+  function consultantStoryTrustPolishW253(story) {
+    const polished = Object.assign({}, story || {});
+    polished.schema = polished.schema || 'forge.consultant-story-surface.v1';
+    polished.trustPolishW253 = {
+      concreteProofAnchorRequired: true,
+      overclaimGuardRequired: true,
+      uncertaintyVisible: true,
+      runtimeAuthorityChanged: false
+    };
+    return polished;
+  }
+
+  function suiteletHeaderDensityQaW253(metrics) {
+    const values = Object.assign({
+      logoMaxWidthPx: 300,
+      logoMaxHeightPx: 108,
+      headerPaddingBlockToken: 'var(--rw-space-200)',
+      headerPaddingInlineToken: 'var(--rw-space-300)',
+      closeButtonPresent: true,
+      tabRowPresent: true,
+      firstCardReachable: true
+    }, metrics || {});
+    const checks = [
+      {
+        id: 'logo_width_compact',
+        label: 'Logo max width is compact',
+        pass: Number(values.logoMaxWidthPx) <= 320,
+        evidence: `${values.logoMaxWidthPx}px`
+      },
+      {
+        id: 'logo_height_compact',
+        label: 'Logo max height is compact',
+        pass: Number(values.logoMaxHeightPx) <= 112,
+        evidence: `${values.logoMaxHeightPx}px`
+      },
+      {
+        id: 'header_spacing_compact',
+        label: 'Header spacing remains compact',
+        pass: values.headerPaddingBlockToken === 'var(--rw-space-200)' && values.headerPaddingInlineToken === 'var(--rw-space-300)',
+        evidence: `${values.headerPaddingBlockToken} / ${values.headerPaddingInlineToken}`
+      },
+      {
+        id: 'close_button_reachable',
+        label: 'Close button remains reachable',
+        pass: values.closeButtonPresent === true,
+        evidence: values.closeButtonPresent ? 'present' : 'missing'
+      },
+      {
+        id: 'tab_row_reachable',
+        label: 'Tab row remains reachable',
+        pass: values.tabRowPresent === true,
+        evidence: values.tabRowPresent ? 'present' : 'missing'
+      },
+      {
+        id: 'first_card_reachable',
+        label: 'First content card remains reachable',
+        pass: values.firstCardReachable === true,
+        evidence: values.firstCardReachable ? 'present' : 'missing'
+      }
+    ];
+    return {
+      schema: 'forge.w253.suitelet-header-density-qa.v1',
+      status: checks.every((check) => check.pass) ? 'pass' : 'needs_attention',
+      values,
+      checks
+    };
+  }
+
+  function postInstallAcceptancePacketW253() {
+    const fields = [
+      { id: 'launcher_readability_standard_zoom', label: 'Launcher readability at standard zoom', expected: 'FORGE icon is readable without enlarging the floating target.', capture: 'pass_fail_note' },
+      { id: 'launcher_click_target_placement', label: 'Launcher click target and placement', expected: 'Launcher remains compact, right-aligned, and easy to click.', capture: 'pass_fail_note' },
+      { id: 'suitelet_header_logo_balance', label: 'Suitelet/header logo balance', expected: 'Header logo is crisp and proportionate; it does not dominate the first viewport.', capture: 'pass_fail_note' },
+      { id: 'close_tabs_first_card_reachability', label: 'Close button, tabs, and first card reachability', expected: 'Close button, tab row, and first content card are visible and reachable after resizing.', capture: 'pass_fail_note' },
+      { id: 'story_card_valid_import_gate', label: 'Review/Run story card valid-import gate', expected: 'Story card appears only after a valid completed import.', capture: 'pass_fail_note' },
+      { id: 'returned_names_lane_labels', label: 'Returned names and lane-aware labels', expected: 'Open target uses returned record names and lane-appropriate labels.', capture: 'pass_fail_note' },
+      { id: 'weak_evidence_confirmation', label: 'Weak/conflicting evidence confirmation', expected: 'Weak or conflicting evidence asks for lane confirmation before claims.', capture: 'pass_fail_note' }
+    ];
+    return {
+      schema: 'forge.w253.post-install-acceptance-packet.v1',
+      status: 'ready_for_targeted_install_smoke',
+      captureMode: 'pass_fail_note',
+      runtimeAuthorityChanged: false,
+      installActionsAllowed: false,
+      fields,
+      visualTestingDecision: {
+        targetedInstallSmokeRecommended: true,
+        broadNetSuiteVisualRegressionRequired: false
+      }
+    };
+  }
+
   function renderRunActionChips(state) {
     return ACTION_MODEL.map((action) => `
       <button
@@ -22196,6 +22288,9 @@
       lanePackProposedChangeDiffW251,
       renderLanePackDiffReviewW252,
       installSmokeAcceptanceChecklistW252,
+      consultantStoryTrustPolishW253,
+      suiteletHeaderDensityQaW253,
+      postInstallAcceptancePacketW253,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,

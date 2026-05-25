@@ -21,7 +21,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
 - `idb-drawer.user.js`
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
-  - W245/W246/W247 add canonical display-ready import records, versioned lane-pack live-demo coaching, and compact consultant story surfaces.
+  - W245/W246/W247/W248 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, and Review/Run story UI wiring.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -55,6 +55,7 @@ npm run harness:contract-generated-legacy-slot-mapping-w244
 npm run harness:canonical-import-result-normalization-w245
 npm run harness:versioned-lane-pack-contract-w246
 npm run harness:lane-pack-authoring-story-surface-w247
+npm run harness:consultant-story-surface-ui-w248
 npm run check
 npm run validate
 ```
@@ -65,12 +66,39 @@ Current expected result:
 - W245 harness passes `10/10`.
 - W246 harness passes `10/10`.
 - W247 harness passes `9/9`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, and W247 harness.
+- W248 harness passes `9/9`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, and W248 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W248: Consultant Story Surface UI Wiring And Evidence Confidence Copy
+
+What changed:
+
+- Wires `consultantStorySurfaceW247` into Review and Run after valid completed import.
+- Shows open target, proof move, safe claim, do-not-claim guardrail, buyer-facing so what, and N/LLM advisory confidence/uncertainty.
+- Keeps the story surface absent before valid import, preserving fake Open-link blocking.
+- Weak evidence now shows explicit lane confirmation guidance instead of treating a fallback pack as truth.
+- Normal story UI hides raw schema names, role arrays, stack traces, and admin diagnostics.
+- W218 success wording and W220 recovery wording remain stable.
+
+Important W248 helper name:
+
+- `renderConsultantStorySurfaceW248`
+
+W248 harness:
+
+- `archive/tools/run_w248_consultant_story_surface_ui_harness.js`
+
+W248 artifacts:
+
+- `archive/reports/w248_consultant_story_surface_ui.md`
+- `archive/trace_samples/w248_consultant_story_surface_ui_trace.json`
+
+Previous completed block:
 
 - W247: Lane Pack Authoring And Consultant Story Surface Hardening
 
@@ -188,38 +216,41 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-Move through W248: Consultant Story Surface UI Wiring And Evidence Confidence Copy.
+Move through W249: Lane Pack Expansion QA And Consultant Coaching Copy Refinement.
 
 Goal:
-Wire the W247 compact consultant story surface into the Review/Run consultant UI so the live-demo talk track is visible, concise, and confidence-aware without exposing internal diagnostics.
+Refine the lane-pack story copy and add QA coverage so consultants can trust the first expanded industry lanes in live demos without overclaiming.
 
 Build:
-- Use `consultantStorySurfaceW247` after valid import to show:
-  - open target
-  - proof move
-  - safe claim
-  - do-not-claim guardrail
-  - buyer-facing so what
-  - N/LLM advisory confidence/uncertainty
-- Keep normal consultant UI compact and buyer-facing.
-- Hide internal schema names, raw role arrays, stack traces, and admin diagnostics from normal UI.
+- Review all W246 initial lane packs for consultant-friendly copy consistency.
+- Tighten proof move, safe claim, do-not-claim, ROI/so-what, and competitive contrast wording where it sounds generic or overconfident.
+- Add lane-pack QA fixtures for at least:
+  - industrial manufacturing
+  - equipment manufacturing
+  - industrial distributors
+  - CPG distributors
+  - CPG manufacturers
+  - food/beverage manufacturers
+- Ensure each fixture produces a clean W248 story surface from W245-style returned records.
+- Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
 - Preserve fake Open-link blocking before valid import.
 - Keep harnesses, reports, and traces under `archive/`.
 - Keep repo front clean.
 
 Validation:
-- Add archived W248 harness covering:
-  - Review/Run renders compact story surface after valid import
-  - no story surface before valid import with fake links
-  - weak evidence shows visible uncertainty/confirmation guidance
-  - normal consultant UI hides internal diagnostics
+- Add archived W249 harness covering:
+  - lane-pack story copy has required fields and no banned overclaims
+  - each QA fixture resolves expected lane pack
+  - each fixture renders W248 story surface with returned record names
+  - weak/conflicting evidence remains confirmation-gated
 - Run only:
   - W244 harness
   - W245 harness
   - W246 harness
   - W247 harness
   - W248 harness
+  - W249 harness
   - check
   - validate
 
@@ -228,9 +259,9 @@ Do not invoke the runner live.
 Do not update W144 deployment.
 
 Output:
-- Review/Run story surface UI wiring.
-- W248 regression harness.
-- W248 report and trace.
+- Lane-pack copy refinements.
+- W249 regression harness.
+- W249 report and trace.
 - Visual testing decision.
 - GitHub Desktop commit title and description.
 - Best next Codex prompt.

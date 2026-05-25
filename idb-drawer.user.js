@@ -2415,7 +2415,7 @@
       return {
         schema: 'forge.consultant-story-surface.v1',
         status: 'needs_lane_confirmation',
-        openTarget: firstProof ? `Open ${firstProof.name}.` : 'Confirm lane before opening proof records.',
+        openTarget: 'Confirm lane before opening proof records.',
         proofMove: 'Prove only what the imported records and website evidence support.',
         safeClaim: 'Evidence is not strong enough for a lane claim yet.',
         doNotClaim: 'Do not claim industry fit, ROI, record creation, or availability without confirmed evidence.',
@@ -10635,12 +10635,10 @@
     const hasValidImport = finalNaming && finalNaming.finalNamesImported && visibleRecords.length > 0;
     const primaryProof = visibleRecords.find((record) => /availability|replenishment|style|formula|batch|bom|assembly|flow|item|sku/i.test(`${record.canonicalRole} ${record.consultantLabel}`)) || visibleRecords[0] || null;
     const openTargets = visibleRecords.slice(0, 5).map((record) => `Open ${record.consultantLabel}`);
-    const lanePackResolution = resolveLanePackFromEvidenceW246(state, {
-      websiteText: lane && lane.signals ? lane.signals.join(' ') : '',
-      signals: lane && lane.signals ? lane.signals : []
-    });
+    const lanePackResolution = resolveLanePackFromEvidenceW246(state, {});
     const lanePackCoaching = liveDemoCoachingFromLanePackW246(state, lanePackResolution.lanePack, { displayReadyRecords: visibleRecords });
-    const consultantStorySurface = consultantStorySurfaceFromLanePackW247(state, lanePackResolution.lanePack, { displayReadyRecords: visibleRecords });
+    const storyLanePack = lanePackResolution.status === 'insufficient_evidence' ? null : lanePackResolution.lanePack;
+    const consultantStorySurface = consultantStorySurfaceFromLanePackW247(state, storyLanePack, { displayReadyRecords: visibleRecords });
     return {
       schema: 'idb.w245-canonical-import-result-normalization.v1',
       status: hasValidImport ? 'display_ready_records_normalized' : 'no_valid_display_ready_records',
@@ -11998,6 +11996,7 @@
         nextSteps,
         show: visibleRecords.slice(0, 4).map((record) => `${record.consultantLabel}: ${record.name}`).join(' -> '),
         liveDemoCoaching: normalizedImport.liveDemoCoaching,
+        consultantStorySurface: normalizedImport.consultantStorySurfaceW247,
         missingProofTerms,
         canMentionBomOrAssembly: flags.hasBomOrAssemblyStructure,
         canMentionWip: flags.hasWorkOrderOrWipObject || flags.hasRouting || flags.hasWorkCenter,
@@ -18896,6 +18895,38 @@
     `;
   }
 
+  function renderConsultantStorySurfaceW248(story) {
+    if (!story || !story.openTarget || !story.proofMove) return '';
+    const confidence = story.nllmAdvisory && story.nllmAdvisory.confidence ? consultantLabel(story.nllmAdvisory.confidence) : 'Unclear';
+    const uncertainty = story.nllmAdvisory && story.nllmAdvisory.uncertainty ? story.nllmAdvisory.uncertainty : 'Ask for confirmation when evidence is weak.';
+    return `
+      <div class="idb-run-action-card idb-w248-story-surface">
+        <div class="idb-status-key">Live demo talk track</div>
+        <div class="idb-strong">${escapeHtml(story.openTarget)}</div>
+        <div class="idb-copy">${escapeHtml(story.buyerFacingSoWhat || '')}</div>
+        <div class="idb-status-strip">
+          <div class="idb-status-cell">
+            <div class="idb-status-key">Prove</div>
+            <div class="idb-copy">${escapeHtml(story.proofMove)}</div>
+          </div>
+          <div class="idb-status-cell">
+            <div class="idb-status-key">Safe to say</div>
+            <div class="idb-copy">${escapeHtml(story.safeClaim)}</div>
+          </div>
+          <div class="idb-status-cell">
+            <div class="idb-status-key">Do not claim</div>
+            <div class="idb-copy">${escapeHtml(story.doNotClaim)}</div>
+          </div>
+        </div>
+        <div class="idb-chip-row">
+          <span class="idb-mini-chip">Evidence confidence: ${escapeHtml(confidence)}</span>
+          <span class="idb-mini-chip">N/LLM: advisory only</span>
+        </div>
+        <div class="idb-copy">${escapeHtml(uncertainty)}</div>
+      </div>
+    `;
+  }
+
   function renderDccHandoffOperatorReview(state, lane, page, recommendation) {
     const handoffPacket = dccRunnerHandoffPacketV1(state, lane, page, recommendation);
     const buildPacket = idbBuildPacketV1(state, lane, page, recommendation);
@@ -18912,6 +18943,9 @@
     const preparedRecords = finalNamesImported && w216ReviewRun
       ? w216ReviewRun.consultantReview.visibleRecords.slice(0, 8)
       : navigation.reviewObjects.slice(0, 6);
+    const consultantStorySurfaceHtml = finalNamesImported && w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface)
+      : '';
     const preparedObjects = preparedRecords.map((record) => `${record.consultantLabel || record.label}: ${record.name || 'Name not returned'}`);
     const finalRecordRows = preparedRecords.map((record) => `
       <li>
@@ -19024,6 +19058,7 @@
         </div>
         ${renderIntegratedBuildRunnerReturnStatus(state, lane, page, recommendation)}
         ${importRecoverySurfaceHtml}
+        ${consultantStorySurfaceHtml}
         <div class="idb-run-action-card idb-w114-build-summary">
           <div class="idb-status-key">${escapeHtml(buildSummaryKey)}</div>
           <div class="idb-copy">${escapeHtml(buildSummaryCopy)}</div>
@@ -19410,6 +19445,13 @@
     const packetIdentity = packetIdentityFor(state, lane);
     const finalNavigation = dccFinalNavigationModel(state, lane, page, recommendation);
     const buildStatus = oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1(state, lane, page, recommendation);
+    const finalNaming = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, page, recommendation);
+    const w216ReviewRun = finalNavigation.runCanUseImportedFinalNames && finalNaming.finalNamesImported
+      ? consultantPartialResultReviewRunModelW216V1(state.dccFinalNamingResult, state, lane, page, recommendation)
+      : null;
+    const consultantStorySurfaceHtml = w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface)
+      : '';
     if (!finalNavigation.runCanUseImportedFinalNames) {
       const waitingForLinks = buildStatus && buildStatus.automation && buildStatus.automation.runnerTaskCaptured;
       const headline = waitingForLinks ? 'Record links are not back yet' : 'Build records before running';
@@ -19465,6 +19507,7 @@
             </ol>
           </div>
         ` : ''}
+        ${consultantStorySurfaceHtml}
       </div>
       <div class="idb-card idb-accent idb-w56-run-script-first">
         <div class="idb-section-title">Live script first</div>
@@ -21204,6 +21247,7 @@
       liveDemoCoachingFromLanePackW246,
       reviewProposedLanePackChangeW247,
       consultantStorySurfaceFromLanePackW247,
+      renderConsultantStorySurfaceW248,
       drawerContractSourceAlignmentW240V1,
       dynamicRecordRenderingPrepModelW240,
       dccHandoffParityLockV1: dccHandoffParityLockV1,

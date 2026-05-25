@@ -443,7 +443,7 @@ function consultantStorySurfaceFromLanePack(input, lanePack, normalizedImport) {
     return {
       schema: 'forge.consultant-story-surface.v1',
       status: 'needs_lane_confirmation',
-      openTarget: firstProof ? `Open ${firstProof.name}.` : 'Confirm lane before opening proof records.',
+      openTarget: 'Confirm lane before opening proof records.',
       proofMove: 'Prove only what the imported records and website evidence support.',
       safeClaim: 'Evidence is not strong enough for a lane claim yet.',
       doNotClaim: 'Do not claim industry fit, ROI, record creation, or availability without confirmed evidence.',

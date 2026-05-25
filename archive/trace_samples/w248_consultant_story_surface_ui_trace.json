@@ -1,0 +1,19 @@
+{
+  "schema": "forge.w248.consultant-story-surface-ui.trace.v1",
+  "status": "implemented",
+  "surface": {
+    "review": "renders after valid import",
+    "run": "renders after valid import",
+    "preImport": "blocked"
+  },
+  "visibleFields": [
+    "openTarget",
+    "proofMove",
+    "safeClaim",
+    "doNotClaim",
+    "buyerFacingSoWhat",
+    "nllmAdvisoryConfidence",
+    "nllmAdvisoryUncertainty"
+  ],
+  "archiveOnlyArtifacts": true
+}

@@ -1700,11 +1700,11 @@
 
   function ensureProductionBuildSavedAdminConfig(state) {
     const saved = productionBuildSavedAdminConfig();
-    state.integratedBuildAdapterConfig = Object.assign(
+    state.integratedBuildAdapterConfig = applySelectedAdapterProfileToConfigW263(Object.assign(
       {},
       saved.integratedBuildAdapterConfig,
       state.integratedBuildAdapterConfig || {}
-    );
+    ), state && state.pageContext);
     state.integratedBuildOperatorApproval = Object.assign(
       {},
       saved.integratedBuildOperatorApproval,
@@ -5559,17 +5559,24 @@
     const resultCapture = result.resultCapture || {};
     const rawStatus = firstNonBlank(result.status, resultCapture.status, opts.status, 'transport_not_executed_no_submit');
     const runnerTaskId = firstNonBlank(result.runnerTaskId, resultCapture.runnerTaskId, opts.runnerTaskId);
+    const normalizedRunnerTaskId = firstNonBlank(
+      runnerTaskId,
+      result.taskId,
+      result.runnerTask && result.runnerTask.id,
+      result.task && result.task.id,
+      resultCapture.taskId
+    );
     const hasError = result.error === true || resultCapture.error === true || /error|failed|rejected|exception/i.test(rawStatus);
     const hasCompletedResultJson = !!(result.finalGeneratedNamesJson || resultCapture.finalGeneratedNamesJson);
     const queueSubmitted = result.queueSubmitted === true || resultCapture.queueSubmitted === true;
-    const captureStatus = firstNonBlank(resultCapture.status, opts.resultCaptureStatus, runnerTaskId ? 'pending_runner_completion' : 'not_started_no_submit');
+    const captureStatus = firstNonBlank(resultCapture.status, opts.resultCaptureStatus, normalizedRunnerTaskId ? 'pending_runner_completion' : 'not_started_no_submit');
     const normalizedStatus = hasError
       ? 'adapter_transport_error_drawer_safe'
       : hasCompletedResultJson
         ? 'completed_result_awaiting_w151_import'
-        : opts.pollAttempted === true && runnerTaskId
+        : opts.pollAttempted === true && normalizedRunnerTaskId
           ? 'polling_pending'
-          : queueSubmitted && runnerTaskId
+          : queueSubmitted && normalizedRunnerTaskId
             ? 'queued_pending'
             : 'false_flag_no_submit';
     const labels = {
@@ -5593,11 +5600,11 @@
       message: messages[normalizedStatus],
       rawStatus,
       queueSubmitted: normalizedStatus === 'adapter_transport_error_drawer_safe' ? false : queueSubmitted,
-      runnerTaskId: normalizedStatus === 'false_flag_no_submit' ? null : runnerTaskId,
+      runnerTaskId: normalizedStatus === 'false_flag_no_submit' ? null : normalizedRunnerTaskId,
       resultCaptureStatus: normalizedStatus === 'false_flag_no_submit' ? 'not_started_no_submit' : captureStatus,
       resultCapture: Object.assign({}, resultCapture, {
         status: normalizedStatus === 'false_flag_no_submit' ? 'not_started_no_submit' : captureStatus,
-        runnerTaskId: runnerTaskId || resultCapture.runnerTaskId || '',
+        runnerTaskId: normalizedRunnerTaskId || resultCapture.runnerTaskId || '',
         finalGeneratedNamesReady: hasCompletedResultJson && normalizedStatus === 'completed_result_awaiting_w151_import',
         finalGeneratedNamesJson: hasCompletedResultJson ? (result.finalGeneratedNamesJson || resultCapture.finalGeneratedNamesJson) : null
       }),
@@ -8767,7 +8774,8 @@
 
   function realSandboxServerAdapterExecutionWiringAndRunnerTaskIdCaptureV1(state, lane, pageContext, recommendation, options) {
     const opts = options || {};
-    const adapterConfig = integratedBuildRunnerAdapterConfigV1(opts.adapterConfig || state && state.integratedBuildAdapterConfig || {});
+    const rawAdapterConfig = applySelectedAdapterProfileToConfigW263(opts.adapterConfig || state && state.integratedBuildAdapterConfig || {}, pageContext);
+    const adapterConfig = integratedBuildRunnerAdapterConfigV1(rawAdapterConfig);
     const operatorEvidence = opts.operatorEvidence || state && state.integratedBuildOperatorApproval || {};
     const operatorGate = integratedBuildOperatorGateV1(Object.assign({}, operatorEvidence, {
       reviewDecision: operatorEvidence.reviewDecision || (operatorEvidence.operatorApproved === true ? 'operator_approved_queue_submit' : ''),
@@ -8911,9 +8919,13 @@
       integratedBuildRunnerResult: Object.assign({}, transportResult || {}, {
         status: transportResult && (transportResult.status || transportResult.runnerStatus) || 'queued_result_capture_pending',
         runnerTaskId: normalized.runnerTaskId,
+        idempotencyToken,
+        adapterResponseStatus: normalized.status,
+        adapterSafeErrorState: normalized.status === 'adapter_transport_error_drawer_safe',
         resultCapture: Object.assign({}, transportResult && transportResult.resultCapture || {}, {
           status: normalized.resultCaptureStatus,
-          runnerTaskId: normalized.runnerTaskId
+          runnerTaskId: normalized.runnerTaskId,
+          resultCaptureStatus: normalized.resultCaptureStatus
         }),
         finalGeneratedNamesJson: null,
         activeOpenLinks: 0
@@ -9090,7 +9102,7 @@
   function governedRunnerResultCapturePollingToCompletedJsonV1(state, lane, pageContext, recommendation, options) {
     const opts = options || {};
     const adapterResult = opts.adapterResult || state && state.integratedBuildRunnerResult || {};
-    const adapterConfig = opts.adapterConfig || state && state.integratedBuildAdapterConfig || {};
+    const adapterConfig = applySelectedAdapterProfileToConfigW263(opts.adapterConfig || state && state.integratedBuildAdapterConfig || {}, pageContext);
     const operatorEvidence = opts.operatorEvidence || state && state.integratedBuildOperatorApproval || {};
     const normalizedSeed = normalizeApprovedServerAdapterTransportResponseV1(adapterResult, {
       pollAttempted: opts.executePoll === true
@@ -15414,6 +15426,195 @@
     };
   }
 
+  function connectedBuildSubmitRefreshImportW264(state, lane, pageContext, recommendation, options) {
+    const opts = options || {};
+    const workingState = Object.assign({}, state || {});
+    ensureProductionBuildSavedAdminConfig(workingState);
+    const adapterConfig = applySelectedAdapterProfileToConfigW263(workingState.integratedBuildAdapterConfig || {}, pageContext);
+    workingState.integratedBuildAdapterConfig = adapterConfig;
+    const w262Before = adapterReadyRecordCreationUxW262(workingState, lane, pageContext, recommendation, opts);
+    const submitTransport = typeof opts.submitTransport === 'function'
+      ? opts.submitTransport
+      : function () {
+        return opts.submitResponse || null;
+      };
+    const pollTransport = typeof opts.pollTransport === 'function'
+      ? opts.pollTransport
+      : function () {
+        return opts.pollResponse || null;
+      };
+    const submit = realSandboxServerAdapterExecutionWiringAndRunnerTaskIdCaptureV1(
+      workingState,
+      lane,
+      pageContext,
+      recommendation,
+      {
+        adapterConfig,
+        operatorEvidence: workingState.integratedBuildOperatorApproval || {},
+        executeLiveCall: opts.executeSubmit === true,
+        transport: submitTransport
+      }
+    );
+    if (submit.runnerTaskIdCapturePath && submit.runnerTaskIdCapturePath.statePatch && submit.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult) {
+      workingState.integratedBuildRunnerResult = submit.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult;
+    } else if (submit.normalizedResponse && submit.normalizedResponse.status === 'adapter_transport_error_drawer_safe') {
+      workingState.integratedBuildRunnerResult = Object.assign({}, opts.submitResponse || {}, {
+        schema: 'idb.approved-server-adapter-result-envelope.v1',
+        status: 'adapter_error',
+        queueSubmitted: false,
+        runnerTaskId: null,
+        adapterResponseStatus: submit.normalizedResponse.status,
+        adapterSafeErrorState: true,
+        resultCapture: Object.assign({}, opts.submitResponse && opts.submitResponse.resultCapture || {}, {
+          status: 'adapter_error',
+          error: true
+        }),
+        finalGeneratedNamesJson: null,
+        activeOpenLinks: 0
+      });
+    }
+    const w262AfterSubmit = adapterReadyRecordCreationUxW262(workingState, lane, pageContext, recommendation, opts);
+    const poll = governedRunnerResultCapturePollingToCompletedJsonV1(
+      workingState,
+      lane,
+      pageContext,
+      recommendation,
+      {
+        adapterResult: workingState.integratedBuildRunnerResult || null,
+        adapterConfig,
+        operatorEvidence: workingState.integratedBuildOperatorApproval || {},
+        approvedEndpointMode: 'approved_server_adapter_only',
+        executePoll: opts.executePoll === true,
+        transport: pollTransport
+      }
+    );
+    if (poll.statePatch && poll.statePatch.integratedBuildRunnerResult) {
+      workingState.integratedBuildRunnerResult = poll.statePatch.integratedBuildRunnerResult;
+    }
+    const w262AfterRefresh = adapterReadyRecordCreationUxW262(workingState, lane, pageContext, recommendation, opts);
+    const normalizedAfterRefresh = normalizeApprovedServerAdapterTransportResponseV1(workingState.integratedBuildRunnerResult || null, { pollAttempted: true });
+    const completedResultJson = normalizedAfterRefresh.finalGeneratedNamesJson ||
+      workingState.integratedBuildRunnerResult && workingState.integratedBuildRunnerResult.finalGeneratedNamesJson ||
+      workingState.integratedBuildRunnerResult && workingState.integratedBuildRunnerResult.resultCapture && workingState.integratedBuildRunnerResult.resultCapture.finalGeneratedNamesJson ||
+      null;
+    const completedGuard = validateDccFinalNamingImportPayload(completedResultJson, workingState, lane, pageContext, recommendation);
+    const syntheticPollControl = completedGuard.valid === true ? {
+      schema: 'idb.approved-server-adapter-result-poll-control-implementation.v1',
+      status: 'poll_control_completed_result_ready_for_w151_import',
+      prerequisites: {
+        runnerTaskIdPresent: true,
+        confirmedBuildRequestReady: true,
+        serverFlagsReady: true,
+        sandboxAllowlistReady: true,
+        operatorApprovalReady: true,
+        idempotencyTokenPresent: true,
+        approvedEndpointModeReady: true
+      },
+      pollRequest: {
+        requestConstructed: poll.requestReady === true,
+        requestSent: poll.requestSent === true
+      },
+      resultImportGuard: {
+        completedResultPresent: true,
+        completedResultAcceptedByW151: true,
+        completedResultStatus: completedGuard.status,
+        importReady: true,
+        stateMutationAllowedInThisBlock: false,
+        activeOpenLinksBeforeImport: 0
+      },
+      normalizedPollResponse: Object.assign({}, normalizedAfterRefresh, {
+        finalGeneratedNamesJson: completedResultJson,
+        finalGeneratedNamesJsonReady: true
+      })
+    } : null;
+    const importCommit = completedRunnerResultImportCommitOperatorFlowV1(
+      workingState,
+      lane,
+      pageContext,
+      recommendation,
+      {
+        operatorChoseImport: opts.finishBuild === true,
+        pollControl: syntheticPollControl,
+        completedResultJson
+      }
+    );
+    const importedState = importCommit.commitAllowed && importCommit.statePatch && importCommit.statePatch.dccFinalNamingResult
+      ? Object.assign({}, workingState, { dccFinalNamingResult: importCommit.statePatch.dccFinalNamingResult })
+      : workingState;
+    const finalNaming = dccFinalNamingResultV1(importedState && importedState.dccFinalNamingResult, importedState, lane, pageContext, recommendation);
+    const normalizedImport = finalNaming.finalNamesImported
+      ? canonicalImportResultNormalizationW245(importedState.dccFinalNamingResult, importedState, lane, pageContext, recommendation)
+      : null;
+    const storySurface = normalizedImport && normalizedImport.consultantStorySurfaceW247 || null;
+    const adapterSafeError = poll.status === 'w190_adapter_error_drawer_safe' ||
+      !!(workingState.integratedBuildRunnerResult && workingState.integratedBuildRunnerResult.adapterSafeErrorState);
+    return {
+      schema: 'forge.w264.connected-build-submit-refresh-import.v1',
+      status: importCommit.commitAllowed
+        ? 'records_imported'
+        : completedGuard.valid === true
+          ? 'records_ready_to_import'
+          : adapterSafeError
+            ? 'adapter_error_safe_stop'
+            : w262AfterSubmit.stateFacts.runnerTaskCaptured
+              ? 'waiting_for_runner_result'
+              : w262Before.readinessState === 'ready_to_build_records'
+                ? 'ready_to_build_records'
+                : 'not_ready',
+      selectedAdapterProfile: adapterConfig.selectedAdapterProfile || null,
+      endpointUrl: adapterConfig.endpointUrl || '',
+      submit,
+      refresh: poll,
+      importCommit,
+      w262States: {
+        beforeSubmit: w262Before.readinessState,
+        afterSubmit: w262AfterSubmit.readinessState,
+        afterRefresh: w262AfterRefresh.readinessState,
+        afterImport: importCommit.commitAllowed ? 'records_imported' : w262AfterRefresh.readinessState
+      },
+      captured: {
+        adapterResponseStatus: workingState.integratedBuildRunnerResult && workingState.integratedBuildRunnerResult.adapterResponseStatus || normalizedAfterRefresh.status || '',
+        runnerTaskId: firstNonBlank(
+          workingState.integratedBuildRunnerResult && workingState.integratedBuildRunnerResult.runnerTaskId,
+          workingState.integratedBuildRunnerResult && workingState.integratedBuildRunnerResult.resultCapture && workingState.integratedBuildRunnerResult.resultCapture.runnerTaskId
+        ),
+        resultCaptureStatus: workingState.integratedBuildRunnerResult && workingState.integratedBuildRunnerResult.resultCapture && workingState.integratedBuildRunnerResult.resultCapture.status || '',
+        adapterSafeErrorState: adapterSafeError
+      },
+      completedResultGuard: {
+        completedResultPresent: !!completedResultJson,
+        completedResultAcceptedByW151: completedGuard.valid === true,
+        status: completedGuard.status,
+        message: completedGuard.message || ''
+      },
+      importedRecords: normalizedImport && Array.isArray(normalizedImport.displayReadyRecords)
+        ? normalizedImport.displayReadyRecords.map((record) => ({
+          role: record.canonicalRole,
+          name: record.recordName,
+          label: record.consultantLabel,
+          recordType: record.netSuiteRecordType,
+          internalId: record.numericInternalId,
+          openUrl: record.supportedOpenUrl,
+          linkAuthority: {
+            status: record.linkAuthorityStatus,
+            openable: record.linkAuthorityStatus === 'verified_openable'
+          }
+        }))
+        : [],
+      storySurface,
+      guardrails: {
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        approvedServerAdapterPathOnly: true,
+        noW144DeploymentUpdateInThisBlock: true,
+        fakeOpenLinksBlockedBeforeImport: true,
+        w245CanonicalImportPreserved: true,
+        w218SuccessWordingPreserved: true,
+        w220RecoveryWordingPreserved: true
+      }
+    };
+  }
+
   function productionFlowHardeningConsultantToggleImageRemovalW209V1(state, lane, pageContext, recommendation, options) {
     const opts = options || {};
     ensureProductionBuildSavedAdminConfig(state);
@@ -20521,6 +20722,21 @@
     const retryUi = approvedServerAdapterLiveDisabledRetryUiStatusV1(state, lane, page, recommendation);
     const finalNaming = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, page, recommendation);
     const importRecoverySurfaceHtml = renderImportRecoveryUiSurfaceW220(state, lane, page, recommendation);
+    const savedRunnerResult = state && state.integratedBuildRunnerResult || null;
+    const savedCompletedResultJson = savedRunnerResult && (savedRunnerResult.finalGeneratedNamesJson ||
+      savedRunnerResult.resultCapture && savedRunnerResult.resultCapture.finalGeneratedNamesJson) || null;
+    const savedCompletedGuard = validateDccFinalNamingImportPayload(savedCompletedResultJson, state, lane, page, recommendation);
+    const invalidCompletedResultRecoveryHtml = savedCompletedResultJson && savedCompletedGuard.valid !== true ? `
+      <div class="idb-run-action-card idb-guard-accent idb-w220-import-recovery-ui">
+        <div class="idb-status-key">Import recovery</div>
+        <div class="idb-strong">Paste the completed build result.</div>
+        <div class="idb-copy">Use the latest completed runner result.</div>
+        <div class="idb-chip-row">
+          <span class="idb-mini-chip">No Open links yet</span>
+          <span class="idb-mini-chip">Use completed result</span>
+        </div>
+      </div>
+    ` : '';
     const productionCleanup = productionConsultantFlowCleanupAfterFiveLinkPassW205V1(state, lane, page, recommendation);
     const productionAutomation = productionConsultantIntakeAndBuildAutomationSimplificationW206V1(state, lane, page, recommendation);
     const oneClickBuild = oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1(state, lane, page, recommendation);
@@ -20569,7 +20785,7 @@
             ${actions.showContinueToRun ? '<span class="idb-mini-chip">Smoke can continue</span>' : ''}
             ${oneClickBuild.automation && oneClickBuild.automation.showAskAdminMessage ? '<span class="idb-mini-chip">Build failed, ask admin</span>' : ''}
           </div>
-          ${importRecoverySurfaceHtml}
+          ${invalidCompletedResultRecoveryHtml || importRecoverySurfaceHtml}
         </div>
       `;
       if (!(state && state.setupEditMode)) return normalCardHtml;
@@ -22446,36 +22662,14 @@
               }
             );
             if (pollControl.resultImportGuard && pollControl.resultImportGuard.importReady === true && completedResultJsonForImport) {
-              importCommit = completedRunnerResultImportCommitOperatorFlowV1(
-                state,
-                lane,
-                pageContext,
-                recommendation,
-                {
-                  operatorChoseImport: true,
-                  pollControl,
-                  completedResultJson: completedResultJsonForImport
-                }
-              );
-              if (importCommit.commitAllowed === true && importCommit.statePatch && importCommit.statePatch.dccFinalNamingResult) {
-                state.dccFinalNamingResult = importCommit.statePatch.dccFinalNamingResult;
-                trace('completed_runner_result_auto_imported_from_check_status', {
-                  status: importCommit.status,
-                  verifiedOpenLinkCount: importCommit.buildRunAfterCommit.verifiedOpenLinkCount,
-                  targetedOpenLinkTestingReady: importCommit.buildRunAfterCommit.targetedOpenLinkTestingReady,
-                  drawerCreatesRecords: false,
-                  drawerInvokesSuiteScriptOutsideApprovedAdapter: false,
-                  drawerTransactionWritesAttempted: false
-                });
-              } else {
-                trace('completed_runner_result_auto_import_blocked_from_check_status', {
-                  status: importCommit.status,
-                  blockedReason: importCommit.blockedReason,
-                  noDrawerWrites: true,
-                  noDrawerTransactionWrites: true,
-                  noActiveOpenLinksWithoutRealUrls: true
-                });
-              }
+              trace('completed_runner_result_ready_finish_build_required', {
+                status: pollControl.status,
+                completedResultStatus: pollControl.resultImportGuard.completedResultStatus,
+                finishBuildRequired: true,
+                noDrawerWrites: true,
+                noDrawerTransactionWrites: true,
+                noActiveOpenLinksWithoutRealUrls: true
+              });
             }
             trace('w190_runner_result_capture_poll_checked', {
               status: w190Result.status,
@@ -23208,6 +23402,7 @@
       selectedAdapterProfileW263,
       applySelectedAdapterProfileToConfigW263,
       deployedAdapterReadinessTraceW263,
+      connectedBuildSubmitRefreshImportW264,
       productionFlowHardeningConsultantToggleImageRemovalW209V1,
       consultantFirstUiCleanupAdminDebugSeparationW210V1,
       toggleAwareNamingGuardrailContractW211V1,

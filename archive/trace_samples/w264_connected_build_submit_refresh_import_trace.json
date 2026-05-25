@@ -1,0 +1,26 @@
+{
+  "schema": "forge.w264.connected-build-submit-refresh-import.trace.v1",
+  "status": "records_imported",
+  "endpoint": "https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl?script=6702&deploy=2",
+  "runnerTaskId": "runner-w264-motion-001",
+  "readinessStates": {
+    "beforeSubmit": "ready_to_build_records",
+    "afterSubmit": "waiting_for_runner_result",
+    "afterRefresh": "records_ready_to_import",
+    "afterImport": "records_imported"
+  },
+  "motionAcceptance": {
+    "prospect": "Motion Industries",
+    "lane": "industrial_distribution",
+    "manufacturingEnabled": false,
+    "wipEnabled": false,
+    "openTargetLabel": "Product SKU"
+  },
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "fakeOpenLinksBlockedBeforeImport": true,
+    "noW144DeploymentUpdateInThisBlock": true
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "forge.w274.lane-pack-expansion-workflow-contract.trace.v1",
+  "workstream": "W274",
+  "title": "Lane Pack Authoring Expansion Workflow Contract Extraction Without Runtime Behavior Change",
+  "contractSummary": {
+    "schema": "forge.w274.lane-pack-expansion-workflow.v1",
+    "module": "src/contracts/lanePackExpansionWorkflow.js",
+    "sourcePackFile": "src/contracts/lanePacks.js",
+    "representedSurfaces": [
+      "W247 lane-pack authoring/review",
+      "W251 proposed-change diff review",
+      "W252 compact admin-safe review renderer expectations",
+      "W255 receipt-driven lane expansion QA",
+      "review-only proposed lane-pack fixtures"
+    ],
+    "guardrails": [
+      "N/LLM advisory-only",
+      "no auto-install",
+      "no write authority",
+      "no record creation",
+      "no hiding uncertainty",
+      "no overriding website evidence",
+      "no overriding consultant toggles",
+      "no guaranteed or measured ROI claims"
+    ]
+  },
+  "parityChecks": {
+    "w247ReviewShape": true,
+    "w251DiffShape": true,
+    "w252RendererExpectations": true,
+    "w255ReceiptDrivenQaShape": true,
+    "proposedFixturesReviewOnly": true,
+    "sourcePackRemainsLanePacksJs": true,
+    "weakEvidenceConfirmationFirst": true,
+    "w273StoryContractAvailable": true,
+    "w272LiveEvidenceContractAvailable": true,
+    "w264W151ValidImportContinuity": true,
+    "w270SharedHarnessUtilitiesAvailable": true
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "laneResolutionChanged": false,
+    "connectedBuildBehaviorChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "proposedPacksReviewOnly": true,
+    "nllmAdvisoryOnly": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRegressionRequired": false,
+    "reason": "Contract extraction and archived parity harness only; no visible consultant UI changes."
+  }
+}

@@ -16471,6 +16471,190 @@
     };
   }
 
+  function codeReviewFindingsReportW269(options) {
+    const opts = options || {};
+    const inventory = opts.inventory || codeReviewPrepInventoryW268();
+    return {
+      schema: 'forge.w269.code-review-findings-report.v1',
+      status: 'review_ready',
+      reviewOnly: true,
+      findings: [
+        {
+          id: 'behavior-regression-connected-build-cluster',
+          riskCategory: 'behavior/regression risk',
+          severity: 'high',
+          finding: 'W262-W268 connected build, evidence, signoff, and release helpers now form a critical path inside idb-drawer.user.js.',
+          evidence: inventory.oversizedRuntimeHelperAreas[0],
+          recommendation: 'Extract only behind parity harnesses and keep adapter submission, refresh, import, and Open-link gating behavior identical.'
+        },
+        {
+          id: 'maintainability-large-userscript-runtime',
+          riskCategory: 'maintainability risk',
+          severity: 'medium',
+          finding: 'The userscript remains the main runtime container and is difficult to reason about as connected-build and story surfaces grow.',
+          evidence: 'idb-drawer.user.js contains runtime contracts, UI rendering, adapter readiness, import normalization, and release evidence helpers.',
+          recommendation: 'Move stable contracts into small modules first; leave UI wiring and state mutation in place until parity is proven.'
+        },
+        {
+          id: 'harness-fixture-duplication',
+          riskCategory: 'test/harness duplication risk',
+          severity: 'medium',
+          finding: 'W263-W268 harnesses repeat VM hook loading, Motion state setup, completed result fixtures, and archive assertions.',
+          evidence: inventory.duplicatedFixtureSetupPatterns.join(' | '),
+          recommendation: 'Extract archived harness fixture utilities before refactoring runtime logic.'
+        },
+        {
+          id: 'lane-pack-expansion-contract-sprawl',
+          riskCategory: 'future lane-pack expansion risk',
+          severity: 'medium',
+          finding: 'Lane-pack story, receipt, script, sequence, and authoring review logic is useful but spread across runtime helpers.',
+          evidence: inventory.candidateExtractionPointsIntoContracts.join(' | '),
+          recommendation: 'Keep lane-pack source in src/contracts/lanePacks.js and extract review/signoff schemas before adding more packs.'
+        },
+        {
+          id: 'consultant-ui-trust-copy-stability',
+          riskCategory: 'UX trust/readability risk',
+          severity: 'medium',
+          finding: 'The normal consultant UI depends on compact, trusted copy that must not regress during extraction.',
+          evidence: inventory.stableNormalConsultantUiSurfaces.join(' | '),
+          recommendation: 'Lock Build records, Refresh build status, Finish build, W258 CTA, W256 script, W257 sequence, W254 receipt, and fake-link blocking during optimization.'
+        }
+      ],
+      reviewOnlyPolicy: {
+        archiveOnly: true,
+        externalUploadAllowed: false,
+        networkCallAllowed: false,
+        trackingAllowed: false,
+        localStorageWriteAllowed: false,
+        installActionAllowed: false,
+        runtimeDependencyAdded: false
+      }
+    };
+  }
+
+  function extractionPlanW269() {
+    const parityHarnesses = [
+      'npm run harness:connected-build-submit-refresh-import-w264',
+      'npm run harness:live-adapter-smoke-retry-safety-w265',
+      'npm run harness:controlled-live-build-run-evidence-w266',
+      'npm run harness:live-run-screenshot-reconciliation-w267',
+      'npm run harness:installed-drawer-live-evidence-release-prep-w268'
+    ];
+    return {
+      schema: 'forge.w269.low-risk-extraction-plan.v1',
+      status: 'review_ready',
+      phases: [
+        {
+          id: 'phase_1_shared_archived_harness_fixture_utilities',
+          label: 'Shared archived harness fixture utilities',
+          sourceHelperArea: 'archive/tools W263-W268 repeated loadHooks, Motion state, completed result, and archive assertions',
+          proposedTargetModule: 'archive/tools/lib/forge_harness_fixtures.js',
+          behaviorSurfacesThatMustStayIdentical: ['all archived harness outputs', 'VM userscript hook loading', 'Motion connected-run fixtures'],
+          parityHarnesses,
+          rollbackBoundary: 'Delete the shared fixture module and restore harness-local fixtures only; no runtime file changes.'
+        },
+        {
+          id: 'phase_2_adapter_profile_readiness_contract_extraction',
+          label: 'Adapter profile/readiness contract extraction',
+          sourceHelperArea: 'releasedAdapterProfileW263, adapterProfileEndpointW263, adapterReadyRecordCreationUxW262, deployedAdapterReadinessTraceW263',
+          proposedTargetModule: 'src/contracts/adapterProfiles.js',
+          behaviorSurfacesThatMustStayIdentical: ['V1.0.0 header unaffected', 'Build records visibility', 'preview-only copy', 'script=6702&deploy=2 profile resolution'],
+          parityHarnesses: parityHarnesses.concat(['npm run harness:real-build-path-clarity-w262', 'npm run harness:deployed-adapter-profile-readiness-trace-w263']),
+          rollbackBoundary: 'Keep existing userscript helpers as source of truth until imported contract parity passes.'
+        },
+        {
+          id: 'phase_3_live_evidence_signoff_packet_contract_extraction',
+          label: 'Live evidence/signoff packet contract extraction',
+          sourceHelperArea: 'W265-W268 response shape, retry, evidence packet, screenshot signoff, release keep packet helpers',
+          proposedTargetModule: 'src/contracts/liveEvidencePackets.js',
+          behaviorSurfacesThatMustStayIdentical: ['W265 retry safety', 'W266 live-run decision', 'W267 signoff', 'W268 release keep packet'],
+          parityHarnesses,
+          rollbackBoundary: 'Leave runtime helpers in idb-drawer.user.js until contract module output is byte/field compatible.'
+        },
+        {
+          id: 'phase_4_story_surface_receipt_script_sequence_contract_extraction',
+          label: 'Story surface receipt/script/sequence contract extraction',
+          sourceHelperArea: 'W248/W254/W255/W256/W257/W258 consultant story, receipt, script, sequence, and density helpers',
+          proposedTargetModule: 'src/contracts/consultantStorySurface.js',
+          behaviorSurfacesThatMustStayIdentical: ['W258 Live proof CTA', 'W256 script', 'W257 guided sequence', 'W254 receipt', 'uncertainty visibility'],
+          parityHarnesses: ['npm run harness:consultant-story-surface-ui-w248', 'npm run harness:evidence-receipt-trail-w254', 'npm run harness:receipt-driven-lane-expansion-qa-w255', 'npm run harness:consultant-live-demo-script-w256', 'npm run harness:guided-demo-step-sequence-w257', 'npm run harness:story-density-header-polish-w258'],
+          rollbackBoundary: 'Do not change rendered consultant UI until contract extraction has exact parity.'
+        },
+        {
+          id: 'phase_5_lane_pack_authoring_expansion_workflow_cleanup',
+          label: 'Lane-pack authoring/expansion workflow cleanup',
+          sourceHelperArea: 'W246-W252 lane-pack contracts, authoring review, diff review, and proposal review surfaces',
+          proposedTargetModule: 'src/contracts/lanePackAuthoring.js',
+          behaviorSurfacesThatMustStayIdentical: ['src/contracts/lanePacks.js remains pack source', 'N/LLM advisory-only', 'proposal review-only and non-installable', 'weak evidence confirmation gate'],
+          parityHarnesses: ['npm run harness:versioned-lane-pack-contract-w246', 'npm run harness:lane-pack-authoring-story-surface-w247', 'npm run harness:lane-pack-expansion-qa-w249', 'npm run harness:lane-pack-authoring-diff-review-w251', 'npm run harness:lane-pack-review-ui-install-smoke-w252'],
+          rollbackBoundary: 'Keep pack source unchanged and archive any proposed module until all authoring/review harnesses pass.'
+        }
+      ],
+      reviewOnlyPolicy: {
+        archiveOnly: true,
+        externalUploadAllowed: false,
+        networkCallAllowed: false,
+        trackingAllowed: false,
+        localStorageWriteAllowed: false,
+        installActionAllowed: false,
+        runtimeDependencyAdded: false
+      }
+    };
+  }
+
+  function optimizationGuardrailPacketW269() {
+    return {
+      schema: 'forge.w269.optimization-guardrail-packet.v1',
+      status: 'guardrails_ready',
+      preservedBehaviorSurfaces: [
+        'W218 success wording: Build results are ready.',
+        'W220 recovery wording: Paste the completed build result.',
+        'W245 canonical import normalization',
+        'W262 readiness states and normal Build records UX',
+        'W263 released adapter profile and dataset switching',
+        'W264 submit/refresh/import flow',
+        'W265 retry safety and response-shape normalization',
+        'W266 controlled live-run evidence packet',
+        'W267 screenshot/Open-link signoff',
+        'W268 V1.0.0 release keep packet'
+      ],
+      authorityBoundaries: [
+        'no drawer-created records',
+        'no drawer transaction writes',
+        'approved W144/server adapter-only record creation',
+        'no W144 deployment update in optimization blocks',
+        'normal consultant UI hides endpoint, raw JSON, task ids, schema names, stack traces, and admin diagnostics',
+        'N/LLM advisory-only and uncertainty-visible'
+      ],
+      requiredParityHarnesses: [
+        'npm run harness:operator-smoke-packet-live-wording-freeze-w218',
+        'npm run harness:import-recovery-ui-surface-wiring-w220',
+        'npm run harness:canonical-import-result-normalization-w245',
+        'npm run harness:real-build-path-clarity-w262',
+        'npm run harness:deployed-adapter-profile-readiness-trace-w263',
+        'npm run harness:connected-build-submit-refresh-import-w264',
+        'npm run harness:live-adapter-smoke-retry-safety-w265',
+        'npm run harness:controlled-live-build-run-evidence-w266',
+        'npm run harness:live-run-screenshot-reconciliation-w267',
+        'npm run harness:installed-drawer-live-evidence-release-prep-w268'
+      ],
+      reviewOnlyPolicy: {
+        archiveOnly: true,
+        externalUploadAllowed: false,
+        networkCallAllowed: false,
+        trackingAllowed: false,
+        localStorageWriteAllowed: false,
+        installActionAllowed: false,
+        runtimeDependencyAdded: false
+      },
+      guardrails: {
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        approvedW144AdapterOnlyRecordCreation: true
+      }
+    };
+  }
+
   function productionFlowHardeningConsultantToggleImageRemovalW209V1(state, lane, pageContext, recommendation, options) {
     const opts = options || {};
     ensureProductionBuildSavedAdminConfig(state);
@@ -24271,6 +24455,9 @@
       reviewerEvidenceFromIntakeW268,
       releaseKeepPacketV100W268,
       codeReviewPrepInventoryW268,
+      codeReviewFindingsReportW269,
+      extractionPlanW269,
+      optimizationGuardrailPacketW269,
       productionFlowHardeningConsultantToggleImageRemovalW209V1,
       consultantFirstUiCleanupAdminDebugSeparationW210V1,
       toggleAwareNamingGuardrailContractW211V1,

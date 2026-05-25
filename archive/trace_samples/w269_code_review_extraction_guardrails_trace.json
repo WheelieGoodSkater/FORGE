@@ -1,0 +1,36 @@
+{
+  "schema": "forge.w269.code-review-extraction-guardrails.trace.v1",
+  "source": "W269 harness fixture",
+  "reviewOnly": true,
+  "findings": {
+    "riskCategories": [
+      "behavior/regression risk",
+      "maintainability risk",
+      "test/harness duplication risk",
+      "future lane-pack expansion risk",
+      "UX trust/readability risk"
+    ]
+  },
+  "extractionPlan": {
+    "phaseCount": 5,
+    "firstRecommendedPhase": "shared archived harness fixture utilities"
+  },
+  "preservedBehaviorSurfaces": [
+    "W218 success wording",
+    "W220 recovery wording",
+    "W245 canonical import normalization",
+    "W262 readiness",
+    "W263 adapter profile",
+    "W264 submit/refresh/import flow",
+    "W265 retry safety",
+    "W266 evidence packet",
+    "W267 signoff",
+    "W268 release keep packet"
+  ],
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedW144AdapterOnlyRecordCreation": true,
+    "reviewOnlyNoExternalActions": true
+  }
+}

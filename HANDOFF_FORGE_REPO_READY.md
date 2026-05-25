@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W268 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, and code-review prep inventory.
+  - W250-W269 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, and optimization guardrails.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -80,6 +80,7 @@ npm run harness:live-adapter-smoke-retry-safety-w265
 npm run harness:controlled-live-build-run-evidence-w266
 npm run harness:live-run-screenshot-reconciliation-w267
 npm run harness:installed-drawer-live-evidence-release-prep-w268
+npm run harness:code-review-extraction-guardrails-w269
 npm run check
 npm run validate
 ```
@@ -111,12 +112,32 @@ Current expected result:
 - W266 harness passes `11/11`.
 - W267 harness passes `8/8`.
 - W268 harness passes `9/9`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, and W268 harness.
+- W269 harness passes `8/8`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, and W269 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W269: Code Review Findings, Extraction Plan, And Optimization Guardrails
+
+What changed:
+
+- Adds an archived code-review findings report sourced from W268 prep inventory and local code inspection.
+- Prioritizes findings by behavior/regression risk, maintainability risk, test/harness duplication risk, future lane-pack expansion risk, and UX trust/readability risk.
+- Adds a low-risk five-phase extraction plan covering shared archived harness fixtures, adapter profile/readiness contracts, live evidence/signoff packet contracts, story surface receipt/script/sequence contracts, and lane-pack authoring/expansion workflow cleanup.
+- Lists source helper areas, target modules, behavior surfaces, parity harnesses, and rollback boundaries for each extraction candidate.
+- Adds an optimization guardrail packet preserving W218/W220/W245/W262-W268 behavior, no drawer-created records, no drawer transaction writes, and approved W144 adapter-only record creation.
+- Keeps W269 review artifacts archived/review-only with no runtime behavior changes, external upload, network call, tracking call, local storage write, install action, runtime dependency, drawer-created records, drawer transaction writes, or W144 deployment update.
+
+Important W269 artifacts:
+
+- `archive/tools/run_w269_code_review_extraction_guardrails_harness.js`
+- `archive/reports/w269_code_review_extraction_guardrails.md`
+- `archive/trace_samples/w269_code_review_extraction_guardrails_trace.json`
+
+Previous completed block:
 
 - W268: Installed Drawer Live Evidence Intake, Release Keep Packet, And Code Review Prep
 
@@ -134,7 +155,7 @@ Important W268 artifacts:
 - `archive/reports/w268_installed_drawer_live_evidence_release_prep.md`
 - `archive/trace_samples/w268_installed_drawer_live_evidence_release_prep_trace.json`
 
-Previous completed block:
+Earlier completed block:
 
 - W267: Live Run Screenshot Reconciliation, Open Link Verification, And Keep/Rollback Signoff
 
@@ -622,65 +643,48 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W269: Code Review Findings, Extraction Plan, And Optimization Guardrails
+W270: Shared Archived Harness Fixture Utilities Without Runtime Behavior Change
 
 Goal:
-Start the true code review and optimization phase by turning the W268 prep inventory into concrete, prioritized findings and a low-risk extraction plan, without changing behavior or weakening the connected build path.
+Execute phase 1 from W269 by reducing archived harness duplication through shared test fixture utilities while keeping runtime behavior, consultant UI, connected build flow, and all W264-W269 evidence/signoff outputs unchanged.
 
 Build:
-- Add an archived code-review findings report sourced from W268 inventory plus local code inspection.
-- Prioritize findings by risk:
-  - behavior/regression risk
-  - maintainability risk
-  - test/harness duplication risk
-  - future lane-pack expansion risk
-  - UX trust/readability risk
-- Add a low-risk extraction plan with phases:
-  - phase 1: shared archived harness fixture utilities
-  - phase 2: adapter profile/readiness contract extraction
-  - phase 3: live evidence/signoff packet contract extraction
-  - phase 4: story surface receipt/script/sequence contract extraction
-  - phase 5: lane-pack authoring/expansion workflow cleanup
-- For each extraction candidate, list:
-  - source helper area
-  - proposed target file/module
-  - behavior surfaces that must stay identical
-  - harnesses that must prove parity
-  - rollback boundary
-- Add an optimization guardrail packet that explicitly preserves:
-  - W218 success wording
-  - W220 recovery wording
-  - fake Open-link blocking
-  - W245 canonical import normalization
-  - W262 readiness
-  - W263 adapter profile
-  - W264 submit/refresh/import flow
-  - W265 retry safety
-  - W266 evidence packet
-  - W267 signoff
-  - W268 release keep packet
-- Do not perform broad refactors in this block. This is review and plan only, plus archived findings/guardrail artifacts.
-- Keep all review artifacts archived/review-only; do not add external uploads, network calls, tracking, local storage writes, install actions, or runtime dependencies.
+- Add a shared archived harness utility module under `archive/tools/lib/`.
+- Move only repeated harness test setup into the utility module:
+  - userscript VM hook loader
+  - standard NetSuite window/document sandbox
+  - Motion Industries connected-build state fixture
+  - completed Motion distribution runner result fixture
+  - common W266 submit/pending/completed response fixtures
+  - common pass/fail assertion helpers
+  - common report/trace read helpers
+- Refactor only W264-W269 archived harnesses to use the shared utility where it reduces duplication.
+- Do not change `idb-drawer.user.js` runtime behavior.
+- Do not change normal consultant UI.
+- Do not change adapter endpoint/profile behavior.
+- Do not change record creation authority.
+- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, W264 submit/refresh/import flow, W265 retry safety, W266 evidence packet, W267 signoff, W268 release keep packet, and W269 optimization guardrails.
+- Keep all new utilities under `archive/tools/lib/`.
+- Keep harnesses, reports, and traces under `archive/`.
+- Keep repo front clean.
 - Keep normal consultant UI free of endpoint, raw JSON, task ids, schema names, stack traces, and admin diagnostics.
 - Do not create records from the drawer client directly.
 - Do not add transaction writes outside approved adapter path.
 - Do not update W144 deployment in this block.
-- Keep harnesses, reports, and traces under archive/.
-- Keep repo front clean.
 
 Validation:
-- Add W269 harness covering:
-  - code-review findings include all required risk categories
-  - extraction plan includes all five phases with source, target, parity harness, and rollback boundary
-  - optimization guardrail packet preserves W218/W220/W245/W262-W268 behavior surfaces
-  - review artifacts introduce no external upload, network call, tracking, local storage write, install action, or runtime dependency
-  - W268 release keep packet remains available
-  - W264, W265, W266, W267, and W268 harnesses still pass
+- Add/extend W270 harness covering:
+  - shared harness utility exists under `archive/tools/lib/`
+  - W264-W269 harnesses can load shared fixtures
+  - Motion fixture output remains equivalent before/after utility extraction
+  - completed result fixture remains W151-valid
+  - W266/W267/W268/W269 outputs remain field-compatible
+  - no runtime file behavior changes are introduced
   - no drawer-created records or drawer transaction writes are introduced
-- Run W244 through W269 harnesses, check, and validate.
+- Run W244 through W270 harnesses, check, and validate.
 
 Output:
-- Summary of code-review findings, extraction plan, optimization guardrails, validation, and recommended first refactor block.
+- Summary of shared harness utility extraction, files touched, parity guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

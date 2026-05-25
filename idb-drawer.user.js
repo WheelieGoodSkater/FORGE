@@ -3395,6 +3395,36 @@
     };
   }
 
+  function consultantLiveDemoScriptW256(story) {
+    const firstGlance = consultantStoryFirstGlanceW255(story || {});
+    const receipt = story && story.evidenceReceiptW254 || {};
+    const rows = arrayValue(receipt.rows);
+    const row = (id) => rows.find((item) => item && item.id === id) || {};
+    const openTarget = firstGlance.openTarget || 'Confirm the lane before opening proof records.';
+    const weak = !story || story.status === 'needs_lane_confirmation' || !story.openUrl;
+    const lines = {
+      openingLine: weak
+        ? 'Start by confirming the lane before turning this into a proof claim.'
+        : `Start with the buyer problem, then open ${openTarget.replace(/^Open\s+/i, '').replace(/\.$/, '')}.`,
+      whatToOpen: openTarget,
+      whatToProve: firstGlance.proveMove || 'Prove only what returned records and website evidence support.',
+      safeBuyerClaim: firstGlance.safeClaim || 'Evidence is not strong enough for a lane claim yet.',
+      valueSoWhat: story && story.buyerFacingSoWhat || 'Keep the value story tied to confirmed evidence.',
+      stopGuardrail: firstGlance.doNotClaimGuardrail || 'Stop before claiming ROI, record creation, writes, or unsupported lane fit.',
+      uncertaintyLine: weak
+        ? 'If the buyer asks for more, say the lane still needs confirmation before making a stronger claim.'
+        : (story && story.nllmAdvisory && story.nllmAdvisory.uncertainty || row('uncertainty_gate').value || 'Keep uncertainty visible if buyer evidence changes.')
+    };
+    return {
+      schema: 'forge.w256.consultant-live-demo-script.v1',
+      status: weak ? 'needs_confirmation_script' : 'script_ready',
+      source: 'w245_records_w246_lane_pack_w254_receipt_w255_first_glance',
+      lines,
+      receiptSummary: firstGlance.receiptSummary,
+      nextAction: firstGlance.nextAction
+    };
+  }
+
   function consultantStorySurfaceFromLanePackW247(state, lanePack, normalizedImport) {
     const resolution = resolveLanePackFromEvidenceW246(state);
     const selected = lanePack || (resolution.status === 'resolved' ? resolution.lanePack : null);
@@ -20093,6 +20123,7 @@
   function renderConsultantStorySurfaceW248(story) {
     if (!story || !story.openTarget || !story.proofMove) return '';
     const firstGlance = consultantStoryFirstGlanceW255(story);
+    const script = consultantLiveDemoScriptW256(story);
     const confidence = story.nllmAdvisory && story.nllmAdvisory.confidence ? consultantLabel(story.nllmAdvisory.confidence) : 'Unclear';
     const uncertainty = story.nllmAdvisory && story.nllmAdvisory.uncertainty ? story.nllmAdvisory.uncertainty : 'Ask for confirmation when evidence is weak.';
     const receipt = story.evidenceReceiptW254 && story.evidenceReceiptW254.status === 'receipt_ready' ? story.evidenceReceiptW254 : null;
@@ -20120,6 +20151,16 @@
         <div class="idb-chip-row idb-w255-first-glance">
           <span class="idb-mini-chip">Receipt: ${escapeHtml(firstGlance.receiptSummary)}</span>
           <span class="idb-mini-chip">Next: ${escapeHtml(firstGlance.nextAction)}</span>
+        </div>
+        <div class="idb-run-action-card idb-w256-live-demo-script">
+          <div class="idb-status-key">Say this live</div>
+          <div class="idb-copy"><strong>Open:</strong> ${escapeHtml(script.lines.whatToOpen)}</div>
+          <div class="idb-copy"><strong>Say:</strong> ${escapeHtml(script.lines.openingLine)}</div>
+          <div class="idb-copy"><strong>Prove:</strong> ${escapeHtml(script.lines.whatToProve)}</div>
+          <div class="idb-copy"><strong>Claim:</strong> ${escapeHtml(script.lines.safeBuyerClaim)}</div>
+          <div class="idb-copy"><strong>So what:</strong> ${escapeHtml(script.lines.valueSoWhat)}</div>
+          <div class="idb-copy"><strong>Stop:</strong> ${escapeHtml(script.lines.stopGuardrail)}</div>
+          <div class="idb-copy"><strong>Uncertainty:</strong> ${escapeHtml(script.lines.uncertaintyLine)}</div>
         </div>
         <div class="idb-status-strip">
           <div class="idb-status-cell">
@@ -22460,6 +22501,7 @@
       storyEvidenceReceiptTrailW254,
       receiptDrivenLaneExpansionQaW255,
       consultantStoryFirstGlanceW255,
+      consultantLiveDemoScriptW256,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,

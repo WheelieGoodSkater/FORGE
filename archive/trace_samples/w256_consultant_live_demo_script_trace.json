@@ -1,0 +1,19 @@
+{
+  "schema": "forge.w256.consultant-live-demo-script.trace.v1",
+  "workItem": "W256",
+  "purpose": "Prove live-demo scripts stay grounded in returned records, receipt evidence, and advisory-only guardrails.",
+  "assertions": [
+    "live-demo script includes all required sections",
+    "script uses returned record names and lane-aware labels",
+    "script is short and consultant-facing",
+    "script avoids banned overclaims and write or creation claims",
+    "weak or conflicting evidence produces a confirmation and uncertainty script",
+    "W254 receipt remains expandable under the script",
+    "W255 receipt-driven QA remains available",
+    "weak or conflicting evidence remains confirmation-gated"
+  ],
+  "visualTestingDecision": {
+    "targetedInstallSmokeRecommended": true,
+    "broadNetSuiteVisualRegressionRequired": false
+  }
+}

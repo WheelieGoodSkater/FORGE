@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W279 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, and the adapter readiness bridge.
+  - W250-W280 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, and the W276-W279 bridge closure/runtime extraction readiness packet.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -107,6 +107,7 @@ npm run harness:live-evidence-signoff-bridge-w276
 npm run harness:lane-pack-review-bridge-w277
 npm run harness:story-coaching-bridge-w278
 npm run harness:adapter-readiness-bridge-w279
+npm run harness:contract-bridge-closure-runtime-extraction-readiness-w280
 npm run check
 npm run validate
 ```
@@ -149,12 +150,32 @@ Current expected result:
 - W277 harness passes `15/15`.
 - W278 harness passes `12/12`.
 - W279 harness passes `14/14`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, adapter readiness bridge, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, W278 harness, and W279 harness.
+- W280 harness passes `14/14`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, adapter readiness bridge, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, W278 harness, W279 harness, and W280 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W280: Contract Bridge Closure Map And Runtime Extraction Readiness Packet
+
+What changed:
+
+- Adds `archive/reports/w280_contract_bridge_closure_runtime_extraction_readiness.md` and `archive/trace_samples/w280_contract_bridge_closure_runtime_extraction_readiness_trace.json` as the W276-W279 bridge closure map and runtime extraction readiness packet.
+- Maps W276 live evidence/signoff, W277 lane-pack review, W278 story coaching, and W279 adapter readiness bridges back to their protected drawer/helper surfaces, governing contract modules, parity harnesses, unchanged consultant UI surfaces, runtime authority boundaries, and rollback boundaries.
+- Selects the next narrow runtime extraction readiness slice: `adapter_profile_readiness_contract_migration_prepare`.
+- Defines source anchors for the selected slice: `releasedAdapterProfileW263`, `adapterProfileEndpointW263`, `adapterProfilesFromConfigW263`, `selectedAdapterProfileW263`, `applySelectedAdapterProfileToConfigW263`, `adapterReadyRecordCreationUxW262`, and `deployedAdapterReadinessTraceW263`.
+- Keeps W280 review-only; it does not perform the selected runtime extraction and does not change `idb-drawer.user.js`, normal consultant UI, Build tab copy/buttons/layout, connected W264 submit/refresh/import, W265 retry safety, lane resolution, endpoint/profile behavior, dataset switching, or record creation authority.
+- Adds W280 archived harness coverage proving bridge closure completeness, selected slice readiness, W276/W277/W278/W279 availability, W264/W265 continuity, W262/W263 adapter readiness/profile continuity, hidden endpoint/profile/raw/admin diagnostics, and no drawer-created records or transaction writes.
+
+Important W280 artifacts:
+
+- `archive/tools/run_w280_contract_bridge_closure_runtime_extraction_readiness_harness.js`
+- `archive/reports/w280_contract_bridge_closure_runtime_extraction_readiness.md`
+- `archive/trace_samples/w280_contract_bridge_closure_runtime_extraction_readiness_trace.json`
+
+Previous completed block:
 
 - W279: Adapter Profile Readiness Bridge Without Connected Build Behavior Change
 
@@ -825,35 +846,47 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W280: Contract Bridge Closure Map And Runtime Extraction Readiness Packet
+W281: Adapter Profile Readiness Contract Migration Without Connected Build Behavior Change
 
 Goal:
-Close the W276-W279 bridge phase by mapping each behavior-preserving bridge back to the runtime/helper areas it protects, then choose the first truly safe runtime extraction slice for `idb-drawer.user.js` without changing consultant UI, connected build behavior, lane resolution, endpoint behavior, dataset switching, or runtime authority.
+Execute the W280 selected first runtime extraction slice by migrating the drawer-owned W262/W263 adapter profile/readiness helper logic toward the W271 adapter profile contract and W279 adapter readiness bridge shape, while keeping normal Build UI, connected submit/refresh/import, endpoint behavior, dataset switching, and runtime authority unchanged.
 
 Build:
-- Add an archived W276-W279 bridge closure map covering:
-  - W276 review-only live evidence/signoff bridge
-  - W277 admin-only lane-pack review bridge
-  - W278 story coaching surface bridge
-  - W279 adapter profile/readiness bridge
-- For each bridge, list:
-  - source drawer/helper surface protected
-  - governing contract module
-  - validation harnesses protecting parity
-  - normal consultant UI surfaces that must remain unchanged
-  - connected build/runtime authority boundaries that must remain unchanged
-  - rollback boundary
-- Add a runtime extraction readiness packet that selects the first low-risk runtime extraction/migration slice after the bridge phase.
-- Prefer a narrow slice that reduces duplication or isolates contract-shaped helper logic while preserving visible UI and connected build behavior.
-- For the selected slice, define:
-  - exact helper anchors or source areas to inspect
-  - target contract/bridge module
-  - expected parity behavior
-  - harnesses that must pass
-  - manual review notes
-  - rollback plan
-- Do not perform the selected runtime extraction in this block.
-- Do not change `idb-drawer.user.js` runtime behavior except review-only inventory/closure references if absolutely necessary.
+- Review the drawer helper anchors selected by W280:
+  - `releasedAdapterProfileW263`
+  - `adapterProfileEndpointW263`
+  - `adapterProfilesFromConfigW263`
+  - `selectedAdapterProfileW263`
+  - `applySelectedAdapterProfileToConfigW263`
+  - `adapterReadyRecordCreationUxW262`
+  - `deployedAdapterReadinessTraceW263`
+- Migrate only the safe adapter profile/readiness shape logic that can preserve exact behavior.
+- Use the W271/W279 contract shape as the authority:
+  - `src/contracts/adapterProfiles.js`
+  - `src/contracts/adapterReadinessBridge.js`
+- If the Tampermonkey userscript cannot directly import Node/CommonJS modules at runtime, keep the drawer self-contained by using contract-shaped pure helper parity in `idb-drawer.user.js`; do not add a runtime `require`, external dependency, bundler requirement, or network dependency.
+- Keep the released W144 governed runner adapter profile values exactly unchanged:
+  - script: `IDB W144 Customer Proof Pilot Suitelet`
+  - title: `IDB W24 Customer Proof Pilot Suitelet`
+  - deployment script id: `customdeployidb_governed_runner_adapter`
+  - status: `Released`
+  - deployed: true
+  - execute as role: `Current Role`
+  - log level: `Error`
+  - path: `/app/site/hosting/scriptlet.nl?script=6702&deploy=2`
+  - default account host: `td3021666.app.netsuite.com`
+- Keep endpoint derivation data-driven from selected account host plus Suitelet path.
+- Keep future dataset/account switching easy without scattering endpoint string edits.
+- Keep W262 readiness states exactly equivalent:
+  - `ready_to_build_records`
+  - `smoke_preview_only`
+  - `adapter_not_configured`
+  - `build_submitted`
+  - `waiting_for_runner_result`
+  - `records_ready_to_import`
+  - `records_imported`
+- Keep W263 readiness trace/export field-compatible.
+- Add an archived W281 migration parity report explaining what helper logic moved or was reshaped, what stayed drawer-owned, and why.
 - Do not change normal consultant UI.
 - Do not change normal Build tab copy, buttons, or layout.
 - Do not change connected W264 submit/refresh/import behavior.
@@ -863,7 +896,7 @@ Build:
 - Do not change adapter endpoint/profile behavior.
 - Do not change dataset/account switching behavior.
 - Do not change record creation authority.
-- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, W264 submit/refresh/import flow, W265 retry safety, W270 shared harness utilities, W271 adapter profile/readiness contract, W272 live evidence/signoff contract, W273 story coaching contract, W274 lane-pack expansion workflow contract, W276 live evidence/signoff bridge, W277 lane-pack review bridge, W278 story coaching bridge, and W279 adapter readiness bridge.
+- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, W264 submit/refresh/import flow, W265 retry safety, W270 shared harness utilities, W271 adapter profile/readiness contract, W272 live evidence/signoff contract, W273 story coaching contract, W274 lane-pack expansion workflow contract, W276 live evidence/signoff bridge, W277 lane-pack review bridge, W278 story coaching bridge, W279 adapter readiness bridge, and W280 bridge closure/readiness packet.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Keep harnesses, reports, and traces under `archive/`.
 - Keep repo front clean.
@@ -873,23 +906,25 @@ Build:
 - Do not update W144 deployment in this block.
 
 Validation:
-- Add W280 harness covering:
-  - bridge closure map includes W276, W277, W278, and W279
-  - each bridge maps to its governing contract module and protected drawer/helper surface
-  - each bridge lists parity harnesses, unchanged consultant UI surfaces, runtime authority boundaries, and rollback boundary
-  - runtime extraction readiness packet selects one narrow first runtime extraction slice
-  - selected slice includes source anchors, target contract/bridge module, expected parity behavior, harnesses, manual review notes, and rollback plan
-  - W276, W277, W278, and W279 bridges remain available
+- Add W281 harness covering:
+  - W280 selected source anchors remain present or are explicitly mapped to migrated equivalents
+  - released W144 profile values remain exactly unchanged
+  - endpoint still derives from account host plus Suitelet path
+  - future dataset/account host can still swap without runtime logic changes
+  - W262 readiness states remain equivalent for preview-only, ready, submitted, waiting, records-ready, and imported paths
+  - W263 readiness trace/export profile fields remain field-compatible
+  - drawer remains self-contained with no runtime `require`, external dependency, bundler requirement, network dependency, or storage write added for contract loading
+  - normal Build UI hides endpoint/profile/raw/admin diagnostics
   - connected W264 submit/refresh/import remains unchanged
   - W265 retry safety remains unchanged
-  - W262/W263 adapter readiness/profile behavior remains unchanged
-  - normal consultant UI hides endpoint/profile/raw/admin diagnostics
+  - W279 adapter readiness bridge remains available
+  - W280 bridge closure/readiness packet remains available
   - no runtime authority changes are introduced
   - no drawer-created records or drawer transaction writes are introduced
-- Run W244 through W280 harnesses, check, and validate.
+- Run W244 through W281 harnesses, check, and validate.
 
 Output:
-- Summary of bridge closure map, selected runtime extraction readiness slice, parity guardrails, and validation.
+- Summary of adapter profile/readiness migration, files touched, parity guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

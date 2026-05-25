@@ -57,10 +57,10 @@ const LANE_PACKS = Object.freeze([
       forbidden: ['ingredient batch', 'flavor', 'style matrix', 'branch transfer']
     },
     liveDemo: {
-      proofMove: 'Open the assembly or finished item, then prove component readiness against the sales order promise.',
-      storyAnchor: 'Configured demand only matters if component readiness and build timing protect the buyer promise.',
-      roiSoWhat: 'Protect delivery revenue by exposing component or supplier gaps before the order promise is at risk.',
-      competitiveContrast: 'NetSuite keeps demand, inventory, and manufacturing proof in one operating path instead of a planning handoff.'
+      proofMove: 'Open the assembly item and prove component readiness, supplier timing, and build confidence against the sales order promise.',
+      storyAnchor: 'The buyer needs confidence that the order can be built on time, not just that demand was captured.',
+      roiSoWhat: 'Protect delivery revenue and reduce expedite risk by surfacing component gaps before they become missed commitments.',
+      competitiveContrast: 'NetSuite keeps sales promise, component availability, and build readiness in one operating path instead of a planning handoff.'
     }
   }),
   pack({
@@ -84,10 +84,10 @@ const LANE_PACKS = Object.freeze([
       forbidden: ['ingredient blend', 'case pack', 'style color size matrix']
     },
     liveDemo: {
-      proofMove: 'Open the equipment assembly and show how WIP or routing context supports the promised shipment.',
-      storyAnchor: 'The consultant should prove order-to-build control, not generic inventory visibility.',
-      roiSoWhat: 'Reduce expediting and missed shipment risk by aligning configured demand to build capacity and components.',
-      competitiveContrast: 'NetSuite lets the team see sales promise, WIP, and component constraints without switching systems.'
+      proofMove: 'Open the equipment assembly and prove component, WIP, or routing readiness behind the promised shipment.',
+      storyAnchor: 'Configured equipment promises only hold when build status and component constraints are visible early.',
+      roiSoWhat: 'Reduce expedite, reschedule, and missed-shipment risk by tying configured demand to build capacity and parts.',
+      competitiveContrast: 'NetSuite connects sales promise, WIP, routing, and component constraints without a separate production tracker.'
     }
   }),
   pack({
@@ -111,10 +111,10 @@ const LANE_PACKS = Object.freeze([
       forbidden: ['production routing', 'ingredient batch', 'fashion collection']
     },
     liveDemo: {
-      proofMove: 'Open the product or availability record and prove branch promise, replenishment timing, and fulfillment confidence.',
-      storyAnchor: 'The buyer cares whether the distributor can promise from the right location at the right time.',
-      roiSoWhat: 'Protect service level and margin by resolving supplier and branch exceptions before the order misses.',
-      competitiveContrast: 'NetSuite shows branch and fulfillment control instead of a generic warehouse snapshot.'
+      proofMove: 'Open the product or availability flow and prove branch promise, supplier timing, and replenishment action.',
+      storyAnchor: 'The buyer needs to know which location can fulfill, when replenishment lands, and what exception needs action.',
+      roiSoWhat: 'Protect service levels and margin by resolving supplier and branch exceptions before the order misses.',
+      competitiveContrast: 'NetSuite shows branch availability, supplier timing, and fulfillment control instead of a generic warehouse snapshot.'
     }
   }),
   pack({
@@ -138,10 +138,10 @@ const LANE_PACKS = Object.freeze([
       forbidden: ['assembly routing', 'work center', 'style matrix']
     },
     liveDemo: {
-      proofMove: 'Open the CPG SKU and prove retailer replenishment, case availability, and allocation confidence.',
-      storyAnchor: 'The distributor story is promotion-to-shelf reliability without pretending to manufacture the item.',
-      roiSoWhat: 'Protect retail revenue by catching replenishment and allocation risk before promotion demand lands.',
-      competitiveContrast: 'NetSuite connects order promise, inventory, and replenishment action in one proof path.'
+      proofMove: 'Open the CPG SKU and prove retailer replenishment, case availability, and allocation confidence without claiming production control.',
+      storyAnchor: 'The distributor story is promotion-to-shelf reliability: the right cases available for the right retailer at the right time.',
+      roiSoWhat: 'Protect retail revenue and service levels by catching replenishment and allocation risk before promotion demand lands.',
+      competitiveContrast: 'NetSuite connects order promise, inventory, allocation, and replenishment action in one proof path.'
     }
   }),
   pack({
@@ -165,10 +165,10 @@ const LANE_PACKS = Object.freeze([
       forbidden: ['dealer network', 'branch transfer', 'regulated lot release']
     },
     liveDemo: {
-      proofMove: 'Open the finished packaged good and prove packaging or component readiness against promotion demand.',
-      storyAnchor: 'Promotion demand is only believable when packaging, replenishment, and finished goods stay connected.',
-      roiSoWhat: 'Reduce missed promotion and chargeback risk by making readiness visible before fulfillment breaks.',
-      competitiveContrast: 'NetSuite ties brand demand, inventory, and manufacturing readiness into one consultant-led path.'
+      proofMove: 'Open the finished packaged good and prove packaging/component readiness against promotion demand and retail availability.',
+      storyAnchor: 'Promotion demand is believable only when packaging, finished goods, and replenishment stay connected.',
+      roiSoWhat: 'Reduce missed promotion, substitution, and chargeback risk by making readiness visible before fulfillment breaks.',
+      competitiveContrast: 'NetSuite ties brand demand, packaging readiness, inventory, and manufacturing proof into one path.'
     }
   }),
   pack({
@@ -192,10 +192,10 @@ const LANE_PACKS = Object.freeze([
       forbidden: ['style matrix', 'dealer allocation', 'equipment routing unless WIP is explicit']
     },
     liveDemo: {
-      proofMove: 'Open the finished food or beverage item and prove ingredient, packaging, and finished-good readiness.',
-      storyAnchor: 'Food and beverage trust comes from showing the batch inputs that protect the shelf promise.',
+      proofMove: 'Open the finished food or beverage item and prove ingredient, packaging, formula/batch, and finished-good readiness.',
+      storyAnchor: 'Food and beverage trust comes from showing the inputs and batch context that protect the shelf promise.',
       roiSoWhat: 'Protect promotion and service revenue by catching ingredient or packaging gaps before production misses demand.',
-      competitiveContrast: 'NetSuite keeps demand, ingredients, production readiness, and availability together.'
+      competitiveContrast: 'NetSuite keeps demand, ingredients, batch readiness, and availability together without a disconnected production tracker.'
     }
   }),
   pack({

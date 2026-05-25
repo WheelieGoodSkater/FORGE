@@ -1,0 +1,107 @@
+{
+  "schema": "forge.w249.lane-pack-expansion-qa-fixtures.v1",
+  "fixtures": [
+    {
+      "id": "industrial-manufacturing-ariens",
+      "expectedPackId": "industrial-manufacturing",
+      "laneId": "industrial_equipment",
+      "customer": "Ariens Industrial",
+      "website": "https://ariens.com",
+      "categoryText": "industrial manufacturing assembly component production plant supplier timing component readiness assembly confidence delivery promise",
+      "notes": "Prove component gaps before the buyer promise is at risk.",
+      "proofRecordName": "Ariens Compact Tractor Assembly",
+      "resolvedOperatingMode": "discrete_manufacturing",
+      "records": [
+        { "role": "customer", "recordType": "customer", "name": "Ariens Industrial Account", "internalId": 249001, "path": "/app/common/entity/custjob.nl" },
+        { "role": "sales_order", "recordType": "salesorder", "name": "SO249-Ariens Assembly Promise", "internalId": 249002, "path": "/app/accounting/transactions/salesord.nl" },
+        { "role": "finished_or_assembly_item", "recordType": "assemblyitem", "name": "Ariens Compact Tractor Assembly", "internalId": 249003, "path": "/app/common/item/item.nl" },
+        { "role": "component_item", "recordType": "inventoryitem", "name": "Hydraulic Pump Component", "internalId": 249004, "path": "/app/common/item/item.nl" }
+      ]
+    },
+    {
+      "id": "equipment-manufacturing-cat",
+      "expectedPackId": "equipment-manufacturing",
+      "laneId": "industrial_equipment",
+      "customer": "CAT Equipment",
+      "website": "https://cat.com",
+      "categoryText": "equipment manufacturing machine configured equipment service part assembly configured order component readiness work order routing shipment control",
+      "notes": "Show configured equipment demand tied to WIP and routing readiness.",
+      "proofRecordName": "CAT Skid Steer Configured Assembly",
+      "resolvedOperatingMode": "wip_manufacturing",
+      "records": [
+        { "role": "customer", "recordType": "customer", "name": "CAT Equipment Account", "internalId": 249011, "path": "/app/common/entity/custjob.nl" },
+        { "role": "sales_order", "recordType": "salesorder", "name": "SO249-CAT Configured Shipment", "internalId": 249012, "path": "/app/accounting/transactions/salesord.nl" },
+        { "role": "finished_or_assembly_item", "recordType": "assemblyitem", "name": "CAT Skid Steer Configured Assembly", "internalId": 249013, "path": "/app/common/item/item.nl" },
+        { "role": "work_order_or_wip_object", "recordType": "workorder", "name": "WIP Build Context 249", "internalId": 249014, "path": "/app/accounting/transactions/workord.nl" }
+      ]
+    },
+    {
+      "id": "industrial-distributor-grainger",
+      "expectedPackId": "industrial-distributor",
+      "laneId": "industrial_distribution",
+      "customer": "Grainger Industrial Supply",
+      "website": "https://grainger.com",
+      "categoryText": "industrial supply branch warehouse MRO distribution stocking location branch availability supplier lead time replenishment transfer-aware inventory",
+      "notes": "Prove branch promise and supplier timing before the order misses.",
+      "proofRecordName": "Grainger Branch Fulfillment SKU",
+      "resolvedOperatingMode": "distribution_replenishment",
+      "records": [
+        { "role": "customer", "recordType": "customer", "name": "Grainger Industrial Supply Account", "internalId": 249021, "path": "/app/common/entity/custjob.nl" },
+        { "role": "sales_order", "recordType": "salesorder", "name": "SO249-Grainger Branch Promise", "internalId": 249022, "path": "/app/accounting/transactions/salesord.nl" },
+        { "role": "branch_or_product_sku", "recordType": "inventoryitem", "name": "Grainger Branch Fulfillment SKU", "internalId": 249023, "path": "/app/common/item/item.nl" },
+        { "role": "replenishment_or_availability_flow", "recordType": "inventoryitem", "name": "Supplier Replenishment Flow", "internalId": 249024, "path": "/app/common/item/item.nl" }
+      ]
+    },
+    {
+      "id": "cpg-distributor-unfi",
+      "expectedPackId": "cpg-distributor",
+      "laneId": "products_cpg",
+      "customer": "UNFI Retail Distribution",
+      "website": "https://unfi.com",
+      "categoryText": "cpg distributor grocery distribution retail replenishment consumer brands case availability promotion fulfillment warehouse allocation",
+      "notes": "Keep the story on case availability and allocation, not manufacturing.",
+      "proofRecordName": "UNFI Retail Case Availability SKU",
+      "resolvedOperatingMode": "distribution_replenishment",
+      "records": [
+        { "role": "customer", "recordType": "customer", "name": "UNFI Retail Distribution Account", "internalId": 249031, "path": "/app/common/entity/custjob.nl" },
+        { "role": "sales_order", "recordType": "salesorder", "name": "SO249-UNFI Retail Replenishment", "internalId": 249032, "path": "/app/accounting/transactions/salesord.nl" },
+        { "role": "product_sku", "recordType": "inventoryitem", "name": "UNFI Retail Case Availability SKU", "internalId": 249033, "path": "/app/common/item/item.nl" },
+        { "role": "replenishment_or_availability_flow", "recordType": "inventoryitem", "name": "Retail Allocation Flow", "internalId": 249034, "path": "/app/common/item/item.nl" }
+      ]
+    },
+    {
+      "id": "cpg-manufacturer-milkbone",
+      "expectedPackId": "cpg-manufacturer",
+      "laneId": "products_cpg",
+      "customer": "Milk-Bone Brand",
+      "website": "https://milkbone.com",
+      "categoryText": "consumer packaged goods brand assortment case pack packaging promotion packaging readiness case-pack timing finished goods retail availability",
+      "notes": "Show packaging and finished goods readiness against promotion demand.",
+      "proofRecordName": "Milk-Bone Variety Pack Finished Good",
+      "resolvedOperatingMode": "discrete_manufacturing",
+      "records": [
+        { "role": "customer", "recordType": "customer", "name": "Milk-Bone Brand Account", "internalId": 249041, "path": "/app/common/entity/custjob.nl" },
+        { "role": "sales_order", "recordType": "salesorder", "name": "SO249-Milk-Bone Promotion", "internalId": 249042, "path": "/app/accounting/transactions/salesord.nl" },
+        { "role": "finished_or_assembly_item", "recordType": "assemblyitem", "name": "Milk-Bone Variety Pack Finished Good", "internalId": 249043, "path": "/app/common/item/item.nl" },
+        { "role": "component_item", "recordType": "inventoryitem", "name": "Retail Carton Packaging Component", "internalId": 249044, "path": "/app/common/item/item.nl" }
+      ]
+    },
+    {
+      "id": "food-beverage-manufacturer-mccormick",
+      "expectedPackId": "food-beverage-manufacturer",
+      "laneId": "food_beverage",
+      "customer": "McCormick Foods",
+      "website": "https://mccormick.com",
+      "categoryText": "food beverage ingredient flavor packaging batch ingredient readiness packaging timing line continuity finished-good availability",
+      "notes": "Prove ingredient and packaging readiness while keeping batch uncertainty visible.",
+      "proofRecordName": "McCormick Taco Seasoning Finished Batch Item",
+      "resolvedOperatingMode": "food_batch_manufacturing",
+      "records": [
+        { "role": "customer", "recordType": "customer", "name": "McCormick Foods Account", "internalId": 249051, "path": "/app/common/entity/custjob.nl" },
+        { "role": "sales_order", "recordType": "salesorder", "name": "SO249-McCormick Promotion", "internalId": 249052, "path": "/app/accounting/transactions/salesord.nl" },
+        { "role": "finished_food_or_batch_item", "recordType": "assemblyitem", "name": "McCormick Taco Seasoning Finished Batch Item", "internalId": 249053, "path": "/app/common/item/item.nl" },
+        { "role": "ingredient_or_component_item", "recordType": "inventoryitem", "name": "Chili Pepper Ingredient", "internalId": 249054, "path": "/app/common/item/item.nl" }
+      ]
+    }
+  ]
+}

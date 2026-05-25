@@ -21,13 +21,16 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
 - `idb-drawer.user.js`
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
-  - W245/W246/W247/W248 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, and Review/Run story UI wiring.
+  - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
 
 - `assets/forge-header-logo-cropped.png`
   - Cropped drawer header logo asset.
+
+- `assets/forge-icon.png`
+  - Repo-local launcher icon asset used where the old circular FORGE wordmark button appeared.
 
 - `src/contracts/operatingModes.js`
 - `src/contracts/recordRoles.js`
@@ -56,6 +59,7 @@ npm run harness:canonical-import-result-normalization-w245
 npm run harness:versioned-lane-pack-contract-w246
 npm run harness:lane-pack-authoring-story-surface-w247
 npm run harness:consultant-story-surface-ui-w248
+npm run harness:lane-pack-expansion-qa-w249
 npm run check
 npm run validate
 ```
@@ -67,23 +71,33 @@ Current expected result:
 - W246 harness passes `10/10`.
 - W247 harness passes `9/9`.
 - W248 harness passes `9/9`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, and W248 harness.
+- W249 harness passes `12/12`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, and W249 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
 
-- W248: Consultant Story Surface UI Wiring And Evidence Confidence Copy
+- W249: Lane Pack Expansion QA, Consultant Copy Refinement, And FORGE Icon Update
 
 What changed:
 
-- Wires `consultantStorySurfaceW247` into Review and Run after valid completed import.
-- Shows open target, proof move, safe claim, do-not-claim guardrail, buyer-facing so what, and N/LLM advisory confidence/uncertainty.
-- Keeps the story surface absent before valid import, preserving fake Open-link blocking.
-- Weak evidence now shows explicit lane confirmation guidance instead of treating a fallback pack as truth.
-- Normal story UI hides raw schema names, role arrays, stack traces, and admin diagnostics.
-- W218 success wording and W220 recovery wording remain stable.
+- Tightens W246 live-demo story copy for industrial manufacturing, equipment manufacturing, industrial distributors, CPG distributors, CPG manufacturers, and food/beverage manufacturers.
+- Adds W249 QA fixtures proving each expanded lane can resolve its expected pack and render a W248 story surface using W245-style returned record names.
+- Copies `/Users/aaronsunshine/Downloads/FORGE ICON.png` into `assets/forge-icon.png` and wires the launcher button to the repo-local icon asset without referencing Downloads at runtime.
+- Keeps N/LLM advisory-only, uncertainty-visible, and confirmation-gated when evidence is weak.
+
+Important W249 artifacts:
+
+- `archive/fixtures/w249_lane_pack_expansion_qa_fixtures.json`
+- `archive/tools/run_w249_lane_pack_expansion_qa_harness.js`
+- `archive/reports/w249_lane_pack_expansion_qa.md`
+- `archive/trace_samples/w249_lane_pack_expansion_qa_trace.json`
+
+Previous completed block:
+
+- W248: Consultant Story Surface UI Wiring And Evidence Confidence Copy
 
 Important W248 helper name:
 
@@ -216,27 +230,22 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-Move through W249: Lane Pack Expansion QA And Consultant Coaching Copy Refinement.
+W250: Lane-Aware Record Label Semantics And Install-Ready Visual Smoke Packet
 
 Goal:
-Refine the lane-pack story copy and add QA coverage so consultants can trust the first expanded industry lanes in live demos without overclaiming.
+Make the consultant story surface even more trustworthy by ensuring returned record labels match the resolved lane pack semantics, then prepare a tight install-ready visual smoke packet for the new launcher icon and compact Review/Run story surface.
 
 Build:
-- Review all W246 initial lane packs for consultant-friendly copy consistency.
-- Tighten proof move, safe claim, do-not-claim, ROI/so-what, and competitive contrast wording where it sounds generic or overconfident.
-- Add lane-pack QA fixtures for at least:
-  - industrial manufacturing
-  - equipment manufacturing
-  - industrial distributors
-  - CPG distributors
-  - CPG manufacturers
-  - food/beverage manufacturers
-- Ensure each fixture produces a clean W248 story surface from W245-style returned records.
-- Replace the current circular FORGE icon treatment in the drawer with the provided icon asset:
-  - source file: `/Users/aaronsunshine/Downloads/FORGE ICON.png`
-  - copy it into `assets/` before wiring it, do not reference the Downloads path at runtime
-  - use it for the page/drawer icon wherever the UI currently shows the FORGE wordmark inside a circle
-  - keep the existing header/logo assets unless the icon placement specifically needs the new asset
+- Review W245 display-ready record labeling where the same returned record role can mean different things by lane pack.
+- Ensure distribution lanes, including industrial distributors and CPG distributors, do not show manufacturing-flavored labels such as Finished/Assembly Item for product SKU or availability proof records.
+- Ensure manufacturing lanes still show honest manufacturing labels for assembly, component, WIP, formula, batch, and ingredient records.
+- Prefer lane-pack-aware label resolution over scattered special cases.
+- Keep W246 lane-pack source in `src/contracts/lanePacks.js` and keep drawer mirror aligned.
+- Add a compact install smoke packet that tells an operator exactly what to verify visually:
+  - launcher uses `assets/forge-icon.png` instead of the circular FORGE text button
+  - Review/Run story card appears only after valid import
+  - Open target uses returned record names and lane-appropriate labels
+  - weak evidence still asks for lane confirmation
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
 - Preserve fake Open-link blocking before valid import.
@@ -244,34 +253,20 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W249 harness covering:
-  - lane-pack story copy has required fields and no banned overclaims
-  - each QA fixture resolves expected lane pack
-  - each fixture renders W248 story surface with returned record names
-  - the new FORGE icon asset is repo-local and used in the intended drawer/page icon location
+- Add archived W250 harness covering:
+  - lane-aware labels for industrial distributor and CPG distributor returned records
+  - manufacturing labels remain correct for industrial, equipment, CPG manufacturing, and food/beverage lanes
+  - W248 story surface uses lane-appropriate labels with returned record names
+  - icon smoke packet references repo-local assets only
   - weak/conflicting evidence remains confirmation-gated
-- Run only:
-  - W244 harness
-  - W245 harness
-  - W246 harness
-  - W247 harness
-  - W248 harness
-  - W249 harness
-  - check
-  - validate
-
-Do not run broad visual testing.
-Do not invoke the runner live.
-Do not update W144 deployment.
+- Run W244, W245, W246, W247, W248, W249, W250 harnesses, check, and validate.
 
 Output:
-- Lane-pack copy refinements.
-- Drawer/page icon update using the new repo-local FORGE icon asset.
-- W249 regression harness.
-- W249 report and trace.
+- Summary of label semantics, install smoke packet, and any UI copy changes.
+- Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.
-- Best next Codex prompt.
+- Next optimized prompt.
 ```
 
 ## Install Note

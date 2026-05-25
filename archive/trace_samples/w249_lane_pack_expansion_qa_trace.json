@@ -1,0 +1,29 @@
+{
+  "schema": "forge.w249.lane-pack-expansion-qa.trace.v1",
+  "workItem": "W249",
+  "purpose": "Prove expanded lane-pack copy, W245 returned-record story rendering, and FORGE launcher icon wiring.",
+  "fixtures": [
+    "industrial-manufacturing",
+    "equipment-manufacturing",
+    "industrial-distributor",
+    "cpg-distributor",
+    "cpg-manufacturer",
+    "food-beverage-manufacturer"
+  ],
+  "assertions": [
+    "lane-pack story copy has required fields and avoids banned overclaims",
+    "each QA fixture resolves the expected W246 lane pack",
+    "each QA fixture renders a W248 consultant story surface using W245-style returned record names",
+    "new FORGE icon asset is repo-local and wired into the launcher icon location",
+    "weak or conflicting evidence remains confirmation-gated"
+  ],
+  "nllmAuthority": {
+    "writeAuthority": "none",
+    "creationAllowed": false,
+    "uncertaintyVisible": true
+  },
+  "repoHygiene": {
+    "harnessesReportsTracesArchived": true,
+    "downloadsPathReferencedAtRuntime": false
+  }
+}

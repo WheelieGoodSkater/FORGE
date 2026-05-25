@@ -18805,6 +18805,175 @@
     };
   }
 
+  function postInstallSmokeEvidenceCaptureTemplateW261() {
+    const releasePacket = installReadyReleasePacketW260();
+    const fields = [
+      {
+        id: 'install_target_drawer_only',
+        label: 'Tampermonkey updated with idb-drawer.user.js only',
+        expected: 'Only idb-drawer.user.js was installed or updated.',
+        capture: 'pass_fail_note',
+        required: true,
+        rollbackCritical: true
+      },
+      {
+        id: 'protected_surfaces_not_updated',
+        label: 'Protected surfaces were not updated',
+        expected: 'W144, runner, SuiteScript deployment, image lookup settings, and lane-pack contract source were not updated.',
+        capture: 'pass_fail_note',
+        required: true,
+        rollbackCritical: true
+      },
+      {
+        id: 'runtime_authority_unchanged',
+        label: 'Runtime authority unchanged',
+        expected: 'No drawer-created records, drawer transaction writes, live runner invocation, or W144 deployment update were enabled.',
+        capture: 'pass_fail_note',
+        required: true,
+        rollbackCritical: true
+      },
+      {
+        id: 'launcher_opens_drawer',
+        label: 'Launcher opens drawer',
+        expected: 'FORGE launcher icon opens the drawer.',
+        capture: 'pass_fail_note',
+        required: true
+      },
+      {
+        id: 'compact_header_visible',
+        label: 'Compact FORGE header visible',
+        expected: 'Header shows FORGE logo, running version, Bug / Enhancement, and close control.',
+        capture: 'pass_fail_note',
+        required: true
+      },
+      {
+        id: 'feedback_placeholder_noop',
+        label: 'Bug / Enhancement remains no-op',
+        expected: 'Bug / Enhancement remains a safe placeholder with no URL, network call, storage write, tracking call, or install action.',
+        capture: 'pass_fail_note',
+        required: true
+      },
+      {
+        id: 'pre_import_fake_links_blocked',
+        label: 'Pre-import fake Open links blocked',
+        expected: 'Review/Run blocks fake Open links before a valid completed import.',
+        capture: 'pass_fail_note',
+        required: true
+      },
+      {
+        id: 'valid_import_story_ready',
+        label: 'Valid import story ready',
+        expected: 'Valid completed import shows returned record names, lane-aware labels, supported Open links, and Build results are ready.',
+        capture: 'pass_fail_note',
+        required: true
+      },
+      {
+        id: 'live_proof_cta_visible',
+        label: 'W258 Live proof CTA visible',
+        expected: 'W258 Live proof CTA appears after valid import.',
+        capture: 'pass_fail_note',
+        required: true
+      },
+      {
+        id: 'coaching_receipt_expandable',
+        label: 'Coaching and receipt expandable',
+        expected: 'W256 script, W257 guided sequence, and W254 evidence receipt remain expandable.',
+        capture: 'pass_fail_note',
+        required: true
+      },
+      {
+        id: 'weak_evidence_confirmation',
+        label: 'Weak evidence asks for confirmation',
+        expected: 'Weak or conflicting evidence asks for confirmation before claims.',
+        capture: 'pass_fail_note',
+        required: true
+      },
+      {
+        id: 'rollback_decision_recorded',
+        label: 'Rollback decision recorded',
+        expected: 'If any targeted smoke item fails, record whether the prior Tampermonkey script was reinstalled or the update was kept for investigation.',
+        capture: 'pass_fail_note',
+        required: true
+      }
+    ];
+    return {
+      schema: 'forge.w261.post-install-smoke-evidence-capture-template.v1',
+      status: 'review_ready',
+      sourceReleasePacketSchema: releasePacket.schema,
+      installTarget: releasePacket.installTarget,
+      updateOnly: releasePacket.updateOnly.slice(),
+      doNotUpdate: releasePacket.doNotUpdate.slice(),
+      captureMode: 'pass_fail_note',
+      localReviewOnly: true,
+      externalUrl: '',
+      networkAllowed: false,
+      trackingAllowed: false,
+      localStorageWriteAllowed: false,
+      installActionAllowed: false,
+      runtimeAuthorityChanged: false,
+      fields,
+      rollbackNote: releasePacket.rollbackNote
+    };
+  }
+
+  function releaseSignoffFromEvidenceW261(capture) {
+    const template = postInstallSmokeEvidenceCaptureTemplateW261();
+    const entries = Array.isArray(capture)
+      ? capture
+      : Object.keys(capture || {}).map((id) => {
+        const value = capture[id];
+        return typeof value === 'object' && value !== null
+          ? Object.assign({ id }, value)
+          : { id, pass: value };
+      });
+    const byId = entries.reduce((map, item) => {
+      if (item && item.id) map[item.id] = item;
+      return map;
+    }, {});
+    const required = template.fields.filter((field) => field.required);
+    const results = required.map((field) => {
+      const item = byId[field.id];
+      const value = item ? item.pass : undefined;
+      const pass = value === true || value === 'pass' || value === 'passed';
+      return {
+        id: field.id,
+        label: field.label,
+        pass,
+        missing: !item,
+        rollbackCritical: !!field.rollbackCritical,
+        note: item && item.note ? String(item.note) : ''
+      };
+    });
+    const failed = results.filter((item) => !item.pass);
+    const rollbackFailures = failed.filter((item) => item.rollbackCritical);
+    const status = rollbackFailures.length
+      ? 'rollback_recommended'
+      : failed.length
+        ? 'needs_attention'
+        : 'ready_to_keep';
+    return {
+      schema: 'forge.w261.release-signoff.v1',
+      status,
+      sourceTemplateSchema: template.schema,
+      requiredPassed: failed.length === 0,
+      rollbackRecommended: rollbackFailures.length > 0,
+      missingRequired: results.filter((item) => item.missing).map((item) => item.id),
+      failedRequired: failed.map((item) => item.id),
+      rollbackCriticalFailures: rollbackFailures.map((item) => item.id),
+      runtimeAuthorityChanged: false,
+      externalUrl: '',
+      networkAllowed: false,
+      trackingAllowed: false,
+      localStorageWriteAllowed: false,
+      installActionAllowed: false,
+      nextAction: status === 'ready_to_keep'
+        ? 'Keep the updated Tampermonkey script installed.'
+        : status === 'rollback_recommended'
+          ? 'Rollback to the prior Tampermonkey script before further demo use.'
+          : 'Review failed or missing smoke evidence before release signoff.'
+    };
+  }
+
   function renderRunActionChips(state) {
     return ACTION_MODEL.map((action) => `
       <button
@@ -22771,6 +22940,8 @@
       visualAcceptancePacketW259,
       consultantAdminSmokeScriptW260,
       installReadyReleasePacketW260,
+      postInstallSmokeEvidenceCaptureTemplateW261,
+      releaseSignoffFromEvidenceW261,
       storyEvidenceReceiptTrailW254,
       receiptDrivenLaneExpansionQaW255,
       consultantStoryFirstGlanceW255,

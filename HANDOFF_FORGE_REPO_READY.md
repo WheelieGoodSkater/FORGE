@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W260 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, and an install-ready release packet from returned records.
+  - W250-W261 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, and post-install evidence/signoff flow from returned records.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -72,6 +72,7 @@ npm run harness:guided-demo-step-sequence-w257
 npm run harness:story-density-header-polish-w258
 npm run harness:header-feedback-placeholder-visual-acceptance-w259
 npm run harness:install-ready-release-packet-w260
+npm run harness:post-install-smoke-evidence-capture-w261
 npm run check
 npm run validate
 ```
@@ -95,12 +96,31 @@ Current expected result:
 - W258 harness passes `13/13`.
 - W259 harness passes `11/11`.
 - W260 harness passes `10/10`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, and W260 harness.
+- W261 harness passes `14/14`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, and W261 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W261: Post-Install Smoke Evidence Capture And Release Signoff
+
+What changed:
+
+- Adds `postInstallSmokeEvidenceCaptureTemplateW261` for local pass/fail/note capture after the W260 Tampermonkey smoke.
+- Adds `releaseSignoffFromEvidenceW261` to classify captured evidence as `ready_to_keep`, `needs_attention`, or `rollback_recommended`.
+- Treats install target and runtime authority boundaries as rollback-critical.
+- Keeps evidence capture review-only with no upload, external URL, network call, tracking call, local storage write, install action, or runtime dependency.
+- Preserves W260 install-only packet purpose, W259 feedback placeholder no-op behavior, W218/W220 wording, fake-link blocking, weak-evidence confirmation, and W255-W257 lane/story continuity.
+
+Important W261 artifacts:
+
+- `archive/tools/run_w261_post_install_smoke_evidence_capture_harness.js`
+- `archive/reports/w261_post_install_smoke_evidence_capture.md`
+- `archive/trace_samples/w261_post_install_smoke_evidence_capture_trace.json`
+
+Previous completed block:
 
 - W260: Install-Ready Release Packet And Consultant Smoke Script
 
@@ -439,36 +459,36 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W261: Post-Install Smoke Evidence Capture And Release Signoff
+W262: Release Signoff Summary Packet And Consultant Install Handoff
 
 Goal:
-Turn the W260 install-ready release packet into a simple post-install evidence capture and release signoff flow, so a consultant/admin can record whether the Tampermonkey update is safe to keep or should be rolled back without changing runtime authority.
+Turn the W261 evidence capture/signoff result into a compact release signoff summary and consultant/admin install handoff, so the team can quickly see whether the Tampermonkey update is safe to keep, needs attention, or should be rolled back.
 
 Build:
-- Add an archived post-install smoke evidence capture template sourced from the W260 release packet.
-- Include pass/fail/note capture fields for:
-  - Tampermonkey updated with `idb-drawer.user.js` only
-  - W144, runner, SuiteScript deployment, image lookup settings, and lane-pack contract source were not updated
-  - launcher icon opens the drawer
-  - compact FORGE header shows logo, version, `Bug / Enhancement`, and close control
-  - `Bug / Enhancement` remains a safe placeholder/no-op
-  - pre-import Review/Run blocks fake Open links
-  - valid completed import shows returned record names, lane-aware labels, supported Open links, and W218 success wording
-  - W258 `Live proof CTA` appears after valid import
-  - W256 script, W257 guided sequence, and W254 evidence receipt remain expandable
-  - weak/conflicting evidence asks for confirmation before claims
-  - rollback decision is recorded if any targeted smoke item fails
-- Add a compact release signoff helper that returns:
-  - `ready_to_keep` when required smoke fields pass
-  - `needs_attention` when any required smoke field fails or is missing
-  - `rollback_recommended` when install target or runtime authority boundaries fail
-- Keep evidence capture local/review-only; do not add uploads, external URLs, network calls, tracking calls, local storage writes, install actions, or runtime dependencies.
-- Keep W260 release packet available and unchanged in purpose: update/install `idb-drawer.user.js` only.
+- Add a compact release signoff summary helper sourced from W261 evidence capture and signoff.
+- Summary should include:
+  - release status: `ready_to_keep`, `needs_attention`, or `rollback_recommended`
+  - install target confirmed or failed
+  - protected surfaces confirmed unchanged or failed
+  - runtime authority unchanged or failed
+  - launcher/header/feedback placeholder smoke result
+  - valid import story smoke result
+  - weak-evidence confirmation smoke result
+  - rollback decision/next action
+- Add an archived consultant/admin install handoff packet that says:
+  - update/install `idb-drawer.user.js` only
+  - do not update W144, runner, SuiteScript deployment, image lookup settings, or lane-pack contract source
+  - run W260 smoke, capture W261 evidence, then use W262 signoff summary
+  - keep the update only if signoff is `ready_to_keep`
+  - rollback if signoff is `rollback_recommended`
+  - investigate before buyer use if signoff is `needs_attention`
+- Keep the handoff and summary review-only; do not add uploads, external URLs, network calls, tracking calls, local storage writes, install actions, or runtime dependencies.
+- Keep W260 release packet and W261 evidence capture available and unchanged in purpose.
 - Keep W259 feedback placeholder no-op and future-ready; do not add the real feedback URL yet.
 - Do not change runtime authority: no drawer-created records, no drawer transaction writes, no live runner invocation, and no W144 deployment update.
 - Preserve returned record names, lane-aware labels, supported Open-link authority, and weak/conflicting evidence confirmation-first behavior.
 - Do not expose raw JSON, stack traces, internal arrays, runner task ids, schema names, admin diagnostics, or install-like actions in normal consultant UI.
-- Keep W252 proposal review admin-only, W253/W259/W260 acceptance/release packets review-only, and W254 receipt consultant-safe.
+- Keep W252 proposal review admin-only, W253/W259/W260/W261 acceptance/release/signoff packets review-only, and W254 receipt consultant-safe.
 - Keep W255 receipt-driven QA, W256 script, and W257 guided sequence available for existing/proposed lane packs and future expansion.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
@@ -477,23 +497,26 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W261 harness covering:
-  - post-install evidence capture template includes all required pass/fail/note fields
-  - release signoff returns `ready_to_keep` when required fields pass
-  - release signoff returns `needs_attention` when required fields fail or are missing
-  - release signoff returns `rollback_recommended` when install target or runtime authority boundaries fail
-  - template and signoff introduce no external URL, fetch, tracking call, local storage write, install action, or runtime dependency
-  - W260 release packet remains available and still says to update/install only `idb-drawer.user.js`
+- Add archived W262 harness covering:
+  - release signoff summary includes status, install target, protected surfaces, runtime authority, launcher/header/feedback, valid import story, weak evidence, and next action
+  - summary returns `ready_to_keep` for passing W261 evidence
+  - summary returns `needs_attention` for noncritical failed or missing W261 evidence
+  - summary returns `rollback_recommended` for install target or runtime authority boundary failure
+  - consultant/admin install handoff says to update/install only `idb-drawer.user.js`
+  - handoff says not to update W144, runner, SuiteScript deployment, image lookup settings, or lane-pack source
+  - handoff instructs W260 smoke, W261 evidence capture, and W262 signoff summary in order
+  - summary and handoff introduce no external URL, fetch, tracking call, local storage write, install action, or runtime dependency
+  - W260 release packet and W261 evidence capture remain available
   - W259 feedback placeholder remains no-op with no URL/network/storage/install path
   - W258 first-glance story surface remains compact and visible after valid import
   - W218 success wording and W220 recovery wording remain preserved
   - normal UI hides raw diagnostics and admin-only proposal review
   - W255 receipt-driven QA remains available
   - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W261 harnesses, check, and validate.
+- Run W244 through W262 harnesses, check, and validate.
 
 Output:
-- Summary of post-install evidence capture, release signoff logic, rollback guardrails, validation, and lane expansion continuity.
+- Summary of release signoff summary, consultant/admin install handoff, rollback guardrails, validation, and lane expansion continuity.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

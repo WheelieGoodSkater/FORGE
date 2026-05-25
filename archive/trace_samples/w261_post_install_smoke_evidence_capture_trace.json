@@ -1,0 +1,44 @@
+{
+  "schema": "forge.w261.post-install-smoke-evidence-capture.trace.v1",
+  "status": "review_only_evidence_capture_ready",
+  "sourceReleasePacketSchema": "forge.w260.install-ready-release-packet.v1",
+  "installTarget": "idb-drawer.user.js",
+  "updateOnly": ["idb-drawer.user.js"],
+  "doNotUpdate": [
+    "W144 adapter",
+    "runner",
+    "SuiteScript deployment",
+    "image lookup settings",
+    "lane-pack contract source"
+  ],
+  "captureMode": "pass_fail_note",
+  "fieldIds": [
+    "install_target_drawer_only",
+    "protected_surfaces_not_updated",
+    "runtime_authority_unchanged",
+    "launcher_opens_drawer",
+    "compact_header_visible",
+    "feedback_placeholder_noop",
+    "pre_import_fake_links_blocked",
+    "valid_import_story_ready",
+    "live_proof_cta_visible",
+    "coaching_receipt_expandable",
+    "weak_evidence_confirmation",
+    "rollback_decision_recorded"
+  ],
+  "signoffStatuses": [
+    "ready_to_keep",
+    "needs_attention",
+    "rollback_recommended"
+  ],
+  "externalUrl": "",
+  "networkAllowed": false,
+  "trackingAllowed": false,
+  "localStorageWriteAllowed": false,
+  "installActionAllowed": false,
+  "runtimeAuthorityChanged": false,
+  "visualTestingDecision": {
+    "targetedInstallSmokeEvidenceCaptureRecommended": true,
+    "broadNetSuiteVisualRegressionRequired": false
+  }
+}

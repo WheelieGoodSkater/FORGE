@@ -16102,6 +16102,183 @@
     return packet;
   }
 
+  function normalizeReviewCaptureW267(id, label, capture, required) {
+    const value = capture && typeof capture === 'object' && !Array.isArray(capture)
+      ? capture
+      : { pass: capture === true };
+    return {
+      id,
+      label,
+      required: required !== false,
+      pass: value.pass === true,
+      note: firstNonBlank(value.note, value.notes, '')
+    };
+  }
+
+  function openLinkVerificationCaptureW267(records, reviewerOpenLinks) {
+    const evidence = reviewerOpenLinks || {};
+    const rows = (Array.isArray(records) ? records : []).map((record) => {
+      const keyCandidates = [
+        record.role,
+        record.name,
+        String(record.internalId || ''),
+        `${record.recordType || ''}:${record.internalId || ''}`
+      ].filter(Boolean);
+      const matched = keyCandidates.reduce((found, key) => found || evidence[key], null) || {};
+      return {
+        role: record.role || '',
+        label: record.label || '',
+        recordName: record.name || '',
+        netSuiteRecordType: record.recordType || '',
+        internalId: record.internalId || '',
+        url: record.openUrl || '',
+        expectedSupportedOpenUrl: Boolean(record.openUrl && /^https:\/\/[^/]+\.app\.netsuite\.com\//i.test(record.openUrl)),
+        openedSuccessfully: matched.openedSuccessfully === true || matched.pass === true,
+        note: firstNonBlank(matched.note, matched.notes, '')
+      };
+    });
+    return {
+      schema: 'forge.w267.open-link-verification-capture.v1',
+      rows,
+      allExpectedRecordsCaptured: rows.length > 0 && rows.every((row) => row.openedSuccessfully === true),
+      unsupportedUrlSeen: rows.some((row) => row.expectedSupportedOpenUrl !== true)
+    };
+  }
+
+  function liveRunScreenshotSignoffHelperW267(reconciliation) {
+    const packet = reconciliation || {};
+    const w266 = packet.w266Packet || {};
+    const rows = Array.isArray(packet.reviewerEvidenceRows) ? packet.reviewerEvidenceRows : [];
+    const comparison = packet.comparison || {};
+    const openLinks = packet.openLinkVerification || {};
+    const noExternal = packet.reviewOnlyPolicy || {};
+    const requiredMissing = rows.filter((row) => row.required !== false && row.pass !== true).map((row) => row.id);
+    const authorityFailed = w266.guardrails && (
+      w266.guardrails.noDrawerCreatedRecords !== true ||
+      w266.guardrails.noDrawerTransactionWrites !== true ||
+      w266.guardrails.approvedServerAdapterPathOnly !== true
+    );
+    const rollbackReasons = [];
+    if (authorityFailed) rollbackReasons.push('runtime_authority_boundary_failed');
+    if (comparison.fakeOpenLinksVisible === true) rollbackReasons.push('fake_open_links_visible');
+    if (comparison.unsupportedUrlsVisible === true || openLinks.unsupportedUrlSeen === true) rollbackReasons.push('unsupported_open_url_visible');
+    if (comparison.invalidImportVisible === true) rollbackReasons.push('invalid_import_visible');
+    if (noExternal.externalUploadAllowed === true || noExternal.networkCallAllowed === true || noExternal.trackingAllowed === true || noExternal.localStorageWriteAllowed === true || noExternal.installActionAllowed === true) {
+      rollbackReasons.push('review_packet_introduced_external_action');
+    }
+    const requiredPass = requiredMissing.length === 0;
+    const recordsAgree = comparison.expectedRecordsShown === true && comparison.laneAwareLabelsShown === true;
+    const linksAgree = comparison.supportedOpenLinksOnlyAfterImport === true && openLinks.allExpectedRecordsCaptured === true;
+    const hiddenDiagnostics = comparison.rawDiagnosticsHidden === true;
+    const w266Ready = w266.liveRunDecision && w266.liveRunDecision.status === 'ready_to_keep';
+    const status = rollbackReasons.length
+      ? 'rollback_recommended'
+      : requiredPass && recordsAgree && linksAgree && hiddenDiagnostics && w266Ready
+        ? 'ready_to_keep'
+        : 'needs_attention';
+    return {
+      schema: 'forge.w267.live-run-keep-rollback-signoff.v1',
+      status,
+      missingRequiredEvidence: requiredMissing,
+      rollbackReasons,
+      comparison: {
+        w266Ready,
+        recordsAgree,
+        linksAgree,
+        hiddenDiagnostics,
+        requiredPass
+      },
+      nextAction: status === 'ready_to_keep'
+        ? 'Keep the installed drawer build path enabled for the approved Motion-style flow.'
+        : status === 'rollback_recommended'
+          ? 'Rollback or disable the installed drawer build path before further demo use.'
+          : 'Review screenshot/Open-link evidence and polish UI copy or labels before signoff.'
+    };
+  }
+
+  function postLiveRunScreenshotEvidencePacketW267(w266Packet, options) {
+    const opts = options || {};
+    const reviewer = opts.reviewerEvidence || {};
+    const expectedRecords = w266Packet && w266Packet.importEvidence && Array.isArray(w266Packet.importEvidence.returnedRecords)
+      ? w266Packet.importEvidence.returnedRecords
+      : [];
+    const screenshotRecords = Array.isArray(reviewer.returnedRecordsShown) ? reviewer.returnedRecordsShown : [];
+    const evidenceRows = [
+      normalizeReviewCaptureW267('build_records_clicked', 'Build records clicked from normal consultant UI', reviewer.buildRecordsClicked, true),
+      normalizeReviewCaptureW267('build_submitted_state_shown', 'Build submitted state shown', reviewer.buildSubmittedStateShown, true),
+      normalizeReviewCaptureW267('refresh_build_status_state_shown', 'Refresh build status state shown', reviewer.refreshBuildStatusStateShown, true),
+      normalizeReviewCaptureW267('records_ready_finish_build_state_shown', 'Records ready / Finish build state shown', reviewer.recordsReadyFinishBuildStateShown, true),
+      normalizeReviewCaptureW267('returned_names_lane_labels_shown', 'Returned names and lane-aware labels shown', reviewer.returnedNamesLaneLabelsShown, true),
+      normalizeReviewCaptureW267('supported_open_links_after_import', 'Supported Open links visible only after valid import', reviewer.supportedOpenLinksAfterImport, true),
+      normalizeReviewCaptureW267('review_run_story_surfaces_visible', 'Review/Run CTA, script, sequence, and receipt visible after import', reviewer.reviewRunStorySurfacesVisible, true),
+      normalizeReviewCaptureW267('weak_uncertainty_visible', 'Weak evidence/uncertainty remains visible where applicable', reviewer.weakUncertaintyVisible, false)
+    ];
+    const expectedNames = expectedRecords.map((record) => record.name).filter(Boolean);
+    const expectedLabels = expectedRecords.map((record) => record.label).filter(Boolean);
+    const shownNames = screenshotRecords.map((record) => record.name || record.recordName).filter(Boolean);
+    const shownLabels = screenshotRecords.map((record) => record.label).filter(Boolean);
+    const allNamesShown = expectedNames.length > 0 && expectedNames.every((name) => shownNames.indexOf(name) >= 0);
+    const allLabelsShown = expectedLabels.length > 0 && expectedLabels.every((label) => shownLabels.indexOf(label) >= 0);
+    const openLinkVerification = openLinkVerificationCaptureW267(expectedRecords, reviewer.openLinks);
+    const packet = {
+      schema: 'forge.w267.post-live-run-screenshot-evidence-reconciliation.v1',
+      status: 'review_packet_ready',
+      reviewOnly: true,
+      w266Packet,
+      reviewerEvidenceRows: evidenceRows,
+      expectedFromW266: {
+        consultantCopy: w266Packet && Array.isArray(w266Packet.normalConsultantCopy) ? w266Packet.normalConsultantCopy.slice() : [],
+        records: expectedRecords.map((record) => ({
+          role: record.role,
+          name: record.name,
+          label: record.label,
+          recordType: record.recordType,
+          internalId: record.internalId,
+          openUrl: record.openUrl
+        })),
+        openLinkAuthority: w266Packet && w266Packet.importEvidence ? w266Packet.importEvidence.supportedOpenLinksOnly === true : false,
+        hiddenDiagnostics: true
+      },
+      screenshotEvidence: {
+        recordsShown: screenshotRecords,
+        rawDiagnosticsVisible: reviewer.rawDiagnosticsVisible === true,
+        endpointVisible: reviewer.endpointVisible === true,
+        runnerTaskIdVisible: reviewer.runnerTaskIdVisible === true,
+        schemaNamesVisible: reviewer.schemaNamesVisible === true,
+        stackTraceVisible: reviewer.stackTraceVisible === true,
+        adminDiagnosticsVisible: reviewer.adminDiagnosticsVisible === true
+      },
+      comparison: {
+        expectedConsultantCopyShown: reviewer.expectedConsultantCopyShown === true,
+        expectedRecordsShown: allNamesShown,
+        laneAwareLabelsShown: allLabelsShown,
+        supportedOpenLinksOnlyAfterImport: reviewer.supportedOpenLinksAfterImport === true || reviewer.supportedOpenLinksAfterImport && reviewer.supportedOpenLinksAfterImport.pass === true,
+        rawDiagnosticsHidden: !reviewer.rawDiagnosticsVisible && !reviewer.endpointVisible && !reviewer.runnerTaskIdVisible && !reviewer.schemaNamesVisible && !reviewer.stackTraceVisible && !reviewer.adminDiagnosticsVisible,
+        fakeOpenLinksVisible: reviewer.fakeOpenLinksVisible === true,
+        unsupportedUrlsVisible: reviewer.unsupportedUrlsVisible === true,
+        invalidImportVisible: reviewer.invalidImportVisible === true
+      },
+      openLinkVerification,
+      reviewOnlyPolicy: {
+        archiveOnly: true,
+        externalUploadAllowed: false,
+        networkCallAllowed: false,
+        trackingAllowed: false,
+        localStorageWriteAllowed: false,
+        installActionAllowed: false,
+        runtimeDependencyAdded: false
+      },
+      guardrails: {
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        noW144DeploymentUpdateInThisBlock: true,
+        preservesW266EvidencePacket: true
+      }
+    };
+    packet.signoff = liveRunScreenshotSignoffHelperW267(packet);
+    return packet;
+  }
+
   function productionFlowHardeningConsultantToggleImageRemovalW209V1(state, lane, pageContext, recommendation, options) {
     const opts = options || {};
     ensureProductionBuildSavedAdminConfig(state);
@@ -23895,6 +24072,9 @@
       liveAdapterSmokeEvidencePacketW265,
       liveRunDecisionHelperW266,
       controlledLiveBuildRunEvidencePacketW266,
+      openLinkVerificationCaptureW267,
+      liveRunScreenshotSignoffHelperW267,
+      postLiveRunScreenshotEvidencePacketW267,
       productionFlowHardeningConsultantToggleImageRemovalW209V1,
       consultantFirstUiCleanupAdminDebugSeparationW210V1,
       toggleAwareNamingGuardrailContractW211V1,

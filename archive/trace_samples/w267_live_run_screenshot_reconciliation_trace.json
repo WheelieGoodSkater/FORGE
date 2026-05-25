@@ -1,0 +1,50 @@
+{
+  "schema": "forge.w267.live-run-screenshot-reconciliation.trace.v1",
+  "source": "W267 harness fixture",
+  "reviewOnly": true,
+  "expectedReturnedRecords": [
+    {
+      "role": "customer",
+      "name": "Motion Industries Demo Account",
+      "label": "Customer",
+      "recordType": "customer",
+      "internalId": "26601"
+    },
+    {
+      "role": "sales_order",
+      "name": "SO-W266 Motion Branch Availability",
+      "label": "Sales Order",
+      "recordType": "salesorder",
+      "internalId": "26602"
+    },
+    {
+      "role": "branch_or_product_sku",
+      "name": "Motion Branch Fulfillment SKU",
+      "label": "Product SKU",
+      "recordType": "inventoryitem",
+      "internalId": "26603"
+    },
+    {
+      "role": "replenishment_or_availability_flow",
+      "name": "Motion Availability Proof Flow",
+      "label": "Availability/Replenishment Flow",
+      "recordType": "inventoryitem",
+      "internalId": "26604"
+    }
+  ],
+  "openLinkVerification": {
+    "allExpectedRecordsCaptured": true,
+    "unsupportedUrlSeen": false
+  },
+  "signoff": {
+    "status": "ready_to_keep",
+    "missingRequiredEvidence": [],
+    "rollbackReasons": []
+  },
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdateInThisBlock": true,
+    "rawDiagnosticsHiddenFromNormalUi": true
+  }
+}

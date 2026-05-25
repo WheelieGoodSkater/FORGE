@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W266 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, and controlled live-run evidence/import QA.
+  - W250-W267 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, and screenshot/Open-link keep/rollback signoff.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -78,6 +78,7 @@ npm run harness:deployed-adapter-profile-readiness-trace-w263
 npm run harness:connected-build-submit-refresh-import-w264
 npm run harness:live-adapter-smoke-retry-safety-w265
 npm run harness:controlled-live-build-run-evidence-w266
+npm run harness:live-run-screenshot-reconciliation-w267
 npm run check
 npm run validate
 ```
@@ -107,12 +108,32 @@ Current expected result:
 - W264 harness passes `15/15`.
 - W265 harness passes `11/11`.
 - W266 harness passes `11/11`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, and W266 harness.
+- W267 harness passes `8/8`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, and W267 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W267: Live Run Screenshot Reconciliation, Open Link Verification, And Keep/Rollback Signoff
+
+What changed:
+
+- Adds a review-only screenshot/evidence reconciliation packet for the installed drawer after a Motion-style live connected build run.
+- Captures reviewer-entered pass/fail/note evidence for Build records, Build submitted, Refresh build status, Records ready / Finish build, returned record names and lane-aware labels, supported Open links after import, Review/Run story surfaces, and uncertainty visibility.
+- Adds per-record Open-link verification capture for each returned W266 record: label, record name, NetSuite record type, internal id, URL, opened yes/no/note.
+- Compares reviewer evidence against W266 expected consultant copy, expected records, lane labels, Open-link authority, and hidden admin/raw diagnostics.
+- Adds a final signoff helper that returns `ready_to_keep`, `needs_attention`, or `rollback_recommended`.
+- Keeps screenshot evidence review-only under `archive/` with no external upload, network call, tracking call, local storage write, install action, drawer-created records, drawer transaction writes, or W144 deployment update.
+
+Important W267 artifacts:
+
+- `archive/tools/run_w267_live_run_screenshot_reconciliation_harness.js`
+- `archive/reports/w267_live_run_screenshot_reconciliation.md`
+- `archive/trace_samples/w267_live_run_screenshot_reconciliation_trace.json`
+
+Previous completed block:
 
 - W266: Controlled Live Build Run Evidence And Result Import QA
 
@@ -581,41 +602,40 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W267: Live Run Screenshot Reconciliation, Open Link Verification, And Keep/Rollback Signoff
+W268: Installed Drawer Live Evidence Intake, Release Keep Packet, And Code Review Prep
 
 Goal:
-Use the W266 controlled live-run evidence packet plus user screenshots from the installed drawer to verify the real Motion build path end-to-end, reconcile any remaining UI/result-shape gaps, and produce a clear keep/needs-attention/rollback signoff without changing runtime authority.
+Use the W267 screenshot/Open-link signoff layer to turn the actual installed-drawer Motion run evidence into a compact V1.0.0 keep/needs-attention/rollback release packet, while preparing the repo for the next phase of code review and optimization.
 
 Build:
-- Add an archived post-live-run screenshot/evidence reconciliation packet for the Motion run.
-- Capture reviewer-entered evidence for:
-  - Build records clicked from normal consultant UI
-  - Build submitted state shown
-  - Refresh build status state shown
-  - Records ready / Finish build state shown
-  - returned record names and lane-aware labels shown
-  - supported Open links visible only after valid import
-  - Review/Run W258 CTA, W256 script, W257 sequence, and W254 receipt visible after import
-  - weak evidence/uncertainty still visible where applicable
-- Compare screenshot/evidence fields against W266 packet:
-  - expected consultant copy
-  - expected records
-  - expected lane labels
-  - expected Open-link authority
-  - expected hidden admin/raw diagnostics
-- Add Open-link verification capture for each returned record:
-  - label
-  - record name
-  - NetSuite record type
-  - internal id
-  - URL
-  - opened successfully yes/no/note
-- Keep raw screenshots/evidence review-only under archive; do not add external uploads, network calls, tracking, local storage writes, install actions, or runtime dependencies.
-- Add final signoff helper:
-  - `ready_to_keep` when W266 packet and screenshot/Open-link evidence agree
-  - `needs_attention` when UI copy or labels need polish but authority boundaries hold
-  - `rollback_recommended` when fake links, unsupported URLs, invalid imports, or runtime authority boundaries fail
-- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, W264 submit/refresh/import flow, W265 retry safety, and W266 evidence packet.
+- Add an archived installed-drawer live evidence intake template for the user-provided Motion screenshots and notes.
+- Intake should map screenshots/notes into the W267 evidence fields:
+  - Build records clicked
+  - Build submitted
+  - Refresh build status
+  - Records ready / Finish build
+  - returned record names and lane-aware labels
+  - supported Open links after valid import
+  - Review/Run story surfaces
+  - uncertainty/weak-evidence visibility
+  - hidden admin/raw diagnostics
+- Add a compact V1.0.0 release keep packet that summarizes:
+  - install target
+  - adapter profile used
+  - Motion run outcome
+  - returned records/Open-link verification
+  - story-surface readiness
+  - any needs-attention UI polish
+  - keep/rollback decision
+- Add a code-review prep inventory for the next phase:
+  - oversized helper areas in `idb-drawer.user.js`
+  - candidate extraction points into `src/contracts/`
+  - duplicated fixture/setup patterns in archived harnesses
+  - normal consultant UI surfaces to keep stable
+  - runtime authority boundaries that must not move
+- Do not refactor runtime logic yet beyond small W268 helper/template additions.
+- Keep all live evidence intake and release packets archived/review-only; do not add external uploads, network calls, tracking, local storage writes, install actions, or runtime dependencies.
+- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, W264 submit/refresh/import flow, W265 retry safety, W266 evidence packet, and W267 signoff.
 - Keep normal consultant UI free of endpoint, raw JSON, task ids, schema names, stack traces, and admin diagnostics.
 - Do not create records from the drawer client directly.
 - Do not add transaction writes outside approved adapter path.
@@ -624,18 +644,19 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add W267 harness covering:
-  - screenshot/evidence reconciliation packet includes all required capture fields
-  - Open-link verification capture includes each returned W266 record
-  - signoff helper returns `ready_to_keep`, `needs_attention`, and `rollback_recommended` correctly
-  - normal consultant UI expectations hide raw diagnostics
-  - W266 live-run decision remains available
-  - W264, W265, and W266 harnesses still pass
+- Add W268 harness covering:
+  - installed-drawer live evidence intake template maps to W267 evidence fields
+  - V1.0.0 release keep packet includes install target, adapter profile, Motion outcome, returned records/Open links, story readiness, needs-attention notes, and decision
+  - release keep packet can represent `ready_to_keep`, `needs_attention`, and `rollback_recommended`
+  - code-review prep inventory includes runtime helper areas, extraction candidates, harness duplication, stable UI surfaces, and authority boundaries
+  - review-only packet introduces no external upload, network call, tracking, local storage write, install action, or runtime dependency
+  - W267 signoff remains available
+  - W264, W265, W266, and W267 harnesses still pass
   - no drawer-created records or drawer transaction writes are introduced
-- Run W244 through W267 harnesses, check, and validate.
+- Run W244 through W268 harnesses, check, and validate.
 
 Output:
-- Summary of screenshot reconciliation, Open-link verification, signoff logic, guardrails, and validation.
+- Summary of live evidence intake, V1.0.0 release keep packet, code-review prep inventory, guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

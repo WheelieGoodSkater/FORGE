@@ -1,0 +1,41 @@
+{
+  "schema": "forge.w268.installed-drawer-live-evidence-release-prep.trace.v1",
+  "source": "W268 harness fixture",
+  "reviewOnly": true,
+  "releaseKeepPacket": {
+    "releaseVersion": "V1.0.0",
+    "status": "ready_to_keep",
+    "installTarget": "idb-drawer.user.js",
+    "motionRunOutcome": {
+      "prospect": "Motion Industries",
+      "submitted": true,
+      "completed": true,
+      "imported": true
+    },
+    "decision": {
+      "status": "ready_to_keep",
+      "missingRequiredEvidence": [],
+      "rollbackReasons": []
+    }
+  },
+  "codeReviewPrepInventory": {
+    "oversizedRuntimeHelperAreas": [
+      "W262-W267 connected build, evidence, and signoff helpers in idb-drawer.user.js"
+    ],
+    "candidateExtractionPointsIntoContracts": [
+      "adapter profile/readiness contract",
+      "live evidence/signoff packet schema"
+    ],
+    "runtimeAuthorityBoundariesThatMustNotMove": [
+      "no drawer-created records",
+      "no drawer transaction writes",
+      "record creation only through approved W144/server adapter path"
+    ]
+  },
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdateInThisBlock": true,
+    "reviewOnlyNoExternalActions": true
+  }
+}

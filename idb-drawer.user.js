@@ -16279,6 +16279,198 @@
     return packet;
   }
 
+  function installedDrawerLiveEvidenceIntakeTemplateW268(options) {
+    const opts = options || {};
+    return {
+      schema: 'forge.w268.installed-drawer-live-evidence-intake-template.v1',
+      status: 'template_ready',
+      reviewOnly: true,
+      prospect: firstNonBlank(opts.prospect, 'Motion Industries'),
+      installTarget: firstNonBlank(opts.installTarget, 'idb-drawer.user.js'),
+      releaseVersion: firstNonBlank(opts.releaseVersion, 'V1.0.0'),
+      evidenceFields: [
+        { id: 'buildRecordsClicked', mapsToW267: 'build_records_clicked', label: 'Build records clicked', required: true, pass: null, note: '' },
+        { id: 'buildSubmittedStateShown', mapsToW267: 'build_submitted_state_shown', label: 'Build submitted state shown', required: true, pass: null, note: '' },
+        { id: 'refreshBuildStatusStateShown', mapsToW267: 'refresh_build_status_state_shown', label: 'Refresh build status state shown', required: true, pass: null, note: '' },
+        { id: 'recordsReadyFinishBuildStateShown', mapsToW267: 'records_ready_finish_build_state_shown', label: 'Records ready / Finish build state shown', required: true, pass: null, note: '' },
+        { id: 'returnedNamesLaneLabelsShown', mapsToW267: 'returned_names_lane_labels_shown', label: 'Returned names and lane-aware labels shown', required: true, pass: null, note: '' },
+        { id: 'supportedOpenLinksAfterImport', mapsToW267: 'supported_open_links_after_import', label: 'Supported Open links after valid import', required: true, pass: null, note: '' },
+        { id: 'reviewRunStorySurfacesVisible', mapsToW267: 'review_run_story_surfaces_visible', label: 'Review/Run story surfaces visible', required: true, pass: null, note: '' },
+        { id: 'weakUncertaintyVisible', mapsToW267: 'weak_uncertainty_visible', label: 'Uncertainty/weak-evidence visibility', required: false, pass: null, note: '' },
+        { id: 'hiddenAdminRawDiagnostics', mapsToW267: 'rawDiagnosticsHidden', label: 'Endpoint, raw JSON, task ids, schema names, stack traces, and admin diagnostics hidden', required: true, pass: null, note: '' }
+      ],
+      screenshotNotes: {
+        buildTab: '',
+        refreshState: '',
+        finishBuildState: '',
+        reviewRun: '',
+        openLinks: '',
+        needsAttentionUiPolish: ''
+      },
+      reviewOnlyPolicy: {
+        archiveOnly: true,
+        externalUploadAllowed: false,
+        networkCallAllowed: false,
+        trackingAllowed: false,
+        localStorageWriteAllowed: false,
+        installActionAllowed: false,
+        runtimeDependencyAdded: false
+      }
+    };
+  }
+
+  function reviewerEvidenceFromIntakeW268(intake) {
+    const source = intake || {};
+    const fields = Array.isArray(source.evidenceFields) ? source.evidenceFields : [];
+    const byId = fields.reduce((acc, field) => {
+      acc[field.id] = field;
+      return acc;
+    }, {});
+    const value = (id) => {
+      const field = byId[id] || {};
+      if (field.pass === null || field.pass === undefined) return { pass: false, note: firstNonBlank(field.note, 'Not captured yet.') };
+      return { pass: field.pass === true, note: firstNonBlank(field.note, '') };
+    };
+    const hiddenDiagnostics = value('hiddenAdminRawDiagnostics').pass === true;
+    return {
+      buildRecordsClicked: value('buildRecordsClicked'),
+      buildSubmittedStateShown: value('buildSubmittedStateShown'),
+      refreshBuildStatusStateShown: value('refreshBuildStatusStateShown'),
+      recordsReadyFinishBuildStateShown: value('recordsReadyFinishBuildStateShown'),
+      returnedNamesLaneLabelsShown: value('returnedNamesLaneLabelsShown'),
+      supportedOpenLinksAfterImport: value('supportedOpenLinksAfterImport'),
+      reviewRunStorySurfacesVisible: value('reviewRunStorySurfacesVisible'),
+      weakUncertaintyVisible: value('weakUncertaintyVisible'),
+      expectedConsultantCopyShown: source.expectedConsultantCopyShown === true,
+      returnedRecordsShown: Array.isArray(source.returnedRecordsShown) ? source.returnedRecordsShown : [],
+      openLinks: source.openLinks || {},
+      rawDiagnosticsVisible: hiddenDiagnostics ? false : source.rawDiagnosticsVisible === true,
+      endpointVisible: hiddenDiagnostics ? false : source.endpointVisible === true,
+      runnerTaskIdVisible: hiddenDiagnostics ? false : source.runnerTaskIdVisible === true,
+      schemaNamesVisible: hiddenDiagnostics ? false : source.schemaNamesVisible === true,
+      stackTraceVisible: hiddenDiagnostics ? false : source.stackTraceVisible === true,
+      adminDiagnosticsVisible: hiddenDiagnostics ? false : source.adminDiagnosticsVisible === true,
+      fakeOpenLinksVisible: source.fakeOpenLinksVisible === true,
+      unsupportedUrlsVisible: source.unsupportedUrlsVisible === true,
+      invalidImportVisible: source.invalidImportVisible === true
+    };
+  }
+
+  function releaseKeepPacketV100W268(w266Packet, w267Packet, options) {
+    const opts = options || {};
+    const signoff = w267Packet && w267Packet.signoff || {};
+    const selectedProfile = w266Packet && w266Packet.selectedAdapterProfile || {};
+    const returnedRecords = w266Packet && w266Packet.importEvidence && Array.isArray(w266Packet.importEvidence.returnedRecords)
+      ? w266Packet.importEvidence.returnedRecords
+      : [];
+    const openRows = w267Packet && w267Packet.openLinkVerification && Array.isArray(w267Packet.openLinkVerification.rows)
+      ? w267Packet.openLinkVerification.rows
+      : [];
+    return {
+      schema: 'forge.w268.v1-release-keep-packet.v1',
+      releaseVersion: 'V1.0.0',
+      status: signoff.status || 'needs_attention',
+      reviewOnly: true,
+      installTarget: firstNonBlank(opts.installTarget, 'idb-drawer.user.js'),
+      adapterProfileUsed: {
+        label: selectedProfile.label || selectedProfile.profileLabel || 'Released W144 governed runner adapter',
+        deploymentScriptId: selectedProfile.deploymentScriptId || 'customdeployidb_governed_runner_adapter',
+        status: selectedProfile.deploymentStatus || selectedProfile.status || 'Released',
+        endpointHiddenFromNormalUi: true
+      },
+      motionRunOutcome: {
+        prospect: 'Motion Industries',
+        submitted: !!(w266Packet && w266Packet.submitEvidence && w266Packet.submitEvidence.runnerTaskId),
+        completed: !!(w266Packet && w266Packet.w151Validation && w266Packet.w151Validation.completedResultAcceptedByW151),
+        imported: !!(w266Packet && w266Packet.importEvidence && w266Packet.importEvidence.imported),
+        decision: signoff.status || 'needs_attention'
+      },
+      returnedRecords: returnedRecords.map((record) => ({
+        role: record.role,
+        name: record.name,
+        label: record.label,
+        recordType: record.recordType,
+        internalId: record.internalId,
+        openUrl: record.openUrl,
+        linkAuthorityStatus: record.linkAuthorityStatus
+      })),
+      openLinkVerification: {
+        allExpectedRecordsCaptured: w267Packet && w267Packet.openLinkVerification && w267Packet.openLinkVerification.allExpectedRecordsCaptured === true,
+        rows: openRows
+      },
+      storySurfaceReadiness: {
+        w258CtaExpected: true,
+        w256ScriptExpected: true,
+        w257SequenceExpected: true,
+        w254ReceiptExpected: true,
+        reviewerConfirmed: !!(w267Packet && w267Packet.reviewerEvidenceRows && w267Packet.reviewerEvidenceRows.some((row) => row.id === 'review_run_story_surfaces_visible' && row.pass === true))
+      },
+      needsAttentionUiPolish: Array.isArray(opts.needsAttentionUiPolish) ? opts.needsAttentionUiPolish : [],
+      decision: {
+        status: signoff.status || 'needs_attention',
+        missingRequiredEvidence: Array.isArray(signoff.missingRequiredEvidence) ? signoff.missingRequiredEvidence : [],
+        rollbackReasons: Array.isArray(signoff.rollbackReasons) ? signoff.rollbackReasons : [],
+        nextAction: signoff.nextAction || 'Review installed-drawer evidence before release signoff.'
+      },
+      reviewOnlyPolicy: {
+        archiveOnly: true,
+        externalUploadAllowed: false,
+        networkCallAllowed: false,
+        trackingAllowed: false,
+        localStorageWriteAllowed: false,
+        installActionAllowed: false,
+        runtimeDependencyAdded: false
+      },
+      guardrails: {
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        noW144DeploymentUpdateInThisBlock: true,
+        normalConsultantUiHidesRawDiagnostics: true
+      }
+    };
+  }
+
+  function codeReviewPrepInventoryW268() {
+    return {
+      schema: 'forge.w268.code-review-prep-inventory.v1',
+      status: 'review_ready',
+      oversizedRuntimeHelperAreas: [
+        'W262-W267 connected build, evidence, and signoff helpers in idb-drawer.user.js',
+        'Lane-pack story surface and receipt/script/sequence helpers',
+        'Adapter readiness and profile normalization helpers',
+        'Completed-result import and Open-link authority helpers'
+      ],
+      candidateExtractionPointsIntoContracts: [
+        'adapter profile/readiness contract',
+        'live evidence/signoff packet schema',
+        'story surface receipt/script/sequence schema',
+        'lane-aware record label semantics'
+      ],
+      duplicatedFixtureSetupPatterns: [
+        'VM userscript hook loader repeated across archived harnesses',
+        'Motion Industries state fixture repeated across W263-W268 harnesses',
+        'completed runner result record fixtures repeated across connected-flow harnesses',
+        'review-only report/trace archive assertions repeated across W blocks'
+      ],
+      stableNormalConsultantUiSurfaces: [
+        'Plan/Build/Review/Run tab flow',
+        'V1.0.0 compact header',
+        'Build records / Refresh build status / Finish build copy',
+        'W258 Live proof CTA',
+        'W256 script, W257 sequence, and W254 receipt expandable surfaces',
+        'fake Open-link blocking before valid import'
+      ],
+      runtimeAuthorityBoundariesThatMustNotMove: [
+        'no drawer-created records',
+        'no drawer transaction writes',
+        'record creation only through approved W144/server adapter path',
+        'no W144 deployment update without explicit install packet',
+        'N/LLM advisory-only and uncertainty-visible',
+        'normal consultant UI hides endpoint, raw JSON, task ids, schema names, stack traces, and admin diagnostics'
+      ]
+    };
+  }
+
   function productionFlowHardeningConsultantToggleImageRemovalW209V1(state, lane, pageContext, recommendation, options) {
     const opts = options || {};
     ensureProductionBuildSavedAdminConfig(state);
@@ -24075,6 +24267,10 @@
       openLinkVerificationCaptureW267,
       liveRunScreenshotSignoffHelperW267,
       postLiveRunScreenshotEvidencePacketW267,
+      installedDrawerLiveEvidenceIntakeTemplateW268,
+      reviewerEvidenceFromIntakeW268,
+      releaseKeepPacketV100W268,
+      codeReviewPrepInventoryW268,
       productionFlowHardeningConsultantToggleImageRemovalW209V1,
       consultantFirstUiCleanupAdminDebugSeparationW210V1,
       toggleAwareNamingGuardrailContractW211V1,

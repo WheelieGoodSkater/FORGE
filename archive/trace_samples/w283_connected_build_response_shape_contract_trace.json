@@ -1,0 +1,109 @@
+{
+  "schema": "forge.w283.connected-build-response-shape-contract.trace.v1",
+  "status": "contract_extraction_ready",
+  "contractModule": "src/contracts/connectedBuildResponseShapes.js",
+  "governingInventory": "archive/trace_samples/w282_connected_build_boundary_inventory_trace.json",
+  "representedShapes": [
+    "submit_response_shape",
+    "pending_refresh_response_shape",
+    "completed_refresh_response_shape",
+    "malformed_error_refresh_response_shape"
+  ],
+  "representedAliases": {
+    "runnerTaskId": [
+      "runnerTaskId",
+      "runner_task_id",
+      "taskId",
+      "task_id",
+      "queueTaskId",
+      "runnerTask.id",
+      "task.id",
+      "queue.taskId",
+      "resultCapture.runnerTaskId",
+      "resultCapture.runner_task_id",
+      "body.runnerTaskId",
+      "body.runner_task_id",
+      "body.taskId",
+      "body.task_id",
+      "body.queueTaskId",
+      "body.runnerTask.id",
+      "body.task.id",
+      "body.queue.taskId",
+      "body.resultCapture.runnerTaskId",
+      "body.resultCapture.runner_task_id",
+      "options.runnerTaskId"
+    ],
+    "idempotencyToken": [
+      "options.idempotencyToken",
+      "idempotencyToken",
+      "idempotency_key",
+      "body.idempotencyToken",
+      "body.idempotency_key",
+      "resultCapture.idempotencyToken"
+    ],
+    "finalGeneratedNamesJson": [
+      "finalGeneratedNamesJson",
+      "completedResultJson",
+      "generatedNamesJson",
+      "finalNamesJson",
+      "resultCapture.finalGeneratedNamesJson",
+      "resultCapture.completedResultJson",
+      "resultCapture.generatedNamesJson",
+      "body.finalGeneratedNamesJson",
+      "body.completedResultJson",
+      "body.generatedNamesJson",
+      "body.finalNamesJson",
+      "body.resultCapture.finalGeneratedNamesJson",
+      "body.resultCapture.completedResultJson",
+      "body.resultCapture.generatedNamesJson"
+    ]
+  },
+  "statuses": [
+    "submit_task_captured",
+    "refresh_pending",
+    "completed_result_shape_ready",
+    "adapter_error_safe_stop",
+    "no_task_or_result_shape"
+  ],
+  "validationBoundary": {
+    "w151OwnsImportValidity": true,
+    "w214OwnsSemanticGuard": true,
+    "w245OwnsCanonicalImportNormalization": true,
+    "responseShapeMayLocateCompletedJsonButCannotDeclareImportValid": true
+  },
+  "runtimeBoundary": {
+    "noSubmitExecutionMoved": true,
+    "noRefreshExecutionMoved": true,
+    "noFinishBuildImportMoved": true,
+    "drawerSelfContained": true,
+    "noRuntimeRequireAdded": true,
+    "noExternalDependencyAdded": true,
+    "noBundlerRequirementAdded": true,
+    "noNetworkDependencyAdded": true,
+    "noStorageWriteAddedForContractLoading": true
+  },
+  "continuity": {
+    "w282BoundaryInventoryAvailable": true,
+    "w281AdapterProfileReadinessMigrationPreserved": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordsOpenLinksChanged": false,
+    "fakeLinkBlockingChanged": false,
+    "normalConsultantUiChanged": false,
+    "endpointProfileBehaviorChanged": false,
+    "datasetSwitchingChanged": false
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "normalConsultantUiHidesEndpointRawTaskSchemaStackAdminDiagnostics": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "noW144DeploymentUpdateInThisBlock": true
+  }
+}

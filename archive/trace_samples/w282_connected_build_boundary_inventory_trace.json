@@ -1,0 +1,141 @@
+{
+  "schema": "forge.w282.connected-build-boundary-inventory.trace.v1",
+  "status": "boundary_inventory_ready",
+  "reviewedAnchors": [
+    "connectedBuildSubmitRefreshImportW264",
+    "actualAdapterResponseShapeW265",
+    "connectedBuildRetryPolicyW265",
+    "adapterReadyRecordCreationUxW262",
+    "canonicalImportResultNormalizationW245",
+    "completedRunnerResultSemanticGuardW214",
+    "validateDccFinalNamingImportPayload"
+  ],
+  "boundaryInventory": [
+    {
+      "id": "consultant_request_readiness",
+      "currentOwner": "adapterReadyRecordCreationUxW262 and accepted packet state",
+      "role": "Confirms prospect, website, notes, lane/toggles, and request readiness before build.",
+      "futureExtractionPosture": "protected_runtime_surface"
+    },
+    {
+      "id": "selected_adapter_profile_readiness",
+      "currentOwner": "W281-shaped W262/W263 adapter profile and readiness helpers",
+      "role": "Selects released adapter profile, derives endpoint from host plus Suitelet path, and keeps dataset switching data-driven.",
+      "futureExtractionPosture": "protected_runtime_surface"
+    },
+    {
+      "id": "submit_payload_idempotency",
+      "currentOwner": "connectedBuildSubmitRefreshImportW264 through approved adapter execution helper",
+      "role": "Builds one approved submit request and idempotency token for the confirmed request.",
+      "futureExtractionPosture": "protected_runtime_surface"
+    },
+    {
+      "id": "adapter_response_normalization",
+      "currentOwner": "actualAdapterResponseShapeW265 and approved adapter transport normalization",
+      "role": "Normalizes submit aliases, HTTP/status, runnerTaskId, result capture status, idempotency, and safe error copy.",
+      "futureExtractionPosture": "future_extractable"
+    },
+    {
+      "id": "refresh_poll_response_normalization",
+      "currentOwner": "actualAdapterResponseShapeW265 and governed runner polling helper",
+      "role": "Normalizes pending/completed/error refresh aliases and finalGeneratedNamesJson location.",
+      "futureExtractionPosture": "future_extractable"
+    },
+    {
+      "id": "completed_result_validation",
+      "currentOwner": "validateDccFinalNamingImportPayload plus completedRunnerResultSemanticGuardW214",
+      "role": "Accepts only completed, owner-valid, URL-valid, role-compatible returned records.",
+      "futureExtractionPosture": "protected_runtime_surface"
+    },
+    {
+      "id": "finish_build_import_action",
+      "currentOwner": "completedRunnerResultImportCommitOperatorFlowV1 inside W264",
+      "role": "Imports only after Finish build and W151-valid completed result.",
+      "futureExtractionPosture": "protected_runtime_surface"
+    },
+    {
+      "id": "returned_record_names_labels_open_links",
+      "currentOwner": "canonicalImportResultNormalizationW245 and W250 lane-aware labels",
+      "role": "Shows returned names, lane-aware labels, and supported Open links only after valid import.",
+      "futureExtractionPosture": "protected_runtime_surface"
+    },
+    {
+      "id": "error_recovery_copy",
+      "currentOwner": "W220 recovery wording and W265 safe-stop copy",
+      "role": "Shows safe consultant copy for invalid/error paths without raw adapter diagnostics.",
+      "futureExtractionPosture": "future_extractable_after_response_contract"
+    },
+    {
+      "id": "admin_only_raw_evidence",
+      "currentOwner": "W265/W266 archived packets and admin/debug surfaces",
+      "role": "Keeps raw response shape evidence out of normal consultant UI.",
+      "futureExtractionPosture": "admin_review_only"
+    }
+  ],
+  "selectedFutureMicroSlice": {
+    "id": "connected_build_response_shape_contract_prepare",
+    "posture": "prepare_only_do_not_extract_in_w282",
+    "sourceAnchors": [
+      "actualAdapterResponseShapeW265",
+      "connectedBuildRetryPolicyW265",
+      "connectedBuildSubmitRefreshImportW264.captured",
+      "normalizeApprovedServerAdapterTransportResponseV1",
+      "controlledLiveBuildRunEvidencePacketW266.responseShape"
+    ],
+    "targetContractOrProposedModule": "src/contracts/connectedBuildResponseShapes.js",
+    "identicalBehaviorSurfaces": [
+      "runnerTaskId alias capture",
+      "idempotency token preservation",
+      "pending refresh copy",
+      "completed refresh Finish build gate",
+      "malformed/error safe-stop copy",
+      "W151 completed-result import gate",
+      "fake Open-link blocking before valid import",
+      "normal consultant UI hidden diagnostics"
+    ],
+    "parityHarnesses": [
+      "W244-W282",
+      "W264",
+      "W265",
+      "W266",
+      "W281",
+      "npm run check",
+      "npm run validate"
+    ],
+    "manualReviewNotes": [
+      "Do not move the submit execution call.",
+      "Do not move the refresh/poll execution call.",
+      "Do not relax W151 or W214 validation.",
+      "Do not expose raw adapter evidence in normal consultant UI.",
+      "Keep drawer self-contained unless a future bundling step is explicit."
+    ],
+    "rollbackPlan": [
+      "Restore drawer-owned W264/W265 response-shape helpers.",
+      "Remove only the future response-shape contract wiring.",
+      "Keep W282 archived inventory as review evidence."
+    ]
+  },
+  "continuity": {
+    "w281AdapterProfileReadinessMigrationPreserved": true,
+    "datasetAccountSwitchingDataDriven": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "returnedRecordsOpenLinksChanged": false,
+    "fakeLinkBlockingChanged": false,
+    "normalConsultantUiChanged": false
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "endpointProfileBehaviorChanged": false,
+    "datasetSwitchingChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "normalConsultantUiHidesEndpointRawTaskSchemaStackAdminDiagnostics": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "noW144DeploymentUpdateInThisBlock": true
+  }
+}

@@ -4,9 +4,11 @@
   "private": true,
   "description": "Tampermonkey right-side NetSuite drawer for consultant-led demo creation.",
   "scripts": {
-    "check": "node --check idb-drawer.user.js && node --check netsuite/idb_governed_runner_adapter_w144_suitelet.js && node --check netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js && node --check src/contracts/operatingModes.js && node --check src/contracts/recordRoles.js && node --check src/contracts/importStates.js && node --check src/contracts/netSuiteLinks.js && node --check src/contracts/runnerResultCompatibility.js && node --check src/contracts/snapshot.js && node --check archive/tools/run_w244_contract_generated_legacy_slot_mapping_slice_harness.js",
+    "check": "node --check idb-drawer.user.js && node --check netsuite/idb_governed_runner_adapter_w144_suitelet.js && node --check netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js && node --check src/contracts/operatingModes.js && node --check src/contracts/recordRoles.js && node --check src/contracts/importStates.js && node --check src/contracts/netSuiteLinks.js && node --check src/contracts/runnerResultCompatibility.js && node --check src/contracts/snapshot.js && node --check src/contracts/lanePacks.js && node --check archive/tools/run_w244_contract_generated_legacy_slot_mapping_slice_harness.js && node --check archive/tools/run_w245_canonical_import_result_normalization_harness.js && node --check archive/tools/run_w246_versioned_lane_pack_contract_harness.js",
     "validate": "npm run check",
-    "harness:contract-generated-legacy-slot-mapping-w244": "node archive/tools/run_w244_contract_generated_legacy_slot_mapping_slice_harness.js"
+    "harness:contract-generated-legacy-slot-mapping-w244": "node archive/tools/run_w244_contract_generated_legacy_slot_mapping_slice_harness.js",
+    "harness:canonical-import-result-normalization-w245": "node archive/tools/run_w245_canonical_import_result_normalization_harness.js",
+    "harness:versioned-lane-pack-contract-w246": "node archive/tools/run_w246_versioned_lane_pack_contract_harness.js"
   },
   "keywords": [
     "netsuite",

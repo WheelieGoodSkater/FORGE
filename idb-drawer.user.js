@@ -593,6 +593,152 @@
     INSUFFICIENT: 'insufficient_evidence'
   };
 
+  const W246_LANE_PACK_SCHEMA_VERSION = 'forge.lane-pack.v1';
+  const W246_NLLM_ALLOWED_TASKS = [
+    'summarizeWebsiteAndCategoryEvidence',
+    'proposeRecordNames',
+    'synthesizePainValueCompetitiveAndRoi',
+    'draftSoWhatAndWhyItMatters',
+    'draftLanePackSuggestionsForHumanReview'
+  ];
+  const W246_NLLM_HARD_LIMITS = [
+    'cannotCreateRecords',
+    'cannotInvokeSuiteScriptOrWriteTransactions',
+    'cannotSilentlyInstallTruth',
+    'cannotOverrideWebsiteEvidence',
+    'cannotOverrideConsultantToggles',
+    'cannotHideUncertainty',
+    'cannotInventVerifiedWebsiteFacts',
+    'cannotClaimMeasuredRoiWithoutBaseline'
+  ];
+  const W246_LIVE_DEMO_LANE_PACKS = [
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'industrial-manufacturing',
+      laneId: 'industrial_equipment',
+      subIndustryId: 'industrial-manufacturing',
+      label: 'Industrial Manufacturing',
+      operatingMode: 'discrete_manufacturing',
+      websiteSignals: { domains: ['ariens.com'], categoryTerms: ['industrial manufacturing', 'assembly', 'component', 'production', 'plant'], evidenceTerms: ['component readiness', 'supplier timing', 'assembly confidence', 'delivery promise'] },
+      recordRoles: { required: ['customer', 'sales_order', 'finished_or_assembly_item', 'component_item'], optional: ['bom_or_assembly_structure', 'production_planning_context'], invalid: ['ingredient_batch_terms_without_food_mode', 'style_matrix_or_availability_flow'] },
+      vocabulary: { allowed: ['assembly', 'component', 'supplier timing', 'configured demand', 'delivery confidence'], forbidden: ['ingredient batch', 'flavor', 'style matrix', 'branch transfer'] },
+      liveDemo: { proofMove: 'Open the assembly or finished item, then prove component readiness against the sales order promise.', storyAnchor: 'Configured demand only matters if component readiness and build timing protect the buyer promise.', roiSoWhat: 'Protect delivery revenue by exposing component or supplier gaps before the order promise is at risk.', competitiveContrast: 'NetSuite keeps demand, inventory, and manufacturing proof in one operating path instead of a planning handoff.' }
+    },
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'equipment-manufacturing',
+      laneId: 'industrial_equipment',
+      subIndustryId: 'equipment-manufacturing',
+      label: 'Equipment Manufacturing',
+      operatingMode: 'wip_manufacturing',
+      websiteSignals: { domains: ['cat.com', 'deere.com'], categoryTerms: ['equipment manufacturing', 'machine', 'configured equipment', 'service part', 'assembly'], evidenceTerms: ['configured order', 'component readiness', 'work order', 'routing', 'shipment control'] },
+      recordRoles: { required: ['customer', 'sales_order', 'finished_or_assembly_item', 'component_item'], optional: ['bom_or_assembly_structure', 'work_order_or_wip_object', 'routing', 'work_center'], invalid: ['formula_or_batch_structure', 'style_matrix_or_availability_flow'] },
+      vocabulary: { allowed: ['configured equipment', 'assembly', 'component availability', 'work order', 'routing'], forbidden: ['ingredient blend', 'case pack', 'style color size matrix'] },
+      liveDemo: { proofMove: 'Open the equipment assembly and show how WIP or routing context supports the promised shipment.', storyAnchor: 'The consultant should prove order-to-build control, not generic inventory visibility.', roiSoWhat: 'Reduce expediting and missed shipment risk by aligning configured demand to build capacity and components.', competitiveContrast: 'NetSuite lets the team see sales promise, WIP, and component constraints without switching systems.' }
+    },
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'industrial-distributor',
+      laneId: 'industrial_distribution',
+      subIndustryId: 'industrial-distributor',
+      label: 'Industrial Distributor',
+      operatingMode: 'distribution_replenishment',
+      websiteSignals: { domains: ['grainger.com', 'uline.com', 'mcmaster.com', 'fastenal.com', 'ferguson.com'], categoryTerms: ['industrial supply', 'branch', 'warehouse', 'MRO', 'distribution', 'stocking location'], evidenceTerms: ['branch availability', 'supplier lead time', 'replenishment', 'transfer-aware inventory'] },
+      recordRoles: { required: ['customer', 'sales_order', 'branch_or_product_sku', 'replenishment_or_availability_flow'], optional: ['supporting_sku', 'location_planning_context'], invalid: ['assembly', 'work_order', 'ingredient', 'batch', 'style_matrix_or_availability_flow'] },
+      vocabulary: { allowed: ['branch availability', 'replenishment', 'supplier lead time', 'fulfillment confidence'], forbidden: ['production routing', 'ingredient batch', 'fashion collection'] },
+      liveDemo: { proofMove: 'Open the product or availability record and prove branch promise, replenishment timing, and fulfillment confidence.', storyAnchor: 'The buyer cares whether the distributor can promise from the right location at the right time.', roiSoWhat: 'Protect service level and margin by resolving supplier and branch exceptions before the order misses.', competitiveContrast: 'NetSuite shows branch and fulfillment control instead of a generic warehouse snapshot.' }
+    },
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'cpg-distributor',
+      laneId: 'products_cpg',
+      subIndustryId: 'cpg-distributor',
+      label: 'CPG Distributor',
+      operatingMode: 'distribution_replenishment',
+      websiteSignals: { domains: ['unfi.com', 'kehe.com'], categoryTerms: ['cpg distributor', 'grocery distribution', 'retail replenishment', 'consumer brands'], evidenceTerms: ['retail replenishment', 'case availability', 'promotion fulfillment', 'warehouse allocation'] },
+      recordRoles: { required: ['customer', 'sales_order', 'branch_or_product_sku', 'replenishment_or_availability_flow'], optional: ['supporting_sku', 'location_planning_context'], invalid: ['work_order_or_wip_object', 'routing', 'formula_or_batch_structure'] },
+      vocabulary: { allowed: ['retail replenishment', 'case availability', 'promotion fulfillment', 'warehouse allocation'], forbidden: ['assembly routing', 'work center', 'style matrix'] },
+      liveDemo: { proofMove: 'Open the CPG SKU and prove retailer replenishment, case availability, and allocation confidence.', storyAnchor: 'The distributor story is promotion-to-shelf reliability without pretending to manufacture the item.', roiSoWhat: 'Protect retail revenue by catching replenishment and allocation risk before promotion demand lands.', competitiveContrast: 'NetSuite connects order promise, inventory, and replenishment action in one proof path.' }
+    },
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'cpg-manufacturer',
+      laneId: 'products_cpg',
+      subIndustryId: 'cpg-manufacturer',
+      label: 'CPG Manufacturer',
+      operatingMode: 'discrete_manufacturing',
+      websiteSignals: { domains: ['milkbone.com'], categoryTerms: ['consumer packaged goods', 'brand assortment', 'case pack', 'packaging', 'promotion'], evidenceTerms: ['packaging readiness', 'case-pack timing', 'finished goods', 'retail availability'] },
+      recordRoles: { required: ['customer', 'sales_order', 'finished_or_assembly_item', 'component_item'], optional: ['bom_or_assembly_structure', 'production_planning_context'], invalid: ['branch_or_product_sku_without_distribution_evidence', 'style_matrix_or_availability_flow'] },
+      vocabulary: { allowed: ['case pack', 'packaging readiness', 'finished goods', 'promotion demand'], forbidden: ['dealer network', 'branch transfer', 'regulated lot release'] },
+      liveDemo: { proofMove: 'Open the finished packaged good and prove packaging or component readiness against promotion demand.', storyAnchor: 'Promotion demand is only believable when packaging, replenishment, and finished goods stay connected.', roiSoWhat: 'Reduce missed promotion and chargeback risk by making readiness visible before fulfillment breaks.', competitiveContrast: 'NetSuite ties brand demand, inventory, and manufacturing readiness into one consultant-led path.' }
+    },
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'food-beverage-manufacturer',
+      laneId: 'food_beverage',
+      subIndustryId: 'food-beverage-manufacturer',
+      label: 'Food/Beverage Manufacturer',
+      operatingMode: 'food_batch_manufacturing',
+      websiteSignals: { domains: ['mccormick.com', 'keebler.com', 'liquiddeath.com', 'yerbamadre.com', 'guayaki.com'], categoryTerms: ['food', 'beverage', 'ingredient', 'flavor', 'packaging', 'batch'], evidenceTerms: ['ingredient readiness', 'packaging timing', 'line continuity', 'finished-good availability'] },
+      recordRoles: { required: ['customer', 'sales_order', 'finished_food_or_batch_item', 'ingredient_or_component_item'], optional: ['formula_or_batch_structure', 'lot_or_availability_context', 'work_order_or_wip_object'], invalid: ['style_matrix_or_availability_flow', 'dealer_availability_or_replenishment_flow'] },
+      vocabulary: { allowed: ['ingredient readiness', 'formula', 'batch', 'packaging timing', 'finished-good availability'], forbidden: ['style matrix', 'dealer allocation', 'equipment routing unless WIP is explicit'] },
+      liveDemo: { proofMove: 'Open the finished food or beverage item and prove ingredient, packaging, and finished-good readiness.', storyAnchor: 'Food and beverage trust comes from showing the batch inputs that protect the shelf promise.', roiSoWhat: 'Protect promotion and service revenue by catching ingredient or packaging gaps before production misses demand.', competitiveContrast: 'NetSuite keeps demand, ingredients, production readiness, and availability together.' }
+    },
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'dealer-hardgoods',
+      laneId: 'dealer_hardgoods',
+      subIndustryId: 'dealer-hardgoods',
+      label: 'Dealer Hardgoods',
+      operatingMode: 'dealer_hardgoods_replenishment',
+      websiteSignals: { domains: ['trekbikes.com', 'yeti.com', 'gordonandsmith.com'], categoryTerms: ['dealer', 'hardgoods', 'bicycle', 'outdoor gear', 'durable goods', 'channel'], evidenceTerms: ['dealer availability', 'allocation', 'channel replenishment', 'durable SKU'] },
+      recordRoles: { required: ['customer', 'sales_order', 'product_sku', 'dealer_availability_or_replenishment_flow'], optional: ['allocation_support_sku', 'channel_context'], invalid: ['ingredient', 'batch', 'assembly_without_manufacturing_evidence', 'style_matrix_or_availability_flow'] },
+      vocabulary: { allowed: ['dealer availability', 'allocation', 'channel replenishment', 'durable SKU'], forbidden: ['ingredient blend', 'batch formula', 'branch-only fulfillment'] },
+      liveDemo: { proofMove: 'Open the dealer SKU and prove channel availability, allocation, and replenishment timing.', storyAnchor: 'Dealer-channel promise depends on SKU availability and allocation, not generic branch inventory.', roiSoWhat: 'Protect dealer revenue and confidence by proving the product can be allocated and replenished.', competitiveContrast: 'NetSuite keeps channel availability and order promise visible in one SKU-centered path.' }
+    },
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'apparel-style-matrix',
+      laneId: 'apparel_accessories',
+      subIndustryId: 'apparel-style-matrix',
+      label: 'Apparel Style Matrix',
+      operatingMode: 'apparel_style_matrix',
+      websiteSignals: { domains: ['ariat.com', 'vans.com', 'patagonia.com'], categoryTerms: ['apparel', 'footwear', 'style', 'size', 'color', 'collection'], evidenceTerms: ['style readiness', 'size color availability', 'allocation', 'seasonal launch'] },
+      recordRoles: { required: ['customer', 'sales_order', 'style_sku', 'style_matrix_or_availability_flow'], optional: ['supporting_style_or_color_sku'], invalid: ['finished_good_without_style_evidence', 'work_order', 'ingredient_or_component_item'] },
+      vocabulary: { allowed: ['style', 'size', 'color', 'collection', 'variant availability'], forbidden: ['ingredient batch', 'industrial assembly', 'branch transfer'] },
+      liveDemo: { proofMove: 'Open the style or matrix item and prove size/color availability, allocation, and launch promise.', storyAnchor: 'The consultant should show matrix truth for variants rather than generic SKU availability.', roiSoWhat: 'Protect launch and seasonal revenue by exposing variant gaps before customers encounter them.', competitiveContrast: 'NetSuite keeps style, variant availability, allocation, and order promise in one path.' }
+    },
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'retail-availability',
+      laneId: 'products_cpg',
+      subIndustryId: 'retail-availability',
+      label: 'Retail Availability',
+      operatingMode: 'retail_availability',
+      websiteSignals: { domains: ['rei.com', 'target.com', 'walmart.com'], categoryTerms: ['retail', 'store availability', 'ecommerce', 'pickup', 'ship to store'], evidenceTerms: ['store availability', 'channel availability', 'replenishment', 'customer promise'] },
+      recordRoles: { required: ['customer', 'sales_order', 'hero_sku', 'availability_or_replenishment_flow'], optional: ['supporting_sku', 'location_or_channel_context'], invalid: ['bom_or_assembly_structure', 'work_order_or_wip_object', 'routing'] },
+      vocabulary: { allowed: ['store availability', 'channel availability', 'replenishment', 'customer promise'], forbidden: ['production routing', 'batch formula', 'regulated release'] },
+      liveDemo: { proofMove: 'Open the SKU or availability flow and prove the channel promise from demand to replenishment.', storyAnchor: 'Retail confidence is whether the buyer can trust availability across channels.', roiSoWhat: 'Protect conversion and service levels by surfacing availability and replenishment risk early.', competitiveContrast: 'NetSuite connects order demand, inventory, and channel availability without a separate lookup story.' }
+    }
+  ].map((lanePack) => Object.assign({}, lanePack, {
+    nllmAdvisory: {
+      allowedTasks: W246_NLLM_ALLOWED_TASKS.slice(),
+      hardLimits: W246_NLLM_HARD_LIMITS.slice(),
+      writeAuthority: 'none',
+      creationAllowed: false,
+      uncertaintyPolicy: 'surface_uncertainty_and_request_confirmation'
+    }
+  }));
+
   function resolverEntryFromHint(hint) {
     const sourceKind = hint.sourceAuthority === 'website_primary' ? 'known_domain_website_primary' : 'website_secondary_hint';
     return Object.assign({}, hint, {
@@ -2070,6 +2216,155 @@
     } catch (err) {
       return value;
     }
+  }
+
+  function versionedLanePacksW246() {
+    return W246_LIVE_DEMO_LANE_PACKS.map((lanePack) => Object.assign({}, lanePack, {
+      websiteSignals: Object.assign({}, lanePack.websiteSignals),
+      recordRoles: Object.assign({}, lanePack.recordRoles),
+      vocabulary: Object.assign({}, lanePack.vocabulary),
+      liveDemo: Object.assign({}, lanePack.liveDemo),
+      nllmAdvisory: Object.assign({}, lanePack.nllmAdvisory)
+    }));
+  }
+
+  function validateLanePackW246(lanePack) {
+    const errors = [];
+    ['schema', 'packVersion', 'packId', 'laneId', 'subIndustryId', 'label', 'operatingMode'].forEach((field) => {
+      if (!lanePack || typeof lanePack[field] !== 'string' || !lanePack[field]) errors.push(`${field} required`);
+    });
+    if (lanePack && lanePack.schema !== W246_LANE_PACK_SCHEMA_VERSION) errors.push('schema mismatch');
+    ['websiteSignals', 'recordRoles', 'vocabulary', 'liveDemo', 'nllmAdvisory'].forEach((field) => {
+      if (!lanePack || !lanePack[field] || typeof lanePack[field] !== 'object') errors.push(`${field} required`);
+    });
+    ['required', 'optional', 'invalid'].forEach((field) => {
+      if (!Array.isArray(lanePack && lanePack.recordRoles && lanePack.recordRoles[field])) errors.push(`recordRoles.${field} array required`);
+    });
+    ['allowed', 'forbidden'].forEach((field) => {
+      if (!Array.isArray(lanePack && lanePack.vocabulary && lanePack.vocabulary[field])) errors.push(`vocabulary.${field} array required`);
+    });
+    ['proofMove', 'storyAnchor', 'roiSoWhat', 'competitiveContrast'].forEach((field) => {
+      if (!lanePack || !lanePack.liveDemo || typeof lanePack.liveDemo[field] !== 'string' || !lanePack.liveDemo[field]) errors.push(`liveDemo.${field} required`);
+    });
+    if (!lanePack || !lanePack.nllmAdvisory || lanePack.nllmAdvisory.writeAuthority !== 'none') errors.push('nllmAdvisory.writeAuthority must be none');
+    if (!lanePack || !lanePack.nllmAdvisory || lanePack.nllmAdvisory.creationAllowed !== false) errors.push('nllmAdvisory.creationAllowed must be false');
+    W246_NLLM_HARD_LIMITS.forEach((limit) => {
+      if (!lanePack || !lanePack.nllmAdvisory || !Array.isArray(lanePack.nllmAdvisory.hardLimits) || !lanePack.nllmAdvisory.hardLimits.includes(limit)) errors.push(`missing hard limit ${limit}`);
+    });
+    return { valid: errors.length === 0, errors };
+  }
+
+  function lanePackEvidenceTextW246(state, options) {
+    const intake = normalizedIntake(state || {});
+    const bridge = state ? websiteEvidenceBridge(state) : {};
+    return [
+      intake.website,
+      options && options.websiteDomain,
+      options && options.websiteText,
+      options && options.categoryText,
+      options && Array.isArray(options.signals) ? options.signals.join(' ') : '',
+      bridge && bridge.evidence,
+      bridge && bridge.productFamily,
+      bridge && bridge.demandMoment
+    ].filter(Boolean).join(' ').toLowerCase();
+  }
+
+  function resolveLanePackFromEvidenceW246(state, options) {
+    const intake = normalizedIntake(state || {});
+    const domain = String((options && options.websiteDomain) || websiteDomain(intake.website) || '').replace(/^www\./i, '').toLowerCase();
+    const text = lanePackEvidenceTextW246(state, Object.assign({}, options, { websiteDomain: domain }));
+    const scored = W246_LIVE_DEMO_LANE_PACKS.map((lanePack) => {
+      let score = 0;
+      const matchedSignals = [];
+      (lanePack.websiteSignals.domains || []).forEach((knownDomain) => {
+        if (domain && (domain === knownDomain || domain.endsWith(`.${knownDomain}`))) {
+          score += 100;
+          matchedSignals.push(`domain:${knownDomain}`);
+        }
+      });
+      (lanePack.websiteSignals.categoryTerms || []).forEach((term) => {
+        if (text.indexOf(String(term).toLowerCase()) !== -1) {
+          score += 18;
+          matchedSignals.push(`category:${term}`);
+        }
+      });
+      (lanePack.websiteSignals.evidenceTerms || []).forEach((term) => {
+        if (text.indexOf(String(term).toLowerCase()) !== -1) {
+          score += 12;
+          matchedSignals.push(`evidence:${term}`);
+        }
+      });
+      return { lanePack, score, matchedSignals };
+    }).sort((a, b) => b.score - a.score);
+    const winner = scored[0] || { lanePack: null, score: 0, matchedSignals: [] };
+    return {
+      schema: 'forge.lane-pack-resolution.v1',
+      status: winner.score >= 100 ? 'resolved' : winner.score >= 36 ? 'needs_confirmation' : 'insufficient_evidence',
+      lanePack: winner.lanePack,
+      packId: winner.lanePack ? winner.lanePack.packId : '',
+      confidence: winner.score >= 100 ? 'high' : winner.score >= 36 ? 'medium' : 'low',
+      score: winner.score,
+      matchedSignals: winner.matchedSignals,
+      notesOverrideIdentityAllowed: false,
+      sourceAuthority: winner.score >= 100 ? 'website_domain' : winner.score >= 36 ? 'website_category' : 'insufficient',
+      nllmAuthority: 'advisory_only'
+    };
+  }
+
+  function nllmAdvisoryPayloadForLanePackW246(state, lanePack, normalizedImport) {
+    const intake = normalizedIntake(state || {});
+    const selected = lanePack || (resolveLanePackFromEvidenceW246(state).lanePack);
+    return {
+      schema: 'forge.lane-pack-nllm-advisory.v1',
+      lanePackSchema: W246_LANE_PACK_SCHEMA_VERSION,
+      packId: selected ? selected.packId : '',
+      laneId: selected ? selected.laneId : '',
+      subIndustryId: selected ? selected.subIndustryId : '',
+      writeAuthority: 'none',
+      creationAllowed: false,
+      allowedTasks: W246_NLLM_ALLOWED_TASKS.slice(),
+      hardLimits: W246_NLLM_HARD_LIMITS.slice(),
+      websiteEvidence: {
+        website: intake.website,
+        websiteDomain: websiteDomain(intake.website),
+        bridge: websiteEvidenceBridge(state || {})
+      },
+      conversationNotesUse: 'Use notes for pain, ROI, competitive framing, objections, and run coaching only. Do not override website-owned lane or naming identity.',
+      importedRecordEvidence: normalizedImport && normalizedImport.displayReadyRecords ? normalizedImport.displayReadyRecords.map((recordItem) => ({
+        role: recordItem.canonicalRole,
+        label: recordItem.consultantLabel,
+        name: recordItem.name,
+        recordType: recordItem.recordType,
+        internalId: recordItem.internalId
+      })) : [],
+      requiredUncertaintyBehavior: 'If evidence is weak or conflicting, ask for confirmation and keep uncertainty visible.'
+    };
+  }
+
+  function liveDemoCoachingFromLanePackW246(state, lanePack, normalizedImport) {
+    const selected = lanePack || (resolveLanePackFromEvidenceW246(state).lanePack);
+    const visibleRecords = normalizedImport && normalizedImport.displayReadyRecords ? normalizedImport.displayReadyRecords.filter((recordItem) => recordItem && recordItem.openable !== false && recordItem.linkAuthorityStatus !== 'blocked_invalid_internal_id') : [];
+    const firstProof = visibleRecords.find((recordItem) => recordItem.canonicalRole && !/customer|sales_order/.test(recordItem.canonicalRole)) || visibleRecords[0] || null;
+    if (!selected) {
+      return {
+        whatShouldIOpen: firstProof ? `Open ${firstProof.name}.` : 'Ask for lane confirmation before opening proof records.',
+        whatShouldIProve: 'Prove only what the imported records and website evidence support.',
+        safeToSay: 'Evidence is not strong enough for a lane claim yet.',
+        shouldNotClaim: 'Do not claim industry fit, ROI, record creation, or availability without confirmed evidence.',
+        buyerFacingSoWhat: 'Keep the buyer story grounded in confirmed evidence and visible uncertainty.'
+      };
+    }
+    return {
+      packId: selected.packId,
+      lanePackLabel: selected.label,
+      whatShouldIOpen: firstProof ? `Open ${firstProof.name} (${firstProof.consultantLabel || firstProof.canonicalRole}).` : selected.liveDemo.proofMove,
+      whatShouldIProve: selected.liveDemo.proofMove,
+      safeToSay: selected.liveDemo.storyAnchor,
+      shouldNotClaim: `Do not claim ${selected.vocabulary.forbidden.join(', ')} or measured ROI without evidence.`,
+      buyerFacingSoWhat: selected.liveDemo.roiSoWhat,
+      competitiveContrast: selected.liveDemo.competitiveContrast,
+      nllmAuthority: 'advisory_only'
+    };
   }
 
   function traceCount() {
@@ -10065,6 +10360,7 @@
       name: cleanName || rawName,
       internalName: rawName && cleanName && rawName !== cleanName ? rawName : firstNonBlank(source.internalName, source.netSuiteGeneratedName),
       id,
+      recordType: firstNonBlank(source.recordType, source.record_type, source.type, source.netSuiteRecordType, source.netsuiteRecordType),
       url,
       source: rawName || id || url ? 'dcc_final' : 'not_returned'
     };
@@ -10195,6 +10491,101 @@
     });
   }
 
+  function inferNetSuiteRecordTypeW245(record) {
+    const direct = firstNonBlank(record && record.recordType, record && record.record_type, record && record.type, record && record.netSuiteRecordType);
+    if (direct) return direct;
+    const url = String(record && record.url || '');
+    if (/\/app\/common\/entity\/custjob\.nl\?/i.test(url)) return 'customer';
+    if (/\/app\/accounting\/transactions\/salesord\.nl\?/i.test(url)) return 'salesorder';
+    if (/\/app\/common\/item\/item\.nl\?/i.test(url)) return 'inventoryitem';
+    return '';
+  }
+
+  function canonicalImportRoleW245(role, mode) {
+    const rawRole = String(role || '').trim();
+    if (rawRole === 'location_planning') {
+      if (mode === 'food_batch_manufacturing') return 'lot_or_availability_context';
+      if (mode === 'retail_availability') return 'location_or_channel_context';
+      return 'location_planning_context';
+    }
+    return canonicalRoleFromSnapshotW244(rawRole, mode, rawRole);
+  }
+
+  function displayReadyRecordsFromFinalNamingW245(finalNaming, state, lane, pageContext, recommendation, payload) {
+    const resolver = resolveBuildOperatingModeW214(state, lane, pageContext, recommendation, { payload });
+    const mode = firstNonBlank(finalNaming && finalNaming.resolvedOperatingMode, resolver && resolver.resolvedOperatingMode);
+    const seen = {};
+    const records = finalNamingRecordsForSemanticGuardW214(finalNaming)
+      .filter((record) => record && record.source === 'dcc_final' && record.name)
+      .map((record) => {
+        const linked = applyRecordLinkAuthority(record);
+        const rawRole = firstNonBlank(linked.w215MappedRole, linked.w214Role, linked.role);
+        const canonicalRole = canonicalImportRoleW245(rawRole, mode);
+        const consultantRecordLabel = modeAwareRecordLabelW216(canonicalRole, mode);
+        const key = [canonicalRole, linked.name, linked.id, linked.url].join('|');
+        if (seen[key]) return null;
+        seen[key] = true;
+        return Object.assign({}, linked, {
+          schema: 'idb.w245-display-ready-record.v1',
+          canonicalRole,
+          legacyDisplayRole: linked.role || rawRole,
+          consultantLabel: consultantRecordLabel,
+          recordName: linked.name,
+          recordType: inferNetSuiteRecordTypeW245(linked),
+          internalId: linked.id,
+          supportedOpenUrl: linked.linkAuthority && linked.linkAuthority.openable ? linked.linkAuthority.url : '',
+          linkAuthorityStatus: linked.linkAuthority && linked.linkAuthority.status || 'unknown',
+          sourceConfidence: linked.linkAuthority && linked.linkAuthority.openable ? 'verified_open_link' : 'returned_not_openable',
+          normalConsultantVisible: !!(linked.linkAuthority && linked.linkAuthority.openable),
+          safeToOpen: !!(linked.linkAuthority && linked.linkAuthority.openable)
+        });
+      })
+      .filter(Boolean);
+    return records;
+  }
+
+  function canonicalImportResultNormalizationW245(input, state, lane, pageContext, recommendation) {
+    const finalNaming = dccFinalNamingResultV1(input, state, lane, pageContext, recommendation);
+    const displayReadyRecords = displayReadyRecordsFromFinalNamingW245(finalNaming, state, lane, pageContext, recommendation, input);
+    const visibleRecords = displayReadyRecords.filter((record) => record.normalConsultantVisible);
+    const hasValidImport = finalNaming && finalNaming.finalNamesImported && visibleRecords.length > 0;
+    const primaryProof = visibleRecords.find((record) => /availability|replenishment|style|formula|batch|bom|assembly|flow|item|sku/i.test(`${record.canonicalRole} ${record.consultantLabel}`)) || visibleRecords[0] || null;
+    const openTargets = visibleRecords.slice(0, 5).map((record) => `Open ${record.consultantLabel}`);
+    const lanePackResolution = resolveLanePackFromEvidenceW246(state, {
+      websiteText: lane && lane.signals ? lane.signals.join(' ') : '',
+      signals: lane && lane.signals ? lane.signals : []
+    });
+    const lanePackCoaching = liveDemoCoachingFromLanePackW246(state, lanePackResolution.lanePack, { displayReadyRecords: visibleRecords });
+    return {
+      schema: 'idb.w245-canonical-import-result-normalization.v1',
+      status: hasValidImport ? 'display_ready_records_normalized' : 'no_valid_display_ready_records',
+      finalNamingStatus: finalNaming && finalNaming.status || '',
+      resolvedOperatingMode: firstNonBlank(finalNaming && finalNaming.resolvedOperatingMode, input && input.resolvedOperatingMode, input && input.operatingMode),
+      versionedLanePackW246: lanePackResolution,
+      lanePackNllmAdvisoryPayloadW246: nllmAdvisoryPayloadForLanePackW246(state, lanePackResolution.lanePack, { displayReadyRecords: visibleRecords }),
+      finalNamesImported: !!(finalNaming && finalNaming.finalNamesImported),
+      displayReadyRecords,
+      visibleRecords,
+      hiddenNonOpenableRecordCount: displayReadyRecords.length - visibleRecords.length,
+      liveDemoCoaching: {
+        whatToOpen: openTargets,
+        whatToProve: primaryProof ? `Use ${primaryProof.consultantLabel}: ${primaryProof.name} as the NetSuite proof point.` : 'Wait for a completed runner result with real Open links.',
+        safeToSay: hasValidImport ? 'These returned records passed import and link authority checks.' : 'Do not present provisional names as generated NetSuite records.',
+        doNotClaim: hasValidImport ? lanePackCoaching.shouldNotClaim : 'Do not claim Open links, created records, or completed build results before valid import.',
+        buyerFacingSoWhat: hasValidImport ? 'The consultant can anchor the live demo in returned NetSuite records instead of searching across disconnected assets.' : 'The consultant needs a valid completed result before using live record navigation.',
+        lanePack: lanePackCoaching
+      },
+      noRegression: {
+        noDrawerWrites: true,
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        noDirectSuiteScriptOutsideApprovedW144AdapterPath: true,
+        nllmAdvisoryOnly: true,
+        fakeOpenLinksBlockedBeforeValidImport: visibleRecords.every((record) => record.linkAuthority && record.linkAuthority.openable)
+      }
+    };
+  }
+
   function renderRecordLinkAuthority(record) {
     const authority = record && record.linkAuthority ? record.linkAuthority : verifiedRecordLinkAuthorityV1(record);
     if (authority.openable) {
@@ -10292,6 +10683,7 @@
         displayObjects: [],
         componentItems: [],
         locationPlanningRecords: [],
+        displayReadyRecords: [],
         csvSalesOrderArtifacts: [],
         warnings: ['Final generated names have not been imported yet. Preview labels remain provisional.'],
         errors: [],
@@ -10366,7 +10758,7 @@
     const warnings = arrayValue(payload.warnings || payload.warning).map((item) => String(item));
     const errors = arrayValue(payload.errors || payload.error).map((item) => String(item));
     const recoverableBlockers = arrayValue(payload.recoverableBlockers || payload.blockers || payload.recoverableErrors).map((item) => String(item));
-    return {
+    const result = {
       schema: 'idb.dcc-final-naming-result.v1',
       status: returnedCount ? 'dcc_final_names_imported' : 'imported_without_final_names',
       displayStatus: returnedCount ? 'Final generated names imported' : 'Imported result did not include final generated names',
@@ -10384,6 +10776,7 @@
       displayObjects,
       componentItems,
       locationPlanningRecords,
+      displayReadyRecords: [],
       csvSalesOrderArtifacts,
       warnings: warnings.concat(payload.partialResultState || payload.partialResult || payload.partial_result ? ['Runner returned an explicit partial-result state.'] : []),
       errors,
@@ -10404,6 +10797,8 @@
         w110HandoffParityPreserved: true
       }
     };
+    result.displayReadyRecords = displayReadyRecordsFromFinalNamingW245(result, state, lane, pageContext, recommendation, payload);
+    return result;
   }
 
   function isDccRunnerHandoffPacketPayload(payload) {
@@ -11470,7 +11865,10 @@
     const mode = mapping.resolvedOperatingMode || semantic.resolvedOperatingMode || '';
     const flags = missingDetailFlagsW216(mapping, semantic);
     const adminDebugEnabled = !!(state && state.setupEditMode);
-    const visibleRecords = returnedOpenableMappedRecordsW216(mapping);
+    const normalizedImport = canonicalImportResultNormalizationW245(sourcePayload, state, lane, pageContext, recommendation);
+    const visibleRecords = normalizedImport.visibleRecords && normalizedImport.visibleRecords.length
+      ? normalizedImport.visibleRecords
+      : returnedOpenableMappedRecordsW216(mapping);
     const partial = guard.valid && semantic.status === 'mode_record_contract_partial';
     let headline = guard.valid ? 'Build results are ready.' : 'Build results are not ready.';
     let summary = guard.valid ? 'Use the returned records with real Open links.' : 'Ask an admin to import a completed build result.';
@@ -11513,6 +11911,7 @@
         headline: partial ? 'Use available records' : 'Build results are ready.',
         nextSteps,
         show: visibleRecords.slice(0, 4).map((record) => `${record.consultantLabel}: ${record.name}`).join(' -> '),
+        liveDemoCoaching: normalizedImport.liveDemoCoaching,
         missingProofTerms,
         canMentionBomOrAssembly: flags.hasBomOrAssemblyStructure,
         canMentionWip: flags.hasWorkOrderOrWipObject || flags.hasRouting || flags.hasWorkCenter,
@@ -11532,6 +11931,7 @@
         } : {}
       },
       forbiddenNormalUiTerms: ['W144', 'runnerTaskId', 'raw JSON', 'W151', 'semantic guard', 'mode contract'],
+      canonicalImportResultNormalization: normalizedImport,
       noRegression: {
         noDrawerWrites: true,
         noDrawerCreatedRecords: true,
@@ -12492,7 +12892,9 @@
     const finalResult = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, pageContext, recommendation);
     const packet = dryRunObjectPacket(state, lane, pageContext, recommendation);
     const finalObjects = finalResult.finalNamesImported
-      ? finalResult.displayObjects.concat(finalResult.componentItems, finalResult.locationPlanningRecords).filter((item) => item.source === 'dcc_final')
+      ? arrayValue(finalResult.displayReadyRecords).length
+        ? arrayValue(finalResult.displayReadyRecords)
+        : finalResult.displayObjects.concat(finalResult.componentItems, finalResult.locationPlanningRecords).filter((item) => item.source === 'dcc_final')
       : [];
     const provisionalObjects = packet.records.map((record) => {
       const preview = record.preview || buildEnrichedObjectPreview(state, lane, record);
@@ -14465,6 +14867,11 @@
     const intake = normalizedIntake(state);
     const websitePackage = websitePackageClassifier(state);
     const naming = websiteProductNamingEvidence(state, lane);
+    const lanePackResolutionW246 = resolveLanePackFromEvidenceW246(state, {
+      websiteText: websitePackage && websitePackage.evidence ? websitePackage.evidence : '',
+      signals: lane && lane.signals ? lane.signals : []
+    });
+    const lanePackAdvisoryW246 = nllmAdvisoryPayloadForLanePackW246(state, lanePackResolutionW246.lanePack, null);
     const genericProductSeed = !naming.productSeed || naming.productSeed === lane.proofAnchor || /^(Finished Good|Product \/ SKU|Inventory \/ Fulfillment|Style \/ SKU Matrix|Assembly|Lot \/ Release)$/.test(naming.productSeed);
     const advisoryNeeded = naming.nllmRecommended || websitePackage.nllmRecommended || genericProductSeed;
     return {
@@ -14482,6 +14889,8 @@
       selectedLaneId: lane.id,
       selectedLane: lane.name,
       proofAnchor: lane.proofAnchor,
+      versionedLanePackW246: lanePackResolutionW246,
+      lanePackNllmAdvisoryPayloadW246: lanePackAdvisoryW246,
       websitePackageClassifier: websitePackage,
       websiteEvidenceBridge: websiteEvidenceBridge(state),
       currentNamingEvidence: naming,
@@ -20700,6 +21109,13 @@
       legacySlotsForCanonicalRoleFromSnapshotW244,
       canonicalRoleToLegacySlotFallbackW244,
       legacyRecordByCanonicalRoleW244,
+      displayReadyRecordsFromFinalNamingW245,
+      canonicalImportResultNormalizationW245,
+      versionedLanePacksW246,
+      validateLanePackW246,
+      resolveLanePackFromEvidenceW246,
+      nllmAdvisoryPayloadForLanePackW246,
+      liveDemoCoachingFromLanePackW246,
       drawerContractSourceAlignmentW240V1,
       dynamicRecordRenderingPrepModelW240,
       dccHandoffParityLockV1: dccHandoffParityLockV1,

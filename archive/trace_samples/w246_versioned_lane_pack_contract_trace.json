@@ -1,0 +1,45 @@
+{
+  "schema": "forge.w246.versioned-lane-pack-contract.trace.v1",
+  "status": "implemented",
+  "lanePackSchema": "forge.lane-pack.v1",
+  "packs": [
+    "industrial-manufacturing",
+    "equipment-manufacturing",
+    "industrial-distributor",
+    "cpg-distributor",
+    "cpg-manufacturer",
+    "food-beverage-manufacturer",
+    "dealer-hardgoods",
+    "apparel-style-matrix",
+    "retail-availability"
+  ],
+  "nllmAuthority": {
+    "writeAuthority": "none",
+    "creationAllowed": false,
+    "allowedTasks": [
+      "summarizeWebsiteAndCategoryEvidence",
+      "proposeRecordNames",
+      "synthesizePainValueCompetitiveAndRoi",
+      "draftSoWhatAndWhyItMatters",
+      "draftLanePackSuggestionsForHumanReview"
+    ],
+    "hardLimits": [
+      "cannotCreateRecords",
+      "cannotInvokeSuiteScriptOrWriteTransactions",
+      "cannotSilentlyInstallTruth",
+      "cannotOverrideWebsiteEvidence",
+      "cannotOverrideConsultantToggles",
+      "cannotHideUncertainty",
+      "cannotInventVerifiedWebsiteFacts",
+      "cannotClaimMeasuredRoiWithoutBaseline"
+    ]
+  },
+  "liveDemoCoachingQuestions": [
+    "whatShouldIOpen",
+    "whatShouldIProve",
+    "safeToSay",
+    "shouldNotClaim",
+    "buyerFacingSoWhat"
+  ],
+  "archiveOnlyArtifacts": true
+}

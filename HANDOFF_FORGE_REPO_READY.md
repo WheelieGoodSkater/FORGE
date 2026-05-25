@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W272 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, and the live evidence/signoff packet contract extraction point.
+  - W250-W273 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, and the story coaching contract extraction point.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -42,10 +42,12 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
 - `src/contracts/lanePacks.js`
 - `src/contracts/adapterProfiles.js`
 - `src/contracts/liveEvidencePackets.js`
+- `src/contracts/storyCoachingSurfaces.js`
   - Canonical runtime contract source modules introduced so the drawer, W144 adapter, and runner can converge on the same mode/role/link language.
   - `lanePacks.js` defines the first versioned industry/sub-industry pack contract for future expansion.
   - `adapterProfiles.js` mirrors the W263 released W144 adapter profile and W262 readiness states as a parity-backed extraction point.
   - `liveEvidencePackets.js` mirrors W260/W261/W266/W267/W268 review-only evidence/signoff packet shapes as a parity-backed extraction point.
+  - `storyCoachingSurfaces.js` mirrors W254/W255/W256/W257 consultant-safe story coaching shapes as a parity-backed extraction point.
 
 - `netsuite/idb_governed_runner_adapter_w144_suitelet.js`
   - Approved W144 adapter path.
@@ -88,6 +90,7 @@ npm run harness:code-review-extraction-guardrails-w269
 npm run harness:shared-harness-fixture-utilities-w270
 npm run harness:adapter-profile-readiness-contract-w271
 npm run harness:live-evidence-signoff-contract-w272
+npm run harness:story-coaching-contract-w273
 npm run check
 npm run validate
 ```
@@ -123,12 +126,33 @@ Current expected result:
 - W270 harness passes `8/8`.
 - W271 harness passes `11/11`.
 - W272 harness passes `12/12`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, live evidence/signoff contract, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, and W272 harness.
+- W273 harness passes `12/12`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, live evidence/signoff contract, story coaching contract, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, and W273 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W273: Story Surface Receipt Script Sequence Contract Extraction Without Consultant UI Behavior Change
+
+What changed:
+
+- Adds `src/contracts/storyCoachingSurfaces.js` as a focused story coaching contract module.
+- Mirrors stable consultant-safe contract shapes for W254 evidence receipt rows and visibility rules, W255 first-glance story surface, W256 live-demo script, and W257 guided demo sequence/objection-safe response.
+- Adds shared guardrail helpers that reject record-creation claims, drawer-write claims, measured/guaranteed ROI claims, unsupported lane-fit claims, hidden uncertainty, and missing N/LLM advisory-only posture.
+- Adds shape/parity helpers for comparing drawer-produced W254/W255/W256/W257 story outputs against the extracted contract shapes.
+- Keeps drawer runtime behavior and consultant Review/Run UI equivalent in this block; the module is a parity-backed extraction point and the drawer still owns runtime behavior.
+- Adds W273 archived report, trace, and harness proving W254-W257 shape parity, valid imported record continuity, weak-evidence confirmation, W272 live evidence/signoff availability, W264 W151-valid import continuity, W270 shared harness availability, hidden raw/admin normal UI behavior, and no runtime authority changes.
+
+Important W273 artifacts:
+
+- `src/contracts/storyCoachingSurfaces.js`
+- `archive/tools/run_w273_story_coaching_contract_harness.js`
+- `archive/reports/w273_story_coaching_contract.md`
+- `archive/trace_samples/w273_story_coaching_contract_trace.json`
+
+Previous completed block:
 
 - W272: Live Evidence And Signoff Packet Contract Extraction Without Review Flow Behavior Change
 
@@ -693,35 +717,39 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W273: Story Surface Receipt Script Sequence Contract Extraction Without Consultant UI Behavior Change
+W274: Lane Pack Authoring Expansion Workflow Contract Extraction Without Runtime Behavior Change
 
 Goal:
-Execute phase 4 from W269 by extracting the W254 receipt, W255 first-glance story, W256 live-demo script, and W257 guided sequence contract shapes into a focused story coaching contract module while keeping the consultant Review/Run UI, returned-record behavior, evidence gating, and W264-W272 harness outputs unchanged.
+Execute phase 5 from W269 by extracting the lane-pack authoring, proposed-pack review, diff, receipt-driven QA, and future expansion workflow contract shapes into a focused lane-pack expansion workflow module while keeping lane resolution, consultant UI, N/LLM authority, and W244-W273 behavior unchanged.
 
 Build:
-- Add a focused contract module under `src/contracts/storyCoachingSurfaces.js`.
-- Move or mirror stable consultant-safe contract shapes for:
-  - W254 evidence receipt rows and receipt visibility rules
-  - W255 first-glance story surface
-  - W256 live-demo script
-  - W257 guided demo sequence and objection-safe response
-- Include shared consultant-safe guardrail helpers for:
-  - no record-creation claims
-  - no drawer-write claims
-  - no measured/guaranteed ROI claims
-  - no unsupported lane-fit claims
-  - uncertainty remains visible
-  - N/LLM remains advisory-only
-- Include shape/parity helpers that can compare drawer-produced W254/W255/W256/W257 outputs against the module contract shapes.
-- Keep story output sourced from W245 returned records, W246 lane pack, W254 receipt data, and W255 first-glance data.
+- Add a focused contract module under `src/contracts/lanePackExpansionWorkflow.js`.
+- Move or mirror stable contract shapes for:
+  - W247 lane-pack authoring/review
+  - W251 proposed-change diff review
+  - W252 compact admin-safe review renderer expectations
+  - W255 receipt-driven lane expansion QA
+  - proposed lane-pack fixture review-only/non-installable behavior
+- Include shared expansion guardrail helpers for:
+  - N/LLM advisory-only
+  - no auto-install
+  - no write authority
+  - no record creation
+  - no hiding uncertainty
+  - no overriding website evidence
+  - no overriding consultant toggles
+  - no guaranteed/measured ROI claims
+- Include shape/parity helpers that can compare drawer/source lane-pack proposal review, diff, and QA outputs against the module contract shapes.
+- Keep pack source in `src/contracts/lanePacks.js`.
+- Keep proposed packs archived/review-only unless explicitly installed by a future human-reviewed code change.
 - Keep weak/conflicting evidence confirmation-first behavior.
 - Keep `idb-drawer.user.js` behavior equivalent; use the contract module only where parity is straightforward and covered by harnesses.
 - Do not change normal consultant UI.
-- Do not change Review/Run story density or visible copy unless needed to preserve existing behavior.
+- Do not change lane resolution behavior.
 - Do not change connected submit/refresh/import behavior.
 - Do not change record creation authority.
-- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W246 lane-pack contract, W254 evidence receipt, W255 first-glance story, W256 script, W257 sequence, W262 readiness, W263/W271 adapter profile contract, W264 submit/refresh/import flow, W265 retry safety, W266 evidence packet, W267 signoff, W268 release keep packet, W269 optimization guardrails, W270 shared harness utilities, and W272 live evidence/signoff contract.
-- Use W270 shared harness utilities in the W273 harness.
+- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W246 lane-pack contract, W247 authoring surface, W251 diff review, W252 review UI, W255 receipt-driven QA, W262 readiness, W263/W271 adapter profile contract, W264 submit/refresh/import flow, W265 retry safety, W266 evidence packet, W267 signoff, W268 release keep packet, W269 optimization guardrails, W270 shared harness utilities, W272 live evidence/signoff contract, and W273 story coaching contract.
+- Use W270 shared harness utilities in the W274 harness.
 - Keep harnesses, reports, and traces under `archive/`.
 - Keep repo front clean.
 - Keep normal consultant UI free of raw JSON, task ids, schema names, stack traces, admin diagnostics, and internal contract arrays.
@@ -730,22 +758,24 @@ Build:
 - Do not update W144 deployment in this block.
 
 Validation:
-- Add W273 harness covering:
-  - story coaching contract module exists under `src/contracts/`
-  - W254/W255/W256/W257 contract shapes are represented
-  - drawer-produced receipt, first-glance story, script, and sequence outputs remain field-compatible with the module contract shapes
-  - guardrail helper rejects record creation, drawer write, measured ROI, guaranteed outcome, unsupported lane-fit, and hidden-uncertainty claims
-  - valid imported records keep returned names, lane-aware labels, and supported Open-link authority in story surfaces
+- Add W274 harness covering:
+  - lane-pack expansion workflow contract module exists under `src/contracts/`
+  - W247/W251/W252/W255 contract shapes are represented
+  - drawer/source authoring review, proposed diff, admin review, and receipt-driven QA outputs remain field-compatible with the module contract shapes
+  - expansion guardrail helper rejects write authority, creation, auto-install, hidden uncertainty, website/toggle override, and guaranteed/measured ROI claims
+  - proposed lane-pack fixtures remain review-only and non-installable
+  - source pack remains `src/contracts/lanePacks.js`
   - weak/conflicting evidence remains confirmation-first
+  - W273 story coaching contract remains available
   - W272 live evidence/signoff contract remains available
   - W264 connected build still imports only W151-valid completed results
   - W270 shared harness utilities remain available
   - no runtime file behavior changes are introduced
   - no drawer-created records or drawer transaction writes are introduced
-- Run W244 through W273 harnesses, check, and validate.
+- Run W244 through W274 harnesses, check, and validate.
 
 Output:
-- Summary of story coaching contract extraction, files touched, parity guardrails, and validation.
+- Summary of lane-pack expansion workflow contract extraction, files touched, parity guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

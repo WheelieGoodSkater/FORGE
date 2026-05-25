@@ -1,0 +1,47 @@
+{
+  "schema": "forge.w273.story-coaching-contract.trace.v1",
+  "status": "complete",
+  "contractSummary": {
+    "schema": "forge.w273.story-coaching-surfaces.v1",
+    "module": "src/contracts/storyCoachingSurfaces.js",
+    "representedStorySurfaces": [
+      "forge.w254.consultant-story-evidence-receipt.v1",
+      "forge.w255.consultant-story-first-glance.v1",
+      "forge.w256.consultant-live-demo-script.v1",
+      "forge.w257.guided-demo-step-sequence.v1"
+    ],
+    "guardrails": [
+      "no record-creation claims",
+      "no drawer-write claims",
+      "no measured or guaranteed ROI claims",
+      "no unsupported lane-fit claims",
+      "uncertainty remains visible",
+      "N/LLM remains advisory-only"
+    ]
+  },
+  "parityGuardrails": [
+    "W254 evidence receipt shape remains represented.",
+    "W255 first-glance story shape remains represented.",
+    "W256 live-demo script shape remains represented.",
+    "W257 guided demo sequence shape remains represented.",
+    "W272 live evidence/signoff contract remains available.",
+    "W270 shared harness utilities remain available."
+  ],
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "reviewRunStoryDensityChanged": false,
+    "connectedSubmitRefreshImportChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "weakEvidenceConfirmationFirst": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true,
+    "w151ValidationPreserved": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRequired": false,
+    "reason": "W273 extracts consultant-safe story coaching contract shapes and parity harness coverage without changing Review/Run UI or connected build behavior."
+  }
+}

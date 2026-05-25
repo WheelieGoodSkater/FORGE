@@ -18711,6 +18711,100 @@
     };
   }
 
+  function consultantAdminSmokeScriptW260() {
+    return {
+      schema: 'forge.w260.consultant-admin-smoke-script.v1',
+      status: 'ready_for_targeted_install_smoke',
+      noLiveRunnerInvocationRequired: true,
+      drawerCreatedRecordsEnabled: false,
+      drawerTransactionWritesEnabled: false,
+      steps: [
+        {
+          id: 'launcher_opens_drawer',
+          label: 'Launcher opens drawer',
+          expected: 'FORGE launcher icon opens the drawer from the NetSuite page.'
+        },
+        {
+          id: 'compact_header_visible',
+          label: 'Compact header visible',
+          expected: 'Header shows FORGE logo, running version, Bug / Enhancement, and close control.'
+        },
+        {
+          id: 'feedback_placeholder_noop',
+          label: 'Bug / Enhancement placeholder',
+          expected: 'Bug / Enhancement remains a safe placeholder with no URL, network call, storage write, tracking call, or install action.'
+        },
+        {
+          id: 'pre_import_fake_links_blocked',
+          label: 'Pre-import fake Open links blocked',
+          expected: 'Review/Run blocks Open links before a valid completed runner import.'
+        },
+        {
+          id: 'valid_import_story_ready',
+          label: 'Valid import story ready',
+          expected: 'Valid completed import shows returned record names, lane-aware labels, supported Open links, and Build results are ready.'
+        },
+        {
+          id: 'live_proof_cta_visible',
+          label: 'Live proof CTA visible',
+          expected: 'Review/Run shows the compact W258 Live proof CTA with open target, proof action, safe claim, stop guardrail, and evidence confidence.'
+        },
+        {
+          id: 'coaching_receipt_expandable',
+          label: 'Coaching and receipt expandable',
+          expected: 'W256 script, W257 guided sequence, and W254 evidence receipt remain expandable below the first-glance story.'
+        },
+        {
+          id: 'weak_evidence_confirmation',
+          label: 'Weak evidence confirmation',
+          expected: 'Weak or conflicting evidence asks for lane confirmation before making claims.'
+        },
+        {
+          id: 'rollback_ready',
+          label: 'Rollback ready',
+          expected: 'If targeted smoke fails, reinstall the prior Tampermonkey script version and disable the updated copy.'
+        }
+      ],
+      visualTestingDecision: {
+        targetedInstallSmokeRecommended: true,
+        broadNetSuiteVisualRegressionRequired: false
+      }
+    };
+  }
+
+  function installReadyReleasePacketW260() {
+    return {
+      schema: 'forge.w260.install-ready-release-packet.v1',
+      status: 'ready_for_install_smoke',
+      installTarget: 'idb-drawer.user.js',
+      updateOnly: ['idb-drawer.user.js'],
+      doNotUpdate: [
+        'W144 adapter',
+        'runner',
+        'SuiteScript deployment',
+        'image lookup settings',
+        'lane-pack contract source'
+      ],
+      noLiveRunnerInvocationRequired: true,
+      drawerCreatedRecordsEnabled: false,
+      drawerTransactionWritesEnabled: false,
+      runtimeAuthorityChanged: false,
+      consultantSafe: true,
+      adminSafe: true,
+      normalUiHiddenDiagnostics: [
+        'raw JSON',
+        'stack traces',
+        'internal arrays',
+        'runner task ids',
+        'schema names',
+        'admin diagnostics',
+        'install-like actions'
+      ],
+      smokeScript: consultantAdminSmokeScriptW260(),
+      rollbackNote: 'If targeted smoke fails, reinstall the prior Tampermonkey script version, disable the updated copy, and do not update W144, runner, SuiteScript deployment, image lookup settings, or lane-pack source.'
+    };
+  }
+
   function renderRunActionChips(state) {
     return ACTION_MODEL.map((action) => `
       <button
@@ -22675,6 +22769,8 @@
       feedbackPlaceholderContractW259,
       feedbackPlaceholderActionW259,
       visualAcceptancePacketW259,
+      consultantAdminSmokeScriptW260,
+      installReadyReleasePacketW260,
       storyEvidenceReceiptTrailW254,
       receiptDrivenLaneExpansionQaW255,
       consultantStoryFirstGlanceW255,

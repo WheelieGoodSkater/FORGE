@@ -1,0 +1,33 @@
+{
+  "schema": "forge.w260.install-ready-release-packet.trace.v1",
+  "status": "ready_for_install_smoke",
+  "installTarget": "idb-drawer.user.js",
+  "updateOnly": ["idb-drawer.user.js"],
+  "doNotUpdate": [
+    "W144 adapter",
+    "runner",
+    "SuiteScript deployment",
+    "image lookup settings",
+    "lane-pack contract source"
+  ],
+  "noLiveRunnerInvocationRequired": true,
+  "drawerCreatedRecordsEnabled": false,
+  "drawerTransactionWritesEnabled": false,
+  "runtimeAuthorityChanged": false,
+  "smokeChecks": [
+    "launcher_opens_drawer",
+    "compact_header_visible",
+    "feedback_placeholder_noop",
+    "pre_import_fake_links_blocked",
+    "valid_import_story_ready",
+    "live_proof_cta_visible",
+    "coaching_receipt_expandable",
+    "weak_evidence_confirmation",
+    "rollback_ready"
+  ],
+  "rollbackNote": "If targeted smoke fails, reinstall the prior Tampermonkey script version, disable the updated copy, and do not update W144, runner, SuiteScript deployment, image lookup settings, or lane-pack source.",
+  "visualTestingDecision": {
+    "targetedInstallSmokeRecommended": true,
+    "broadNetSuiteVisualRegressionRequired": false
+  }
+}

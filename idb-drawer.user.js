@@ -45,6 +45,54 @@
     QUEUE_SUBMIT_ENABLED: true,
     productionBuildModeEnabled: true
   };
+  const ADAPTER_PROFILE_CONTRACT_SCHEMA_W281 = 'forge.w271.adapter-profile.v1';
+  const ADAPTER_READINESS_CONTRACT_SCHEMA_W281 = 'forge.w271.adapter-readiness.v1';
+  const ADAPTER_READINESS_STATES_W281 = {
+    READY_TO_BUILD_RECORDS: 'ready_to_build_records',
+    SMOKE_PREVIEW_ONLY: 'smoke_preview_only',
+    ADAPTER_NOT_CONFIGURED: 'adapter_not_configured',
+    BUILD_SUBMITTED: 'build_submitted',
+    WAITING_FOR_RUNNER_RESULT: 'waiting_for_runner_result',
+    RECORDS_READY_TO_IMPORT: 'records_ready_to_import',
+    RECORDS_IMPORTED: 'records_imported'
+  };
+  const ADAPTER_READINESS_COPY_W281 = {
+    ready_to_build_records: {
+      label: 'Ready to build records',
+      headline: 'Ready to create NetSuite records',
+      copy: 'Click Build records. FORGE will submit the approved build path, then you can refresh status until returned records are ready.'
+    },
+    smoke_preview_only: {
+      label: 'Preview ready',
+      headline: 'Preview ready. Record creation is not enabled in this install.',
+      copy: 'You can continue smoke testing the drawer flow. The real Build records action appears when the approved server build setup is ready.'
+    },
+    adapter_not_configured: {
+      label: 'Preview ready',
+      headline: 'Preview ready. Record creation is not enabled in this install.',
+      copy: 'You can continue smoke testing the drawer flow. Record creation stays off until the approved server build setup is ready.'
+    },
+    build_submitted: {
+      label: 'Build submitted',
+      headline: 'Build submitted',
+      copy: 'Refresh build status to check whether the runner returned completed records.'
+    },
+    waiting_for_runner_result: {
+      label: 'Waiting for records',
+      headline: 'Build submitted',
+      copy: 'Refresh build status to check whether the runner returned completed records.'
+    },
+    records_ready_to_import: {
+      label: 'Records ready',
+      headline: 'Records ready',
+      copy: 'Finish the build to bring returned names, labels, and Open links into Review and Run.'
+    },
+    records_imported: {
+      label: 'Records imported',
+      headline: 'Records ready',
+      copy: 'Review and Run are using returned NetSuite record names, lane-aware labels, and supported Open links.'
+    }
+  };
   const DEFAULT_PRODUCTION_BUILD_ADMIN_CONFIG = {
     integratedBuildAdapterConfig: {
       selectedAdapterProfileId: RELEASED_W144_ADAPTER_PROFILE_W263.profileId,
@@ -1604,10 +1652,39 @@
     }));
   }
 
+  function normalizeAdapterAccountHostW281(host) {
+    const raw = String(host || '').trim().replace(/\/+$/g, '');
+    if (!raw) return '';
+    return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  }
+
+  function normalizeAdapterSuiteletPathW281(path) {
+    const raw = String(path || '').trim();
+    if (!raw) return '';
+    return raw.charAt(0) === '/' ? raw : `/${raw.replace(/^\/+/g, '')}`;
+  }
+
+  function adapterProfileEndpointFromContractShapeW281(profile) {
+    const selected = profile || RELEASED_W144_ADAPTER_PROFILE_W263;
+    const accountHost = normalizeAdapterAccountHostW281(selected.accountHost);
+    const suiteletPath = normalizeAdapterSuiteletPathW281(selected.suiteletPath);
+    return accountHost && suiteletPath ? `${accountHost}${suiteletPath}` : '';
+  }
+
+  function adapterProfileWithContractShapeW281(profile, pageContext) {
+    const source = Object.assign({}, profile || RELEASED_W144_ADAPTER_PROFILE_W263);
+    if (!source.schema) source.schema = ADAPTER_PROFILE_CONTRACT_SCHEMA_W281;
+    if (Array.isArray(source.sandboxAccountAllowlist)) {
+      source.sandboxAccountAllowlist = source.sandboxAccountAllowlist.slice();
+    }
+    source.fullEndpointUrl = adapterProfileEndpointW263(source, pageContext);
+    return source;
+  }
+
   function adapterProfileEndpointW263(profile, pageContext) {
     const selected = profile || RELEASED_W144_ADAPTER_PROFILE_W263;
     const pageUrl = pageContext && pageContext.url || window && window.location && window.location.href || '';
-    let accountHost = String(selected.accountHost || '').replace(/\/+$/g, '');
+    let accountHost = normalizeAdapterAccountHostW281(selected.accountHost);
     if (!accountHost) accountHost = currentNetSuiteOrigin();
     if (!accountHost && pageUrl) {
       try {
@@ -1617,30 +1694,28 @@
         accountHost = '';
       }
     }
-    const suiteletPath = String(selected.suiteletPath || '').charAt(0) === '/'
-      ? selected.suiteletPath
-      : `/${String(selected.suiteletPath || '').replace(/^\/+/g, '')}`;
+    const suiteletPath = normalizeAdapterSuiteletPathW281(selected.suiteletPath);
     return accountHost && suiteletPath ? `${accountHost}${suiteletPath}` : '';
   }
 
   function releasedAdapterProfileW263(overrides) {
     const profile = Object.assign({}, RELEASED_W144_ADAPTER_PROFILE_W263, overrides || {});
+    if (Array.isArray(profile.sandboxAccountAllowlist)) {
+      profile.sandboxAccountAllowlist = profile.sandboxAccountAllowlist.slice();
+    }
     profile.fullEndpointUrl = adapterProfileEndpointW263(profile);
     return profile;
   }
 
   function adapterProfilesFromConfigW263(config) {
     if (config && config.adapterProfileDisabled === true) {
-      return arrayValue(config.adapterProfiles).filter((profile) => profile && profile.profileId);
+      return arrayValue(config.adapterProfiles).filter((profile) => profile && profile.profileId).map((profile) => adapterProfileWithContractShapeW281(profile));
     }
     const profiles = arrayValue(config && config.adapterProfiles).filter((profile) => profile && profile.profileId);
     if (!profiles.some((profile) => profile.profileId === RELEASED_W144_ADAPTER_PROFILE_W263.profileId)) {
       profiles.unshift(releasedAdapterProfileW263());
     }
-    return profiles.map((profile) => Object.assign({}, profile, {
-      schema: profile.schema || 'forge.w263.adapter-profile.v1',
-      fullEndpointUrl: adapterProfileEndpointW263(profile)
-    }));
+    return profiles.map((profile) => adapterProfileWithContractShapeW281(profile));
   }
 
   function selectedAdapterProfileW263(config, pageContext) {
@@ -15295,55 +15370,18 @@
     const adapterReady = productionAutomation.automationStates.submitReady === true;
     const requestReady = productionAutomation.automationStates.consultantIntakeReady === true &&
       productionAutomation.automationStates.demoPathConfirmed === true;
-    let readinessState = 'adapter_not_configured';
-    if (finalNaming.finalNamesImported) readinessState = 'records_imported';
-    else if (productionAutomation.automationStates.completedResultReady) readinessState = 'records_ready_to_import';
-    else if (productionAutomation.automationStates.runnerTaskCaptured) readinessState = 'waiting_for_runner_result';
-    else if (adapterReady) readinessState = 'ready_to_build_records';
-    else if (requestReady && adapterConfig && adapterConfig.endpointUrl) readinessState = 'smoke_preview_only';
-    else if (requestReady) readinessState = 'smoke_preview_only';
+    let readinessState = ADAPTER_READINESS_STATES_W281.ADAPTER_NOT_CONFIGURED;
+    if (finalNaming.finalNamesImported) readinessState = ADAPTER_READINESS_STATES_W281.RECORDS_IMPORTED;
+    else if (productionAutomation.automationStates.completedResultReady) readinessState = ADAPTER_READINESS_STATES_W281.RECORDS_READY_TO_IMPORT;
+    else if (productionAutomation.automationStates.runnerTaskCaptured) readinessState = ADAPTER_READINESS_STATES_W281.WAITING_FOR_RUNNER_RESULT;
+    else if (adapterReady) readinessState = ADAPTER_READINESS_STATES_W281.READY_TO_BUILD_RECORDS;
+    else if (requestReady && adapterConfig && adapterConfig.endpointUrl) readinessState = ADAPTER_READINESS_STATES_W281.SMOKE_PREVIEW_ONLY;
+    else if (requestReady) readinessState = ADAPTER_READINESS_STATES_W281.SMOKE_PREVIEW_ONLY;
 
-    const copyByState = {
-      ready_to_build_records: {
-        label: 'Ready to build records',
-        headline: 'Ready to create NetSuite records',
-        copy: 'Click Build records. FORGE will submit the approved build path, then you can refresh status until returned records are ready.'
-      },
-      smoke_preview_only: {
-        label: 'Preview ready',
-        headline: 'Preview ready. Record creation is not enabled in this install.',
-        copy: 'You can continue smoke testing the drawer flow. The real Build records action appears when the approved server build setup is ready.'
-      },
-      adapter_not_configured: {
-        label: 'Preview ready',
-        headline: 'Preview ready. Record creation is not enabled in this install.',
-        copy: 'You can continue smoke testing the drawer flow. Record creation stays off until the approved server build setup is ready.'
-      },
-      build_submitted: {
-        label: 'Build submitted',
-        headline: 'Build submitted',
-        copy: 'Refresh build status to check whether the runner returned completed records.'
-      },
-      waiting_for_runner_result: {
-        label: 'Waiting for records',
-        headline: 'Build submitted',
-        copy: 'Refresh build status to check whether the runner returned completed records.'
-      },
-      records_ready_to_import: {
-        label: 'Records ready',
-        headline: 'Records ready',
-        copy: 'Finish the build to bring returned names, labels, and Open links into Review and Run.'
-      },
-      records_imported: {
-        label: 'Records imported',
-        headline: 'Records ready',
-        copy: 'Review and Run are using returned NetSuite record names, lane-aware labels, and supported Open links.'
-      }
-    };
-    const copy = copyByState[readinessState] || copyByState.smoke_preview_only;
-    const showBuildButton = readinessState === 'ready_to_build_records';
-    const showRefreshButton = readinessState === 'build_submitted' || readinessState === 'waiting_for_runner_result';
-    const showFinishButton = readinessState === 'records_ready_to_import';
+    const copy = ADAPTER_READINESS_COPY_W281[readinessState] || ADAPTER_READINESS_COPY_W281.smoke_preview_only;
+    const showBuildButton = readinessState === ADAPTER_READINESS_STATES_W281.READY_TO_BUILD_RECORDS;
+    const showRefreshButton = readinessState === ADAPTER_READINESS_STATES_W281.BUILD_SUBMITTED || readinessState === ADAPTER_READINESS_STATES_W281.WAITING_FOR_RUNNER_RESULT;
+    const showFinishButton = readinessState === ADAPTER_READINESS_STATES_W281.RECORDS_READY_TO_IMPORT;
     return {
       schema: 'forge.w262.adapter-ready-record-creation-ux.v1',
       releaseVersion: 'V1.0.0',
@@ -15363,7 +15401,7 @@
         showBuildButton,
         showRefreshButton,
         showFinishButton,
-        showContinueToRun: readinessState === 'smoke_preview_only' || readinessState === 'adapter_not_configured',
+        showContinueToRun: readinessState === ADAPTER_READINESS_STATES_W281.SMOKE_PREVIEW_ONLY || readinessState === ADAPTER_READINESS_STATES_W281.ADAPTER_NOT_CONFIGURED,
         buildActionId: 'submit_w144_once',
         refreshActionId: 'check_runner_result',
         finishActionId: 'import_completed_runner_result'
@@ -15392,8 +15430,8 @@
         'sandbox allowlist'
       ],
       smokeBoundary: {
-        previewOnlyCopy: copyByState.smoke_preview_only.headline,
-        smokeCanContinueWithoutRecordCreation: readinessState !== 'ready_to_build_records',
+        previewOnlyCopy: ADAPTER_READINESS_COPY_W281.smoke_preview_only.headline,
+        smokeCanContinueWithoutRecordCreation: readinessState !== ADAPTER_READINESS_STATES_W281.READY_TO_BUILD_RECORDS,
         releasePacketInstallTarget: 'idb-drawer.user.js'
       },
       guardrails: {

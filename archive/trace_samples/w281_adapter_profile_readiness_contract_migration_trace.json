@@ -1,0 +1,94 @@
+{
+  "schema": "forge.w281.adapter-profile-readiness-contract-migration.trace.v1",
+  "workstream": "W281",
+  "title": "Adapter Profile Readiness Contract Migration Without Connected Build Behavior Change",
+  "migration": {
+    "schema": "forge.w281.adapter-profile-readiness-migration.v1",
+    "status": "parity_migration_complete",
+    "sourceFile": "idb-drawer.user.js",
+    "contractAuthority": [
+      "src/contracts/adapterProfiles.js",
+      "src/contracts/adapterReadinessBridge.js"
+    ],
+    "drawerRemainsSelfContained": true,
+    "runtimeRequireAdded": false,
+    "externalDependencyAdded": false,
+    "bundlerRequirementAdded": false,
+    "networkDependencyForContractLoadingAdded": false,
+    "storageWriteForContractLoadingAdded": false,
+    "migratedOrReshapedLogic": [
+      "W271-shaped adapter profile/readiness constants added inside drawer",
+      "W271-style account-host normalization added inside drawer",
+      "W271-style Suitelet-path normalization added inside drawer",
+      "adapter profile endpoint derivation reshaped around host plus path",
+      "profile list helpers return contract-shaped fullEndpointUrl consistently",
+      "W262 readiness copy moved to shared drawer-local W271-shaped table"
+    ],
+    "stayedDrawerOwned": [
+      "connected W264 submit/refresh/import",
+      "W265 retry safety",
+      "normal consultant Build UI rendering",
+      "Tampermonkey runtime helper execution"
+    ]
+  },
+  "selectedSourceAnchors": {
+    "releasedAdapterProfileW263": "present",
+    "adapterProfileEndpointW263": "present",
+    "adapterProfilesFromConfigW263": "present",
+    "selectedAdapterProfileW263": "present",
+    "applySelectedAdapterProfileToConfigW263": "present",
+    "adapterReadyRecordCreationUxW262": "present",
+    "deployedAdapterReadinessTraceW263": "present",
+    "migratedEquivalentHelpers": [
+      "normalizeAdapterAccountHostW281",
+      "normalizeAdapterSuiteletPathW281",
+      "adapterProfileEndpointFromContractShapeW281",
+      "adapterProfileWithContractShapeW281",
+      "ADAPTER_READINESS_STATES_W281",
+      "ADAPTER_READINESS_COPY_W281"
+    ]
+  },
+  "releasedProfile": {
+    "scriptName": "IDB W144 Customer Proof Pilot Suitelet",
+    "title": "IDB W24 Customer Proof Pilot Suitelet",
+    "deploymentScriptId": "customdeployidb_governed_runner_adapter",
+    "deploymentStatus": "Released",
+    "deployed": true,
+    "executeAsRole": "Current Role",
+    "logLevel": "Error",
+    "suiteletPath": "/app/site/hosting/scriptlet.nl?script=6702&deploy=2",
+    "scriptId": "6702",
+    "deploymentId": "2",
+    "defaultAccountHost": "td3021666.app.netsuite.com"
+  },
+  "continuity": {
+    "w262ReadinessStatesEquivalent": true,
+    "w263ReadinessTraceFieldCompatible": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w279AdapterReadinessBridgeAvailable": true,
+    "w280BridgeClosureReadinessPacketAvailable": true,
+    "datasetAccountSwitchingChanged": false,
+    "weakEvidenceConfirmationFirst": true
+  },
+  "guardrails": {
+    "normalConsultantUiChanged": false,
+    "buildTabCopyButtonsLayoutChanged": false,
+    "connectedBuildFlowChanged": false,
+    "retrySafetyChanged": false,
+    "returnedRecordImportChanged": false,
+    "laneResolutionChanged": false,
+    "adapterEndpointProfileChanged": false,
+    "datasetAccountSwitchingChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "normalBuildUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdateInThisBlock": true,
+    "nllmAdvisoryOnly": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRegressionRequired": false,
+    "reason": "Helper-shape parity migration only; no visible consultant Build UI changes."
+  }
+}

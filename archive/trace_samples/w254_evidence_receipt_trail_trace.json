@@ -1,0 +1,18 @@
+{
+  "schema": "forge.w254.evidence-receipt-trail.trace.v1",
+  "workItem": "W254",
+  "purpose": "Prove the consultant story surface carries a compact evidence receipt trail without exposing internal diagnostics.",
+  "assertions": [
+    "evidence receipt has required consultant-safe rows",
+    "receipt renders only after valid import",
+    "receipt uses returned record names and lane-aware labels",
+    "receipt covers industrial manufacturing, equipment manufacturing, industrial distributors, CPG distributors, CPG manufacturers, and food/beverage manufacturers",
+    "normal UI hides raw diagnostics and admin-only proposal review",
+    "N/LLM remains advisory-only with hard limits visible",
+    "weak or conflicting evidence remains confirmation-gated"
+  ],
+  "visualTestingDecision": {
+    "targetedInstallSmokeRecommended": true,
+    "broadNetSuiteVisualRegressionRequired": false
+  }
+}

@@ -64,6 +64,7 @@ npm run harness:lane-aware-record-label-semantics-w250
 npm run harness:lane-pack-authoring-diff-review-w251
 npm run harness:lane-pack-review-ui-install-smoke-w252
 npm run harness:post-install-visual-acceptance-w253
+npm run harness:evidence-receipt-trail-w254
 npm run check
 npm run validate
 ```
@@ -80,12 +81,31 @@ Current expected result:
 - W251 harness passes `11/11`.
 - W252 harness passes `9/9`.
 - W253 harness passes `9/9`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, and W253 harness.
+- W254 harness passes `8/8`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, and W254 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W254: Evidence Receipt Trail For Consultant Story Trust And Lane Expansion
+
+What changed:
+
+- Adds a compact evidence receipt trail to the consultant Review/Run story surface after valid import.
+- Receipt rows explain lane confidence, website/category evidence, returned Open target, conversation-note role, N/LLM advisory limits, and uncertainty gate.
+- Receipt content is generated from structured lane-pack resolution, W245 normalized returned records, website evidence, and N/LLM advisory metadata.
+- Covers industrial manufacturing, equipment manufacturing, industrial distributors, CPG distributors, CPG manufacturers, and food/beverage manufacturers.
+- Tightens weak/medium lane evidence so it stays confirmation-gated unless a lane pack is explicitly supplied by the completed import path.
+
+Important W254 artifacts:
+
+- `archive/tools/run_w254_evidence_receipt_trail_harness.js`
+- `archive/reports/w254_evidence_receipt_trail.md`
+- `archive/trace_samples/w254_evidence_receipt_trail_trace.json`
+
+Previous completed block:
 
 - W253: Post-Install Visual Acceptance, Header Density QA, And Consultant Story Trust Polish
 
@@ -294,25 +314,31 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W254: Evidence Receipt Trail For Consultant Story Trust And Lane Expansion
+W255: Receipt-Driven Lane Expansion QA And Consultant Story Compression
 
 Goal:
-Make the compact Review/Run story surface more trustworthy by attaching a concise evidence receipt trail that explains why the lane, proof move, safe claim, and uncertainty state are safe to use without exposing raw diagnostics.
+Use the W254 evidence receipt trail to make future lane expansion easier to review, while compressing the consultant story surface so the proof, trust receipt, and next action stay fast to read live.
 
 Build:
-- Add a compact evidence receipt model for the W248/W253 consultant story surface.
-- Include consultant-safe receipt rows for:
-  - resolved lane pack and confidence
-  - website/domain/category evidence used
-  - returned record name and lane-aware label used as the Open target
-  - conversation-note contribution to pain/value/ROI framing
-  - N/LLM advisory role and hard limits
-  - uncertainty or confirmation gate when evidence is weak/conflicting
-- Render the receipt as a small expandable consultant-facing section after valid import.
-- Keep the receipt buyer-facing and readable; do not show raw JSON, stack traces, internal arrays, contract schema names, runner task ids, or admin diagnostics.
-- Add receipt coverage for industrial manufacturing, equipment manufacturing, industrial distributors, CPG distributors, CPG manufacturers, and food/beverage manufacturers.
-- Keep lane-pack expansion future-friendly: receipts should come from structured lane-pack/normalization data, not scattered hardcoded story strings.
-- Keep W252 proposal review admin-only and W253 acceptance packet review-only.
+- Add a receipt-driven lane expansion QA helper that can evaluate a proposed or existing lane pack against expected consultant story receipt rows.
+- For each lane pack, verify the receipt can explain:
+  - why this lane was chosen
+  - what returned record is the Open target
+  - what evidence supports the proof move
+  - what notes contributed to pain/value/ROI framing
+  - what N/LLM may and may not do
+  - what uncertainty remains
+- Compress the Review/Run story surface so the first glance shows:
+  - Open target
+  - prove move
+  - safe claim
+  - do-not-claim guardrail
+  - receipt summary
+  - next action
+- Keep the full receipt expandable for trust review, but avoid crowding the normal consultant UI.
+- Add QA coverage for at least one new proposed lane-pack fixture that remains review-only and cannot install itself.
+- Keep lane-pack expansion future-friendly: use structured lane-pack, normalized import, and receipt data, not scattered hardcoded strings.
+- Keep W252 proposal review admin-only, W253 acceptance packet review-only, and W254 receipt consultant-safe.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
 - Preserve fake Open-link blocking before valid import.
@@ -320,18 +346,18 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W254 harness covering:
-  - evidence receipt has all required consultant-safe rows
-  - receipt renders only after valid import
-  - receipt uses returned record names and lane-aware labels
-  - receipt covers the six priority industry lanes
-  - normal UI hides raw diagnostics and admin-only proposal review
-  - N/LLM remains advisory-only with hard limits visible
+- Add archived W255 harness covering:
+  - receipt-driven QA validates existing lane packs
+  - proposed lane-pack fixture remains review-only and non-installable
+  - compressed story surface keeps required first-glance fields
+  - expanded receipt remains available after valid import
+  - normal UI avoids raw diagnostics and overcrowding
+  - N/LLM advisory limits remain visible without write authority
   - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W254 harnesses, check, and validate.
+- Run W244 through W255 harnesses, check, and validate.
 
 Output:
-- Summary of evidence receipt model/UI, lane coverage, trust guardrails, and validation.
+- Summary of receipt-driven QA, story compression, lane expansion guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

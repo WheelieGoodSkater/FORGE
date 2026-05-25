@@ -3254,9 +3254,78 @@
     };
   }
 
+  function storyEvidenceReceiptTrailW254(state, lanePack, resolution, normalizedImport, firstProof, advisory) {
+    const intake = normalizedIntake(state || {});
+    const bridge = websiteEvidenceBridge(state || {});
+    const records = normalizedImport && Array.isArray(normalizedImport.displayReadyRecords) ? normalizedImport.displayReadyRecords : [];
+    const visibleRecords = records.filter((recordItem) => recordItem && recordItem.normalConsultantVisible !== false && recordItem.linkAuthorityStatus !== 'blocked_invalid_internal_id');
+    const hasValidImport = visibleRecords.length > 0;
+    const selected = lanePack || resolution && resolution.lanePack || null;
+    const confidence = resolution && resolution.confidence || 'low';
+    const matchedSignals = arrayValue(resolution && resolution.matchedSignals)
+      .slice(0, 4)
+      .map((signal) => String(signal).replace(/^(domain|category|evidence):/i, ''))
+      .filter(Boolean);
+    const websiteBits = [
+      websiteDomain(intake.website) ? `Domain: ${websiteDomain(intake.website)}` : '',
+      matchedSignals.length ? `Signals: ${matchedSignals.join(', ')}` : '',
+      bridge && bridge.productFamily ? `Category: ${bridge.productFamily}` : ''
+    ].filter(Boolean);
+    const proofLabel = firstProof && (firstProof.consultantLabel || firstProof.canonicalRole) || '';
+    const proofName = firstProof && firstProof.name || '';
+    const notesPresent = !!(intake.notes && String(intake.notes).trim());
+    const noteUse = notesPresent
+      ? 'Conversation notes may shape pain, value, ROI framing, objections, and run coaching.'
+      : 'No conversation-note contribution captured yet; keep value framing tied to website and returned records.';
+    const uncertainty = selected
+      ? confidence === 'high'
+        ? 'Lane evidence is strong enough for the current talk track; keep uncertainty visible if buyer evidence changes.'
+        : 'Lane evidence needs consultant confirmation before treating the pack as truth.'
+      : 'Lane evidence is weak or conflicting; ask for lane confirmation before making claims.';
+    return {
+      schema: 'forge.w254.consultant-story-evidence-receipt.v1',
+      status: hasValidImport ? 'receipt_ready' : 'waiting_for_valid_import',
+      renderAfterValidImportOnly: true,
+      rows: [
+        {
+          id: 'lane_pack_confidence',
+          label: 'Lane confidence',
+          value: selected ? `${selected.label} / ${consultantLabel(confidence)}` : `Needs lane confirmation / ${consultantLabel(confidence)}`
+        },
+        {
+          id: 'website_evidence',
+          label: 'Website evidence',
+          value: websiteBits.length ? websiteBits.join(' | ') : 'No strong website/category evidence captured.'
+        },
+        {
+          id: 'open_target_record',
+          label: 'Open target',
+          value: proofName ? `${proofName}${proofLabel ? ` (${proofLabel})` : ''}` : 'No returned Open target yet.'
+        },
+        {
+          id: 'conversation_notes',
+          label: 'Notes contribution',
+          value: noteUse
+        },
+        {
+          id: 'nllm_limits',
+          label: 'N/LLM role',
+          value: advisory && advisory.writeAuthority === 'none'
+            ? 'Advisory only: summarize evidence, propose names, draft pain/value/ROI; no writes, no record creation, no hidden uncertainty.'
+            : 'Advisory only; no write authority.'
+        },
+        {
+          id: 'uncertainty_gate',
+          label: 'Uncertainty gate',
+          value: uncertainty
+        }
+      ]
+    };
+  }
+
   function consultantStorySurfaceFromLanePackW247(state, lanePack, normalizedImport) {
     const resolution = resolveLanePackFromEvidenceW246(state);
-    const selected = lanePack || (resolution.status === 'insufficient_evidence' ? null : resolution.lanePack);
+    const selected = lanePack || (resolution.status === 'resolved' ? resolution.lanePack : null);
     const records = normalizedImport && Array.isArray(normalizedImport.displayReadyRecords) ? normalizedImport.displayReadyRecords : [];
     const visibleRecords = records.filter((recordItem) => recordItem && recordItem.normalConsultantVisible !== false && recordItem.linkAuthorityStatus !== 'blocked_invalid_internal_id');
     const firstProof = visibleRecords.find((recordItem) => recordItem && recordItem.canonicalRole && !/customer|sales_order/.test(recordItem.canonicalRole)) || visibleRecords[0] || null;
@@ -3275,7 +3344,8 @@
           uncertainty: 'Lane evidence is insufficient; ask for confirmation and keep uncertainty visible.',
           allowedTasks: advisory.allowedTasks,
           hardLimits: advisory.hardLimits
-        }
+        },
+        evidenceReceiptW254: storyEvidenceReceiptTrailW254(state, selected, resolution, normalizedImport, firstProof, advisory)
       });
     }
     return consultantStoryTrustPolishW253({
@@ -3297,7 +3367,8 @@
         creationAllowed: false,
         allowedTasks: advisory.allowedTasks,
         hardLimits: advisory.hardLimits
-      }
+      },
+      evidenceReceiptW254: storyEvidenceReceiptTrailW254(state, selected, resolution, normalizedImport, firstProof, advisory)
     });
   }
 
@@ -19951,6 +20022,23 @@
     if (!story || !story.openTarget || !story.proofMove) return '';
     const confidence = story.nllmAdvisory && story.nllmAdvisory.confidence ? consultantLabel(story.nllmAdvisory.confidence) : 'Unclear';
     const uncertainty = story.nllmAdvisory && story.nllmAdvisory.uncertainty ? story.nllmAdvisory.uncertainty : 'Ask for confirmation when evidence is weak.';
+    const receipt = story.evidenceReceiptW254 && story.evidenceReceiptW254.status === 'receipt_ready' ? story.evidenceReceiptW254 : null;
+    const receiptHtml = receipt ? `
+        <details class="idb-technical-details idb-w254-evidence-receipt">
+          <summary>Evidence receipt</summary>
+          <div class="idb-record-group">
+            ${arrayValue(receipt.rows).map((row) => `
+              <div class="idb-plan-row idb-compressed-row">
+                <span>
+                  <span class="idb-build-label">${escapeHtml(row.label)}</span>
+                  <span class="idb-build-statement">${escapeHtml(row.value)}</span>
+                </span>
+                <span class="idb-plan-role">Trust check</span>
+              </div>
+            `).join('')}
+          </div>
+        </details>
+      ` : '';
     return `
       <div class="idb-run-action-card idb-w248-story-surface">
         <div class="idb-status-key">Live demo talk track</div>
@@ -19975,6 +20063,7 @@
           <span class="idb-mini-chip">N/LLM: advisory only</span>
         </div>
         <div class="idb-copy">${escapeHtml(uncertainty)}</div>
+        ${receiptHtml}
       </div>
     `;
   }
@@ -22291,6 +22380,7 @@
       consultantStoryTrustPolishW253,
       suiteletHeaderDensityQaW253,
       postInstallAcceptancePacketW253,
+      storyEvidenceReceiptTrailW254,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,

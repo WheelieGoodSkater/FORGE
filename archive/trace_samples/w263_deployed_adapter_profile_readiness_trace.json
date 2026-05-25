@@ -1,0 +1,49 @@
+{
+  "schema": "forge.w263.deployed-adapter-profile-readiness-trace.v1",
+  "releaseVersion": "V1.0.0",
+  "deployedAdapterProfile": {
+    "profileId": "td3021666-released-governed-runner-adapter",
+    "profileLabel": "TD3021666 released governed runner adapter",
+    "scriptName": "IDB W144 Customer Proof Pilot Suitelet",
+    "title": "IDB W24 Customer Proof Pilot Suitelet",
+    "deploymentScriptId": "customdeployidb_governed_runner_adapter",
+    "deploymentStatus": "Released",
+    "deployed": true,
+    "executeAsRole": "Current Role",
+    "logLevel": "Error",
+    "accountHost": "https://td3021666.app.netsuite.com",
+    "suiteletPath": "/app/site/hosting/scriptlet.nl?script=6702&deploy=2",
+    "scriptId": "6702",
+    "deploymentId": "2",
+    "fullEndpointUrl": "https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl?script=6702&deploy=2"
+  },
+  "readinessStates": {
+    "missingEndpoint": "smoke_preview_only",
+    "releasedProfileReady": "ready_to_build_records",
+    "submitted": "waiting_for_runner_result",
+    "completed": "records_ready_to_import",
+    "imported": "records_imported"
+  },
+  "motionRunObservations": {
+    "prospect": "Motion Industries",
+    "website": "https://www.motion.com",
+    "laneConfirmed": true,
+    "selectedLaneId": "industrial_distribution",
+    "manufacturingEnabled": false,
+    "wipEnabled": false,
+    "previousBlockerWasMissingEndpoint": true,
+    "runnerTaskCaptured": false,
+    "completedResultImported": false
+  },
+  "datasetSwitching": {
+    "accountHostStoredPerProfile": true,
+    "endpointDerivedFromAccountHostAndPath": true,
+    "canSwapAccountHostWithoutRuntimeLogicChange": true
+  },
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "recordCreationRequiresApprovedServerAdapterPath": true,
+    "noW144DeploymentUpdateInThisBlock": true
+  }
+}

@@ -23,9 +23,33 @@
   const RESOLVER_TOKEN_STORAGE_KEY = 'idb.websiteResolver.token.v1';
   const RESOLVER_LOCAL_FALLBACK_STORAGE_KEY = 'idb.websiteResolver.localFallback.v1';
   const PRODUCTION_BUILD_ADMIN_CONFIG_STORAGE_KEY = 'idb.productionBuild.adminConfig.v1';
+  const RELEASED_W144_ADAPTER_PROFILE_W263 = {
+    schema: 'forge.w263.adapter-profile.v1',
+    profileId: 'td3021666-released-governed-runner-adapter',
+    profileLabel: 'TD3021666 released governed runner adapter',
+    accountHost: 'https://td3021666.app.netsuite.com',
+    scriptName: 'IDB W144 Customer Proof Pilot Suitelet',
+    title: 'IDB W24 Customer Proof Pilot Suitelet',
+    deploymentScriptId: 'customdeployidb_governed_runner_adapter',
+    deploymentStatus: 'Released',
+    deployed: true,
+    executeAsRole: 'Current Role',
+    logLevel: 'Error',
+    suiteletPath: '/app/site/hosting/scriptlet.nl?script=6702&deploy=2',
+    scriptId: '6702',
+    deploymentId: '2',
+    sandboxAccountAllowlist: ['TD3021666'],
+    adapterApproved: true,
+    CREATE_ENABLED: true,
+    GOVERNED_SANDBOX_WRITE_ENABLED: true,
+    QUEUE_SUBMIT_ENABLED: true,
+    productionBuildModeEnabled: true
+  };
   const DEFAULT_PRODUCTION_BUILD_ADMIN_CONFIG = {
     integratedBuildAdapterConfig: {
-      endpointUrl: '',
+      selectedAdapterProfileId: RELEASED_W144_ADAPTER_PROFILE_W263.profileId,
+      adapterProfiles: [RELEASED_W144_ADAPTER_PROFILE_W263],
+      endpointUrl: 'https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl?script=6702&deploy=2',
       adapterApproved: true,
       CREATE_ENABLED: true,
       GOVERNED_SANDBOX_WRITE_ENABLED: true,
@@ -1580,13 +1604,83 @@
     }));
   }
 
+  function adapterProfileEndpointW263(profile, pageContext) {
+    const selected = profile || RELEASED_W144_ADAPTER_PROFILE_W263;
+    const pageUrl = pageContext && pageContext.url || window && window.location && window.location.href || '';
+    let accountHost = String(selected.accountHost || '').replace(/\/+$/g, '');
+    if (!accountHost) accountHost = currentNetSuiteOrigin();
+    if (!accountHost && pageUrl) {
+      try {
+        const parsed = new URL(pageUrl);
+        if (/\.app\.netsuite\.com$/i.test(parsed.hostname)) accountHost = parsed.origin;
+      } catch (error) {
+        accountHost = '';
+      }
+    }
+    const suiteletPath = String(selected.suiteletPath || '').charAt(0) === '/'
+      ? selected.suiteletPath
+      : `/${String(selected.suiteletPath || '').replace(/^\/+/g, '')}`;
+    return accountHost && suiteletPath ? `${accountHost}${suiteletPath}` : '';
+  }
+
+  function releasedAdapterProfileW263(overrides) {
+    const profile = Object.assign({}, RELEASED_W144_ADAPTER_PROFILE_W263, overrides || {});
+    profile.fullEndpointUrl = adapterProfileEndpointW263(profile);
+    return profile;
+  }
+
+  function adapterProfilesFromConfigW263(config) {
+    if (config && config.adapterProfileDisabled === true) {
+      return arrayValue(config.adapterProfiles).filter((profile) => profile && profile.profileId);
+    }
+    const profiles = arrayValue(config && config.adapterProfiles).filter((profile) => profile && profile.profileId);
+    if (!profiles.some((profile) => profile.profileId === RELEASED_W144_ADAPTER_PROFILE_W263.profileId)) {
+      profiles.unshift(releasedAdapterProfileW263());
+    }
+    return profiles.map((profile) => Object.assign({}, profile, {
+      schema: profile.schema || 'forge.w263.adapter-profile.v1',
+      fullEndpointUrl: adapterProfileEndpointW263(profile)
+    }));
+  }
+
+  function selectedAdapterProfileW263(config, pageContext) {
+    const profiles = adapterProfilesFromConfigW263(config);
+    const selectedId = firstNonBlank(config && config.selectedAdapterProfileId, RELEASED_W144_ADAPTER_PROFILE_W263.profileId);
+    const profile = profiles.find((item) => item.profileId === selectedId) || profiles[0] || releasedAdapterProfileW263();
+    return Object.assign({}, profile, {
+      fullEndpointUrl: adapterProfileEndpointW263(profile, pageContext)
+    });
+  }
+
+  function applySelectedAdapterProfileToConfigW263(config, pageContext) {
+    const base = Object.assign({}, config || {});
+    if (base.adapterProfileDisabled === true) {
+      base.adapterProfiles = adapterProfilesFromConfigW263(base);
+      return base;
+    }
+    base.adapterProfiles = adapterProfilesFromConfigW263(base);
+    if (!base.selectedAdapterProfileId) base.selectedAdapterProfileId = RELEASED_W144_ADAPTER_PROFILE_W263.profileId;
+    const selected = selectedAdapterProfileW263(base, pageContext);
+    if (!base.endpointUrl) base.endpointUrl = selected.fullEndpointUrl;
+    if (!Array.isArray(base.sandboxAccountAllowlist) || !base.sandboxAccountAllowlist.length) {
+      base.sandboxAccountAllowlist = arrayValue(selected.sandboxAccountAllowlist);
+    }
+    ['adapterApproved', 'CREATE_ENABLED', 'GOVERNED_SANDBOX_WRITE_ENABLED', 'QUEUE_SUBMIT_ENABLED', 'productionBuildModeEnabled'].forEach((key) => {
+      if (base[key] !== true && selected[key] === true) base[key] = true;
+    });
+    base.profileEndpointUrl = selected.fullEndpointUrl;
+    base.selectedAdapterProfile = selected;
+    return base;
+  }
+
   function productionBuildSavedAdminConfig() {
     const saved = readJson(PRODUCTION_BUILD_ADMIN_CONFIG_STORAGE_KEY, null);
-    const adapterConfig = Object.assign(
+    let adapterConfig = Object.assign(
       {},
       DEFAULT_PRODUCTION_BUILD_ADMIN_CONFIG.integratedBuildAdapterConfig,
       saved && saved.integratedBuildAdapterConfig || {}
     );
+    adapterConfig = applySelectedAdapterProfileToConfigW263(adapterConfig);
     const operatorApproval = Object.assign(
       {},
       DEFAULT_PRODUCTION_BUILD_ADMIN_CONFIG.integratedBuildOperatorApproval,
@@ -15248,6 +15342,78 @@
     };
   }
 
+  function deployedAdapterReadinessTraceW263(state, lane, pageContext, recommendation, options) {
+    const opts = options || {};
+    ensureProductionBuildSavedAdminConfig(state);
+    const adapterConfig = applySelectedAdapterProfileToConfigW263(state && state.integratedBuildAdapterConfig || {}, pageContext);
+    const profile = adapterConfig.adapterProfileDisabled === true
+      ? null
+      : selectedAdapterProfileW263(adapterConfig, pageContext);
+    const w262 = adapterReadyRecordCreationUxW262(state, lane, pageContext, recommendation, opts);
+    const runnerResult = state && state.integratedBuildRunnerResult || null;
+    const toggles = resolvedToggles(state, lane);
+    const blockers = [];
+    if (!profile) blockers.push('adapter profile not selected');
+    if (!adapterConfig.endpointUrl) blockers.push('endpoint missing');
+    if (adapterConfig.adapterApproved !== true) blockers.push('adapter not approved');
+    if (adapterConfig.CREATE_ENABLED !== true || adapterConfig.GOVERNED_SANDBOX_WRITE_ENABLED !== true || adapterConfig.QUEUE_SUBMIT_ENABLED !== true) blockers.push('server flags incomplete');
+    if (!arrayValue(adapterConfig.sandboxAccountAllowlist).length) blockers.push('sandbox allowlist missing');
+    if (!(state && state.acceptedPacket)) blockers.push('consultant request not confirmed');
+    if (runnerResult && !w262.stateFacts.runnerTaskCaptured) blockers.push('runner task not captured');
+    const intake = normalizedIntake(state);
+    return {
+      schema: 'forge.w263.deployed-adapter-readiness-trace.v1',
+      releaseVersion: CONTRACT.product.version,
+      selectedAdapterProfile: profile ? {
+        profileId: profile.profileId,
+        profileLabel: profile.profileLabel,
+        scriptName: profile.scriptName,
+        title: profile.title,
+        deploymentScriptId: profile.deploymentScriptId,
+        deploymentStatus: profile.deploymentStatus,
+        deployed: profile.deployed === true,
+        executeAsRole: profile.executeAsRole,
+        logLevel: profile.logLevel,
+        accountHost: profile.accountHost,
+        suiteletPath: profile.suiteletPath,
+        scriptId: profile.scriptId,
+        deploymentId: profile.deploymentId,
+        fullEndpointUrl: profile.fullEndpointUrl
+      } : null,
+      endpointConfigured: !!adapterConfig.endpointUrl,
+      endpointUrl: adapterConfig.endpointUrl || '',
+      w262ReadinessState: w262.readinessState,
+      blockers,
+      datasetSwitching: {
+        accountHostStoredPerProfile: true,
+        endpointDerivedFromAccountHostAndPath: !!(profile && profile.accountHost && profile.suiteletPath && profile.fullEndpointUrl),
+        canSwapAccountHostWithoutRuntimeLogicChange: true
+      },
+      motionRunObservations: {
+        prospect: intake.customer || '',
+        website: intake.website || '',
+        laneConfirmed: state && state.laneSelectionSource === 'consultant_confirmed',
+        selectedLaneId: lane && lane.id || '',
+        selectedLaneName: lane && lane.name || '',
+        manufacturingEnabled: toggles.enableManufacturing === true,
+        wipEnabled: toggles.enableWip === true,
+        previousBlockerWasMissingEndpoint: opts.previousBlockerWasMissingEndpoint === true || !adapterConfig.endpointUrl,
+        runnerTaskCaptured: w262.stateFacts.runnerTaskCaptured === true,
+        completedResultImported: w262.stateFacts.finalNamesImported === true
+      },
+      normalUi: {
+        endpointProfileHiddenFromConsultant: true,
+        consultantWorkflow: w262.consultantWorkflow
+      },
+      guardrails: {
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        recordCreationRequiresApprovedServerAdapterPath: true,
+        noW144DeploymentUpdateInThisBlock: true
+      }
+    };
+  }
+
   function productionFlowHardeningConsultantToggleImageRemovalW209V1(state, lane, pageContext, recommendation, options) {
     const opts = options || {};
     ensureProductionBuildSavedAdminConfig(state);
@@ -21419,6 +21585,7 @@
       ? reviewProposedLanePackChangeW247(state.lanePackProposalW251)
       : null;
     const copyStatus = state && state.operatorSummaryCopyStatus || null;
+    const w263Trace = deployedAdapterReadinessTraceW263(state, lane, page, recommendation);
     return `
       <div class="idb-card">
         <div class="idb-section-title">Trace actions only</div>
@@ -21430,6 +21597,7 @@
           <span class="idb-chip idb-open">${escapeHtml(consultantLabel(packet.packetMode))}</span>
           <span class="idb-chip idb-open">${escapeHtml(consultantLabel(packet.stopGo))}</span>
           <span class="idb-chip idb-open">${escapeHtml(consultantLabel(adapter.state))}</span>
+          <span class="idb-chip idb-${w263Trace.w262ReadinessState === 'ready_to_build_records' ? 'ready' : 'partial'}">${escapeHtml(consultantLabel(w263Trace.w262ReadinessState))}</span>
         </div>
         <div class="idb-actions">
           ${showAdminResultImport ? '<button class="idb-primary" data-idb-export-dcc-handoff>Export debug handoff</button>' : ''}
@@ -21441,6 +21609,7 @@
         ${showAdminResultImport ? `<label class="idb-checkbox-line"><input type="checkbox" data-idb-operator-summary-diagnostics ${state.includeOperatorSummaryDiagnostics ? 'checked' : ''}> Include diagnostics appendix</label>` : ''}
         ${copyStatus ? `<div class="idb-footer-note">${escapeHtml(copyStatus)}</div>` : ''}
         <div class="idb-footer-note">Clear session resets setup, lane choice, review packet, and trace for the next prospect.</div>
+        <div class="idb-footer-note">Adapter profile: ${escapeHtml(w263Trace.selectedAdapterProfile && w263Trace.selectedAdapterProfile.profileLabel || 'Not selected')} ${w263Trace.endpointConfigured ? '(endpoint configured)' : '(endpoint missing)'}</div>
       </div>
       ${showAdminResultImport ? `<div class="idb-card idb-accent idb-w116-final-naming-import">
         <div class="idb-section-title">Completed runner result import</div>
@@ -21565,6 +21734,8 @@
       recordNamingAdvisoryRequest: buildRecordNamingAdvisoryRequest(state, lane, dryRunObjectPacket(state, lane, pageContext, recommendation)),
       namingAdvisorySummary: namingAdvisorySummary(state, lane, dryRunObjectPacket(state, lane, pageContext, recommendation)),
       oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1: oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1(state, lane, pageContext, recommendation),
+      adapterReadyRecordCreationUxW262: adapterReadyRecordCreationUxW262(state, lane, pageContext, recommendation),
+      deployedAdapterReadinessTraceW263: deployedAdapterReadinessTraceW263(state, lane, pageContext, recommendation),
       productionFlowHardeningConsultantToggleImageRemovalW209V1: productionFlowHardeningConsultantToggleImageRemovalW209V1(state, lane, pageContext, recommendation),
       consultantFirstUiCleanupAdminDebugSeparationW210V1: consultantFirstUiCleanupAdminDebugSeparationW210V1(state, lane, pageContext, recommendation),
       governedPilotHandoff: governedPilotHandoffModel(state, lane, dryRunObjectPacket(state, lane, pageContext, recommendation)),
@@ -23031,6 +23202,12 @@
       productionBuildModeSmokeWithSavedAdminConfigW207V1,
       oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1,
       adapterReadyRecordCreationUxW262,
+      releasedAdapterProfileW263,
+      adapterProfileEndpointW263,
+      adapterProfilesFromConfigW263,
+      selectedAdapterProfileW263,
+      applySelectedAdapterProfileToConfigW263,
+      deployedAdapterReadinessTraceW263,
       productionFlowHardeningConsultantToggleImageRemovalW209V1,
       consultantFirstUiCleanupAdminDebugSeparationW210V1,
       toggleAwareNamingGuardrailContractW211V1,

@@ -107,6 +107,19 @@ function baseState(hooks) {
       enableManufacturing: false,
       enableWip: false
     },
+    integratedBuildAdapterConfig: {
+      adapterProfileDisabled: true,
+      adapterProfiles: [],
+      selectedAdapterProfileId: '',
+      endpointUrl: '',
+      adapterApproved: true,
+      CREATE_ENABLED: true,
+      GOVERNED_SANDBOX_WRITE_ENABLED: true,
+      QUEUE_SUBMIT_ENABLED: true,
+      sandboxAccountAllowlist: ['TD3021666'],
+      productionBuildModeEnabled: true,
+      mode: 'production_build_saved_admin_config'
+    },
     pageContext: {
       title: 'NetSuite Home',
       url: 'https://TD3021666.app.netsuite.com/app/center/card.nl',

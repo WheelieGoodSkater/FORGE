@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W262 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, and V1.0.0 real-build path clarity from returned records.
+  - W250-W263 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, and the saved released W144 adapter profile for connected build readiness.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -74,6 +74,7 @@ npm run harness:header-feedback-placeholder-visual-acceptance-w259
 npm run harness:install-ready-release-packet-w260
 npm run harness:post-install-smoke-evidence-capture-w261
 npm run harness:real-build-path-clarity-w262
+npm run harness:deployed-adapter-profile-readiness-trace-w263
 npm run check
 npm run validate
 ```
@@ -99,12 +100,46 @@ Current expected result:
 - W260 harness passes `10/10`.
 - W261 harness passes `14/14`.
 - W262 harness passes `11/11`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, and W262 harness.
+- W263 harness passes `12/12`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, and W263 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W263: Deployed Adapter Profile, Dataset Switching, And Readiness Trace
+
+What changed:
+
+- Adds a saved released W144 governed runner adapter profile for `customdeployidb_governed_runner_adapter`.
+- Stores the current account host, Suitelet path, script/deploy ids, deployment status, deployed flag, execute-as-role mode, log level, allowlist, adapter approval flags, and production build mode flag.
+- Represents the released endpoint as account host plus path so future datasets/accounts can swap hosts without changing runtime logic.
+- Applies the selected released profile to W262 readiness so missing endpoint remains preview-only, while a released profile with all gates true becomes `ready_to_build_records`.
+- Keeps endpoint/profile setup hidden from normal consultant UI.
+- Adds W262 readiness, selected profile, endpoint configuration, script/deploy ids, blockers, and Motion run observations into Trace/export.
+- Captures Motion observations from the current run: industrial distribution confirmed, manufacturing off, WIP off, previous blocker was missing endpoint, no runner task captured, and no completed result imported.
+- Preserves no drawer-created records, no drawer transaction writes, and the approved W144/server-adapter-only record creation boundary.
+
+Released adapter profile:
+
+- Script: `IDB W144 Customer Proof Pilot Suitelet`
+- Title: `IDB W24 Customer Proof Pilot Suitelet`
+- Deployment script id: `customdeployidb_governed_runner_adapter`
+- Status: `Released`
+- Deployed: `true`
+- Execute as role: `Current Role`
+- Log level: `Error`
+- Suitelet path: `/app/site/hosting/scriptlet.nl?script=6702&deploy=2`
+- Current endpoint: `https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl?script=6702&deploy=2`
+
+Important W263 artifacts:
+
+- `archive/tools/run_w263_deployed_adapter_profile_readiness_trace_harness.js`
+- `archive/reports/w263_deployed_adapter_profile_readiness_trace.md`
+- `archive/trace_samples/w263_deployed_adapter_profile_readiness_trace.json`
+
+Previous completed block:
 
 - W262: V1.0.0 Release UX, Real Build Path Clarity, And Adapter-Ready Record Creation
 
@@ -480,64 +515,70 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W263: Adapter Readiness Setup Handoff And Real Build Smoke Checklist
+W264: Connected Build Submit, Runner Refresh, And Completed Import
 
 Goal:
-Make the real Build records path operationally clear after W262 by documenting exactly what must be configured for approved adapter readiness, while keeping consultants on the simple name/website/notes/toggles workflow.
+Use the saved released adapter profile to run the full connected Build records path: submit one approved build, capture runnerTaskId, refresh/poll runner status, import the completed result, and show real returned records in Review/Run.
 
 Build:
-- Add an archived adapter readiness setup handoff that explains:
-  - consultants only enter prospect name, website, notes, and toggles
-  - `Build records` appears only when approved adapter readiness is true
-  - required admin setup includes approved endpoint, server flags, sandbox allowlist, operator confirmation, and production build mode
-  - record creation is owned by the approved server adapter/runner path, not by drawer client writes
-  - `Refresh build status` appears after submit
-  - `Finish build` appears after W245-valid completed result is ready
-- Add a real build smoke checklist for an approved sandbox adapter run:
-  - confirm the header shows `V1.0.0`
-  - confirm normal Build UI hides internal diagnostics
-  - enter prospect, website, notes, and toggles
-  - confirm `Build records` appears only when adapter readiness is true
-  - submit one approved build
-  - refresh runner status
-  - finish/import completed result
-  - confirm Review/Run show returned names, lane-aware labels, supported Open links, W218 success wording, W256 script, W257 sequence, and W254 receipt
-  - confirm weak/conflicting evidence still asks for confirmation
-- Keep W262 preview-only smoke behavior available when adapter readiness is false.
-- Keep W260 release packet and W261 evidence capture available and aligned with the updated W262 states.
-- Keep W259 feedback placeholder no-op and future-ready; do not add the real feedback URL yet.
-- Do not create records from the drawer client directly; record creation must go through the approved W144/server adapter path.
-- Do not add drawer transaction writes outside the approved adapter path.
+- Wire `Build records` to the selected released adapter profile when W262 readiness is `ready_to_build_records`.
+- Submit only through:
+  - selected adapter profile endpoint
+  - approved adapter flags
+  - confirmed consultant request
+  - current sandbox/account allowlist
+  - one idempotency token per confirmed request
+- Capture and persist:
+  - adapter response status
+  - runnerTaskId
+  - result capture status
+  - adapter-safe error state
+- After submit, show consultant-safe state:
+  - `Build submitted`
+  - `Refresh build status`
+  - no raw runner/admin diagnostics in normal UI
+- Wire `Refresh build status` through the approved adapter result/poll path.
+- If runner is still processing, show waiting copy.
+- If adapter returns error, stop safely and ask for admin review.
+- When refresh returns completed result JSON:
+  - validate through W245/W151 guardrails
+  - show `Finish build`
+- On `Finish build`:
+  - import returned display-ready records
+  - show returned record names
+  - show lane-aware labels
+  - show supported Open links only for valid NetSuite URLs
+  - update Review/Run story surface
+  - preserve W256 script, W257 guided sequence, and W254 evidence receipt
+- Add Motion-style connected-run acceptance coverage.
+- Keep thin website evidence uncertainty visible.
+- Do not create records from the drawer client directly.
+- Do not add transaction writes outside approved adapter path.
 - Do not update W144 deployment in this block.
-- Preserve returned record names, lane-aware labels, supported Open-link authority, and weak/conflicting evidence confirmation-first behavior.
-- Do not expose raw JSON, stack traces, internal arrays, runner task ids, schema names, admin diagnostics, or install-like actions in normal consultant UI.
-- Keep W252 proposal review admin-only, W253/W259/W260/W261 acceptance/release/signoff packets review-only, and W254 receipt consultant-safe.
-- Keep W255 receipt-driven QA, W256 script, W257 guided sequence, and W262 adapter readiness UX available for existing/proposed lane packs and future expansion.
-- Keep N/LLM advisory-only and uncertainty-visible.
-- Preserve W218 success wording and W220 recovery wording.
-- Preserve fake Open-link blocking before valid import.
-- Keep harnesses, reports, and traces under `archive/`.
+- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, and W245 canonical import normalization.
+- Keep harnesses, reports, and traces under archive/.
 - Keep repo front clean.
 
 Validation:
-- Add archived W262 harness covering:
-  - adapter readiness setup handoff lists all required approved setup gates
-  - consultant workflow remains name, website, notes, and toggles
-  - real build smoke checklist covers Build records, refresh status, finish/import, and Review/Run returned records
-  - `Build records` appears only when W262 adapter readiness is true
-  - preview-only mode remains clear when W262 adapter readiness is false
-  - normal Build UI hides internal diagnostics
-  - W260 release packet and W261 evidence capture remain available and aligned to W262 states
-  - W259 feedback placeholder remains no-op with no URL/network/storage/install path
-  - W258 first-glance story surface remains compact and visible after valid import
-  - W218 success wording and W220 recovery wording remain preserved
-  - normal UI hides raw diagnostics and admin-only proposal review
-  - W255 receipt-driven QA remains available
-  - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W263 harnesses, check, and validate.
+- Add W264 harness covering:
+  - Build records submits only when released profile readiness is true
+  - submit uses `script=6702&deploy=2`
+  - one-call/idempotency behavior is preserved
+  - runnerTaskId is captured from approved adapter response
+  - Refresh build status appears after submit
+  - completed result validates before Finish build appears
+  - invalid result is rejected with W220 recovery wording
+  - valid result imports returned names and Open links
+  - Motion-style distribution records use Product SKU / availability labels, not manufacturing labels
+  - Review/Run show W258 CTA, W256 script, W257 sequence, and W254 receipt
+  - fake links remain blocked before import
+  - adapter error does not mutate returned records or show fake Open links
+  - normal consultant UI hides raw adapter diagnostics
+  - no drawer-created records or drawer transaction writes are introduced
+- Run W244 through W264 harnesses, check, and validate.
 
 Output:
-- Summary of adapter readiness setup handoff, real build smoke checklist, runtime guardrails, validation, and lane expansion continuity.
+- Summary of connected submit/poll/import flow, runner task capture, completed import, safety guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

@@ -393,6 +393,92 @@ function nllmAdvisoryPayloadForLanePack(input, lanePack) {
   };
 }
 
+function reviewProposedLanePackChange(proposal) {
+  const errors = [];
+  const warnings = [];
+  const candidate = proposal && proposal.candidatePack;
+  const validation = validateLanePack(candidate);
+  validation.errors.forEach((error) => errors.push(error));
+  if (!proposal || proposal.proposedBy !== 'nllm_advisory') errors.push('proposal.proposedBy must be nllm_advisory');
+  if (!proposal || proposal.installRequested !== true) warnings.push('proposal is review-only until a human requests install');
+  if (proposal && proposal.autoInstall === true) errors.push('autoInstall is forbidden');
+  if (candidate && candidate.nllmAdvisory && candidate.nllmAdvisory.writeAuthority !== 'none') errors.push('candidate cannot grant write authority');
+  if (candidate && candidate.nllmAdvisory && candidate.nllmAdvisory.creationAllowed !== false) errors.push('candidate cannot allow creation');
+  if (candidate && candidate.websiteSignals && (!Array.isArray(candidate.websiteSignals.categoryTerms) || candidate.websiteSignals.categoryTerms.length < 2)) {
+    errors.push('candidate needs at least two category evidence terms');
+  }
+  if (candidate && candidate.liveDemo && /guarantee|guaranteed|measured roi|will increase/i.test([
+    candidate.liveDemo.proofMove,
+    candidate.liveDemo.storyAnchor,
+    candidate.liveDemo.roiSoWhat,
+    candidate.liveDemo.competitiveContrast
+  ].join(' '))) {
+    errors.push('candidate story cannot make guaranteed or measured ROI claims');
+  }
+  if (candidate && LANE_PACKS.some((lanePack) => lanePack.packId === candidate.packId)) {
+    warnings.push('candidate pack id already exists and would require an explicit replacement review');
+  }
+  return {
+    schema: 'forge.lane-pack-authoring-review.v1',
+    status: errors.length ? 'rejected' : 'review_ready',
+    installAllowed: false,
+    humanReviewRequired: true,
+    nllmAdvisoryOnly: true,
+    errors,
+    warnings,
+    candidatePackId: candidate && candidate.packId || ''
+  };
+}
+
+function consultantStorySurfaceFromLanePack(input, lanePack, normalizedImport) {
+  const resolution = resolveLanePackFromEvidence(input || {});
+  const selected = lanePack || (resolution.status === 'insufficient_evidence' ? null : resolution.lanePack);
+  const records = normalizedImport && Array.isArray(normalizedImport.displayReadyRecords)
+    ? normalizedImport.displayReadyRecords
+    : [];
+  const visibleRecords = records.filter((record) => record && record.normalConsultantVisible !== false && record.linkAuthorityStatus !== 'blocked_invalid_internal_id');
+  const firstProof = visibleRecords.find((record) => record && record.canonicalRole && !/customer|sales_order/.test(record.canonicalRole)) || visibleRecords[0] || null;
+  const advisory = nllmAdvisoryPayloadForLanePack(input || {}, selected);
+  if (!selected) {
+    return {
+      schema: 'forge.consultant-story-surface.v1',
+      status: 'needs_lane_confirmation',
+      openTarget: firstProof ? `Open ${firstProof.name}.` : 'Confirm lane before opening proof records.',
+      proofMove: 'Prove only what the imported records and website evidence support.',
+      safeClaim: 'Evidence is not strong enough for a lane claim yet.',
+      doNotClaim: 'Do not claim industry fit, ROI, record creation, or availability without confirmed evidence.',
+      buyerFacingSoWhat: 'Keep the buyer story grounded in confirmed evidence and visible uncertainty.',
+      nllmAdvisory: {
+        confidence: 'low',
+        uncertainty: 'Lane evidence is insufficient; ask for confirmation.',
+        allowedTasks: advisory.allowedTasks,
+        hardLimits: advisory.hardLimits
+      }
+    };
+  }
+  return {
+    schema: 'forge.consultant-story-surface.v1',
+    status: firstProof ? 'story_ready' : 'story_ready_without_open_target',
+    packId: selected.packId,
+    laneLabel: selected.label,
+    openTarget: firstProof ? `Open ${firstProof.name}${firstProof.consultantLabel ? ` (${firstProof.consultantLabel})` : ''}.` : selected.liveDemo.proofMove,
+    openUrl: firstProof && firstProof.supportedOpenUrl || '',
+    proofMove: selected.liveDemo.proofMove,
+    safeClaim: selected.liveDemo.storyAnchor,
+    doNotClaim: `Do not claim ${selected.vocabulary.forbidden.join(', ')} or measured ROI without evidence.`,
+    buyerFacingSoWhat: selected.liveDemo.roiSoWhat,
+    competitiveContrast: selected.liveDemo.competitiveContrast,
+    nllmAdvisory: {
+      confidence: resolution.confidence,
+      uncertainty: resolution.status === 'resolved' ? 'Low uncertainty: website evidence resolved the lane pack.' : 'Visible uncertainty: ask for confirmation before treating the pack as truth.',
+      writeAuthority: 'none',
+      creationAllowed: false,
+      allowedTasks: advisory.allowedTasks,
+      hardLimits: advisory.hardLimits
+    }
+  };
+}
+
 module.exports = {
   LANE_PACK_SCHEMA_VERSION,
   NLLM_ALLOWED_TASKS,
@@ -401,5 +487,7 @@ module.exports = {
   validateLanePack,
   resolveLanePackFromEvidence,
   nllmAdvisoryPayloadForLanePack,
+  reviewProposedLanePackChange,
+  consultantStorySurfaceFromLanePack,
   domainFromWebsite
 };

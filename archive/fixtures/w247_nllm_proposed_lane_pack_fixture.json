@@ -1,0 +1,58 @@
+{
+  "schema": "forge.lane-pack-authoring-proposal.v1",
+  "proposedBy": "nllm_advisory",
+  "installRequested": true,
+  "autoInstall": false,
+  "proposalUse": "review_fixture_only",
+  "candidatePack": {
+    "schema": "forge.lane-pack.v1",
+    "packVersion": "1.0.0",
+    "packId": "electrical-components-distributor",
+    "laneId": "industrial_distribution",
+    "subIndustryId": "electrical-components-distributor",
+    "label": "Electrical Components Distributor",
+    "operatingMode": "distribution_replenishment",
+    "websiteSignals": {
+      "domains": ["example-electrical-distributor.com"],
+      "categoryTerms": ["electrical components", "wire", "cable", "switchgear", "industrial distributor"],
+      "evidenceTerms": ["branch availability", "supplier lead time", "replenishment", "project fulfillment"]
+    },
+    "recordRoles": {
+      "required": ["customer", "sales_order", "branch_or_product_sku", "replenishment_or_availability_flow"],
+      "optional": ["supporting_sku", "location_planning_context"],
+      "invalid": ["formula_or_batch_structure", "work_order_or_wip_object", "style_matrix_or_availability_flow"]
+    },
+    "vocabulary": {
+      "allowed": ["branch availability", "supplier lead time", "project fulfillment", "replenishment"],
+      "forbidden": ["ingredient batch", "style matrix", "production routing"]
+    },
+    "liveDemo": {
+      "proofMove": "Open the electrical component SKU and prove branch availability, supplier timing, and replenishment confidence.",
+      "storyAnchor": "The buyer needs confidence that the distributor can promise project-critical components from the right location.",
+      "roiSoWhat": "Protect service levels and margin by catching supplier and branch exceptions before project fulfillment misses.",
+      "competitiveContrast": "NetSuite connects order promise, branch inventory, and replenishment action without a separate lookup path."
+    },
+    "nllmAdvisory": {
+      "allowedTasks": [
+        "summarizeWebsiteAndCategoryEvidence",
+        "proposeRecordNames",
+        "synthesizePainValueCompetitiveAndRoi",
+        "draftSoWhatAndWhyItMatters",
+        "draftLanePackSuggestionsForHumanReview"
+      ],
+      "hardLimits": [
+        "cannotCreateRecords",
+        "cannotInvokeSuiteScriptOrWriteTransactions",
+        "cannotSilentlyInstallTruth",
+        "cannotOverrideWebsiteEvidence",
+        "cannotOverrideConsultantToggles",
+        "cannotHideUncertainty",
+        "cannotInventVerifiedWebsiteFacts",
+        "cannotClaimMeasuredRoiWithoutBaseline"
+      ],
+      "writeAuthority": "none",
+      "creationAllowed": false,
+      "uncertaintyPolicy": "surface_uncertainty_and_request_confirmation"
+    }
+  }
+}

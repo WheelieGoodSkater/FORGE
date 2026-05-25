@@ -21,7 +21,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
 - `idb-drawer.user.js`
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
-  - W245/W246 add canonical display-ready import records and versioned lane-pack live-demo coaching.
+  - W245/W246/W247 add canonical display-ready import records, versioned lane-pack live-demo coaching, and compact consultant story surfaces.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -54,6 +54,7 @@ Run from `/Users/aaronsunshine/Documents/Playground/FORGE-repo-ready`:
 npm run harness:contract-generated-legacy-slot-mapping-w244
 npm run harness:canonical-import-result-normalization-w245
 npm run harness:versioned-lane-pack-contract-w246
+npm run harness:lane-pack-authoring-story-surface-w247
 npm run check
 npm run validate
 ```
@@ -63,12 +64,42 @@ Current expected result:
 - W244 harness passes `10/10`.
 - W245 harness passes `10/10`.
 - W246 harness passes `10/10`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, and W246 harness.
+- W247 harness passes `9/9`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, and W247 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W247: Lane Pack Authoring And Consultant Story Surface Hardening
+
+What changed:
+
+- Added a review-only lane-pack authoring gate for N/LLM proposed pack changes.
+- Added compact consultant story surface helpers that combine W246 lane-pack truth with W245 real returned records.
+- Story surface returns open target, proof move, safe claim, do-not-claim guardrail, buyer-facing so what, competitive contrast, and N/LLM confidence/uncertainty.
+- Added a sample N/LLM proposed lane-pack fixture under `archive/fixtures/`; it can be validated and reviewed but cannot install itself.
+- W245 import normalization now carries `consultantStorySurfaceW247` for Review/Run consumers.
+
+Important W247 helper names:
+
+- `reviewProposedLanePackChange`
+- `consultantStorySurfaceFromLanePack`
+- `reviewProposedLanePackChangeW247`
+- `consultantStorySurfaceFromLanePackW247`
+
+W247 harness:
+
+- `archive/tools/run_w247_lane_pack_authoring_story_surface_harness.js`
+
+W247 artifacts:
+
+- `archive/fixtures/w247_nllm_proposed_lane_pack_fixture.json`
+- `archive/reports/w247_lane_pack_authoring_story_surface.md`
+- `archive/trace_samples/w247_lane_pack_authoring_story_surface_trace.json`
+
+Previous completed block:
 
 - W246: Versioned Lane Pack Contract For Live Demo Coaching
 
@@ -157,37 +188,38 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-Move through W247: Lane Pack Authoring And Consultant Story Surface Hardening.
+Move through W248: Consultant Story Surface UI Wiring And Evidence Confidence Copy.
 
 Goal:
-Make lane-pack expansion and consultant live-demo storytelling easier to author, review, and trust without editing scattered runtime logic.
+Wire the W247 compact consultant story surface into the Review/Run consultant UI so the live-demo talk track is visible, concise, and confidence-aware without exposing internal diagnostics.
 
 Build:
-- Add a structured authoring/review harness for lane-pack changes.
-- Add compact consultant-facing story output from the resolved lane pack plus W245 records:
+- Use `consultantStorySurfaceW247` after valid import to show:
   - open target
   - proof move
   - safe claim
   - do-not-claim guardrail
   - buyer-facing so what
   - N/LLM advisory confidence/uncertainty
-- Add a sample proposed-lane-pack fixture that N/LLM could draft but cannot install without validation.
-- Keep pack source in `src/contracts/lanePacks.js`; do not scatter new regex/story/naming edits.
-- Keep N/LLM advisory-only and uncertainty-visible.
+- Keep normal consultant UI compact and buyer-facing.
+- Hide internal schema names, raw role arrays, stack traces, and admin diagnostics from normal UI.
+- Preserve W218 success wording and W220 recovery wording.
+- Preserve fake Open-link blocking before valid import.
 - Keep harnesses, reports, and traces under `archive/`.
 - Keep repo front clean.
 
 Validation:
-- Add archived W247 harness covering:
-  - lane-pack authoring fixture validation
-  - rejected unsafe N/LLM proposed pack changes
-  - consultant story surface uses W245 real records and W246 pack truth
-  - uncertainty remains visible when evidence is weak
+- Add archived W248 harness covering:
+  - Review/Run renders compact story surface after valid import
+  - no story surface before valid import with fake links
+  - weak evidence shows visible uncertainty/confirmation guidance
+  - normal consultant UI hides internal diagnostics
 - Run only:
   - W244 harness
   - W245 harness
   - W246 harness
   - W247 harness
+  - W248 harness
   - check
   - validate
 
@@ -196,10 +228,9 @@ Do not invoke the runner live.
 Do not update W144 deployment.
 
 Output:
-- Consultant story surface helper.
-- Lane-pack authoring review fixture.
-- W247 regression harness.
-- W247 report and trace.
+- Review/Run story surface UI wiring.
+- W248 regression harness.
+- W248 report and trace.
 - Visual testing decision.
 - GitHub Desktop commit title and description.
 - Best next Codex prompt.

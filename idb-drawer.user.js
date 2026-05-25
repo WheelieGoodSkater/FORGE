@@ -2367,6 +2367,90 @@
     };
   }
 
+  function reviewProposedLanePackChangeW247(proposal) {
+    const errors = [];
+    const warnings = [];
+    const candidate = proposal && proposal.candidatePack;
+    const validation = validateLanePackW246(candidate);
+    validation.errors.forEach((error) => errors.push(error));
+    if (!proposal || proposal.proposedBy !== 'nllm_advisory') errors.push('proposal.proposedBy must be nllm_advisory');
+    if (!proposal || proposal.installRequested !== true) warnings.push('proposal is review-only until a human requests install');
+    if (proposal && proposal.autoInstall === true) errors.push('autoInstall is forbidden');
+    if (candidate && candidate.nllmAdvisory && candidate.nllmAdvisory.writeAuthority !== 'none') errors.push('candidate cannot grant write authority');
+    if (candidate && candidate.nllmAdvisory && candidate.nllmAdvisory.creationAllowed !== false) errors.push('candidate cannot allow creation');
+    if (candidate && candidate.websiteSignals && (!Array.isArray(candidate.websiteSignals.categoryTerms) || candidate.websiteSignals.categoryTerms.length < 2)) {
+      errors.push('candidate needs at least two category evidence terms');
+    }
+    if (candidate && candidate.liveDemo && /guarantee|guaranteed|measured roi|will increase/i.test([
+      candidate.liveDemo.proofMove,
+      candidate.liveDemo.storyAnchor,
+      candidate.liveDemo.roiSoWhat,
+      candidate.liveDemo.competitiveContrast
+    ].join(' '))) {
+      errors.push('candidate story cannot make guaranteed or measured ROI claims');
+    }
+    if (candidate && W246_LIVE_DEMO_LANE_PACKS.some((lanePack) => lanePack.packId === candidate.packId)) {
+      warnings.push('candidate pack id already exists and would require an explicit replacement review');
+    }
+    return {
+      schema: 'forge.lane-pack-authoring-review.v1',
+      status: errors.length ? 'rejected' : 'review_ready',
+      installAllowed: false,
+      humanReviewRequired: true,
+      nllmAdvisoryOnly: true,
+      errors,
+      warnings,
+      candidatePackId: candidate && candidate.packId || ''
+    };
+  }
+
+  function consultantStorySurfaceFromLanePackW247(state, lanePack, normalizedImport) {
+    const resolution = resolveLanePackFromEvidenceW246(state);
+    const selected = lanePack || (resolution.status === 'insufficient_evidence' ? null : resolution.lanePack);
+    const records = normalizedImport && Array.isArray(normalizedImport.displayReadyRecords) ? normalizedImport.displayReadyRecords : [];
+    const visibleRecords = records.filter((recordItem) => recordItem && recordItem.normalConsultantVisible !== false && recordItem.linkAuthorityStatus !== 'blocked_invalid_internal_id');
+    const firstProof = visibleRecords.find((recordItem) => recordItem && recordItem.canonicalRole && !/customer|sales_order/.test(recordItem.canonicalRole)) || visibleRecords[0] || null;
+    const advisory = nllmAdvisoryPayloadForLanePackW246(state, selected, normalizedImport);
+    if (!selected) {
+      return {
+        schema: 'forge.consultant-story-surface.v1',
+        status: 'needs_lane_confirmation',
+        openTarget: firstProof ? `Open ${firstProof.name}.` : 'Confirm lane before opening proof records.',
+        proofMove: 'Prove only what the imported records and website evidence support.',
+        safeClaim: 'Evidence is not strong enough for a lane claim yet.',
+        doNotClaim: 'Do not claim industry fit, ROI, record creation, or availability without confirmed evidence.',
+        buyerFacingSoWhat: 'Keep the buyer story grounded in confirmed evidence and visible uncertainty.',
+        nllmAdvisory: {
+          confidence: 'low',
+          uncertainty: 'Lane evidence is insufficient; ask for confirmation.',
+          allowedTasks: advisory.allowedTasks,
+          hardLimits: advisory.hardLimits
+        }
+      };
+    }
+    return {
+      schema: 'forge.consultant-story-surface.v1',
+      status: firstProof ? 'story_ready' : 'story_ready_without_open_target',
+      packId: selected.packId,
+      laneLabel: selected.label,
+      openTarget: firstProof ? `Open ${firstProof.name}${firstProof.consultantLabel ? ` (${firstProof.consultantLabel})` : ''}.` : selected.liveDemo.proofMove,
+      openUrl: firstProof && firstProof.supportedOpenUrl || '',
+      proofMove: selected.liveDemo.proofMove,
+      safeClaim: selected.liveDemo.storyAnchor,
+      doNotClaim: `Do not claim ${selected.vocabulary.forbidden.join(', ')} or measured ROI without evidence.`,
+      buyerFacingSoWhat: selected.liveDemo.roiSoWhat,
+      competitiveContrast: selected.liveDemo.competitiveContrast,
+      nllmAdvisory: {
+        confidence: resolution.confidence,
+        uncertainty: resolution.status === 'resolved' ? 'Low uncertainty: website evidence resolved the lane pack.' : 'Visible uncertainty: ask for confirmation before treating the pack as truth.',
+        writeAuthority: 'none',
+        creationAllowed: false,
+        allowedTasks: advisory.allowedTasks,
+        hardLimits: advisory.hardLimits
+      }
+    };
+  }
+
   function traceCount() {
     return readJson(TRACE_KEY, []).length;
   }
@@ -10556,6 +10640,7 @@
       signals: lane && lane.signals ? lane.signals : []
     });
     const lanePackCoaching = liveDemoCoachingFromLanePackW246(state, lanePackResolution.lanePack, { displayReadyRecords: visibleRecords });
+    const consultantStorySurface = consultantStorySurfaceFromLanePackW247(state, lanePackResolution.lanePack, { displayReadyRecords: visibleRecords });
     return {
       schema: 'idb.w245-canonical-import-result-normalization.v1',
       status: hasValidImport ? 'display_ready_records_normalized' : 'no_valid_display_ready_records',
@@ -10563,6 +10648,7 @@
       resolvedOperatingMode: firstNonBlank(finalNaming && finalNaming.resolvedOperatingMode, input && input.resolvedOperatingMode, input && input.operatingMode),
       versionedLanePackW246: lanePackResolution,
       lanePackNllmAdvisoryPayloadW246: nllmAdvisoryPayloadForLanePackW246(state, lanePackResolution.lanePack, { displayReadyRecords: visibleRecords }),
+      consultantStorySurfaceW247: consultantStorySurface,
       finalNamesImported: !!(finalNaming && finalNaming.finalNamesImported),
       displayReadyRecords,
       visibleRecords,
@@ -21116,6 +21202,8 @@
       resolveLanePackFromEvidenceW246,
       nllmAdvisoryPayloadForLanePackW246,
       liveDemoCoachingFromLanePackW246,
+      reviewProposedLanePackChangeW247,
+      consultantStorySurfaceFromLanePackW247,
       drawerContractSourceAlignmentW240V1,
       dynamicRecordRenderingPrepModelW240,
       dccHandoffParityLockV1: dccHandoffParityLockV1,

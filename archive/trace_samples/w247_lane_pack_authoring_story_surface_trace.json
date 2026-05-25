@@ -1,0 +1,23 @@
+{
+  "schema": "forge.w247.lane-pack-authoring-story-surface.trace.v1",
+  "status": "implemented",
+  "authoringReview": {
+    "schema": "forge.lane-pack-authoring-review.v1",
+    "installAllowed": false,
+    "humanReviewRequired": true,
+    "nllmAdvisoryOnly": true
+  },
+  "consultantStorySurface": {
+    "schema": "forge.consultant-story-surface.v1",
+    "fields": [
+      "openTarget",
+      "proofMove",
+      "safeClaim",
+      "doNotClaim",
+      "buyerFacingSoWhat",
+      "nllmAdvisory.confidence",
+      "nllmAdvisory.uncertainty"
+    ]
+  },
+  "archiveOnlyArtifacts": true
+}

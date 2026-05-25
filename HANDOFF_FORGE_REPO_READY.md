@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W258 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, and SCOUT-style header polish from returned records.
+  - W250-W259 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, and a safe feedback placeholder contract from returned records.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -70,6 +70,7 @@ npm run harness:receipt-driven-lane-expansion-qa-w255
 npm run harness:consultant-live-demo-script-w256
 npm run harness:guided-demo-step-sequence-w257
 npm run harness:story-density-header-polish-w258
+npm run harness:header-feedback-placeholder-visual-acceptance-w259
 npm run check
 npm run validate
 ```
@@ -91,12 +92,31 @@ Current expected result:
 - W256 harness passes `9/9`.
 - W257 harness passes `9/9`.
 - W258 harness passes `13/13`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, and W258 harness.
+- W259 harness passes `11/11`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, and W259 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W259: Header Feedback Placeholder Contract And Visual Acceptance Packet
+
+What changed:
+
+- Adds `feedbackPlaceholderContractW259`, `feedbackPlaceholderActionW259`, and `visualAcceptancePacketW259` to make the header `Bug / Enhancement` entry point reviewable and future-ready.
+- Wires the header button with safe placeholder metadata: `data-idb-feedback-placeholder="w259"`, accessible label/title, and `aria-disabled="true"`.
+- Keeps the button a no-op until a future human-reviewed URL is provided; no external URL, fetch, tracking, local storage write, install action, or runtime dependency is introduced.
+- Adds a compact visual acceptance packet covering header logo readability, version placement, feedback placeholder visibility, close button reachability, tabs/first-card reachability, W258 `Live proof CTA` density, W256/W257 expandable coaching, and W254 receipt placement.
+- Keeps W248/W255/W256/W257 story hierarchy compact and preserves no-write/no-runner/no-W144 runtime authority boundaries.
+
+Important W259 artifacts:
+
+- `archive/tools/run_w259_header_feedback_placeholder_visual_acceptance_harness.js`
+- `archive/reports/w259_header_feedback_placeholder_visual_acceptance.md`
+- `archive/trace_samples/w259_header_feedback_placeholder_visual_acceptance_trace.json`
+
+Previous completed block:
 
 - W258: Consultant Story Surface Density Pass And FORGE Assistant Header Polish
 
@@ -399,33 +419,36 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W259: Header Feedback Placeholder Contract And Visual Acceptance Packet
+W260: Install-Ready Release Packet And Consultant Smoke Script
 
 Goal:
-Make the new FORGE assistant header feedback entry point safe, reviewable, and future-ready while adding a targeted visual acceptance packet for the compact W258 header and live proof story surface.
+Create a compact install-ready release packet that tells a consultant/admin exactly what to update in Tampermonkey, what not to update, and how to smoke test the W245-W259 trusted story flow after install.
 
 Build:
-- Add a small feedback placeholder contract for the `Bug / Enhancement` header button.
-- Keep the button no-op/safe until a future URL is explicitly provided.
-- Add accessible button text/title/state that makes the future-link status clear without adding noise to the normal consultant UI.
-- Do not introduce any external URL, network call, tracking call, local storage write, install action, or runtime dependency for the placeholder.
-- Add a compact visual acceptance packet for:
-  - compact header logo size and readability
-  - version placement beside the logo
-  - `Bug / Enhancement` button visibility and no-op behavior
-  - close button reachability
-  - tab row and first content card reachability
-  - W258 first-glance `Live proof CTA` density
-  - W256/W257 expandable coaching availability
-  - W254 receipt placement below the coaching surface
-- Keep the W258 header colors/layout stable unless the acceptance packet exposes a concrete readability issue.
-- Keep the W248/W255/W256/W257 story hierarchy compact and avoid duplicate coaching text in the normal view.
+- Add an archived install-ready release packet for the current Tampermonkey drawer.
+- The packet must clearly say:
+  - update/install `idb-drawer.user.js` only
+  - do not update W144, runner, SuiteScript deployment, image lookup settings, or lane-pack contract source
+  - no live runner invocation is needed for the smoke
+  - no drawer-created records or drawer transaction writes are enabled
+- Add a compact consultant/admin smoke script that verifies:
+  - launcher icon opens the drawer
+  - compact FORGE header shows logo, version, `Bug / Enhancement`, and close control
+  - `Bug / Enhancement` remains a safe placeholder/no-op
+  - pre-import Review/Run blocks fake Open links
+  - valid completed import shows returned record names, lane-aware labels, supported Open links, and W218 success wording
+  - Review/Run shows the W258 `Live proof CTA`
+  - W256 script, W257 guided sequence, and W254 evidence receipt remain expandable
+  - weak/conflicting evidence asks for confirmation before claims
+- Add a concise rollback note for reinstalling the prior Tampermonkey script if the targeted smoke fails.
+- Keep the release packet consultant-safe and admin-safe; do not expose raw JSON, stack traces, internal arrays, runner task ids, schema names, admin diagnostics, or install-like actions in normal consultant UI.
+- Keep W259 feedback placeholder no-op and future-ready; do not add the real feedback URL yet.
 - Preserve returned record names, lane-aware labels, supported Open-link authority, and weak/conflicting evidence confirmation-first behavior.
 - Do not expose raw JSON, stack traces, internal arrays, runner task ids, schema names, admin diagnostics, or install-like actions in normal consultant UI.
 - Do not change runtime authority: no drawer-created records, no drawer transaction writes, no live runner invocation, and no W144 deployment update.
+- Keep W252 proposal review admin-only, W253/W259 acceptance packets review-only, and W254 receipt consultant-safe.
 - Keep W256 and W257 helpers available for harnesses and future expansion.
 - Keep W255 receipt-driven QA available for existing/proposed lane packs.
-- Keep W252 proposal review admin-only, W253 acceptance packet review-only, and W254 receipt consultant-safe.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
 - Preserve fake Open-link blocking before valid import.
@@ -433,21 +456,20 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W259 harness covering:
-  - feedback placeholder contract exists and is reviewable
-  - `Bug / Enhancement` button renders in the header with safe no-op behavior
-  - no external URL, fetch, tracking call, local storage write, or install action is introduced
-  - compact SCOUT-style header keeps logo, version, button, close control, tabs, and first content card reachable
-  - W258 first-glance story surface remains compact and contains open target, proof action, safe claim, stop guardrail, and evidence confidence
-  - W256 script and W257 guided sequence remain available behind expandable surfaces
-  - W254 receipt remains expandable below the coaching surface
-  - raw diagnostics and admin-only proposal review remain hidden from normal UI
+- Add archived W260 harness covering:
+  - release packet says to install/update only `idb-drawer.user.js`
+  - release packet explicitly says not to update W144, runner, SuiteScript deployment, image lookup settings, or lane-pack source
+  - smoke script includes launcher, header, feedback placeholder, pre-import fake-link block, valid import story, expandable script/sequence/receipt, weak evidence confirmation, and rollback checks
+  - W259 feedback placeholder remains no-op with no URL/network/storage/install path
+  - W258 first-glance story surface remains compact and visible after valid import
+  - W218 success wording and W220 recovery wording remain preserved
+  - normal UI hides raw diagnostics and admin-only proposal review
   - W255 receipt-driven QA remains available
   - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W259 harnesses, check, and validate.
+- Run W244 through W260 harnesses, check, and validate.
 
 Output:
-- Summary of feedback placeholder contract, visual acceptance packet, header/story guardrails, validation, and lane expansion continuity.
+- Summary of install-ready release packet, consultant smoke script, rollback note, guardrails, validation, and lane expansion continuity.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

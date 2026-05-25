@@ -17373,6 +17373,7 @@
         cursor: pointer;
       }
       .idb-bug-button:hover { background: #f4d36f; }
+      .idb-bug-button[aria-disabled="true"] { cursor: default; }
       .idb-icon-button {
         border: 1px solid rgba(255,255,255,.76);
         border-radius: var(--rw-radius-xs);
@@ -18645,6 +18646,64 @@
       runtimeAuthorityChanged: false,
       installActionsAllowed: false,
       fields,
+      visualTestingDecision: {
+        targetedInstallSmokeRecommended: true,
+        broadNetSuiteVisualRegressionRequired: false
+      }
+    };
+  }
+
+  function feedbackPlaceholderContractW259() {
+    return {
+      schema: 'forge.w259.feedback-placeholder-contract.v1',
+      status: 'placeholder_ready',
+      buttonLabel: 'Bug / Enhancement',
+      title: 'Bug / Enhancement link coming soon',
+      ariaLabel: 'Bug or enhancement feedback link coming soon',
+      actionStatus: 'no_op_until_future_url',
+      futureUrlConfigured: false,
+      externalUrl: '',
+      networkAllowed: false,
+      trackingAllowed: false,
+      localStorageWriteAllowed: false,
+      installActionAllowed: false,
+      runtimeAuthorityChanged: false,
+      consultantCopy: 'Feedback link coming soon.'
+    };
+  }
+
+  function feedbackPlaceholderActionW259() {
+    const contract = feedbackPlaceholderContractW259();
+    return {
+      schema: 'forge.w259.feedback-placeholder-action.v1',
+      status: 'no_op',
+      message: contract.consultantCopy,
+      externalUrlOpened: false,
+      networkCalled: false,
+      trackingCalled: false,
+      localStorageWritten: false,
+      installActionStarted: false,
+      runtimeAuthorityChanged: false
+    };
+  }
+
+  function visualAcceptancePacketW259() {
+    return {
+      schema: 'forge.w259.header-story-visual-acceptance-packet.v1',
+      status: 'ready_for_targeted_visual_acceptance',
+      captureMode: 'pass_fail_note',
+      runtimeAuthorityChanged: false,
+      installActionsAllowed: false,
+      checks: [
+        { id: 'compact_header_logo_readability', label: 'Compact header logo size and readability', expected: 'FORGE logo is readable at 188px wide and does not dominate the first viewport.' },
+        { id: 'version_placement', label: 'Version placement beside logo', expected: 'Version appears in the header meta area to the right of the FORGE logo.' },
+        { id: 'feedback_placeholder_noop', label: 'Bug / Enhancement placeholder', expected: 'Button is visible and clearly marked as coming soon with no external dependency.' },
+        { id: 'close_button_reachable', label: 'Close button reachability', expected: 'Close control remains visible and balanced on the right.' },
+        { id: 'tabs_first_card_reachable', label: 'Tabs and first card reachability', expected: 'Tabs and first content card are visible sooner after the compact header.' },
+        { id: 'live_proof_cta_density', label: 'W258 Live proof CTA density', expected: 'First glance shows open target, proof action, safe claim, stop guardrail, and evidence confidence.' },
+        { id: 'expandable_coaching_available', label: 'W256/W257 expandable coaching', expected: 'Say this live and Guided demo sequence remain available without crowding the normal view.' },
+        { id: 'receipt_below_coaching', label: 'W254 receipt placement', expected: 'Evidence receipt remains expandable below the coaching surface.' }
+      ],
       visualTestingDecision: {
         targetedInstallSmokeRecommended: true,
         broadNetSuiteVisualRegressionRequired: false
@@ -21031,6 +21090,7 @@
     const action = getAction(state);
     const summary = runCoachSummary(state, lane, page, selectedMove, recommendation, action);
     const activeView = normalizedView(state);
+    const feedbackPlaceholder = feedbackPlaceholderContractW259();
     const activePanel = activeView === 'review'
       ? renderReviewView(state, lane, page, recommendation)
       : activeView === 'value'
@@ -21048,7 +21108,14 @@
           </div>
           <div class="idb-header-meta">
             <div class="idb-version-pill">v${escapeHtml(CONTRACT.product.version || '0.1.2')}</div>
-            <button class="idb-bug-button" type="button" title="Bug / Enhancement link coming soon">Bug / Enhancement</button>
+            <button
+              class="idb-bug-button"
+              type="button"
+              data-idb-feedback-placeholder="w259"
+              aria-label="${escapeHtml(feedbackPlaceholder.ariaLabel)}"
+              aria-disabled="true"
+              title="${escapeHtml(feedbackPlaceholder.title)}"
+            >${escapeHtml(feedbackPlaceholder.buttonLabel)}</button>
           </div>
           <button class="idb-icon-button" data-idb-close title="Close drawer">×</button>
         </div>
@@ -21960,6 +22027,11 @@
     });
     const close = root.querySelector('[data-idb-close]');
     if (close) close.addEventListener('click', () => toggle(false, state));
+    const feedbackPlaceholderButton = root.querySelector('[data-idb-feedback-placeholder]');
+    if (feedbackPlaceholderButton) feedbackPlaceholderButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      feedbackPlaceholderActionW259();
+    });
     const exporter = root.querySelector('[data-idb-export]');
     if (exporter) exporter.addEventListener('click', () => exportTrace(state));
     const operatorSummaryCopier = root.querySelector('[data-idb-copy-operator-summary]');
@@ -22600,6 +22672,9 @@
       consultantStoryTrustPolishW253,
       suiteletHeaderDensityQaW253,
       postInstallAcceptancePacketW253,
+      feedbackPlaceholderContractW259,
+      feedbackPlaceholderActionW259,
+      visualAcceptancePacketW259,
       storyEvidenceReceiptTrailW254,
       receiptDrivenLaneExpansionQaW255,
       consultantStoryFirstGlanceW255,

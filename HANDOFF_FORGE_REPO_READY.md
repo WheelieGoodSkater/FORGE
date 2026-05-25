@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W277 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, and the admin-only lane-pack review bridge.
+  - W250-W278 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, and the story coaching surface bridge.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -44,6 +44,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
 - `src/contracts/liveEvidencePackets.js`
 - `src/contracts/liveEvidenceSignoffBridge.js`
 - `src/contracts/storyCoachingSurfaces.js`
+- `src/contracts/storyCoachingBridge.js`
 - `src/contracts/lanePackExpansionWorkflow.js`
 - `src/contracts/lanePackReviewBridge.js`
   - Canonical runtime contract source modules introduced so the drawer, W144 adapter, and runner can converge on the same mode/role/link language.
@@ -52,6 +53,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - `liveEvidencePackets.js` mirrors W260/W261/W266/W267/W268 review-only evidence/signoff packet shapes as a parity-backed extraction point.
   - `liveEvidenceSignoffBridge.js` adds the W276 review-only bridge that validates and normalizes W260/W261/W266/W267/W268 evidence/signoff packets against `liveEvidencePackets.js`.
   - `storyCoachingSurfaces.js` mirrors W254/W255/W256/W257 consultant-safe story coaching shapes as a parity-backed extraction point.
+  - `storyCoachingBridge.js` adds the W278 consultant story bridge that validates and normalizes W254/W255/W256/W257 story coaching surfaces against `storyCoachingSurfaces.js`.
   - `lanePackExpansionWorkflow.js` mirrors W247/W251/W252/W255 lane-pack authoring, diff review, admin review, receipt-driven QA, and review-only proposed-pack shapes as a parity-backed extraction point.
   - `lanePackReviewBridge.js` adds the W277 admin-only bridge that validates and normalizes W247/W251/W252/W255 lane-pack review workflow packets against `lanePackExpansionWorkflow.js`.
 
@@ -101,6 +103,7 @@ npm run harness:lane-pack-expansion-workflow-contract-w274
 npm run harness:extraction-closure-runtime-inventory-w275
 npm run harness:live-evidence-signoff-bridge-w276
 npm run harness:lane-pack-review-bridge-w277
+npm run harness:story-coaching-bridge-w278
 npm run check
 npm run validate
 ```
@@ -141,12 +144,33 @@ Current expected result:
 - W275 harness passes `15/15`.
 - W276 harness passes `13/13`.
 - W277 harness passes `15/15`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, lane-pack expansion workflow contract, lane-pack review bridge, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, and W277 harness.
+- W278 harness passes `12/12`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, and W278 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W278: Story Coaching Surface Bridge Without Consultant UI Behavior Change
+
+What changed:
+
+- Adds `src/contracts/storyCoachingBridge.js` as the W278 consultant story bridge between drawer-produced W254/W255/W256/W257 story outputs and the W273 `storyCoachingSurfaces.js` contract module.
+- Validates and normalizes W254 evidence receipt, W255 first-glance story surface, W256 live-demo script, and W257 guided demo sequence outputs.
+- Delegates consultant-safe overclaim, advisory-only, uncertainty, and receipt visibility checks to W273 helpers so W273 remains the story coaching authority.
+- Keeps the bridge outside the drawer runtime; `idb-drawer.user.js` does not import the W278 bridge.
+- Preserves visible Review/Run copy and layout, returned record names, lane-aware labels, supported Open-link authority, weak/conflicting evidence confirmation-first behavior, connected W264 submit/refresh/import, lane resolution, W276/W277 bridge availability, N/LLM advisory-only authority, and record creation authority.
+- Adds W278 archived report, trace, and harness proving W254/W255/W256/W257 field compatibility, valid imported record continuity, W273 guardrail authority, hidden raw/admin diagnostics, W276/W277 continuity, W264 continuity, weak-evidence confirmation, and no drawer-created records or transaction writes.
+
+Important W278 artifacts:
+
+- `src/contracts/storyCoachingBridge.js`
+- `archive/tools/run_w278_story_coaching_bridge_harness.js`
+- `archive/reports/w278_story_coaching_bridge.md`
+- `archive/trace_samples/w278_story_coaching_bridge_trace.json`
+
+Previous completed block:
 
 - W277: Admin-Only Lane Pack Review Bridge Without Consultant UI Behavior Change
 
@@ -158,26 +182,6 @@ What changed:
 - Keeps the bridge outside the drawer runtime; `idb-drawer.user.js` does not import the W277 bridge.
 - Preserves normal consultant UI, source pack data in `src/contracts/lanePacks.js`, lane resolution, connected W264 submit/refresh/import, returned-record import behavior, adapter endpoint/profile behavior, W276 live evidence/signoff bridge availability, N/LLM advisory-only authority, and record creation authority.
 - Adds W277 archived report, trace, and harness proving field compatibility, proposed-pack non-installability, W274 guardrail authority, hidden raw/admin diagnostics, source-pack stability, lane resolution continuity, W264 continuity, weak-evidence confirmation, and no drawer-created records or transaction writes.
-
-Important W277 artifacts:
-
-- `src/contracts/lanePackReviewBridge.js`
-- `archive/tools/run_w277_lane_pack_review_bridge_harness.js`
-- `archive/reports/w277_lane_pack_review_bridge.md`
-- `archive/trace_samples/w277_lane_pack_review_bridge_trace.json`
-
-Previous completed block:
-
-- W276: Review-Only Live Evidence Signoff Bridge Without Runtime Behavior Change
-
-What changed:
-
-- Adds `src/contracts/liveEvidenceSignoffBridge.js` as the W276 review-only bridge between drawer-produced W265-W268 evidence/signoff packets and the W272 `liveEvidencePackets.js` contract module.
-- Validates and normalizes review-only/admin-only packet shapes for W260 install-ready release packets, W261 post-install smoke evidence/signoff, W266 controlled live build evidence, W267 screenshot/Open-link reconciliation, W268 installed-drawer evidence intake, and W268 V1.0.0 release keep packets.
-- Delegates keep/needs-attention/rollback decisions, Open-link verification capture, screenshot signoff, and review-only policy checks to W272 helpers so W272 remains the authority.
-- Keeps the bridge outside the drawer runtime; `idb-drawer.user.js` does not import the W276 bridge.
-- Preserves normal consultant UI, connected W264 submit/refresh/import, W265 retry safety, W266/W267/W268 packet parity, lane resolution, adapter endpoint/profile behavior, returned-record import behavior, and record creation authority.
-- Adds W276 archived report, trace, and harness proving field compatibility, W272 authority, hidden raw/admin diagnostics, W264/W265 continuity, W275 optimization slice availability, weak-evidence confirmation, and no drawer-created records or transaction writes.
 
 - Adds an archived extraction-closure map summarizing W270-W274 outputs: shared archived harness fixture utilities, adapter profile/readiness contract, live evidence/signoff contract, story coaching contract, and lane-pack expansion workflow contract.
 - Adds a runtime helper dependency inventory for `idb-drawer.user.js` grouped by adapter profile/readiness, connected submit/refresh/import, live evidence/signoff packets, story receipt/script/sequence surfaces, lane-pack authoring/diff/review/QA, normal consultant UI renderers, and admin/debug-only renderers.
@@ -797,52 +801,58 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W278: Story Coaching Surface Bridge Without Consultant UI Behavior Change
+W279: Adapter Profile Readiness Bridge Without Connected Build Behavior Change
 
 Goal:
-Continue the optimization phase by adding a behavior-preserving bridge between drawer-produced W254 receipt, W255 first-glance story, W256 live-demo script, and W257 guided sequence outputs and the W273 story coaching contract module, while keeping Review/Run consultant UI, returned-record behavior, evidence gating, connected build behavior, and runtime authority unchanged.
+Continue the optimization phase by adding a behavior-preserving bridge between drawer-produced W262/W263 adapter readiness/profile outputs and the W271 adapter profile/readiness contract module, while keeping normal consultant Build UI, connected submit/refresh/import, endpoint behavior, dataset switching, and runtime authority unchanged.
 
 Build:
-- Add a focused bridge/helper layer for consultant story coaching surfaces.
+- Add a focused bridge/helper layer for adapter profile and readiness outputs.
 - Keep the bridge limited to shape validation and parity normalization:
-  - W254 evidence receipt
-  - W255 first-glance story surface
-  - W256 live-demo script
-  - W257 guided demo sequence
-- Use `src/contracts/storyCoachingSurfaces.js` where parity is straightforward.
-- Do not change visible Review/Run copy or layout.
-- Do not change returned record names, lane-aware labels, or Open-link authority.
-- Do not change weak/conflicting evidence confirmation-first behavior.
-- Do not change connected submit/refresh/import behavior.
+  - released W144 governed runner adapter profile
+  - derived endpoint from host + Suitelet path
+  - dataset/account host switching
+  - W262 readiness states
+  - W263 readiness trace/export profile fields
+- Use `src/contracts/adapterProfiles.js` where parity is straightforward.
+- Do not change the selected released adapter profile values.
+- Do not change the full endpoint path or script/deploy ids.
+- Do not expose endpoint/profile setup in normal consultant UI.
+- Do not change normal Build tab copy, buttons, or layout.
+- Do not change connected W264 submit/refresh/import behavior.
+- Do not change W265 retry safety.
+- Do not change returned record import behavior.
 - Do not change lane resolution behavior.
 - Do not change record creation authority.
-- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W246 lane-pack contract, W254 evidence receipt, W255 first-glance story, W256 script, W257 guided sequence, W262 readiness, W263/W271 adapter profile contract, W264 submit/refresh/import flow, W265 retry safety, W270 shared harness utilities, W272 live evidence/signoff contract, W273 story coaching contract, W274 lane-pack expansion workflow contract, W276 live evidence/signoff bridge, and W277 lane-pack review bridge.
+- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W262 readiness, W263 adapter profile, W264 submit/refresh/import flow, W265 retry safety, W270 shared harness utilities, W271 adapter profile/readiness contract, W272 live evidence/signoff contract, W273 story coaching contract, W274 lane-pack expansion workflow contract, W276 live evidence/signoff bridge, W277 lane-pack review bridge, and W278 story coaching bridge.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Keep harnesses, reports, and traces under `archive/`.
 - Keep repo front clean.
 - Do not change normal consultant UI.
-- Keep normal consultant UI free of raw JSON, task ids, schema names, stack traces, admin diagnostics, and internal contract arrays.
+- Keep normal consultant UI free of endpoint URLs, raw JSON, task ids, schema names, stack traces, admin diagnostics, and internal contract arrays.
 - Do not create records from the drawer client directly.
 - Do not add transaction writes outside approved adapter path.
 - Do not update W144 deployment in this block.
 
 Validation:
-- Add W278 harness covering:
-  - story coaching bridge exists
-  - bridge uses or validates against `src/contracts/storyCoachingSurfaces.js`
-  - W254/W255/W256/W257 outputs remain field-compatible
-  - valid imported records keep returned names, lane-aware labels, and supported Open-link authority
-  - weak/conflicting evidence remains confirmation-first
-  - W273 guardrail helper remains authoritative
-  - normal consultant UI remains unchanged and hides raw diagnostics/admin surfaces
-  - W276 and W277 bridges remain available
+- Add W279 harness covering:
+  - adapter readiness bridge exists
+  - bridge uses or validates against `src/contracts/adapterProfiles.js`
+  - released W144 governed runner adapter profile remains field-compatible
+  - endpoint derives from account host + Suitelet path
+  - future dataset/account host can swap without runtime logic change
+  - W262 readiness states remain field-compatible for preview-only, ready, submitted, waiting, records ready, and imported paths
+  - W263 readiness trace/export profile fields remain field-compatible
+  - normal consultant UI hides endpoint/profile/admin diagnostics
+  - W276, W277, and W278 bridges remain available
   - connected W264 submit/refresh/import remains unchanged
+  - W265 retry safety remains unchanged
   - no runtime authority changes are introduced
   - no drawer-created records or drawer transaction writes are introduced
-- Run W244 through W278 harnesses, check, and validate.
+- Run W244 through W279 harnesses, check, and validate.
 
 Output:
-- Summary of story coaching bridge, files touched, parity guardrails, and validation.
+- Summary of adapter readiness bridge, files touched, parity guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

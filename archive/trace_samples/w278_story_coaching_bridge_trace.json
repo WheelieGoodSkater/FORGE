@@ -1,0 +1,62 @@
+{
+  "schema": "forge.w278.story-coaching-bridge.trace.v1",
+  "workstream": "W278",
+  "title": "Story Coaching Surface Bridge Without Consultant UI Behavior Change",
+  "bridge": {
+    "schema": "forge.w278.story-coaching-bridge.v1",
+    "module": "src/contracts/storyCoachingBridge.js",
+    "governingContract": "src/contracts/storyCoachingSurfaces.js",
+    "scope": "consultant_story_surface_shape_validation_and_parity_normalization",
+    "packetsCovered": [
+      "W254 evidence receipt",
+      "W255 first-glance story surface",
+      "W256 live-demo script",
+      "W257 guided demo sequence"
+    ],
+    "runtimeBridgeImportedByDrawer": false
+  },
+  "fieldCompatibility": {
+    "w254EvidenceReceipt": "validated_against_w273_contract_shape",
+    "w255FirstGlance": "validated_against_w273_contract_shape",
+    "w256LiveDemoScript": "validated_against_w273_contract_shape",
+    "w257GuidedSequence": "validated_against_w273_contract_shape"
+  },
+  "w273Authority": {
+    "consultantSafeGuardrailsAuthoritative": true,
+    "recordCreationClaimsAllowed": false,
+    "drawerWriteClaimsAllowed": false,
+    "measuredGuaranteedRoiClaimsAllowed": false,
+    "unsupportedLaneFitClaimsAllowed": false,
+    "uncertaintyVisible": true,
+    "nllmAdvisoryOnly": true
+  },
+  "continuity": {
+    "w254ReceiptChanged": false,
+    "w255FirstGlanceChanged": false,
+    "w256ScriptChanged": false,
+    "w257SequenceChanged": false,
+    "w264SubmitRefreshImportChanged": false,
+    "w276LiveEvidenceSignoffBridgeAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "weakEvidenceConfirmationFirst": true
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "visibleReviewRunCopyChanged": false,
+    "connectedBuildFlowChanged": false,
+    "returnedRecordBehaviorChanged": false,
+    "openLinkAuthorityChanged": false,
+    "laneResolutionChanged": false,
+    "adapterEndpointProfileChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdateInThisBlock": true,
+    "normalConsultantUiHidesRawDiagnostics": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRegressionRequired": false,
+    "reason": "Contract bridge and archived story parity validation only; no visible Review/Run UI changes."
+  }
+}

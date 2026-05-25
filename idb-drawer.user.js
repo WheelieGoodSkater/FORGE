@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      0.1.2
+// @version      1.0.0
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @match        https://*.app.netsuite.com/*
 // @match        https://*.netsuite.com/*
@@ -991,7 +991,7 @@
   };
 
   const CONTRACT = {
-    product: { name: 'Intelligent Demo Builder', version: '0.1.2-w144-error-trace' },
+    product: { name: 'Intelligent Demo Builder', version: 'V1.0.0' },
     nonRegression: {
       noNewIndustries: false,
       apparelAccessoriesLaneAuthorized: true,
@@ -15018,9 +15018,9 @@
         copy: 'Build and Run now use the generated NetSuite records.'
       },
       build_needs_admin_setup: {
-        label: 'Build needs admin setup',
-        headline: 'Build needs admin setup',
-        copy: 'Ask an admin to finish the saved build setup. The consultant workflow stays simple.'
+        label: 'Live build unavailable',
+        headline: 'Live build not required for smoke',
+        copy: 'This install smoke uses the drawer flow and completed-import checks. Do not run a live build unless the saved W144 adapter setup is confirmed.'
       },
       build_failed_ask_admin: {
         label: 'Build failed, ask admin',
@@ -15061,7 +15061,7 @@
         requiredInputs: ['Customer / Prospect Name', 'Website', 'Conversation Notes'],
         simpleToggles: ['Create new item', 'Manufacturing', 'WIP'],
         primaryButton: 'Build demo records',
-        visibleStatuses: ['Ready to build', 'Building records', 'Still building', 'Records ready', 'Build needs admin setup', 'Build failed, ask admin'],
+        visibleStatuses: ['Ready to build', 'Building records', 'Still building', 'Records ready', 'Live build unavailable', 'Build failed, ask admin'],
         hiddenAdminTerms: normalFlowHiddenTerms,
         adminDebugOnly: true,
         handoffExportNormalFlow: false,
@@ -15115,6 +15115,136 @@
       releaseDecision: finalNaming.finalNamesImported || opts.allowReleaseBeforeImport === true
         ? 'release_candidate_for_one_click_consultant_build'
         : 'release_candidate_after_completed_result_import_smoke'
+    };
+  }
+
+  function adapterReadyRecordCreationUxW262(state, lane, pageContext, recommendation, options) {
+    const opts = options || {};
+    ensureProductionBuildSavedAdminConfig(state);
+    const productionAutomation = productionConsultantIntakeAndBuildAutomationSimplificationW206V1(state, lane, pageContext, recommendation);
+    const oneClick = oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1(state, lane, pageContext, recommendation, opts);
+    const finalNaming = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, pageContext, recommendation);
+    const runnerResult = state && state.integratedBuildRunnerResult || null;
+    const adapterConfig = state && state.integratedBuildAdapterConfig || {};
+    const adapterReady = productionAutomation.automationStates.submitReady === true;
+    const requestReady = productionAutomation.automationStates.consultantIntakeReady === true &&
+      productionAutomation.automationStates.demoPathConfirmed === true;
+    let readinessState = 'adapter_not_configured';
+    if (finalNaming.finalNamesImported) readinessState = 'records_imported';
+    else if (productionAutomation.automationStates.completedResultReady) readinessState = 'records_ready_to_import';
+    else if (productionAutomation.automationStates.runnerTaskCaptured) readinessState = 'waiting_for_runner_result';
+    else if (adapterReady) readinessState = 'ready_to_build_records';
+    else if (requestReady && adapterConfig && adapterConfig.endpointUrl) readinessState = 'smoke_preview_only';
+    else if (requestReady) readinessState = 'smoke_preview_only';
+
+    const copyByState = {
+      ready_to_build_records: {
+        label: 'Ready to build records',
+        headline: 'Ready to create NetSuite records',
+        copy: 'Click Build records. FORGE will submit the approved build path, then you can refresh status until returned records are ready.'
+      },
+      smoke_preview_only: {
+        label: 'Preview ready',
+        headline: 'Preview ready. Record creation is not enabled in this install.',
+        copy: 'You can continue smoke testing the drawer flow. The real Build records action appears when the approved server build setup is ready.'
+      },
+      adapter_not_configured: {
+        label: 'Preview ready',
+        headline: 'Preview ready. Record creation is not enabled in this install.',
+        copy: 'You can continue smoke testing the drawer flow. Record creation stays off until the approved server build setup is ready.'
+      },
+      build_submitted: {
+        label: 'Build submitted',
+        headline: 'Build submitted',
+        copy: 'Refresh build status to check whether the runner returned completed records.'
+      },
+      waiting_for_runner_result: {
+        label: 'Waiting for records',
+        headline: 'Build submitted',
+        copy: 'Refresh build status to check whether the runner returned completed records.'
+      },
+      records_ready_to_import: {
+        label: 'Records ready',
+        headline: 'Records ready',
+        copy: 'Finish the build to bring returned names, labels, and Open links into Review and Run.'
+      },
+      records_imported: {
+        label: 'Records imported',
+        headline: 'Records ready',
+        copy: 'Review and Run are using returned NetSuite record names, lane-aware labels, and supported Open links.'
+      }
+    };
+    const copy = copyByState[readinessState] || copyByState.smoke_preview_only;
+    const showBuildButton = readinessState === 'ready_to_build_records';
+    const showRefreshButton = readinessState === 'build_submitted' || readinessState === 'waiting_for_runner_result';
+    const showFinishButton = readinessState === 'records_ready_to_import';
+    return {
+      schema: 'forge.w262.adapter-ready-record-creation-ux.v1',
+      releaseVersion: 'V1.0.0',
+      readinessState,
+      label: copy.label,
+      headline: copy.headline,
+      copy: copy.copy,
+      consultantWorkflow: {
+        requiredInputs: ['Customer / Prospect Name', 'Website', 'Conversation Notes'],
+        simpleToggles: ['Create new item', 'Manufacturing', 'WIP'],
+        primaryAction: 'Build records',
+        refreshAction: 'Refresh build status',
+        completedAction: 'Finish build',
+        consultantNeedsAdminFields: false
+      },
+      actions: {
+        showBuildButton,
+        showRefreshButton,
+        showFinishButton,
+        showContinueToRun: readinessState === 'smoke_preview_only' || readinessState === 'adapter_not_configured',
+        buildActionId: 'submit_w144_once',
+        refreshActionId: 'check_runner_result',
+        finishActionId: 'import_completed_runner_result'
+      },
+      stateFacts: {
+        requestReady,
+        adapterReady,
+        runnerTaskCaptured: productionAutomation.automationStates.runnerTaskCaptured === true,
+        completedResultReady: productionAutomation.automationStates.completedResultReady === true,
+        finalNamesImported: finalNaming.finalNamesImported === true,
+        endpointConfigured: !!(adapterConfig && adapterConfig.endpointUrl),
+        runnerTaskId: firstNonBlank(
+          runnerResult && runnerResult.runnerTaskId,
+          runnerResult && runnerResult.resultCapture && runnerResult.resultCapture.runnerTaskId
+        )
+      },
+      hiddenFromNormalUi: [
+        'blocked before server adapter',
+        'operator gate',
+        'server flags',
+        'transport boundary',
+        'no submit',
+        'invocation from drawer: no',
+        'runnerTaskId',
+        'result JSON',
+        'sandbox allowlist'
+      ],
+      smokeBoundary: {
+        previewOnlyCopy: copyByState.smoke_preview_only.headline,
+        smokeCanContinueWithoutRecordCreation: readinessState !== 'ready_to_build_records',
+        releasePacketInstallTarget: 'idb-drawer.user.js'
+      },
+      guardrails: {
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true,
+        recordCreationRequiresApprovedServerAdapterPath: true,
+        noW144DeploymentUpdateInThisBlock: true,
+        w245CanonicalImportPreserved: true,
+        w218SuccessWordingPreserved: true,
+        w220RecoveryWordingPreserved: true,
+        fakeOpenLinksBlockedBeforeImport: true,
+        nllmAdvisoryOnly: true
+      },
+      source: {
+        w206Status: productionAutomation.status,
+        w208Status: oneClick.status
+      }
     };
   }
 
@@ -20228,51 +20358,60 @@
     const productionCleanup = productionConsultantFlowCleanupAfterFiveLinkPassW205V1(state, lane, page, recommendation);
     const productionAutomation = productionConsultantIntakeAndBuildAutomationSimplificationW206V1(state, lane, page, recommendation);
     const oneClickBuild = oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1(state, lane, page, recommendation);
-    if (!(state && state.setupEditMode) && !finalNaming.finalNamesImported) {
-      const automation = oneClickBuild.automation || {};
-      const showBuildButton = automation.showBuildButton === true;
-      const showPollButton = automation.showCheckStatusButton === true;
-      const showImportButton = automation.showFinishBuildButton === true;
-      const pollButtonLabel = automation.completedResultDetected ? 'Bring back records' : 'Check status';
+    const w262BuildUx = adapterReadyRecordCreationUxW262(state, lane, page, recommendation);
+    if (!finalNaming.finalNamesImported) {
+      const actions = w262BuildUx.actions || {};
+      const showBuildButton = actions.showBuildButton === true;
+      const showPollButton = actions.showRefreshButton === true;
+      const showImportButton = actions.showFinishButton === true;
+      const pollButtonLabel = 'Refresh build status';
       const chipTone = showBuildButton || showPollButton || showImportButton ? 'ready' : oneClickBuild.status === 'build_failed_ask_admin' ? 'danger' : 'partial';
-      return `
+      const normalCardHtml = `
         <div class="idb-run-action-card idb-w208-one-click-production-build">
           <div class="idb-status-key">Build demo records</div>
-          <div class="idb-strong">${escapeHtml(oneClickBuild.headline)}</div>
-          <div class="idb-copy">${escapeHtml(oneClickBuild.copy)}</div>
+          <div class="idb-strong">${escapeHtml(w262BuildUx.headline)}</div>
+          <div class="idb-copy">${escapeHtml(w262BuildUx.copy)}</div>
           ${renderToggleControls(state, lane)}
           <div class="idb-chip-row">
-            <span class="idb-chip idb-${chipTone}">${escapeHtml(oneClickBuild.label)}</span>
-            <span class="idb-mini-chip">Setup saved</span>
-            <span class="idb-mini-chip">NetSuite records</span>
+            <span class="idb-chip idb-${chipTone}">${escapeHtml(w262BuildUx.label)}</span>
+            <span class="idb-mini-chip">${w262BuildUx.stateFacts.requestReady ? 'Request ready' : 'Confirm demo path'}</span>
+            <span class="idb-mini-chip">${w262BuildUx.stateFacts.adapterReady ? 'Build setup ready' : 'Preview only'}</span>
             <span class="idb-mini-chip">Links appear when ready</span>
           </div>
           <div class="idb-status-strip idb-w208-consultant-summary">
             <div class="idb-status-cell">
               <div class="idb-status-key">Request</div>
-              <div class="idb-status-value">${automation.consultantIntakeReady && automation.demoPathConfirmed ? 'Ready' : 'Needs confirmation'}</div>
+              <div class="idb-status-value">${w262BuildUx.stateFacts.requestReady ? 'Ready' : 'Needs confirmation'}</div>
               <div class="idb-copy">Built from customer name, website, notes, and selected toggles.</div>
             </div>
             <div class="idb-status-cell">
               <div class="idb-status-key">Build</div>
-              <div class="idb-status-value">${automation.completedResultReady ? 'Complete' : automation.waitingForRecordLinks ? 'Finishing' : automation.runnerTaskCaptured ? 'Running' : automation.submitReady ? 'Ready' : 'Waiting'}</div>
-              <div class="idb-copy">IDB uses the saved setup behind the scenes.</div>
+              <div class="idb-status-value">${w262BuildUx.stateFacts.completedResultReady ? 'Complete' : w262BuildUx.stateFacts.runnerTaskCaptured ? 'Running' : w262BuildUx.stateFacts.adapterReady ? 'Ready' : 'Preview only'}</div>
+              <div class="idb-copy">${w262BuildUx.stateFacts.adapterReady ? 'FORGE uses the approved build setup behind the scenes.' : 'Record creation is off in this install.'}</div>
             </div>
             <div class="idb-status-cell">
               <div class="idb-status-key">Links</div>
-              <div class="idb-status-value">${automation.completedResultReady ? 'Ready to finish' : automation.waitingForRecordLinks ? 'Not returned yet' : automation.completedResultDetected ? 'Bring back records' : 'Waiting'}</div>
+              <div class="idb-status-value">${w262BuildUx.stateFacts.completedResultReady ? 'Ready to finish' : w262BuildUx.stateFacts.runnerTaskCaptured ? 'Waiting' : 'Hidden'}</div>
               <div class="idb-copy">Open links appear only after real NetSuite records are returned.</div>
             </div>
           </div>
           <div class="idb-actions">
-            ${showBuildButton ? '<button class="idb-primary" data-idb-real-adapter-action="submit_w144_once">Build demo records</button>' : ''}
+            ${showBuildButton ? '<button class="idb-primary" data-idb-real-adapter-action="submit_w144_once">Build records</button>' : ''}
             ${showPollButton ? `<button class="idb-secondary" data-idb-build-return-action="check_runner_result">${escapeHtml(pollButtonLabel)}</button>` : ''}
             ${showImportButton ? '<button class="idb-primary" data-idb-build-return-action="import_completed_runner_result">Finish build</button>' : ''}
-            ${automation.showAdminSetupMessage ? '<span class="idb-mini-chip">Build needs admin setup</span>' : ''}
-            ${automation.showAskAdminMessage ? '<span class="idb-mini-chip">Build failed, ask admin</span>' : ''}
+            ${actions.showContinueToRun ? '<button class="idb-secondary" data-idb-view="run">Continue to Run</button>' : ''}
+            ${actions.showContinueToRun ? '<span class="idb-mini-chip">Smoke can continue</span>' : ''}
+            ${oneClickBuild.automation && oneClickBuild.automation.showAskAdminMessage ? '<span class="idb-mini-chip">Build failed, ask admin</span>' : ''}
           </div>
           ${importRecoverySurfaceHtml}
         </div>
+      `;
+      if (!(state && state.setupEditMode)) return normalCardHtml;
+      return `${normalCardHtml}
+        <details class="idb-technical-details idb-w262-admin-build-readiness">
+          <summary>Admin/debug: build setup readiness</summary>
+          <div class="idb-copy">Review the saved build setup only when intentionally configuring the approved server build path.</div>
+        </details>
       `;
     }
     if (finalNaming.finalNamesImported && !(state && state.setupEditMode)) {
@@ -21370,7 +21509,7 @@
             <img class="idb-forge-logo" src="${FORGE_BRAND_IMAGE_SRC}" alt="${escapeHtml(FORGE_BRAND_ALT_TEXT)}">
           </div>
           <div class="idb-header-meta">
-            <div class="idb-version-pill">v${escapeHtml(CONTRACT.product.version || '0.1.2')}</div>
+            <div class="idb-version-pill">${escapeHtml(CONTRACT.product.version || 'V1.0.0')}</div>
             <button
               class="idb-bug-button"
               type="button"
@@ -22891,6 +23030,7 @@
       productionConsultantIntakeAndBuildAutomationSimplificationW206V1,
       productionBuildModeSmokeWithSavedAdminConfigW207V1,
       oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1,
+      adapterReadyRecordCreationUxW262,
       productionFlowHardeningConsultantToggleImageRemovalW209V1,
       consultantFirstUiCleanupAdminDebugSeparationW210V1,
       toggleAwareNamingGuardrailContractW211V1,

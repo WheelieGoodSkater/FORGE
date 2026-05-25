@@ -1,0 +1,33 @@
+{
+  "schema": "forge.w262.real-build-path-clarity-trace.v1",
+  "releaseVersion": "V1.0.0",
+  "previewOnlyReadinessState": "smoke_preview_only",
+  "adapterReadyReadinessState": "ready_to_build_records",
+  "submittedReadinessState": "waiting_for_runner_result",
+  "completedReadinessState": "records_ready_to_import",
+  "normalConsultantInputs": [
+    "Customer / Prospect Name",
+    "Website",
+    "Conversation Notes"
+  ],
+  "normalConsultantToggles": [
+    "Create new item",
+    "Manufacturing",
+    "WIP"
+  ],
+  "hiddenNormalUiTerms": [
+    "blocked before server adapter",
+    "operator gate",
+    "server flags",
+    "transport boundary",
+    "no submit",
+    "invocation from drawer: no"
+  ],
+  "guardrails": {
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "recordCreationRequiresApprovedServerAdapterPath": true,
+    "noW144DeploymentUpdateInThisBlock": true,
+    "fakeOpenLinksBlockedBeforeImport": true
+  }
+}

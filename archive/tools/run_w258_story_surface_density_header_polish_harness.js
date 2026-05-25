@@ -237,7 +237,8 @@ function main() {
     'logo 188px / 58px, body offset 73px');
 
   assertCase(results, 'version-and-bug-enhancement-button-present-without-external-dependency',
-    /v0\.1\.2-w144-error-trace/.test(sample.drawerHtml) &&
+    /V1\.0\.0/.test(sample.drawerHtml) &&
+      !/w144-error-trace|v0\.1\.2/i.test(sample.drawerHtml) &&
       /Bug \/ Enhancement/.test(sample.drawerHtml) &&
       !/href=|window\.open|https?:\/\/.*Bug/i.test(sample.drawerHtml),
     sample.drawerHtml.slice(0, 1000));

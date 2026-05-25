@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W261 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, and post-install evidence/signoff flow from returned records.
+  - W250-W262 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, and V1.0.0 real-build path clarity from returned records.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -73,6 +73,7 @@ npm run harness:story-density-header-polish-w258
 npm run harness:header-feedback-placeholder-visual-acceptance-w259
 npm run harness:install-ready-release-packet-w260
 npm run harness:post-install-smoke-evidence-capture-w261
+npm run harness:real-build-path-clarity-w262
 npm run check
 npm run validate
 ```
@@ -97,12 +98,32 @@ Current expected result:
 - W259 harness passes `11/11`.
 - W260 harness passes `10/10`.
 - W261 harness passes `14/14`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, and W261 harness.
+- W262 harness passes `11/11`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, and W262 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W262: V1.0.0 Release UX, Real Build Path Clarity, And Adapter-Ready Record Creation
+
+What changed:
+
+- Stabilizes the visible FORGE release/version display as `V1.0.0`.
+- Adds `adapterReadyRecordCreationUxW262` to separate preview-only smoke mode from real adapter-ready record creation.
+- Keeps the normal consultant Build path to name, website, notes, toggles, `Build records`, `Refresh build status`, `Finish build`, then Review/Run returned names and Open links.
+- Shows the real `Build records` action only when the approved server adapter path is ready.
+- Replaces internal normal-UI language like blocked server adapter, operator gate, server flags, transport boundary, no submit, and invocation diagnostics with consultant-safe preview/build copy.
+- Preserves W245 canonical import normalization, W218 success wording, W220 recovery wording, fake-link blocking, W260 install-only packet, and W261 smoke signoff.
+
+Important W262 artifacts:
+
+- `archive/tools/run_w262_real_build_path_clarity_harness.js`
+- `archive/reports/w262_real_build_path_clarity.md`
+- `archive/trace_samples/w262_real_build_path_clarity_trace.json`
+
+Previous completed block:
 
 - W261: Post-Install Smoke Evidence Capture And Release Signoff
 
@@ -459,37 +480,39 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W262: Release Signoff Summary Packet And Consultant Install Handoff
+W263: Adapter Readiness Setup Handoff And Real Build Smoke Checklist
 
 Goal:
-Turn the W261 evidence capture/signoff result into a compact release signoff summary and consultant/admin install handoff, so the team can quickly see whether the Tampermonkey update is safe to keep, needs attention, or should be rolled back.
+Make the real Build records path operationally clear after W262 by documenting exactly what must be configured for approved adapter readiness, while keeping consultants on the simple name/website/notes/toggles workflow.
 
 Build:
-- Add a compact release signoff summary helper sourced from W261 evidence capture and signoff.
-- Summary should include:
-  - release status: `ready_to_keep`, `needs_attention`, or `rollback_recommended`
-  - install target confirmed or failed
-  - protected surfaces confirmed unchanged or failed
-  - runtime authority unchanged or failed
-  - launcher/header/feedback placeholder smoke result
-  - valid import story smoke result
-  - weak-evidence confirmation smoke result
-  - rollback decision/next action
-- Add an archived consultant/admin install handoff packet that says:
-  - update/install `idb-drawer.user.js` only
-  - do not update W144, runner, SuiteScript deployment, image lookup settings, or lane-pack contract source
-  - run W260 smoke, capture W261 evidence, then use W262 signoff summary
-  - keep the update only if signoff is `ready_to_keep`
-  - rollback if signoff is `rollback_recommended`
-  - investigate before buyer use if signoff is `needs_attention`
-- Keep the handoff and summary review-only; do not add uploads, external URLs, network calls, tracking calls, local storage writes, install actions, or runtime dependencies.
-- Keep W260 release packet and W261 evidence capture available and unchanged in purpose.
+- Add an archived adapter readiness setup handoff that explains:
+  - consultants only enter prospect name, website, notes, and toggles
+  - `Build records` appears only when approved adapter readiness is true
+  - required admin setup includes approved endpoint, server flags, sandbox allowlist, operator confirmation, and production build mode
+  - record creation is owned by the approved server adapter/runner path, not by drawer client writes
+  - `Refresh build status` appears after submit
+  - `Finish build` appears after W245-valid completed result is ready
+- Add a real build smoke checklist for an approved sandbox adapter run:
+  - confirm the header shows `V1.0.0`
+  - confirm normal Build UI hides internal diagnostics
+  - enter prospect, website, notes, and toggles
+  - confirm `Build records` appears only when adapter readiness is true
+  - submit one approved build
+  - refresh runner status
+  - finish/import completed result
+  - confirm Review/Run show returned names, lane-aware labels, supported Open links, W218 success wording, W256 script, W257 sequence, and W254 receipt
+  - confirm weak/conflicting evidence still asks for confirmation
+- Keep W262 preview-only smoke behavior available when adapter readiness is false.
+- Keep W260 release packet and W261 evidence capture available and aligned with the updated W262 states.
 - Keep W259 feedback placeholder no-op and future-ready; do not add the real feedback URL yet.
-- Do not change runtime authority: no drawer-created records, no drawer transaction writes, no live runner invocation, and no W144 deployment update.
+- Do not create records from the drawer client directly; record creation must go through the approved W144/server adapter path.
+- Do not add drawer transaction writes outside the approved adapter path.
+- Do not update W144 deployment in this block.
 - Preserve returned record names, lane-aware labels, supported Open-link authority, and weak/conflicting evidence confirmation-first behavior.
 - Do not expose raw JSON, stack traces, internal arrays, runner task ids, schema names, admin diagnostics, or install-like actions in normal consultant UI.
 - Keep W252 proposal review admin-only, W253/W259/W260/W261 acceptance/release/signoff packets review-only, and W254 receipt consultant-safe.
-- Keep W255 receipt-driven QA, W256 script, and W257 guided sequence available for existing/proposed lane packs and future expansion.
+- Keep W255 receipt-driven QA, W256 script, W257 guided sequence, and W262 adapter readiness UX available for existing/proposed lane packs and future expansion.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
 - Preserve fake Open-link blocking before valid import.
@@ -498,25 +521,23 @@ Build:
 
 Validation:
 - Add archived W262 harness covering:
-  - release signoff summary includes status, install target, protected surfaces, runtime authority, launcher/header/feedback, valid import story, weak evidence, and next action
-  - summary returns `ready_to_keep` for passing W261 evidence
-  - summary returns `needs_attention` for noncritical failed or missing W261 evidence
-  - summary returns `rollback_recommended` for install target or runtime authority boundary failure
-  - consultant/admin install handoff says to update/install only `idb-drawer.user.js`
-  - handoff says not to update W144, runner, SuiteScript deployment, image lookup settings, or lane-pack source
-  - handoff instructs W260 smoke, W261 evidence capture, and W262 signoff summary in order
-  - summary and handoff introduce no external URL, fetch, tracking call, local storage write, install action, or runtime dependency
-  - W260 release packet and W261 evidence capture remain available
+  - adapter readiness setup handoff lists all required approved setup gates
+  - consultant workflow remains name, website, notes, and toggles
+  - real build smoke checklist covers Build records, refresh status, finish/import, and Review/Run returned records
+  - `Build records` appears only when W262 adapter readiness is true
+  - preview-only mode remains clear when W262 adapter readiness is false
+  - normal Build UI hides internal diagnostics
+  - W260 release packet and W261 evidence capture remain available and aligned to W262 states
   - W259 feedback placeholder remains no-op with no URL/network/storage/install path
   - W258 first-glance story surface remains compact and visible after valid import
   - W218 success wording and W220 recovery wording remain preserved
   - normal UI hides raw diagnostics and admin-only proposal review
   - W255 receipt-driven QA remains available
   - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W262 harnesses, check, and validate.
+- Run W244 through W263 harnesses, check, and validate.
 
 Output:
-- Summary of release signoff summary, consultant/admin install handoff, rollback guardrails, validation, and lane expansion continuity.
+- Summary of adapter readiness setup handoff, real build smoke checklist, runtime guardrails, validation, and lane expansion continuity.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

@@ -1,0 +1,18 @@
+{
+  "schema": "forge.w255.receipt-driven-lane-expansion-qa.trace.v1",
+  "workItem": "W255",
+  "purpose": "Prove receipt-driven QA and compressed consultant story surfaces remain lane-expansion friendly and authority-safe.",
+  "assertions": [
+    "receipt-driven QA validates existing lane packs",
+    "proposed lane-pack fixture remains review-only and non-installable",
+    "compressed story surface keeps required first-glance fields",
+    "expanded receipt remains available after valid import",
+    "normal UI avoids raw diagnostics and overcrowding",
+    "N/LLM advisory limits remain visible without write authority",
+    "weak or conflicting evidence remains confirmation-gated"
+  ],
+  "visualTestingDecision": {
+    "targetedInstallSmokeRecommended": true,
+    "broadNetSuiteVisualRegressionRequired": false
+  }
+}

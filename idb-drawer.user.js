@@ -3323,6 +3323,78 @@
     };
   }
 
+  function receiptDrivenLaneExpansionQaW255(lanePack, story) {
+    const receipt = story && story.evidenceReceiptW254 || {};
+    const rows = arrayValue(receipt.rows);
+    const rowById = (id) => rows.find((row) => row && row.id === id) || {};
+    const checks = [
+      {
+        id: 'lane_choice_explained',
+        label: 'Why this lane was chosen',
+        pass: !!(lanePack && lanePack.packId && rowById('lane_pack_confidence').value),
+        evidence: rowById('lane_pack_confidence').value || ''
+      },
+      {
+        id: 'open_target_explained',
+        label: 'Returned Open target',
+        pass: !!(rowById('open_target_record').value && !/No returned Open target/i.test(rowById('open_target_record').value)),
+        evidence: rowById('open_target_record').value || ''
+      },
+      {
+        id: 'proof_evidence_explained',
+        label: 'Proof evidence',
+        pass: !!(rowById('website_evidence').value && !/No strong/i.test(rowById('website_evidence').value)),
+        evidence: rowById('website_evidence').value || ''
+      },
+      {
+        id: 'notes_contribution_explained',
+        label: 'Notes contribution',
+        pass: /notes|Conversation/i.test(rowById('conversation_notes').value || ''),
+        evidence: rowById('conversation_notes').value || ''
+      },
+      {
+        id: 'nllm_limits_explained',
+        label: 'N/LLM boundaries',
+        pass: /Advisory only/i.test(rowById('nllm_limits').value || '') && /no writes|no write/i.test(rowById('nllm_limits').value || ''),
+        evidence: rowById('nllm_limits').value || ''
+      },
+      {
+        id: 'uncertainty_explained',
+        label: 'Uncertainty',
+        pass: !!rowById('uncertainty_gate').value,
+        evidence: rowById('uncertainty_gate').value || ''
+      }
+    ];
+    return {
+      schema: 'forge.w255.receipt-driven-lane-expansion-qa.v1',
+      status: checks.every((check) => check.pass) ? 'pass' : 'needs_review',
+      packId: lanePack && lanePack.packId || story && story.packId || '',
+      checks
+    };
+  }
+
+  function consultantStoryFirstGlanceW255(story) {
+    const receipt = story && story.evidenceReceiptW254 || {};
+    const rows = arrayValue(receipt.rows);
+    const row = (id) => rows.find((item) => item && item.id === id) || {};
+    const receiptSummary = [
+      row('lane_pack_confidence').value,
+      row('open_target_record').value
+    ].filter(Boolean).join(' | ') || 'Receipt appears after valid returned records.';
+    const nextAction = story && story.openUrl
+      ? 'Open the returned record and prove only what the receipt supports.'
+      : 'Confirm the lane before opening proof records.';
+    return {
+      schema: 'forge.w255.consultant-story-first-glance.v1',
+      openTarget: story && story.openTarget || '',
+      proveMove: story && story.proofMove || '',
+      safeClaim: story && story.safeClaim || '',
+      doNotClaimGuardrail: story && story.doNotClaim || '',
+      receiptSummary,
+      nextAction
+    };
+  }
+
   function consultantStorySurfaceFromLanePackW247(state, lanePack, normalizedImport) {
     const resolution = resolveLanePackFromEvidenceW246(state);
     const selected = lanePack || (resolution.status === 'resolved' ? resolution.lanePack : null);
@@ -20020,6 +20092,7 @@
 
   function renderConsultantStorySurfaceW248(story) {
     if (!story || !story.openTarget || !story.proofMove) return '';
+    const firstGlance = consultantStoryFirstGlanceW255(story);
     const confidence = story.nllmAdvisory && story.nllmAdvisory.confidence ? consultantLabel(story.nllmAdvisory.confidence) : 'Unclear';
     const uncertainty = story.nllmAdvisory && story.nllmAdvisory.uncertainty ? story.nllmAdvisory.uncertainty : 'Ask for confirmation when evidence is weak.';
     const receipt = story.evidenceReceiptW254 && story.evidenceReceiptW254.status === 'receipt_ready' ? story.evidenceReceiptW254 : null;
@@ -20042,20 +20115,24 @@
     return `
       <div class="idb-run-action-card idb-w248-story-surface">
         <div class="idb-status-key">Live demo talk track</div>
-        <div class="idb-strong">${escapeHtml(story.openTarget)}</div>
+        <div class="idb-strong">${escapeHtml(firstGlance.openTarget)}</div>
         <div class="idb-copy">${escapeHtml(story.buyerFacingSoWhat || '')}</div>
+        <div class="idb-chip-row idb-w255-first-glance">
+          <span class="idb-mini-chip">Receipt: ${escapeHtml(firstGlance.receiptSummary)}</span>
+          <span class="idb-mini-chip">Next: ${escapeHtml(firstGlance.nextAction)}</span>
+        </div>
         <div class="idb-status-strip">
           <div class="idb-status-cell">
             <div class="idb-status-key">Prove</div>
-            <div class="idb-copy">${escapeHtml(story.proofMove)}</div>
+            <div class="idb-copy">${escapeHtml(firstGlance.proveMove)}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Safe to say</div>
-            <div class="idb-copy">${escapeHtml(story.safeClaim)}</div>
+            <div class="idb-copy">${escapeHtml(firstGlance.safeClaim)}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Do not claim</div>
-            <div class="idb-copy">${escapeHtml(story.doNotClaim)}</div>
+            <div class="idb-copy">${escapeHtml(firstGlance.doNotClaimGuardrail)}</div>
           </div>
         </div>
         <div class="idb-chip-row">
@@ -22381,6 +22458,8 @@
       suiteletHeaderDensityQaW253,
       postInstallAcceptancePacketW253,
       storyEvidenceReceiptTrailW254,
+      receiptDrivenLaneExpansionQaW255,
+      consultantStoryFirstGlanceW255,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,

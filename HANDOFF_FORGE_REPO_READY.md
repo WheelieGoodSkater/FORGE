@@ -65,6 +65,7 @@ npm run harness:lane-pack-authoring-diff-review-w251
 npm run harness:lane-pack-review-ui-install-smoke-w252
 npm run harness:post-install-visual-acceptance-w253
 npm run harness:evidence-receipt-trail-w254
+npm run harness:receipt-driven-lane-expansion-qa-w255
 npm run check
 npm run validate
 ```
@@ -82,12 +83,32 @@ Current expected result:
 - W252 harness passes `9/9`.
 - W253 harness passes `9/9`.
 - W254 harness passes `8/8`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, and W254 harness.
+- W255 harness passes `8/8`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, and W255 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W255: Receipt-Driven Lane Expansion QA And Consultant Story Compression
+
+What changed:
+
+- Adds receipt-driven lane expansion QA that validates whether a lane/story receipt explains lane choice, Open target, proof evidence, notes contribution, N/LLM limits, and uncertainty.
+- Adds a compressed first-glance story model for Open target, prove move, safe claim, do-not-claim guardrail, receipt summary, and next action.
+- Updates the Review/Run story surface with compact receipt and next-action chips while keeping the full W254 receipt expandable.
+- Adds a W255 proposed lane-pack fixture that remains N/LLM advisory, review-only, and non-installable.
+- Keeps W252 proposal review admin-only, W253 acceptance packet review-only, and W254 receipt consultant-safe.
+
+Important W255 artifacts:
+
+- `archive/fixtures/w255_proposed_lane_pack_receipt_fixture.json`
+- `archive/tools/run_w255_receipt_driven_lane_expansion_qa_harness.js`
+- `archive/reports/w255_receipt_driven_lane_expansion_qa.md`
+- `archive/trace_samples/w255_receipt_driven_lane_expansion_qa_trace.json`
+
+Previous completed block:
 
 - W254: Evidence Receipt Trail For Consultant Story Trust And Lane Expansion
 
@@ -314,30 +335,26 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W255: Receipt-Driven Lane Expansion QA And Consultant Story Compression
+W256: Consultant Live Demo Script From Receipt Evidence And Returned Records
 
 Goal:
-Use the W254 evidence receipt trail to make future lane expansion easier to review, while compressing the consultant story surface so the proof, trust receipt, and next action stay fast to read live.
+Turn the trusted W255 story surface into a short live-demo coaching script that tells the consultant exactly what to say, what to open, what to prove, and where to stop without adding claims beyond the evidence receipt.
 
 Build:
-- Add a receipt-driven lane expansion QA helper that can evaluate a proposed or existing lane pack against expected consultant story receipt rows.
-- For each lane pack, verify the receipt can explain:
-  - why this lane was chosen
-  - what returned record is the Open target
-  - what evidence supports the proof move
-  - what notes contributed to pain/value/ROI framing
-  - what N/LLM may and may not do
-  - what uncertainty remains
-- Compress the Review/Run story surface so the first glance shows:
-  - Open target
-  - prove move
-  - safe claim
-  - do-not-claim guardrail
-  - receipt summary
-  - next action
-- Keep the full receipt expandable for trust review, but avoid crowding the normal consultant UI.
-- Add QA coverage for at least one new proposed lane-pack fixture that remains review-only and cannot install itself.
-- Keep lane-pack expansion future-friendly: use structured lane-pack, normalized import, and receipt data, not scattered hardcoded strings.
+- Add a compact live-demo script helper sourced from W245 returned records, W246 lane pack, W254 receipt, and W255 first-glance story.
+- Script should include:
+  - opening line
+  - what to open
+  - what to prove
+  - safe buyer-facing claim
+  - value/so-what line
+  - stop/guardrail line
+  - uncertainty line when evidence is weak or conflicting
+- Render the script in Review/Run after valid import as a compact consultant-facing block.
+- Keep the script short enough for live use and avoid generic filler.
+- Ensure the script never claims record creation, write actions, measured ROI, guaranteed outcomes, or unsupported lane fit.
+- Keep the full W254 receipt expandable below the script for trust review.
+- Keep W255 receipt-driven QA available for existing/proposed lane packs.
 - Keep W252 proposal review admin-only, W253 acceptance packet review-only, and W254 receipt consultant-safe.
 - Keep N/LLM advisory-only and uncertainty-visible.
 - Preserve W218 success wording and W220 recovery wording.
@@ -346,18 +363,19 @@ Build:
 - Keep repo front clean.
 
 Validation:
-- Add archived W255 harness covering:
-  - receipt-driven QA validates existing lane packs
-  - proposed lane-pack fixture remains review-only and non-installable
-  - compressed story surface keeps required first-glance fields
-  - expanded receipt remains available after valid import
-  - normal UI avoids raw diagnostics and overcrowding
-  - N/LLM advisory limits remain visible without write authority
+- Add archived W256 harness covering:
+  - live-demo script includes all required sections
+  - script uses returned record names and lane-aware labels
+  - script is short and consultant-facing
+  - script avoids banned overclaims and write/creation claims
+  - weak/conflicting evidence produces a confirmation/uncertainty script
+  - W254 receipt remains expandable under the script
+  - W255 receipt-driven QA remains available
   - weak/conflicting evidence remains confirmation-gated
-- Run W244 through W255 harnesses, check, and validate.
+- Run W244 through W256 harnesses, check, and validate.
 
 Output:
-- Summary of receipt-driven QA, story compression, lane expansion guardrails, and validation.
+- Summary of live-demo script helper/UI, trust guardrails, validation, and lane expansion continuity.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

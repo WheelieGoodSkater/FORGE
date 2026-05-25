@@ -1,0 +1,54 @@
+{
+  "schema": "forge.w279.adapter-readiness-bridge.trace.v1",
+  "workstream": "W279",
+  "title": "Adapter Profile Readiness Bridge Without Connected Build Behavior Change",
+  "bridge": {
+    "schema": "forge.w279.adapter-readiness-bridge.v1",
+    "module": "src/contracts/adapterReadinessBridge.js",
+    "governingContract": "src/contracts/adapterProfiles.js",
+    "scope": "adapter_profile_and_readiness_shape_validation_and_parity_normalization",
+    "packetsCovered": [
+      "released W144 governed runner adapter profile",
+      "derived endpoint from host plus Suitelet path",
+      "dataset/account host switching",
+      "W262 readiness states",
+      "W263 readiness trace/export profile fields"
+    ],
+    "runtimeBridgeImportedByDrawer": false
+  },
+  "fieldCompatibility": {
+    "releasedAdapterProfile": "validated_against_w271_adapter_profile_contract",
+    "endpointDerivation": "validated_against_w271_endpoint_derivation",
+    "datasetSwitching": "validated_account_host_swap_without_runtime_logic_change",
+    "w262ReadinessStates": "validated_against_w271_readiness_contract",
+    "w263ReadinessTrace": "validated_field_compatible"
+  },
+  "continuity": {
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w276LiveEvidenceSignoffBridgeAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w278StoryCoachingBridgeAvailable": true,
+    "weakEvidenceConfirmationFirst": true
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "buildTabCopyButtonsLayoutChanged": false,
+    "connectedBuildFlowChanged": false,
+    "retrySafetyChanged": false,
+    "returnedRecordImportChanged": false,
+    "laneResolutionChanged": false,
+    "adapterEndpointProfileChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "endpointProfileHiddenFromNormalUi": true,
+    "normalConsultantUiHidesEndpointProfileAdminDiagnostics": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdateInThisBlock": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRegressionRequired": false,
+    "reason": "Adapter readiness contract bridge and archived parity validation only; no visible Build UI changes."
+  }
+}

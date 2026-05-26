@@ -3644,6 +3644,52 @@
     };
   }
 
+  function storyCoachingRuntimeShapeW298(story) {
+    const source = story || {};
+    const receipt = source.evidenceReceiptW254 || {
+      schema: 'forge.w254.consultant-story-evidence-receipt.v1',
+      status: 'waiting_for_valid_import',
+      renderAfterValidImportOnly: true,
+      rows: []
+    };
+    const firstGlance = consultantStoryFirstGlanceW255(source);
+    const script = consultantLiveDemoScriptW256(source);
+    const sequence = guidedDemoStepSequenceW257(source);
+    return {
+      schema: 'forge.w298.story-coaching-runtime-shape.v1',
+      status: source && source.status === 'needs_lane_confirmation' ? 'needs_confirmation' : 'shape_ready',
+      sourceStatus: source.status || '',
+      w254EvidenceReceipt: receipt,
+      w255FirstGlance: firstGlance,
+      w256LiveDemoScript: script,
+      w257GuidedSequence: sequence,
+      source: 'drawer_local_contract_shaped_story_coaching_fact_assembly',
+      governingContract: 'forge.w273.story-coaching-surfaces.v1',
+      governingBridge: 'forge.w278.story-coaching-bridge.v1',
+      boundaries: {
+        renderConsultantStorySurfaceW248DrawerOwned: true,
+        visibleReviewRunCopyChanged: false,
+        returnedRecordImportChanged: false,
+        w151W214W245ValidationChanged: false,
+        connectedSubmitRefreshImportChanged: false,
+        adapterInvocationAllowed: false,
+        canRenderUi: false,
+        canMutateState: false,
+        canImportRecords: false,
+        canCreateRecords: false,
+        canWriteTransactions: false,
+        canCreateOpenLinks: false
+      },
+      guardrails: {
+        nllmAdvisoryOnly: true,
+        uncertaintyVisible: true,
+        weakEvidenceConfirmationFirst: source.status === 'needs_lane_confirmation' || script.status === 'needs_confirmation_script' || sequence.status === 'confirmation_first_sequence',
+        noDrawerCreatedRecords: true,
+        noDrawerTransactionWrites: true
+      }
+    };
+  }
+
   function consultantStorySurfaceFromLanePackW247(state, lanePack, normalizedImport) {
     const resolution = resolveLanePackFromEvidenceW246(state);
     const selected = lanePack || (resolution.status === 'resolved' ? resolution.lanePack : null);
@@ -22529,12 +22575,13 @@
 
   function renderConsultantStorySurfaceW248(story) {
     if (!story || !story.openTarget || !story.proofMove) return '';
-    const firstGlance = consultantStoryFirstGlanceW255(story);
-    const script = consultantLiveDemoScriptW256(story);
-    const sequence = guidedDemoStepSequenceW257(story);
+    const coachingShape = storyCoachingRuntimeShapeW298(story);
+    const firstGlance = coachingShape.w255FirstGlance;
+    const script = coachingShape.w256LiveDemoScript;
+    const sequence = coachingShape.w257GuidedSequence;
     const confidence = story.nllmAdvisory && story.nllmAdvisory.confidence ? consultantLabel(story.nllmAdvisory.confidence) : 'Unclear';
     const uncertainty = story.nllmAdvisory && story.nllmAdvisory.uncertainty ? story.nllmAdvisory.uncertainty : 'Ask for confirmation when evidence is weak.';
-    const receipt = story.evidenceReceiptW254 && story.evidenceReceiptW254.status === 'receipt_ready' ? story.evidenceReceiptW254 : null;
+    const receipt = coachingShape.w254EvidenceReceipt && coachingShape.w254EvidenceReceipt.status === 'receipt_ready' ? coachingShape.w254EvidenceReceipt : null;
     const proofAction = sequence && sequence.steps && sequence.steps[2] ? sequence.steps[2].line : firstGlance.proveMove;
     const receiptHtml = receipt ? `
         <details class="idb-technical-details idb-w254-evidence-receipt">
@@ -24968,6 +25015,7 @@
       consultantStoryFirstGlanceW255,
       consultantLiveDemoScriptW256,
       guidedDemoStepSequenceW257,
+      storyCoachingRuntimeShapeW298,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,

@@ -1,0 +1,96 @@
+{
+  "schema": "forge.w298.story-coaching-runtime-shape-migration.trace.v1",
+  "status": "runtime_shape_migration_ready",
+  "runtimeHelper": {
+    "name": "storyCoachingRuntimeShapeW298",
+    "location": "idb-drawer.user.js",
+    "schema": "forge.w298.story-coaching-runtime-shape.v1",
+    "source": "drawer_local_contract_shaped_story_coaching_fact_assembly",
+    "governingContract": "src/contracts/storyCoachingSurfaces.js",
+    "governingBridge": "src/contracts/storyCoachingBridge.js"
+  },
+  "sourceAnchorsReviewed": [
+    "consultantStorySurfaceFromLanePackW247",
+    "storyEvidenceReceiptTrailW254",
+    "consultantStoryFirstGlanceW255",
+    "consultantLiveDemoScriptW256",
+    "guidedDemoStepSequenceW257",
+    "renderConsultantStorySurfaceW248"
+  ],
+  "migratedShapeFacts": [
+    "W254 evidence receipt packet",
+    "W255 first-glance story packet",
+    "W256 live-demo script packet",
+    "W257 guided sequence packet",
+    "story coaching runtime guardrail flags",
+    "drawer-owned boundary flags"
+  ],
+  "drawerOwnedRuntimeBehavior": [
+    "renderConsultantStorySurfaceW248 visible Review/Run renderer",
+    "consultantStorySurfaceFromLanePackW247 story surface assembly",
+    "storyEvidenceReceiptTrailW254 receipt row construction",
+    "consultantStoryFirstGlanceW255 first-glance copy",
+    "consultantLiveDemoScriptW256 script copy",
+    "guidedDemoStepSequenceW257 sequence copy",
+    "canonicalImportResultNormalizationW245 returned-record import normalization",
+    "W151 completed-result validation",
+    "completedRunnerResultSemanticGuardW214 semantic guard",
+    "connectedBuildSubmitRefreshImportW264 submit/refresh/import"
+  ],
+  "parity": {
+    "w278BridgeFieldCompatible": true,
+    "w273ContractFieldCompatible": true,
+    "w247StorySurfaceFieldCompatible": true,
+    "renderConsultantStorySurfaceW248DrawerOwned": true,
+    "visibleReviewRunCopyChanged": false,
+    "returnedRecordBehaviorChanged": false,
+    "openLinkAuthorityChanged": false,
+    "connectedSubmitRefreshImportChanged": false,
+    "laneResolutionChanged": false,
+    "recordCreationAuthorityChanged": false
+  },
+  "boundaries": {
+    "canRenderUi": false,
+    "canChangeVisibleCopy": false,
+    "canMutateState": false,
+    "canImportRecords": false,
+    "canCreateRecords": false,
+    "canWriteTransactions": false,
+    "canCreateOpenLinks": false,
+    "canInvokeAdapter": false,
+    "canDeclareW245W151W214Validity": false
+  },
+  "continuity": {
+    "w297ClosureReadinessMapAvailable": true,
+    "w296BridgeAvailableAndUnchanged": true,
+    "w295ContractAvailableAndUnchanged": true,
+    "w294ClosureReadinessMapAvailable": true,
+    "w273StoryCoachingContractAvailable": true,
+    "w278StoryCoachingBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRegressionRequired": false,
+    "reason": "W298 preserves the W248 renderer and visible Review/Run copy; harness verifies visible markers and hidden diagnostics."
+  },
+  "nextRecommendedBlock": "W299: Story Coaching Runtime Shape Closure And Lane Resolution Readiness"
+}

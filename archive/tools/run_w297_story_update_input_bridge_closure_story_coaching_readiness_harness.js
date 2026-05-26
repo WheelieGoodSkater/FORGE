@@ -196,8 +196,7 @@ function main() {
       trace.guardrails.noDrawerCreatedRecords === true &&
       trace.guardrails.noDrawerTransactionWrites === true &&
       trace.guardrails.nlLmAdvisoryOnly === true &&
-      trace.guardrails.uncertaintyVisible === true &&
-      !/storyCoachingRuntimeShapeW298/.test(userscript),
+      trace.guardrails.uncertaintyVisible === true,
     JSON.stringify(trace.guardrails));
 
   assertCase(results, 'w297-harness-and-check-registration-present',

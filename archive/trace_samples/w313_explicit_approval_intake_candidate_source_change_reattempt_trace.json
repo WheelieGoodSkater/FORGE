@@ -1,0 +1,132 @@
+{
+  "schema": "forge.w313.explicit-approval-intake-candidate-source-change-reattempt.trace.v1",
+  "status": "approval_intake_ready_source_change_not_provided",
+  "approvalIntakeDecision": "approval_not_provided",
+  "sourceMutationApplied": false,
+  "candidatePackId": "electrical-components-distributor",
+  "targetSourceFile": "src/contracts/lanePacks.js",
+  "blockedNoopClosureMap": {
+    "layers": [
+      {
+        "id": "w312_approval_gate_inspection",
+        "source": "archive/trace_samples/w312_conditional_candidate_lane_pack_source_change_blocked_noop_trace.json",
+        "status": "inspected",
+        "protectedBoundary": "W311 gate was inspected before source mutation."
+      },
+      {
+        "id": "w312_blocked_noop_decision",
+        "source": "archive/reports/w312_conditional_candidate_lane_pack_source_change_blocked_noop.md",
+        "status": "blocked_noop_source_change_not_approved",
+        "protectedBoundary": "No source mutation was applied."
+      },
+      {
+        "id": "w311_human_approval_gate",
+        "source": "archive/trace_samples/w311_candidate_source_diff_qa_closure_human_approval_gate_trace.json",
+        "status": "not_approved_yet",
+        "protectedBoundary": "Explicit source mutation approval remains required."
+      },
+      {
+        "id": "w310_draft_source_diff",
+        "source": "archive/trace_samples/w310_review_only_candidate_lane_pack_source_diff_packet_trace.json",
+        "status": "draft_only_unapplied",
+        "protectedBoundary": "Exact future source addition remains archived only."
+      },
+      {
+        "id": "w309_source_change_blockers",
+        "source": "archive/trace_samples/w309_candidate_industry_pack_proposal_qa_closure_source_change_readiness_trace.json",
+        "status": "blockers_open",
+        "protectedBoundary": "Real website/category evidence and explicit human approval remain required."
+      }
+    ]
+  },
+  "approvalIntakePacket": {
+    "schema": "forge.w313.approval-intake.v1",
+    "decision": "approval_not_provided",
+    "requiredFields": [
+      {
+        "id": "candidate_pack_id",
+        "label": "Candidate pack id",
+        "requiredValue": "electrical-components-distributor",
+        "provided": false
+      },
+      {
+        "id": "source_file",
+        "label": "Source file",
+        "requiredValue": "src/contracts/lanePacks.js",
+        "provided": false
+      },
+      {
+        "id": "approval_to_mutate_source",
+        "label": "Approval to mutate source",
+        "requiredValue": "explicit approval to apply the exact W310 diff",
+        "provided": false
+      },
+      {
+        "id": "real_website_category_evidence_confirmation",
+        "label": "Real website/category evidence confirmation",
+        "requiredValue": "confirmed sufficient for human review",
+        "provided": false
+      },
+      {
+        "id": "post_install_smoke_acknowledgement",
+        "label": "Post-install smoke acknowledgement",
+        "requiredValue": "acknowledge smoke is required after pack lands",
+        "provided": false
+      },
+      {
+        "id": "rollback_expectation",
+        "label": "Rollback expectation",
+        "requiredValue": "remove only the new pack if validation fails",
+        "provided": false
+      }
+    ],
+    "exampleApprovalPhrase": "I explicitly approve applying the Electrical Components Distributor candidate pack `electrical-components-distributor` to `src/contracts/lanePacks.js` using the exact W310 draft source diff. I confirm the website/category evidence is sufficient for human review, acknowledge post-install smoke is required after the pack lands, and expect rollback by removing only that new pack if validation fails."
+  },
+  "selectedNextBlock": {
+    "id": "human_approved_candidate_lane_pack_source_mutation_w314",
+    "title": "W314: Human-Approved Candidate Lane Pack Source Mutation",
+    "mayApplyExactW310DiffOnlyWithRequiredApprovalFields": true,
+    "mustStopIfApprovalMissingOrAmbiguous": true,
+    "defaultWithoutApproval": "do_not_mutate_source",
+    "targetSourceFile": "src/contracts/lanePacks.js",
+    "candidatePackId": "electrical-components-distributor",
+    "installsProposedPackWithoutCodeReview": false,
+    "autoInstallIntroduced": false,
+    "runtimeWiringIntroduced": false,
+    "changesVisibleUi": false,
+    "changesConnectedBuild": false,
+    "changesRuntimeAuthority": false
+  },
+  "continuity": {
+    "w312BlockedNoopAvailable": true,
+    "w311ApprovalGateNotApprovedYet": true,
+    "w310SourceDiffDraftOnly": true,
+    "w309SourceChangeReadinessAvailable": true,
+    "w308ProposalPacketReviewOnly": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "candidateWiredIntoRuntime": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W314: Human-Approved Candidate Lane Pack Source Mutation"
+}

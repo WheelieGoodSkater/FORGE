@@ -1,0 +1,78 @@
+{
+  "schema": "forge.w287.completed-result-import-eligibility-contract.trace.v1",
+  "status": "contract_ready",
+  "contractModule": "src/contracts/completedResultImportEligibility.js",
+  "governingBoundaryMap": "archive/trace_samples/w286_connected_build_import_guard_boundary_map_trace.json",
+  "representedInputs": [
+    "completed-result JSON presence",
+    "W151 validation status",
+    "W214 semantic guard status",
+    "W245 canonical normalization readiness",
+    "generated record owner / governed runner ownership",
+    "Finish build CTA eligibility",
+    "Open-link preconditions",
+    "W218 success wording preservation flag",
+    "W220 recovery wording preservation flag",
+    "admin-only raw evidence policy"
+  ],
+  "statuses": [
+    "missing_completed_result",
+    "w151_rejected",
+    "w214_semantic_blocked",
+    "w245_normalization_not_ready",
+    "finish_build_eligible",
+    "finish_build_blocked"
+  ],
+  "validationBoundary": {
+    "w151ValidationConsumedNotReplaced": true,
+    "w214SemanticGuardConsumedNotReplaced": true,
+    "w245NormalizationConsumedNotReplaced": true,
+    "moduleCannotDeclareImportValidWithoutSuppliedFacts": true
+  },
+  "runtimeBoundary": {
+    "contractNotWiredIntoDrawerRuntime": true,
+    "drawerSelfContained": true,
+    "noRuntimeRequireAdded": true,
+    "noExternalDependencyAdded": true,
+    "noBundlerRequirementAdded": true,
+    "noNetworkDependencyAdded": true,
+    "noStorageWriteAddedForContractLoading": true,
+    "noStateMutation": true,
+    "noRecordImport": true,
+    "noRecordCreation": true,
+    "noTransactionWrites": true,
+    "noOpenLinkCreation": true,
+    "finishBuildMutationStaysDrawerOwned": true
+  },
+  "futureBridgePath": {
+    "proposedBridge": "src/contracts/completedResultImportEligibilityBridge.js",
+    "scope": "compare drawer-produced import eligibility facts against W287 contract output",
+    "movesFinishBuildMutation": false
+  },
+  "continuity": {
+    "w286ImportGuardBoundaryMapAvailable": true,
+    "w285ResponseShapeRuntimeMigrationAvailable": true,
+    "w284ResponseShapeBridgeAvailable": true,
+    "w283ResponseShapeContractAvailable": true,
+    "w282BoundaryInventoryAvailable": true,
+    "w281AdapterProfileReadinessMigrationPreserved": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordsOpenLinksChanged": false,
+    "fakeLinkBlockingChanged": false,
+    "normalConsultantUiChanged": false
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "normalConsultantUiHidesEndpointRawTaskSchemaStackAdminDiagnostics": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "noW144DeploymentUpdateInThisBlock": true
+  }
+}

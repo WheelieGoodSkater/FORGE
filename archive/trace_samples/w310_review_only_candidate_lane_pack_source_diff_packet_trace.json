@@ -1,0 +1,169 @@
+{
+  "schema": "forge.w310.review-only-candidate-lane-pack-source-diff-packet.trace.v1",
+  "status": "review_only_source_diff_packet_ready",
+  "sourceDiffPacket": {
+    "candidateIdentity": {
+      "proposedPackId": "electrical-components-distributor",
+      "label": "Electrical Components Distributor",
+      "sourceTarget": "src/contracts/lanePacks.js",
+      "basePackId": "industrial-distributor",
+      "laneId": "industrial_distribution",
+      "subIndustryId": "electrical-components-distributor",
+      "operatingMode": "distribution_replenishment",
+      "packVersion": "1.0.0"
+    },
+    "reviewOnly": true,
+    "sourceMutationApplied": false,
+    "runtimeWired": false,
+    "installable": false,
+    "sourceTruth": false,
+    "autoInstallIntroduced": false,
+    "proposedFutureSourcePatch": {
+      "targetFile": "src/contracts/lanePacks.js",
+      "anchorAfterBasePackId": "industrial-distributor",
+      "patchApplied": false,
+      "patchLines": [
+        "  pack({",
+        "    packId: 'electrical-components-distributor',",
+        "    laneId: 'industrial_distribution',",
+        "    subIndustryId: 'electrical-components-distributor',",
+        "    label: 'Electrical Components Distributor',",
+        "    operatingMode: 'distribution_replenishment',",
+        "    websiteSignals: {",
+        "      domains: ['example-electrical-distributor.com'],",
+        "      categoryTerms: ['electrical components', 'wire', 'cable', 'switchgear', 'industrial distributor', 'electrical supply'],",
+        "      evidenceTerms: ['branch availability', 'supplier lead time', 'replenishment', 'project fulfillment', 'component SKU']",
+        "    },",
+        "    recordRoles: {",
+        "      required: ['customer', 'sales_order', 'branch_or_product_sku', 'replenishment_or_availability_flow'],",
+        "      optional: ['supporting_sku', 'supplier_lead_time_context', 'location_planning_context'],",
+        "      invalid: ['formula_or_batch_structure', 'work_order_or_wip_object', 'style_matrix_or_availability_flow']",
+        "    },",
+        "    vocabulary: {",
+        "      allowed: ['branch availability', 'supplier lead time', 'project fulfillment', 'replenishment', 'component SKU'],",
+        "      forbidden: ['ingredient batch', 'style matrix', 'production routing', 'measured ROI', 'guaranteed savings']",
+        "    },",
+        "    liveDemo: {",
+        "      proofMove: 'Open the electrical component SKU and prove branch availability, supplier timing, and replenishment confidence for the project promise.',",
+        "      storyAnchor: 'The buyer needs confidence that project-critical components can be promised from the right location.',",
+        "      roiSoWhat: 'Protect service levels and margin by catching supplier and branch exceptions before project fulfillment misses.',",
+        "      competitiveContrast: 'NetSuite connects order promise, branch inventory, and replenishment action without a separate lookup path.'",
+        "    }",
+        "  }),"
+      ]
+    },
+    "websiteSignals": {
+      "domains": ["example-electrical-distributor.com"],
+      "categoryTerms": ["electrical components", "wire", "cable", "switchgear", "industrial distributor", "electrical supply"],
+      "evidenceTerms": ["branch availability", "supplier lead time", "replenishment", "project fulfillment", "component SKU"]
+    },
+    "recordRoles": {
+      "required": ["customer", "sales_order", "branch_or_product_sku", "replenishment_or_availability_flow"],
+      "optional": ["supporting_sku", "supplier_lead_time_context", "location_planning_context"],
+      "invalid": ["formula_or_batch_structure", "work_order_or_wip_object", "style_matrix_or_availability_flow"]
+    },
+    "vocabulary": {
+      "allowed": ["branch availability", "supplier lead time", "project fulfillment", "replenishment", "component SKU"],
+      "forbidden": ["ingredient batch", "style matrix", "production routing", "measured ROI", "guaranteed savings"]
+    },
+    "liveDemo": {
+      "proofMove": "Open the electrical component SKU and prove branch availability, supplier timing, and replenishment confidence for the project promise.",
+      "storyAnchor": "The buyer needs confidence that project-critical components can be promised from the right location.",
+      "roiSoWhat": "Protect service levels and margin by catching supplier and branch exceptions before project fulfillment misses.",
+      "competitiveContrast": "NetSuite connects order promise, branch inventory, and replenishment action without a separate lookup path."
+    },
+    "nllmAdvisoryOnly": {
+      "inheritsDefaultPackLimits": true,
+      "writeAuthority": "none",
+      "creationAllowed": false,
+      "uncertaintyPolicy": "surface_uncertainty_and_request_confirmation",
+      "hardLimits": [
+        "cannotCreateRecords",
+        "cannotInvokeSuiteScriptOrWriteTransactions",
+        "cannotSilentlyInstallTruth",
+        "cannotOverrideWebsiteEvidence",
+        "cannotOverrideConsultantToggles",
+        "cannotHideUncertainty",
+        "cannotInventVerifiedWebsiteFacts",
+        "cannotClaimMeasuredRoiWithoutBaseline"
+      ]
+    },
+    "expectedDiffAgainstIndustrialDistributor": [
+      "Adds electrical components, wire, cable, switchgear, electrical supply, and project fulfillment evidence.",
+      "Keeps distribution fulfillment roles and Product SKU / availability proof path.",
+      "Adds supplier lead-time context as optional review-only role coverage.",
+      "Keeps food batch, WIP, manufacturing, and style matrix claims invalid without independent evidence.",
+      "Keeps ROI copy outcome-safe with no measured or guaranteed claims."
+    ],
+    "w309BlockersStillOpen": [
+      "confirmed_real_website_category_evidence",
+      "explicit_human_code_review_approval"
+    ],
+    "humanCodeReviewApproval": {
+      "decision": "not_approved_yet",
+      "reviewer": "",
+      "date": "",
+      "notes": ""
+    },
+    "postInstallSmokePlanIfLaterApproved": [
+      "Verify standard consultant inputs stay prospect, website, notes, and toggles.",
+      "Verify electrical distributor evidence resolves only with strong website/category evidence or explicit consultant confirmation.",
+      "Verify weak/conflicting evidence remains confirmation-gated.",
+      "Verify returned records preserve Product SKU / availability labels, supported Open-link authority, W218 success wording, and W220 recovery wording.",
+      "Verify normal consultant UI hides diagnostics and admin-only proposal review.",
+      "Verify connected build submit, refresh, and import remain unchanged."
+    ]
+  },
+  "diffReadinessAcceptancePacket": {
+    "schema": "forge.w310.review-only-diff-readiness-acceptance.v1",
+    "diffDrafted": true,
+    "diffApplied": false,
+    "sourcePackMutated": false,
+    "runtimeWired": false,
+    "installable": false,
+    "sourceTruth": false,
+    "autoInstallIntroduced": false,
+    "normalConsultantUiChanged": false,
+    "runtimeAuthorityChanged": false
+  },
+  "continuity": {
+    "w309SourceChangeReadinessAvailable": true,
+    "w308ProposalPacketReviewOnly": true,
+    "w308AcceptancePacketNonInstallable": true,
+    "w307ClosureAuthoringPlanAvailable": true,
+    "w306RuntimeShapeFieldCompatibleWithW305": true,
+    "w305BridgeAvailable": true,
+    "w304ContractAvailable": true,
+    "w303ClosureReadinessMapAvailable": true,
+    "w302RuntimeShapeFieldCompatibleWithW301": true,
+    "w301BridgeAvailable": true,
+    "w300ContractAvailable": true,
+    "w274LanePackExpansionWorkflowAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "candidateWiredIntoRuntime": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W311: Candidate Source Diff QA Closure And Human Approval Gate"
+}

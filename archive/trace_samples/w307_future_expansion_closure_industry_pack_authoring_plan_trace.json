@@ -1,0 +1,247 @@
+{
+  "schema": "forge.w307.future-expansion-closure-industry-pack-authoring-plan.trace.v1",
+  "status": "closure_and_authoring_plan_ready",
+  "closureMap": {
+    "layers": [
+      {
+        "id": "w303_lane_resolution_closure_future_expansion_readiness",
+        "sourceSurfaceProtected": [
+          "W299-W302 lane-resolution readiness closure",
+          "future industry/sub-industry expansion readiness inventory",
+          "selected W304 future expansion readiness slice"
+        ],
+        "governingContractOrBridge": "archive/reports/w303_lane_resolution_optimization_closure_future_expansion_readiness.md",
+        "drawerSourceOwnedBehavior": [
+          "source lane packs",
+          "actual lane choice/confidence",
+          "website evidence runtime",
+          "consultant toggles",
+          "W250 labels",
+          "connected build",
+          "returned-record import",
+          "visible UI rendering"
+        ],
+        "parityHarnesses": [
+          "harness:lane-resolution-optimization-closure-future-expansion-readiness-w303"
+        ],
+        "rollbackBoundary": "Remove W303 archive-only closure artifacts and package registration."
+      },
+      {
+        "id": "w304_future_lane_pack_expansion_readiness_contract",
+        "sourceSurfaceProtected": [
+          "proposed lane/sub-industry identity",
+          "website/category evidence",
+          "role/vocabulary/story coverage",
+          "N/LLM advisory limits",
+          "human-review and non-installable gates"
+        ],
+        "governingContractOrBridge": "src/contracts/futureLanePackExpansionReadiness.js",
+        "drawerSourceOwnedBehavior": [
+          "W247 authoring/review",
+          "W251 proposed diff",
+          "W252 admin review",
+          "W255 receipt-driven QA",
+          "W300-W302 lane-readiness",
+          "source lane pack mutation"
+        ],
+        "parityHarnesses": [
+          "harness:future-lane-pack-expansion-readiness-contract-w304"
+        ],
+        "rollbackBoundary": "Remove W304 contract module, report, trace, harness, and package registration."
+      },
+      {
+        "id": "w305_future_lane_pack_expansion_readiness_bridge",
+        "sourceSurfaceProtected": [
+          "drawer/source future expansion facts",
+          "W304 contract-normalized output",
+          "review-only no-authority boundaries"
+        ],
+        "governingContractOrBridge": "src/contracts/futureLanePackExpansionReadinessBridge.js",
+        "drawerSourceOwnedBehavior": [
+          "source pack comparison source",
+          "authoring/review workflow",
+          "diff rendering",
+          "receipt QA",
+          "lane behavior"
+        ],
+        "parityHarnesses": [
+          "harness:future-lane-pack-expansion-readiness-bridge-w305"
+        ],
+        "rollbackBoundary": "Remove W305 bridge module, report, trace, harness, and package registration."
+      },
+      {
+        "id": "w306_future_expansion_readiness_runtime_shape_migration",
+        "sourceSurfaceProtected": [
+          "futureExpansionReadinessRuntimeShapeW306",
+          "drawer-local future expansion readiness fact assembly",
+          "W304/W305 field-compatible statuses"
+        ],
+        "governingContractOrBridge": "src/contracts/futureLanePackExpansionReadiness.js + src/contracts/futureLanePackExpansionReadinessBridge.js",
+        "drawerSourceOwnedBehavior": [
+          "source lane packs",
+          "W247/W251/W252/W255 workflows",
+          "W300-W302 lane readiness",
+          "W245/W151/W214 validation",
+          "connected build",
+          "returned-record import",
+          "Open-link authority",
+          "visible UI rendering"
+        ],
+        "parityHarnesses": [
+          "harness:future-lane-pack-expansion-readiness-runtime-shape-migration-w306"
+        ],
+        "rollbackBoundary": "Remove W306 drawer helper/export plus W306 report, trace, harness, and package registration."
+      }
+    ]
+  },
+  "futureIndustryPackAuthoringPlan": {
+    "status": "review_only_authoring_plan_ready",
+    "steps": [
+      {
+        "id": "candidate_industry_subindustry_intake",
+        "description": "Capture candidate industry, sub-industry, label, base pack target, and business reason."
+      },
+      {
+        "id": "website_category_evidence_collection",
+        "description": "Collect website domain, category copy, product/service evidence, and matched signals before drafting pack truth."
+      },
+      {
+        "id": "record_role_design",
+        "description": "Define required, optional, and invalid record roles with lane-safe labels."
+      },
+      {
+        "id": "vocabulary_design",
+        "description": "Define allowed and forbidden vocabulary so future copy does not cross lane boundaries."
+      },
+      {
+        "id": "proof_story_roi_competitive_copy",
+        "description": "Draft proof move, story anchor, ROI-safe so-what, and competitive contrast without measured or guaranteed claims."
+      },
+      {
+        "id": "nllm_advisory_draft_limits",
+        "description": "Allow N/LLM to draft and summarize only; no writes, no source changes, no override of evidence or toggles, no hidden uncertainty."
+      },
+      {
+        "id": "w247_authoring_review",
+        "description": "Run W247 authoring/review expectations before any source change."
+      },
+      {
+        "id": "w251_proposed_diff_review",
+        "description": "Run W251 proposed diff against the source comparison target."
+      },
+      {
+        "id": "w252_admin_safe_review",
+        "description": "Render admin-safe review only, hidden from normal consultant UI and with no install action."
+      },
+      {
+        "id": "w255_receipt_driven_qa",
+        "description": "Run receipt-driven QA for lane choice, open target, proof evidence, notes, N/LLM limits, and uncertainty."
+      },
+      {
+        "id": "w304_w306_readiness_check",
+        "description": "Evaluate future expansion readiness through W304 contract, W305 bridge, and W306 runtime shape."
+      },
+      {
+        "id": "human_code_review_before_source_mutation",
+        "description": "Require a human-reviewed code change before mutating src/contracts/lanePacks.js."
+      },
+      {
+        "id": "post_install_smoke_after_pack_lands",
+        "description": "After a reviewed pack lands, smoke lane resolution, labels, Open links, story surfaces, weak-evidence confirmation, and hidden diagnostics."
+      }
+    ]
+  },
+  "selectedNextBlock": {
+    "id": "review_only_candidate_industry_pack_proposal_packet_w308",
+    "title": "W308: Review-Only Candidate Industry Pack Proposal Packet Without Source Pack Mutation",
+    "reviewOnly": true,
+    "mutatesSourceLanePacks": false,
+    "installsProposedPack": false,
+    "autoInstallIntroduced": false,
+    "changesVisibleUi": false,
+    "changesLaneBehavior": false,
+    "changesStoryCopy": false,
+    "changesConnectedBuild": false,
+    "changesRuntimeAuthority": false,
+    "sourceAnchors": [
+      "reviewProposedLanePackChangeW247",
+      "lanePackProposedChangeDiffW251",
+      "renderLanePackDiffReviewW252",
+      "receiptDrivenLaneExpansionQaW255",
+      "futureExpansionReadinessRuntimeShapeW306",
+      "src/contracts/futureLanePackExpansionReadiness.js",
+      "src/contracts/futureLanePackExpansionReadinessBridge.js",
+      "src/contracts/lanePacks.js"
+    ],
+    "proposedArchivedPacketHarness": [
+      "archive/reports/w308_review_only_candidate_industry_pack_proposal_packet.md",
+      "archive/trace_samples/w308_review_only_candidate_industry_pack_proposal_packet_trace.json",
+      "archive/tools/run_w308_review_only_candidate_industry_pack_proposal_packet_harness.js"
+    ],
+    "behaviorSurfacesThatMustRemainIdentical": [
+      "source lane packs",
+      "lane resolution",
+      "website evidence authority",
+      "consultant toggles",
+      "visible Plan/Build/Review/Run UI",
+      "Review/Run story copy",
+      "connected submit/refresh/import",
+      "W265 retry safety",
+      "W245/W151/W214 validation",
+      "returned record names and labels",
+      "supported Open-link authority",
+      "weak-evidence confirmation gate",
+      "normal UI hidden diagnostics",
+      "runtime authority"
+    ],
+    "manualReviewNotes": [
+      "Treat the candidate pack as review-only evidence, not source truth.",
+      "Confirm website/category evidence before any human-reviewed source mutation.",
+      "Require explicit human code review before touching src/contracts/lanePacks.js.",
+      "Keep N/LLM advisory-only and uncertainty visible.",
+      "Reject auto-install, write authority, record creation, and measured ROI claims."
+    ],
+    "validationCommands": [
+      "npm run harness:review-only-candidate-industry-pack-proposal-packet-w308",
+      "Run W244 through W308 harnesses",
+      "npm run check",
+      "npm run validate"
+    ],
+    "rollbackPlan": "Remove W308 archived packet, trace, harness, and package registration. No runtime or source pack rollback should be needed because W308 is review-only."
+  },
+  "continuity": {
+    "w306RuntimeShapeFieldCompatibleWithW305": true,
+    "w305BridgeAvailable": true,
+    "w304ContractAvailable": true,
+    "w303ClosureReadinessMapAvailable": true,
+    "w302RuntimeShapeFieldCompatibleWithW301": true,
+    "w301BridgeAvailable": true,
+    "w300ContractAvailable": true,
+    "w274LanePackExpansionWorkflowAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W308: Review-Only Candidate Industry Pack Proposal Packet Without Source Pack Mutation"
+}

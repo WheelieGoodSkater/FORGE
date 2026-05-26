@@ -1,0 +1,63 @@
+{
+  "schema": "forge.w293.returned-record-display-ready-import-runtime-migration.trace.v1",
+  "status": "runtime_shape_migration_ready",
+  "migratedDrawerHelper": "returnedRecordDisplayReadyImportShapeW293",
+  "supportingDrawerHelpers": [
+    "returnedRecordDisplayReadyFactW293",
+    "returnedRecordDisplayReadyStatusW293",
+    "returnedRecordDisplayReadyBlockedReasonsW293"
+  ],
+  "governingContract": "src/contracts/returnedRecordDisplayReadyImport.js",
+  "governingBridge": "src/contracts/returnedRecordDisplayReadyImportBridge.js",
+  "protectedSourceAnchors": [
+    "canonicalImportResultNormalizationW245",
+    "displayReadyRecordsFromFinalNamingW245",
+    "lanePackAwareRecordLabelW250",
+    "verifiedRecordLinkAuthorityV1",
+    "completedRunnerResultImportCommitOperatorFlowV1",
+    "connectedBuildSubmitRefreshImportW264"
+  ],
+  "coveredCases": [
+    "display_ready_records_valid",
+    "display_ready_record_blocked_invalid_id",
+    "display_ready_record_blocked_unsupported_url",
+    "display_ready_record_hidden_internal",
+    "display_ready_records_missing",
+    "display_ready_records_not_import_valid"
+  ],
+  "validationBoundary": {
+    "w151ValidationConsumedNotReplaced": true,
+    "w214SemanticGuardConsumedNotReplaced": true,
+    "w245ValidationConsumedNotReplaced": true,
+    "canonicalImportResultNormalizationRemainsDrawerOwned": true,
+    "displayReadyRecordsFromFinalNamingRemainsDrawerOwned": true
+  },
+  "runtimeBoundary": {
+    "finishBuildMutationStaysDrawerOwned": true,
+    "connectedSubmitExecutionStaysDrawerOwned": true,
+    "refreshPollExecutionStaysDrawerOwned": true,
+    "noStateMutation": true,
+    "noRecordImport": true,
+    "noRecordCreation": true,
+    "noTransactionWrites": true,
+    "noOpenLinkCreation": true,
+    "noUiRendering": true,
+    "noRuntimeRequireAdded": true,
+    "noExternalDependencyAdded": true,
+    "noBundlerRequirementAdded": true,
+    "noNetworkDependencyAdded": true,
+    "noStorageWriteAddedForContractLoading": true
+  },
+  "continuity": {
+    "w292BridgeAvailableAndUnchanged": true,
+    "w291ContractAvailableAndUnchanged": true,
+    "w290ClosureMapAvailable": true,
+    "w289RuntimeMigrationFieldCompatibleWithW288": true,
+    "w264SubmitRefreshImportUnchanged": true,
+    "w265RetrySafetyUnchanged": true,
+    "w245W151W214ValidationUnchanged": true,
+    "returnedRecordNamesLabelsOpenLinksPreserved": true,
+    "fakeOpenLinksBlockedBeforeValidImport": true
+  },
+  "nextRecommendedBlock": "W294: Returned Record Import Closure And Story Update Readiness"
+}

@@ -12305,6 +12305,173 @@
     };
   }
 
+  const RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293 = Object.freeze({
+    VALID: 'display_ready_records_valid',
+    MISSING: 'display_ready_records_missing',
+    BLOCKED_INVALID_ID: 'display_ready_record_blocked_invalid_id',
+    BLOCKED_UNSUPPORTED_URL: 'display_ready_record_blocked_unsupported_url',
+    HIDDEN_INTERNAL: 'display_ready_record_hidden_internal',
+    NOT_IMPORT_VALID: 'display_ready_records_not_import_valid'
+  });
+
+  const RETURNED_RECORD_DISPLAY_READY_REQUIRED_FIELDS_W293 = Object.freeze([
+    'canonicalRole',
+    'consultantLabel',
+    'recordName',
+    'netSuiteRecordType',
+    'numericInternalId',
+    'supportedOpenUrl',
+    'linkAuthorityStatus',
+    'sourceConfidence',
+    'normalConsultantVisible',
+    'laneAwareLabelSource',
+    'evidenceGuardrailSource'
+  ]);
+
+  function returnedRecordDisplayReadyStringW293(value) {
+    return value === undefined || value === null ? '' : String(value);
+  }
+
+  function returnedRecordDisplayReadyNumericIdW293(value) {
+    const id = returnedRecordDisplayReadyStringW293(value).trim();
+    return /^\d+$/.test(id) ? id : '';
+  }
+
+  function returnedRecordDisplayReadySupportedOpenUrlW293(value) {
+    const url = returnedRecordDisplayReadyStringW293(value).trim();
+    if (!url) return '';
+    if (!/^https:\/\/[^/]+\.app\.netsuite\.com\/app\//i.test(url)) return '';
+    if (/REPLACE_|YOUR_ACCOUNT_ID|example\.com|javascript:/i.test(url)) return '';
+    return url;
+  }
+
+  function returnedRecordDisplayReadyLinkAuthorityStatusW293(record) {
+    const authority = record && record.linkAuthority || {};
+    return returnedRecordDisplayReadyStringW293(record && (record.linkAuthorityStatus || authority.status));
+  }
+
+  function returnedRecordDisplayReadyOpenUrlW293(record) {
+    return returnedRecordDisplayReadyStringW293(record && (record.supportedOpenUrl || record.openUrl || record.openableUrl || record.url));
+  }
+
+  function returnedRecordDisplayReadyInternalIdW293(record) {
+    return returnedRecordDisplayReadyStringW293(record && (record.internalId || record.id));
+  }
+
+  function returnedRecordDisplayReadyNormalVisibleW293(record) {
+    if (!record) return false;
+    if (record.normalConsultantVisible === false) return false;
+    if (record.internalDiagnostic === true || record.adminOnly === true) return false;
+    const authority = record.linkAuthority || {};
+    if (authority.hiddenFromNormalConsultantUi === true) return false;
+    return true;
+  }
+
+  function returnedRecordDisplayReadyFactW293(record, options) {
+    const source = record || {};
+    const opts = options || {};
+    const id = returnedRecordDisplayReadyNumericIdW293(returnedRecordDisplayReadyInternalIdW293(source));
+    const url = returnedRecordDisplayReadySupportedOpenUrlW293(returnedRecordDisplayReadyOpenUrlW293(source));
+    const authority = source.linkAuthority || {};
+    const authorityStatus = returnedRecordDisplayReadyLinkAuthorityStatusW293(source) || (authority.openable === true ? 'verified_openable' : 'not_verified');
+    const visible = returnedRecordDisplayReadyNormalVisibleW293(source);
+    return {
+      schema: 'idb.w293.display-ready-returned-record-runtime-shape.v1',
+      canonicalRole: returnedRecordDisplayReadyStringW293(source.canonicalRole || source.role),
+      consultantLabel: returnedRecordDisplayReadyStringW293(source.consultantLabel || source.label),
+      recordName: returnedRecordDisplayReadyStringW293(source.recordName || source.name),
+      netSuiteRecordType: returnedRecordDisplayReadyStringW293(source.netSuiteRecordType || source.recordType || source.type),
+      numericInternalId: id,
+      supportedOpenUrl: url,
+      linkAuthorityStatus: authorityStatus,
+      sourceConfidence: returnedRecordDisplayReadyStringW293(source.sourceConfidence || source.confidence || 'supplied_w245_fact'),
+      normalConsultantVisible: visible,
+      laneAwareLabelSource: returnedRecordDisplayReadyStringW293(source.laneAwareLabelSource || opts.laneAwareLabelSource || 'W250 lane-aware label facts'),
+      evidenceGuardrailSource: returnedRecordDisplayReadyStringW293(source.evidenceGuardrailSource || opts.evidenceGuardrailSource || 'W245 normalized import + verified link authority facts'),
+      safeToOpen: visible && !!id && !!url && (authority.openable === true || authorityStatus === 'verified_openable'),
+      sourceRecord: source
+    };
+  }
+
+  function returnedRecordDisplayReadyFactsRecordsW293(input) {
+    const source = input || {};
+    if (Array.isArray(source.records)) return source.records;
+    if (Array.isArray(source.displayReadyRecords)) return source.displayReadyRecords;
+    if (source.normalizedImport && Array.isArray(source.normalizedImport.displayReadyRecords)) return source.normalizedImport.displayReadyRecords;
+    if (source.w245 && Array.isArray(source.w245.displayReadyRecords)) return source.w245.displayReadyRecords;
+    return [];
+  }
+
+  function returnedRecordDisplayReadyW245FactsValidW293(input) {
+    const source = input || {};
+    const w245 = source.w245 || source.normalizedImport || {};
+    if (source.w245ImportValid === false || source.w245CanonicalNormalizationReady === false) return false;
+    if (source.w245ImportValid === true || source.w245CanonicalNormalizationReady === true) return true;
+    return w245.status === 'display_ready_records_normalized' || w245.ready === true;
+  }
+
+  function returnedRecordDisplayReadyStatusW293(records, importValid) {
+    if (!importValid) return RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.NOT_IMPORT_VALID;
+    if (!records.length) return RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.MISSING;
+    const visible = records.filter((record) => record.normalConsultantVisible !== false);
+    if (!visible.length) return RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.HIDDEN_INTERNAL;
+    if (visible.some((record) => !record.numericInternalId)) return RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.BLOCKED_INVALID_ID;
+    if (visible.some((record) => !record.supportedOpenUrl || record.safeToOpen !== true)) {
+      return RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.BLOCKED_UNSUPPORTED_URL;
+    }
+    return RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.VALID;
+  }
+
+  function returnedRecordDisplayReadyBlockedReasonsW293(status, records, importValid) {
+    if (status === RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.VALID) return [];
+    if (!importValid) return ['w245_import_valid_fact_not_supplied'];
+    if (status === RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.MISSING) return ['display_ready_records_missing'];
+    if (status === RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.HIDDEN_INTERNAL) return ['records_hidden_from_normal_consultant_ui'];
+    if (status === RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.BLOCKED_INVALID_ID) return ['numeric_internal_id_missing_or_invalid'];
+    if (status === RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.BLOCKED_UNSUPPORTED_URL) return ['supported_open_url_missing_or_unsupported'];
+    return records.length ? ['display_ready_records_blocked'] : ['display_ready_records_missing'];
+  }
+
+  function returnedRecordDisplayReadyImportShapeW293(input) {
+    const source = input || {};
+    const importValid = returnedRecordDisplayReadyW245FactsValidW293(source);
+    const records = returnedRecordDisplayReadyFactsRecordsW293(source)
+      .map((record) => returnedRecordDisplayReadyFactW293(record, source));
+    const visibleRecords = records.filter((record) => record.normalConsultantVisible !== false);
+    const hiddenRecords = records.filter((record) => record.normalConsultantVisible === false);
+    const status = returnedRecordDisplayReadyStatusW293(records, importValid);
+    return {
+      schema: 'idb.w293.returned-record-display-ready-import-runtime-shape.v1',
+      status,
+      displayReady: status === RETURNED_RECORD_DISPLAY_READY_IMPORT_STATUSES_W293.VALID,
+      blockedReasons: returnedRecordDisplayReadyBlockedReasonsW293(status, records, importValid),
+      requiredRecordFields: RETURNED_RECORD_DISPLAY_READY_REQUIRED_FIELDS_W293.slice(),
+      records,
+      visibleRecords,
+      hiddenRecords,
+      importFacts: {
+        w245ImportValid: importValid,
+        w245ValidationConsumedNotReplaced: true,
+        w151ValidationConsumedNotReplaced: true,
+        w214SemanticGuardConsumedNotReplaced: true
+      },
+      openLinkAuthority: {
+        allVisibleRecordsHaveNumericIds: visibleRecords.every((record) => !!record.numericInternalId),
+        allVisibleRecordsHaveSupportedOpenUrls: visibleRecords.every((record) => !!record.supportedOpenUrl),
+        allVisibleRecordsSafeToOpen: visibleRecords.every((record) => record.safeToOpen === true)
+      },
+      runtimeBoundary: {
+        noStateMutation: true,
+        noRecordImport: true,
+        noRecordCreation: true,
+        noTransactionWrites: true,
+        noOpenLinkCreation: true,
+        noUiRendering: true,
+        finishBuildMutationStaysDrawerOwned: true
+      }
+    };
+  }
+
   function renderRecordLinkAuthority(record) {
     const authority = record && record.linkAuthority ? record.linkAuthority : verifiedRecordLinkAuthorityV1(record);
     if (authority.openable) {
@@ -24818,6 +24985,8 @@
       canonicalRoleToLegacySlotFallbackW244,
       legacyRecordByCanonicalRoleW244,
       lanePackAwareRecordLabelW250,
+      returnedRecordDisplayReadyImportShapeW293,
+      returnedRecordDisplayReadyFactW293,
       displayReadyRecordsFromFinalNamingW245,
       canonicalImportResultNormalizationW245,
       versionedLanePacksW246,

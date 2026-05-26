@@ -1,0 +1,291 @@
+{
+  "schema": "forge.w294.returned-record-import-closure-story-update-readiness.trace.v1",
+  "status": "closure_and_story_update_readiness_ready",
+  "closureMap": {
+    "layers": [
+      {
+        "id": "w290_completed_result_import_guard_closure",
+        "sourceDrawerHelperSurfaceProtected": [
+          "connectedBuildSubmitRefreshImportW264",
+          "completedRunnerResultImportCommitOperatorFlowV1",
+          "canonicalImportResultNormalizationW245",
+          "displayReadyRecordsFromFinalNamingW245",
+          "lanePackAwareRecordLabelW250",
+          "verifiedRecordLinkAuthorityV1"
+        ],
+        "governingContractOrBridge": "archive/reports/w290_completed_result_import_guard_closure.md",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "submit execution",
+          "refresh/poll execution",
+          "W151 payload validation",
+          "W214 semantic guard",
+          "W245 normalization",
+          "Finish build mutation",
+          "returned-record import mutation",
+          "Review/Run story input assembly"
+        ],
+        "parityHarnesses": [
+          "harness:completed-result-import-guard-closure-w290",
+          "harness:connected-build-submit-refresh-import-w264"
+        ],
+        "rollbackBoundary": "Remove W290 archive-only closure/readiness artifacts. Runtime remains unchanged."
+      },
+      {
+        "id": "w291_returned_record_display_ready_import_contract",
+        "sourceDrawerHelperSurfaceProtected": [
+          "W245-normalized display-ready returned records",
+          "lane-aware labels",
+          "supported Open-link authority",
+          "normal consultant visibility"
+        ],
+        "governingContractOrBridge": "src/contracts/returnedRecordDisplayReadyImport.js",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "W151 validation",
+          "W214 semantic guard",
+          "W245 normalization",
+          "Finish build mutation",
+          "Open-link creation/blocking",
+          "Review/Run rendering"
+        ],
+        "parityHarnesses": [
+          "harness:returned-record-display-ready-import-contract-w291",
+          "harness:completed-result-import-guard-closure-w290"
+        ],
+        "rollbackBoundary": "Remove W291 contract/report/trace/harness before any runtime dependency."
+      },
+      {
+        "id": "w292_returned_record_display_ready_import_bridge",
+        "sourceDrawerHelperSurfaceProtected": [
+          "drawer-produced W245 display-ready returned record facts",
+          "W291 contract-normalized output",
+          "hidden/internal and unsupported-link cases"
+        ],
+        "governingContractOrBridge": "src/contracts/returnedRecordDisplayReadyImportBridge.js",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "W151/W214/W245 validation",
+          "Finish build mutation",
+          "returned-record import mutation",
+          "Open-link creation/blocking",
+          "Review/Run rendering"
+        ],
+        "parityHarnesses": [
+          "harness:returned-record-display-ready-import-bridge-w292",
+          "harness:returned-record-display-ready-import-contract-w291"
+        ],
+        "rollbackBoundary": "Remove W292 bridge/report/trace/harness. Drawer runtime remains unchanged."
+      },
+      {
+        "id": "w293_drawer_local_returned_record_display_ready_runtime_shape_migration",
+        "sourceDrawerHelperSurfaceProtected": [
+          "returnedRecordDisplayReadyImportShapeW293",
+          "returnedRecordDisplayReadyFactW293",
+          "returnedRecordDisplayReadyStatusW293",
+          "returnedRecordDisplayReadyBlockedReasonsW293"
+        ],
+        "governingContractOrBridge": "W291/W292 contract-shaped parity with self-contained drawer helpers",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "canonicalImportResultNormalizationW245",
+          "displayReadyRecordsFromFinalNamingW245",
+          "completedRunnerResultImportCommitOperatorFlowV1",
+          "connectedBuildSubmitRefreshImportW264",
+          "W151/W214 validation",
+          "returned-record import mutation",
+          "Open-link creation/blocking",
+          "Review/Run rendering"
+        ],
+        "parityHarnesses": [
+          "harness:returned-record-display-ready-import-runtime-migration-w293",
+          "harness:returned-record-display-ready-import-bridge-w292",
+          "harness:connected-build-submit-refresh-import-w264"
+        ],
+        "rollbackBoundary": "Revert W293 drawer-local helper shape assembly and remove W293 artifacts. Keep W245/W151/W214 and Finish build mutation untouched."
+      }
+    ]
+  },
+  "storyUpdateReadinessInventory": {
+    "areas": [
+      {
+        "id": "w254_evidence_receipt_inputs",
+        "sourceHelperAnchor": "storyEvidenceReceiptTrailW254",
+        "inputs": [
+          "W245 returned records",
+          "W246 lane pack",
+          "website evidence",
+          "conversation-note contribution",
+          "N/LLM advisory limits",
+          "uncertainty gate"
+        ],
+        "currentOwner": "drawer-owned story input assembly"
+      },
+      {
+        "id": "w255_first_glance_story_inputs",
+        "sourceHelperAnchor": "consultantStoryFirstGlanceW255",
+        "inputs": [
+          "open target",
+          "prove move",
+          "safe claim",
+          "do-not-claim guardrail",
+          "receipt summary",
+          "next action"
+        ],
+        "currentOwner": "drawer-owned story input assembly"
+      },
+      {
+        "id": "w256_live_demo_script_inputs",
+        "sourceHelperAnchor": "consultantLiveDemoScriptW256",
+        "inputs": [
+          "W255 first glance",
+          "returned record Open target",
+          "safe buyer-facing claim",
+          "value/so-what",
+          "stop guardrail",
+          "uncertainty line"
+        ],
+        "currentOwner": "drawer-owned story input assembly"
+      },
+      {
+        "id": "w257_guided_sequence_inputs",
+        "sourceHelperAnchor": "guidedDemoStepSequenceW257",
+        "inputs": [
+          "W256 script",
+          "buyer problem frame",
+          "Open returned record step",
+          "prove value step",
+          "objection-safe response",
+          "uncertainty response"
+        ],
+        "currentOwner": "drawer-owned story input assembly"
+      },
+      {
+        "id": "w248_w258_review_run_rendering_surfaces",
+        "sourceHelperAnchor": "renderConsultantStorySurfaceW248",
+        "inputs": [
+          "W254 receipt",
+          "W255 first glance",
+          "W256 script",
+          "W257 sequence"
+        ],
+        "currentOwner": "drawer-owned UI rendering"
+      },
+      {
+        "id": "returned_records_and_open_link_authority_feeding_story",
+        "sourceHelperAnchor": "canonicalImportResultNormalizationW245 + returnedRecordDisplayReadyImportShapeW293",
+        "inputs": [
+          "returned record names",
+          "lane-aware labels",
+          "supported Open-link authority",
+          "source confidence"
+        ],
+        "currentOwner": "drawer-owned W245/W293 assembly"
+      },
+      {
+        "id": "weak_conflicting_evidence_confirmation_gate",
+        "sourceHelperAnchor": "consultantStorySurfaceFromLanePackW247",
+        "inputs": [
+          "lane resolution status",
+          "website evidence confidence",
+          "consultant confirmation requirement"
+        ],
+        "currentOwner": "drawer-owned story gate"
+      },
+      {
+        "id": "nllm_advisory_visibility",
+        "sourceHelperAnchor": "nllmAdvisoryPayloadForLanePackW246",
+        "inputs": [
+          "advisory-only status",
+          "write authority none",
+          "hard limits",
+          "uncertainty visible"
+        ],
+        "currentOwner": "drawer-owned advisory copy"
+      },
+      {
+        "id": "admin_only_raw_evidence_surfaces",
+        "sourceHelperAnchor": "archive/admin debug evidence",
+        "inputs": [
+          "trace/report evidence",
+          "raw response evidence",
+          "proposal review evidence"
+        ],
+        "currentOwner": "archive/admin-only"
+      }
+    ]
+  },
+  "selectedNextMicroSlice": {
+    "id": "story_surface_update_input_contract_w295",
+    "proposedContractModule": "src/contracts/storySurfaceUpdateInputs.js",
+    "proposedBridgeModule": "src/contracts/storySurfaceUpdateInputBridge.js",
+    "sourceHelperAnchors": [
+      "consultantStorySurfaceFromLanePackW247",
+      "storyEvidenceReceiptTrailW254",
+      "consultantStoryFirstGlanceW255",
+      "consultantLiveDemoScriptW256",
+      "guidedDemoStepSequenceW257",
+      "renderConsultantStorySurfaceW248",
+      "canonicalImportResultNormalizationW245",
+      "returnedRecordDisplayReadyImportShapeW293"
+    ],
+    "targetsStorySurfaceUpdateInputs": true,
+    "movesVisibleReviewRunLayoutOrCopy": false,
+    "movesImportMutation": false,
+    "movesConnectedSubmitRefreshImport": false,
+    "movesOpenLinkCreation": false,
+    "behaviorSurfacesThatMustRemainIdentical": [
+      "Review/Run story surface visibility after valid import",
+      "W254 receipt rows and expandable placement",
+      "W255 first-glance fields",
+      "W256 live-demo script fields",
+      "W257 guided sequence fields",
+      "returned record names and lane-aware labels in story surfaces",
+      "supported Open-link authority",
+      "weak/conflicting evidence confirmation-first behavior",
+      "N/LLM advisory-only visibility",
+      "hidden normal consultant diagnostics"
+    ],
+    "parityHarnesses": [
+      "future W295 story update input contract harness",
+      "harness:story-coaching-bridge-w278",
+      "harness:returned-record-display-ready-import-runtime-migration-w293",
+      "harness:consultant-story-surface-ui-w248",
+      "harness:evidence-receipt-trail-w254",
+      "harness:receipt-driven-lane-expansion-qa-w255",
+      "harness:consultant-live-demo-script-w256",
+      "harness:guided-demo-step-sequence-w257",
+      "npm run check",
+      "npm run validate"
+    ],
+    "manualReviewNotes": [
+      "Do not change visible Review/Run layout or copy in W295.",
+      "Do not move renderConsultantStorySurfaceW248 rendering.",
+      "Do not let the contract create records, write transactions, create Open links, or declare import validity.",
+      "Keep weak/conflicting evidence confirmation-first.",
+      "Keep N/LLM advisory-only and uncertainty visible."
+    ],
+    "rollbackPlan": "Remove W295 story surface update input contract/report/trace/harness before runtime wiring. Keep W247/W254/W255/W256/W257/W248 drawer helpers untouched."
+  },
+  "continuity": {
+    "w293RuntimeMigrationFieldCompatibleWithW292": true,
+    "w292BridgeAvailableAndUnchanged": true,
+    "w291ContractAvailableAndUnchanged": true,
+    "w290ClosureReadinessMapAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunStorySurfacesChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "nlLmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W295: Story Surface Update Input Contract Without Review/Run UI Change"
+}

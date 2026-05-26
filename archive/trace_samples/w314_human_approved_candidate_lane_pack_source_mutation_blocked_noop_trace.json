@@ -1,0 +1,71 @@
+{
+  "schema": "forge.w314.human-approved-candidate-lane-pack-source-mutation.trace.v1",
+  "status": "blocked_noop_explicit_approval_missing",
+  "pathTaken": "blocked_noop",
+  "candidatePackId": "electrical-components-distributor",
+  "targetSourceFile": "src/contracts/lanePacks.js",
+  "sourceMutationApplied": false,
+  "approvalIntakeInspection": {
+    "source": "archive/trace_samples/w313_explicit_approval_intake_candidate_source_change_reattempt_trace.json",
+    "w313Decision": "approval_not_provided",
+    "requiredFieldsProvided": false,
+    "explicitApprovalInW314Request": false,
+    "approvalMissingOrAmbiguous": true,
+    "result": "stop_without_source_mutation"
+  },
+  "blockedNoopPacket": {
+    "sourceMutationApplied": false,
+    "sourceFileChanged": false,
+    "exactW310PatchApplied": false,
+    "existingSourcePacksModified": false,
+    "candidatePackInstalled": false,
+    "autoInstallIntroduced": false,
+    "runtimeWiringIntroduced": false,
+    "runtimeAuthorityChanged": false
+  },
+  "sourceMutationEvidence": {
+    "approvalTextSource": "W314 request did not include the explicit W313 approval phrase or equivalent required fields.",
+    "appliedPackId": "",
+    "sourceFileChanged": false,
+    "diffSummary": "No source diff applied. W310 remains draft-only.",
+    "validationResult": "blocked_noop_path_validated",
+    "postInstallSmokeChecklist": "Not applicable until a future approved source mutation lands.",
+    "rollbackNote": "No rollback required because no source mutation was applied."
+  },
+  "continuity": {
+    "w313ApprovalIntakeInspected": true,
+    "w313ApprovalIntakeDecision": "approval_not_provided",
+    "w312BlockedNoopAvailable": true,
+    "w311ApprovalGateNotApprovedYet": true,
+    "w310SourceDiffDraftOnly": true,
+    "w309SourceChangeReadinessAvailable": true,
+    "w308ProposalPacketReviewOnly": true,
+    "w274LanePackExpansionWorkflowAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "candidateWiredIntoRuntime": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W315: Final Human Approval Capture For Candidate Source Mutation"
+}

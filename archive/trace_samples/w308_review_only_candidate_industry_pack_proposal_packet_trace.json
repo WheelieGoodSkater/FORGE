@@ -1,0 +1,218 @@
+{
+  "schema": "forge.w308.review-only-candidate-industry-pack-proposal-packet.trace.v1",
+  "status": "review_only_candidate_packet_ready",
+  "proposalPacket": {
+    "candidateIdentity": {
+      "proposedPackId": "electrical-components-distributor",
+      "laneId": "distribution",
+      "subIndustryId": "electrical-components",
+      "label": "Electrical Components Distributor",
+      "source": "review_only_human_and_nllm_advisory_draft"
+    },
+    "sourcePackComparison": {
+      "sourcePackFile": "src/contracts/lanePacks.js",
+      "basePackId": "industrial-distributor",
+      "candidatePackId": "electrical-components-distributor",
+      "comparisonReady": true,
+      "sourcePackMutationRequested": false
+    },
+    "websiteCategoryEvidence": {
+      "website": "https://example-electrical-distributor.com",
+      "domain": "example-electrical-distributor.com",
+      "category": "Electrical components distributor",
+      "signals": [
+        "electrical components",
+        "wire",
+        "cable",
+        "switchgear",
+        "branch availability",
+        "supplier lead time",
+        "replenishment",
+        "project fulfillment"
+      ],
+      "evidenceReady": true,
+      "canOverrideWebsiteEvidence": false
+    },
+    "recordRoleCoverage": {
+      "required": [
+        "customer",
+        "sales_order",
+        "branch_or_product_sku",
+        "replenishment_or_availability_flow"
+      ],
+      "optional": [
+        "supporting_sku",
+        "supplier_lead_time_context",
+        "location_planning_context"
+      ],
+      "invalid": [
+        "formula_or_batch_structure",
+        "work_order_or_wip_object",
+        "style_matrix_or_availability_flow"
+      ],
+      "coverageReady": true
+    },
+    "vocabularyCoverage": {
+      "allowed": [
+        "branch availability",
+        "supplier lead time",
+        "project fulfillment",
+        "replenishment",
+        "component SKU"
+      ],
+      "forbidden": [
+        "ingredient batch",
+        "style matrix",
+        "production routing",
+        "measured ROI",
+        "guaranteed savings"
+      ],
+      "coverageReady": true
+    },
+    "storyCopyCoverage": {
+      "proofMove": "Open the electrical component SKU and prove branch availability, supplier timing, and replenishment confidence for the project promise.",
+      "storyAnchor": "The buyer needs confidence that project-critical components can be promised from the right location.",
+      "roiSoWhat": "Protect service levels and margin by catching supplier and branch exceptions before project fulfillment misses.",
+      "competitiveContrast": "NetSuite connects order promise, branch inventory, and replenishment action without a separate lookup path.",
+      "coverageReady": true,
+      "hasGuaranteedOrMeasuredRoiClaim": false
+    },
+    "nllmDraftIntake": {
+      "advisoryOnly": true,
+      "writeAuthority": "none",
+      "creationAllowed": false,
+      "uncertaintyVisible": true,
+      "allowedTasks": [
+        "summarizeWebsiteAndCategoryEvidence",
+        "draftLanePackSuggestionsForHumanReview",
+        "draftSoWhatAndWhyItMatters"
+      ],
+      "hardLimits": [
+        "cannotCreateRecords",
+        "cannotInvokeSuiteScriptOrWriteTransactions",
+        "cannotSilentlyInstallTruth",
+        "cannotOverrideWebsiteEvidence",
+        "cannotOverrideConsultantToggles",
+        "cannotHideUncertainty",
+        "cannotInventVerifiedWebsiteFacts",
+        "cannotClaimMeasuredRoiWithoutBaseline"
+      ]
+    },
+    "reviewWorkflowExpectations": {
+      "w247AuthoringReview": "required",
+      "w251ProposedDiffReview": "required",
+      "w252AdminSafeReview": "required_review_only_hidden_from_normal_ui_no_install_action",
+      "w255ReceiptDrivenQa": "required",
+      "w304W306FutureExpansionReadiness": "required",
+      "humanCodeReviewBeforeSourceMutation": true,
+      "postInstallSmokeAfterReviewedPackLands": true
+    },
+    "futureExpansionReadinessFacts": {
+      "authoringReview": {
+        "status": "review_ready",
+        "installAllowed": false,
+        "humanReviewRequired": true,
+        "nllmAdvisoryOnly": true
+      },
+      "proposedDiff": {
+        "status": "compared_to_existing_pack",
+        "basePackId": "industrial-distributor",
+        "candidatePackId": "electrical-components-distributor",
+        "changes": [
+          { "area": "websiteSignals" },
+          { "area": "recordRoles" },
+          { "area": "vocabulary" },
+          { "area": "liveDemo" }
+        ]
+      },
+      "adminReview": {
+        "status": "review_rendered",
+        "rendererReady": true,
+        "requiredSectionsVisible": true,
+        "hiddenFromNormalUi": true,
+        "noInstallAction": true
+      },
+      "receiptDrivenQa": {
+        "status": "qa_ready",
+        "checks": [
+          { "id": "lane_choice_explained", "status": "pass" },
+          { "id": "open_target_explained", "status": "pass" },
+          { "id": "proof_evidence_explained", "status": "pass" },
+          { "id": "notes_contribution_explained", "status": "pass" },
+          { "id": "nllm_limits_explained", "status": "pass" },
+          { "id": "uncertainty_explained", "status": "pass" }
+        ]
+      },
+      "laneResolutionCompatibility": {
+        "status": "lane_resolution_ready",
+        "ready": true,
+        "consumesFactsOnly": true,
+        "changesLaneBehavior": false
+      },
+      "humanReviewGate": {
+        "humanReviewRequired": true,
+        "reviewOnly": true,
+        "nonInstallable": true,
+        "installAllowed": false,
+        "autoInstall": false
+      },
+      "uncertaintyGate": {
+        "uncertaintyVisible": true,
+        "weakEvidenceConfirmationRequired": true,
+        "weakOrConflictingEvidence": false,
+        "hideUncertainty": false
+      }
+    }
+  },
+  "acceptancePacket": {
+    "schema": "forge.w308.review-only-candidate-pack-acceptance.v1",
+    "decision": "review_only_ready",
+    "reviewOnly": true,
+    "nonInstallable": true,
+    "sourceTruth": false,
+    "runtimeWired": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "humanCodeReviewRequiredBeforeSourceMutation": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true,
+    "weakEvidenceConfirmationFirst": true
+  },
+  "continuity": {
+    "w307ClosureAuthoringPlanAvailable": true,
+    "w306RuntimeShapeFieldCompatibleWithW305": true,
+    "w305BridgeAvailable": true,
+    "w304ContractAvailable": true,
+    "w303ClosureReadinessMapAvailable": true,
+    "w302RuntimeShapeFieldCompatibleWithW301": true,
+    "w301BridgeAvailable": true,
+    "w300ContractAvailable": true,
+    "w274LanePackExpansionWorkflowAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "candidateWiredIntoRuntime": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W309: Candidate Industry Pack Proposal QA Closure And Source Change Readiness"
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "forge.w295.story-surface-update-input-contract.trace.v1",
+  "status": "contract_ready",
+  "module": "src/contracts/storySurfaceUpdateInputs.js",
+  "selectedFromW294": "story_surface_update_input_contract_w295",
+  "futureBridge": "src/contracts/storySurfaceUpdateInputBridge.js",
+  "representedInputs": [
+    "W245/W293 returned record facts used by story surfaces",
+    "W246 resolved lane pack and confidence",
+    "W250 lane-aware label source",
+    "supported Open-link authority",
+    "W254 receipt input rows",
+    "W255 first-glance input fields",
+    "W256 live-demo script input fields",
+    "W257 guided sequence input fields",
+    "weak/conflicting evidence confirmation state",
+    "N/LLM advisory-only limits and uncertainty visibility"
+  ],
+  "statuses": [
+    "story_update_inputs_ready",
+    "story_update_inputs_waiting_for_valid_import",
+    "story_update_inputs_need_lane_confirmation",
+    "story_update_inputs_blocked_missing_open_target",
+    "story_update_inputs_blocked_hidden_uncertainty"
+  ],
+  "drawerOwnedSurfaces": [
+    "consultantStorySurfaceFromLanePackW247",
+    "storyEvidenceReceiptTrailW254",
+    "consultantStoryFirstGlanceW255",
+    "consultantLiveDemoScriptW256",
+    "guidedDemoStepSequenceW257",
+    "renderConsultantStorySurfaceW248"
+  ],
+  "validationBoundary": {
+    "w245ValidationConsumedNotReplaced": true,
+    "w151ValidationConsumedNotReplaced": true,
+    "w214SemanticGuardConsumedNotReplaced": true,
+    "cannotDeclareImportValidWithoutSuppliedFacts": true
+  },
+  "runtimeBoundary": {
+    "noUiRendering": true,
+    "noVisibleCopyChange": true,
+    "noStateMutation": true,
+    "noRecordImport": true,
+    "noRecordCreation": true,
+    "noTransactionWrites": true,
+    "noOpenLinkCreation": true,
+    "noAdapterInvocation": true,
+    "notWiredIntoDrawerRuntime": true
+  },
+  "continuity": {
+    "w294ClosureReadinessMapAvailable": true,
+    "w293RuntimeMigrationFieldCompatibleWithW292": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "nlLmAdvisoryOnly": true,
+    "uncertaintyVisible": true,
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true
+  },
+  "nextRecommendedBlock": "W296: Story Surface Update Input Bridge Without Review/Run UI Change"
+}

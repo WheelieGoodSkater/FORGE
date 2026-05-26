@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W294 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, the connected-build response-shape contract extraction point, the connected-build response-shape bridge, the drawer-local connected-build response-shape runtime migration, the connected-build import guard boundary map, the completed-result import eligibility contract extraction point, the completed-result import eligibility bridge, the drawer-local completed-result import eligibility runtime migration, the W286-W289 completed-result import guard closure/readiness map, the returned-record display-ready import contract extraction point, the returned-record display-ready import bridge, the drawer-local returned-record display-ready runtime shape migration, and the W290-W293 returned-record import closure/story-update readiness map.
+  - W250-W295 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, the connected-build response-shape contract extraction point, the connected-build response-shape bridge, the drawer-local connected-build response-shape runtime migration, the connected-build import guard boundary map, the completed-result import eligibility contract extraction point, the completed-result import eligibility bridge, the drawer-local completed-result import eligibility runtime migration, the W286-W289 completed-result import guard closure/readiness map, the returned-record display-ready import contract extraction point, the returned-record display-ready import bridge, the drawer-local returned-record display-ready runtime shape migration, the W290-W293 returned-record import closure/story-update readiness map, and the story surface update-input contract extraction point.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -54,6 +54,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
 - `src/contracts/completedResultImportEligibilityBridge.js`
 - `src/contracts/returnedRecordDisplayReadyImport.js`
 - `src/contracts/returnedRecordDisplayReadyImportBridge.js`
+- `src/contracts/storySurfaceUpdateInputs.js`
   - Canonical runtime contract source modules introduced so the drawer, W144 adapter, and runner can converge on the same mode/role/link language.
   - `lanePacks.js` defines the first versioned industry/sub-industry pack contract for future expansion.
   - `adapterProfiles.js` mirrors the W263 released W144 adapter profile and W262 readiness states as a parity-backed extraction point.
@@ -70,6 +71,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - `completedResultImportEligibilityBridge.js` adds the W288 bridge that validates drawer-produced completed-result import eligibility facts against `completedResultImportEligibility.js` while keeping Finish build mutation, W151/W214/W245 validation, import, record creation, transaction writes, and Open-link creation outside the bridge.
   - `returnedRecordDisplayReadyImport.js` adds the W291 returned-record display-ready contract shape that describes supplied W245-normalized records, lane-aware labels, and supported Open-link authority without moving import mutation, W151/W214/W245 validation, Open-link creation, or UI rendering.
   - `returnedRecordDisplayReadyImportBridge.js` adds the W292 bridge that validates drawer-produced W245 display-ready returned records/Open-link authority facts against `returnedRecordDisplayReadyImport.js` without moving import mutation, W151/W214/W245 validation, Open-link creation, or UI rendering.
+  - `storySurfaceUpdateInputs.js` adds the W295 story surface update-input contract shape that describes supplied W245/W293 returned-record facts, W246 lane-pack confidence, W250 labels, Open-link authority, W254 receipt inputs, W255 first-glance inputs, W256 script inputs, W257 sequence inputs, weak-evidence gates, and N/LLM advisory limits without rendering UI or changing story copy.
   - W293 adds drawer-local `returnedRecordDisplayReadyImportShapeW293` parity helpers in `idb-drawer.user.js` so returned-record display-ready fact assembly is contract-shaped while W245 normalization, Finish build mutation, connected submit/refresh/import, Open-link creation, and Review/Run rendering remain drawer-owned.
   - W294 adds an archived closure/readiness map that closes W290-W293 and selects W295 as a story surface update-input contract slice while leaving Review/Run UI and import mutation untouched.
   - `idb-drawer.user.js` now includes W289 drawer-local completed-result import eligibility shape helpers that mirror W287/W288 while keeping the drawer self-contained and leaving Finish build mutation owned by `completedRunnerResultImportCommitOperatorFlowV1`.
@@ -193,12 +195,40 @@ Current expected result:
 - W292 harness passes `18/18`.
 - W293 harness passes `17/17`.
 - W294 harness passes `15/15`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, adapter readiness bridge, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, connected build response-shape contract, connected build response-shape bridge, completed result import eligibility contract, completed result import eligibility bridge, returned record display-ready import contract, returned record display-ready import bridge, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, W278 harness, W279 harness, W280 harness, W281 harness, W282 harness, W283 harness, W284 harness, W285 harness, W286 harness, W287 harness, W288 harness, W289 harness, W290 harness, W291 harness, W292 harness, W293 harness, and W294 harness.
+- W295 harness passes `17/17`.
+- W288 harness passes `13/13`.
+- W289 harness passes `15/15`.
+- W290 harness passes `18/18`.
+- W291 harness passes `20/20`.
+- W292 harness passes `18/18`.
+- W293 harness passes `17/17`.
+- W294 harness passes `15/15`.
+- W295 harness passes `17/17`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, adapter readiness bridge, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, connected build response-shape contract, connected build response-shape bridge, completed result import eligibility contract, completed result import eligibility bridge, returned record display-ready import contract, returned record display-ready import bridge, story surface update-input contract, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, W278 harness, W279 harness, W280 harness, W281 harness, W282 harness, W283 harness, W284 harness, W285 harness, W286 harness, W287 harness, W288 harness, W289 harness, W290 harness, W291 harness, W292 harness, W293 harness, W294 harness, and W295 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W295: Story Surface Update Input Contract Without Review/Run UI Change
+
+What changed:
+
+- Adds `src/contracts/storySurfaceUpdateInputs.js` as a pure W295 story surface update-input contract.
+- Represents W245/W293 returned record facts, W246 lane-pack confidence, W250 label source, supported Open-link authority, W254 receipt inputs, W255 first-glance inputs, W256 script inputs, W257 sequence inputs, weak/conflicting evidence gates, and N/LLM advisory-only limits.
+- Adds status handling for ready, waiting for valid import, needing lane confirmation, missing Open target, and hidden uncertainty/non-advisory N/LLM blocks.
+- Keeps W254/W255/W256/W257/W248 drawer-owned and leaves Review/Run UI, visible copy, import mutation, connected submit/refresh/import, endpoint behavior, dataset switching, and runtime authority unchanged.
+- Adds W295 archived report, trace, and harness proving W294/W293/W292 continuity, W264/W265/W245/W151/W214 continuity, returned records/Open links, story surfaces, weak-evidence confirmation, hidden diagnostics, and no runtime authority changes.
+
+Important W295 artifacts:
+
+- `src/contracts/storySurfaceUpdateInputs.js`
+- `archive/tools/run_w295_story_surface_update_input_contract_harness.js`
+- `archive/reports/w295_story_surface_update_input_contract.md`
+- `archive/trace_samples/w295_story_surface_update_input_contract_trace.json`
+
+Previous completed block:
 
 - W294: Returned Record Import Optimization Closure And Story Update Readiness
 
@@ -1071,14 +1101,14 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W295: Story Surface Update Input Contract Without Review/Run UI Change
+W296: Story Surface Update Input Bridge Without Review/Run UI Change
 
 Goal:
-Add a focused story surface update-input contract that describes the data feeding W254 receipt, W255 first glance, W256 live-demo script, and W257 guided sequence after valid returned-record import, without changing visible Review/Run UI, story copy, rendering, returned-record import, connected submit/refresh/import, endpoint behavior, dataset switching, or runtime authority.
+Add a behavior-preserving bridge between drawer-produced story surface update-input facts and the W295 story surface update-input contract, without changing visible Review/Run UI, story copy, rendering, returned-record import, connected submit/refresh/import, endpoint behavior, dataset switching, or runtime authority.
 
 Build:
-- Add a focused contract module under `src/contracts/storySurfaceUpdateInputs.js`.
-- Represent the stable update-input shape for:
+- Add a focused bridge/helper module under `src/contracts/storySurfaceUpdateInputBridge.js`.
+- Keep the bridge limited to shape validation and parity normalization for:
   - W245/W293 returned record facts used by story surfaces
   - W246 resolved lane pack and confidence
   - W250 lane-aware label source
@@ -1089,63 +1119,53 @@ Build:
   - W257 guided sequence input fields
   - weak/conflicting evidence confirmation state
   - N/LLM advisory-only limits and uncertainty visibility
-- Include status constants for:
-  - `story_update_inputs_ready`
-  - `story_update_inputs_waiting_for_valid_import`
-  - `story_update_inputs_need_lane_confirmation`
-  - `story_update_inputs_blocked_missing_open_target`
-  - `story_update_inputs_blocked_hidden_uncertainty`
-- Include pure helper functions that evaluate supplied story input facts.
-- The module may describe story-update readiness, but it must not render UI, change visible story copy, mutate state, import records, create records, perform transaction writes, create Open links, invoke the adapter, or declare W245/W151/W214 import validity.
+- Use `src/contracts/storySurfaceUpdateInputs.js` where parity is straightforward.
+- Compare drawer-produced story update facts against W295 contract-normalized output for:
+  - status
+  - ready flag
+  - blocked reasons
+  - returned record input facts
+  - lane pack and confidence input facts
+  - receipt / first-glance / script / sequence input shape
+  - weak-evidence confirmation state
+  - N/LLM advisory-only and uncertainty-visible state
+  - W151/W214/W245 consumed-not-replaced boundary
+  - no render/copy/mutation/import/create/write/Open-link/adapter invocation boundary
+- The bridge may prove story update-input parity, but it must not render UI, change visible story copy, mutate state, import records, create records, perform transaction writes, create Open links, invoke the adapter, or declare W245/W151/W214 validity.
 - Keep `consultantStorySurfaceFromLanePackW247`, `storyEvidenceReceiptTrailW254`, `consultantStoryFirstGlanceW255`, `consultantLiveDemoScriptW256`, `guidedDemoStepSequenceW257`, and `renderConsultantStorySurfaceW248` drawer-owned.
-- Keep W295 contract extraction-only; do not wire the module into `idb-drawer.user.js` runtime in this block.
-- Keep the drawer self-contained; do not add a runtime `require`, external dependency, bundler requirement, network dependency, or storage write for contract loading.
-- Preserve W294 returned-record import closure/story update readiness map.
+- Keep W296 bridge extraction-only; do not wire the bridge into `idb-drawer.user.js` runtime in this block.
+- Keep the drawer self-contained; do not add a runtime `require`, external dependency, bundler requirement, network dependency, or storage write for bridge/contract loading.
+- Preserve W295 story surface update-input contract and W294 returned-record import closure/story update readiness map.
 - Do not change normal consultant UI.
-- Do not change normal Build tab copy, buttons, or layout.
 - Do not change connected W264 submit/refresh/import behavior.
 - Do not change W265 retry safety.
 - Do not change returned record import behavior.
 - Do not change W245/W151 completed-result validation behavior.
 - Do not relax W214 semantic guard behavior.
-- Do not change lane resolution behavior.
-- Do not change adapter endpoint/profile behavior.
-- Do not change dataset/account switching behavior.
-- Do not change record creation authority.
-- Preserve W218 success wording, W220 recovery wording, fake Open-link blocking, W245 canonical import normalization, W250 lane-aware labels, W262-W294 continuity, N/LLM advisory-only behavior, and uncertainty visibility.
+- Do not change lane resolution, endpoint/profile behavior, dataset switching, or record creation authority.
+- Preserve W218/W220 wording, fake Open-link blocking, W245 canonical import normalization, W250 lane-aware labels, W262-W295 continuity, N/LLM advisory-only behavior, and uncertainty visibility.
 - Keep harnesses, reports, and traces under `archive/`.
-- Keep repo front clean.
-- Keep normal consultant UI free of endpoint URLs, raw JSON, task ids, schema names, stack traces, admin diagnostics, and internal contract arrays.
-- Do not create records from the drawer client directly.
-- Do not add transaction writes outside approved adapter path.
-- Do not update W144 deployment in this block.
 
 Validation:
-- Add W295 harness covering:
-  - `src/contracts/storySurfaceUpdateInputs.js` exists
-  - contract represents W245/W293 returned record facts, W246 lane pack, W250 label source, Open-link authority, W254 receipt inputs, W255 first-glance inputs, W256 script inputs, W257 sequence inputs, weak-evidence state, and N/LLM limits
-  - valid imported Motion distribution story facts produce `story_update_inputs_ready`
-  - missing valid import facts produce `story_update_inputs_waiting_for_valid_import`
-  - weak/conflicting evidence facts produce `story_update_inputs_need_lane_confirmation`
-  - missing Open target facts produce `story_update_inputs_blocked_missing_open_target`
-  - hidden uncertainty or non-advisory N/LLM facts produce `story_update_inputs_blocked_hidden_uncertainty`
-  - contract cannot render UI, change visible copy, mutate/import/create/write/create links/invoke adapter, or declare W245/W151/W214 validity
-  - module is not wired into drawer runtime and drawer remains self-contained
+- Add W296 harness covering:
+  - `src/contracts/storySurfaceUpdateInputBridge.js` exists
+  - bridge validates against `src/contracts/storySurfaceUpdateInputs.js`
+  - ready, waiting-for-import, needs-confirmation, missing-open-target, and hidden-uncertainty cases remain field-compatible
+  - bridge consumes supplied story/returned-record facts but does not replace W151/W214/W245 validation
+  - bridge cannot render UI, change visible copy, mutate/import/create/write/create links/invoke adapter, or declare W245/W151/W214 validity
+  - bridge is not wired into drawer runtime and drawer remains self-contained
+  - W295 contract remains available and unchanged
   - W294 closure/readiness map remains available
   - W293 runtime migration remains field-compatible with W292
-  - W264 submit/refresh/import remains unchanged
-  - W265 retry safety remains unchanged
-  - W245/W151/W214 validation remains unchanged
-  - returned record names, lane-aware labels, and supported Open links remain preserved after valid import
-  - Review/Run story surfaces and visible copy remain unchanged
+  - W264/W265/W245/W151/W214 behavior remains unchanged
+  - returned record names, lane-aware labels, supported Open links, and Review/Run visible copy remain unchanged
   - weak/conflicting evidence remains confirmation-first
   - normal consultant UI hides endpoint/profile/raw/admin diagnostics
-  - no runtime authority changes are introduced
-  - no drawer-created records or drawer transaction writes are introduced
-- Run W244 through W295 harnesses, check, and validate.
+  - no runtime authority changes, drawer-created records, or drawer transaction writes are introduced
+- Run W244 through W296 harnesses, check, and validate.
 
 Output:
-- Summary of story surface update-input contract extraction, guardrails, and validation.
+- Summary of story surface update-input bridge, files touched, parity guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

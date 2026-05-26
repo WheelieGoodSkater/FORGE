@@ -1,0 +1,92 @@
+{
+  "schema": "forge.w315.final-human-approval-capture-candidate-source-mutation.trace.v1",
+  "status": "approval_not_provided",
+  "candidatePackId": "electrical-components-distributor",
+  "targetSourceFile": "src/contracts/lanePacks.js",
+  "sourceMutationApplied": false,
+  "approvalCapturePacket": {
+    "schema": "forge.w315.final-approval-capture.v1",
+    "decision": "approval_not_provided",
+    "readyForSourceMutation": false,
+    "exactW310DiffAuthorized": false,
+    "requiredFields": [
+      {
+        "id": "candidate_pack_id",
+        "requiredValue": "electrical-components-distributor",
+        "provided": false
+      },
+      {
+        "id": "source_file",
+        "requiredValue": "src/contracts/lanePacks.js",
+        "provided": false
+      },
+      {
+        "id": "approval_to_mutate_source_using_exact_w310_diff",
+        "requiredValue": "explicit approval to apply the exact W310 diff",
+        "provided": false
+      },
+      {
+        "id": "real_website_category_evidence_confirmation",
+        "requiredValue": "confirmed sufficient for human review",
+        "provided": false
+      },
+      {
+        "id": "post_install_smoke_acknowledgement",
+        "requiredValue": "acknowledge smoke is required after the pack lands",
+        "provided": false
+      },
+      {
+        "id": "rollback_expectation",
+        "requiredValue": "remove only the new pack if validation fails",
+        "provided": false
+      }
+    ],
+    "exampleApprovalPhrase": "I explicitly approve applying the Electrical Components Distributor candidate pack `electrical-components-distributor` to `src/contracts/lanePacks.js` using the exact W310 draft source diff. I confirm the website/category evidence is sufficient for human review, acknowledge post-install smoke is required after the pack lands, and expect rollback by removing only that new pack if validation fails."
+  },
+  "approvalEvaluationCases": {
+    "approvalNotProvidedActual": {
+      "decision": "approval_not_provided",
+      "readyForSourceMutation": false,
+      "requiredFieldsProvided": false,
+      "sourceMutationAllowed": false
+    },
+    "approvalReadyFixture": {
+      "decision": "approval_ready_for_source_mutation",
+      "readyForSourceMutation": true,
+      "requiredFieldsProvided": true,
+      "sourceMutationAllowed": true,
+      "wouldAuthorizeOnlyExactW310Diff": true
+    }
+  },
+  "continuity": {
+    "w314BlockedNoopAvailable": true,
+    "w313ApprovalIntakeAvailable": true,
+    "w313ApprovalIntakeDecision": "approval_not_provided",
+    "w310SourceDiffDraftOnly": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "candidateWiredIntoRuntime": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W316: Approval-Gated Candidate Lane Pack Source Mutation"
+}

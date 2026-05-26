@@ -1,0 +1,308 @@
+{
+  "schema": "forge.w299.story-coaching-runtime-closure-lane-resolution-readiness.trace.v1",
+  "status": "closure_and_lane_resolution_readiness_ready",
+  "closureMap": {
+    "layers": [
+      {
+        "id": "w297_story_update_input_bridge_closure_story_coaching_readiness",
+        "sourceDrawerHelperSurfaceProtected": [
+          "consultantStorySurfaceFromLanePackW247",
+          "storyEvidenceReceiptTrailW254",
+          "consultantStoryFirstGlanceW255",
+          "consultantLiveDemoScriptW256",
+          "guidedDemoStepSequenceW257",
+          "renderConsultantStorySurfaceW248"
+        ],
+        "governingContractOrBridge": "archive/reports/w297_story_update_input_bridge_closure_story_coaching_readiness.md",
+        "drawerOwnedRuntimeBehavior": [
+          "story coaching runtime readiness inventory",
+          "Review/Run rendering",
+          "visible story copy",
+          "returned-record import",
+          "connected submit/refresh/import",
+          "runtime authority boundaries"
+        ],
+        "parityHarnesses": [
+          "harness:story-update-input-closure-story-coaching-readiness-w297",
+          "harness:story-surface-update-input-bridge-w296",
+          "harness:story-coaching-bridge-w278"
+        ],
+        "rollbackBoundary": "Remove W297 archive-only closure/readiness artifacts. Runtime remains unchanged."
+      },
+      {
+        "id": "w298_story_coaching_runtime_shape_migration",
+        "sourceDrawerHelperSurfaceProtected": [
+          "storyCoachingRuntimeShapeW298",
+          "storyEvidenceReceiptTrailW254",
+          "consultantStoryFirstGlanceW255",
+          "consultantLiveDemoScriptW256",
+          "guidedDemoStepSequenceW257",
+          "renderConsultantStorySurfaceW248"
+        ],
+        "governingContractOrBridge": "src/contracts/storyCoachingSurfaces.js + src/contracts/storyCoachingBridge.js",
+        "drawerOwnedRuntimeBehavior": [
+          "W248 visible Review/Run rendering",
+          "W247 story surface assembly",
+          "W254/W255/W256/W257 copy generation",
+          "W245/W151/W214 validation",
+          "returned-record import and Open-link authority",
+          "connected submit/refresh/import"
+        ],
+        "parityHarnesses": [
+          "harness:story-coaching-runtime-shape-migration-w298",
+          "harness:story-coaching-bridge-w278",
+          "harness:consultant-story-surface-ui-w248"
+        ],
+        "rollbackBoundary": "Remove storyCoachingRuntimeShapeW298 and W298 artifacts. Keep W248 rendering and W254-W257 helpers drawer-owned."
+      },
+      {
+        "id": "w273_story_coaching_contract",
+        "sourceDrawerHelperSurfaceProtected": [
+          "W254 evidence receipt rows",
+          "W255 first-glance fields",
+          "W256 live-demo script lines",
+          "W257 guided sequence steps",
+          "consultant-safe guardrails"
+        ],
+        "governingContractOrBridge": "src/contracts/storyCoachingSurfaces.js",
+        "drawerOwnedRuntimeBehavior": [
+          "actual story packet production",
+          "Review/Run rendering",
+          "visible story copy",
+          "weak-evidence confirmation behavior"
+        ],
+        "parityHarnesses": [
+          "harness:story-coaching-contract-w273",
+          "harness:evidence-receipt-trail-w254",
+          "harness:consultant-live-demo-script-w256",
+          "harness:guided-demo-step-sequence-w257"
+        ],
+        "rollbackBoundary": "Remove W273 contract artifacts if needed; runtime story helpers remain drawer-owned."
+      },
+      {
+        "id": "w278_story_coaching_bridge",
+        "sourceDrawerHelperSurfaceProtected": [
+          "drawer-produced W254 receipt",
+          "drawer-produced W255 first glance",
+          "drawer-produced W256 script",
+          "drawer-produced W257 sequence"
+        ],
+        "governingContractOrBridge": "src/contracts/storyCoachingBridge.js",
+        "drawerOwnedRuntimeBehavior": [
+          "story packet production",
+          "Review/Run rendering",
+          "connected submit/refresh/import",
+          "returned-record import",
+          "lane resolution"
+        ],
+        "parityHarnesses": [
+          "harness:story-coaching-bridge-w278",
+          "harness:story-coaching-contract-w273"
+        ],
+        "rollbackBoundary": "Remove W278 bridge artifacts. Runtime remains self-contained."
+      }
+    ]
+  },
+  "laneResolutionRuntimeReadinessInventory": {
+    "areas": [
+      {
+        "id": "w246_resolved_lane_pack_and_confidence",
+        "sourceHelperAnchor": "resolveLanePackFromEvidenceW246",
+        "inputs": [
+          "website evidence",
+          "matched signals",
+          "consultant selected lane",
+          "lane-pack definitions"
+        ],
+        "currentOwner": "drawer-owned lane-pack resolution"
+      },
+      {
+        "id": "website_evidence_bridge_and_matched_signals",
+        "sourceHelperAnchor": "websiteEvidenceBridge + ensureWebsiteEvidenceRuntime",
+        "inputs": [
+          "website URL",
+          "domain",
+          "category terms",
+          "product family hints",
+          "conversation notes"
+        ],
+        "currentOwner": "drawer-owned website evidence runtime"
+      },
+      {
+        "id": "consultant_lane_toggle_confirmation",
+        "sourceHelperAnchor": "selectedLaneId + laneSelectionSource + toggles",
+        "inputs": [
+          "manual lane selection",
+          "website recommendation",
+          "consultant confirmation",
+          "manufacturing toggle",
+          "WIP toggle"
+        ],
+        "currentOwner": "drawer-owned consultant state"
+      },
+      {
+        "id": "resolve_lane_pack_from_evidence_w246",
+        "sourceHelperAnchor": "resolveLanePackFromEvidenceW246",
+        "inputs": [
+          "state",
+          "lane packs",
+          "website evidence bridge",
+          "matched terms"
+        ],
+        "currentOwner": "drawer-owned resolver"
+      },
+      {
+        "id": "nllm_advisory_payload_w246",
+        "sourceHelperAnchor": "nllmAdvisoryPayloadForLanePackW246",
+        "inputs": [
+          "state",
+          "selected lane pack",
+          "normalized import",
+          "hard limits"
+        ],
+        "currentOwner": "drawer-owned advisory payload"
+      },
+      {
+        "id": "consultant_story_surface_w247",
+        "sourceHelperAnchor": "consultantStorySurfaceFromLanePackW247",
+        "inputs": [
+          "lane resolution",
+          "selected lane pack",
+          "returned records",
+          "N/LLM advisory payload",
+          "evidence receipt"
+        ],
+        "currentOwner": "drawer-owned story surface assembly"
+      },
+      {
+        "id": "w250_lane_aware_labels",
+        "sourceHelperAnchor": "lanePackAwareRecordLabelW250",
+        "inputs": [
+          "canonical role",
+          "operating mode",
+          "lane pack",
+          "raw role"
+        ],
+        "currentOwner": "drawer-owned label resolver"
+      },
+      {
+        "id": "weak_conflicting_evidence_confirmation_gate",
+        "sourceHelperAnchor": "resolveLanePackFromEvidenceW246 + consultantStorySurfaceFromLanePackW247",
+        "inputs": [
+          "unresolved lane",
+          "low confidence",
+          "conflicting evidence",
+          "manual confirmation state"
+        ],
+        "currentOwner": "drawer-owned confirmation gate"
+      },
+      {
+        "id": "future_lane_pack_expansion_workflow",
+        "sourceHelperAnchor": "src/contracts/lanePacks.js + src/contracts/lanePackExpansionWorkflow.js",
+        "inputs": [
+          "new lane packs",
+          "proposed pack review",
+          "diff review",
+          "receipt-driven QA"
+        ],
+        "currentOwner": "contract-backed authoring with drawer-owned resolution"
+      },
+      {
+        "id": "normal_ui_and_admin_evidence_boundaries",
+        "sourceHelperAnchor": "normal consultant UI + archive/admin debug evidence",
+        "inputs": [
+          "consultant-safe lane copy",
+          "hidden endpoint/admin diagnostics",
+          "archived traces/reports"
+        ],
+        "currentOwner": "drawer UI and archive-only evidence"
+      }
+    ]
+  },
+  "selectedNextMicroSlice": {
+    "id": "lane_resolution_readiness_contract_w300",
+    "proposedContractModule": "src/contracts/laneResolutionReadiness.js",
+    "proposedBridgeModule": "",
+    "sourceHelperAnchors": [
+      "resolveLanePackFromEvidenceW246",
+      "websiteEvidenceBridge",
+      "ensureWebsiteEvidenceRuntime",
+      "nllmAdvisoryPayloadForLanePackW246",
+      "consultantStorySurfaceFromLanePackW247",
+      "lanePackAwareRecordLabelW250"
+    ],
+    "targetsLaneResolutionFactAssembly": true,
+    "movesVisibleUiLayoutOrCopy": false,
+    "movesLaneResolutionBehavior": false,
+    "movesReturnedRecordImport": false,
+    "movesConnectedSubmitRefreshImport": false,
+    "movesEndpointOrDatasetSwitching": false,
+    "movesRuntimeAuthority": false,
+    "behaviorSurfacesThatMustRemainIdentical": [
+      "resolved lane pack and confidence outputs",
+      "website evidence matched signals",
+      "consultant confirmation and toggle state semantics",
+      "weak/conflicting evidence confirmation-first behavior",
+      "N/LLM advisory-only payload and hard limits",
+      "W247 story surface inputs",
+      "W250 lane-aware labels",
+      "normal consultant UI copy and layout",
+      "returned record names and supported Open links",
+      "connected W264 submit/refresh/import behavior"
+    ],
+    "parityHarnesses": [
+      "future W300 lane resolution readiness contract harness",
+      "harness:versioned-lane-pack-contract-w246",
+      "harness:lane-aware-record-label-semantics-w250",
+      "harness:story-coaching-runtime-shape-migration-w298",
+      "harness:story-coaching-bridge-w278",
+      "harness:consultant-story-surface-ui-w248",
+      "harness:connected-build-submit-refresh-import-w264",
+      "npm run check",
+      "npm run validate"
+    ],
+    "manualReviewNotes": [
+      "Do not change lane resolution behavior in W300.",
+      "Do not change visible Plan/Build/Review/Run copy or layout.",
+      "Do not let conversation notes override website evidence or consultant toggles.",
+      "Keep weak or conflicting evidence confirmation-first.",
+      "Keep N/LLM advisory-only with no write authority."
+    ],
+    "rollbackPlan": "Remove W300 contract/report/trace/harness artifacts. Keep W246 resolver, W247 story assembly, W250 labels, W298 story shape, and all runtime behavior untouched."
+  },
+  "continuity": {
+    "w298RuntimeShapeFieldCompatibleWithW278": true,
+    "w297ClosureReadinessMapAvailable": true,
+    "w296BridgeAvailable": true,
+    "w295ContractAvailable": true,
+    "w294ClosureReadinessMapAvailable": true,
+    "w273StoryCoachingContractAvailable": true,
+    "w278StoryCoachingBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "laneResolutionChanged": false,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRegressionRequired": false,
+    "reason": "W299 is archive-only closure/readiness work with no visible UI changes."
+  },
+  "nextRecommendedBlock": "W300: Lane Resolution Readiness Contract Without Lane Behavior Change"
+}

@@ -3914,6 +3914,331 @@
     };
   }
 
+  function futureExpansionStringW306(value) {
+    return value === undefined || value === null ? '' : String(value);
+  }
+
+  function futureExpansionHasTextW306(value) {
+    return !!futureExpansionStringW306(value).trim();
+  }
+
+  function futureExpansionObjectW306() {
+    for (let i = 0; i < arguments.length; i += 1) {
+      const candidate = arguments[i];
+      if (candidate && typeof candidate === 'object' && !Array.isArray(candidate)) return candidate;
+    }
+    return {};
+  }
+
+  function futureExpansionProposalIdentityFactsW306(source) {
+    const proposal = futureExpansionObjectW306(source.proposalIdentity, source.proposal, source.candidatePack);
+    return {
+      proposedPackId: futureExpansionStringW306(proposal.proposedPackId || proposal.candidatePackId || proposal.packId || source.proposedPackId),
+      laneId: futureExpansionStringW306(proposal.laneId || source.laneId),
+      subIndustryId: futureExpansionStringW306(proposal.subIndustryId || proposal.subIndustry || source.subIndustryId),
+      label: futureExpansionStringW306(proposal.label || proposal.name || source.label),
+      source: futureExpansionStringW306(proposal.source || source.proposalSource || 'human_or_nllm_draft')
+    };
+  }
+
+  function futureExpansionSourcePackComparisonFactsW306(source) {
+    const comparison = futureExpansionObjectW306(source.sourcePackComparison, source.comparison, source.proposedDiff);
+    return {
+      sourcePackFile: futureExpansionStringW306(comparison.sourcePackFile || source.sourcePackFile || 'src/contracts/lanePacks.js'),
+      basePackId: futureExpansionStringW306(comparison.basePackId || source.basePackId),
+      candidatePackId: futureExpansionStringW306(comparison.candidatePackId || source.candidatePackId),
+      comparisonReady: comparison.comparisonReady === true || futureExpansionHasTextW306(comparison.basePackId) || futureExpansionHasTextW306(comparison.candidatePackId),
+      sourcePackMutationRequested: comparison.sourcePackMutationRequested === true || source.sourcePackMutationRequested === true
+    };
+  }
+
+  function futureExpansionWebsiteCategoryEvidenceFactsW306(source) {
+    const evidence = futureExpansionObjectW306(source.websiteCategoryEvidence, source.websiteEvidence, source.evidence);
+    const signals = arrayValue(evidence.signals || evidence.matchedSignals || source.matchedSignals);
+    return {
+      website: futureExpansionStringW306(evidence.website || source.website),
+      domain: futureExpansionStringW306(evidence.domain || evidence.websiteDomain || source.websiteDomain),
+      category: futureExpansionStringW306(evidence.category || evidence.categoryText || source.category),
+      signals,
+      evidenceReady: evidence.evidenceReady === true || futureExpansionHasTextW306(evidence.website) || futureExpansionHasTextW306(evidence.domain) || futureExpansionHasTextW306(evidence.category) || signals.length > 0,
+      canOverrideWebsiteEvidence: evidence.canOverrideWebsiteEvidence === true || source.canOverrideWebsiteEvidence === true
+    };
+  }
+
+  function futureExpansionRecordRoleCoverageFactsW306(source) {
+    const roles = futureExpansionObjectW306(source.recordRoleCoverage, source.recordRoles, source.roles);
+    const required = arrayValue(roles.required);
+    const optional = arrayValue(roles.optional);
+    const invalid = arrayValue(roles.invalid || roles.forbidden);
+    return {
+      required,
+      optional,
+      invalid,
+      requiredReady: required.length > 0,
+      invalidReady: invalid.length > 0,
+      coverageReady: roles.coverageReady === true || required.length > 0 && invalid.length > 0
+    };
+  }
+
+  function futureExpansionVocabularyCoverageFactsW306(source) {
+    const vocabulary = futureExpansionObjectW306(source.vocabularyCoverage, source.vocabulary);
+    const allowed = arrayValue(vocabulary.allowed);
+    const forbidden = arrayValue(vocabulary.forbidden || vocabulary.invalid);
+    return {
+      allowed,
+      forbidden,
+      coverageReady: vocabulary.coverageReady === true || allowed.length > 0 && forbidden.length > 0
+    };
+  }
+
+  function futureExpansionStoryCopyCoverageFactsW306(source) {
+    const story = futureExpansionObjectW306(source.storyCopyCoverage, source.story, source.liveDemo);
+    const text = [
+      story.proofMove,
+      story.storyAnchor,
+      story.roiSoWhat,
+      story.competitiveContrast
+    ].map(futureExpansionStringW306).join(' ');
+    return {
+      proofMove: futureExpansionStringW306(story.proofMove),
+      storyAnchor: futureExpansionStringW306(story.storyAnchor),
+      roiSoWhat: futureExpansionStringW306(story.roiSoWhat),
+      competitiveContrast: futureExpansionStringW306(story.competitiveContrast),
+      coverageReady: story.coverageReady === true ||
+        futureExpansionHasTextW306(story.proofMove) &&
+        futureExpansionHasTextW306(story.storyAnchor) &&
+        futureExpansionHasTextW306(story.roiSoWhat) &&
+        futureExpansionHasTextW306(story.competitiveContrast),
+      hasGuaranteedOrMeasuredRoiClaim: /guarantee|guaranteed|measured roi|will increase|will reduce/i.test(text)
+    };
+  }
+
+  function futureExpansionNllmDraftIntakeFactsW306(source) {
+    const nllm = futureExpansionObjectW306(source.nllmDraftIntake, source.nllm, source.nllmAdvisory);
+    const hardLimits = arrayValue(nllm.hardLimits || nllm.limits);
+    return {
+      advisoryOnly: nllm.advisoryOnly === true || /advisory/i.test(futureExpansionStringW306(nllm.role || nllm.authority)),
+      writeAuthority: futureExpansionStringW306(nllm.writeAuthority || source.nllmWriteAuthority || 'none'),
+      creationAllowed: nllm.creationAllowed === true || source.nllmCreationAllowed === true,
+      allowedTasks: arrayValue(nllm.allowedTasks),
+      hardLimits,
+      uncertaintyVisible: nllm.uncertaintyVisible === true || futureExpansionHasTextW306(nllm.uncertainty) || source.uncertaintyVisible === true,
+      canOverrideWebsiteEvidence: nllm.canOverrideWebsiteEvidence === true || source.nllmCanOverrideWebsiteEvidence === true,
+      canOverrideConsultantToggles: nllm.canOverrideConsultantToggles === true || source.nllmCanOverrideConsultantToggles === true
+    };
+  }
+
+  function futureExpansionAuthoringReviewFactsW306(source) {
+    const review = futureExpansionObjectW306(source.authoringReview, source.w247AuthoringReview, source.review);
+    return {
+      status: futureExpansionStringW306(review.status),
+      installAllowed: review.installAllowed === true,
+      humanReviewRequired: review.humanReviewRequired === true,
+      nllmAdvisoryOnly: review.nllmAdvisoryOnly === true,
+      ready: review.status === 'review_ready' && review.humanReviewRequired === true && review.nllmAdvisoryOnly === true && review.installAllowed !== true
+    };
+  }
+
+  function futureExpansionProposedDiffFactsW306(source) {
+    const diff = futureExpansionObjectW306(source.proposedDiff, source.w251ProposedDiff, source.diff);
+    const changes = arrayValue(diff.changes);
+    const areas = changes.map((change) => change && change.area).filter(Boolean);
+    return {
+      status: futureExpansionStringW306(diff.status),
+      basePackId: futureExpansionStringW306(diff.basePackId),
+      candidatePackId: futureExpansionStringW306(diff.candidatePackId),
+      changeAreas: areas,
+      ready: changes.length > 0 && ['websiteSignals', 'recordRoles', 'vocabulary', 'liveDemo'].every((area) => areas.indexOf(area) >= 0)
+    };
+  }
+
+  function futureExpansionAdminReviewFactsW306(source) {
+    const review = futureExpansionObjectW306(source.adminReview, source.w252AdminReview);
+    return {
+      rendererReady: review.rendererReady === true || review.status === 'review_rendered',
+      requiredSectionsVisible: review.requiredSectionsVisible === true,
+      hiddenFromNormalUi: review.hiddenFromNormalUi !== false,
+      noInstallAction: review.noInstallAction !== false,
+      ready: (review.rendererReady === true || review.status === 'review_rendered') &&
+        review.requiredSectionsVisible === true &&
+        review.hiddenFromNormalUi !== false &&
+        review.noInstallAction !== false
+    };
+  }
+
+  function futureExpansionReceiptDrivenQaFactsW306(source) {
+    const qa = futureExpansionObjectW306(source.receiptDrivenQa, source.w255ReceiptDrivenQa);
+    const checks = arrayValue(qa.checks);
+    const ids = checks.map((check) => check && check.id).filter(Boolean);
+    return {
+      status: futureExpansionStringW306(qa.status),
+      checks,
+      ready: qa.status === 'qa_ready' || [
+        'lane_choice_explained',
+        'open_target_explained',
+        'proof_evidence_explained',
+        'notes_contribution_explained',
+        'nllm_limits_explained',
+        'uncertainty_explained'
+      ].every((id) => ids.indexOf(id) >= 0)
+    };
+  }
+
+  function futureExpansionLaneResolutionCompatibilityFactsW306(source) {
+    const readiness = futureExpansionObjectW306(source.laneResolutionCompatibility, source.laneResolutionReadiness, source.w300Readiness);
+    return {
+      status: futureExpansionStringW306(readiness.status),
+      ready: readiness.ready === true || readiness.status === 'lane_resolution_ready',
+      consumesFactsOnly: readiness.consumesFactsOnly !== false,
+      changesLaneBehavior: readiness.changesLaneBehavior === true
+    };
+  }
+
+  function futureExpansionHumanReviewGateFactsW306(source) {
+    const gate = futureExpansionObjectW306(source.humanReviewGate, source.reviewGate);
+    return {
+      humanReviewRequired: gate.humanReviewRequired !== false,
+      reviewOnly: gate.reviewOnly !== false,
+      nonInstallable: gate.nonInstallable !== false,
+      installAllowed: gate.installAllowed === true || source.installAllowed === true,
+      autoInstall: gate.autoInstall === true || source.autoInstall === true
+    };
+  }
+
+  function futureExpansionUncertaintyGateFactsW306(source) {
+    const gate = futureExpansionObjectW306(source.uncertaintyGate, source.uncertainty);
+    return {
+      uncertaintyVisible: gate.uncertaintyVisible === true || source.uncertaintyVisible === true || futureExpansionHasTextW306(gate.copy),
+      weakEvidenceConfirmationRequired: gate.weakEvidenceConfirmationRequired !== false,
+      weakOrConflictingEvidence: gate.weakOrConflictingEvidence === true || source.weakEvidence === true || source.conflictingEvidence === true,
+      hideUncertainty: gate.hideUncertainty === true || source.hideUncertainty === true
+    };
+  }
+
+  function futureExpansionHasUnsafeAuthorityW306(source) {
+    const nllm = futureExpansionNllmDraftIntakeFactsW306(source);
+    const evidence = futureExpansionWebsiteCategoryEvidenceFactsW306(source);
+    const story = futureExpansionStoryCopyCoverageFactsW306(source);
+    const uncertainty = futureExpansionUncertaintyGateFactsW306(source);
+    const laneCompatibility = futureExpansionLaneResolutionCompatibilityFactsW306(source);
+    const comparison = futureExpansionSourcePackComparisonFactsW306(source);
+    return nllm.advisoryOnly !== true ||
+      nllm.writeAuthority !== 'none' ||
+      nllm.creationAllowed === true ||
+      nllm.uncertaintyVisible !== true ||
+      nllm.canOverrideWebsiteEvidence === true ||
+      nllm.canOverrideConsultantToggles === true ||
+      evidence.canOverrideWebsiteEvidence === true ||
+      story.hasGuaranteedOrMeasuredRoiClaim === true ||
+      uncertainty.hideUncertainty === true ||
+      laneCompatibility.changesLaneBehavior === true ||
+      comparison.sourcePackMutationRequested === true;
+  }
+
+  function futureExpansionReadinessStatusW306(source) {
+    const reasons = [];
+    const proposal = futureExpansionProposalIdentityFactsW306(source);
+    const comparison = futureExpansionSourcePackComparisonFactsW306(source);
+    const evidence = futureExpansionWebsiteCategoryEvidenceFactsW306(source);
+    const roles = futureExpansionRecordRoleCoverageFactsW306(source);
+    const vocabulary = futureExpansionVocabularyCoverageFactsW306(source);
+    const story = futureExpansionStoryCopyCoverageFactsW306(source);
+    const authoring = futureExpansionAuthoringReviewFactsW306(source);
+    const diff = futureExpansionProposedDiffFactsW306(source);
+    const admin = futureExpansionAdminReviewFactsW306(source);
+    const qa = futureExpansionReceiptDrivenQaFactsW306(source);
+    const lane = futureExpansionLaneResolutionCompatibilityFactsW306(source);
+    const gate = futureExpansionHumanReviewGateFactsW306(source);
+    const uncertainty = futureExpansionUncertaintyGateFactsW306(source);
+    if (futureExpansionHasUnsafeAuthorityW306(source)) {
+      reasons.push('unsafe_authority_or_hidden_uncertainty_forbidden');
+      return { status: 'future_lane_pack_expansion_blocked_unsafe_authority', reasons };
+    }
+    if (gate.installAllowed === true || gate.autoInstall === true || gate.nonInstallable !== true) {
+      reasons.push('future_lane_pack_must_remain_review_only_non_installable');
+      return { status: 'future_lane_pack_expansion_blocked_auto_install', reasons };
+    }
+    if (!evidence.evidenceReady) {
+      reasons.push('website_category_evidence_required');
+      return { status: 'future_lane_pack_expansion_needs_evidence', reasons };
+    }
+    if (!futureExpansionHasTextW306(proposal.proposedPackId)) reasons.push('proposal_identity_missing');
+    if (!futureExpansionHasTextW306(proposal.laneId)) reasons.push('proposal_lane_missing');
+    if (!comparison.comparisonReady) reasons.push('source_pack_comparison_missing');
+    if (!roles.coverageReady) reasons.push('record_role_coverage_missing');
+    if (!vocabulary.coverageReady) reasons.push('vocabulary_coverage_missing');
+    if (!story.coverageReady) reasons.push('story_copy_coverage_missing');
+    if (!authoring.ready) reasons.push('w247_authoring_review_not_ready');
+    if (!diff.ready) reasons.push('w251_proposed_diff_not_ready');
+    if (!admin.ready) reasons.push('w252_admin_review_not_ready');
+    if (!qa.ready) reasons.push('w255_receipt_qa_not_ready');
+    if (!lane.ready || lane.consumesFactsOnly !== true) reasons.push('w300_w302_lane_readiness_not_compatible');
+    if (gate.humanReviewRequired !== true || gate.reviewOnly !== true) reasons.push('human_review_gate_not_ready');
+    if (uncertainty.uncertaintyVisible !== true || uncertainty.weakEvidenceConfirmationRequired !== true) reasons.push('uncertainty_gate_not_ready');
+    return {
+      status: reasons.length ? 'future_lane_pack_expansion_not_ready' : 'future_lane_pack_expansion_ready_for_review',
+      reasons
+    };
+  }
+
+  function futureExpansionReadinessRuntimeShapeW306(input) {
+    const source = input || {};
+    const status = futureExpansionReadinessStatusW306(source);
+    return {
+      schema: 'forge.w306.future-lane-pack-expansion-readiness-runtime-shape.v1',
+      contractSchema: 'forge.w304.future-lane-pack-expansion-readiness.v1',
+      bridgeSchema: 'forge.w305.future-lane-pack-expansion-readiness-bridge.v1',
+      status: status.status,
+      readyForReview: status.status === 'future_lane_pack_expansion_ready_for_review',
+      blockedReasons: status.reasons,
+      proposalIdentity: futureExpansionProposalIdentityFactsW306(source),
+      sourcePackComparison: futureExpansionSourcePackComparisonFactsW306(source),
+      websiteCategoryEvidence: futureExpansionWebsiteCategoryEvidenceFactsW306(source),
+      recordRoleCoverage: futureExpansionRecordRoleCoverageFactsW306(source),
+      vocabularyCoverage: futureExpansionVocabularyCoverageFactsW306(source),
+      storyCopyCoverage: futureExpansionStoryCopyCoverageFactsW306(source),
+      nllmDraftIntake: futureExpansionNllmDraftIntakeFactsW306(source),
+      authoringReview: futureExpansionAuthoringReviewFactsW306(source),
+      proposedDiff: futureExpansionProposedDiffFactsW306(source),
+      adminReview: futureExpansionAdminReviewFactsW306(source),
+      receiptDrivenQa: futureExpansionReceiptDrivenQaFactsW306(source),
+      laneResolutionCompatibility: futureExpansionLaneResolutionCompatibilityFactsW306(source),
+      humanReviewGate: futureExpansionHumanReviewGateFactsW306(source),
+      uncertaintyGate: futureExpansionUncertaintyGateFactsW306(source),
+      consumedNotReplacedBoundary: {
+        w247AuthoringReviewConsumedNotReplaced: true,
+        w251ProposedDiffConsumedNotReplaced: true,
+        w252AdminReviewConsumedNotReplaced: true,
+        w255ReceiptDrivenQaConsumedNotReplaced: true,
+        w274WorkflowConsumedNotReplaced: true,
+        w277BridgeConsumedNotReplaced: true,
+        w300W301W302LaneReadinessConsumedNotReplaced: true,
+        w245ValidationConsumedNotReplaced: true,
+        w151ValidationConsumedNotReplaced: true,
+        w214SemanticGuardConsumedNotReplaced: true
+      },
+      runtimeBoundary: {
+        noSourcePackMutation: true,
+        noProposalInstall: true,
+        noLaneChoice: true,
+        noConfidenceChange: true,
+        noWebsiteEvidenceOverride: true,
+        noConsultantToggleOverride: true,
+        noHiddenUncertainty: true,
+        noUiRendering: true,
+        noVisibleCopyChange: true,
+        noStateMutation: true,
+        noRecordImport: true,
+        noRecordCreation: true,
+        noTransactionWrites: true,
+        noOpenLinkCreation: true,
+        noAdapterInvocation: true,
+        noW245W151W214ValidityDeclaration: true
+      },
+      source: 'drawer_local_contract_shaped_future_lane_pack_expansion_readiness_fact_assembly'
+    };
+  }
+
   function consultantStorySurfaceFromLanePackW247(state, lanePack, normalizedImport) {
     const resolution = resolveLanePackFromEvidenceW246(state);
     const selected = lanePack || (resolution.status === 'resolved' ? resolution.lanePack : null);
@@ -25241,6 +25566,7 @@
       guidedDemoStepSequenceW257,
       storyCoachingRuntimeShapeW298,
       laneResolutionReadinessRuntimeShapeW302,
+      futureExpansionReadinessRuntimeShapeW306,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,

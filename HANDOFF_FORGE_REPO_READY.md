@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W302 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, the connected-build response-shape contract extraction point, the connected-build response-shape bridge, the drawer-local connected-build response-shape runtime migration, the connected-build import guard boundary map, the completed-result import eligibility contract extraction point, the completed-result import eligibility bridge, the drawer-local completed-result import eligibility runtime migration, the W286-W289 completed-result import guard closure/readiness map, the returned-record display-ready import contract extraction point, the returned-record display-ready import bridge, the drawer-local returned-record display-ready runtime shape migration, the W290-W293 returned-record import closure/story-update readiness map, the story surface update-input contract extraction point, the story surface update-input bridge, the W294-W296 story update-input closure/story coaching readiness map, the drawer-local W298 story coaching runtime shape migration, the W299 story coaching runtime closure/lane-resolution readiness map, the W300 lane-resolution readiness contract extraction point, the W301 lane-resolution readiness bridge, and the drawer-local W302 lane-resolution readiness runtime shape migration.
+  - W250-W303 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, the connected-build response-shape contract extraction point, the connected-build response-shape bridge, the drawer-local connected-build response-shape runtime migration, the connected-build import guard boundary map, the completed-result import eligibility contract extraction point, the completed-result import eligibility bridge, the drawer-local completed-result import eligibility runtime migration, the W286-W289 completed-result import guard closure/readiness map, the returned-record display-ready import contract extraction point, the returned-record display-ready import bridge, the drawer-local returned-record display-ready runtime shape migration, the W290-W293 returned-record import closure/story-update readiness map, the story surface update-input contract extraction point, the story surface update-input bridge, the W294-W296 story update-input closure/story coaching readiness map, the drawer-local W298 story coaching runtime shape migration, the W299 story coaching runtime closure/lane-resolution readiness map, the W300 lane-resolution readiness contract extraction point, the W301 lane-resolution readiness bridge, the drawer-local W302 lane-resolution readiness runtime shape migration, and the W303 lane-resolution optimization closure/future industry expansion readiness map.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -155,6 +155,7 @@ npm run harness:story-coaching-runtime-closure-lane-resolution-readiness-w299
 npm run harness:lane-resolution-readiness-contract-w300
 npm run harness:lane-resolution-readiness-bridge-w301
 npm run harness:lane-resolution-readiness-runtime-shape-migration-w302
+npm run harness:lane-resolution-optimization-closure-future-expansion-readiness-w303
 npm run check
 npm run validate
 ```
@@ -220,12 +221,32 @@ Current expected result:
 - W300 harness passes `16/16`.
 - W301 harness passes `13/13`.
 - W302 harness passes `13/13`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, adapter readiness bridge, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, connected build response-shape contract, connected build response-shape bridge, completed result import eligibility contract, completed result import eligibility bridge, returned record display-ready import contract, returned record display-ready import bridge, story surface update-input contract, story surface update-input bridge, lane-resolution readiness contract, lane-resolution readiness bridge, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, W278 harness, W279 harness, W280 harness, W281 harness, W282 harness, W283 harness, W284 harness, W285 harness, W286 harness, W287 harness, W288 harness, W289 harness, W290 harness, W291 harness, W292 harness, W293 harness, W294 harness, W295 harness, W296 harness, W297 harness, W298 harness, W299 harness, W300 harness, W301 harness, and W302 harness.
+- W303 harness passes `15/15`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, adapter readiness bridge, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, connected build response-shape contract, connected build response-shape bridge, completed result import eligibility contract, completed result import eligibility bridge, returned record display-ready import contract, returned record display-ready import bridge, story surface update-input contract, story surface update-input bridge, lane-resolution readiness contract, lane-resolution readiness bridge, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, W278 harness, W279 harness, W280 harness, W281 harness, W282 harness, W283 harness, W284 harness, W285 harness, W286 harness, W287 harness, W288 harness, W289 harness, W290 harness, W291 harness, W292 harness, W293 harness, W294 harness, W295 harness, W296 harness, W297 harness, W298 harness, W299 harness, W300 harness, W301 harness, W302 harness, and W303 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W303: Lane Resolution Optimization Closure And Future Industry Expansion Readiness
+
+What changed:
+
+- Adds an archived W299-W302 closure map for the lane-resolution readiness optimization slice.
+- Maps W299 closure/readiness, W300 contract, W301 bridge, and W302 drawer-local runtime shape migration.
+- Adds a future industry/sub-industry expansion readiness inventory for source lane packs, W247/W251/W252/W255 review surfaces, W274/W277 contracts, W300-W302 readiness facts, N/LLM advisory draft intake, website evidence authority, consultant toggle authority, weak-evidence gates, returned records/Open links feeding stories, and UI/admin-only evidence boundaries.
+- Selects W304 as the next narrow future lane-pack expansion readiness contract slice.
+- Keeps future expansion extraction deferred; W303 is archive-only closure/readiness work.
+- Preserves source packs, lane behavior, visible Plan/Build/Review/Run UI, story copy, returned-record import, connected submit/refresh/import, endpoint behavior, dataset switching, W245/W151/W214 validation, weak-evidence confirmation, and runtime authority.
+
+Important W303 artifacts:
+
+- `archive/tools/run_w303_lane_resolution_optimization_closure_future_expansion_readiness_harness.js`
+- `archive/reports/w303_lane_resolution_optimization_closure_future_expansion_readiness.md`
+- `archive/trace_samples/w303_lane_resolution_optimization_closure_future_expansion_readiness_trace.json`
+
+Previous completed block:
 
 - W302: Lane Resolution Readiness Runtime Shape Migration Without Lane Behavior Change
 
@@ -1178,50 +1199,40 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W303: Lane Resolution Optimization Closure And Future Industry Expansion Readiness
+W304: Future Lane Pack Expansion Readiness Contract Without Source Pack Mutation
 
 Goal:
-Close the W299-W302 lane-resolution readiness optimization slice, map what is now contract-backed versus drawer-owned, and select the next safe future industry/sub-industry expansion readiness slice without changing lane behavior, visible UI, story copy, returned-record import, connected submit/refresh/import, endpoint behavior, dataset switching, or runtime authority.
+Add a focused future lane-pack expansion readiness contract that describes proposed industry/sub-industry pack authoring readiness, N/LLM advisory draft intake, proposal QA, and human-review gates without mutating `src/contracts/lanePacks.js`, changing lane resolution behavior, visible UI, story copy, returned-record import, connected submit/refresh/import, endpoint behavior, dataset switching, or runtime authority.
 
 Build:
-- Add an archived W299-W302 lane-resolution optimization closure map covering:
-  - W299 story coaching runtime closure/lane-resolution readiness map
-  - W300 lane-resolution readiness contract
-  - W301 lane-resolution readiness bridge
-  - W302 drawer-local lane-resolution readiness runtime shape migration
-- For each layer, list:
-  - source drawer/helper surface protected
-  - governing contract or bridge
-  - runtime behavior that stayed drawer-owned
-  - validation harnesses protecting parity
-  - rollback boundary
-- Add a future industry/sub-industry expansion readiness inventory for:
-  - `src/contracts/lanePacks.js` source packs
-  - W247 authoring/review inputs
-  - W251 proposed diff review
-  - W252 admin-safe review renderer
-  - W255 receipt-driven QA
-  - W274 lane-pack expansion workflow contract
-  - W277 lane-pack review bridge
-  - W300/W301/W302 lane-resolution readiness facts
-  - N/LLM advisory-only draft intake
-  - website evidence authority
-  - consultant toggle/confirmation authority
-  - weak/conflicting evidence confirmation gate
-  - returned record names, lane-aware labels, and Open-link authority feeding story surfaces
-  - normal consultant UI and admin-only evidence boundaries
-- Select the next narrow optimization micro-slice.
-- Prefer future lane-pack expansion authoring/readiness shape or proposal intake QA, not visible UI layout/copy, not source pack mutation, and not lane resolution behavior changes.
-- For the selected future micro-slice, define:
-  - source helper anchors
-  - proposed contract or bridge module
-  - exact behavior surfaces that must remain identical
-  - parity harnesses
-  - manual review notes
-  - rollback plan
-- Do not perform the selected future expansion extraction in this block.
-- Do not change `idb-drawer.user.js` runtime behavior except review-only closure/inventory references if absolutely necessary.
-- Preserve W302 runtime shape migration, W301 bridge, W300 contract, W299 closure/readiness map, W298 runtime shape migration, W297 closure/readiness map, W296 bridge, W295 contract, W294 closure/readiness map, W273 story coaching contract, W278 story coaching bridge, W274 lane-pack expansion workflow contract, and W277 lane-pack review bridge.
+- Add a focused contract module under `src/contracts/futureLanePackExpansionReadiness.js`.
+- Represent a stable future expansion readiness shape for:
+  - proposed lane/sub-industry identity
+  - source pack comparison target
+  - website/category evidence coverage
+  - required/optional/invalid record role coverage
+  - allowed/forbidden vocabulary coverage
+  - proof move/story/ROI/competitive copy coverage
+  - N/LLM advisory-only draft source and hard limits
+  - W247 authoring/review status
+  - W251 proposed diff status
+  - W252 admin-review rendering readiness
+  - W255 receipt-driven QA readiness
+  - W300-W302 lane-resolution readiness compatibility
+  - human-review required / review-only / non-installable state
+  - uncertainty and weak-evidence confirmation gate
+- Include status constants:
+  - `future_lane_pack_expansion_ready_for_review`
+  - `future_lane_pack_expansion_needs_evidence`
+  - `future_lane_pack_expansion_blocked_unsafe_authority`
+  - `future_lane_pack_expansion_blocked_auto_install`
+  - `future_lane_pack_expansion_not_ready`
+- Include pure helper functions that evaluate supplied future expansion facts.
+- The module may describe readiness, but it must not mutate `src/contracts/lanePacks.js`, install proposed packs, choose lanes, change confidence, override website evidence, override consultant toggles, hide uncertainty, render UI, mutate state, import/create records, write transactions, create Open links, invoke the adapter, or declare W245/W151/W214 validity.
+- Keep W247/W251/W252/W255/W274/W277 drawer/source review workflows outside this module; the module consumes supplied facts only.
+- Keep W304 contract extraction-only; do not wire it into `idb-drawer.user.js` runtime.
+- Keep the drawer self-contained; do not add a runtime `require`, external dependency, bundler requirement, network dependency, or storage write for contract loading.
+- Preserve W303 closure/readiness map, W302 runtime shape migration, W301 bridge, W300 contract, W299 closure/readiness map, W274 expansion workflow contract, and W277 lane-pack review bridge.
 - Do not change normal consultant UI.
 - Do not change visible Plan/Build/Review/Run copy or rendering.
 - Do not change connected W264 submit/refresh/import behavior.
@@ -1229,30 +1240,34 @@ Build:
 - Do not change returned record import behavior.
 - Do not change W245/W151 completed-result validation behavior.
 - Do not relax W214 semantic guard behavior.
-- Do not change lane resolution, endpoint/profile behavior, dataset switching, or record creation authority.
-- Preserve W218/W220 wording, fake Open-link blocking, W245 canonical import normalization, W250 lane-aware labels, W262-W302 continuity, N/LLM advisory-only behavior, and uncertainty visibility.
+- Do not change lane resolution, endpoint/profile behavior, dataset switching, source lane packs, or record creation authority.
+- Preserve W218/W220 wording, fake Open-link blocking, W245 canonical import normalization, W250 lane-aware labels, W262-W303 continuity, N/LLM advisory-only behavior, and uncertainty visibility.
 - Keep harnesses, reports, and traces under `archive/`.
 
 Validation:
-- Add W303 harness covering:
-  - W299-W302 closure map exists and includes all four layers
-  - each layer maps source helper surface, governing contract/bridge, drawer-owned behavior, parity harnesses, and rollback boundary
-  - future industry/sub-industry expansion readiness inventory includes lane packs, authoring/review, diff review, admin review, receipt-driven QA, W274/W277 contracts, W300-W302 readiness facts, N/LLM advisory draft intake, website evidence authority, consultant toggle/confirmation authority, weak-evidence gating, returned records/Open-link authority, and UI/admin evidence boundaries
-  - selected next micro-slice is narrow and targets future lane-pack expansion authoring/readiness or proposal intake QA rather than visible UI, source pack mutation, or lane behavior changes
-  - selected slice includes source anchors, proposed contract/bridge module, behavior surfaces, parity harnesses, manual review notes, and rollback plan
+- Add W304 harness covering:
+  - `src/contracts/futureLanePackExpansionReadiness.js` exists
+  - contract represents required future expansion fields and statuses
+  - complete review-safe proposed expansion facts produce `future_lane_pack_expansion_ready_for_review`
+  - missing website/category evidence produces `future_lane_pack_expansion_needs_evidence`
+  - unsafe write/creation authority or hidden uncertainty produces `future_lane_pack_expansion_blocked_unsafe_authority`
+  - auto-install/installable facts produce `future_lane_pack_expansion_blocked_auto_install`
+  - incomplete proposal/review/QA facts produce `future_lane_pack_expansion_not_ready`
+  - contract consumes W247/W251/W252/W255/W274/W277/W300-W302 facts but does not replace authoring/review/lane resolution behavior
+  - contract cannot mutate source packs, install proposals, choose lanes, change confidence, override evidence/toggles, hide uncertainty, render UI, mutate/import/create/write/create links/invoke adapter, or declare W245/W151/W214 validity
+  - module is not wired into drawer runtime and drawer remains self-contained
+  - W303 closure/readiness map remains available
   - W302 runtime shape remains field-compatible with W301
-  - W301 bridge and W300 contract remain available and unchanged
-  - W299 closure/readiness map remains available
   - W274/W277 lane-pack expansion/review contracts remain available
   - W264/W265/W245/W151/W214 behavior remains unchanged
   - returned record names, lane-aware labels, supported Open links, and Review/Run visible copy remain unchanged
   - weak/conflicting evidence remains confirmation-first
   - normal consultant UI hides endpoint/profile/raw/admin diagnostics
-  - no runtime authority changes, drawer-created records, or drawer transaction writes are introduced
-- Run W244 through W303 harnesses, check, and validate.
+  - no runtime authority changes, drawer-created records, drawer transaction writes, source pack mutations, or auto-install behavior are introduced
+- Run W244 through W304 harnesses, check, and validate.
 
 Output:
-- Summary of lane-resolution optimization closure map, selected future expansion readiness slice, parity guardrails, and validation.
+- Summary of future lane-pack expansion readiness contract, guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

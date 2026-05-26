@@ -1,0 +1,80 @@
+{
+  "schema": "forge.w301.lane-resolution-readiness-bridge.trace.v1",
+  "status": "bridge_ready",
+  "bridge": {
+    "module": "src/contracts/laneResolutionReadinessBridge.js",
+    "governingContract": "src/contracts/laneResolutionReadiness.js",
+    "schema": "forge.w301.lane-resolution-readiness-bridge.v1",
+    "purpose": "Validate drawer-produced lane-resolution readiness facts against the W300 contract without changing runtime behavior."
+  },
+  "parityInputs": [
+    "W246 resolved lane pack and confidence",
+    "website evidence bridge and matched signals",
+    "consultant lane/toggle confirmation",
+    "resolveLanePackFromEvidenceW246 facts",
+    "nllmAdvisoryPayloadForLanePackW246 facts",
+    "consultantStorySurfaceFromLanePackW247 inputs",
+    "W250 lane-aware label facts",
+    "weak/conflicting evidence confirmation gate",
+    "future lane-pack expansion workflow facts"
+  ],
+  "validatedStatuses": [
+    "lane_resolution_ready",
+    "lane_resolution_needs_confirmation",
+    "lane_resolution_blocked_missing_website_evidence",
+    "lane_resolution_blocked_hidden_uncertainty",
+    "lane_resolution_not_ready"
+  ],
+  "runtimeOwnership": {
+    "resolveLanePackFromEvidenceW246": "drawer_owned",
+    "websiteEvidenceBridge": "drawer_owned",
+    "ensureWebsiteEvidenceRuntime": "drawer_owned",
+    "nllmAdvisoryPayloadForLanePackW246": "drawer_owned",
+    "consultantStorySurfaceFromLanePackW247": "drawer_owned",
+    "lanePackAwareRecordLabelW250": "drawer_owned",
+    "connectedBuildSubmitRefreshImportW264": "drawer_owned",
+    "canonicalImportResultNormalizationW245": "drawer_owned"
+  },
+  "boundaries": {
+    "canChooseLane": false,
+    "canChangeConfidence": false,
+    "canOverrideWebsiteEvidence": false,
+    "canOverrideConsultantToggles": false,
+    "canHideUncertainty": false,
+    "canRenderUi": false,
+    "canChangeVisibleCopy": false,
+    "canMutateState": false,
+    "canImportRecords": false,
+    "canCreateRecords": false,
+    "canWriteTransactions": false,
+    "canCreateOpenLinks": false,
+    "canInvokeAdapter": false,
+    "canDeclareW245W151W214Validity": false
+  },
+  "continuity": {
+    "w300ContractAvailable": true,
+    "w299ClosureReadinessMapAvailable": true,
+    "w298RuntimeShapeFieldCompatibleWithW278": true,
+    "w274LanePackExpansionWorkflowAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W302: Lane Resolution Readiness Runtime Shape Migration Without Lane Behavior Change"
+}

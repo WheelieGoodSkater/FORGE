@@ -1,0 +1,80 @@
+{
+  "schema": "forge.w312.conditional-candidate-lane-pack-source-change.trace.v1",
+  "status": "blocked_noop_source_change_not_approved",
+  "pathTaken": "blocked_noop",
+  "candidatePackId": "electrical-components-distributor",
+  "targetSourceFile": "src/contracts/lanePacks.js",
+  "approvalGateInspection": {
+    "source": "archive/trace_samples/w311_candidate_source_diff_qa_closure_human_approval_gate_trace.json",
+    "w311Decision": "not_approved_yet",
+    "w311SourceMutationAllowed": false,
+    "explicitApprovalInW312Request": false,
+    "approvalMissingOrAmbiguous": true,
+    "result": "stop_at_w311_approval_gate"
+  },
+  "blockedNoopPacket": {
+    "sourceMutationApplied": false,
+    "sourceFileChanged": false,
+    "exactW310PatchApplied": false,
+    "existingSourcePacksModified": false,
+    "candidatePackInstalled": false,
+    "autoInstallIntroduced": false,
+    "runtimeWiringIntroduced": false,
+    "runtimeAuthorityChanged": false,
+    "normalConsultantUiChanged": false
+  },
+  "sourceChangeEvidence": {
+    "approvalTextSource": "W312 request did not explicitly approve source mutation.",
+    "appliedPackId": "",
+    "sourceFileChanged": "",
+    "diffSummary": "No source diff applied. W310 remains draft-only.",
+    "w311ApprovalGateResult": "not_approved_yet",
+    "postChangeLanePackValidation": "not_applicable_noop",
+    "postInstallSmokeExpectations": "not_applicable_noop"
+  },
+  "futureApprovalRequirement": {
+    "requiresExplicitPhrase": true,
+    "requiredMeaning": "Approve applying the Electrical Components Distributor candidate pack to src/contracts/lanePacks.js.",
+    "mustReferenceCandidate": "electrical-components-distributor",
+    "mustReferenceSourceFile": "src/contracts/lanePacks.js",
+    "mustNotBeAmbiguous": true
+  },
+  "continuity": {
+    "w311ApprovalGateInspected": true,
+    "w310SourceDiffPacketAvailable": true,
+    "w310DiffReadinessDraftOnly": true,
+    "w309SourceChangeReadinessAvailable": true,
+    "w308ProposalPacketReviewOnly": true,
+    "w308AcceptancePacketNonInstallable": true,
+    "w306RuntimeShapeFieldCompatibleWithW305": true,
+    "w305BridgeAvailable": true,
+    "w304ContractAvailable": true,
+    "w274LanePackExpansionWorkflowAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "candidateWiredIntoRuntime": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W313: Explicit Approval Intake Or Candidate Source Change Reattempt"
+}

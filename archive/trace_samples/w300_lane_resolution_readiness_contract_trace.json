@@ -1,0 +1,84 @@
+{
+  "schema": "forge.w300.lane-resolution-readiness-contract.trace.v1",
+  "status": "contract_ready",
+  "contract": {
+    "module": "src/contracts/laneResolutionReadiness.js",
+    "schema": "forge.w300.lane-resolution-readiness.v1",
+    "selectedFromW299": "lane_resolution_readiness_contract_w300",
+    "futureBridge": "src/contracts/laneResolutionReadinessBridge.js"
+  },
+  "representedInputs": [
+    "W246 resolved lane pack and confidence",
+    "website evidence bridge and matched signals",
+    "consultant lane and toggle confirmation",
+    "resolveLanePackFromEvidenceW246 output",
+    "nllmAdvisoryPayloadForLanePackW246 limits",
+    "consultantStorySurfaceFromLanePackW247 inputs",
+    "W250 lane-aware labels",
+    "weak/conflicting evidence confirmation gate",
+    "future lane-pack expansion workflow"
+  ],
+  "statuses": [
+    "lane_resolution_ready",
+    "lane_resolution_needs_confirmation",
+    "lane_resolution_blocked_missing_website_evidence",
+    "lane_resolution_blocked_hidden_uncertainty",
+    "lane_resolution_not_ready"
+  ],
+  "runtimeOwnership": {
+    "resolveLanePackFromEvidenceW246": "drawer_owned",
+    "websiteEvidenceBridge": "drawer_owned",
+    "ensureWebsiteEvidenceRuntime": "drawer_owned",
+    "nllmAdvisoryPayloadForLanePackW246": "drawer_owned",
+    "consultantStorySurfaceFromLanePackW247": "drawer_owned",
+    "lanePackAwareRecordLabelW250": "drawer_owned"
+  },
+  "boundaries": {
+    "canChooseLane": false,
+    "canChangeConfidence": false,
+    "canOverrideWebsiteEvidence": false,
+    "canOverrideConsultantToggles": false,
+    "canHideUncertainty": false,
+    "canRenderUi": false,
+    "canChangeVisibleCopy": false,
+    "canMutateState": false,
+    "canImportRecords": false,
+    "canCreateRecords": false,
+    "canWriteTransactions": false,
+    "canCreateOpenLinks": false,
+    "canInvokeAdapter": false,
+    "canDeclareW245W151W214Validity": false
+  },
+  "continuity": {
+    "w299ClosureReadinessMapAvailable": true,
+    "w298RuntimeShapeFieldCompatibleWithW278": true,
+    "w274LanePackExpansionWorkflowAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "laneResolutionChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "normalConsultantUiChanged": false,
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true
+  },
+  "visualTestingDecision": {
+    "broadVisualRegressionRequired": false,
+    "reason": "W300 is a contract-only extraction point and is not wired into visible runtime UI."
+  },
+  "nextRecommendedBlock": "W301: Lane Resolution Readiness Bridge Without Lane Behavior Change"
+}

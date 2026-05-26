@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const laneReadiness = require('../../src/contracts/laneResolutionReadiness');
+const laneReadinessBridge = require('../../src/contracts/laneResolutionReadinessBridge');
 const laneExpansion = require('../../src/contracts/lanePackExpansionWorkflow');
 const laneReviewBridge = require('../../src/contracts/lanePackReviewBridge');
 const {
@@ -77,19 +78,33 @@ function baseFacts(overrides = {}) {
   }, overrides);
 }
 
+function equivalentDrawerOutput(output) {
+  return Object.assign({}, output, {
+    schema: laneReadiness.LANE_RESOLUTION_READINESS_SCHEMA_VERSION
+  });
+}
+
+function casePacket(hooks, input) {
+  return {
+    input,
+    drawerOutput: equivalentDrawerOutput(hooks.laneResolutionReadinessRuntimeShapeW302(input))
+  };
+}
+
 function main() {
   const results = [];
-  const hooks = loadHooks({ fetchMessage: 'live fetch disabled in W300 harness' });
+  const hooks = loadHooks({ fetchMessage: 'live fetch disabled in W302 harness' });
   const userscript = read(userscriptPath);
   const packageJson = JSON.parse(readRepoFile('package.json'));
-  const contractSource = readRepoFile('src', 'contracts', 'laneResolutionReadiness.js');
-  const report = readArchiveText('reports', 'w300_lane_resolution_readiness_contract.md');
-  const trace = readArchiveJson('trace_samples', 'w300_lane_resolution_readiness_contract_trace.json');
+  const report = readArchiveText('reports', 'w302_lane_resolution_readiness_runtime_shape_migration.md');
+  const trace = readArchiveJson('trace_samples', 'w302_lane_resolution_readiness_runtime_shape_migration_trace.json');
+  const w301Trace = readArchiveJson('trace_samples', 'w301_lane_resolution_readiness_bridge_trace.json');
+  const w300Trace = readArchiveJson('trace_samples', 'w300_lane_resolution_readiness_contract_trace.json');
   const w299Trace = readArchiveJson('trace_samples', 'w299_story_coaching_runtime_closure_lane_resolution_readiness_trace.json');
   const w298Trace = readArchiveJson('trace_samples', 'w298_story_coaching_runtime_shape_migration_trace.json');
 
-  const ready = laneReadiness.normalizeLaneResolutionReadiness(baseFacts());
-  const needsConfirmation = laneReadiness.normalizeLaneResolutionReadiness(baseFacts({
+  const readyFacts = baseFacts();
+  const needsConfirmationFacts = baseFacts({
     laneResolution: {
       status: 'needs_confirmation',
       packId: 'industrial-distributor',
@@ -106,8 +121,8 @@ function main() {
       toggles: { manufacturing: false, wip: false }
     },
     weakEvidence: true
-  }));
-  const missingEvidence = laneReadiness.normalizeLaneResolutionReadiness(baseFacts({
+  });
+  const missingWebsiteEvidenceFacts = baseFacts({
     websiteEvidence: {
       website: '',
       websiteDomain: '',
@@ -115,8 +130,8 @@ function main() {
       matchedSignals: [],
       hasStrongWebsiteEvidence: false
     }
-  }));
-  const hiddenUncertainty = laneReadiness.normalizeLaneResolutionReadiness(baseFacts({
+  });
+  const hiddenUncertaintyFacts = baseFacts({
     nllm: {
       advisoryOnly: false,
       writeAuthority: 'write',
@@ -125,8 +140,8 @@ function main() {
       hardLimits: []
     },
     hideUncertainty: true
-  }));
-  const notReady = laneReadiness.normalizeLaneResolutionReadiness(baseFacts({
+  });
+  const notReadyFacts = baseFacts({
     laneResolution: {
       status: 'resolved',
       packId: '',
@@ -140,16 +155,26 @@ function main() {
       source: 'manual',
       labelsReady: false
     }
-  }));
+  });
+
+  const bridgePacket = laneReadinessBridge.bridgeLaneResolutionReadiness({
+    ready: casePacket(hooks, readyFacts),
+    needsConfirmation: casePacket(hooks, needsConfirmationFacts),
+    missingWebsiteEvidence: casePacket(hooks, missingWebsiteEvidenceFacts),
+    hiddenUncertainty: casePacket(hooks, hiddenUncertaintyFacts),
+    notReady: casePacket(hooks, notReadyFacts)
+  });
+  const readyShape = hooks.laneResolutionReadinessRuntimeShapeW302(readyFacts);
+  const readyValidation = laneReadinessBridge.validateLaneResolutionReadiness(equivalentDrawerOutput(readyShape), readyFacts);
 
   const state = motionState(hooks);
   const context = motionContext(hooks, state);
-  const completedResult = completedMotionResult({ prefix: '300' });
-  const completedRaw = completedRefreshResponse('runner-w300-motion-001', completedResult);
+  const completedResult = completedMotionResult({ prefix: '302' });
+  const completedRaw = completedRefreshResponse('runner-w302-motion-001', completedResult);
   const completedShape = hooks.actualAdapterResponseShapeW265(completedRaw, {
     phase: 'refresh',
-    runnerTaskId: 'runner-w300-motion-001',
-    idempotencyToken: 'motion-w300-token'
+    runnerTaskId: 'runner-w302-motion-001',
+    idempotencyToken: 'motion-w302-token'
   });
   const completedGuard = hooks.validateDccFinalNamingImportPayload(completedShape.finalGeneratedNamesJson, state, context.lane, context.page, context.recommendation);
   const semanticGuard = hooks.completedRunnerResultSemanticGuardW214(completedGuard.finalNaming, state, context.lane, completedShape.finalGeneratedNamesJson);
@@ -166,87 +191,83 @@ function main() {
     executeSubmit: true,
     executePoll: true,
     finishBuild: true,
-    submitTransport: () => submitResponse('runner-w300-motion-001', 'motion-w300-token'),
+    submitTransport: () => submitResponse('runner-w302-motion-001', 'motion-w302-token'),
     pollTransport: () => completedRaw
   });
 
-  assertCase(results, 'lane-resolution-readiness-contract-module-exists',
-    /LANE_RESOLUTION_READINESS_SCHEMA_VERSION/.test(contractSource) &&
-      laneReadiness.contractSummary().schema === 'forge.w300.lane-resolution-readiness.v1' &&
-      trace.contract.module === 'src/contracts/laneResolutionReadiness.js',
-    JSON.stringify(laneReadiness.contractSummary()));
+  assertCase(results, 'w299-through-w301-source-anchors-present-or-mapped',
+    /function resolveLanePackFromEvidenceW246/.test(userscript) &&
+      /function websiteEvidenceBridge/.test(userscript) &&
+      /function ensureWebsiteEvidenceRuntime/.test(userscript) &&
+      /function nllmAdvisoryPayloadForLanePackW246/.test(userscript) &&
+      /function consultantStorySurfaceFromLanePackW247/.test(userscript) &&
+      /function lanePackAwareRecordLabelW250/.test(userscript) &&
+      /function laneResolutionReadinessRuntimeShapeW302/.test(userscript) &&
+      hooks.laneResolutionReadinessRuntimeShapeW302,
+    'selected source anchors and W302 runtime shape helper present');
 
-  assertCase(results, 'contract-represents-required-fields-and-statuses',
-    laneReadiness.contractSummary().requiredFactFields.length === 7 &&
-      ['lane_resolution_ready', 'lane_resolution_needs_confirmation', 'lane_resolution_blocked_missing_website_evidence', 'lane_resolution_blocked_hidden_uncertainty', 'lane_resolution_not_ready']
-        .every((status) => laneReadiness.contractSummary().statuses.indexOf(status) >= 0) &&
-      trace.representedInputs.length >= 9,
-    JSON.stringify(laneReadiness.contractSummary().statuses));
+  assertCase(results, 'drawer-local-lane-readiness-shape-field-compatible-with-w301',
+    bridgePacket.status === 'bridge_ready' &&
+      bridgePacket.validations.length === 5 &&
+      bridgePacket.validations.every((validation) => validation.status === 'field_compatible') &&
+      bridgePacket.validations.map((validation) => validation.contractStatus).join('|') === [
+        'lane_resolution_ready',
+        'lane_resolution_needs_confirmation',
+        'lane_resolution_blocked_missing_website_evidence',
+        'lane_resolution_blocked_hidden_uncertainty',
+        'lane_resolution_not_ready'
+      ].join('|'),
+    JSON.stringify(bridgePacket.validations.map((validation) => validation.contractStatus)));
 
-  assertCase(results, 'resolved-high-confidence-lane-facts-ready',
-    ready.status === laneReadiness.LANE_RESOLUTION_READINESS_STATUSES.READY &&
-      ready.ready === true &&
-      ready.laneResolution.packId === 'industrial-distributor' &&
-      ready.websiteEvidence.hasWebsiteEvidence === true &&
-      ready.nllm.advisoryOnly === true,
-    JSON.stringify(ready));
+  assertCase(results, 'lane-resolution-and-validation-boundaries-remain-outside-migrated-helper',
+    readyShape.runtimeBoundary.resolveLanePackFromEvidenceW246DrawerOwned === true &&
+      readyValidation.guardrails.bridgeConsumesW246Resolution === true &&
+      readyValidation.guardrails.bridgeConsumesWebsiteEvidence === true &&
+      readyValidation.guardrails.bridgeConsumesConsultantToggles === true &&
+      readyValidation.guardrails.bridgeConsumesW250Labels === true &&
+      readyValidation.guardrails.bridgeConsumesW245Validation === true &&
+      readyValidation.guardrails.bridgeConsumesW151Validation === true &&
+      readyValidation.guardrails.bridgeConsumesW214SemanticGuard === true,
+    JSON.stringify({ shape: readyShape.runtimeBoundary, guardrails: readyValidation.guardrails }));
 
-  assertCase(results, 'weak-or-conflicting-lane-facts-need-confirmation',
-    needsConfirmation.status === laneReadiness.LANE_RESOLUTION_READINESS_STATUSES.NEEDS_CONFIRMATION &&
-      needsConfirmation.ready === false &&
-      needsConfirmation.blockedReasons.indexOf('lane_confirmation_required_before_lane_claims') >= 0,
-    JSON.stringify(needsConfirmation));
+  assertCase(results, 'resolve-lane-pack-remains-drawer-owned-for-choice-and-confidence',
+    hooks.resolveLanePackFromEvidenceW246(state).schema === 'forge.lane-pack-resolution.v1' &&
+      readyShape.laneResolution.packId === 'industrial-distributor' &&
+      readyShape.runtimeBoundary.noLaneChoice === true &&
+      readyShape.runtimeBoundary.noConfidenceChange === true &&
+      trace.drawerOwnedBoundaries.resolveLanePackFromEvidenceW246.indexOf('lane choice') >= 0,
+    JSON.stringify(hooks.resolveLanePackFromEvidenceW246(state)));
 
-  assertCase(results, 'missing-website-evidence-blocked',
-    missingEvidence.status === laneReadiness.LANE_RESOLUTION_READINESS_STATUSES.BLOCKED_MISSING_WEBSITE_EVIDENCE &&
-      missingEvidence.blockedReasons.indexOf('website_evidence_required_before_lane_readiness') >= 0,
-    JSON.stringify(missingEvidence));
-
-  assertCase(results, 'hidden-uncertainty-or-non-advisory-nllm-blocked',
-    hiddenUncertainty.status === laneReadiness.LANE_RESOLUTION_READINESS_STATUSES.BLOCKED_HIDDEN_UNCERTAINTY &&
-      hiddenUncertainty.blockedReasons.indexOf('nllm_must_remain_advisory_only_and_uncertainty_visible') >= 0,
-    JSON.stringify(hiddenUncertainty));
-
-  assertCase(results, 'not-ready-facts-produce-lane-resolution-not-ready',
-    notReady.status === laneReadiness.LANE_RESOLUTION_READINESS_STATUSES.NOT_READY &&
-      notReady.blockedReasons.indexOf('resolved_lane_pack_missing') >= 0 &&
-      notReady.blockedReasons.indexOf('lane_confidence_missing') >= 0 &&
-      notReady.blockedReasons.indexOf('lane_aware_labels_not_ready') >= 0,
-    JSON.stringify(notReady));
-
-  assertCase(results, 'contract-consumes-facts-without-replacing-runtime-authorities',
-    ready.validationBoundary.w246ResolutionConsumedNotReplaced === true &&
-      ready.validationBoundary.websiteEvidenceConsumedNotReplaced === true &&
-      ready.validationBoundary.consultantTogglesConsumedNotReplaced === true &&
-      ready.validationBoundary.w250LabelsConsumedNotReplaced === true &&
-      ready.validationBoundary.w245ValidationConsumedNotReplaced === true &&
-      ready.validationBoundary.w151ValidationConsumedNotReplaced === true &&
-      ready.validationBoundary.w214SemanticGuardConsumedNotReplaced === true,
-    JSON.stringify(ready.validationBoundary));
-
-  assertCase(results, 'contract-cannot-choose-lane-change-confidence-override-render-mutate-or-write',
-    Object.keys(ready.runtimeBoundary).every((key) => ready.runtimeBoundary[key] === true) &&
-      trace.boundaries.canChooseLane === false &&
-      trace.boundaries.canChangeConfidence === false &&
-      trace.boundaries.canOverrideWebsiteEvidence === false &&
-      trace.boundaries.canOverrideConsultantToggles === false &&
-      trace.boundaries.canHideUncertainty === false &&
-      trace.boundaries.canRenderUi === false &&
-      trace.boundaries.canMutateState === false &&
-      trace.boundaries.canImportRecords === false &&
-      trace.boundaries.canCreateRecords === false &&
-      trace.boundaries.canWriteTransactions === false &&
-      trace.boundaries.canCreateOpenLinks === false &&
-      trace.boundaries.canInvokeAdapter === false &&
+  assertCase(results, 'migrated-helper-cannot-choose-change-override-render-mutate-or-write',
+    readyValidation.guardrails.bridgeCannotChooseLane === true &&
+      readyValidation.guardrails.bridgeCannotChangeConfidence === true &&
+      readyValidation.guardrails.bridgeCannotOverrideWebsiteEvidence === true &&
+      readyValidation.guardrails.bridgeCannotOverrideConsultantToggles === true &&
+      readyValidation.guardrails.bridgeCannotHideUncertainty === true &&
+      readyValidation.guardrails.bridgeCannotRenderUi === true &&
+      readyValidation.guardrails.bridgeCannotMutateState === true &&
+      readyValidation.guardrails.bridgeCannotImportRecords === true &&
+      readyValidation.guardrails.bridgeCannotCreateRecords === true &&
+      readyValidation.guardrails.bridgeCannotWriteTransactions === true &&
+      readyValidation.guardrails.bridgeCannotCreateOpenLinks === true &&
+      readyValidation.guardrails.bridgeCannotInvokeAdapter === true &&
       trace.boundaries.canDeclareW245W151W214Validity === false,
-    JSON.stringify({ runtime: ready.runtimeBoundary, trace: trace.boundaries }));
+    JSON.stringify({ validation: readyValidation.guardrails, trace: trace.boundaries }));
 
-  assertCase(results, 'module-not-wired-into-drawer-runtime-and-drawer-self-contained',
+  assertCase(results, 'drawer-self-contained-no-runtime-require-external-dependency-network-or-storage-write',
     !/require\(['\"][^'\"]*laneResolutionReadiness/.test(userscript) &&
       !/import\s+.*laneResolutionReadiness/.test(userscript) &&
       !/fetch\([^)]*laneResolutionReadiness/.test(userscript) &&
-      !/localStorage\.setItem\([^)]*laneResolutionReadiness/.test(userscript),
-    'drawer runtime has no W300 contract import, network, or storage dependency');
+      !/localStorage\.setItem\([^)]*laneResolutionReadiness/.test(userscript) &&
+      trace.guardrails.noRuntimeRequireExternalDependencyBundlerNetworkOrStorageWrite === true,
+    'drawer runtime remains self-contained');
+
+  assertCase(results, 'w301-bridge-and-w300-contract-remain-available',
+    laneReadinessBridge.exportedContractSummary().schema === 'forge.w301.lane-resolution-readiness-bridge.v1' &&
+      laneReadiness.contractSummary().schema === 'forge.w300.lane-resolution-readiness.v1' &&
+      w301Trace.status === 'bridge_ready' &&
+      w300Trace.status === 'contract_ready',
+    JSON.stringify({ w301: w301Trace.status, w300: w300Trace.status }));
 
   assertCase(results, 'w299-closure-and-w298-runtime-shape-remain-available',
     w299Trace.status === 'closure_and_lane_resolution_readiness_ready' &&
@@ -280,7 +301,7 @@ function main() {
       record.recordName === 'Motion Branch Fulfillment SKU' &&
       /Product SKU/.test(record.consultantLabel) &&
       record.safeToOpen === true &&
-      /netsuite\.com\/app\/common\/item\/item\.nl\?id=30003/.test(record.supportedOpenUrl)
+      /netsuite\.com\/app\/common\/item\/item\.nl\?id=30203/.test(record.supportedOpenUrl)
     ) &&
       /Live proof CTA/.test(html) &&
       weakStory.status === 'needs_lane_confirmation' &&
@@ -291,7 +312,7 @@ function main() {
     JSON.stringify({ records: normalizedImport.visibleRecords.map((record) => record.recordName), weak: weakStory.status }));
 
   assertCase(results, 'normal-consultant-ui-hides-diagnostics-and-no-runtime-authority-changes',
-    !/script=6702|deploy=2|runner-w300-motion-001|finalGeneratedNamesJson|stack trace|schema/i.test(html) &&
+    !/script=6702|deploy=2|runner-w302-motion-001|finalGeneratedNamesJson|stack trace|schema/i.test(html) &&
       trace.guardrails.normalConsultantUiHidesEndpointProfileRawAdminDiagnostics === true &&
       trace.guardrails.runtimeBehaviorChanged === false &&
       trace.guardrails.connectedBuildFlowChanged === false &&
@@ -300,16 +321,15 @@ function main() {
       trace.guardrails.noDrawerTransactionWrites === true,
     JSON.stringify(trace.guardrails));
 
-  assertCase(results, 'w300-report-trace-harness-and-check-registration-present',
-    /W300 Lane Resolution Readiness Contract/.test(report) &&
-      trace.schema === 'forge.w300.lane-resolution-readiness-contract.trace.v1' &&
-      trace.nextRecommendedBlock === 'W301: Lane Resolution Readiness Bridge Without Lane Behavior Change' &&
-      packageJson.scripts['harness:lane-resolution-readiness-contract-w300'] &&
-      packageJson.scripts.check.includes('src/contracts/laneResolutionReadiness.js') &&
-      packageJson.scripts.check.includes('run_w300_lane_resolution_readiness_contract_harness.js'),
-    JSON.stringify({ trace: trace.schema, script: packageJson.scripts['harness:lane-resolution-readiness-contract-w300'] || '' }));
+  assertCase(results, 'w302-report-trace-harness-and-check-registration-present',
+    /W302 Lane Resolution Readiness Runtime Shape Migration/.test(report) &&
+      trace.schema === 'forge.w302.lane-resolution-readiness-runtime-shape-migration.trace.v1' &&
+      trace.nextRecommendedBlock === 'W303: Lane Resolution Optimization Closure And Future Industry Expansion Readiness' &&
+      packageJson.scripts['harness:lane-resolution-readiness-runtime-shape-migration-w302'] &&
+      packageJson.scripts.check.includes('run_w302_lane_resolution_readiness_runtime_shape_migration_harness.js'),
+    JSON.stringify({ trace: trace.schema, script: packageJson.scripts['harness:lane-resolution-readiness-runtime-shape-migration-w302'] || '' }));
 
-  printResults('W300 lane resolution readiness contract harness', results);
+  printResults('W302 lane resolution readiness runtime shape migration harness', results);
 }
 
 main();

@@ -3690,6 +3690,230 @@
     };
   }
 
+  function laneReadinessStringW302(value) {
+    return value === undefined || value === null ? '' : String(value);
+  }
+
+  function laneReadinessObjectW302() {
+    for (let index = 0; index < arguments.length; index += 1) {
+      const candidate = arguments[index];
+      if (candidate && typeof candidate === 'object' && !Array.isArray(candidate)) return candidate;
+    }
+    return {};
+  }
+
+  function laneReadinessHasTextW302(value) {
+    return !!laneReadinessStringW302(value).trim();
+  }
+
+  function laneResolutionFactsW302(source) {
+    const resolution = laneReadinessObjectW302(source.laneResolution, source.resolution, source.w246Resolution);
+    const lanePack = laneReadinessObjectW302(source.lanePack, source.resolvedLanePack, resolution.lanePack);
+    return {
+      status: laneReadinessStringW302(resolution.status || source.status),
+      packId: laneReadinessStringW302(resolution.packId || lanePack.packId || lanePack.id || source.packId),
+      laneId: laneReadinessStringW302(lanePack.laneId || source.laneId),
+      subIndustryId: laneReadinessStringW302(lanePack.subIndustryId || source.subIndustryId),
+      confidence: laneReadinessStringW302(resolution.confidence || source.confidence),
+      sourceAuthority: laneReadinessStringW302(resolution.sourceAuthority || source.sourceAuthority),
+      matchedSignals: arrayValue(resolution.matchedSignals || source.matchedSignals),
+      notesOverrideIdentityAllowed: resolution.notesOverrideIdentityAllowed === true || source.notesOverrideIdentityAllowed === true,
+      nllmAuthority: laneReadinessStringW302(resolution.nllmAuthority || source.nllmAuthority || 'advisory_only')
+    };
+  }
+
+  function websiteEvidenceFactsW302(source) {
+    const evidence = laneReadinessObjectW302(source.websiteEvidence, source.websiteEvidenceBridge, source.bridge);
+    const matched = arrayValue(source.matchedSignals || evidence.matchedSignals || evidence.signals);
+    const domain = laneReadinessStringW302(evidence.domain || evidence.websiteDomain || source.websiteDomain);
+    const website = laneReadinessStringW302(evidence.website || source.website);
+    const category = laneReadinessStringW302(evidence.category || evidence.productFamily || source.categoryText || source.productFamily);
+    const text = [
+      website,
+      domain,
+      category,
+      evidence.evidence,
+      evidence.demandMoment,
+      matched.join(' ')
+    ].filter(Boolean).join(' ');
+    return {
+      website,
+      domain,
+      category,
+      matchedSignals: matched,
+      hasWebsiteEvidence: laneReadinessHasTextW302(website) || laneReadinessHasTextW302(domain) || laneReadinessHasTextW302(category) || matched.length > 0 || laneReadinessHasTextW302(evidence.evidence),
+      hasStrongWebsiteEvidence: evidence.hasStrongWebsiteEvidence === true || /domain:/i.test(matched.join(' ')) || laneReadinessHasTextW302(domain) && matched.length > 0,
+      evidenceTextPresent: laneReadinessHasTextW302(text)
+    };
+  }
+
+  function consultantConfirmationFactsW302(source) {
+    const confirmation = laneReadinessObjectW302(source.consultantConfirmation, source.confirmation, source.state);
+    const toggles = laneReadinessObjectW302(source.toggles, confirmation.toggles);
+    const laneSelectionSource = laneReadinessStringW302(confirmation.laneSelectionSource || source.laneSelectionSource);
+    return {
+      selectedLaneId: laneReadinessStringW302(confirmation.selectedLaneId || source.selectedLaneId),
+      laneSelectionSource,
+      laneConfirmed: confirmation.laneConfirmed === true || source.laneConfirmed === true || laneSelectionSource === 'consultant_confirmed',
+      togglesPresent: Object.keys(toggles).length > 0 || source.togglesPresent === true,
+      manufacturingEnabled: toggles.manufacturing === true || toggles.enableManufacturing === true || source.manufacturingEnabled === true,
+      wipEnabled: toggles.wip === true || toggles.enableWip === true || source.wipEnabled === true
+    };
+  }
+
+  function nllmFactsW302(source) {
+    const nllm = laneReadinessObjectW302(source.nllm, source.nllmAdvisory, source.advisory);
+    return {
+      advisoryOnly: nllm.advisoryOnly === true || source.nllmAdvisoryOnly === true || /advisory/i.test(laneReadinessStringW302(nllm.role || nllm.authority)),
+      writeAuthority: laneReadinessStringW302(nllm.writeAuthority || source.nllmWriteAuthority || 'none'),
+      creationAllowed: nllm.creationAllowed === true || source.nllmCreationAllowed === true,
+      uncertaintyVisible: nllm.uncertaintyVisible === true || source.uncertaintyVisible === true || laneReadinessHasTextW302(nllm.uncertainty),
+      hardLimitsVisible: arrayValue(nllm.hardLimits || nllm.limits || source.nllmHardLimits).length > 0,
+      canOverrideWebsiteEvidence: nllm.canOverrideWebsiteEvidence === true || source.nllmCanOverrideWebsiteEvidence === true,
+      canOverrideConsultantToggles: nllm.canOverrideConsultantToggles === true || source.nllmCanOverrideConsultantToggles === true
+    };
+  }
+
+  function storySurfaceInputFactsW302(source) {
+    const story = laneReadinessObjectW302(source.storySurfaceInputs, source.story, source.w247StorySurface);
+    return {
+      storyStatus: laneReadinessStringW302(story.status),
+      packId: laneReadinessStringW302(story.packId || source.packId),
+      hasOpenTarget: laneReadinessHasTextW302(story.openTarget) && !/confirm lane before opening proof records/i.test(story.openTarget),
+      usesLaneResolution: source.usesLaneResolution !== false,
+      usesReturnedRecords: source.usesReturnedRecords !== false
+    };
+  }
+
+  function laneAwareLabelFactsW302(source) {
+    const labelFacts = laneReadinessObjectW302(source.laneAwareLabelFacts, source.labels);
+    return {
+      source: laneReadinessStringW302(labelFacts.source || source.laneAwareLabelSource || 'lanePackAwareRecordLabelW250'),
+      labelsReady: labelFacts.labelsReady === true || source.labelsReady === true || laneReadinessStringW302(labelFacts.source || source.laneAwareLabelSource).indexOf('lanePackAwareRecordLabelW250') >= 0,
+      distributionLabelsProtected: labelFacts.distributionLabelsProtected === true || source.distributionLabelsProtected === true,
+      manufacturingLabelsProtected: labelFacts.manufacturingLabelsProtected === true || source.manufacturingLabelsProtected === true
+    };
+  }
+
+  function expansionWorkflowFactsW302(source) {
+    const expansion = laneReadinessObjectW302(source.expansionWorkflow, source.lanePackExpansionWorkflow);
+    return {
+      sourcePackFile: laneReadinessStringW302(expansion.sourcePackFile || source.sourcePackFile || 'src/contracts/lanePacks.js'),
+      reviewOnlyProposals: expansion.reviewOnlyProposals !== false && source.reviewOnlyProposals !== false,
+      noAutoInstall: expansion.noAutoInstall !== false && source.noAutoInstall !== false,
+      advisoryOnly: expansion.advisoryOnly !== false && source.expansionAdvisoryOnly !== false
+    };
+  }
+
+  function hiddenUncertaintyOrBadAuthorityW302(source) {
+    const nllm = nllmFactsW302(source);
+    const resolution = laneResolutionFactsW302(source);
+    return nllm.advisoryOnly !== true ||
+      nllm.writeAuthority !== 'none' ||
+      nllm.creationAllowed === true ||
+      nllm.uncertaintyVisible !== true ||
+      nllm.canOverrideWebsiteEvidence === true ||
+      nllm.canOverrideConsultantToggles === true ||
+      source.hideUncertainty === true ||
+      source.uncertaintyHidden === true ||
+      resolution.notesOverrideIdentityAllowed === true ||
+      resolution.nllmAuthority !== 'advisory_only';
+  }
+
+  function laneNeedsConfirmationW302(source) {
+    const resolution = laneResolutionFactsW302(source);
+    const confirmation = consultantConfirmationFactsW302(source);
+    if (source.weakEvidence === true || source.conflictingEvidence === true || source.laneConfirmationRequired === true) return true;
+    if (resolution.status === 'needs_confirmation' || resolution.status === 'insufficient_evidence') return true;
+    if (/low|weak|conflicting|needs|medium/i.test(resolution.confidence) && confirmation.laneConfirmed !== true) return true;
+    return false;
+  }
+
+  function laneResolutionReadinessStatusW302(source) {
+    const reasons = [];
+    const website = websiteEvidenceFactsW302(source);
+    const resolution = laneResolutionFactsW302(source);
+    const labels = laneAwareLabelFactsW302(source);
+    const story = storySurfaceInputFactsW302(source);
+    const expansion = expansionWorkflowFactsW302(source);
+    if (hiddenUncertaintyOrBadAuthorityW302(source)) {
+      reasons.push('nllm_must_remain_advisory_only_and_uncertainty_visible');
+      return { status: 'lane_resolution_blocked_hidden_uncertainty', reasons };
+    }
+    if (!website.hasWebsiteEvidence) {
+      reasons.push('website_evidence_required_before_lane_readiness');
+      return { status: 'lane_resolution_blocked_missing_website_evidence', reasons };
+    }
+    if (laneNeedsConfirmationW302(source)) {
+      reasons.push('lane_confirmation_required_before_lane_claims');
+      return { status: 'lane_resolution_needs_confirmation', reasons };
+    }
+    if (!laneReadinessHasTextW302(resolution.packId)) reasons.push('resolved_lane_pack_missing');
+    if (!laneReadinessHasTextW302(resolution.confidence)) reasons.push('lane_confidence_missing');
+    if (!labels.labelsReady) reasons.push('lane_aware_labels_not_ready');
+    if (!story.usesLaneResolution) reasons.push('story_surface_not_using_lane_resolution_facts');
+    if (!expansion.reviewOnlyProposals || !expansion.noAutoInstall || !expansion.advisoryOnly) reasons.push('future_expansion_guardrails_not_ready');
+    return {
+      status: reasons.length ? 'lane_resolution_not_ready' : 'lane_resolution_ready',
+      reasons
+    };
+  }
+
+  function laneResolutionReadinessRuntimeShapeW302(input) {
+    const source = input || {};
+    const status = laneResolutionReadinessStatusW302(source);
+    const nllm = nllmFactsW302(source);
+    return {
+      schema: 'forge.w302.lane-resolution-readiness-runtime-shape.v1',
+      contractSchema: 'forge.w300.lane-resolution-readiness.v1',
+      bridgeSchema: 'forge.w301.lane-resolution-readiness-bridge.v1',
+      status: status.status,
+      ready: status.status === 'lane_resolution_ready',
+      blockedReasons: status.reasons,
+      laneResolution: laneResolutionFactsW302(source),
+      websiteEvidence: websiteEvidenceFactsW302(source),
+      consultantConfirmation: consultantConfirmationFactsW302(source),
+      nllm: {
+        advisoryOnly: nllm.advisoryOnly,
+        writeAuthority: nllm.writeAuthority,
+        creationAllowed: nllm.creationAllowed,
+        uncertaintyVisible: nllm.uncertaintyVisible,
+        hardLimitsVisible: nllm.hardLimitsVisible,
+        canOverrideWebsiteEvidence: nllm.canOverrideWebsiteEvidence,
+        canOverrideConsultantToggles: nllm.canOverrideConsultantToggles
+      },
+      storySurfaceInputs: storySurfaceInputFactsW302(source),
+      laneAwareLabelFacts: laneAwareLabelFactsW302(source),
+      expansionWorkflow: expansionWorkflowFactsW302(source),
+      validationBoundary: {
+        w246ResolutionConsumedNotReplaced: true,
+        websiteEvidenceConsumedNotReplaced: true,
+        consultantTogglesConsumedNotReplaced: true,
+        w250LabelsConsumedNotReplaced: true,
+        w245ValidationConsumedNotReplaced: true,
+        w151ValidationConsumedNotReplaced: true,
+        w214SemanticGuardConsumedNotReplaced: true
+      },
+      runtimeBoundary: {
+        resolveLanePackFromEvidenceW246DrawerOwned: true,
+        noLaneChoice: true,
+        noConfidenceChange: true,
+        noWebsiteEvidenceOverride: true,
+        noConsultantToggleOverride: true,
+        noHiddenUncertainty: true,
+        noUiRendering: true,
+        noVisibleCopyChange: true,
+        noStateMutation: true,
+        noRecordImport: true,
+        noRecordCreation: true,
+        noTransactionWrites: true,
+        noOpenLinkCreation: true,
+        noAdapterInvocation: true
+      },
+      source: 'drawer_local_contract_shaped_lane_resolution_readiness_fact_assembly'
+    };
+  }
+
   function consultantStorySurfaceFromLanePackW247(state, lanePack, normalizedImport) {
     const resolution = resolveLanePackFromEvidenceW246(state);
     const selected = lanePack || (resolution.status === 'resolved' ? resolution.lanePack : null);
@@ -25016,6 +25240,7 @@
       consultantLiveDemoScriptW256,
       guidedDemoStepSequenceW257,
       storyCoachingRuntimeShapeW298,
+      laneResolutionReadinessRuntimeShapeW302,
       generatedContractSnapshotW242,
       operatingModeContractFromSnapshotW242,
       operatingModeLabelFromSnapshotW242,

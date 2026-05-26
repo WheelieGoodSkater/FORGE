@@ -1,0 +1,79 @@
+{
+  "schema": "forge.w302.lane-resolution-readiness-runtime-shape-migration.trace.v1",
+  "status": "runtime_shape_migration_ready",
+  "runtimeHelper": {
+    "name": "laneResolutionReadinessRuntimeShapeW302",
+    "file": "idb-drawer.user.js",
+    "source": "drawer_local_contract_shaped_lane_resolution_readiness_fact_assembly",
+    "governingContract": "src/contracts/laneResolutionReadiness.js",
+    "governingBridge": "src/contracts/laneResolutionReadinessBridge.js"
+  },
+  "reshapedLogic": [
+    "lane-resolution readiness fact assembly",
+    "lane-resolution readiness status and blocked reasons",
+    "N/LLM advisory-only and uncertainty-visible guardrail shape",
+    "W250 label readiness guardrail shape",
+    "future lane-pack expansion review-only guardrail shape"
+  ],
+  "drawerOwnedBoundaries": {
+    "resolveLanePackFromEvidenceW246": "lane choice and confidence remain drawer-owned",
+    "websiteEvidenceBridge": "website evidence facts remain drawer-owned",
+    "ensureWebsiteEvidenceRuntime": "website evidence runtime remains drawer-owned",
+    "nllmAdvisoryPayloadForLanePackW246": "N/LLM advisory payload remains drawer-owned",
+    "consultantStorySurfaceFromLanePackW247": "story surface creation remains drawer-owned",
+    "lanePackAwareRecordLabelW250": "lane-aware labels remain drawer-owned",
+    "canonicalImportResultNormalizationW245": "returned-record import remains drawer-owned",
+    "connectedBuildSubmitRefreshImportW264": "connected build remains drawer-owned"
+  },
+  "validatedCases": [
+    "lane_resolution_ready",
+    "lane_resolution_needs_confirmation",
+    "lane_resolution_blocked_missing_website_evidence",
+    "lane_resolution_blocked_hidden_uncertainty",
+    "lane_resolution_not_ready"
+  ],
+  "boundaries": {
+    "canChooseLane": false,
+    "canChangeConfidence": false,
+    "canOverrideWebsiteEvidence": false,
+    "canOverrideConsultantToggles": false,
+    "canHideUncertainty": false,
+    "canRenderUi": false,
+    "canChangeVisibleCopy": false,
+    "canMutateState": false,
+    "canImportRecords": false,
+    "canCreateRecords": false,
+    "canWriteTransactions": false,
+    "canCreateOpenLinks": false,
+    "canInvokeAdapter": false,
+    "canDeclareW245W151W214Validity": false
+  },
+  "continuity": {
+    "w301BridgeAvailable": true,
+    "w300ContractAvailable": true,
+    "w299ClosureReadinessMapAvailable": true,
+    "w298RuntimeShapeFieldCompatibleWithW278": true,
+    "w274LanePackExpansionWorkflowAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noRuntimeRequireExternalDependencyBundlerNetworkOrStorageWrite": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W303: Lane Resolution Optimization Closure And Future Industry Expansion Readiness"
+}

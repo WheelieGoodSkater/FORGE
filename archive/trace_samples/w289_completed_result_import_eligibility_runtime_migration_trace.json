@@ -1,0 +1,60 @@
+{
+  "schema": "forge.w289.completed-result-import-eligibility-runtime-migration.trace.v1",
+  "status": "runtime_shape_migration_ready",
+  "migratedHelperAnchors": [
+    "completedResultImportEligibilityShapeW289",
+    "completedResultImportEligibilityFromDrawerGuardsW289"
+  ],
+  "protectedSourceAnchors": [
+    "connectedBuildSubmitRefreshImportW264",
+    "completedRunnerResultImportCommitOperatorFlowV1",
+    "validateDccFinalNamingImportPayload",
+    "completedRunnerResultSemanticGuardW214",
+    "canonicalImportResultNormalizationW245",
+    "adapterResultIndicatesCompletedResultReady"
+  ],
+  "governingContract": "src/contracts/completedResultImportEligibility.js",
+  "governingBridge": "src/contracts/completedResultImportEligibilityBridge.js",
+  "validationBoundary": {
+    "w151W214W245ValidationOutsideMigratedHelpers": true,
+    "migratedHelpersConsumeSuppliedFactsOnly": true,
+    "migratedHelpersCannotDeclareImportValidWithoutSuppliedFacts": true
+  },
+  "runtimeBoundary": {
+    "finishBuildMutationStaysDrawerOwned": true,
+    "actualSubmitExecutionStaysDrawerOwned": true,
+    "actualRefreshPollExecutionStaysDrawerOwned": true,
+    "drawerSelfContained": true,
+    "noRuntimeRequireAdded": true,
+    "noExternalDependencyAdded": true,
+    "noBundlerRequirementAdded": true,
+    "noNetworkDependencyAdded": true,
+    "noStorageWriteAddedForContractBridgeLoading": true
+  },
+  "continuity": {
+    "w288BridgeAvailableAndUnchanged": true,
+    "w287ContractAvailableAndUnchanged": true,
+    "w286ImportGuardBoundaryMapAvailableAndUnchanged": true,
+    "w285ResponseShapeMigrationFieldCompatibleWithW284": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordsOpenLinksChanged": false,
+    "fakeLinkBlockingChanged": false
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "normalConsultantUiHidesEndpointRawTaskSchemaStackAdminDiagnostics": true,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "approvedServerAdapterPathOnly": true,
+    "noW144DeploymentUpdateInThisBlock": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W290: Completed Result Import Guard Closure And Next Optimization Readiness"
+}

@@ -5902,6 +5902,166 @@
     return false;
   }
 
+  const COMPLETED_RESULT_IMPORT_ELIGIBILITY_STATUSES_W289 = Object.freeze({
+    MISSING_COMPLETED_RESULT: 'missing_completed_result',
+    W151_REJECTED: 'w151_rejected',
+    W214_SEMANTIC_BLOCKED: 'w214_semantic_blocked',
+    W245_NORMALIZATION_NOT_READY: 'w245_normalization_not_ready',
+    FINISH_BUILD_ELIGIBLE: 'finish_build_eligible',
+    FINISH_BUILD_BLOCKED: 'finish_build_blocked'
+  });
+
+  const COMPLETED_RESULT_IMPORT_ELIGIBILITY_REQUIRED_INPUTS_W289 = Object.freeze([
+    'completedResultJsonPresent',
+    'w151ValidationStatus',
+    'w214SemanticGuardStatus',
+    'w245CanonicalNormalizationReady',
+    'generatedRecordOwner',
+    'governedRunnerOwnerValid',
+    'finishBuildCtaEligible',
+    'openLinkPreconditions',
+    'w218SuccessWordingPreserved',
+    'w220RecoveryWordingPreserved',
+    'rawEvidencePolicy'
+  ]);
+
+  function completedResultImportEligibilityBoolW289(value) {
+    return value === true;
+  }
+
+  function completedResultImportEligibilityOpenLinksReadyW289(preconditions) {
+    const checks = preconditions || {};
+    return completedResultImportEligibilityBoolW289(checks.realUrlsOnly) &&
+      completedResultImportEligibilityBoolW289(checks.numericInternalIds) &&
+      completedResultImportEligibilityBoolW289(checks.supportedNetSuiteUrls) &&
+      checks.fakeLinksBlockedBeforeImport !== false;
+  }
+
+  function completedResultImportEligibilityFactsW289(input) {
+    const source = input || {};
+    const w151 = source.w151 || source.w151Guard || source.completedGuard || {};
+    const w214 = source.w214 || source.w214Guard || source.semanticGuard || {};
+    const w245 = source.w245 || source.w245Normalization || source.normalizedImport || {};
+    const owner = firstNonBlank(source.generatedRecordOwner, source.recordOwner, source.owner);
+    const openLinks = source.openLinkPreconditions || {};
+    const rawEvidence = source.rawEvidencePolicy || {};
+    return {
+      completedResultJsonPresent: completedResultImportEligibilityBoolW289(source.completedResultJsonPresent) || !!source.completedResultJson,
+      w151ValidationStatus: firstNonBlank(source.w151ValidationStatus, w151.status),
+      w151Valid: completedResultImportEligibilityBoolW289(source.w151Valid) ||
+        completedResultImportEligibilityBoolW289(w151.valid) ||
+        source.w151ValidationStatus === 'completed_runner_result_accepted',
+      w214SemanticGuardStatus: firstNonBlank(source.w214SemanticGuardStatus, w214.status),
+      w214Valid: completedResultImportEligibilityBoolW289(source.w214Valid) ||
+        completedResultImportEligibilityBoolW289(w214.valid),
+      w245CanonicalNormalizationReady: completedResultImportEligibilityBoolW289(source.w245CanonicalNormalizationReady) ||
+        completedResultImportEligibilityBoolW289(w245.ready) ||
+        w245.status === 'display_ready_records_normalized',
+      w245NormalizationStatus: firstNonBlank(source.w245NormalizationStatus, w245.status),
+      generatedRecordOwner: owner,
+      governedRunnerOwnerValid: completedResultImportEligibilityBoolW289(source.governedRunnerOwnerValid) ||
+        owner === 'governed_runner_internal_build_engine',
+      finishBuildCtaEligible: completedResultImportEligibilityBoolW289(source.finishBuildCtaEligible),
+      openLinkPreconditions: {
+        realUrlsOnly: completedResultImportEligibilityBoolW289(openLinks.realUrlsOnly),
+        numericInternalIds: completedResultImportEligibilityBoolW289(openLinks.numericInternalIds),
+        supportedNetSuiteUrls: completedResultImportEligibilityBoolW289(openLinks.supportedNetSuiteUrls),
+        fakeLinksBlockedBeforeImport: openLinks.fakeLinksBlockedBeforeImport !== false
+      },
+      w218SuccessWordingPreserved: source.w218SuccessWordingPreserved !== false,
+      w220RecoveryWordingPreserved: source.w220RecoveryWordingPreserved !== false,
+      rawEvidencePolicy: {
+        adminOnly: rawEvidence.adminOnly !== false,
+        archivedOnly: rawEvidence.archivedOnly !== false,
+        hiddenFromNormalConsultantUi: rawEvidence.hiddenFromNormalConsultantUi !== false
+      }
+    };
+  }
+
+  function completedResultImportEligibilityStatusW289(facts) {
+    if (!facts.completedResultJsonPresent) return COMPLETED_RESULT_IMPORT_ELIGIBILITY_STATUSES_W289.MISSING_COMPLETED_RESULT;
+    if (!facts.w151Valid) return COMPLETED_RESULT_IMPORT_ELIGIBILITY_STATUSES_W289.W151_REJECTED;
+    if (!facts.w214Valid) return COMPLETED_RESULT_IMPORT_ELIGIBILITY_STATUSES_W289.W214_SEMANTIC_BLOCKED;
+    if (!facts.w245CanonicalNormalizationReady) return COMPLETED_RESULT_IMPORT_ELIGIBILITY_STATUSES_W289.W245_NORMALIZATION_NOT_READY;
+    if (
+      facts.finishBuildCtaEligible &&
+      facts.governedRunnerOwnerValid &&
+      completedResultImportEligibilityOpenLinksReadyW289(facts.openLinkPreconditions)
+    ) {
+      return COMPLETED_RESULT_IMPORT_ELIGIBILITY_STATUSES_W289.FINISH_BUILD_ELIGIBLE;
+    }
+    return COMPLETED_RESULT_IMPORT_ELIGIBILITY_STATUSES_W289.FINISH_BUILD_BLOCKED;
+  }
+
+  function completedResultImportEligibilityBlockedReasonsW289(facts, status) {
+    const reasons = [];
+    if (!facts.completedResultJsonPresent) reasons.push('completed_result_json_missing');
+    if (facts.completedResultJsonPresent && !facts.w151Valid) reasons.push('w151_validation_not_accepted');
+    if (facts.w151Valid && !facts.w214Valid) reasons.push('w214_semantic_guard_not_accepted');
+    if (facts.w214Valid && !facts.w245CanonicalNormalizationReady) reasons.push('w245_canonical_normalization_not_ready');
+    if (facts.w245CanonicalNormalizationReady && !facts.governedRunnerOwnerValid) reasons.push('generated_record_owner_not_governed_runner');
+    if (facts.w245CanonicalNormalizationReady && !facts.finishBuildCtaEligible) reasons.push('finish_build_cta_not_eligible');
+    if (facts.w245CanonicalNormalizationReady && !completedResultImportEligibilityOpenLinksReadyW289(facts.openLinkPreconditions)) reasons.push('open_link_preconditions_not_ready');
+    if (status === COMPLETED_RESULT_IMPORT_ELIGIBILITY_STATUSES_W289.FINISH_BUILD_ELIGIBLE) return [];
+    return reasons.length ? reasons : ['finish_build_blocked'];
+  }
+
+  function completedResultImportEligibilityShapeW289(input) {
+    const facts = completedResultImportEligibilityFactsW289(input);
+    const status = completedResultImportEligibilityStatusW289(facts);
+    const finishBuildEligible = status === COMPLETED_RESULT_IMPORT_ELIGIBILITY_STATUSES_W289.FINISH_BUILD_ELIGIBLE;
+    return {
+      schema: 'idb.w289.completed-result-import-eligibility-runtime-shape.v1',
+      status,
+      finishBuildEligible,
+      blockedReasons: completedResultImportEligibilityBlockedReasonsW289(facts, status),
+      requiredInputs: COMPLETED_RESULT_IMPORT_ELIGIBILITY_REQUIRED_INPUTS_W289.slice(),
+      facts,
+      openLinkPreconditionsReady: completedResultImportEligibilityOpenLinksReadyW289(facts.openLinkPreconditions),
+      wordingPreservation: {
+        w218SuccessWordingPreserved: facts.w218SuccessWordingPreserved,
+        w220RecoveryWordingPreserved: facts.w220RecoveryWordingPreserved
+      },
+      rawEvidencePolicy: facts.rawEvidencePolicy,
+      validationBoundary: {
+        w151ValidationConsumedNotReplaced: true,
+        w214SemanticGuardConsumedNotReplaced: true,
+        w245NormalizationConsumedNotReplaced: true,
+        moduleCannotDeclareImportValidWithoutSuppliedFacts: true
+      },
+      runtimeBoundary: {
+        noStateMutation: true,
+        noRecordImport: true,
+        noRecordCreation: true,
+        noTransactionWrites: true,
+        noOpenLinkCreation: true,
+        finishBuildMutationStaysDrawerOwned: true
+      }
+    };
+  }
+
+  function completedResultImportEligibilityFromDrawerGuardsW289(input) {
+    const source = input || {};
+    return completedResultImportEligibilityShapeW289({
+      completedResultJsonPresent: !!source.completedResultJson,
+      completedResultJson: source.completedResultJson,
+      w151: source.completedGuard,
+      w214: source.semanticGuard,
+      w245: source.normalizedImport,
+      generatedRecordOwner: firstNonBlank(source.generatedRecordOwner, source.owner),
+      governedRunnerOwnerValid: firstNonBlank(source.generatedRecordOwner, source.owner) === 'governed_runner_internal_build_engine',
+      finishBuildCtaEligible: source.finishBuildCtaEligible === true,
+      openLinkPreconditions: source.openLinkPreconditions || {},
+      w218SuccessWordingPreserved: source.w218SuccessWordingPreserved !== false,
+      w220RecoveryWordingPreserved: source.w220RecoveryWordingPreserved !== false,
+      rawEvidencePolicy: {
+        adminOnly: true,
+        archivedOnly: true,
+        hiddenFromNormalConsultantUi: true
+      }
+    });
+  }
+
   function approvedServerAdapterDryRunFixturePollCycleV1(transportBoundary, options) {
     const opts = options || {};
     const idempotencyToken = firstNonBlank(
@@ -11299,6 +11459,8 @@
       null;
     const completedGuard = validateDccFinalNamingImportPayload(completedResultJson, state, lane, pageContext, recommendation);
     const handoffGuard = validateDccFinalNamingImportPayload(opts.handoffJson || opts.handoffPacket || null, state, lane, pageContext, recommendation);
+    const semanticGuardW289 = completedRunnerResultSemanticGuardW214(completedGuard.finalNaming, state, lane, completedResultJson);
+    const normalizedImportW289 = canonicalImportResultNormalizationW245(completedResultJson, state, lane, pageContext, recommendation);
     const owner = firstNonBlank(completedResultJson && completedResultJson.generatedRecordOwner, completedResultJson && completedResultJson.recordOwner);
     const ctaReady = importCtaWiring.status === 'completed_poll_result_import_cta_ready' &&
       importCtaWiring.importCta &&
@@ -11334,6 +11496,25 @@
         pendingPollImportGate: ctaReady ? null : syntheticPollImportGate
       }
     );
+    const commitLinkAuthority = commitSurface.linkAuthority || {};
+    const importEligibilityW289 = completedResultImportEligibilityFromDrawerGuardsW289({
+      completedResultJson,
+      completedGuard,
+      semanticGuard: semanticGuardW289,
+      normalizedImport: normalizedImportW289,
+      generatedRecordOwner: owner,
+      finishBuildCtaEligible: ctaReady &&
+        commitPreviewReady &&
+        commitSurface.commitAllowed === true,
+      openLinkPreconditions: {
+        realUrlsOnly: commitLinkAuthority.noActiveOpenLinksWithoutRealUrls !== false,
+        numericInternalIds: Number(commitLinkAuthority.supportedOpenLinksAfterCommit || 0) > 0 &&
+          Number(commitLinkAuthority.supportedOpenLinksAfterCommit || 0) >= Number(commitLinkAuthority.openableAfterCommit || 0),
+        supportedNetSuiteUrls: Number(commitLinkAuthority.supportedOpenLinksAfterCommit || 0) > 0 &&
+          Number(commitLinkAuthority.supportedOpenLinksAfterCommit || 0) >= Number(commitLinkAuthority.openableAfterCommit || 0),
+        fakeLinksBlockedBeforeImport: Number(commitLinkAuthority.activeOpenLinksBeforeImport || 0) === 0
+      }
+    });
     const commitAllowed = operatorChoseImport &&
       ctaReady &&
       commitPreviewReady &&
@@ -11390,11 +11571,14 @@
         drawerCreatesRecords: false,
         drawerInvokesSuiteScriptOutsideApprovedAdapter: false
       },
+      importEligibilityW289,
       importGuards: {
         pendingAdapterErrorMalformedAndHandoffNonMutating: commitAllowed || !statePatch.dccFinalNamingResult,
         handoffJsonStatus: handoffGuard.status,
         completedResultStatus: completedGuard.status,
         completedResultAcceptedByW151: completedGuard.valid === true,
+        completedResultSemanticStatusW214: semanticGuardW289.status,
+        completedResultCanonicalNormalizationStatusW245: normalizedImportW289.status,
         activeOpenLinksBeforeImport: 0,
         openLinksAvailableOnlyAfterCommit: commitAllowed
       },
@@ -24511,6 +24695,8 @@
       connectedBuildIdempotencyTokenFromActualResponseW285,
       connectedBuildResponseShapeStatusW285,
       connectedBuildNormalUiCopyForStatusW285,
+      completedResultImportEligibilityShapeW289,
+      completedResultImportEligibilityFromDrawerGuardsW289,
       approvedServerAdapterDryRunFixturePollCycleV1,
       integratedBuildHarnessStateMachineV1,
       integratedBuildStateMachineUiStatusAndImportCtaV1,

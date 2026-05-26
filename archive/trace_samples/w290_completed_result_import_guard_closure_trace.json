@@ -1,0 +1,234 @@
+{
+  "schema": "forge.w290.completed-result-import-guard-closure.trace.v1",
+  "status": "closure_and_returned_record_readiness_ready",
+  "closureMap": {
+    "layers": [
+      {
+        "id": "w286_connected_build_import_guard_boundary_map",
+        "sourceDrawerHelperSurfaceProtected": [
+          "connectedBuildSubmitRefreshImportW264",
+          "validateDccFinalNamingImportPayload",
+          "completedRunnerResultSemanticGuardW214",
+          "canonicalImportResultNormalizationW245",
+          "completedRunnerResultImportCommitOperatorFlowV1",
+          "synthetic poll-control creation before Finish build"
+        ],
+        "governingContractOrBridge": "archive/reports/w286_connected_build_import_guard_boundary_map.md",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "submit execution",
+          "refresh/poll execution",
+          "W151 payload validation",
+          "W214 semantic guard",
+          "W245 normalization",
+          "Finish build operator action",
+          "imported returned records",
+          "W218/W220 wording"
+        ],
+        "parityHarnesses": [
+          "harness:connected-build-import-guard-boundary-map-w286",
+          "W264-W285 continuity harnesses"
+        ],
+        "rollbackBoundary": "Remove W286 archive-only map/report/trace. Runtime remains unchanged."
+      },
+      {
+        "id": "w287_completed_result_import_eligibility_contract",
+        "sourceDrawerHelperSurfaceProtected": [
+          "completed-result JSON presence facts",
+          "W151 supplied facts",
+          "W214 supplied facts",
+          "W245 supplied facts",
+          "governed runner owner facts",
+          "Finish build CTA eligibility facts",
+          "Open-link precondition facts"
+        ],
+        "governingContractOrBridge": "src/contracts/completedResultImportEligibility.js",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "W151 validation",
+          "W214 semantic guard",
+          "W245 normalization",
+          "Finish build mutation",
+          "record import",
+          "Open-link creation/blocking"
+        ],
+        "parityHarnesses": [
+          "harness:completed-result-import-eligibility-contract-w287",
+          "harness:connected-build-import-guard-boundary-map-w286"
+        ],
+        "rollbackBoundary": "Remove W287 contract/report/trace before runtime wiring."
+      },
+      {
+        "id": "w288_completed_result_import_eligibility_bridge",
+        "sourceDrawerHelperSurfaceProtected": [
+          "drawer-produced import eligibility facts",
+          "W287 contract-normalized output",
+          "admin-only raw evidence policy"
+        ],
+        "governingContractOrBridge": "src/contracts/completedResultImportEligibilityBridge.js",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "Finish build state mutation",
+          "W151 validation",
+          "W214 semantic guard",
+          "W245 normalization",
+          "record import",
+          "record creation/write authority"
+        ],
+        "parityHarnesses": [
+          "harness:completed-result-import-eligibility-bridge-w288",
+          "harness:completed-result-import-eligibility-contract-w287"
+        ],
+        "rollbackBoundary": "Remove W288 bridge/report/trace. Drawer runtime remains unchanged."
+      },
+      {
+        "id": "w289_drawer_local_eligibility_runtime_shape_migration",
+        "sourceDrawerHelperSurfaceProtected": [
+          "completedResultImportEligibilityShapeW289",
+          "completedResultImportEligibilityFromDrawerGuardsW289",
+          "completedRunnerResultImportCommitOperatorFlowV1 review evidence"
+        ],
+        "governingContractOrBridge": "W287/W288 contract-shaped parity with self-contained drawer helpers",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "Finish build mutation",
+          "submit execution",
+          "refresh/poll execution",
+          "W151 validation",
+          "W214 semantic guard",
+          "W245 normalization",
+          "record import",
+          "Open-link creation/blocking",
+          "consultant UI rendering"
+        ],
+        "parityHarnesses": [
+          "harness:completed-result-import-eligibility-runtime-migration-w289",
+          "harness:completed-result-import-eligibility-bridge-w288",
+          "harness:connected-build-submit-refresh-import-w264"
+        ],
+        "rollbackBoundary": "Revert W289 helper shape assembly and remove W289 artifacts. Keep W151/W214/W245 and Finish build mutation untouched."
+      }
+    ]
+  },
+  "returnedRecordImportReadinessInventory": {
+    "areas": [
+      {
+        "id": "w245_canonical_display_ready_normalization",
+        "sourceHelperAnchor": "canonicalImportResultNormalizationW245",
+        "currentOwner": "drawer-owned runtime helper"
+      },
+      {
+        "id": "display_ready_returned_record_collection",
+        "sourceHelperAnchor": "displayReadyRecordsFromFinalNamingW245",
+        "currentOwner": "drawer-owned runtime helper"
+      },
+      {
+        "id": "lane_aware_labels",
+        "sourceHelperAnchor": "lanePackAwareRecordLabelW250",
+        "currentOwner": "drawer-owned runtime helper governed by W246 lane packs"
+      },
+      {
+        "id": "supported_open_link_authority",
+        "sourceHelperAnchor": "verifiedRecordLinkAuthorityV1",
+        "currentOwner": "drawer-owned runtime helper"
+      },
+      {
+        "id": "w218_success_wording",
+        "sourceHelperAnchor": "W218 success wording surfaces",
+        "currentOwner": "drawer-owned consultant copy"
+      },
+      {
+        "id": "w220_recovery_wording",
+        "sourceHelperAnchor": "W220 recovery wording surfaces",
+        "currentOwner": "drawer-owned consultant copy"
+      },
+      {
+        "id": "review_run_story_surface_update_inputs",
+        "sourceHelperAnchor": "W245 records + W246 lane pack + W254/W255/W256/W257 story data",
+        "currentOwner": "drawer-owned runtime assembly with contract parity"
+      },
+      {
+        "id": "admin_only_raw_evidence",
+        "sourceHelperAnchor": "archive/admin debug evidence",
+        "currentOwner": "archive/admin-only"
+      }
+    ]
+  },
+  "selectedNextMicroSlice": {
+    "id": "returned_record_display_ready_import_contract_w291",
+    "proposedContractModule": "src/contracts/returnedRecordDisplayReadyImport.js",
+    "proposedBridgeModule": "src/contracts/returnedRecordDisplayReadyImportBridge.js",
+    "sourceHelperAnchors": [
+      "canonicalImportResultNormalizationW245",
+      "displayReadyRecordsFromFinalNamingW245",
+      "lanePackAwareRecordLabelW250",
+      "verifiedRecordLinkAuthorityV1",
+      "completedRunnerResultImportCommitOperatorFlowV1",
+      "connectedBuildSubmitRefreshImportW264",
+      "returned record names/labels/Open-link authority"
+    ],
+    "targetsReturnedRecordDisplayReadyShapeAndOpenLinkAuthority": true,
+    "movesFinishBuildStateMutation": false,
+    "movesVisibleUILayout": false,
+    "movesW151W214W245Validation": false,
+    "movesReturnedRecordImportStateMutation": false,
+    "behaviorSurfacesThatMustRemainIdentical": [
+      "returned record names",
+      "canonical roles",
+      "consultant labels",
+      "NetSuite record types",
+      "numeric internal ids",
+      "supported Open URLs",
+      "link authority",
+      "source confidence",
+      "Motion distribution Product SKU / availability labels",
+      "manufacturing assembly/component/WIP/formula/batch/ingredient labels",
+      "fake Open-link blocking before valid import",
+      "hidden non-openable/internal diagnostic records",
+      "W218 success wording",
+      "W220 recovery wording",
+      "Review/Run story surface inputs",
+      "hidden normal consultant diagnostics"
+    ],
+    "parityHarnesses": [
+      "future W291",
+      "future returned-record display-ready bridge harness",
+      "harness:canonical-import-result-normalization-w245",
+      "harness:lane-aware-record-label-semantics-w250",
+      "harness:connected-build-submit-refresh-import-w264",
+      "harness:completed-result-import-guard-closure-w290",
+      "npm run check",
+      "npm run validate"
+    ],
+    "manualReviewNotes": [
+      "Do not move completedRunnerResultImportCommitOperatorFlowV1.",
+      "Do not move W151/W214/W245 validation into the returned-record display-ready contract.",
+      "Do not create, mutate, write, import, or open records from the contract.",
+      "Do not render consultant UI from the contract.",
+      "Keep the drawer self-contained unless a future packaging step explicitly changes userscript bundling."
+    ],
+    "rollbackPlan": "Remove the W291 returned-record display-ready contract/report/trace/harness before runtime wiring. Keep W245/W250/W264/W286-W289 runtime behavior untouched."
+  },
+  "continuity": {
+    "w289RuntimeMigrationFieldCompatibleWithW288": true,
+    "w288BridgeAvailableAndUnchanged": true,
+    "w287ContractAvailableAndUnchanged": true,
+    "w286ImportGuardBoundaryMapAvailableAndUnchanged": true,
+    "finishBuildStateMutationDrawerOwned": true,
+    "actualSubmitExecutionDrawerOwned": true,
+    "actualRefreshPollExecutionDrawerOwned": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "fakeLinkBlockingChanged": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "nlLmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  }
+}

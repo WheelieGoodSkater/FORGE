@@ -1,0 +1,286 @@
+{
+  "schema": "forge.w297.story-update-input-bridge-closure-story-coaching-readiness.trace.v1",
+  "status": "closure_and_story_coaching_readiness_ready",
+  "closureMap": {
+    "layers": [
+      {
+        "id": "w294_returned_record_import_closure_story_update_readiness",
+        "sourceDrawerHelperSurfaceProtected": [
+          "canonicalImportResultNormalizationW245",
+          "returnedRecordDisplayReadyImportShapeW293",
+          "consultantStorySurfaceFromLanePackW247",
+          "storyEvidenceReceiptTrailW254",
+          "consultantStoryFirstGlanceW255",
+          "consultantLiveDemoScriptW256",
+          "guidedDemoStepSequenceW257",
+          "renderConsultantStorySurfaceW248"
+        ],
+        "governingContractOrBridge": "archive/reports/w294_returned_record_import_closure_story_update_readiness.md",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "W245 normalization",
+          "returned-record import mutation",
+          "Review/Run story assembly",
+          "Review/Run UI rendering",
+          "weak-evidence confirmation gate",
+          "connected submit/refresh/import"
+        ],
+        "parityHarnesses": [
+          "harness:returned-record-import-closure-story-update-readiness-w294",
+          "harness:consultant-story-surface-ui-w248",
+          "harness:story-coaching-bridge-w278"
+        ],
+        "rollbackBoundary": "Remove W294 archive-only closure/readiness artifacts. Runtime remains unchanged."
+      },
+      {
+        "id": "w295_story_surface_update_input_contract",
+        "sourceDrawerHelperSurfaceProtected": [
+          "W245/W293 returned record facts used by story surfaces",
+          "W246 resolved lane pack and confidence",
+          "W250 lane-aware label source",
+          "supported Open-link authority",
+          "W254 receipt input rows",
+          "W255 first-glance input fields",
+          "W256 live-demo script input fields",
+          "W257 guided sequence input fields",
+          "weak/conflicting evidence confirmation state",
+          "N/LLM advisory-only limits and uncertainty visibility"
+        ],
+        "governingContractOrBridge": "src/contracts/storySurfaceUpdateInputs.js",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "story surface assembly",
+          "Review/Run rendering",
+          "visible story copy",
+          "returned-record import mutation",
+          "W151/W214/W245 validation",
+          "Open-link creation/blocking"
+        ],
+        "parityHarnesses": [
+          "harness:story-surface-update-input-contract-w295",
+          "harness:returned-record-import-closure-story-update-readiness-w294"
+        ],
+        "rollbackBoundary": "Remove W295 contract/report/trace/harness before any runtime dependency."
+      },
+      {
+        "id": "w296_story_surface_update_input_bridge",
+        "sourceDrawerHelperSurfaceProtected": [
+          "drawer-produced story update-input facts",
+          "W295 contract-normalized output",
+          "ready/waiting/confirmation/missing-open/hidden-uncertainty cases"
+        ],
+        "governingContractOrBridge": "src/contracts/storySurfaceUpdateInputBridge.js",
+        "drawerOwnedBehaviorThatStayedInPlace": [
+          "W247/W254/W255/W256/W257 story object assembly",
+          "W248 Review/Run rendering",
+          "visible story copy",
+          "connected submit/refresh/import",
+          "returned-record import mutation",
+          "runtime authority"
+        ],
+        "parityHarnesses": [
+          "harness:story-surface-update-input-bridge-w296",
+          "harness:story-surface-update-input-contract-w295"
+        ],
+        "rollbackBoundary": "Remove W296 bridge/report/trace/harness. Drawer runtime remains unchanged."
+      }
+    ]
+  },
+  "storyCoachingRuntimeShapeReadinessInventory": {
+    "areas": [
+      {
+        "id": "w247_story_surface_fact_assembly",
+        "sourceHelperAnchor": "consultantStorySurfaceFromLanePackW247",
+        "inputs": [
+          "W245/W293 returned records",
+          "W246 lane pack",
+          "W250 lane-aware labels",
+          "Open-link authority",
+          "weak-evidence state",
+          "N/LLM advisory limits"
+        ],
+        "currentOwner": "drawer-owned story coaching assembly"
+      },
+      {
+        "id": "w254_evidence_receipt_shape",
+        "sourceHelperAnchor": "storyEvidenceReceiptTrailW254",
+        "inputs": [
+          "lane confidence",
+          "website evidence",
+          "Open target record",
+          "conversation notes",
+          "N/LLM limits",
+          "uncertainty gate"
+        ],
+        "currentOwner": "drawer-owned evidence receipt assembly"
+      },
+      {
+        "id": "w255_first_glance_shape",
+        "sourceHelperAnchor": "consultantStoryFirstGlanceW255",
+        "inputs": [
+          "open target",
+          "proof action",
+          "safe claim",
+          "stop guardrail",
+          "receipt summary",
+          "next action"
+        ],
+        "currentOwner": "drawer-owned first-glance assembly"
+      },
+      {
+        "id": "w256_live_demo_script_shape",
+        "sourceHelperAnchor": "consultantLiveDemoScriptW256",
+        "inputs": [
+          "opening line",
+          "what to open",
+          "what to prove",
+          "safe buyer-facing claim",
+          "value/so-what",
+          "stop guardrail",
+          "uncertainty line"
+        ],
+        "currentOwner": "drawer-owned script assembly"
+      },
+      {
+        "id": "w257_guided_sequence_shape",
+        "sourceHelperAnchor": "guidedDemoStepSequenceW257",
+        "inputs": [
+          "frame buyer problem",
+          "open returned record",
+          "prove value/so-what",
+          "stop condition",
+          "likely objection",
+          "safe response",
+          "uncertainty response"
+        ],
+        "currentOwner": "drawer-owned guided sequence assembly"
+      },
+      {
+        "id": "w248_review_run_rendering_surface",
+        "sourceHelperAnchor": "renderConsultantStorySurfaceW248",
+        "inputs": [
+          "W254 receipt",
+          "W255 first glance",
+          "W256 script",
+          "W257 sequence"
+        ],
+        "currentOwner": "drawer-owned UI rendering"
+      },
+      {
+        "id": "returned_records_open_link_authority_feeding_story_coaching",
+        "sourceHelperAnchor": "canonicalImportResultNormalizationW245 + returnedRecordDisplayReadyImportShapeW293",
+        "inputs": [
+          "returned record names",
+          "lane-aware labels",
+          "supported Open-link authority",
+          "source confidence"
+        ],
+        "currentOwner": "drawer-owned import/normalization facts"
+      },
+      {
+        "id": "weak_conflicting_evidence_confirmation_gate",
+        "sourceHelperAnchor": "consultantStorySurfaceFromLanePackW247",
+        "inputs": [
+          "lane resolution status",
+          "website evidence confidence",
+          "consultant confirmation requirement"
+        ],
+        "currentOwner": "drawer-owned story gate"
+      },
+      {
+        "id": "nllm_advisory_visibility",
+        "sourceHelperAnchor": "nllmAdvisoryPayloadForLanePackW246",
+        "inputs": [
+          "advisory-only status",
+          "write authority none",
+          "hard limits",
+          "uncertainty visible"
+        ],
+        "currentOwner": "drawer-owned advisory copy"
+      },
+      {
+        "id": "admin_only_raw_evidence_surfaces",
+        "sourceHelperAnchor": "archive/admin debug evidence",
+        "inputs": [
+          "trace/report evidence",
+          "raw response evidence",
+          "contract/bridge validation evidence"
+        ],
+        "currentOwner": "archive/admin-only"
+      }
+    ]
+  },
+  "selectedNextMicroSlice": {
+    "id": "story_coaching_runtime_shape_migration_w298",
+    "proposedContractModule": "src/contracts/storyCoachingSurfaces.js",
+    "proposedBridgeModule": "src/contracts/storyCoachingBridge.js",
+    "sourceHelperAnchors": [
+      "consultantStorySurfaceFromLanePackW247",
+      "storyEvidenceReceiptTrailW254",
+      "consultantStoryFirstGlanceW255",
+      "consultantLiveDemoScriptW256",
+      "guidedDemoStepSequenceW257"
+    ],
+    "targetsStoryCoachingFactAssembly": true,
+    "movesVisibleReviewRunLayoutOrCopy": false,
+    "movesRenderConsultantStorySurfaceW248": false,
+    "movesImportMutation": false,
+    "movesConnectedSubmitRefreshImport": false,
+    "movesOpenLinkCreation": false,
+    "behaviorSurfacesThatMustRemainIdentical": [
+      "W247 story surface object fields",
+      "W254 receipt rows and visibility rules",
+      "W255 first-glance fields",
+      "W256 live-demo script line keys",
+      "W257 guided sequence step ids and objection fields",
+      "W248 Review/Run rendered copy and layout",
+      "returned record names and lane-aware labels in story surfaces",
+      "supported Open-link authority",
+      "weak/conflicting evidence confirmation-first behavior",
+      "N/LLM advisory-only and uncertainty-visible copy"
+    ],
+    "parityHarnesses": [
+      "future W298 story coaching runtime shape migration harness",
+      "harness:story-coaching-bridge-w278",
+      "harness:story-coaching-contract-w273",
+      "harness:story-surface-update-input-bridge-w296",
+      "harness:consultant-story-surface-ui-w248",
+      "harness:evidence-receipt-trail-w254",
+      "harness:receipt-driven-lane-expansion-qa-w255",
+      "harness:consultant-live-demo-script-w256",
+      "harness:guided-demo-step-sequence-w257",
+      "npm run check",
+      "npm run validate"
+    ],
+    "manualReviewNotes": [
+      "Do not change visible Review/Run layout or copy in W298.",
+      "Do not move renderConsultantStorySurfaceW248 rendering.",
+      "Do not change returned-record import mutation or Open-link authority.",
+      "Do not let the migrated helpers create records, write transactions, create Open links, invoke the adapter, or declare import validity.",
+      "Keep N/LLM advisory-only and uncertainty visible."
+    ],
+    "rollbackPlan": "Remove W298 drawer-local story coaching shape migration and W298 artifacts. Keep W273/W278 contracts, W296/W295 bridge/contract, W245/W151/W214 validation, and W248 rendering untouched."
+  },
+  "continuity": {
+    "w296BridgeAvailableAndUnchanged": true,
+    "w295ContractAvailableAndUnchanged": true,
+    "w294ClosureReadinessMapAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true
+  },
+  "guardrails": {
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "nlLmAdvisoryOnly": true,
+    "uncertaintyVisible": true,
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true
+  },
+  "nextRecommendedBlock": "W298: Story Coaching Runtime Shape Migration Without Review/Run UI Change"
+}

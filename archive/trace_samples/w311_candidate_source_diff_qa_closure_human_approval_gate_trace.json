@@ -1,0 +1,193 @@
+{
+  "schema": "forge.w311.candidate-source-diff-qa-closure-human-approval-gate.trace.v1",
+  "status": "source_diff_qa_closure_human_gate_ready",
+  "sourceDiffQaClosureMap": {
+    "candidatePackId": "electrical-components-distributor",
+    "candidateLabel": "Electrical Components Distributor",
+    "basePackId": "industrial-distributor",
+    "sourceTarget": "src/contracts/lanePacks.js",
+    "layers": [
+      {
+        "id": "w310_review_only_source_diff_packet",
+        "source": "archive/reports/w310_review_only_candidate_lane_pack_source_diff_packet.md",
+        "status": "draft_diff_archived",
+        "protectedBoundary": "Exact future source patch is represented but not applied."
+      },
+      {
+        "id": "w310_diff_readiness_acceptance_packet",
+        "source": "archive/trace_samples/w310_review_only_candidate_lane_pack_source_diff_packet_trace.json",
+        "status": "draft_only",
+        "protectedBoundary": "Diff drafted yes, diff applied no, source pack mutated no, runtime wired no, installable no, source truth no."
+      },
+      {
+        "id": "w309_source_change_blockers",
+        "source": "archive/trace_samples/w309_candidate_industry_pack_proposal_qa_closure_source_change_readiness_trace.json",
+        "status": "blockers_open",
+        "protectedBoundary": "Real website/category evidence and explicit human source approval remain required."
+      },
+      {
+        "id": "w308_candidate_proposal_acceptance",
+        "source": "archive/trace_samples/w308_review_only_candidate_industry_pack_proposal_packet_trace.json",
+        "status": "review_only_non_installable",
+        "protectedBoundary": "Candidate remains non-installable, not source truth, and not runtime wired."
+      },
+      {
+        "id": "w304_w306_future_expansion_readiness",
+        "source": "W304/W305/W306 future expansion readiness layers",
+        "status": "field_compatible",
+        "protectedBoundary": "Readiness facts do not mutate source packs or install proposals."
+      },
+      {
+        "id": "w247_w251_w252_w255_review_expectations",
+        "source": "authoring/diff/admin-review/receipt-QA workflow",
+        "status": "required_before_source_change",
+        "protectedBoundary": "Review workflows stay admin/review-only until a human-reviewed code change."
+      }
+    ]
+  },
+  "humanApprovalGate": {
+    "schema": "forge.w311.human-approval-gate.v1",
+    "decision": "not_approved_yet",
+    "sourceMutationAllowed": false,
+    "allRequiredBeforeSourceMutation": true,
+    "items": [
+      {
+        "id": "real_website_category_evidence_confirmation",
+        "required": true,
+        "approved": false,
+        "reason": "W310 still uses review-only example evidence."
+      },
+      {
+        "id": "base_pack_comparison_approval",
+        "required": true,
+        "approved": true,
+        "reason": "Base comparison against industrial-distributor is represented."
+      },
+      {
+        "id": "record_role_approval",
+        "required": true,
+        "approved": true,
+        "reason": "Required, optional, and invalid roles are drafted in W310."
+      },
+      {
+        "id": "vocabulary_approval",
+        "required": true,
+        "approved": true,
+        "reason": "Allowed and forbidden vocabulary are drafted in W310."
+      },
+      {
+        "id": "story_roi_competitive_copy_approval",
+        "required": true,
+        "approved": true,
+        "reason": "Draft copy is outcome-safe and avoids measured or guaranteed ROI claims."
+      },
+      {
+        "id": "nllm_advisory_only_approval",
+        "required": true,
+        "approved": true,
+        "reason": "N/LLM limits inherit the source pack hard limits."
+      },
+      {
+        "id": "w247_authoring_review_approval",
+        "required": true,
+        "approved": true,
+        "reason": "W308/W310 facts remain review-ready."
+      },
+      {
+        "id": "w251_proposed_diff_approval",
+        "required": true,
+        "approved": true,
+        "reason": "W310 exact draft patch is represented for review."
+      },
+      {
+        "id": "w252_admin_safe_review_approval",
+        "required": true,
+        "approved": true,
+        "reason": "Admin review remains hidden from normal UI and has no install action."
+      },
+      {
+        "id": "w255_receipt_driven_qa_approval",
+        "required": true,
+        "approved": true,
+        "reason": "Receipt-driven QA expectations remain present."
+      },
+      {
+        "id": "w304_w306_readiness_approval",
+        "required": true,
+        "approved": true,
+        "reason": "Candidate facts remain field-compatible with W304-W306."
+      },
+      {
+        "id": "explicit_source_mutation_approval",
+        "required": true,
+        "approved": false,
+        "reason": "No explicit approval to mutate src/contracts/lanePacks.js has been provided."
+      },
+      {
+        "id": "post_install_smoke_approval",
+        "required": true,
+        "approved": true,
+        "reason": "Post-install smoke plan is represented if a future pack lands."
+      }
+    ]
+  },
+  "selectedNextBlock": {
+    "id": "conditional_human_approved_candidate_lane_pack_source_change_w312",
+    "title": "W312: Conditional Human-Approved Candidate Lane Pack Source Change",
+    "mayApplySourceMutationOnlyWithExplicitHumanApproval": true,
+    "mustStopIfApprovalMissingOrAmbiguous": true,
+    "defaultWithoutApproval": "do_not_mutate_source",
+    "targetSourceFile": "src/contracts/lanePacks.js",
+    "candidatePackId": "electrical-components-distributor",
+    "requiresRealWebsiteCategoryEvidence": true,
+    "requiresExplicitSourceMutationApproval": true,
+    "installsProposedPackWithoutCodeReview": false,
+    "autoInstallIntroduced": false,
+    "runtimeWiringIntroduced": false,
+    "changesVisibleUi": false,
+    "changesConnectedBuild": false,
+    "changesRuntimeAuthority": false
+  },
+  "continuity": {
+    "w310SourceDiffPacketAvailable": true,
+    "w310DiffReadinessDraftOnly": true,
+    "w309SourceChangeReadinessAvailable": true,
+    "w308ProposalPacketReviewOnly": true,
+    "w308AcceptancePacketNonInstallable": true,
+    "w307ClosureAuthoringPlanAvailable": true,
+    "w306RuntimeShapeFieldCompatibleWithW305": true,
+    "w305BridgeAvailable": true,
+    "w304ContractAvailable": true,
+    "w303ClosureReadinessMapAvailable": true,
+    "w302RuntimeShapeFieldCompatibleWithW301": true,
+    "w301BridgeAvailable": true,
+    "w300ContractAvailable": true,
+    "w274LanePackExpansionWorkflowAvailable": true,
+    "w277LanePackReviewBridgeAvailable": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "candidateWiredIntoRuntime": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W312: Conditional Human-Approved Candidate Lane Pack Source Change"
+}

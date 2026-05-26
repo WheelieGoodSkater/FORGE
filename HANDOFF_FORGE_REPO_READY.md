@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W310 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, the connected-build response-shape contract extraction point, the connected-build response-shape bridge, the drawer-local connected-build response-shape runtime migration, the connected-build import guard boundary map, the completed-result import eligibility contract extraction point, the completed-result import eligibility bridge, the drawer-local completed-result import eligibility runtime migration, the W286-W289 completed-result import guard closure/readiness map, the returned-record display-ready import contract extraction point, the returned-record display-ready import bridge, the drawer-local returned-record display-ready runtime shape migration, the W290-W293 returned-record import closure/story-update readiness map, the story surface update-input contract extraction point, the story surface update-input bridge, the W294-W296 story update-input closure/story coaching readiness map, the drawer-local W298 story coaching runtime shape migration, the W299 story coaching runtime closure/lane-resolution readiness map, the W300 lane-resolution readiness contract extraction point, the W301 lane-resolution readiness bridge, the drawer-local W302 lane-resolution readiness runtime shape migration, the W303 lane-resolution optimization closure/future industry expansion readiness map, the W304 future lane-pack expansion readiness contract extraction point, the W305 future lane-pack expansion readiness bridge, the drawer-local W306 future lane-pack expansion readiness runtime shape migration, the W307 future expansion closure/industry pack authoring plan, the W308 review-only candidate industry pack proposal packet, the W309 candidate QA closure/source-change readiness checklist, and the W310 review-only candidate source diff packet.
+  - W250-W311 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, the connected-build response-shape contract extraction point, the connected-build response-shape bridge, the drawer-local connected-build response-shape runtime migration, the connected-build import guard boundary map, the completed-result import eligibility contract extraction point, the completed-result import eligibility bridge, the drawer-local completed-result import eligibility runtime migration, the W286-W289 completed-result import guard closure/readiness map, the returned-record display-ready import contract extraction point, the returned-record display-ready import bridge, the drawer-local returned-record display-ready runtime shape migration, the W290-W293 returned-record import closure/story-update readiness map, the story surface update-input contract extraction point, the story surface update-input bridge, the W294-W296 story update-input closure/story coaching readiness map, the drawer-local W298 story coaching runtime shape migration, the W299 story coaching runtime closure/lane-resolution readiness map, the W300 lane-resolution readiness contract extraction point, the W301 lane-resolution readiness bridge, the drawer-local W302 lane-resolution readiness runtime shape migration, the W303 lane-resolution optimization closure/future industry expansion readiness map, the W304 future lane-pack expansion readiness contract extraction point, the W305 future lane-pack expansion readiness bridge, the drawer-local W306 future lane-pack expansion readiness runtime shape migration, the W307 future expansion closure/industry pack authoring plan, the W308 review-only candidate industry pack proposal packet, the W309 candidate QA closure/source-change readiness checklist, the W310 review-only candidate source diff packet, and the W311 human approval gate.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -88,6 +88,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - W308 adds an archived review-only Electrical Components Distributor proposal packet and acceptance packet, proving the candidate is non-installable, not source truth, and not wired into runtime.
   - W309 adds an archived QA closure map and source-change readiness checklist, selecting W310 as a review-only source diff packet without applying source mutation.
   - W310 adds an archived review-only source diff packet for the Electrical Components Distributor candidate, drafting the exact future `lanePacks.js` addition while proving the diff is not applied, installable, source truth, or runtime wired.
+  - W311 closes the W310 source diff QA loop with a default `not_approved_yet` human approval gate before any future `lanePacks.js` source mutation.
   - W293 adds drawer-local `returnedRecordDisplayReadyImportShapeW293` parity helpers in `idb-drawer.user.js` so returned-record display-ready fact assembly is contract-shaped while W245 normalization, Finish build mutation, connected submit/refresh/import, Open-link creation, and Review/Run rendering remain drawer-owned.
   - W294 adds an archived closure/readiness map that closes W290-W293 and selects W295 as a story surface update-input contract slice while leaving Review/Run UI and import mutation untouched.
   - `idb-drawer.user.js` now includes W289 drawer-local completed-result import eligibility shape helpers that mirror W287/W288 while keeping the drawer self-contained and leaving Finish build mutation owned by `completedRunnerResultImportCommitOperatorFlowV1`.
@@ -172,6 +173,7 @@ npm run harness:future-expansion-closure-industry-pack-authoring-plan-w307
 npm run harness:review-only-candidate-industry-pack-proposal-packet-w308
 npm run harness:candidate-industry-pack-proposal-qa-closure-source-change-readiness-w309
 npm run harness:review-only-candidate-lane-pack-source-diff-packet-w310
+npm run harness:candidate-source-diff-qa-closure-human-approval-gate-w311
 npm run check
 npm run validate
 ```
@@ -245,12 +247,31 @@ Current expected result:
 - W308 harness passes `14/14`.
 - W309 harness passes `13/13`.
 - W310 harness passes `16/16`.
+- W311 harness passes `15/15`.
 - `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, adapter profile contract, adapter readiness bridge, live evidence/signoff contract, live evidence/signoff bridge, story coaching contract, story coaching bridge, lane-pack expansion workflow contract, lane-pack review bridge, connected build response-shape contract, connected build response-shape bridge, completed result import eligibility contract, completed result import eligibility bridge, returned record display-ready import contract, returned record display-ready import bridge, story surface update-input contract, story surface update-input bridge, lane-resolution readiness contract, lane-resolution readiness bridge, future lane-pack expansion readiness contract, future lane-pack expansion readiness bridge, shared archived harness utilities, W244 harness, W245 harness, W246 harness, W247 harness, W248 harness, W249 harness, W250 harness, W251 harness, W252 harness, W253 harness, W254 harness, W255 harness, W256 harness, W257 harness, W258 harness, W259 harness, W260 harness, W261 harness, W262 harness, W263 harness, W264 harness, W265 harness, W266 harness, W267 harness, W268 harness, W269 harness, W270 harness, W271 harness, W272 harness, W273 harness, W274 harness, W275 harness, W276 harness, W277 harness, W278 harness, W279 harness, W280 harness, W281 harness, W282 harness, W283 harness, W284 harness, W285 harness, W286 harness, W287 harness, W288 harness, W289 harness, W290 harness, W291 harness, W292 harness, W293 harness, W294 harness, W295 harness, W296 harness, W297 harness, W298 harness, W299 harness, W300 harness, W301 harness, W302 harness, W303 harness, W304 harness, W305 harness, W306 harness, W307 harness, W308 harness, and W309 harness.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W311: Candidate Source Diff QA Closure And Human Approval Gate
+
+What changed:
+
+- Adds an archived W310 source diff QA closure map.
+- Adds a human approval gate packet with default decision `not_approved_yet`.
+- Keeps real website/category evidence and explicit source mutation approval required before any future `src/contracts/lanePacks.js` mutation.
+- Selects W312 as a conditional human-approved source-change block that must stop if approval is missing or ambiguous.
+- Preserves source packs, lane behavior, visible UI, connected build, returned-record import, W245/W151/W214 validation, weak-evidence confirmation, and runtime authority.
+
+Important W311 artifacts:
+
+- `archive/tools/run_w311_candidate_source_diff_qa_closure_human_approval_gate_harness.js`
+- `archive/reports/w311_candidate_source_diff_qa_closure_human_approval_gate.md`
+- `archive/trace_samples/w311_candidate_source_diff_qa_closure_human_approval_gate_trace.json`
+
+Previous completed block:
 
 - W310: Review-Only Candidate Lane Pack Source Diff Packet Without Applying Source Mutation
 
@@ -1313,59 +1334,51 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W311: Candidate Source Diff QA Closure And Human Approval Gate
+W312: Conditional Human-Approved Candidate Lane Pack Source Change
 
 Goal:
-Close the W310 review-only source diff packet, verify the exact proposed Electrical Components Distributor source patch is still draft-only, and create a human approval gate that states what must be confirmed before any future `src/contracts/lanePacks.js` mutation is allowed, without applying the mutation, installing the proposed pack, wiring runtime behavior, changing lane resolution behavior, visible UI, story copy, returned-record import, connected submit/refresh/import, endpoint behavior, dataset switching, or runtime authority.
+Conditionally apply the Electrical Components Distributor candidate pack to `src/contracts/lanePacks.js` only if the user explicitly provides human approval for the source mutation in the W312 request. If approval is missing, ambiguous, or not tied to this exact candidate/source diff, stop at the W311 approval gate and do not mutate source.
 
 Build:
-- Add an archived W310 source diff QA closure map covering:
-  - W310 review-only source diff packet
-  - W310 diff-readiness acceptance packet
-  - W309 source-change readiness blockers
-  - W308 review-only candidate proposal and acceptance packet
-  - W304-W306 future expansion readiness continuity
-  - W247/W251/W252/W255 review expectations
-- Add a human approval gate packet that records:
-  - real website/category evidence confirmation
-  - base-pack comparison approval
-  - role/vocabulary/story copy approval
-  - N/LLM advisory-only approval
-  - W247/W251/W252/W255 QA approval
-  - W304-W306 readiness approval
-  - source mutation approval status
-  - post-install smoke approval status
-- Keep the approval gate default decision as `not_approved_yet`.
-- Select the next narrow implementation block.
-- Prefer a conditional source-change execution prompt that may apply the candidate pack only after explicit human approval is provided in a future user request.
-- Do not mutate `src/contracts/lanePacks.js`.
+- First inspect W311 human approval gate.
+- If explicit approval is not present in the user request, add an archived W312 blocked/no-op packet and stop without source mutation.
+- If explicit approval is present, apply only the exact W310 proposed Electrical Components Distributor pack addition to `src/contracts/lanePacks.js`.
+- Do not modify existing source packs except inserting the approved new pack.
+- Keep N/LLM advisory-only limits inherited from the source `pack()` default.
+- Add a source-change evidence packet recording:
+  - approval text/source
+  - exact applied pack id
+  - source file changed
+  - diff summary
+  - W311 approval gate result
+  - post-change lane-pack validation
+  - post-install smoke expectations
+- Add harness coverage proving either the blocked no-op path or the approved source-change path.
 - Do not install proposed packs or add auto-install behavior.
-- Do not wire the candidate into drawer runtime.
-- Preserve W310 source diff packet, W309 QA closure/source-change readiness, W308 proposal packet, W307 closure/authoring plan, W306 runtime shape migration, W305 bridge, W304 contract, W303 closure/readiness map, W302 runtime shape migration, W301 bridge, W300 contract, W274 expansion workflow contract, and W277 lane-pack review bridge.
-- Preserve W218/W220 wording, fake Open-link blocking, W245 canonical import normalization, W250 lane-aware labels, W262-W310 continuity, N/LLM advisory-only behavior, and uncertainty visibility.
+- Do not add separate runtime wiring beyond the source pack contract.
+- Do not change normal consultant UI, visible Plan/Build/Review/Run copy, connected W264 submit/refresh/import, W265 retry safety, returned-record import, W245/W151 validation, W214 semantic guard, endpoint/profile behavior, dataset switching, or record creation authority.
+- Preserve W311 approval gate, W310 source diff packet, W309 QA closure/source-change readiness, W308 proposal packet, W304-W306 readiness, W274/W277 lane-pack review/expansion contracts, W218/W220 wording, fake Open-link blocking, W245 canonical import normalization, W250 lane-aware labels, N/LLM advisory-only behavior, and uncertainty visibility.
 - Keep harnesses, reports, and traces under `archive/`.
 
 Validation:
-- Add W311 harness covering:
-  - W310 source diff QA closure map exists
-  - human approval gate defaults to `not_approved_yet`
-  - real website/category evidence and explicit human source approval remain required before source mutation
-  - W310 source diff remains represented but unapplied
-  - W310 diff-readiness acceptance remains draft-only
-  - W308 proposal remains review-only and non-installable
-  - W306 runtime shape remains field-compatible with W305 for candidate facts
-  - W305 bridge and W304 contract remain available and unchanged
-  - W303/W307/W309/W310 closure maps remain available
-  - W274/W277 lane-pack expansion/review contracts remain available
+- Add W312 harness covering:
+  - W311 approval gate is inspected
+  - missing/ambiguous approval produces blocked no-op with no source mutation
+  - approved path, if executed, applies only the exact W310 candidate pack
+  - source pack schema remains valid
+  - known existing lane packs still resolve unchanged
+  - Electrical Components Distributor candidate remains N/LLM advisory-only and uncertainty-visible
+  - no install/auto-install behavior is introduced
+  - no drawer runtime wiring or transaction authority is introduced
   - W264/W265/W245/W151/W214 behavior remains unchanged
   - returned record names, lane-aware labels, supported Open links, and Review/Run visible copy remain unchanged
   - weak/conflicting evidence remains confirmation-first
   - normal consultant UI hides endpoint/profile/raw/admin diagnostics
-  - no runtime authority changes, drawer-created records, drawer transaction writes, source pack mutations, proposed-pack installs, or auto-install behavior are introduced
-- Run W244 through W311 harnesses, check, and validate.
+  - no runtime authority changes, drawer-created records, drawer transaction writes, proposed-pack installs, or auto-install behavior are introduced
+- Run W244 through W312 harnesses, check, and validate.
 
 Output:
-- Summary of source diff QA closure, human approval gate, guardrails, and validation.
+- Summary of approval-gated source-change decision, applied or blocked path, guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

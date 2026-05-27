@@ -1,0 +1,80 @@
+{
+  "schema": "forge.w316.approval-gated-candidate-lane-pack-source-mutation.trace.v1",
+  "status": "blocked_noop_approval_missing",
+  "pathTaken": "blocked_noop",
+  "candidatePackId": "electrical-components-distributor",
+  "targetSourceFile": "src/contracts/lanePacks.js",
+  "sourceMutationApplied": false,
+  "approvalGateInspection": {
+    "w315Source": "archive/trace_samples/w315_final_human_approval_capture_candidate_source_mutation_trace.json",
+    "w315Decision": "approval_not_provided",
+    "w315ReadyForSourceMutation": false,
+    "w314BlockedNoopAvailable": true,
+    "w313Decision": "approval_not_provided",
+    "w310DraftSourceDiffAvailable": true,
+    "explicitApprovalInW316Request": false,
+    "approvalMissingOrAmbiguous": true,
+    "result": "stop_without_source_mutation"
+  },
+  "blockedNoopPacket": {
+    "sourceMutationApplied": false,
+    "exactW310PatchApplied": false,
+    "candidatePackIdAdded": false,
+    "existingSourcePacksModified": false,
+    "candidatePackInstalled": false,
+    "autoInstallIntroduced": false,
+    "runtimeWiringBeyondSourceContractAdded": false,
+    "runtimeAuthorityChanged": false
+  },
+  "approvedPathFixture": {
+    "wouldRequireW313ApprovalPhraseOrEquivalentFields": true,
+    "wouldApplyOnlyExactW310Patch": true,
+    "wouldInsertPackId": "electrical-components-distributor",
+    "wouldTargetSourceFile": "src/contracts/lanePacks.js",
+    "wouldModifyExistingPacks": false,
+    "wouldInstallProposedPack": false,
+    "wouldAddAutoInstall": false,
+    "wouldAddRuntimeWiringBeyondSourceContract": false
+  },
+  "sourceMutationEvidence": {
+    "approvalTextSource": "W316 request did not include the explicit W313 approval phrase or equivalent required fields captured by W315.",
+    "appliedPackId": "",
+    "sourceFileChanged": false,
+    "diffSummary": "No source diff applied. W310 remains draft-only.",
+    "validationResult": "blocked_noop_path_validated",
+    "postInstallSmokeChecklist": "Not applicable until a future approved source mutation lands.",
+    "rollbackNote": "No rollback required because no source mutation was applied."
+  },
+  "continuity": {
+    "w315FinalApprovalCaptureAvailable": true,
+    "w315ApprovalDecision": "approval_not_provided",
+    "w314BlockedNoopAvailable": true,
+    "w313ApprovalIntakeAvailable": true,
+    "w310SourceDiffDraftOnly": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "candidateWiredIntoRuntime": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W317: Candidate Source Mutation Approval Or Closure Decision"
+}

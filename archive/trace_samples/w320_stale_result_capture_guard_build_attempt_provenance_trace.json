@@ -1,0 +1,59 @@
+{
+  "schema": "forge.w320.stale-result-capture-guard-build-attempt-provenance.trace.v1",
+  "status": "stale_result_guard_ready_for_upload",
+  "rootCause": {
+    "summary": "Latest smoke submitted a fresh runner task but W144 could still select an older idempotency-matching result-capture file.",
+    "currentRunnerTaskEvidence": "SCHEDSCRIPT_0168677b771a160306140300051177535e0f03051f11016c14430649_bd465d43a1e636e1b5c86cb0a1bfc154dcecbdb3",
+    "staleFilePattern": "idb_runner_sidecar_pending_*_1779886811837.json",
+    "staleVocabularyObserved": ["Machine Unit", "Formula", "Ingredient"],
+    "freshRequestOperatingMode": "distribution_replenishment"
+  },
+  "buildAttemptProvenance": {
+    "drawerAdds": ["buildAttemptId", "submittedAt", "sourceRequestId"],
+    "duplicateSubmitSafety": "same confirmed request with existing runnerTaskId reuses refresh path",
+    "newExplicitBuild": "new buildAttemptId distinguishes the next live smoke even when idempotency token is deterministic"
+  },
+  "adapterResultCaptureLookup": {
+    "priority": ["runnerTaskId", "buildAttemptId", "idempotencyToken"],
+    "rejects": "stale_result_capture_file_rejected",
+    "rejectReasonExamples": ["buildAttemptId_missing", "buildAttemptId_mismatch", "runnerTaskId_mismatch"],
+    "idempotencyOnlyFallback": "allowed only when capture provenance still matches current buildAttemptId/sourceRequestId"
+  },
+  "resultCaptureFields": [
+    "runnerTaskId",
+    "idempotencyToken",
+    "sourceRequestId",
+    "buildAttemptId",
+    "submittedAt",
+    "resolvedOperatingMode",
+    "runnerLaneVocabularyPolicy"
+  ],
+  "consultantSafeSemanticBlockCopy": [
+    "Records returned but blocked",
+    "Review needed",
+    "No Open links until fixed"
+  ],
+  "uploadFiles": [
+    "idb-drawer.user.js",
+    "netsuite/idb_governed_runner_adapter_w144_suitelet.js",
+    "netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js"
+  ],
+  "guardrails": {
+    "w151ValidationWeakened": false,
+    "w214SemanticGuardWeakened": false,
+    "w245CanonicalImportWeakened": false,
+    "drawerCreatesRecords": false,
+    "drawerTransactionWrites": false,
+    "recordCreationAuthorityChanged": false
+  },
+  "validationIntent": {
+    "staleResultFilesRejected": true,
+    "duplicateSubmitStillReusesSameTask": true,
+    "freshMatchingBuildAttemptCanImport": true,
+    "w318VocabularyHarnessStillRequired": true,
+    "w264W265W319ContinuityRequired": true
+  },
+  "decision": "ready_for_controlled_distribution_smoke_after_upload",
+  "nextRecommendedBlock": "W321: Storytelling Polish And Industry Expansion Smoke Feedback Intake"
+}
+

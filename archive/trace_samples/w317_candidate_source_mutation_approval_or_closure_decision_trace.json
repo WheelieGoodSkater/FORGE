@@ -1,0 +1,70 @@
+{
+  "schema": "forge.w317.candidate-source-mutation-approval-or-closure-decision.trace.v1",
+  "status": "blocked_pending_explicit_human_approval",
+  "candidatePackId": "electrical-components-distributor",
+  "targetSourceFile": "src/contracts/lanePacks.js",
+  "sourceMutationApplied": false,
+  "closurePacket": {
+    "decision": "blocked_pending_explicit_human_approval",
+    "approvalReadyForSourceMutation": false,
+    "exactW310PatchApplied": false,
+    "sourcePackMutated": false,
+    "sourceTruth": false,
+    "runtimeWired": false,
+    "installable": false,
+    "autoInstallIntroduced": false,
+    "requiredFutureApproval": "W313 approval phrase or equivalent W315 required fields"
+  },
+  "inspection": {
+    "w316Status": "blocked_noop_approval_missing",
+    "w315Decision": "approval_not_provided",
+    "w314Status": "blocked_noop_explicit_approval_missing",
+    "w313Decision": "approval_not_provided",
+    "w310DraftSourceDiffAvailable": true,
+    "approvalInW317Request": false,
+    "approvalMissingOrAmbiguous": true,
+    "result": "candidate_closed_pending_explicit_approval"
+  },
+  "approvalReadyDecisionShape": {
+    "decision": "approval_ready_for_source_mutation",
+    "requiresExactApproval": true,
+    "futureMutationMayApplyOnlyExactW310Diff": true,
+    "doesNotAuthorizeInstallOrAutoInstall": true,
+    "doesNotAuthorizeRuntimeWiringBeyondSourceContract": true,
+    "doesNotAuthorizeAdapterChange": true,
+    "doesNotAuthorizeDrawerCreatedRecords": true,
+    "doesNotAuthorizeDrawerTransactionWrites": true
+  },
+  "continuity": {
+    "w316BlockedNoopAvailable": true,
+    "w315FinalApprovalCaptureAvailable": true,
+    "w314BlockedNoopAvailable": true,
+    "w313ApprovalIntakeAvailable": true,
+    "w310SourceDiffDraftOnly": true,
+    "w264SubmitRefreshImportChanged": false,
+    "w265RetrySafetyChanged": false,
+    "w245CanonicalImportChanged": false,
+    "w151ValidationChanged": false,
+    "w214SemanticGuardChanged": false,
+    "returnedRecordNamesLabelsOpenLinksChanged": false,
+    "reviewRunVisibleCopyChanged": false,
+    "weakConflictingEvidenceConfirmationFirst": true,
+    "sourceLanePacksChanged": false,
+    "proposedPacksInstalled": false
+  },
+  "guardrails": {
+    "normalConsultantUiHidesEndpointProfileRawAdminDiagnostics": true,
+    "runtimeBehaviorChanged": false,
+    "connectedBuildFlowChanged": false,
+    "recordCreationAuthorityChanged": false,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false,
+    "candidateWiredIntoRuntime": false,
+    "noDrawerCreatedRecords": true,
+    "noDrawerTransactionWrites": true,
+    "noW144DeploymentUpdate": true,
+    "nllmAdvisoryOnly": true,
+    "uncertaintyVisible": true
+  },
+  "nextRecommendedBlock": "W318: Post-Approval-Gate Roadmap And Next Product Optimization Slice"
+}

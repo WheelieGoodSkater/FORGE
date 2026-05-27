@@ -22,7 +22,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - Tampermonkey drawer script to install/update.
   - Current drawer includes FORGE branding, completed-result import, real Open-link guardrails, W214-W244 operating-mode / record-role contract work, and W244 legacy slot mapping helpers.
   - W245/W246/W247/W248/W249 add canonical display-ready import records, versioned lane-pack live-demo coaching, compact consultant story surfaces, Review/Run story UI wiring, lane-pack expansion QA, and the repo-local launcher icon update.
-  - W250-W316 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, the connected-build response-shape contract extraction point, the connected-build response-shape bridge, the drawer-local connected-build response-shape runtime migration, the connected-build import guard boundary map, the completed-result import eligibility contract extraction point, the completed-result import eligibility bridge, the drawer-local completed-result import eligibility runtime migration, the W286-W289 completed-result import guard closure/readiness map, the returned-record display-ready import contract extraction point, the returned-record display-ready import bridge, the drawer-local returned-record display-ready runtime shape migration, the W290-W293 returned-record import closure/story-update readiness map, the story surface update-input contract extraction point, the story surface update-input bridge, the W294-W296 story update-input closure/story coaching readiness map, the drawer-local W298 story coaching runtime shape migration, the W299 story coaching runtime closure/lane-resolution readiness map, the W300 lane-resolution readiness contract extraction point, the W301 lane-resolution readiness bridge, the drawer-local W302 lane-resolution readiness runtime shape migration, the W303 lane-resolution optimization closure/future industry expansion readiness map, the W304 future lane-pack expansion readiness contract extraction point, the W305 future lane-pack expansion readiness bridge, the drawer-local W306 future lane-pack expansion readiness runtime shape migration, the W307 future expansion closure/industry pack authoring plan, the W308 review-only candidate industry pack proposal packet, the W309 candidate QA closure/source-change readiness checklist, the W310 review-only candidate source diff packet, the W311 human approval gate, the W312 blocked no-op source-change decision, the W313 explicit approval intake packet, the W314 blocked no-op source-mutation decision, the W315 final approval capture packet, and the W316 approval-gated blocked no-op decision.
+  - W250-W317 harden lane-aware labels, review-only lane-pack proposal intake, visual acceptance packets, evidence receipts, receipt-driven QA, live-demo script coaching, guided objection-safe demo sequencing, compact story density, SCOUT-style header polish, a safe feedback placeholder contract, an install-ready release packet, post-install evidence/signoff flow, V1.0.0 real-build path clarity, the saved released W144 adapter profile for connected build readiness, the connected submit/refresh/import flow, live adapter response-shape/retry safety, controlled live-run evidence/import QA, screenshot/Open-link keep/rollback signoff, V1.0.0 release keep packet, code-review prep inventory, code-review findings, extraction planning, optimization guardrails, shared archived harness fixture utilities, the adapter profile/readiness contract extraction point, the live evidence/signoff packet contract extraction point, the story coaching contract extraction point, the lane-pack expansion workflow contract extraction point, the extraction closure/runtime helper dependency inventory, the review-only live evidence/signoff bridge, the admin-only lane-pack review bridge, the story coaching surface bridge, the adapter readiness bridge, the W276-W279 bridge closure/runtime extraction readiness packet, the adapter profile/readiness contract-shaped drawer migration, the connected-build boundary inventory/next response-shape extraction readiness packet, the connected-build response-shape contract extraction point, the connected-build response-shape bridge, the drawer-local connected-build response-shape runtime migration, the connected-build import guard boundary map, the completed-result import eligibility contract extraction point, the completed-result import eligibility bridge, the drawer-local completed-result import eligibility runtime migration, the W286-W289 completed-result import guard closure/readiness map, the returned-record display-ready import contract extraction point, the returned-record display-ready import bridge, the drawer-local returned-record display-ready runtime shape migration, the W290-W293 returned-record import closure/story-update readiness map, the story surface update-input contract extraction point, the story surface update-input bridge, the W294-W296 story update-input closure/story coaching readiness map, the drawer-local W298 story coaching runtime shape migration, the W299 story coaching runtime closure/lane-resolution readiness map, the W300 lane-resolution readiness contract extraction point, the W301 lane-resolution readiness bridge, the drawer-local W302 lane-resolution readiness runtime shape migration, the W303 lane-resolution optimization closure/future industry expansion readiness map, the W304 future lane-pack expansion readiness contract extraction point, the W305 future lane-pack expansion readiness bridge, the drawer-local W306 future lane-pack expansion readiness runtime shape migration, the W307 future expansion closure/industry pack authoring plan, the W308 review-only candidate industry pack proposal packet, the W309 candidate QA closure/source-change readiness checklist, the W310 review-only candidate source diff packet, the W311 human approval gate, the W312 blocked no-op source-change decision, the W313 explicit approval intake packet, the W314 blocked no-op source-mutation decision, the W315 final approval capture packet, the W316 approval-gated blocked no-op decision, and the W317 blocked-pending-human-approval closure decision.
 
 - `assets/FORGE.png`
   - Original FORGE logo asset.
@@ -94,6 +94,7 @@ The repo is intentionally not just a one-file Tampermonkey package. It includes 
   - W314 inspects W313, finds no explicit approval phrase or equivalent required approval fields in the request, and records a blocked no-op source-mutation decision with no `lanePacks.js` change.
   - W315 records a final approval capture packet, keeps the decision as `approval_not_provided`, and preserves the exact W310 diff as draft-only with no source mutation.
   - W316 inspects W315/W314/W313/W310, finds approval still missing, and records an approval-gated blocked no-op decision with no source mutation.
+  - W317 closes the repeated source-mutation attempts by recording `blocked_pending_explicit_human_approval` until the exact W313 approval phrase or W315 equivalent fields are supplied.
   - W293 adds drawer-local `returnedRecordDisplayReadyImportShapeW293` parity helpers in `idb-drawer.user.js` so returned-record display-ready fact assembly is contract-shaped while W245 normalization, Finish build mutation, connected submit/refresh/import, Open-link creation, and Review/Run rendering remain drawer-owned.
   - W294 adds an archived closure/readiness map that closes W290-W293 and selects W295 as a story surface update-input contract slice while leaving Review/Run UI and import mutation untouched.
   - `idb-drawer.user.js` now includes W289 drawer-local completed-result import eligibility shape helpers that mirror W287/W288 while keeping the drawer self-contained and leaving Finish build mutation owned by `completedRunnerResultImportCommitOperatorFlowV1`.
@@ -184,6 +185,7 @@ npm run harness:explicit-approval-intake-candidate-source-change-reattempt-w313
 npm run harness:human-approved-candidate-lane-pack-source-mutation-w314
 npm run harness:final-human-approval-capture-candidate-source-mutation-w315
 npm run harness:approval-gated-candidate-lane-pack-source-mutation-w316
+npm run harness:candidate-source-mutation-approval-or-closure-decision-w317
 npm run check
 npm run validate
 ```
@@ -263,12 +265,31 @@ Current expected result:
 - W314 harness passes `13/13`.
 - W315 harness passes `14/14`.
 - W316 harness passes `13/13`.
-- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, shared archived harness utilities, and W244-W316 harnesses.
+- W317 harness passes `14/14`.
+- `check` passes syntax checks for drawer, W144 adapter, runner, contract modules, shared archived harness utilities, and W244-W317 harnesses.
 - `validate` currently aliases `check`.
 
 ## Latest Completed Work
 
 Latest completed block:
+
+- W317: Candidate Source Mutation Approval Or Closure Decision
+
+What changed:
+
+- Inspects W316 blocked/no-op evidence, W315 final approval capture, W314 blocked/no-op evidence, W313 approval intake, and the W310 draft source diff.
+- Records the closure decision as `blocked_pending_explicit_human_approval` because the request still does not include the exact W313 approval phrase or equivalent W315 required fields.
+- Keeps the W310 Electrical Components Distributor source diff archived and draft-only.
+- Preserves no `src/contracts/lanePacks.js` mutation, no install, no auto-install, no runtime wiring, and no runtime authority change.
+- Selects W318 as a post-approval-gate roadmap block so we stop looping on source mutation until approval is supplied.
+
+Important W317 artifacts:
+
+- `archive/tools/run_w317_candidate_source_mutation_approval_or_closure_decision_harness.js`
+- `archive/reports/w317_candidate_source_mutation_approval_or_closure_decision.md`
+- `archive/trace_samples/w317_candidate_source_mutation_approval_or_closure_decision_trace.json`
+
+Previous completed block:
 
 - W316: Approval-Gated Candidate Lane Pack Source Mutation
 
@@ -1440,27 +1461,38 @@ Preserve these unless a future prompt explicitly changes them:
 ## Recommended Next Block
 
 ```text
-W317: Candidate Source Mutation Approval Or Closure Decision
+W318: Post-Approval-Gate Roadmap And Next Product Optimization Slice
 
 Goal:
-Decide whether the Electrical Components Distributor candidate remains blocked pending explicit approval or is ready for an approval-backed source mutation block. This block should close the repeated no-op approval attempts unless the user provides the exact W313 approval phrase or equivalent W315 required fields.
+Consolidate the W310-W317 Electrical Components Distributor approval-gate outcome, keep the candidate blocked until explicit human approval is supplied, and choose the next productive FORGE optimization or release-readiness slice outside source-pack mutation.
 
 Build:
-- Inspect W316 blocked/no-op evidence, W315 final approval capture, W314 blocked/no-op evidence, W313 approval intake, and W310 draft source diff.
-- If approval is missing or ambiguous, add an archived candidate-closure packet with decision `blocked_pending_explicit_human_approval`.
-- If approval is explicit, record `approval_ready_for_source_mutation` and select a future source-mutation block.
-- Do not mutate `src/contracts/lanePacks.js` in this block.
+- Inspect W317 closure, W316 blocked/no-op, W315 final approval capture, and W310 draft source diff.
+- Add an archived post-approval-gate roadmap packet.
+- Summarize the candidate status:
+  - candidate pack remains review-only
+  - W310 diff remains draft-only
+  - source pack mutation remains blocked
+  - exact W313 approval phrase or W315 equivalent fields remain required
+- Select the next narrow productive block outside source mutation.
+- Prefer one of:
+  - release readiness cleanup after W262-W317
+  - harness/report index cleanup
+  - installed-drawer evidence intake update
+  - connected build QA review
+  - future industry pack evidence collection without source mutation
+- Do not mutate `src/contracts/lanePacks.js`.
 - Do not install proposed packs or add auto-install behavior.
 - Do not wire the candidate into drawer runtime.
-- Preserve W262-W316 continuity and all runtime authority boundaries.
+- Preserve W262-W317 continuity and all runtime authority boundaries.
 - Keep harnesses, reports, and traces under `archive/`.
 
 Validation:
-- Add W317 harness covering W316/W315/W314/W313/W310 continuity, blocked-pending-approval closure, optional approval-ready decision shape, unchanged source pack schema, W264/W265/W245/W151/W214 continuity, unchanged UI/story copy, weak-evidence confirmation, hidden diagnostics, and no runtime authority/source-pack mutation/auto-install changes.
-- Run W244 through W317 harnesses, check, and validate.
+- Add W318 harness covering the W310-W317 approval-gate summary, selected next productive block, unchanged source pack schema, W264/W265/W245/W151/W214 continuity, unchanged UI/story copy, weak-evidence confirmation, hidden diagnostics, and no runtime authority/source-pack mutation/auto-install changes.
+- Run W244 through W318 harnesses, check, and validate.
 
 Output:
-- Summary of candidate approval/closure decision, guardrails, and validation.
+- Summary of approval-gate roadmap, selected next product slice, guardrails, and validation.
 - Validation results.
 - Visual testing decision.
 - GitHub Desktop commit title and description.

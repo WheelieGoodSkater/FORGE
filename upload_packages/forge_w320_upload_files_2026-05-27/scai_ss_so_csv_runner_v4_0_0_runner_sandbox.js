@@ -1161,7 +1161,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     // sidecar and must not create the demo transaction directly.
     let soFileId = null;
     let soTaskId = null;
-    const soCsv = buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey: ids.heroItemCsvKey || ids.heroItemExternalId || ANCHORS.heroItem });
+    const soCsv = buildSoCsv({ extId, prospect, website, notes, agenda, locationId, itemKey: ids.heroItemCsvKey || ids.heroItemExternalId || ANCHORS.heroItem });
     soFileId = saveCsvToFileCabinet({ folderId: soFolderId, filename: `scai_so_${extId}.csv`, contents: soCsv });
     soTaskId = submitCsvImport({ mappingId: soMappingId, fileId: soFileId });
 
@@ -4699,9 +4699,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // SO CSV + import
   // ----------------------------
-  function buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey }) {
-    const memoBase = `SCAI Demo Reset: ${prospect}${website ? ` (${extractDomain(website)})` : ''}`;
-    const memo = agenda ? memoBase + ' - ' + summarizeOneLine(agenda) : memoBase;
+  function buildSoCsv({ extId, prospect, website, notes, agenda, locationId, itemKey }) {
+    const memo = recordSafeDemoContextMemo({ prospect, website, notes, agenda });
 
     const today = new Date();
     const d1 = fmtDate(today);
@@ -5340,8 +5339,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       finalGeneratedNamesJson: null
     };
 
-    const attemptFileToken = buildAttemptId ? safeFileToken(buildAttemptId) : safeFileToken(extId);
-    const filename = `idb_runner_sidecar_pending_${attemptFileToken}_${safeFileToken(extId)}_${new Date().getTime()}.json`;
+    const filename = resultCaptureFileNameW320({ buildAttemptId, extId });
     const saved = saveTextArtifact({
       folderId,
       name: filename,
@@ -6026,6 +6024,39 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function trimLen(s, n) { const t = String(s || '').trim(); return t.length <= n ? t : t.slice(0, n).trim(); }
   function summarizeOneLine(text) { const t = String(text || '').replace(/\s+/g, ' ').trim(); return t.length <= 160 ? t : t.slice(0, 157) + '...'; }
+  function recordFieldSafeText(text, maxLen) {
+    const limit = Number(maxLen || 190);
+    const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+    if (normalized.length <= limit) return normalized;
+    return normalized.slice(0, Math.max(0, limit - 3)).replace(/[ ,;:.-]+$/g, '').trim() + '...';
+  }
+  function firstSentenceFragment(text, fallback, maxLen) {
+    const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+    const sentence = (normalized.match(/^[^.!?]+[.!?]?/) || [normalized])[0] || fallback || '';
+    return recordFieldSafeText(sentence, maxLen || 52);
+  }
+  function recordSafeDemoContextMemo({ prospect, website, notes, agenda }) {
+    const combined = `${notes || ''} ${agenda || ''}`;
+    const domain = extractDomain(website);
+    const buyer = /regional sales|branch operations|vp sales|buyer|operations/i.test(combined)
+      ? 'sales/branch ops'
+      : firstSentenceFragment(combined, 'first call', 40);
+    let pain = 'availability trust';
+    if (/supplier|replenishment|lead[- ]?time/i.test(combined)) pain = 'branch/supplier availability';
+    else if (/quote|order|promise/i.test(combined)) pain = 'quote/order confidence';
+    let proof = 'Inventory/Fulfillment';
+    if (/branch/i.test(combined)) proof = 'branch availability';
+    let value = 'faster promise decisions';
+    if (/margin/i.test(combined)) value = 'faster decisions and margin protection';
+    const prefix = `IDB Demo: ${recordFieldSafeText(prospect || 'Prospect', 42)}${domain ? ` (${domain})` : ''}`;
+    return recordFieldSafeText(`${prefix} | Buyer: ${buyer}; Pain: ${pain}; Proof: ${proof}; Value: ${value}.`, 190);
+  }
+  function resultCaptureFileNameW320({ buildAttemptId, extId }) {
+    const attemptToken = safeFileToken(buildAttemptId || extId).slice(0, 56);
+    const extToken = safeFileToken(extId || buildAttemptId).slice(0, 48);
+    const stamp = String(new Date().getTime());
+    return trimLen(`idb_runner_sidecar_${attemptToken}_${extToken}_${stamp}.json`, 180);
+  }
 
   function csvQuote(s) {
     const t = String(s || '');

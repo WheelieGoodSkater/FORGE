@@ -149,12 +149,21 @@ function main() {
     'drawer should stamp explicit build attempts');
 
   assertCase(results, 'w144-lookup-prefers-runner-task-then-attempt-before-idempotency',
-    /searchTokens\.push\(\{ source: 'runnerTaskId'/.test(adapter) &&
-      /searchTokens\.push\(\{ source: 'buildAttemptId'/.test(adapter) &&
-      /searchTokens\.push\(\{ source: 'idempotencyToken'/.test(adapter) &&
-      adapter.indexOf("source: 'runnerTaskId'") < adapter.indexOf("source: 'buildAttemptId'") &&
-      adapter.indexOf("source: 'buildAttemptId'") < adapter.indexOf("source: 'idempotencyToken'"),
+      /pushUniqueSearchToken\(searchTokens, seen, 'runnerTaskId'/.test(adapter) &&
+      /pushUniqueSearchToken\(searchTokens, seen, 'buildAttemptId'/.test(adapter) &&
+      /pushUniqueSearchToken\(searchTokens, seen, 'idempotencyToken'/.test(adapter) &&
+      adapter.indexOf("pushUniqueSearchToken(searchTokens, seen, 'runnerTaskId'") < adapter.indexOf("pushUniqueSearchToken(searchTokens, seen, 'buildAttemptId'") &&
+      adapter.indexOf("pushUniqueSearchToken(searchTokens, seen, 'buildAttemptId'") < adapter.indexOf("pushUniqueSearchToken(searchTokens, seen, 'idempotencyToken'"),
     'adapter lookup priority should prefer current task/current attempt before idempotency fallback');
+
+  assertCase(results, 'w144-lookup-searches-field-safe-sidecar-filename-tokens',
+    /function resultCaptureFileSearchTokensW320/.test(adapter) &&
+      /safeBuildAttemptIdFileTokenW320/.test(adapter) &&
+      /safeIdempotencyFileTokenW320/.test(adapter) &&
+      /safeAttempt\.slice\(0, 56\)/.test(adapter) &&
+      /safeToken\.slice\(0, 48\)/.test(adapter) &&
+      /resultCaptureFileSearchTokensW320\(expected\)/.test(adapter),
+    'adapter should search the same truncated safe tokens used by runner sidecar filenames');
 
   assertCase(results, 'w144-rejects-stale-idempotency-only-result-captures',
     /stale_result_capture_file_rejected/.test(adapter) &&
@@ -171,7 +180,7 @@ function main() {
       /submittedAt/.test(runner) &&
       /resolvedOperatingMode/.test(runner) &&
       /runnerLaneVocabularyPolicy/.test(runner) &&
-      runner.indexOf('idb_runner_sidecar_pending_${attemptFileToken}_${safeFileToken(extId)}_') >= 0,
+      /function resultCaptureFileNameW320/.test(runner),
     'runner sidecar should include provenance plus vocabulary policy');
 
   assertCase(results, 'runner-sales-order-memo-uses-record-safe-consolidated-context',
@@ -184,6 +193,14 @@ function main() {
       /recordSafeDemoContextMemo\(\{ prospect, website, notes, agenda \}\)/.test(runner) &&
       !/memoBase \+ ' - ' \+ summarizeOneLine\(agenda\)/.test(runner),
     'SO memo should be a field-safe buyer/pain/proof/value summary, not raw notes');
+
+  assertCase(results, 'runner-result-capture-filename-is-field-safe',
+    /function resultCaptureFileNameW320/.test(runner) &&
+      /slice\(0, 56\)/.test(runner) &&
+      /slice\(0, 48\)/.test(runner) &&
+      /trimLen\(`idb_runner_sidecar_/.test(runner) &&
+      /, 180\)/.test(runner),
+    'result capture file name should stay under NetSuite field length limits');
 
   assertCase(results, 'duplicate-submit-safety-still-reuses-existing-task-scope',
     /duplicateSubmitScope: 'same_confirmed_request_reuses_existing_runner_task'/.test(userscript) &&

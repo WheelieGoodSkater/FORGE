@@ -424,6 +424,35 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     return String(value || '').replace(/[^A-Za-z0-9_\-]/g, '_').slice(0, 80) || 'missing_token';
   }
 
+  function pushUniqueSearchToken(tokens, seen, source, token) {
+    const normalized = String(token || '').trim();
+    if (!normalized || seen[normalized]) return;
+    seen[normalized] = true;
+    tokens.push({ source, token: normalized });
+  }
+
+  function resultCaptureFileSearchTokensW320(expected) {
+    const searchTokens = [];
+    const seen = {};
+    const runnerTaskId = expected && expected.runnerTaskId;
+    const buildAttemptId = expected && expected.buildAttemptId;
+    const idempotencyToken = expected && expected.idempotencyToken;
+    if (runnerTaskId) pushUniqueSearchToken(searchTokens, seen, 'runnerTaskId', runnerTaskId);
+    if (buildAttemptId) {
+      pushUniqueSearchToken(searchTokens, seen, 'buildAttemptId', buildAttemptId);
+      const safeAttempt = safeFileToken(buildAttemptId);
+      pushUniqueSearchToken(searchTokens, seen, 'safeBuildAttemptId', safeAttempt);
+      pushUniqueSearchToken(searchTokens, seen, 'safeBuildAttemptIdFileTokenW320', safeAttempt.slice(0, 56));
+    }
+    if (idempotencyToken) {
+      pushUniqueSearchToken(searchTokens, seen, 'idempotencyToken', idempotencyToken);
+      const safeToken = safeFileToken(idempotencyToken);
+      pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyToken', safeToken);
+      pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW320', safeToken.slice(0, 48));
+    }
+    return searchTokens;
+  }
+
   function resultCaptureLookupProvenance(lookup) {
     const confirmed = lookup && lookup.confirmedRequest || {};
     const provenance = confirmed.buildAttemptProvenance || {};
@@ -774,14 +803,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const searchModule = modules && modules.search;
     const fileModule = modules && modules.file;
     if (!searchModule || !fileModule) return { found: false, reason: 'file/search modules unavailable' };
-    const searchTokens = [];
-    if (runnerTaskId) searchTokens.push({ source: 'runnerTaskId', token: runnerTaskId });
-    if (buildAttemptId) searchTokens.push({ source: 'buildAttemptId', token: buildAttemptId });
-    if (idempotencyToken) {
-      searchTokens.push({ source: 'idempotencyToken', token: idempotencyToken });
-      const safeToken = safeFileToken(idempotencyToken);
-      if (safeToken !== idempotencyToken) searchTokens.push({ source: 'safeIdempotencyToken', token: safeToken });
-    }
+    const searchTokens = resultCaptureFileSearchTokensW320(expected);
     const staleCandidates = [];
     const checkedFileIds = {};
     for (let tokenIndex = 0; tokenIndex < searchTokens.length; tokenIndex += 1) {

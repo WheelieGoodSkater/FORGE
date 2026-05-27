@@ -5339,8 +5339,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       finalGeneratedNamesJson: null
     };
 
-    const attemptFileToken = buildAttemptId ? safeFileToken(buildAttemptId) : safeFileToken(extId);
-    const filename = `idb_runner_sidecar_pending_${attemptFileToken}_${safeFileToken(extId)}_${new Date().getTime()}.json`;
+    const filename = resultCaptureFileNameW320({ buildAttemptId, extId });
     const saved = saveTextArtifact({
       folderId,
       name: filename,
@@ -6051,6 +6050,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (/margin/i.test(combined)) value = 'faster decisions and margin protection';
     const prefix = `IDB Demo: ${recordFieldSafeText(prospect || 'Prospect', 42)}${domain ? ` (${domain})` : ''}`;
     return recordFieldSafeText(`${prefix} | Buyer: ${buyer}; Pain: ${pain}; Proof: ${proof}; Value: ${value}.`, 190);
+  }
+  function resultCaptureFileNameW320({ buildAttemptId, extId }) {
+    const attemptToken = safeFileToken(buildAttemptId || extId).slice(0, 56);
+    const extToken = safeFileToken(extId || buildAttemptId).slice(0, 48);
+    const stamp = String(new Date().getTime());
+    return trimLen(`idb_runner_sidecar_${attemptToken}_${extToken}_${stamp}.json`, 180);
   }
 
   function csvQuote(s) {

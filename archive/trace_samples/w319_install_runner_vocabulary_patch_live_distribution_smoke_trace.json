@@ -1,0 +1,83 @@
+{
+  "schema": "forge.w319.install-runner-vocabulary-patch-live-distribution-smoke.trace.v1",
+  "status": "operator_upload_required",
+  "decision": "needs_attention",
+  "decisionReason": "W318 runner vocabulary patch is locally validated, but authenticated NetSuite upload and live smoke evidence are not present in this Codex session.",
+  "uploadPacket": {
+    "uploadOnly": [
+      "netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+      "netsuite/idb_governed_runner_adapter_w144_suitelet.js"
+    ],
+    "optionalDrawerRefresh": "idb-drawer.user.js",
+    "doNotUploadOrMutate": [
+      "src/contracts/lanePacks.js",
+      "proposed lane-pack fixtures",
+      "drawer-created record logic",
+      "runtime dependencies"
+    ],
+    "runnerVocabularyPatchIncluded": true,
+    "w144AdapterPatchIncluded": true,
+    "sourceLanePacksMutated": false,
+    "autoInstallIntroduced": false
+  },
+  "liveSmokeEvidencePacket": {
+    "installTarget": "td3021666.app.netsuite.com",
+    "adapterProfile": "Released W144 governed runner adapter",
+    "adapterEndpointPath": "/app/site/hosting/scriptlet.nl?script=6702&deploy=2",
+    "uploadTimestamp": null,
+    "runnerFileUploaded": null,
+    "w144AdapterFileUploaded": null,
+    "installedDrawerFileUsed": null,
+    "prospectName": "Summit Electrical Supply",
+    "website": "https://www.gexpro.com",
+    "notes": "Summit/Gexpro-style distribution smoke focused on branch availability, supplier lead time, and quote-to-order confidence.",
+    "toggles": {
+      "createNewHeroItem": true,
+      "manufacturing": false,
+      "wip": false
+    },
+    "buildSubmittedStateShown": null,
+    "runnerTaskIdCaptured": null,
+    "pendingRefreshCaptured": null,
+    "completedRefreshCaptured": null,
+    "w151ValidationResult": null,
+    "w214SemanticGuardResult": null,
+    "w245NormalizationResult": null,
+    "finishBuildShown": null,
+    "returnedRecords": [],
+    "openLinkVerification": [],
+    "hiddenDiagnosticsCheck": null
+  },
+  "acceptanceCriteria": {
+    "readyToKeepRequires": [
+      "submit succeeds through W144",
+      "runnerTaskId captured",
+      "refresh returns completed result",
+      "W151/W214/W245 pass",
+      "Finish build appears only after valid completed result",
+      "returned records avoid Style, Formula, Ingredient, Assembly, Work Order, Routing, and WIP",
+      "labels use Product SKU / availability or replenishment language",
+      "Open links appear only after valid import",
+      "normal consultant UI hides admin diagnostics"
+    ],
+    "currentDecision": "needs_attention",
+    "rollbackTriggers": [
+      "bad vocabulary imported",
+      "fake or unsupported Open links",
+      "drawer-created records",
+      "drawer transaction writes",
+      "weakened W151/W214/W245 validation"
+    ]
+  },
+  "continuity": {
+    "w318RunnerLaneVocabularyReconciliationAvailable": true,
+    "w264ConnectedBuildContinuityRequired": true,
+    "w265RetrySafetyRequired": true,
+    "w151ValidationWeakened": false,
+    "w214SemanticGuardWeakened": false,
+    "w245CanonicalImportWeakened": false,
+    "normalConsultantUiChanged": false,
+    "recordCreationAuthorityChanged": false
+  },
+  "nextRecommendedBlock": "W320: Storytelling Polish And Industry Expansion Prioritization"
+}

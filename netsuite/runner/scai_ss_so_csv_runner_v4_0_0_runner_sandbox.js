@@ -173,6 +173,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       notes: str(s.getParameter({ name: 'custscript_v3_runner_notes' })),
       agenda: str(s.getParameter({ name: 'custscript_v3_runner_agenda' })),
       extId: str(s.getParameter({ name: 'custscript_v3_runner_extid' })),
+      confirmedBuildRequestJson: parseEmbeddedJson(s.getParameter({ name: 'custscript_v3_runner_idb_request_json' })) || null,
       resultCaptureFolderId: toIntOrNull(
         s.getParameter({ name: 'custscript_v3_runner_result_capture_folder' }) ||
         s.getParameter({ name: 'custscript_idb_result_capture_folder_id' })
@@ -697,6 +698,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const notes    = runnerParams.notes;
     const agenda   = runnerParams.agenda;
     const extId    = runnerParams.extId;
+    const confirmedBuildRequestJson = runnerParams.confirmedBuildRequestJson || null;
     const runUniqueSuffix = buildRunUniquenessToken(extId);
     const explicitResultCaptureFolderId = runnerParams.resultCaptureFolderId;
     const enableImageEnrichment = runnerParams.enableImageEnrichment === true;
@@ -969,7 +971,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       enableManufacturing: finalEnableManufacturing,
       enableWip: effectiveEnableWip,
       prospect,
-      extId
+      extId,
+      confirmedBuildRequestJson
     });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({ source: namingPayload.source || names._source || 'deterministic', signalLen: names._signalLen || 0, industry_category: names.industry_category || '', namingFileId: namingPayload.fileId || namingFileId || null, namingPayloadFound: !!namingPayload.found, namingPayloadParsed: !!namingPayload.parsed, namingPayloadApplied: !!namingPayload.applied, namingDiscoveryMode: namingPayload.discoveryMode || 'none' }) });
     if (names._toggleAwareNamingGuardrail && names._toggleAwareNamingGuardrail.rewrites && names._toggleAwareNamingGuardrail.rewrites.length) {
@@ -1185,6 +1188,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         runUniqueSuffix,
         enableManufacturing: finalEnableManufacturing,
         enableWip: effectiveEnableWip,
+        confirmedBuildRequestJson,
         flowState: authoritativeTruth.flowState || canonicalStorySeed.flowState,
         csvImport: {
           status: 'submitted',
@@ -4157,6 +4161,80 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return IDB_NON_MFG_FORBIDDEN_NAME_RE.test(String(name || ''));
   }
 
+  function arrayFromMaybe(value) {
+    return Array.isArray(value) ? value.map(str).filter(Boolean) : [];
+  }
+
+  function lowerList(values) {
+    return arrayFromMaybe(values).map(function (value) { return value.toLowerCase(); });
+  }
+
+  function runnerLaneVocabularyPolicyV1(opts) {
+    const request = opts && opts.confirmedBuildRequestJson || {};
+    const demoPath = request.demoPath || {};
+    const contract = request.resultValidationExpectations && request.resultValidationExpectations.recordContract || {};
+    const selectedToggles = request.selectedToggles || {};
+    const operatingMode = str(request.resolvedOperatingMode || contract.resolvedOperatingMode || '');
+    const laneId = str(demoPath.laneId || selectedToggles.selectedLaneId || request.selectedLaneId || '');
+    const text = String([
+      operatingMode,
+      laneId,
+      demoPath.laneName,
+      demoPath.proofAnchor,
+      demoPath.familyKey,
+      contract.label,
+      arrayFromMaybe(request.requiredRecordRoles).join(' '),
+      arrayFromMaybe(contract.requiredRecordRoles).join(' '),
+      arrayFromMaybe(contract.allowedNouns).join(' ')
+    ].join(' ')).toLowerCase();
+    const invalidTerms = lowerList(contract.invalidTerms).concat([
+      'finished good',
+      'ingredient',
+      'ingredient blend',
+      'formula',
+      'batch',
+      'assembly',
+      'work order',
+      'routing',
+      'wip',
+      'manufacturing line'
+    ]);
+    const enableManufacturing = !!(opts && opts.enableManufacturing === true);
+    const enableWip = !!(opts && opts.enableWip === true);
+    let modeKey = '';
+    if (/apparel_style_matrix|apparel|style|size\s*\/\s*color/.test(text)) modeKey = 'apparel_style_matrix';
+    if (/dealer_hardgoods|dealer|hardgoods|allocation/.test(text)) modeKey = 'dealer_hardgoods';
+    if (/distribution_replenishment|industrial_distribution|distribution|branch|replenishment|fulfillment|availability/.test(text)) modeKey = 'distribution_replenishment';
+    if (/food_batch_manufacturing|food|beverage|cpg|ingredient|formula|batch/.test(text) && enableManufacturing) modeKey = 'food_ingredient_manufacturing';
+    if (/manufacturing|assembly|work order|routing|wip/.test(text) && (enableManufacturing || enableWip)) modeKey = enableWip ? 'wip_manufacturing' : 'manufacturing';
+    if (!modeKey) modeKey = '';
+    return {
+      schema: 'idb.runner-lane-vocabulary-policy.v1',
+      source: request.schema === 'idb.confirmed-build-request.v1' ? 'confirmed_build_request' : 'runner_fallback',
+      operatingMode,
+      laneId,
+      modeKey,
+      enableManufacturing,
+      enableWip,
+      allowedNouns: lowerList(contract.allowedNouns),
+      invalidTerms,
+      finalResultRoleLabels: {
+        matrixProofItem: modeKey === 'distribution_replenishment' ? 'Branch Availability / Replenishment Flow' : '',
+        componentItem: modeKey === 'distribution_replenishment' ? 'Fulfillment Support SKU' : ''
+      }
+    };
+  }
+
+  function idbNameHasPolicyForbiddenTerm(name, policy) {
+    const lower = String(name || '').toLowerCase();
+    if (idbNameHasNonManufacturingForbiddenTerm(lower)) return true;
+    if (policy && policy.modeKey === 'distribution_replenishment' && /\b(style|formula|ingredient|batch|assembly|work\s+order|routing|wip)\b/i.test(lower)) return true;
+    const invalidTerms = policy && Array.isArray(policy.invalidTerms) ? policy.invalidTerms : [];
+    return invalidTerms.some(function (term) {
+      return term && lower.indexOf(term) !== -1;
+    });
+  }
+
   function idbNamingProspect(names, opts) {
     const fromOpts = str(opts && opts.prospect);
     if (fromOpts) return trimLen(fromOpts, 50);
@@ -4188,6 +4266,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       names && names.assembly_name,
       names && Array.isArray(names.component_names) ? names.component_names.join(' ') : ''
     ].join(' ')).toLowerCase();
+    if (/distribution_replenishment|industrial_distribution|distribution|branch|industrial distributor/.test(hay)) return 'distribution_replenishment';
     if (/food|beverage|cpg|ingredient|recipe|formula|batch/.test(hay)) return 'food_ingredient_manufacturing';
     if (/dealer|hardgoods|outdoor|replenishment|fulfillment|distribution|channel/.test(hay)) return 'dealer_hardgoods';
     if (/apparel|footwear|style|sku|color|size/.test(hay)) return 'apparel_style_matrix';
@@ -4212,9 +4291,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return `${prospect} Fulfillment Support SKU`;
   }
 
-  function rewriteIdbNonManufacturingName(name, role, prospect, modeKey) {
+  function rewriteIdbNonManufacturingName(name, role, prospect, modeKey, policy) {
     const current = str(name);
-    if (!current || idbNameHasNonManufacturingForbiddenTerm(current)) {
+    if (!current || idbNameHasPolicyForbiddenTerm(current, policy)) {
       return idbAllowedNonManufacturingName(role, prospect, modeKey);
     }
     if (modeKey === 'dealer_hardgoods') {
@@ -4230,36 +4309,38 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const enableManufacturing = !!(opts && opts.enableManufacturing === true);
     const enableWip = !!(opts && opts.enableWip === true);
     const rewrites = [];
+    const vocabularyPolicy = runnerLaneVocabularyPolicyV1(opts || {});
     if (enableManufacturing || enableWip) {
       out._toggleAwareNamingGuardrail = {
         status: 'manufacturing_vocabulary_allowed',
         enableManufacturing,
         enableWip,
+        laneVocabularyPolicy: vocabularyPolicy,
         rewrites: []
       };
       return out;
     }
 
     const prospect = idbNamingProspect(out, opts);
-    const modeKey = idbNamingModeKey(out, opts);
+    const modeKey = vocabularyPolicy.modeKey || idbNamingModeKey(out, opts);
     const beforeHero = out.hero_item_name;
-    const afterHero = rewriteIdbNonManufacturingName(beforeHero, 'hero_item_name', prospect, modeKey);
+    const afterHero = rewriteIdbNonManufacturingName(beforeHero, 'hero_item_name', prospect, modeKey, vocabularyPolicy);
     if (afterHero !== beforeHero) rewrites.push({ role: 'hero_item_name', before: beforeHero || '', after: afterHero });
     out.hero_item_name = trimLen(afterHero, 60);
 
     const beforeAssembly = out.assembly_name;
-    const afterAssembly = rewriteIdbNonManufacturingName(beforeAssembly, 'assembly_name', prospect, modeKey);
+    const afterAssembly = rewriteIdbNonManufacturingName(beforeAssembly, 'assembly_name', prospect, modeKey, vocabularyPolicy);
     if (afterAssembly !== beforeAssembly) rewrites.push({ role: 'matrix_or_proof_item', before: beforeAssembly || '', after: afterAssembly });
     out.assembly_name = trimLen(afterAssembly, 60);
 
     const components = Array.isArray(out.component_names) && out.component_names.length ? out.component_names.slice() : [''];
     out.component_names = components.map((componentName, index) => {
-      const after = rewriteIdbNonManufacturingName(componentName, `component_${index + 1}`, prospect, modeKey);
+      const after = rewriteIdbNonManufacturingName(componentName, `component_${index + 1}`, prospect, modeKey, vocabularyPolicy);
       if (after !== componentName) rewrites.push({ role: `component_item_${index + 1}`, before: componentName || '', after });
       return trimLen(after, 60);
     });
 
-    if (idbNameHasNonManufacturingForbiddenTerm(out.bom_name)) {
+    if (idbNameHasPolicyForbiddenTerm(out.bom_name, vocabularyPolicy)) {
       const afterBom = `${prospect} Product Structure`;
       rewrites.push({ role: 'bom_name', before: out.bom_name || '', after: afterBom });
       out.bom_name = trimLen(afterBom, 80);
@@ -4271,6 +4352,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       modeKey,
       enableManufacturing,
       enableWip,
+      laneVocabularyPolicy: vocabularyPolicy,
       forbiddenTermsBlocked: [
         'Finished Good',
         'Ingredient',
@@ -4434,19 +4516,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const runUniqueSuffix = opts && opts.runUniqueSuffix;
     const heroNamePair = buildDifferentiatedNames(names.hero_item_name, extId, runUniqueSuffix);
     const namingVertical = detectNamingVertical({ prospect: names.hero_item_name, website: '', signalText: [names.industry_category || '', names.assembly_name || '', (names.component_names || []).join(' ')].join(' ') });
-    const heroSalesDesc = namingVertical === 'food' ? `${names.hero_item_name} finished good ready for service-level fulfillment.` : `${names.hero_item_name} finished good ready for sale.`;
-    const heroPurchDesc = namingVertical === 'food' ? `Purchased ingredient and packaging inputs supporting ${names.hero_item_name} production.` : `Purchased inputs supporting ${names.hero_item_name} production.`;
+    const heroSalesDesc = !enableManufacturing ? `${names.hero_item_name} supports availability, replenishment, and fulfillment confidence.` : (namingVertical === 'food' ? `${names.hero_item_name} finished good ready for service-level fulfillment.` : `${names.hero_item_name} finished good ready for sale.`);
+    const heroPurchDesc = !enableManufacturing ? `Purchased supply context supporting ${names.hero_item_name} availability.` : (namingVertical === 'food' ? `Purchased ingredient and packaging inputs supporting ${names.hero_item_name} production.` : `Purchased inputs supporting ${names.hero_item_name} production.`);
 
     const asmNameBase = names.assembly_name || names.hero_item_name;
     const asmNamePair = buildDifferentiatedNames(asmNameBase, extId, runUniqueSuffix);
-    const asmSalesDesc  = namingVertical === 'food' ? `${asmNameBase} supports line readiness and finished-goods fulfillment.` : `${asmNameBase} buildable finished good for customer orders.`;
-    const asmPurchDesc  = namingVertical === 'food' ? `Ingredient, packaging, and line inputs used to support ${asmNameBase}.` : `Assembly supply inputs used to build ${asmNameBase}.`;
+    const asmSalesDesc  = !enableManufacturing ? `${asmNameBase} supports branch availability and replenishment readiness.` : (namingVertical === 'food' ? `${asmNameBase} supports line readiness and finished-goods fulfillment.` : `${asmNameBase} buildable finished good for customer orders.`);
+    const asmPurchDesc  = !enableManufacturing ? `Supply planning inputs used to support ${asmNameBase}.` : (namingVertical === 'food' ? `Ingredient, packaging, and line inputs used to support ${asmNameBase}.` : `Assembly supply inputs used to build ${asmNameBase}.`);
 
     function compSalesDesc(compName) {
-      return namingVertical === 'food' ? `${compName} supports ingredient, packaging, or finished-good readiness in ${asmNameBase}.` : `${compName} component used in ${asmNameBase}.`;
+      return !enableManufacturing ? `${compName} supports fulfillment and availability readiness in ${asmNameBase}.` : (namingVertical === 'food' ? `${compName} supports ingredient, packaging, or finished-good readiness in ${asmNameBase}.` : `${compName} component used in ${asmNameBase}.`);
     }
     function compPurchDesc(compName) {
-      return namingVertical === 'food' ? `Procured ${compName} input for ${asmNameBase}.` : `Procured ${compName} material for ${asmNameBase}.`;
+      return !enableManufacturing ? `Procured ${compName} supply input for ${asmNameBase}.` : (namingVertical === 'food' ? `Procured ${compName} input for ${asmNameBase}.` : `Procured ${compName} material for ${asmNameBase}.`);
     }
 
     const heroValues = {
@@ -5105,6 +5187,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (!extId) throw new Error('IDB result capture requires idempotency token / extId.');
 
     const prospect = str(args.prospect) || 'IDB Prospect';
+    const laneVocabularyPolicy = runnerLaneVocabularyPolicyV1({
+      confirmedBuildRequestJson: args.confirmedBuildRequestJson,
+      enableManufacturing: args.enableManufacturing,
+      enableWip: args.enableWip
+    });
+    const resultNames = applyToggleAwareNamingGuardrails(Object.assign({}, args.names || {}), {
+      prospect,
+      extId,
+      enableManufacturing: args.enableManufacturing,
+      enableWip: args.enableWip,
+      confirmedBuildRequestJson: args.confirmedBuildRequestJson
+    });
     const customer = ensureIdbCustomerForResult({
       prospect,
       website: args.website,
@@ -5114,7 +5208,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const heroItem = normalizeIdbRecord({
       role: 'heroItem',
       type: 'inventoryitem',
-      name: readRecordDisplayName('inventoryitem', args.ids && args.ids.heroItemId, args.names && args.names.hero_item_name || `${prospect} Hero Item`),
+      name: readRecordDisplayName('inventoryitem', args.ids && args.ids.heroItemId, resultNames.hero_item_name || `${prospect} Hero Item`),
       internalId: args.ids && args.ids.heroItemId
     });
     const matrixProofItem = ensureIdbProofItemForResult({
@@ -5123,7 +5217,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       locationId: args.locationId,
       extId,
       runUniqueSuffix: args.runUniqueSuffix,
-      name: args.names && args.names.assembly_name || `${prospect} Style / SKU Matrix Proof Item`
+      name: resultNames.assembly_name || `${prospect} Availability Flow`,
+      laneVocabularyPolicy
     });
     const componentItem = ensureIdbComponentItemForResult({
       prospect,
@@ -5131,7 +5226,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       locationId: args.locationId,
       extId,
       runUniqueSuffix: args.runUniqueSuffix,
-      name: firstNonEmpty(args.names && args.names.component_names && args.names.component_names[0], `${prospect} Component Item`)
+      name: firstNonEmpty(resultNames.component_names && resultNames.component_names[0], `${prospect} Fulfillment Support SKU`),
+      laneVocabularyPolicy
     });
     const demoTransaction = buildPendingIdbDemoTransactionForResult({
       prospect,
@@ -5170,6 +5266,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         generatedRecordsOwnedBy: 'governed_runner_internal_build_engine',
         drawerWrites: false,
         drawerTransactionWrites: false
+      },
+      runnerLaneVocabularyPolicy: {
+        schema: laneVocabularyPolicy.schema,
+        source: laneVocabularyPolicy.source,
+        operatingMode: laneVocabularyPolicy.operatingMode,
+        laneId: laneVocabularyPolicy.laneId,
+        modeKey: laneVocabularyPolicy.modeKey,
+        enableManufacturing: laneVocabularyPolicy.enableManufacturing,
+        enableWip: laneVocabularyPolicy.enableWip
       }
     };
 
@@ -5269,8 +5374,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
   }
 
-  function ensureIdbProofItemForResult({ prospect, subsidiaryId, locationId, extId, name, runUniqueSuffix }) {
-    const proofName = roleSpecificGeneratedItemName('Formula / Availability Context', name || `${prospect} Style / SKU Matrix Proof Item`);
+  function ensureIdbProofItemForResult({ prospect, subsidiaryId, locationId, extId, name, runUniqueSuffix, laneVocabularyPolicy }) {
+    const roleLabel = laneVocabularyPolicy && laneVocabularyPolicy.finalResultRoleLabels && laneVocabularyPolicy.finalResultRoleLabels.matrixProofItem
+      ? laneVocabularyPolicy.finalResultRoleLabels.matrixProofItem
+      : 'Formula / Availability Context';
+    const fallbackName = laneVocabularyPolicy && laneVocabularyPolicy.modeKey === 'distribution_replenishment'
+      ? `${prospect} Availability Flow`
+      : `${prospect} Style / SKU Matrix Proof Item`;
+    const proofName = roleSpecificGeneratedItemName(roleLabel, name || fallbackName);
     return ensureIdbInventoryItemForResult({
       externalId: buildUniqueExternalId('IDB_MATRIX', extId, runUniqueSuffix),
       name: buildUniqueRecordName(proofName, runUniqueSuffix, 83),
@@ -5280,8 +5391,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
   }
 
-  function ensureIdbComponentItemForResult({ prospect, subsidiaryId, locationId, extId, name, runUniqueSuffix }) {
-    const componentName = roleSpecificGeneratedItemName('Ingredient / Packaging Component', name || `${prospect} Component Item`);
+  function ensureIdbComponentItemForResult({ prospect, subsidiaryId, locationId, extId, name, runUniqueSuffix, laneVocabularyPolicy }) {
+    const roleLabel = laneVocabularyPolicy && laneVocabularyPolicy.finalResultRoleLabels && laneVocabularyPolicy.finalResultRoleLabels.componentItem
+      ? laneVocabularyPolicy.finalResultRoleLabels.componentItem
+      : 'Ingredient / Packaging Component';
+    const fallbackName = laneVocabularyPolicy && laneVocabularyPolicy.modeKey === 'distribution_replenishment'
+      ? `${prospect} Fulfillment Support SKU`
+      : `${prospect} Component Item`;
+    const componentName = roleSpecificGeneratedItemName(roleLabel, name || fallbackName);
     return ensureIdbInventoryItemForResult({
       externalId: buildUniqueExternalId('IDB_COMPONENT', extId, runUniqueSuffix),
       name: buildUniqueRecordName(componentName, runUniqueSuffix, 83),

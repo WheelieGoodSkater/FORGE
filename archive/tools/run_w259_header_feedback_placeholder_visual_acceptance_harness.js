@@ -176,7 +176,7 @@ function main() {
   assertCase(results, 'feedback-placeholder-contract-reviewable',
     contract.schema === 'forge.w259.feedback-placeholder-contract.v1' &&
       contract.status === 'placeholder_ready' &&
-      contract.buttonLabel === 'Bug / Enhancement' &&
+      contract.buttonLabel === 'Bug / Idea' &&
       contract.futureUrlConfigured === false &&
       contract.runtimeAuthorityChanged === false,
     JSON.stringify(contract));
@@ -184,7 +184,7 @@ function main() {
   assertCase(results, 'bug-enhancement-button-renders-safe-noop',
     /data-idb-feedback-placeholder="w259"/.test(sample.drawerHtml) &&
       /aria-disabled="true"/.test(sample.drawerHtml) &&
-      /Bug \/ Enhancement/.test(sample.drawerHtml) &&
+      /Bug \/ Idea/.test(sample.drawerHtml) &&
       action.status === 'no_op' &&
       action.externalUrlOpened === false &&
       action.runtimeAuthorityChanged === false,

@@ -9,7 +9,7 @@ W258 also polishes the FORGE assistant header into a compact SCOUT-style top bar
 - smaller FORGE logo
 - muted teal/blue header bar
 - version displayed beside the logo
-- warm yellow `Bug / Enhancement` placeholder button
+- small warm yellow `Bug / Idea` placeholder button
 - balanced close button
 - compact header height so tabs and the first content card appear sooner
 

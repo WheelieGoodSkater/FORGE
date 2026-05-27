@@ -19930,8 +19930,8 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 6px;
-        min-width: 86px;
+        gap: 4px;
+        min-width: 58px;
         margin-inline-end: auto;
       }
       .idb-version-pill {
@@ -19942,12 +19942,16 @@
       }
       .idb-bug-button {
         border: 1px solid #e1bd56;
-        border-radius: 7px;
+        border-radius: 6px;
         background: #efc85f;
         color: #112435;
-        min-height: 30px;
-        padding: 0 12px;
-        font-size: 12px;
+        min-block-size: 22px !important;
+        min-height: 22px;
+        inline-size: 86px;
+        max-inline-size: 86px;
+        padding: 0 7px;
+        font-size: 10px;
+        line-height: 1;
         font-weight: 850;
         cursor: pointer;
       }
@@ -21236,9 +21240,9 @@
     return {
       schema: 'forge.w259.feedback-placeholder-contract.v1',
       status: 'placeholder_ready',
-      buttonLabel: 'Bug / Enhancement',
-      title: 'Bug / Enhancement link coming soon',
-      ariaLabel: 'Bug or enhancement feedback link coming soon',
+      buttonLabel: 'Bug / Idea',
+      title: 'Bug / Idea link coming soon',
+      ariaLabel: 'Bug or idea feedback link coming soon',
       actionStatus: 'no_op_until_future_url',
       futureUrlConfigured: false,
       externalUrl: '',
@@ -21276,7 +21280,7 @@
       checks: [
         { id: 'compact_header_logo_readability', label: 'Compact header logo size and readability', expected: 'FORGE logo is readable at 188px wide and does not dominate the first viewport.' },
         { id: 'version_placement', label: 'Version placement beside logo', expected: 'Version appears in the header meta area to the right of the FORGE logo.' },
-        { id: 'feedback_placeholder_noop', label: 'Bug / Enhancement placeholder', expected: 'Button is visible and clearly marked as coming soon with no external dependency.' },
+        { id: 'feedback_placeholder_noop', label: 'Bug / Idea placeholder', expected: 'Button is visible and clearly marked as coming soon with no external dependency.' },
         { id: 'close_button_reachable', label: 'Close button reachability', expected: 'Close control remains visible and balanced on the right.' },
         { id: 'tabs_first_card_reachable', label: 'Tabs and first card reachability', expected: 'Tabs and first content card are visible sooner after the compact header.' },
         { id: 'live_proof_cta_density', label: 'W258 Live proof CTA density', expected: 'First glance shows open target, proof action, safe claim, stop guardrail, and evidence confidence.' },
@@ -21306,12 +21310,12 @@
         {
           id: 'compact_header_visible',
           label: 'Compact header visible',
-          expected: 'Header shows FORGE logo, running version, Bug / Enhancement, and close control.'
+          expected: 'Header shows FORGE logo, running version, Bug / Idea, and close control.'
         },
         {
           id: 'feedback_placeholder_noop',
-          label: 'Bug / Enhancement placeholder',
-          expected: 'Bug / Enhancement remains a safe placeholder with no URL, network call, storage write, tracking call, or install action.'
+          label: 'Bug / Idea placeholder',
+          expected: 'Bug / Idea remains a safe placeholder with no URL, network call, storage write, tracking call, or install action.'
         },
         {
           id: 'pre_import_fake_links_blocked',
@@ -21421,14 +21425,14 @@
       {
         id: 'compact_header_visible',
         label: 'Compact FORGE header visible',
-        expected: 'Header shows FORGE logo, running version, Bug / Enhancement, and close control.',
+        expected: 'Header shows FORGE logo, running version, Bug / Idea, and close control.',
         capture: 'pass_fail_note',
         required: true
       },
       {
         id: 'feedback_placeholder_noop',
-        label: 'Bug / Enhancement remains no-op',
-        expected: 'Bug / Enhancement remains a safe placeholder with no URL, network call, storage write, tracking call, or install action.',
+        label: 'Bug / Idea remains no-op',
+        expected: 'Bug / Idea remains a safe placeholder with no URL, network call, storage write, tracking call, or install action.',
         capture: 'pass_fail_note',
         required: true
       },
@@ -22830,6 +22834,15 @@
       const showImportButton = actions.showFinishButton === true;
       const pollButtonLabel = 'Refresh build status';
       const chipTone = showBuildButton || showPollButton || showImportButton ? 'ready' : oneClickBuild.status === 'build_failed_ask_admin' ? 'danger' : 'partial';
+      const approvedBuildTouched = w262BuildUx.stateFacts.adapterReady === true ||
+        w262BuildUx.stateFacts.runnerTaskCaptured === true ||
+        w262BuildUx.stateFacts.completedResultReady === true;
+      const buildSetupChip = approvedBuildTouched ? 'Build setup ready' : 'Preview only';
+      const buildSetupCopy = w262BuildUx.stateFacts.runnerTaskCaptured
+        ? 'FORGE submitted through the approved build setup and is waiting for valid returned records.'
+        : approvedBuildTouched
+          ? 'FORGE uses the approved build setup behind the scenes.'
+          : 'Record creation is off in this install.';
       const normalCardHtml = `
         <div class="idb-run-action-card idb-w208-one-click-production-build">
           <div class="idb-status-key">Build demo records</div>
@@ -22839,7 +22852,7 @@
           <div class="idb-chip-row">
             <span class="idb-chip idb-${chipTone}">${escapeHtml(w262BuildUx.label)}</span>
             <span class="idb-mini-chip">${w262BuildUx.stateFacts.requestReady ? 'Request ready' : 'Confirm demo path'}</span>
-            <span class="idb-mini-chip">${w262BuildUx.stateFacts.adapterReady ? 'Build setup ready' : 'Preview only'}</span>
+            <span class="idb-mini-chip">${escapeHtml(buildSetupChip)}</span>
             <span class="idb-mini-chip">Links appear when ready</span>
           </div>
           <div class="idb-status-strip idb-w208-consultant-summary">
@@ -22851,7 +22864,7 @@
             <div class="idb-status-cell">
               <div class="idb-status-key">Build</div>
               <div class="idb-status-value">${w262BuildUx.stateFacts.completedResultReady ? 'Complete' : w262BuildUx.stateFacts.runnerTaskCaptured ? 'Running' : w262BuildUx.stateFacts.adapterReady ? 'Ready' : 'Preview only'}</div>
-              <div class="idb-copy">${w262BuildUx.stateFacts.adapterReady ? 'FORGE uses the approved build setup behind the scenes.' : 'Record creation is off in this install.'}</div>
+              <div class="idb-copy">${escapeHtml(buildSetupCopy)}</div>
             </div>
             <div class="idb-status-cell">
               <div class="idb-status-key">Links</div>

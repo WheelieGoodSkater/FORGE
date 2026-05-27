@@ -471,6 +471,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (mode === 'apparel_style_matrix' && base === 'finished_or_assembly_item') return 'style_sku';
     if (mode === 'dealer_hardgoods_replenishment' && base === 'finished_or_assembly_item') return 'product_sku';
     if (mode === 'distribution_replenishment' && base === 'finished_or_assembly_item') return 'branch_or_product_sku';
+    if (mode === 'distribution_replenishment' && base === 'formula_or_batch_structure') return 'replenishment_or_availability_flow';
+    if (mode === 'distribution_replenishment' && base === 'component_item') return 'supporting_sku';
     return base;
   }
 
@@ -482,6 +484,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       style_sku: 'Style SKU',
       product_sku: 'Product SKU',
       branch_or_product_sku: 'Product SKU',
+      replenishment_or_availability_flow: 'Availability/Replenishment Flow',
+      supporting_sku: 'Product SKU',
       finished_or_assembly_item: 'Finished/Assembly Item',
       finished_food_or_batch_item: 'Finished Food/Batch Item',
       component_item: 'Component Item',
@@ -540,7 +544,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const demoTransaction = firstCanonicalRecord(canonicalRecords, ['sales_order', 'demoTransaction', 'salesOrder']) || normalizeRecord(null, 'salesorder');
     const heroItem = firstCanonicalRecord(canonicalRecords, ['finished_food_or_batch_item', 'finished_or_assembly_item', 'hero_sku', 'style_sku', 'product_sku', 'branch_or_product_sku', 'heroItem']) || normalizeRecord(null, 'inventoryitem');
     const matrixProofItem = firstCanonicalRecord(canonicalRecords, ['formula_or_batch_structure', 'availability_or_replenishment_flow', 'style_matrix_or_availability_flow', 'dealer_availability_or_replenishment_flow', 'replenishment_or_availability_flow', 'matrixProofItem', 'matrixItem']) || normalizeRecord(null, 'matrixitem');
-    const componentItem = firstCanonicalRecord(canonicalRecords, ['ingredient_or_component_item', 'component_item', 'componentItem']) || normalizeRecord(null, 'inventoryitem');
+    const componentItem = firstCanonicalRecord(canonicalRecords, ['supporting_sku', 'ingredient_or_component_item', 'component_item', 'componentItem']) || normalizeRecord(null, 'inventoryitem');
     const completed = {
       schema: 'idb.completed-runner-result-json.v1',
       status: 'completed',

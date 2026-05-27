@@ -2,7 +2,7 @@
   "schema": "forge.w259.header-feedback-placeholder-visual-acceptance.trace.v1",
   "status": "ready_for_targeted_install_smoke",
   "feedbackPlaceholder": {
-    "buttonLabel": "Bug / Enhancement",
+    "buttonLabel": "Bug / Idea",
     "actionStatus": "no_op_until_future_url",
     "futureUrlConfigured": false,
     "externalUrl": "",

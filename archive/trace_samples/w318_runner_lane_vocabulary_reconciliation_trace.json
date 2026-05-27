@@ -1,0 +1,88 @@
+{
+  "schema": "forge.w318.runner-lane-vocabulary-reconciliation.trace.v1",
+  "status": "runner_lane_vocabulary_policy_applied",
+  "agentPlan": {
+    "runnerContractAgent": {
+      "goal": "derive lane vocabulary policy from confirmed build request, not customer examples",
+      "inputs": [
+        "resolvedOperatingMode",
+        "demoPath.laneId",
+        "selectedToggles",
+        "resultValidationExpectations.recordContract.allowedNouns",
+        "resultValidationExpectations.recordContract.invalidTerms"
+      ]
+    },
+    "runnerMutationAgent": {
+      "goal": "apply policy at runner naming and result-capture save points",
+      "protectedFiles": [
+        "netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js",
+        "netsuite/idb_governed_runner_adapter_w144_suitelet.js"
+      ]
+    },
+    "drawerGuardAgent": {
+      "goal": "keep W151/W214/W245 strict and prove bad returned records stay blocked",
+      "strictValidationPreserved": true
+    },
+    "smokeAnalystAgent": {
+      "goal": "use Summit trace as regression evidence without saving Summit as a special case",
+      "specialCaseProspectAdded": false
+    }
+  },
+  "summitSmokeFailure": {
+    "prospect": "Summit Electrical Supply",
+    "selectedLane": "industrial_distribution",
+    "resolvedOperatingMode": "distribution_replenishment",
+    "manufacturing": false,
+    "wip": false,
+    "runnerTaskCaptured": true,
+    "completedResultReturned": true,
+    "completedResultStatus": "toggle_vocabulary_guardrail_failed",
+    "invalidReturnedTerms": [
+      "Style SKU",
+      "Formula / Availability Context",
+      "Ingredient / Packaging Component"
+    ],
+    "rootCause": "runner result capture and adapter compatibility still used legacy hero/matrix/component slots and manufacturing/apparel/food fallback vocabulary"
+  },
+  "runnerVocabularyPolicy": {
+    "schema": "idb.runner-lane-vocabulary-policy.v1",
+    "policySource": "confirmed_build_request",
+    "distributionNoManufacturingNoWip": {
+      "allowedNames": [
+        "Product Availability SKU",
+        "Availability Flow",
+        "Fulfillment Support SKU",
+        "Branch Availability / Replenishment Flow"
+      ],
+      "blockedTerms": [
+        "style",
+        "formula",
+        "ingredient",
+        "batch",
+        "assembly",
+        "work order",
+        "routing",
+        "wip"
+      ]
+    }
+  },
+  "guardrails": {
+    "strictValidationPreserved": true,
+    "normalConsultantUiChanged": false,
+    "normalConsultantUiHidesRawDiagnostics": true,
+    "drawerCreatedRecords": false,
+    "drawerTransactionWrites": false,
+    "w144DeploymentUpdated": false,
+    "recordCreationAuthorityChanged": false,
+    "runtimeRequireAdded": false,
+    "externalDependencyAdded": false
+  },
+  "continuity": {
+    "w264ThroughW317StillRequired": true,
+    "w151ValidationWeakened": false,
+    "w214SemanticGuardWeakened": false,
+    "w245CanonicalImportWeakened": false,
+    "returnedOpenLinksStillRequireValidImport": true
+  },
+  "nextRecommendedBlock": "W319: Install Runner Vocabulary Patch And Live Distribution Smoke"
+}

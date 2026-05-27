@@ -2,7 +2,7 @@
 
 Status: ready for targeted install smoke.
 
-W259 adds a reviewable feedback placeholder contract for the FORGE assistant header `Bug / Enhancement` button. The button remains a safe no-op until a future human-reviewed change provides an explicit destination.
+W259 adds a reviewable feedback placeholder contract for the FORGE assistant header `Bug / Idea` button. The button remains a safe no-op until a future human-reviewed change provides an explicit destination.
 
 Guardrails:
 

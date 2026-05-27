@@ -12,7 +12,8 @@
     "logoMaxWidthPx": 188,
     "logoMaxHeightPx": 58,
     "versionVisible": true,
-    "bugEnhancementPlaceholder": true,
+    "bugIdeaPlaceholder": true,
+    "bugIdeaCompact": true,
     "externalRuntimeDependency": false
   },
   "guardrails": {

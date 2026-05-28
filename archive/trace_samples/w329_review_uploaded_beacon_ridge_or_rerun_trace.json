@@ -1,0 +1,73 @@
+{
+  "schema": "forge.w329.review-uploaded-beacon-ridge-or-rerun.trace.v1",
+  "status": "beacon_ridge_evidence_missing",
+  "decision": "needs_attention_pending_w325_trace",
+  "w328Continuity": {
+    "w328Status": "beacon_ridge_evidence_missing",
+    "w328Decision": "needs_attention_pending_w325_trace",
+    "dealerHardgoodsStatus": "no_go_until_w325_keep",
+    "unchanged": true
+  },
+  "evidenceSearch": {
+    "beaconRidgeTraceFound": false,
+    "beaconRidgeScreenshotsFound": false,
+    "searchedTerms": [
+      "Beacon Ridge",
+      "Beacon",
+      "Graybar",
+      "graybar",
+      "W325"
+    ],
+    "traceFileReference": "pending_user_upload",
+    "screenshotReferences": []
+  },
+  "rerunInstructions": {
+    "customer": "Beacon Ridge Electrical Supply",
+    "website": "https://www.graybar.com",
+    "buildPath": "Distribution / Branch Availability Control",
+    "toggles": {
+      "createNewItem": true,
+      "manufacturing": false,
+      "wip": false
+    },
+    "requiredUploads": [
+      "FORGE trace JSON exported after refresh/import",
+      "Build tab screenshot after submit and after refresh",
+      "Build results screenshot after Finish build/import",
+      "Review tab screenshot showing electrical story surface",
+      "Run tab screenshot showing returned records and Open-link guidance"
+    ]
+  },
+  "liveChecks": {
+    "submitRunnerTaskIdCapture": "pending",
+    "refreshPollCurrentResultMatching": "pending",
+    "w151W214W245Acceptance": "pending",
+    "finishBuildImport": "pending",
+    "returnedRecordNamesLabelsIdsLinks": "pending",
+    "reviewRunStoryQuality": "pending"
+  },
+  "goNoGo": {
+    "w325KeepDecision": "no_go_until_evidence_uploaded",
+    "dealerHardgoodsExpansion": "no_go_until_w325_keep"
+  },
+  "protectedBaselines": {
+    "w321BaselineProtected": true,
+    "w322LabelsProtected": true,
+    "w324ElectricalStoryAvailable": true,
+    "w144SubmitRefreshImportUnchanged": true,
+    "w151W214W245ValidationUnchanged": true
+  },
+  "guardrails": {
+    "sourceLanePacksMutated": false,
+    "proposedPacksInstalled": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W330",
+    "title": "Review Beacon Ridge Smoke Evidence And Decide Dealer Hardgoods Unlock",
+    "focus": "consume the uploaded Beacon Ridge trace/screenshots, decide keep/needs-attention/rollback, then unlock Dealer/Hardgoods only if W325 is keep"
+  }
+}

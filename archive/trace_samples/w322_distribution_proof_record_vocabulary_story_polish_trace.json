@@ -1,0 +1,72 @@
+{
+  "schema": "forge.w322.distribution-proof-record-vocabulary-story-polish.trace.v1",
+  "status": "distribution_story_polish_ready",
+  "w321BaselineProtected": true,
+  "distributionProofRecordVocabulary": {
+    "safeLabels": [
+      "Customer",
+      "Sales Order",
+      "Product SKU",
+      "Branch Availability / Replenishment Flow",
+      "Fulfillment Support SKU"
+    ],
+    "blockedConsultantFacingTerms": [
+      "Finished/Assembly Item",
+      "Formula or Batch Structure",
+      "Ingredient",
+      "Component Item",
+      "Work Order",
+      "Routing",
+      "WIP"
+    ],
+    "genericInventoryItemFallbacks": [
+      {
+        "sourceRolePattern": "finished_or_assembly_item|hero_sku|product_sku|branch_or_product_sku|heroItem",
+        "consultantLabel": "Product SKU"
+      },
+      {
+        "sourceRolePattern": "formula_or_batch_structure|availability_or_replenishment_flow|replenishment_or_availability_flow|matrixProofItem",
+        "consultantLabel": "Branch Availability / Replenishment Flow"
+      },
+      {
+        "sourceRolePattern": "component_item|supporting_sku|componentItem",
+        "consultantLabel": "Fulfillment Support SKU"
+      }
+    ],
+    "rawNetSuiteCompatibilityPreserved": true
+  },
+  "storySurfacePolish": {
+    "firstCallSummary": "The buyer is testing whether the branch can make a believable availability promise before the order is placed.",
+    "proofMove": "Open the Product SKU, then use Branch Availability / Replenishment Flow and Fulfillment Support SKU records to show branch availability, replenishment timing, and fulfillment support in one NetSuite proof path.",
+    "objectionResponse": "If the buyer asks whether the promise is trustworthy, open the returned records and show the proof path first; then ask which branch, supplier handoff, or replenishment decision they would validate next.",
+    "finalValueAnswer": "Frame value as fewer missed promises, faster counter-sales decisions, better replenishment timing, and margin protection on urgent replacement orders.",
+    "noClaimCaution": "Do not claim manufacturing, WIP, routing, formula, ingredient, work order, measured ROI, record creation, write actions, or availability beyond returned records and confirmed buyer evidence.",
+    "conciseSalesUsefulClaimSafe": true
+  },
+  "agentResponsibilities": {
+    "Connection Steward": "Protect W144 submit, refresh/poll, validation, Finish build/import, and Open-link authority.",
+    "Proof Architect": "Own distribution proof record roles, names, labels, and proof-path shape.",
+    "Story Strategist": "Turn first-call notes into proof move, objection response, and value story.",
+    "Vocabulary Guard": "Block manufacturing/WIP leakage in distribution consultant-facing surfaces.",
+    "QA Story Runner": "Judge whether the live proof makes sense to a sales rep or SC."
+  },
+  "guardrails": {
+    "w144SubmitRefreshImportUnchanged": true,
+    "connectedBuildAuthorityUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "finishBuildImportUnchanged": true,
+    "returnedRecordOpenLinksOnlyAfterValidImport": true,
+    "rawNetSuiteRecordTypeCompatibilityPreserved": true,
+    "normalConsultantUiHiddenDiagnostics": true,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "sourcePackMutationIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W323",
+    "title": "Industry Expansion Story Pack And First-Call Differentiation Harness",
+    "focus": "industry expansion and richer sales-call storytelling"
+  }
+}

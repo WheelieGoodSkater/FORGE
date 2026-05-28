@@ -1,0 +1,87 @@
+{
+  "schema": "forge.w330.crescent-live-smoke-evidence-review.trace.v1",
+  "status": "live_writeback_keep_story_needs_attention",
+  "connectionDecision": "keep",
+  "storyProofSurfaceDecision": "needs_attention_before_dealer_hardgoods",
+  "dealerHardgoodsUnlock": "no_go_until_post_import_story_label_cleanup",
+  "evidence": {
+    "traceFile": "/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1779996482573.json",
+    "screenshotsReviewedFromUserMessage": true,
+    "customer": "Crescent Electric Supply",
+    "website": "https://www.crescentelectric.com/",
+    "selectedLane": "Industrial Distribution & Branch Fulfillment"
+  },
+  "livePath": {
+    "runnerTaskIdCaptured": true,
+    "currentCompletedResultImported": true,
+    "w151W214W245Accepted": true,
+    "finishBuildImportedRecords": true,
+    "openLinksOnlyAfterValidImport": true,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false
+  },
+  "returnedRecords": [
+    {
+      "consultantLabel": "Customer",
+      "name": "Crescent Electric Supply Customer Account",
+      "id": "2422",
+      "openLinkPresent": true
+    },
+    {
+      "consultantLabel": "Sales Order",
+      "name": "SO2691",
+      "id": "82829",
+      "openLinkPresent": true
+    },
+    {
+      "consultantLabel": "Product SKU",
+      "name": "Crescent Electric Supply Product Availability SKU - DISTRIBU-PVLPIZ-IVH",
+      "id": "4145",
+      "openLinkPresent": true
+    },
+    {
+      "consultantLabel": "Availability/Replenishment Flow",
+      "name": "Branch Availability / Replenishment Flow - Crescent Electric - DISTRIBU-PVLPIZ-IVH",
+      "id": "4146",
+      "openLinkPresent": true
+    },
+    {
+      "consultantLabel": "Supporting SKU",
+      "name": "Crescent Electric Supply Fulfillment Support SKU - DISTRIBU-PVLPIZ-IVH",
+      "id": "4147",
+      "openLinkPresent": true
+    }
+  ],
+  "storyQuality": {
+    "buyerProblemClear": true,
+    "proofMoveUseful": true,
+    "objectionResponseClaimSafe": true,
+    "competitiveContrastPresent": true,
+    "roiSafeValueFramingPresent": true,
+    "weakEvidenceHonestyPresent": true,
+    "needsMoreElectricalSpecificity": true
+  },
+  "needsAttention": [
+    "post-import proof CTA still says confirm lane before opening proof records",
+    "Run/navigation layers still show legacy labels Hero item, Matrix item / proof item, and Component item 1",
+    "trace layers still contain legacy raw labels Finished/Assembly Item and Formula or Batch Structure",
+    "story copy should lean harder into contractor counter, branch transfer, replenishment, supplier portals, callbacks, and margin-safe substitutes"
+  ],
+  "guardrails": {
+    "w321WritebackBaselineProtected": true,
+    "w322DistributionLabelsProtected": true,
+    "w324ElectricalStoryAvailable": true,
+    "w144SubmitRefreshImportUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "sourceLanePacksMutated": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W331",
+    "title": "Post-Import Proof CTA And Story Label Polish",
+    "focus": "after valid import, replace lane-confirmation CTA with imported-record proof guidance, prefer consultant labels over legacy labels, and sharpen electrical contractor-counter story language"
+  }
+}

@@ -3574,7 +3574,9 @@
     const lines = {
       openingLine: weak
         ? 'Start by confirming the lane before turning this into a proof claim.'
-        : `Start with the buyer problem, then open ${openTarget.replace(/^Open\s+/i, '').replace(/\.$/, '')}.`,
+        : story && story.firstCallSummaryW322
+          ? `${story.firstCallSummaryW322} Then open ${openTarget.replace(/^Open\s+/i, '').replace(/\.$/, '')}.`
+          : `Start with the buyer problem, then open ${openTarget.replace(/^Open\s+/i, '').replace(/\.$/, '')}.`,
       whatToOpen: openTarget,
       whatToProve: firstGlance.proveMove || 'Prove only what returned records and website evidence support.',
       safeBuyerClaim: firstGlance.safeClaim || 'Evidence is not strong enough for a lane claim yet.',
@@ -3627,7 +3629,7 @@
       : 'How do we know this is real enough to use in the demo?';
     const safeResponse = weak
       ? 'Confirm the lane first, then only use returned record names and supported Open links.'
-      : 'Use the returned record and evidence receipt; stop before adding unsupported facts.';
+      : story && story.objectionResponseW322 || 'Use the returned record and evidence receipt; stop before adding unsupported facts.';
     const uncertaintyResponse = weak
       ? 'Say the evidence is not strong enough yet and ask for lane confirmation before continuing.'
       : 'Keep uncertainty visible if buyer evidence changes.';
@@ -4239,6 +4241,65 @@
     };
   }
 
+  function distributionStorySurfacePolishW322(state, selected, firstProof, visibleRecords) {
+    const intake = normalizedIntake(state || {});
+    const customer = intake.customer || 'the buyer';
+    const records = arrayValue(visibleRecords);
+    const byLabel = (pattern) => records.find((recordItem) => pattern.test(String(recordItem && recordItem.consultantLabel || '')));
+    const product = byLabel(/Product SKU/i) || firstProof || {};
+    const availability = byLabel(/Branch Availability|Replenishment/i) || firstProof || {};
+    const support = byLabel(/Fulfillment Support/i) || {};
+    const productName = product.name || product.recordName || 'the returned product SKU';
+    const availabilityName = availability.name || availability.recordName || 'the branch availability and replenishment proof';
+    const supportName = support.name || support.recordName || 'the fulfillment support SKU';
+    const liveDemo = selected && selected.liveDemo || {};
+    const forbidden = selected && selected.vocabulary && Array.isArray(selected.vocabulary.forbidden)
+      ? selected.vocabulary.forbidden.join(', ')
+      : 'manufacturing, WIP, routing, formula, ingredient, work order';
+    return {
+      firstCallSummary: `${customer} is testing whether the branch can make a believable availability promise before the order is placed.`,
+      proofMove: `Open ${productName}, then use ${availabilityName} and ${supportName} to show how branch availability, replenishment timing, and fulfillment support stay in one NetSuite proof path.`,
+      safeClaim: `${customer} can use the returned records to inspect the availability promise, replenishment path, and fulfillment support before making a customer commitment.`,
+      buyerFacingSoWhat: 'Frame the value as fewer missed promises, faster counter-sales decisions, better replenishment timing, and margin protection on urgent replacement orders.',
+      competitiveContrast: liveDemo.competitiveContrast || 'NetSuite keeps branch promise, supplier timing, replenishment action, and order context together instead of forcing a spreadsheet or point-solution lookup.',
+      objectionResponse: 'If the buyer asks whether the promise is trustworthy, open the returned records and show the proof path first; then ask which branch, supplier handoff, or replenishment decision they would validate next.',
+      doNotClaim: `Do not claim ${forbidden}, measured ROI, record creation, write actions, or availability beyond the returned records and confirmed buyer evidence.`
+    };
+  }
+
+  function electricalComponentsStorySurfacePolishW324(state, selected, firstProof, visibleRecords) {
+    const intake = normalizedIntake(state || {});
+    const customer = intake.customer || 'the buyer';
+    const evidenceText = [
+      intake.customer,
+      intake.website,
+      intake.notes,
+      selected && selected.label,
+      selected && selected.description
+    ].filter(Boolean).join(' ');
+    const hasElectricalCounterSignal = /electrical|contractor|counter|breaker|conduit|panel|job-critical|job critical|branch transfer|supplier eta|eclipse/i.test(evidenceText);
+    if (!hasElectricalCounterSignal) return null;
+    const records = arrayValue(visibleRecords);
+    const byLabel = (pattern) => records.find((recordItem) => pattern.test(String(recordItem && recordItem.consultantLabel || '')));
+    const product = byLabel(/Product SKU/i) || firstProof || {};
+    const availability = byLabel(/Branch Availability|Replenishment/i) || firstProof || {};
+    const support = byLabel(/Fulfillment Support/i) || {};
+    const productName = product.name || product.recordName || 'the returned contractor Product SKU';
+    const availabilityName = availability.name || availability.recordName || 'the branch transfer and replenishment proof';
+    const supportName = support.name || support.recordName || 'the fulfillment support SKU';
+    return {
+      storyPackCandidate: 'electrical-components-distributor-review-only',
+      firstCallSummary: `${customer} is testing whether counter reps can prove contractor-critical availability and alternatives before promising the job.`,
+      proofMove: `Open ${productName}, then use ${availabilityName} and ${supportName} to show contractor demand, branch transfer or replenishment support, and fulfillment confidence in one NetSuite proof path.`,
+      safeClaim: `${customer} can use the returned records to inspect contractor-critical availability, alternate support, and replenishment confidence before making a counter promise.`,
+      buyerFacingSoWhat: 'Frame the value as fewer callbacks, faster contractor counter decisions, and better margin protection after the buyer confirms the current callback baseline.',
+      competitiveContrast: 'NetSuite keeps contractor demand, item availability, branch transfer context, and fulfillment support in one path instead of splitting the story across Eclipse reports, supplier portals, Excel sheets, and customer texts.',
+      objectionResponse: 'If the buyer asks how this avoids another callback, open the returned records and ask which alternate, branch transfer, or supplier ETA needs to be trusted before the contractor leaves.',
+      doNotClaim: 'Do not claim guaranteed delivery, measured ROI, manufacturing, WIP, source-pack truth, record creation, write actions, or availability beyond the returned records and confirmed buyer evidence.',
+      weakEvidenceConfirmation: 'Electrical Components Distribution is review-only story shaping here; confirm website/category evidence before treating it as source-pack truth.'
+    };
+  }
+
   function consultantStorySurfaceFromLanePackW247(state, lanePack, normalizedImport) {
     const resolution = resolveLanePackFromEvidenceW246(state);
     const selected = lanePack || (resolution.status === 'resolved' ? resolution.lanePack : null);
@@ -4264,6 +4325,14 @@
         evidenceReceiptW254: storyEvidenceReceiptTrailW254(state, selected, resolution, normalizedImport, firstProof, advisory)
       });
     }
+    const distributionPack = selected && (
+      selected.operatingMode === 'distribution_replenishment' ||
+      selected.packId === 'industrial-distributor' ||
+      selected.packId === 'cpg-distributor'
+    );
+    const distributionPolish = distributionPack ? distributionStorySurfacePolishW322(state, selected, firstProof, visibleRecords) : null;
+    const electricalPolish = distributionPack ? electricalComponentsStorySurfacePolishW324(state, selected, firstProof, visibleRecords) : null;
+    const storyPolish = electricalPolish || distributionPolish;
     return consultantStoryTrustPolishW253({
       schema: 'forge.consultant-story-surface.v1',
       status: firstProof ? 'story_ready' : 'story_ready_without_open_target',
@@ -4271,14 +4340,20 @@
       laneLabel: selected.label,
       openTarget: firstProof ? `Open ${firstProof.name}${firstProof.consultantLabel ? ` (${firstProof.consultantLabel})` : ''}.` : selected.liveDemo.proofMove,
       openUrl: firstProof && firstProof.supportedOpenUrl || '',
-      proofMove: firstProof ? `${selected.liveDemo.proofMove} Anchor the proof on ${firstProof.name} and its supported Open link.` : selected.liveDemo.proofMove,
-      safeClaim: selected.liveDemo.storyAnchor,
-      doNotClaim: `Do not claim ${selected.vocabulary.forbidden.join(', ')}, created records, write actions, or measured ROI without evidence.`,
-      buyerFacingSoWhat: selected.liveDemo.roiSoWhat,
-      competitiveContrast: selected.liveDemo.competitiveContrast,
+      storyPackCandidateW324: electricalPolish && electricalPolish.storyPackCandidate || '',
+      firstCallSummaryW322: storyPolish && storyPolish.firstCallSummary || '',
+      firstCallSummaryW324: electricalPolish && electricalPolish.firstCallSummary || '',
+      proofMove: storyPolish ? storyPolish.proofMove : firstProof ? `${selected.liveDemo.proofMove} Anchor the proof on ${firstProof.name} and its supported Open link.` : selected.liveDemo.proofMove,
+      safeClaim: storyPolish ? storyPolish.safeClaim : selected.liveDemo.storyAnchor,
+      doNotClaim: storyPolish ? storyPolish.doNotClaim : `Do not claim ${selected.vocabulary.forbidden.join(', ')}, created records, write actions, or measured ROI without evidence.`,
+      buyerFacingSoWhat: storyPolish ? storyPolish.buyerFacingSoWhat : selected.liveDemo.roiSoWhat,
+      competitiveContrast: storyPolish ? storyPolish.competitiveContrast : selected.liveDemo.competitiveContrast,
+      objectionResponseW322: storyPolish && storyPolish.objectionResponse || '',
+      objectionResponseW324: electricalPolish && electricalPolish.objectionResponse || '',
+      weakEvidenceConfirmationW324: electricalPolish && electricalPolish.weakEvidenceConfirmation || '',
       nllmAdvisory: {
         confidence: resolution.confidence,
-        uncertainty: resolution.status === 'resolved' ? 'Low uncertainty: website evidence resolved the lane pack; keep it visible if buyer evidence changes.' : 'Visible uncertainty: ask for confirmation before treating the pack as truth.',
+        uncertainty: electricalPolish && electricalPolish.weakEvidenceConfirmation || (resolution.status === 'resolved' ? 'Low uncertainty: website evidence resolved the lane pack; keep it visible if buyer evidence changes.' : 'Visible uncertainty: ask for confirmation before treating the pack as truth.'),
         writeAuthority: 'none',
         creationAllowed: false,
         allowedTasks: advisory.allowedTasks,
@@ -14435,8 +14510,8 @@
       packId === 'cpg-distributor';
     if (distributionPack) {
       if (/finished_or_assembly_item|hero_sku|product_sku|branch_or_product_sku|heroitem|hero_item/.test(evidence)) return 'Product SKU';
-      if (/formula_or_batch_structure|availability_or_replenishment_flow|replenishment_or_availability_flow|matrixproofitem|matrix_or_proof_item/.test(evidence)) return 'Availability/Replenishment Flow';
-      if (/component_item|supporting_sku|componentitem/.test(evidence)) return 'Supporting SKU';
+      if (/formula_or_batch_structure|availability_or_replenishment_flow|replenishment_or_availability_flow|matrixproofitem|matrix_or_proof_item/.test(evidence)) return 'Branch Availability / Replenishment Flow';
+      if (/component_item|supporting_sku|componentitem/.test(evidence)) return 'Fulfillment Support SKU';
     }
     return modeAwareRecordLabelW216(mappedRole, mode);
   }

@@ -971,6 +971,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       enableManufacturing: finalEnableManufacturing,
       enableWip: effectiveEnableWip,
       prospect,
+      website,
+      notes,
+      agenda,
       extId,
       confirmedBuildRequestJson
     });
@@ -4176,6 +4179,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const selectedToggles = request.selectedToggles || {};
     const operatingMode = str(request.resolvedOperatingMode || contract.resolvedOperatingMode || '');
     const laneId = str(demoPath.laneId || selectedToggles.selectedLaneId || request.selectedLaneId || '');
+    const fallbackText = String([
+      opts && opts.extId,
+      opts && opts.prospect,
+      opts && opts.website,
+      opts && opts.notes,
+      opts && opts.agenda,
+      opts && opts.familyKey,
+      opts && opts.scenario
+    ].join(' '));
     const text = String([
       operatingMode,
       laneId,
@@ -4185,7 +4197,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       contract.label,
       arrayFromMaybe(request.requiredRecordRoles).join(' '),
       arrayFromMaybe(contract.requiredRecordRoles).join(' '),
-      arrayFromMaybe(contract.allowedNouns).join(' ')
+      arrayFromMaybe(contract.allowedNouns).join(' '),
+      fallbackText
     ].join(' ')).toLowerCase();
     const invalidTerms = lowerList(contract.invalidTerms).concat([
       'finished good',
@@ -4207,6 +4220,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (/distribution_replenishment|industrial_distribution|distribution|branch|replenishment|fulfillment|availability/.test(text)) modeKey = 'distribution_replenishment';
     if (/food_batch_manufacturing|food|beverage|cpg|ingredient|formula|batch/.test(text) && enableManufacturing) modeKey = 'food_ingredient_manufacturing';
     if (/manufacturing|assembly|work order|routing|wip/.test(text) && (enableManufacturing || enableWip)) modeKey = enableWip ? 'wip_manufacturing' : 'manufacturing';
+    if (!modeKey && !enableManufacturing && !enableWip) modeKey = 'distribution_replenishment';
     if (!modeKey) modeKey = '';
     return {
       schema: 'idb.runner-lane-vocabulary-policy.v1',
@@ -5194,10 +5208,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const laneVocabularyPolicy = runnerLaneVocabularyPolicyV1({
       confirmedBuildRequestJson: confirmedBuildRequest,
       enableManufacturing: args.enableManufacturing,
-      enableWip: args.enableWip
+      enableWip: args.enableWip,
+      prospect,
+      website: args.website,
+      notes: args.notes,
+      agenda: args.agenda,
+      extId
     });
     const resultNames = applyToggleAwareNamingGuardrails(Object.assign({}, args.names || {}), {
       prospect,
+      website: args.website,
+      notes: args.notes,
+      agenda: args.agenda,
       extId,
       enableManufacturing: args.enableManufacturing,
       enableWip: args.enableWip,

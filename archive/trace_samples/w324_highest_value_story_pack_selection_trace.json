@@ -1,0 +1,70 @@
+{
+  "schema": "forge.w324.highest-value-story-pack-selection.trace.v1",
+  "status": "highest_value_story_pack_selected",
+  "protectedBaselines": {
+    "w321LiveWritebackBaselineFrozen": true,
+    "w322DistributionVocabularyStoryPolishFrozen": true
+  },
+  "selection": {
+    "selectedPack": "electrical-components-distributor-review-only",
+    "selectedFixture": "metrovolt-electrical-components-counter-sales",
+    "sourceScoringModel": "W323 industry story pack first-call differentiation scoring",
+    "reason": "Improves contractor counter sales story specificity while reusing the proven distribution writeback path and W322-safe proof record labels.",
+    "expectedLiveStoryImprovement": [
+      "contractor-critical buyer problem summary",
+      "Product SKU plus branch transfer and replenishment proof move",
+      "callback-risk objection response",
+      "Eclipse supplier portal Excel text-message competitive contrast",
+      "ROI-safe fewer-callbacks and margin-protection framing",
+      "guaranteed-delivery and source-pack-truth no-claim caution",
+      "review-only weak-evidence confirmation"
+    ]
+  },
+  "sourceFixturesUsed": [
+    "archive/fixtures/w323_industry_story_first_call_fixtures.json"
+  ],
+  "implementation": {
+    "runtimeFile": "idb-drawer.user.js",
+    "storyOverlay": "electricalComponentsStorySurfacePolishW324",
+    "activatedBy": "electrical contractor counter first-call evidence while using the existing distribution lane pack",
+    "sourceLanePackMutation": false,
+    "installedProposedPack": false,
+    "runtimeAuthorityChanged": false
+  },
+  "rollbackBoundary": {
+    "canRevert": [
+      "electricalComponentsStorySurfacePolishW324",
+      "W324 storyPolish selection fields",
+      "W324 archive packets",
+      "W324 harness registration"
+    ],
+    "mustNotChange": [
+      "W321 writeback baseline",
+      "W322 distribution vocabulary baseline",
+      "W144 submit/refresh/import",
+      "W151/W214/W245 validation",
+      "Open-link authority",
+      "src/contracts/lanePacks.js"
+    ]
+  },
+  "guardrails": {
+    "sourceLanePacksMutated": false,
+    "proposedPackInstalled": false,
+    "laneResolutionBehaviorChanged": false,
+    "w144SubmitRefreshImportUnchanged": true,
+    "connectedBuildAuthorityUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "returnedRecordLabelsW322Compatible": true,
+    "openLinksOnlyAfterValidImport": true,
+    "normalConsultantUiHiddenDiagnostics": true,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W325",
+    "title": "Live Smoke Test Improved Industry Story Surface",
+    "focus": "run one fresh sales-call use case through the improved electrical/distribution story surface and judge story usefulness, proof fit, labels, and writeback continuity"
+  }
+}

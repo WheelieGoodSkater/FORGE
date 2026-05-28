@@ -1,0 +1,87 @@
+{
+  "schema": "forge.w323.industry-story-first-call-fixtures.v1",
+  "status": "review_only_story_expansion_fixtures",
+  "fixtures": [
+    {
+      "id": "gulfshore-industrial-supply-branch-fulfillment",
+      "industry": "Industrial Distribution",
+      "subIndustry": "Branch Fulfillment",
+      "candidatePackReference": "industrial-distributor",
+      "company": "Gulfshore Industrial Supply",
+      "website": "https://example.invalid/gulfshore-industrial-supply",
+      "firstCallNotes": {
+        "buyerRole": "VP Branch Operations with regional sales manager on the call.",
+        "pain": "Counter reps are promising hose, fittings, and MRO parts before they know whether the local branch, another branch, or a supplier can actually fulfill the order.",
+        "proofRequested": "Show a branch availability path that connects the customer promise, product SKU, replenishment action, and fulfillment support without turning it into manufacturing.",
+        "valueHypothesis": "Reduce missed promises, speed counter-sales decisions, protect margin on urgent replacement orders, and make replenishment exceptions visible sooner.",
+        "competitorOrSpreadsheetPressure": "They currently check branch spreadsheets, supplier portals, and a point inventory lookup before calling the customer back.",
+        "uncertaintyOrMissingEvidence": "Website category evidence is thin; confirm the exact branch/category terms before claiming industry fit."
+      },
+      "expectedStory": {
+        "buyerProblemSummary": "Gulfshore needs branch teams to make a believable availability promise while the buyer is still on the phone.",
+        "proofRecordRoles": ["Customer", "Sales Order", "Product SKU", "Branch Availability / Replenishment Flow", "Fulfillment Support SKU"],
+        "demoPath": "Distribution / Branch Availability Control",
+        "proofMove": "Open the Product SKU, then show branch availability, replenishment timing, and fulfillment support as one NetSuite proof path.",
+        "objectionResponse": "If they ask whether the promise is current enough, show the returned records first and ask which branch or supplier handoff they want to validate next.",
+        "competitiveContrast": "NetSuite keeps branch promise, replenishment action, and order context together instead of stitching spreadsheets and supplier portals.",
+        "roiSafeValueFraming": "Frame ROI as risk reduction: fewer missed promises, faster counter-sales decisions, and cleaner replenishment exception handling after the buyer confirms the baseline.",
+        "noClaimCaution": "Do not claim measured ROI, manufacturing readiness, WIP, record creation, write actions, or guaranteed availability.",
+        "weakEvidenceConfirmationBehavior": "Ask the consultant to confirm branch/category evidence before using ROI, competitive, or write-prep language."
+      }
+    },
+    {
+      "id": "metrovolt-electrical-components-counter-sales",
+      "industry": "Electrical Components Distribution",
+      "subIndustry": "Contractor Counter Sales",
+      "candidatePackReference": "electrical-components-distributor-review-only",
+      "company": "MetroVolt Electrical Supply",
+      "website": "https://example.invalid/metrovolt-electrical",
+      "firstCallNotes": {
+        "buyerRole": "Director of Sales with branch manager and inside sales lead.",
+        "pain": "Contractors ask whether breakers, conduit, panels, and job-critical parts are available today, but reps do not trust the branch transfer and supplier ETA story.",
+        "proofRequested": "Show availability, substitute/alternate readiness, and replenishment confidence for a contractor order without showing production or assembly language.",
+        "valueHypothesis": "Win contractor trust by making the counter promise more precise, reducing callbacks, and protecting margin when urgent jobs need alternatives.",
+        "competitorOrSpreadsheetPressure": "They compare against Epicor Eclipse reports, supplier portals, Excel branch transfer sheets, and customer texts.",
+        "uncertaintyOrMissingEvidence": "Candidate pack is not source truth yet; use as review-only story expectations until human-reviewed pack approval."
+      },
+      "expectedStory": {
+        "buyerProblemSummary": "MetroVolt needs counter reps to prove contractor-critical availability and alternatives before promising the job.",
+        "proofRecordRoles": ["Customer", "Sales Order", "Product SKU", "Branch Availability / Replenishment Flow", "Fulfillment Support SKU"],
+        "demoPath": "Electrical Distribution / Contractor Availability",
+        "proofMove": "Open the contractor Product SKU, then show branch transfer/replenishment support and fulfillment confidence for the order promise.",
+        "objectionResponse": "If they ask how this avoids another callback, show the returned records and ask which alternate, transfer, or supplier ETA needs to be trusted before the contractor leaves.",
+        "competitiveContrast": "NetSuite keeps contractor demand, item availability, branch transfer context, and fulfillment support in one path instead of splitting the story across Eclipse reports, supplier portals, and texts.",
+        "roiSafeValueFraming": "Frame value as fewer callbacks, faster contractor counter decisions, and better margin protection after they confirm the current callback baseline.",
+        "noClaimCaution": "Do not claim guaranteed delivery, measured ROI, manufacturing, WIP, write actions, or source-pack truth for the proposed electrical pack.",
+        "weakEvidenceConfirmationBehavior": "Mark the electrical pack as review-only and ask for website/category confirmation before source mutation."
+      }
+    },
+    {
+      "id": "ridgeway-outdoor-power-dealer-hardgoods",
+      "industry": "Dealer / Hardgoods Distribution",
+      "subIndustry": "Outdoor Power Equipment Dealer Network",
+      "candidatePackReference": "dealer-hardgoods-review-only",
+      "company": "Ridgeway Outdoor Power",
+      "website": "https://example.invalid/ridgeway-outdoor-power",
+      "firstCallNotes": {
+        "buyerRole": "General manager with parts counter lead and service coordinator.",
+        "pain": "Dealers lose customer confidence when mower, snowblower, attachment, and replacement-part availability differs between the sales counter, service desk, and supplier ETA.",
+        "proofRequested": "Show dealer SKU availability, channel allocation, and service/parts fulfillment support for a customer order.",
+        "valueHypothesis": "Protect seasonal revenue, reduce service desk escalations, and help staff answer whether they can sell, reserve, or replenish the item.",
+        "competitorOrSpreadsheetPressure": "They use dealer management reports, OEM portals, QuickBooks exports, and whiteboard allocations during seasonal peaks.",
+        "uncertaintyOrMissingEvidence": "Need website/category confirmation before claiming this is outdoor power specific rather than generic hardgoods."
+      },
+      "expectedStory": {
+        "buyerProblemSummary": "Ridgeway needs one dealer-ready story for whether a product can be sold, reserved, replenished, or supported by service.",
+        "proofRecordRoles": ["Customer", "Sales Order", "Dealer SKU", "Channel Availability / Allocation Flow", "Service Fulfillment Support"],
+        "demoPath": "Dealer Hardgoods / Seasonal Availability",
+        "proofMove": "Open the dealer SKU, then prove allocation, replenishment timing, and service support against the customer promise.",
+        "objectionResponse": "If they ask what happens during a seasonal spike, show the proof path and ask which allocation or supplier handoff currently causes the most rework.",
+        "competitiveContrast": "NetSuite keeps dealer demand, SKU availability, allocation, and service fulfillment visible instead of splitting it across DMS reports, OEM portals, and whiteboards.",
+        "roiSafeValueFraming": "Frame ROI as seasonal risk reduction: fewer escalations, clearer allocation decisions, and faster customer answers after the baseline is confirmed.",
+        "noClaimCaution": "Do not claim guaranteed seasonal availability, measured savings, manufacturing, WIP, write actions, or unsupported outdoor-power fit.",
+        "weakEvidenceConfirmationBehavior": "Ask for dealer/category confirmation before using outdoor-power-specific claims."
+      }
+    }
+  ]
+}

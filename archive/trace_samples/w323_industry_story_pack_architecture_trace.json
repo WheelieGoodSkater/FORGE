@@ -1,0 +1,49 @@
+{
+  "schema": "forge.w323.industry-story-pack-architecture.trace.v1",
+  "status": "industry_story_pack_architecture_ready",
+  "protectedBaselines": {
+    "w321LiveWritebackBaselineFrozen": true,
+    "w322DistributionVocabularyStoryPolishFrozen": true
+  },
+  "requiredStoryPackFields": [
+    "buyerProblemSummary",
+    "proofRecordRoles",
+    "demoPath",
+    "proofMove",
+    "objectionResponse",
+    "competitiveContrast",
+    "roiSafeValueFraming",
+    "noClaimCaution",
+    "weakEvidenceConfirmationBehavior"
+  ],
+  "firstCallFixtureCoverage": [
+    "industrial distribution / branch fulfillment",
+    "electrical components distribution / contractor counter sales",
+    "dealer or hardgoods distribution / outdoor power equipment dealer network"
+  ],
+  "storyScoringModel": {
+    "industrySpecificity": "Names the industry operating decision and avoids generic ERP phrasing.",
+    "proofRecordFit": "Uses record roles that match the buyer promise and proof path.",
+    "storyUsefulness": "Gives the consultant a concrete move to run live.",
+    "objectionReadiness": "Answers the expected buyer doubt without overclaiming.",
+    "claimSafety": "Uses risk-reduction language before any measured savings claim.",
+    "vocabularySafety": "Blocks wrong industry terms and mode leakage.",
+    "weakEvidenceHonesty": "Surfaces missing website/category evidence and asks for confirmation."
+  },
+  "selectedNextBlock": {
+    "id": "W324",
+    "title": "Implement Highest-Value Industry Story Pack Into Live Story Surface",
+    "focus": "use W323 scoring to choose one review-only story pack and wire only safe story-copy shaping into the live Review/Run surface"
+  },
+  "guardrails": {
+    "sourceLanePacksMutated": false,
+    "w144SubmitRefreshImportUnchanged": true,
+    "connectedBuildAuthorityUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "openLinksOnlyAfterValidImport": true,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  }
+}

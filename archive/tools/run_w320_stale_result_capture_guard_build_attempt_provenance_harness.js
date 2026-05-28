@@ -174,6 +174,17 @@ function main() {
       /staleCandidates/.test(adapter),
     'adapter should reject stale capture candidates');
 
+  assertCase(results, 'w144-allows-current-safe-token-sidecar-when-runner-provenance-is-missing',
+    /function legacyCurrentSafeTokenCaptureAllowed/.test(adapter) &&
+      /legacy_current_safe_token_capture_allowed/.test(adapter) &&
+      /sidecar_missing_build_attempt_provenance_but_matches_current_safe_token_and_file_time/.test(adapter) &&
+      /timestampFromResultCaptureFileName/.test(adapter) &&
+      /idempotencyToken_mismatch/.test(adapter) &&
+      /idempotencyMatchesExtIdAlias/.test(adapter) &&
+      /tokenSource === 'safeIdempotencyFileTokenW320'/.test(adapter) &&
+      /fileTime >= submittedTime/.test(adapter),
+    'adapter should recover current legacy sidecars without accepting stale mismatched captures');
+
   assertCase(results, 'runner-result-capture-includes-required-provenance',
     /sourceRequestId/.test(runner) &&
       /buildAttemptId/.test(runner) &&
@@ -182,6 +193,16 @@ function main() {
       /runnerLaneVocabularyPolicy/.test(runner) &&
       /function resultCaptureFileNameW320/.test(runner),
     'runner sidecar should include provenance plus vocabulary policy');
+
+  assertCase(results, 'runner-fallback-vocabulary-is-distribution-safe-when-request-json-is-missing',
+    /fallbackText/.test(runner) &&
+      /opts && opts\.notes/.test(runner) &&
+      /opts && opts\.agenda/.test(runner) &&
+      /!modeKey && !enableManufacturing && !enableWip\) modeKey = 'distribution_replenishment'/.test(runner) &&
+      /website,\n\s+notes,\n\s+agenda,\n\s+extId,\n\s+confirmedBuildRequestJson/.test(runner) &&
+      /notes: args\.notes/.test(runner) &&
+      /agenda: args\.agenda/.test(runner),
+    'runner should not fall back to Formula/Ingredient labels when confirmed request JSON is unavailable');
 
   assertCase(results, 'runner-sales-order-memo-uses-record-safe-consolidated-context',
     /function recordSafeDemoContextMemo/.test(runner) &&

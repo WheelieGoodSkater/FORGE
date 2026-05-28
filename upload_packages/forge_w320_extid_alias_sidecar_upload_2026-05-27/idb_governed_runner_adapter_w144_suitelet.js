@@ -503,6 +503,37 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     };
   }
 
+  function timestampFromResultCaptureFileName(fileName) {
+    const match = String(fileName || '').match(/_(\d{12,})\.json$/);
+    return match ? Number(match[1]) : 0;
+  }
+
+  function submittedAtTime(value) {
+    const parsed = Date.parse(String(value || ''));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function legacyCurrentSafeTokenCaptureAllowed(matchResult, searchToken, fileName) {
+    const expected = matchResult && matchResult.expected || {};
+    const actual = matchResult && matchResult.actual || {};
+    const reasons = matchResult && matchResult.reasons || [];
+    const tokenSource = searchToken && searchToken.source || '';
+    const fileTime = timestampFromResultCaptureFileName(fileName);
+    const submittedTime = submittedAtTime(expected.submittedAt);
+    const provenanceMissingWithExtIdAliasOnly = reasons.length > 0 && reasons.every((reason) => {
+      return reason === 'buildAttemptId_missing' || reason === 'idempotencyToken_mismatch';
+    });
+    const noActualCurrentFields = !actual.runnerTaskId && !actual.buildAttemptId && !actual.sourceRequestId && !actual.submittedAt;
+    const idempotencyMatchesExtIdAlias = expected.idempotencyToken && actual.idempotencyToken &&
+      (actual.idempotencyToken === expected.idempotencyToken || actual.idempotencyToken.indexOf(expected.idempotencyToken) !== -1);
+    return tokenSource === 'safeIdempotencyFileTokenW320' &&
+      provenanceMissingWithExtIdAliasOnly &&
+      noActualCurrentFields &&
+      idempotencyMatchesExtIdAlias &&
+      fileTime > 0 &&
+      (!submittedTime || fileTime >= submittedTime);
+  }
+
   function buildNetSuiteRecordUrl(type, id) {
     const internalId = String(id || '').trim();
     if (!numericId(internalId)) return '';
@@ -835,6 +866,22 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         }
         const matchResult = resultCaptureMatchesCurrentAttempt(parsed, expected);
         if (!matchResult.matches) {
+          if (legacyCurrentSafeTokenCaptureAllowed(matchResult, searchToken, fileName || captureFile.name || '')) {
+            return {
+              found: true,
+              fileId,
+              fileName: String(fileName || captureFile.name || ''),
+              contents,
+              lookupSource: searchToken.source,
+              provenance: matchResult.actual,
+              provenanceFallback: {
+                status: 'legacy_current_safe_token_capture_allowed',
+                reason: 'sidecar_missing_build_attempt_provenance_but_matches_current_safe_token_and_file_time',
+                expected: matchResult.expected,
+                actual: matchResult.actual
+              }
+            };
+          }
           staleCandidates.push({
             fileId,
             fileName: String(fileName || captureFile.name || ''),

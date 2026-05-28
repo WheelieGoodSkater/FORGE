@@ -1,0 +1,84 @@
+{
+  "schema": "forge.w326.live-smoke-evidence-review-next-story-pack.trace.v1",
+  "status": "w325_live_evidence_not_uploaded",
+  "decision": "needs_attention_pending_w325_trace",
+  "evidenceReview": {
+    "traceFileReference": "pending_user_upload",
+    "screenshotReferences": [],
+    "uploadedTraceFound": false,
+    "uploadedScreenshotsFound": false,
+    "submitCapturedRunnerTaskId": "pending",
+    "refreshPollFoundCurrentMatchingResult": "pending",
+    "completedResultPassedW151W214W245": "pending",
+    "finishBuildImportedReturnedRecords": "pending",
+    "openLinksAppearedOnlyAfterValidImport": "pending",
+    "reviewRunUsedW324ElectricalStoryShaping": "pending"
+  },
+  "returnedRecordsReviewed": {
+    "status": "pending_live_evidence",
+    "expectedLabels": [
+      "Customer",
+      "Sales Order",
+      "Product SKU",
+      "Branch Availability / Replenishment Flow",
+      "Fulfillment Support SKU"
+    ],
+    "names": [],
+    "numericIds": [],
+    "supportedOpenLinks": []
+  },
+  "storyQualityFindings": {
+    "status": "pending_live_evidence",
+    "buyerProblemClarity": "pending",
+    "proofMoveUsefulness": "pending",
+    "objectionResponseQuality": "pending",
+    "competitiveContrast": "pending",
+    "roiSafeValueFraming": "pending",
+    "noClaimCaution": "pending",
+    "weakEvidenceHonesty": "pending"
+  },
+  "vocabularyFindings": {
+    "status": "pending_live_evidence",
+    "blockedTerms": [
+      "Finished/Assembly Item",
+      "Formula or Batch Structure",
+      "Ingredient",
+      "Component Item",
+      "Work Order",
+      "Routing",
+      "WIP"
+    ],
+    "distributionLeakageFound": "pending"
+  },
+  "connectionFindings": {
+    "status": "locally_protected_pending_live_evidence",
+    "w321WritebackBaselineProtected": true,
+    "w144SubmitRefreshImportUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "openLinkAuthorityUnchanged": true,
+    "drawerWriteAuthorityUnchanged": true
+  },
+  "selectedNextIndustryStoryPack": {
+    "status": "conditional_after_w325_keep",
+    "pack": "dealer-hardgoods-review-only",
+    "candidateFixture": "ridgeway-outdoor-power-dealer-hardgoods",
+    "reason": "Dealer/hardgoods distribution is the next highest-value expansion once W325 is confirmed keep because it tests seasonal SKU availability, channel allocation, and service/parts fulfillment story differentiation."
+  },
+  "guardrails": {
+    "w321BaselineUnchanged": true,
+    "w322LabelsProtected": true,
+    "w324StoryBehaviorEvaluatedAgainstW325Expectations": true,
+    "w144SubmitRefreshImportUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "sourcePackMutationIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W327",
+    "title": "Apply W325 Evidence Or Prepare Dealer Hardgoods Story Pack",
+    "focus": "if W325 evidence is uploaded, review it and decide keep/fix; if W325 is keep, implement the dealer/hardgoods story pack surface"
+  }
+}

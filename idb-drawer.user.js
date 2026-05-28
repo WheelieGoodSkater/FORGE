@@ -4308,14 +4308,45 @@
     const firstProof = visibleRecords.find((recordItem) => recordItem && recordItem.canonicalRole && !/customer|sales_order/.test(recordItem.canonicalRole)) || visibleRecords[0] || null;
     const advisory = nllmAdvisoryPayloadForLanePackW246(state, selected, normalizedImport);
     if (!selected) {
+      const intake = normalizedIntake(state || {});
+      const evidenceText = [
+        intake.customer,
+        intake.website,
+        intake.notes
+      ].filter(Boolean).join(' ');
+      const electricalCounterSignals = /electrical|contractor|counter|breaker|breakers|conduit|panel|panels|wire|fitting|fittings|supplier portal|branch transfer|callback|callbacks|alternate|substitute|margin/i.test(evidenceText);
+      const firstProofLabel = firstProof && (firstProof.consultantLabel || firstProof.canonicalRole) || '';
+      const importedProofTarget = firstProof
+        ? `Use imported records: open ${firstProof.name}${firstProofLabel ? ` (${firstProofLabel})` : ''}.`
+        : 'Confirm lane before opening proof records.';
+      const importedProofMove = firstProof
+        ? electricalCounterSignals
+          ? `Use ${firstProofLabel || 'the returned proof record'}: ${firstProof.name} with its supported Open link. Prove the contractor counter availability path, then tie it to branch transfer, replenishment, supplier portal checks, callbacks, urgent alternates, and margin-safe substitutes without turning weak lane evidence into a claim.`
+          : `Use ${firstProofLabel || 'the returned proof record'}: ${firstProof.name} with its supported Open link. Prove only the imported availability and replenishment path while confirming lane evidence.`
+        : 'Use only returned record names, supported Open links, and website evidence until the lane is confirmed.';
+      const importedSafeClaim = firstProof
+        ? electricalCounterSignals
+          ? 'Returned records are ready to inspect for contractor counter availability, transfer/replenishment, and substitute support; lane and ROI claims still need buyer confirmation.'
+          : 'Returned records are ready to inspect; lane and ROI claims still need buyer confirmation.'
+        : 'Evidence is not strong enough for a lane claim yet.';
       return consultantStoryTrustPolishW253({
         schema: 'forge.consultant-story-surface.v1',
-        status: 'needs_lane_confirmation',
-        openTarget: 'Confirm lane before opening proof records.',
-        proofMove: 'Use only returned record names, supported Open links, and website evidence until the lane is confirmed.',
-        safeClaim: 'Evidence is not strong enough for a lane claim yet.',
+        status: firstProof ? 'story_ready_needs_lane_confirmation' : 'needs_lane_confirmation',
+        openTarget: importedProofTarget,
+        openUrl: firstProof && firstProof.supportedOpenUrl || '',
+        proofMove: importedProofMove,
+        safeClaim: importedSafeClaim,
         doNotClaim: 'Do not claim industry fit, ROI, record creation, write actions, or availability without confirmed evidence.',
-        buyerFacingSoWhat: 'Keep the buyer story grounded in confirmed evidence and visible uncertainty.',
+        buyerFacingSoWhat: firstProof
+          ? electricalCounterSignals
+            ? 'Use the imported NetSuite records as the proof path for counter callbacks, branch transfer/replenishment decisions, and margin-safe alternates; keep industry confidence visibly confirmation-first.'
+            : 'Use the imported NetSuite records as the proof path, and keep industry confidence visibly confirmation-first.'
+          : 'Keep the buyer story grounded in confirmed evidence and visible uncertainty.',
+        firstCallSummaryW322: firstProof
+          ? electricalCounterSignals
+            ? 'Imported records are ready; use them to prove contractor counter availability, replenishment, and substitute support while keeping weak lane evidence visible.'
+            : 'Imported records are ready; use them to prove the path while keeping weak lane evidence visible.'
+          : '',
         nllmAdvisory: {
           confidence: 'low',
           uncertainty: 'Lane evidence is insufficient; ask for confirmation and keep uncertainty visible.',
@@ -19616,7 +19647,7 @@
     const finalPivots = finalNavigation.runCanUseImportedFinalNames
       ? w216ReviewRun && w216ReviewRun.consultantRun
         ? `${w216ReviewRun.consultantRun.headline}: ${w216ReviewRun.consultantRun.show}.`
-        : `Use final generated names: ${finalNavigation.scriptPivotObjects.slice(0, 3).map((item) => `${item.label}: ${item.name}`).join(' -> ')}.`
+        : `Use final generated names: ${finalNavigation.scriptPivotObjects.slice(0, 3).map((item) => `${item.consultantLabel || item.label}: ${item.name}`).join(' -> ')}.`
       : '';
     const w213Run = value.w213Coach && value.w213Coach.updatedConsultantCopyModel
       ? value.w213Coach.updatedConsultantCopyModel.runCoaching
@@ -23993,7 +24024,7 @@
             <ol class="idb-value-list">
               ${finalNavigation.scriptPivotObjects.map((item) => `
                 <li>
-                  <span>${escapeHtml(item.label)}: ${escapeHtml(item.name)}</span>
+                  <span>${escapeHtml(item.consultantLabel || item.label)}: ${escapeHtml(item.name)}</span>
                   ${renderRecordLinkAuthority(item)}
                 </li>
               `).join('')}

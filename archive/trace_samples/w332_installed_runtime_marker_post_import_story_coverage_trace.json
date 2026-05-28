@@ -1,0 +1,81 @@
+{
+  "schema": "forge.w332.installed-runtime-marker-post-import-story-coverage.trace.v1",
+  "status": "ready_for_marker_verified_live_smoke",
+  "runtimeMarker": "W332 post-import story polish active",
+  "evidence": {
+    "uploadedTraceFile": "/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1780001809153.json",
+    "customer": "Northline Electrical & Contractor Supply",
+    "writebackSucceeded": true,
+    "recordsImported": true,
+    "openLinksReturned": true,
+    "w331PolishVisibleInUploadedScreenshots": false
+  },
+  "rootCauseDecision": "likely_stale_install_or_cache_plus_uncovered_runtime_marker",
+  "returnedRecords": [
+    {
+      "consultantLabel": "Customer",
+      "name": "Northline Electrical & Contractor Supply Customer Account",
+      "id": "2522",
+      "openLinkPresent": true
+    },
+    {
+      "consultantLabel": "Sales Order",
+      "name": "SO2692",
+      "id": "82929",
+      "openLinkPresent": true
+    },
+    {
+      "consultantLabel": "Product SKU",
+      "name": "Northline Electrical & Contractor Supply Product Availabilit - ONTRACTO-PZ1R89-BGZ",
+      "id": "4245",
+      "openLinkPresent": true
+    },
+    {
+      "consultantLabel": "Availability/Replenishment Flow",
+      "name": "Branch Availability / Replenishment Flow - Northline Electric - ONTRACTO-PZ1R89-BGZ",
+      "id": "4246",
+      "openLinkPresent": true
+    },
+    {
+      "consultantLabel": "Supporting SKU",
+      "name": "Fulfillment Support SKU - Northline Electrical & Contractor S - ONTRACTO-PZ1R89-BGZ",
+      "id": "4247",
+      "openLinkPresent": true
+    }
+  ],
+  "postImportCoverage": {
+    "oldCtaBlockedAfterValidImport": true,
+    "importedRecordProofGuidanceRequired": true,
+    "weakEvidenceRemainsConfirmationFirstForClaims": true,
+    "consultantLabelsRequired": [
+      "Product SKU",
+      "Availability/Replenishment Flow",
+      "Supporting SKU"
+    ],
+    "blockedLegacyNormalUiLabels": [
+      "Hero item",
+      "Matrix item / proof item",
+      "Component item 1",
+      "Finished/Assembly",
+      "Formula",
+      "Work Order",
+      "Routing",
+      "WIP"
+    ]
+  },
+  "guardrails": {
+    "w321WritebackBaselineProtected": true,
+    "w144SubmitRefreshImportUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "sourceLanePacksMutated": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W333",
+    "title": "Marker-Verified Live Smoke After Post-Import Story Coverage",
+    "focus": "confirm installed W332 marker first, then run one clean electrical distribution smoke and review post-import CTA plus Run labels"
+  }
+}

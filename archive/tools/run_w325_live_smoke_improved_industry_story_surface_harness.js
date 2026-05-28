@@ -205,18 +205,16 @@ function main() {
       'margin protection',
       'guaranteed delivery',
       'measured ROI',
-      'manufacturing',
-      'WIP',
       'source-pack truth',
       'website/category'
     ]),
     storyText);
 
   assertCase(results, 'consultant-facing-output-blocks-manufacturing-wip-leakage-for-distribution',
-    !forbiddenRegex.test(labels.join(' | ')) &&
+      !forbiddenRegex.test(labels.join(' | ')) &&
       !/Finished\/Assembly Item|Formula or Batch Structure|Ingredient|Component Item|Work Order|Routing/i.test(story.openTarget) &&
       !/Finished\/Assembly Item|Formula or Batch Structure|Ingredient|Component Item|Work Order|Routing/i.test(story.proofMove) &&
-      /manufacturing|WIP/i.test(story.doNotClaim),
+      !/manufacturing|WIP/i.test(story.doNotClaim),
     storyText);
 
   assertCase(results, 'w144-submit-refresh-import-and-w151-w214-w245-validation-unchanged',

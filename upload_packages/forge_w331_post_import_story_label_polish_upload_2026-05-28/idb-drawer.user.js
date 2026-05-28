@@ -1177,21 +1177,6 @@
     ]
   };
 
-  const INSTALLED_DRAWER_RUNTIME_MARKER_W332 = 'W332 post-import story polish active';
-
-  function installedDrawerRuntimeMarkerW332() {
-    return {
-      schema: 'forge.installed-drawer-runtime-marker.w332.v1',
-      marker: INSTALLED_DRAWER_RUNTIME_MARKER_W332,
-      installedTarget: 'idb-drawer.user.js',
-      postImportStoryPolishActive: true,
-      consultantLabelPolishActive: true,
-      writebackAuthorityChanged: false,
-      validationChanged: false,
-      sourceLanePacksMutated: false
-    };
-  }
-
   const NETSUITE_WIN_THEMES = {
     products_cpg: {
       headline: 'NetSuite wins by keeping order promise, inventory, replenishment, and financial impact in one ERP flow.',
@@ -3585,8 +3570,7 @@
     const rows = arrayValue(receipt.rows);
     const row = (id) => rows.find((item) => item && item.id === id) || {};
     const openTarget = firstGlance.openTarget || 'Confirm the lane before opening proof records.';
-    const hasImportedOpenTarget = Boolean(story && story.openUrl && firstGlance.openTarget);
-    const weak = !hasImportedOpenTarget && (!story || story.status === 'needs_lane_confirmation' || !story.openUrl);
+    const weak = !story || story.status === 'needs_lane_confirmation' || !story.openUrl;
     const lines = {
       openingLine: weak
         ? 'Start by confirming the lane before turning this into a proof claim.'
@@ -3615,8 +3599,7 @@
   function guidedDemoStepSequenceW257(story) {
     const script = consultantLiveDemoScriptW256(story || {});
     const lines = script.lines || {};
-    const hasImportedOpenTarget = Boolean(story && story.openUrl && lines.whatToOpen);
-    const weak = !hasImportedOpenTarget && (!story || story.status === 'needs_lane_confirmation' || !story.openUrl || script.status === 'needs_confirmation_script');
+    const weak = !story || story.status === 'needs_lane_confirmation' || !story.openUrl || script.status === 'needs_confirmation_script';
     const openTarget = lines.whatToOpen || 'Confirm lane before opening proof records.';
     const soWhat = lines.valueSoWhat || 'Keep the value story tied to confirmed evidence.';
     const steps = [
@@ -4272,7 +4255,7 @@
     const liveDemo = selected && selected.liveDemo || {};
     const forbidden = selected && selected.vocabulary && Array.isArray(selected.vocabulary.forbidden)
       ? selected.vocabulary.forbidden.join(', ')
-      : 'production-build terms, routing, formula, ingredient, work order';
+      : 'manufacturing, WIP, routing, formula, ingredient, work order';
     return {
       firstCallSummary: `${customer} is testing whether the branch can make a believable availability promise before the order is placed.`,
       proofMove: `Open ${productName}, then use ${availabilityName} and ${supportName} to show how branch availability, replenishment timing, and fulfillment support stay in one NetSuite proof path.`,
@@ -4312,7 +4295,7 @@
       buyerFacingSoWhat: 'Frame the value as fewer callbacks, faster contractor counter decisions, and better margin protection after the buyer confirms the current callback baseline.',
       competitiveContrast: 'NetSuite keeps contractor demand, item availability, branch transfer context, and fulfillment support in one path instead of splitting the story across Eclipse reports, supplier portals, Excel sheets, and customer texts.',
       objectionResponse: 'If the buyer asks how this avoids another callback, open the returned records and ask which alternate, branch transfer, or supplier ETA needs to be trusted before the contractor leaves.',
-      doNotClaim: 'Do not claim guaranteed delivery, measured ROI, source-pack truth, record creation, write actions, or availability beyond the returned records and confirmed buyer evidence.',
+      doNotClaim: 'Do not claim guaranteed delivery, measured ROI, manufacturing, WIP, source-pack truth, record creation, write actions, or availability beyond the returned records and confirmed buyer evidence.',
       weakEvidenceConfirmation: 'Electrical Components Distribution is review-only story shaping here; confirm website/category evidence before treating it as source-pack truth.'
     };
   }
@@ -19603,14 +19586,6 @@
     };
   }
 
-  function consultantRunNavigationLabelW332(item) {
-    const label = item && (item.consultantLabel || item.label) || 'Record';
-    if (/matrix item|proof item|branch availability\s*\/\s*replenishment flow/i.test(label)) return 'Availability/Replenishment Flow';
-    if (/component item|fulfillment support sku/i.test(label)) return 'Supporting SKU';
-    if (/hero item/i.test(label)) return 'Product SKU';
-    return label;
-  }
-
   function pageAwareRunCue(value, lane, pageContext, selectedMove, recommendation) {
     const path = lane.moves.slice(0, 3).join(' -> ');
     const genericCue = `Open ${recommendation.move} next. If you are on a dashboard or unrelated page, navigate to ${recommendation.move} for ${value.customer}, then pivot through ${path} to prove ${lane.proofAnchor}.`;
@@ -19672,7 +19647,7 @@
     const finalPivots = finalNavigation.runCanUseImportedFinalNames
       ? w216ReviewRun && w216ReviewRun.consultantRun
         ? `${w216ReviewRun.consultantRun.headline}: ${w216ReviewRun.consultantRun.show}.`
-        : `Use final generated names: ${finalNavigation.scriptPivotObjects.slice(0, 3).map((item) => `${consultantRunNavigationLabelW332(item)}: ${item.name}`).join(' -> ')}.`
+        : `Use final generated names: ${finalNavigation.scriptPivotObjects.slice(0, 3).map((item) => `${item.consultantLabel || item.label}: ${item.name}`).join(' -> ')}.`
       : '';
     const w213Run = value.w213Coach && value.w213Coach.updatedConsultantCopyModel
       ? value.w213Coach.updatedConsultantCopyModel.runCoaching
@@ -24049,7 +24024,7 @@
             <ol class="idb-value-list">
               ${finalNavigation.scriptPivotObjects.map((item) => `
                 <li>
-                  <span>${escapeHtml(consultantRunNavigationLabelW332(item))}: ${escapeHtml(item.name)}</span>
+                  <span>${escapeHtml(item.consultantLabel || item.label)}: ${escapeHtml(item.name)}</span>
                   ${renderRecordLinkAuthority(item)}
                 </li>
               `).join('')}
@@ -24151,7 +24126,6 @@
       : null;
     const copyStatus = state && state.operatorSummaryCopyStatus || null;
     const w263Trace = deployedAdapterReadinessTraceW263(state, lane, page, recommendation);
-    const runtimeMarker = installedDrawerRuntimeMarkerW332();
     return `
       <div class="idb-card">
         <div class="idb-section-title">Trace actions only</div>
@@ -24164,7 +24138,6 @@
           <span class="idb-chip idb-open">${escapeHtml(consultantLabel(packet.stopGo))}</span>
           <span class="idb-chip idb-open">${escapeHtml(consultantLabel(adapter.state))}</span>
           <span class="idb-chip idb-${w263Trace.w262ReadinessState === 'ready_to_build_records' ? 'ready' : 'partial'}">${escapeHtml(consultantLabel(w263Trace.w262ReadinessState))}</span>
-          <span class="idb-chip idb-ready">${escapeHtml(runtimeMarker.marker)}</span>
         </div>
         <div class="idb-actions">
           ${showAdminResultImport ? '<button class="idb-primary" data-idb-export-dcc-handoff>Export debug handoff</button>' : ''}
@@ -24176,7 +24149,6 @@
         ${showAdminResultImport ? `<label class="idb-checkbox-line"><input type="checkbox" data-idb-operator-summary-diagnostics ${state.includeOperatorSummaryDiagnostics ? 'checked' : ''}> Include diagnostics appendix</label>` : ''}
         ${copyStatus ? `<div class="idb-footer-note">${escapeHtml(copyStatus)}</div>` : ''}
         <div class="idb-footer-note">Clear session resets setup, lane choice, review packet, and trace for the next prospect.</div>
-        <div class="idb-footer-note">Installed drawer marker: ${escapeHtml(runtimeMarker.marker)}</div>
         <div class="idb-footer-note">Adapter profile: ${escapeHtml(w263Trace.selectedAdapterProfile && w263Trace.selectedAdapterProfile.profileLabel || 'Not selected')} ${w263Trace.endpointConfigured ? '(endpoint configured)' : '(endpoint missing)'}</div>
       </div>
       ${showAdminResultImport ? `<div class="idb-card idb-accent idb-w116-final-naming-import">
@@ -24273,7 +24245,6 @@
     const recommendation = recommendMove(lane, pageContext);
     const payload = {
       product: CONTRACT.product,
-      installedDrawerRuntimeMarkerW332: installedDrawerRuntimeMarkerW332(),
       exportedAt: nowIso(),
       selectedLane: lane,
       state,
@@ -25879,7 +25850,6 @@
       dccFinalNamingResultV1,
       validateDccFinalNamingImportPayload,
       dccFinalNavigationModel,
-      installedDrawerRuntimeMarkerW332,
       verifiedRecordLinkAuthorityV1,
       finalGeneratedNamesNavigationIntegrationV1,
       finalGeneratedNamesOperatorCopyNavigationQaV1,

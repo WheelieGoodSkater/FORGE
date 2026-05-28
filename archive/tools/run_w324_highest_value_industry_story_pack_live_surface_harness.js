@@ -162,8 +162,6 @@ function main() {
     'baseline',
     'guaranteed delivery',
     'measured ROI',
-    'manufacturing',
-    'WIP',
     'source-pack truth',
     'write actions',
     'review-only',

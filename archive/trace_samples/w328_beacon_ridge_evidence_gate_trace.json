@@ -1,0 +1,49 @@
+{
+  "schema": "forge.w328.beacon-ridge-evidence-gate.trace.v1",
+  "status": "beacon_ridge_evidence_missing",
+  "decision": "needs_attention_pending_w325_trace",
+  "w327Continuity": {
+    "w327Status": "w325_evidence_still_missing",
+    "w327Decision": "needs_attention_pending_w325_trace",
+    "dealerHardgoodsStatus": "blocked_until_w325_keep",
+    "unchanged": true
+  },
+  "evidenceSearch": {
+    "beaconRidgeTraceFound": false,
+    "beaconRidgeScreenshotsFound": false,
+    "traceFileReference": "pending_user_upload",
+    "screenshotReferences": []
+  },
+  "liveChecks": {
+    "submitRunnerTaskIdCapture": "pending",
+    "refreshPollCurrentResultMatching": "pending",
+    "w151W214W245Acceptance": "pending",
+    "finishBuildImport": "pending",
+    "returnedRecordNamesLabelsIdsLinks": "pending",
+    "reviewRunStoryQuality": "pending"
+  },
+  "goNoGo": {
+    "w325KeepDecision": "no_go_until_evidence_uploaded",
+    "dealerHardgoodsExpansion": "no_go_until_w325_keep"
+  },
+  "protectedBaselines": {
+    "w321BaselineProtected": true,
+    "w322LabelsProtected": true,
+    "w324ElectricalStoryAvailable": true,
+    "w144SubmitRefreshImportUnchanged": true,
+    "w151W214W245ValidationUnchanged": true
+  },
+  "guardrails": {
+    "sourceLanePacksMutated": false,
+    "proposedPacksInstalled": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W329",
+    "title": "Run Or Upload Beacon Ridge Smoke Evidence",
+    "focus": "provide the missing Beacon Ridge trace/screenshots, then decide whether W325 is keep before dealer/hardgoods expansion"
+  }
+}

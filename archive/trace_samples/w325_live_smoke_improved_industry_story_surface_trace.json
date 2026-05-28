@@ -1,0 +1,71 @@
+{
+  "schema": "forge.w325.live-smoke-improved-industry-story-surface.trace.v1",
+  "status": "ready_for_user_live_smoke",
+  "decision": "needs_attention_pending_user_trace",
+  "protectedBaselines": {
+    "w321LiveWritebackBaselineFrozen": true,
+    "w322DistributionProofLabelsFrozen": true,
+    "w324ElectricalStorySurfaceActive": true
+  },
+  "liveSmokeUseCase": {
+    "customer": "Beacon Ridge Electrical Supply",
+    "website": "https://www.graybar.com",
+    "path": "Distribution / Branch Availability Control",
+    "toggles": {
+      "createNewItem": true,
+      "manufacturing": false,
+      "wip": false
+    },
+    "notes": "First call with the VP of Sales, branch operations manager, and contractor counter lead. Their contractors call in from job sites asking whether panels, breakers, conduit, fittings, and replacement parts are available today. The counter team checks branch inventory, transfer availability, supplier portals, and text threads before promising the order. They are under pressure from Epicor Eclipse reports, supplier portal lookups, and spreadsheet-based branch transfer tracking. They want a demo that proves whether the rep can trust the product availability story, see a branch transfer or replenishment path, and protect margin when an urgent contractor order needs an alternate. Website/category evidence should be treated as helpful but still confirmation-first before making ROI or competitive claims."
+  },
+  "liveEvidence": {
+    "traceFileReference": "pending_user_upload",
+    "screenshotsReviewed": [],
+    "submitCapturedRunnerTaskId": "pending_user_smoke",
+    "refreshPollFoundCurrentMatchingResult": "pending_user_smoke",
+    "completedResultPassedW151W214W245": "pending_user_smoke",
+    "finishBuildImportedReturnedRecords": "pending_user_smoke",
+    "openLinksAppearedOnlyAfterValidImport": "pending_user_smoke"
+  },
+  "expectedReturnedRecordLabels": [
+    "Customer",
+    "Sales Order",
+    "Product SKU",
+    "Branch Availability / Replenishment Flow",
+    "Fulfillment Support SKU"
+  ],
+  "expectedStoryBehavior": {
+    "buyerProblem": "contractor counter teams need to prove availability before promising the job",
+    "proofMove": "open Product SKU, then show Branch Availability / Replenishment Flow and Fulfillment Support SKU",
+    "objectionResponse": "use returned records and ask which alternate, branch transfer, or supplier ETA must be trusted",
+    "competitiveContrast": "Eclipse reports, supplier portals, spreadsheets, and texts versus one NetSuite proof path",
+    "roiSafeFraming": "fewer callbacks, faster counter decisions, and margin protection only after baseline confirmation",
+    "noClaimCaution": "no guaranteed delivery, measured ROI, manufacturing, WIP, write actions, or source-pack truth",
+    "weakEvidenceConfirmation": "website/category evidence remains confirmation-first before ROI or competitive claims"
+  },
+  "storyQualityNotes": [
+    "Expected W324 story shaping should activate from electrical contractor counter notes.",
+    "Story should remain claim-safe and confirmation-first until live evidence is reviewed."
+  ],
+  "vocabularySafetyNotes": [
+    "Distribution consultant-facing labels must stay Product SKU, Branch Availability / Replenishment Flow, and Fulfillment Support SKU.",
+    "Manufacturing and WIP terms must not appear in consultant-facing distribution proof output."
+  ],
+  "guardrails": {
+    "w144SubmitRefreshImportUnchanged": true,
+    "connectedBuildAuthorityUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "returnedRecordOpenLinksOnlyAfterValidImport": true,
+    "normalConsultantUiHiddenDiagnostics": true,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "sourcePackMutationIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W326",
+    "title": "Review Live Smoke Evidence And Expand Next Industry Story Pack",
+    "focus": "review the uploaded W325 trace/screenshots, decide keep or fix, then select the next highest-value industry story pack for broader expansion"
+  }
+}

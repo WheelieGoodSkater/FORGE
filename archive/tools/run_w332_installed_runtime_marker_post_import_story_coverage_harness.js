@@ -113,7 +113,7 @@ function main() {
     /contractor counter/i.test(storyText) &&
       /branch transfer/i.test(storyText) &&
       /replenishment/i.test(storyText) &&
-      /supplier portal checks/i.test(storyText) &&
+      /supplier portal/i.test(storyText) &&
       /callbacks/i.test(storyText) &&
       /urgent alternates/i.test(storyText) &&
       /margin-safe substitutes/i.test(storyText),

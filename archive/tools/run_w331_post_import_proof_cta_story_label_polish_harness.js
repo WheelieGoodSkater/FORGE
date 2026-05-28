@@ -110,14 +110,16 @@ function main() {
     JSON.stringify({ legacyRunLabels }));
 
   assertCase(results, 'electrical-story-language-is-specific-and-claim-safe',
-    /contractor counter availability path/i.test(storyText) &&
+    /contractor counter availability/i.test(storyText) &&
       /branch transfer/i.test(storyText) &&
       /replenishment/i.test(storyText) &&
-      /supplier portal checks/i.test(storyText) &&
+      /supplier portal/i.test(storyText) &&
+      /transfer spreadsheets/i.test(storyText) &&
+      /text threads/i.test(storyText) &&
       /callbacks/i.test(storyText) &&
       /urgent alternates/i.test(storyText) &&
       /margin-safe substitutes/i.test(storyText) &&
-      /without turning weak lane evidence into a claim/i.test(storyText),
+      /Keep lane confidence confirmation-first|weak lane evidence visible/i.test(storyText),
     storyText);
 
   assertCase(results, 'w144-and-validation-remain-unchanged',

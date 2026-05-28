@@ -152,10 +152,8 @@ function main() {
     'callback',
     'supplier ETA',
     'contractor leaves',
-    'Eclipse reports',
     'supplier portals',
-    'Excel',
-    'customer texts',
+    'text threads',
     'fewer callbacks',
     'contractor counter decisions',
     'margin protection',
@@ -192,7 +190,7 @@ function main() {
     storyText);
 
   assertCase(results, 'buyer-problem-proof-objection-competitive-roi-caution-and-weak-evidence-are-represented',
-    /counter reps can prove contractor-critical availability/i.test(story.firstCallSummaryW324) &&
+    /contractor counter reps can trust availability/i.test(story.firstCallSummaryW324) &&
       /Product SKU/i.test(storyText) &&
       missingStoryTerms.length === 0,
     JSON.stringify({ missingStoryTerms, storyText }));

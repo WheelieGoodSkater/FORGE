@@ -1,0 +1,56 @@
+{
+  "schema": "forge.w334.post-import-cta-electrical-story-specificity-polish.trace.v1",
+  "status": "post_import_story_polish_ready",
+  "liveEvidence": {
+    "traceFile": "/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1780006822962.json",
+    "customer": "Harborline Electrical Supply",
+    "runtimeMarker": "W332 post-import story polish active",
+    "writebackResult": "records_imported",
+    "finalNamingStatus": "dcc_final_names_imported",
+    "oldLaneConfirmationCtaAbsent": true,
+    "openLinksValidAfterImport": true
+  },
+  "polish": {
+    "postImportCtaCompressed": true,
+    "displayAliasesAdded": true,
+    "electricalDistributionSpecificityImproved": true,
+    "noteSpecificCompetitivePressurePreferred": true,
+    "doublePunctuationGuarded": true
+  },
+  "expectedConsultantLabels": [
+    "Product SKU",
+    "Availability/Replenishment Flow",
+    "Supporting SKU"
+  ],
+  "noteSpecificCompetitivePressure": [
+    "supplier portals",
+    "transfer spreadsheets",
+    "text threads",
+    "branch inventory checks",
+    "manual counter promise tracking"
+  ],
+  "blockedNormalUiTerms": [
+    "Hero item",
+    "Matrix item / proof item",
+    "Component item 1",
+    "Finished/Assembly",
+    "Formula",
+    "Work Order",
+    "Routing",
+    "WIP"
+  ],
+  "guardrails": {
+    "w144SubmitRefreshImportUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "sourceLanePacksMutated": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W335",
+    "title": "Live Smoke Electrical Story CTA Polish Verification",
+    "focus": "marker-verified live smoke to confirm compact post-import CTA, display aliases, and note-specific electrical story polish"
+  }
+}

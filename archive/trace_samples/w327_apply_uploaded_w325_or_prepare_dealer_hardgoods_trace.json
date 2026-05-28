@@ -1,0 +1,60 @@
+{
+  "schema": "forge.w327.apply-uploaded-w325-or-prepare-dealer-hardgoods.trace.v1",
+  "status": "w325_evidence_still_missing",
+  "decision": "needs_attention_pending_w325_trace",
+  "w326Continuity": {
+    "w326Status": "w325_live_evidence_not_uploaded",
+    "w326Decision": "needs_attention_pending_w325_trace",
+    "unchanged": true
+  },
+  "w325Evidence": {
+    "uploadedTraceFound": false,
+    "uploadedScreenshotsFound": false,
+    "traceFileReference": "pending_user_upload",
+    "screenshotReferences": [],
+    "falseKeepDecisionPrevented": true
+  },
+  "w325ReviewIfEvidencePresent": {
+    "returnedRecordsReviewed": "not_applicable_until_upload",
+    "openLinksReviewed": "not_applicable_until_upload",
+    "storyQualityReviewed": "not_applicable_until_upload",
+    "keepNeedsAttentionRollbackDecision": "needs_attention_pending_w325_trace"
+  },
+  "dealerHardgoodsReadiness": {
+    "candidatePack": "dealer-hardgoods-review-only",
+    "candidateFixture": "ridgeway-outdoor-power-dealer-hardgoods",
+    "status": "blocked_until_w325_keep",
+    "selectedOnlyIfW325Keep": true,
+    "implementationStarted": false,
+    "preparedStoryShapingScope": [
+      "buyer problem summary",
+      "dealer SKU proof move",
+      "allocation replenishment service support story",
+      "seasonal spike objection response",
+      "DMS OEM portal whiteboard competitive contrast",
+      "ROI-safe seasonal risk framing",
+      "no-claim caution",
+      "weak-evidence confirmation"
+    ]
+  },
+  "protectedBaselines": {
+    "w321BaselineProtected": true,
+    "w322LabelsProtected": true,
+    "w324ElectricalStoryAvailable": true,
+    "w144SubmitRefreshImportUnchanged": true,
+    "w151W214W245ValidationUnchanged": true
+  },
+  "guardrails": {
+    "sourceLanePacksMutated": false,
+    "proposedPacksInstalled": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  },
+  "selectedNextBlock": {
+    "id": "W328",
+    "title": "Review Uploaded W325 Evidence Or Run Beacon Ridge Smoke",
+    "focus": "upload/review the missing Beacon Ridge W325 trace and screenshots before any dealer/hardgoods implementation"
+  }
+}

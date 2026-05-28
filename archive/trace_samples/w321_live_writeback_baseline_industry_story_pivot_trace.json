@@ -1,0 +1,158 @@
+{
+  "schema": "forge.w321.live-writeback-baseline-industry-story-pivot.trace.v1",
+  "status": "live_writeback_baseline_locked",
+  "decision": "keep_connection_baseline_and_pivot_to_industry_story",
+  "sourceTrace": {
+    "path": "/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1779926099124.json",
+    "exportedAt": "2026-05-27T23:54:58.812Z",
+    "customer": "Tri-State Hose & Hydraulics",
+    "lane": "Industrial Distribution & Branch Fulfillment",
+    "proofPath": "Inventory / Fulfillment"
+  },
+  "baseline": {
+    "submitCapturedRunnerTaskId": true,
+    "runnerTaskId": "SCHEDSCRIPT_0168677b771a160306140300051177535e0f020d1011016c14430649_ee2c61720ba822faa598f9ea3b854b8d531402e9",
+    "buildAttemptId": "attempt-idb-build-tri-state-hose-hydraulics-industrial-distribution-distribution-1779925452086",
+    "submittedAt": "2026-05-27T23:44:12.086Z",
+    "w144FoundCurrentSidecar": true,
+    "sidecarLookupStatus": "resolved_by_csv_import",
+    "sourceFileId": "58992",
+    "sourceFileName": "idb_runner_sidecar_IDB-idb-build-tri-state-hose-hydraulics-industrial-distr_IDB-idb-build-tri-state-hose-hydraulics-industri_1779925506310.json",
+    "salesOrderResolved": true,
+    "salesOrderName": "SO2690",
+    "salesOrderInternalId": "82129",
+    "salesOrderUrl": "https://td3021666.app.netsuite.com/app/accounting/transactions/salesord.nl?id=82129",
+    "w151Accepted": true,
+    "w214Accepted": true,
+    "w245Accepted": true,
+    "completedResultStatus": "completed_runner_result_accepted",
+    "finalDrawerStatus": "completed_result_imported",
+    "returnedRecordsImported": true,
+    "openLinksAppearedOnlyAfterValidImport": true,
+    "drawerCreatedRecords": false,
+    "drawerTransactionWrites": false
+  },
+  "returnedRecords": [
+    {
+      "role": "customer",
+      "label": "Customer",
+      "name": "Tri-State Hose & Hydraulics Customer Account",
+      "recordType": "customer",
+      "internalId": "2322",
+      "url": "https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=2322",
+      "openLinkSupportedAfterImport": true
+    },
+    {
+      "role": "sales_order",
+      "label": "Sales Order",
+      "name": "SO2690",
+      "recordType": "salesorder",
+      "internalId": "82129",
+      "url": "https://td3021666.app.netsuite.com/app/accounting/transactions/salesord.nl?id=82129",
+      "openLinkSupportedAfterImport": true
+    },
+    {
+      "role": "distribution_item",
+      "label": "Product SKU",
+      "name": "Tri-State Hose & Hydraulics Machine Unit - ALDISTRI-OPNPVC-M6F",
+      "rawRunnerRoleLabel": "Finished/Assembly Item",
+      "recordType": "inventoryitem",
+      "internalId": "4045",
+      "url": "https://td3021666.app.netsuite.com/app/common/item/item.nl?id=4045",
+      "openLinkSupportedAfterImport": true,
+      "needsVocabularyPolish": true
+    },
+    {
+      "role": "branch_availability_flow",
+      "label": "Branch Availability / Replenishment Flow",
+      "name": "Branch Availability / Replenishment Flow - Tri-State Hose & H - ALDISTRI-OPNPVC-M6F",
+      "rawRunnerRoleLabel": "Formula or Batch Structure",
+      "recordType": "inventoryitem",
+      "internalId": "4046",
+      "url": "https://td3021666.app.netsuite.com/app/common/item/item.nl?id=4046",
+      "openLinkSupportedAfterImport": true,
+      "needsVocabularyPolish": true
+    },
+    {
+      "role": "fulfillment_support_sku",
+      "label": "Fulfillment Support SKU",
+      "name": "Fulfillment Support SKU - Tri-State Hose & Hydraulics Frame W - ALDISTRI-OPNPVC-M6F",
+      "rawRunnerRoleLabel": "Component Item",
+      "recordType": "inventoryitem",
+      "internalId": "4047",
+      "url": "https://td3021666.app.netsuite.com/app/common/item/item.nl?id=4047",
+      "openLinkSupportedAfterImport": true,
+      "needsVocabularyPolish": true
+    }
+  ],
+  "connectionFreeze": {
+    "w144SubmitProtected": true,
+    "refreshPollProtected": true,
+    "sidecarLookupProtected": true,
+    "staleResultRejectionProtected": true,
+    "completedResultValidationProtected": true,
+    "finishBuildImportProtected": true,
+    "openLinkAuthorityProtected": true,
+    "noDrawerCreatedRecordsProtected": true,
+    "noDrawerTransactionWritesProtected": true
+  },
+  "industryStoryPivot": {
+    "industryUnderstanding": "Understand the industry, buyer, category, product family, fulfillment model, and branch promise before choosing proof language.",
+    "proofRecordDesign": "Returned records should be industry-believable proof objects with distribution-safe names, labels, and roles.",
+    "conversationDrivenStoryCoaching": "First-call notes should drive differentiated talk tracks, demo moves, objection handling, and live value answers.",
+    "reusableIndustryExpansionPacks": "Expansion should come from reusable pack patterns and evidence gates, not saving every one-off prospect example."
+  },
+  "agentRoles": [
+    {
+      "name": "Connection Steward",
+      "responsibilities": ["submit/refresh/import protection", "sidecar lookup", "validation", "Open-link authority"]
+    },
+    {
+      "name": "Proof Architect",
+      "responsibilities": ["returned record roles", "proof-path shape", "record names", "record labels"]
+    },
+    {
+      "name": "Industry Taxonomist",
+      "responsibilities": ["industry packs", "sub-industry packs", "expansion rules", "weak-evidence gates"]
+    },
+    {
+      "name": "Story Strategist",
+      "responsibilities": ["first-call talk tracks", "demo moves", "objection answers", "value story"]
+    },
+    {
+      "name": "Vocabulary Guard",
+      "responsibilities": ["wrong-term blocking", "mode leakage prevention", "claim safety", "fake-link blocking"]
+    },
+    {
+      "name": "QA Story Runner",
+      "responsibilities": ["sales usefulness review", "SC usefulness review", "end-to-end demo sensemaking", "differentiation check"]
+    }
+  ],
+  "selectedNextBlock": {
+    "id": "W322",
+    "title": "Distribution Proof Record Vocabulary And Story Surface Polish Without Writeback Authority Change",
+    "targetsDistributionProofRecordVocabulary": true,
+    "targetsStorySurfacePolish": true,
+    "targetsGovernanceExpansion": false,
+    "notes": "Use W321 as connection baseline and focus next on distribution-safe proof records and story quality."
+  },
+  "continuity": {
+    "w320StaleGuardAvailable": true,
+    "w318VocabularyContinuityAvailable": true,
+    "w319LiveSmokeContinuityAvailable": true,
+    "w264ConnectedBuildContinuityAvailable": true,
+    "w265RetrySafetyContinuityAvailable": true
+  },
+  "guardrails": {
+    "w144SubmitRefreshImportUnchanged": true,
+    "connectedBuildAuthorityUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "returnedRecordOpenLinksOnlyAfterValidImport": true,
+    "normalConsultantUiHiddenDiagnostics": true,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "sourcePackMutationIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  }
+}

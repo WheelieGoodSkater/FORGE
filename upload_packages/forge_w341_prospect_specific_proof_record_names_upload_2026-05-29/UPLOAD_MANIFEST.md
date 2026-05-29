@@ -1,4 +1,4 @@
-# W341 Upload Manifest
+# W342 / W341 Upload Manifest
 
 ## Upload
 
@@ -26,10 +26,21 @@ Open the FORGE Trace tab before running Build records.
 
 Required Trace text:
 
-- `W339 imported proof record UX active`
-- `Installed drawer fingerprint: W339 imported proof record UX active`
+- `W342 runner naming verification active`
+- `Current installed block: W342 runner naming verification active`
+- Before a new W341 runner result is returned, Trace may show `W341 runner naming marker not returned`.
 
-If W339 is missing, stop and do not run Build records.
+If W342 is missing, stop and do not run Build records.
+
+Older drawer markers such as W332/W339 are no longer normal Trace chips. They may remain in hidden/export support context only.
+
+## Required Post-Smoke Verification
+
+After a fresh Build records run completes and records import, Trace should show:
+
+- `W341 prospect-specific proof naming active`
+
+If the drawer still shows `W341 runner naming marker not returned` after a fresh imported result, the drawer is current but the deployed runner did not return the W341 naming marker.
 
 ## Protected Boundaries
 

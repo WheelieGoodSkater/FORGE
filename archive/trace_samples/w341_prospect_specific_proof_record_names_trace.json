@@ -19,6 +19,12 @@
       "Parkway Safe Substitute Fulfillment Support SKU"
     ]
   },
+  "runnerNamingMarker": {
+    "schema": "idb.runner-prospect-specific-proof-naming-marker.w341.v1",
+    "expectedActiveMarker": "W341 prospect-specific proof naming active",
+    "missingMarkerCopy": "W341 runner naming marker not returned",
+    "purpose": "Prove whether the deployed runner returned the W341 prospect-specific naming policy."
+  },
   "guardrails": {
     "w144SubmitRefreshImportChanged": false,
     "w151W214W245ValidationChanged": false,

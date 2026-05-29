@@ -68,10 +68,34 @@ function main() {
   updateName('hero_item', 'Parkway Breaker Availability SKU');
   updateName('matrix_or_proof_item', 'Parkway Branch Availability / Replenishment Flow');
   updateName('component_item', 'Parkway Safe Substitute Fulfillment Support SKU');
+  w341Result.runnerLaneVocabularyPolicy = {
+    schema: 'idb.runner-lane-vocabulary-policy.v1',
+    modeKey: 'distribution_replenishment',
+    prospectSpecificProofNames: {
+      schema: 'idb.runner-prospect-specific-proof-names.w341.v1',
+      hero: 'Parkway Breaker Availability SKU',
+      matrix: 'Parkway Branch Availability / Replenishment Flow',
+      component: 'Parkway Safe Substitute Fulfillment Support SKU'
+    },
+    prospectSpecificProofNamingMarker: {
+      schema: 'idb.runner-prospect-specific-proof-naming-marker.w341.v1',
+      marker: 'W341 prospect-specific proof naming active',
+      active: true,
+      modeKey: 'distribution_replenishment',
+      proofNames: {
+        schema: 'idb.runner-prospect-specific-proof-names.w341.v1',
+        hero: 'Parkway Breaker Availability SKU',
+        matrix: 'Parkway Branch Availability / Replenishment Flow',
+        component: 'Parkway Safe Substitute Fulfillment Support SKU'
+      }
+    }
+  };
   const futureState = Object.assign({}, state, { dccFinalNamingResult: w341Result });
   hooks.reconcileStateAuthority(futureState);
   const futureRunText = stripHtml(hooks.renderRunView(futureState, lane, futureState.pageContext, recommendation, selectedMove, { id: 'prove' }, {}));
   const futureBuildText = stripHtml(hooks.renderReviewView(futureState, lane, futureState.pageContext, recommendation));
+  const futureTraceText = stripHtml(hooks.renderTraceView(futureState, lane, futureState.pageContext, recommendation));
+  const futureRunnerNamingMarker = hooks.runnerProofNamingMarkerW341(futureState);
   const futureFinalNavigation = hooks.dccFinalNavigationModel(futureState, lane, futureState.pageContext, recommendation);
   const names = futureFinalNavigation.scriptPivotObjects.map((record) => hooks.consultantProofRecordDisplayNameW341(record));
   const forbidden = /Finished\/Assembly|Formula|Ingredient|Component item|Component Item|Work Order|Routing|WIP/i;
@@ -99,8 +123,16 @@ function main() {
     /idbDistributionProofNamesW341/.test(runner) &&
       /\$\{prefix\} \$\{proofNoun\} Availability SKU/.test(runner) &&
       /Safe Substitute Fulfillment Support SKU/.test(runner) &&
-      runner.includes('breakers?\\b'),
+      runner.includes('breakers?\\b') &&
+      /W341 prospect-specific proof naming active/.test(runner) &&
+      /IDB W341 prospect proof naming marker/.test(runner),
     'runner W341 proof-noun helper is present');
+
+  assertCase(results, 'runner-naming-marker-is-visible-and-exportable',
+    futureRunnerNamingMarker.active === true &&
+      futureRunnerNamingMarker.marker === 'W341 prospect-specific proof naming active' &&
+      /W341 prospect-specific proof naming active/.test(futureTraceText),
+    JSON.stringify(futureRunnerNamingMarker));
 
   assertCase(results, 'proof-names-stay-within-field-length-limits',
     names.filter(Boolean).every((name) => name.length <= maxNameLength) &&

@@ -1179,6 +1179,7 @@
 
   const INSTALLED_DRAWER_RUNTIME_MARKER_W332 = 'W332 post-import story polish active';
   const INSTALLED_DRAWER_VERSION_FINGERPRINT_W339 = 'W339 imported proof record UX active';
+  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W342 runner naming verification active';
   const INSTALLED_DRAWER_COPY_FINGERPRINT_W339 = [
     'Use imported proof records',
     'Use returned NetSuite proof records',
@@ -1214,6 +1215,50 @@
       runnerChanged: false,
       adapterChanged: false,
       sourceLanePacksMutated: false
+    };
+  }
+
+  function runnerProofNamingMarkerW341(state) {
+    const sources = [
+      state && state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.runnerLaneVocabularyPolicy,
+      state && state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.resultCapture && state.integratedBuildRunnerResult.resultCapture.runnerLaneVocabularyPolicy,
+      state && state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.resultCapture && state.integratedBuildRunnerResult.resultCapture.sidecarGeneratedNamesJson && state.integratedBuildRunnerResult.resultCapture.sidecarGeneratedNamesJson.runnerLaneVocabularyPolicy,
+      state && state.dccFinalNamingResult && state.dccFinalNamingResult.runnerLaneVocabularyPolicy,
+      state && state.dccFinalNamingResult && state.dccFinalNamingResult.resultCapture && state.dccFinalNamingResult.resultCapture.runnerLaneVocabularyPolicy
+    ];
+    const policy = sources.find((item) => item && item.prospectSpecificProofNamingMarker);
+    const marker = policy && policy.prospectSpecificProofNamingMarker || null;
+    if (marker && marker.schema === 'idb.runner-prospect-specific-proof-naming-marker.w341.v1') {
+      return {
+        schema: 'forge.runner-proof-naming-marker.w341.v1',
+        marker: marker.marker || 'W341 prospect-specific proof naming marker returned',
+        active: marker.active === true,
+        modeKey: marker.modeKey || policy.modeKey || '',
+        proofNames: marker.proofNames || policy.prospectSpecificProofNames || null,
+        source: 'runner_result_capture'
+      };
+    }
+    return {
+      schema: 'forge.runner-proof-naming-marker.w341.v1',
+      marker: 'W341 runner naming marker not returned',
+      active: false,
+      modeKey: '',
+      proofNames: null,
+      source: 'not_returned'
+    };
+  }
+
+  function installedDrawerCurrentBlockMarkerW342() {
+    return {
+      schema: 'forge.installed-drawer-current-block-marker.w342.v1',
+      marker: INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342,
+      active: true,
+      purpose: 'Current visible Trace marker for runner naming verification.',
+      previousMarkersRetainedInExportOnly: true,
+      writebackAuthorityChanged: false,
+      validationChanged: false,
+      runnerAuthorityChanged: false,
+      adapterChanged: false
     };
   }
 
@@ -24302,6 +24347,8 @@
     const w263Trace = deployedAdapterReadinessTraceW263(state, lane, page, recommendation);
     const runtimeMarker = installedDrawerRuntimeMarkerW332();
     const versionFingerprint = installedDrawerVersionFingerprintW339();
+    const currentBlockMarker = installedDrawerCurrentBlockMarkerW342();
+    const runnerNamingMarker = runnerProofNamingMarkerW341(state);
     return `
       <div class="idb-card">
         <div class="idb-section-title">Trace actions only</div>
@@ -24314,8 +24361,8 @@
           <span class="idb-chip idb-open">${escapeHtml(consultantLabel(packet.stopGo))}</span>
           <span class="idb-chip idb-open">${escapeHtml(consultantLabel(adapter.state))}</span>
           <span class="idb-chip idb-${w263Trace.w262ReadinessState === 'ready_to_build_records' ? 'ready' : 'partial'}">${escapeHtml(consultantLabel(w263Trace.w262ReadinessState))}</span>
-          <span class="idb-chip idb-ready">${escapeHtml(runtimeMarker.marker)}</span>
-          <span class="idb-chip idb-ready">${escapeHtml(versionFingerprint.marker)}</span>
+          <span class="idb-chip idb-ready">${escapeHtml(currentBlockMarker.marker)}</span>
+          <span class="idb-chip idb-${runnerNamingMarker.active ? 'ready' : 'open'}">${escapeHtml(runnerNamingMarker.marker)}</span>
         </div>
         <div class="idb-actions">
           ${showAdminResultImport ? '<button class="idb-primary" data-idb-export-dcc-handoff>Export debug handoff</button>' : ''}
@@ -24327,8 +24374,9 @@
         ${showAdminResultImport ? `<label class="idb-checkbox-line"><input type="checkbox" data-idb-operator-summary-diagnostics ${state.includeOperatorSummaryDiagnostics ? 'checked' : ''}> Include diagnostics appendix</label>` : ''}
         ${copyStatus ? `<div class="idb-footer-note">${escapeHtml(copyStatus)}</div>` : ''}
         <div class="idb-footer-note">Clear session resets setup, lane choice, review packet, and trace for the next prospect.</div>
-        <div class="idb-footer-note">Installed drawer marker: ${escapeHtml(runtimeMarker.marker)}</div>
-        <div class="idb-footer-note">Installed drawer fingerprint: ${escapeHtml(versionFingerprint.marker)}</div>
+        <div class="idb-footer-note">Current installed block: ${escapeHtml(currentBlockMarker.marker)}</div>
+        <div class="idb-footer-note">Runner naming marker: ${escapeHtml(runnerNamingMarker.marker)}</div>
+        <div class="idb-footer-note idb-admin-only" hidden>Previous drawer marker: ${escapeHtml(runtimeMarker.marker)} / ${escapeHtml(versionFingerprint.marker)}</div>
         <div class="idb-footer-note">Adapter profile: ${escapeHtml(w263Trace.selectedAdapterProfile && w263Trace.selectedAdapterProfile.profileLabel || 'Not selected')} ${w263Trace.endpointConfigured ? '(endpoint configured)' : '(endpoint missing)'}</div>
       </div>
       ${showAdminResultImport ? `<div class="idb-card idb-accent idb-w116-final-naming-import">
@@ -24427,6 +24475,8 @@
       product: CONTRACT.product,
       installedDrawerRuntimeMarkerW332: installedDrawerRuntimeMarkerW332(),
       installedDrawerVersionFingerprintW339: installedDrawerVersionFingerprintW339(),
+      installedDrawerCurrentBlockMarkerW342: installedDrawerCurrentBlockMarkerW342(),
+      runnerProofNamingMarkerW341: runnerProofNamingMarkerW341(state),
       exportedAt: nowIso(),
       selectedLane: lane,
       state,
@@ -26034,6 +26084,8 @@
       dccFinalNavigationModel,
       installedDrawerRuntimeMarkerW332,
       installedDrawerVersionFingerprintW339,
+      installedDrawerCurrentBlockMarkerW342,
+      runnerProofNamingMarkerW341,
       consultantProofRecordDisplayNameW341,
       verifiedRecordLinkAuthorityV1,
       finalGeneratedNamesNavigationIntegrationV1,

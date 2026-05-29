@@ -40,6 +40,12 @@ When first-call notes mention concrete product/category nouns such as breakers, 
 
 The drawer display layer now preserves readable returned proof names in normal consultant Run/Build surfaces instead of flattening them to generic labels.
 
+W341 also emits a live runner naming marker so the next smoke can prove whether the deployed runner returned the naming policy:
+
+- `W341 prospect-specific proof naming active`
+
+If Trace still shows `W341 runner naming marker not returned` after a fresh imported result, the drawer is current but the deployed runner did not return the W341 naming marker.
+
 ## Boundaries
 
 - W144 submit/refresh/import unchanged

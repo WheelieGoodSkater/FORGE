@@ -1205,6 +1205,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         title: `IDB sidecar result capture pending transaction resolution [${VERSION}]`,
         details: JSON.stringify(idbRunnerResultCapture)
       });
+      log.audit({
+        title: `IDB W341 prospect proof naming marker [${VERSION}]`,
+        details: JSON.stringify(idbRunnerResultCapture.runnerLaneVocabularyPolicy && idbRunnerResultCapture.runnerLaneVocabularyPolicy.prospectSpecificProofNamingMarker || {
+          schema: 'idb.runner-prospect-specific-proof-naming-marker.w341.v1',
+          marker: 'W341 prospect-specific proof naming marker missing',
+          active: false
+        })
+      });
     }
 
     const flowState = authoritativeTruth.flowState || canonicalStorySeed.flowState;
@@ -4226,6 +4234,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const prospectSpecificProofNames = modeKey === 'distribution_replenishment'
       ? idbDistributionProofNamesW341(prospect, opts || {})
       : null;
+    const prospectSpecificProofNamingMarker = {
+      schema: 'idb.runner-prospect-specific-proof-naming-marker.w341.v1',
+      marker: prospectSpecificProofNames ? 'W341 prospect-specific proof naming active' : 'W341 prospect-specific proof naming inactive',
+      active: !!prospectSpecificProofNames,
+      modeKey,
+      proofNames: prospectSpecificProofNames
+    };
     return {
       schema: 'idb.runner-lane-vocabulary-policy.v1',
       source: request.schema === 'idb.confirmed-build-request.v1' ? 'confirmed_build_request' : 'runner_fallback',
@@ -4237,6 +4252,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       allowedNouns: lowerList(contract.allowedNouns),
       invalidTerms,
       prospectSpecificProofNames,
+      prospectSpecificProofNamingMarker,
       finalResultRoleLabels: {
         matrixProofItem: modeKey === 'distribution_replenishment' ? 'Branch Availability / Replenishment Flow' : '',
         componentItem: modeKey === 'distribution_replenishment' ? 'Fulfillment Support SKU' : ''
@@ -5372,7 +5388,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         laneId: laneVocabularyPolicy.laneId,
         modeKey: laneVocabularyPolicy.modeKey,
         enableManufacturing: laneVocabularyPolicy.enableManufacturing,
-        enableWip: laneVocabularyPolicy.enableWip
+        enableWip: laneVocabularyPolicy.enableWip,
+        prospectSpecificProofNames: laneVocabularyPolicy.prospectSpecificProofNames,
+        prospectSpecificProofNamingMarker: laneVocabularyPolicy.prospectSpecificProofNamingMarker
       }
     };
 
@@ -5391,6 +5409,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       generatedRecordOwner: 'governed_runner_internal_build_engine',
       finalGeneratedNamesReady: false,
       activeOpenLinks: 0,
+      runnerLaneVocabularyPolicy: {
+        schema: laneVocabularyPolicy.schema,
+        source: laneVocabularyPolicy.source,
+        operatingMode: laneVocabularyPolicy.operatingMode,
+        laneId: laneVocabularyPolicy.laneId,
+        modeKey: laneVocabularyPolicy.modeKey,
+        enableManufacturing: laneVocabularyPolicy.enableManufacturing,
+        enableWip: laneVocabularyPolicy.enableWip,
+        prospectSpecificProofNames: laneVocabularyPolicy.prospectSpecificProofNames,
+        prospectSpecificProofNamingMarker: laneVocabularyPolicy.prospectSpecificProofNamingMarker
+      },
       transactionResolution: {
         status: 'pending_transaction_resolution',
         authority: 'legacy_runner_csv_import_path',
@@ -5443,7 +5472,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         operatingMode: laneVocabularyPolicy.operatingMode,
         modeKey: laneVocabularyPolicy.modeKey,
         enableManufacturing: laneVocabularyPolicy.enableManufacturing,
-        enableWip: laneVocabularyPolicy.enableWip
+        enableWip: laneVocabularyPolicy.enableWip,
+        prospectSpecificProofNames: laneVocabularyPolicy.prospectSpecificProofNames,
+        prospectSpecificProofNamingMarker: laneVocabularyPolicy.prospectSpecificProofNamingMarker
       },
       transactionResolution: capture.transactionResolution,
       records: sidecarGeneratedNamesJson.records

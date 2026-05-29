@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.0
+// @version      1.0.1
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
+// @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
+// @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @match        https://*.app.netsuite.com/*
 // @match        https://*.netsuite.com/*
 // @grant        GM_xmlhttpRequest

@@ -1,0 +1,31 @@
+{
+  "schema": "forge.w341.prospect-specific-proof-record-names.trace.v1",
+  "status": "prospect_specific_naming_polish_ready",
+  "evidenceTraceFile": "/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1780072239583.json",
+  "customer": "Parkway Contractor Electrical Supply",
+  "w339MarkerVerified": true,
+  "recordsImported": true,
+  "openLinksValid": true,
+  "finding": {
+    "rootCause": "proof_record_names_were_valid_but_too_generic_for_live_story",
+    "genericNamesObserved": [
+      "Product Availability SKU",
+      "Branch Availability / Replenishment Flow",
+      "Fulfillment Support SKU"
+    ],
+    "preferredFutureNames": [
+      "Parkway Breaker Availability SKU",
+      "Parkway Branch Availability / Replenishment Flow",
+      "Parkway Safe Substitute Fulfillment Support SKU"
+    ]
+  },
+  "guardrails": {
+    "w144SubmitRefreshImportChanged": false,
+    "w151W214W245ValidationChanged": false,
+    "sourceLanePacksMutated": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  }
+}

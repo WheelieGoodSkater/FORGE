@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.3
+// @version      1.0.4
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,6 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.4';
+  const CURRENT_UX_BLOCK_W346 = 'W346';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1217,6 +1219,51 @@
       runnerChanged: false,
       adapterChanged: false,
       sourceLanePacksMutated: false
+    };
+  }
+
+  function installedDrawerPostImportUxCleanupW346() {
+    return {
+      schema: 'forge.installed-drawer-post-import-ux-cleanup.w346.v1',
+      marker: 'W346 consultant post-import UX cleanup active',
+      installedTarget: 'idb-drawer.user.js',
+      userscriptVersion: DRAWER_USERSCRIPT_VERSION,
+      visibleVersionLabel: drawerDisplayVersionW346(),
+      websiteConfidenceSeparatedFromBuildConfidence: true,
+      postImportPlanShowsRecordsReady: true,
+      internalNoteLabelsHiddenFromConsultantCopy: true,
+      writebackAuthorityChanged: false,
+      validationChanged: false,
+      runnerChanged: false,
+      adapterChanged: false,
+      sourceLanePacksMutated: false
+    };
+  }
+
+  function hasImportedProofRecordsW346(state, lane, page, recommendation) {
+    const finalNaming = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, page, recommendation);
+    return finalNaming.finalNamesImported === true && arrayValue(finalNaming.displayReadyRecords).some((record) => record.safeToOpen === true);
+  }
+
+  function postImportConfidenceModelW346(state, lane, page, recommendation) {
+    const evidence = websiteEvidenceUxModel(state, lane);
+    const imported = hasImportedProofRecordsW346(state, lane, page, recommendation);
+    return {
+      schema: 'forge.w346.post-import-confidence-separation.v1',
+      importedProofReady: imported,
+      buildImportConfidence: imported ? 'verified' : 'pending',
+      websiteConfidenceState: evidence.confidence.state,
+      websiteConfidenceScore: evidence.confidence.scoreLabel,
+      websiteConfidenceSource: evidence.confidence.source || 'none',
+      requiresWebsiteConfirmation: evidence.confidence.requiresConfirmation === true,
+      planConfidenceLabel: imported ? 'Build verified' : consultantLabel(evidence.confidence.state),
+      planConfidenceDetail: imported
+        ? `Website evidence: ${consultantLabel(evidence.confidence.state)} / ${consultantLabel(evidence.confidence.scoreLabel)}`
+        : `${consultantLabel(evidence.confidence.scoreLabel)} / ${consultantLabel(evidence.confidence.source || 'none')}`,
+      nextActionLabel: imported ? 'Run imported proof records.' : '',
+      nextActionCopy: imported
+        ? 'Build/import is verified. Keep website uncertainty visible before ROI claims.'
+        : ''
     };
   }
 
@@ -4743,6 +4790,29 @@
     return `${text.slice(0, Math.max(0, max - 3)).trim()}...`;
   }
 
+  function consultantVisibleCopyW346(value, limit) {
+    let text = String(value || '')
+      .replace(/\r/g, '')
+      .replace(/\bBusiness\s+Pain\s*\/\s*Request\s+Notes\b\s*/gi, '')
+      .replace(/\bRequested\s+Proof\b\s*/gi, '')
+      .replace(/\bDecision\s+Criteria\b\s*/gi, '')
+      .replace(/\bTimeline\s*\/\s*Urgency\b\s*/gi, '')
+      .replace(/\bCompetitor\s*\/\s*Current\s+Tools\b\s*/gi, '')
+      .replace(/\bCOV\s*\/\s*Call\s+Notes\b\s*/gi, '')
+      .replace(/\bOptional\s+Website\s*\/\s*Category\s+Evidence\b\s*/gi, '')
+      .replace(/\s*\n+\s*/g, ' ')
+      .replace(/\s+/g, ' ')
+      .replace(/\s+\./g, '.')
+      .replace(/\.{2,}/g, '.')
+      .trim();
+    if (text && !/[.!?]$/.test(text)) text += '.';
+    return compactText(text, limit || 240);
+  }
+
+  function drawerDisplayVersionW346() {
+    return `Drawer ${DRAWER_USERSCRIPT_VERSION} / ${CURRENT_UX_BLOCK_W346}`;
+  }
+
   function noteSentencesForConsultantDigest(value) {
     return String(value || '')
       .replace(/\s+/g, ' ')
@@ -4772,14 +4842,14 @@
     const customer = customerSeed(intake.customer);
     const product = firstNonBlank(naming.productSeed, naming.productFamily, lane && lane.proofAnchor, 'the proof item');
     const proofAnchor = lane && lane.proofAnchor ? lane.proofAnchor : 'the proof path';
-    const pain = compactText(labeledNoteSection(notes, /current\s+pain\s*:/i, /\b(roi\s+angle|competitive\s+angle)\s*:/i), 150) ||
-      firstNoteSentenceMatching(notes, [/pain/i, /not\s+always/i, /same\s+view/i, /manual/i, /reconciliation/i, /available/i, /committed/i], `${customer} needs one trusted view before the customer promise is made.`);
-    const proof = compactText(firstNoteSentenceMatching(notes, [/team\s+needs/i, /demo\s+should\s+show/i, /prove/i, /show/i], `Prove ${proofAnchor} readiness with ${product}.`), 150);
-    const roi = compactText(labeledNoteSection(notes, /roi\s+angle\s*:/i, /competitive\s+angle\s*:/i), 150) ||
-      firstNoteSentenceMatching(notes, [/roi/i, /reduce/i, /protect/i, /improve/i, /baseline/i], `Frame ROI as reduced risk around ${proofAnchor} readiness; capture the current baseline before claiming savings.`);
-    const competitive = compactText(labeledNoteSection(notes, /competitive\s+angle\s*:/i, null), 150) ||
-      firstNoteSentenceMatching(notes, [/competitive/i, /current\s+way/i, /spreadsheet/i, /disconnected/i], 'Contrast NetSuite against disconnected workflows without inventing unsupported claims.');
-    const buyer = firstNoteSentenceMatching(notes, [/buyer/i, /vp/i, /operations/i, /finance/i, /sell/i], `${customer} is evaluating whether the NetSuite path can support the proof.`);
+    const pain = consultantVisibleCopyW346(compactText(labeledNoteSection(notes, /current\s+pain\s*:/i, /\b(roi\s+angle|competitive\s+angle)\s*:/i), 150) ||
+      firstNoteSentenceMatching(notes, [/pain/i, /not\s+always/i, /same\s+view/i, /manual/i, /reconciliation/i, /available/i, /committed/i], `${customer} needs one trusted view before the customer promise is made.`), 180);
+    const proof = consultantVisibleCopyW346(compactText(firstNoteSentenceMatching(notes, [/team\s+needs/i, /demo\s+should\s+show/i, /prove/i, /show/i], `Prove ${proofAnchor} readiness with ${product}.`), 150), 180);
+    const roi = consultantVisibleCopyW346(compactText(labeledNoteSection(notes, /roi\s+angle\s*:/i, /competitive\s+angle\s*:/i), 150) ||
+      firstNoteSentenceMatching(notes, [/roi/i, /reduce/i, /protect/i, /improve/i, /baseline/i], `Frame ROI as reduced risk around ${proofAnchor} readiness; capture the current baseline before claiming savings.`), 180);
+    const competitive = consultantVisibleCopyW346(compactText(labeledNoteSection(notes, /competitive\s+angle\s*:/i, null), 150) ||
+      firstNoteSentenceMatching(notes, [/competitive/i, /current\s+way/i, /spreadsheet/i, /disconnected/i], 'Contrast NetSuite against disconnected workflows without inventing unsupported claims.'), 180);
+    const buyer = consultantVisibleCopyW346(firstNoteSentenceMatching(notes, [/buyer/i, /vp/i, /operations/i, /finance/i, /sell/i], `${customer} is evaluating whether the NetSuite path can support the proof.`), 180);
     const consultantBrief = [
       `Buyer: ${buyer}`,
       `Pain: ${pain}`,
@@ -16855,7 +16925,7 @@
     const showFinishButton = readinessState === ADAPTER_READINESS_STATES_W281.RECORDS_READY_TO_IMPORT;
     return {
       schema: 'forge.w262.adapter-ready-record-creation-ux.v1',
-      releaseVersion: 'V1.0.0',
+      releaseVersion: drawerDisplayVersionW346(),
       readinessState,
       label: copy.label,
       headline: copy.headline,
@@ -19507,7 +19577,7 @@
   function painSignal(state, lane) {
     const notes = normalizedIntake(state).notes;
     const signal = noteSignal(state, lane.proofAnchor).toLowerCase();
-    if (notes) return notes.length > 130 ? `${notes.slice(0, 127).trim()}...` : notes;
+    if (notes) return consultantVisibleCopyW346(notes, 220);
     return `The likely ${lane.name} pain is proving ${signal} without switching between disconnected views.`;
   }
 
@@ -19521,15 +19591,15 @@
     const pain = notes
       ? painSignal(state, lane)
       : `Need to prove ${signal.toLowerCase()} before the buyer trusts the ${lane.proofAnchor} story.`;
-    const objective = intake.scObjective || `Prove ${lane.proofAnchor} readiness for ${product.product} in a focused ${lane.name} path.`;
-    const decisionCriteria = intake.decisionCriteria || `The buyer can see ${lane.proofAnchor}, ${product.demandMoment}, and the next operating decision in NetSuite.`;
+    const objective = consultantVisibleCopyW346(intake.scObjective || `Prove ${lane.proofAnchor} readiness for ${product.product} in a focused ${lane.name} path.`, 220);
+    const decisionCriteria = consultantVisibleCopyW346(intake.decisionCriteria || `The buyer can see ${lane.proofAnchor}, ${product.demandMoment}, and the next operating decision in NetSuite.`, 220);
     const likelyObjections = [
       `How do we know ${product.demandMoment} is current enough to trust?`,
       `Can this stay in NetSuite instead of becoming another spreadsheet or point-solution workflow?`,
       `What happens when ${signal.toLowerCase()} changes during the customer conversation?`
     ];
     const topMoves = [
-      `Open with ${customerSeed(intake.customer)}'s stated pain: ${pain}`,
+      `Open with ${customerSeed(intake.customer)}'s stated pain: ${consultantVisibleCopyW346(pain, 180)}`,
       `Prove ${lane.proofAnchor} using ${product.product} and ${recommendation.move}.`,
       `Close on the decision: ${decisionCriteria}`
     ];
@@ -19553,7 +19623,7 @@
 
   function roiAuditV3Model(state, lane, product, story, recommendation) {
     const customer = customerSeed(normalizedIntake(state).customer);
-    const driver = story.pain;
+    const driver = consultantVisibleCopyW346(story.pain, 220);
     return {
       schema: 'idb.roi-audit.v3',
       headline: `${customer} can protect the ${product.demandMoment} decision.`,
@@ -19732,7 +19802,7 @@
     const copies = {
       open: {
         title: 'Open with the business risk',
-        copy: `Start with ${value.customer}'s stated pain: ${value.pain}. Then make ${product} the proof moment where NetSuite connects demand, operations, and financial impact.`
+      copy: `Start with ${value.customer}'s stated pain: ${consultantVisibleCopyW346(value.pain, 180)} Then make ${product} the proof moment where NetSuite connects demand, operations, and financial impact.`
       },
       prove: {
         title: 'Prove the NetSuite path',
@@ -19923,6 +19993,9 @@
         selectedScript.close = w216ReviewRun.consultantRun.nextSteps.join(' / ');
       }
     }
+    selectedScript.say = consultantVisibleCopyW346(selectedScript.say, 320);
+    selectedScript.show = consultantVisibleCopyW346(selectedScript.show, 260);
+    selectedScript.close = consultantVisibleCopyW346(selectedScript.close, 220);
     return {
       actionId: action.id,
       title: selectedScript.title,
@@ -19933,7 +20006,7 @@
       decision: `Confirm ${lane.proofAnchor} readiness through ${selectedMove}.`,
       valueDecision: value.valueDecision,
       packetId: packetIdentity.packetId,
-      topThreeMoves: value.story.topMoves,
+      topThreeMoves: value.story.topMoves.map((item) => consultantVisibleCopyW346(item, 220)),
       pageConfidence: pageContext.confidence,
       tracePayload: {
         runCoachV3: coach.tracePayload,
@@ -19945,7 +20018,7 @@
         exception: coach.painSpecificException,
         close: selectedScript.close,
         valueDecision: value.valueDecision,
-        topThreeMoves: value.story.topMoves
+        topThreeMoves: value.story.topMoves.map((item) => consultantVisibleCopyW346(item, 220))
       }
     };
   }
@@ -20080,7 +20153,7 @@
       `Operational proof: ${lane.proofAnchor} through ${recommendation.move}.`,
       `Financial proof: connect ${product.demandMoment} to margin, fulfillment, revenue timing, or working-capital conversation.`
     ];
-    const talkTrackLead = w213Copy.talkTrack;
+    const talkTrackLead = consultantVisibleCopyW346(w213Copy.talkTrack, 360);
     const valueDecision = `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
     const roiAuditCards = [
       `Why now: ${pain}`,
@@ -20104,30 +20177,30 @@
       product: product.product,
       industryWin,
       exceptions,
-      pain,
-      objective,
+      pain: consultantVisibleCopyW346(pain, 260),
+      objective: consultantVisibleCopyW346(objective, 260),
       story,
       competitive,
       grounded,
       competitorContext: competitive.competitorSafeContrast,
-      decisionCriteria: criteria,
+      decisionCriteria: consultantVisibleCopyW346(criteria, 260),
       roiAudit,
       w213Coach,
       valueProofStack,
       talkTrackLead,
-      valueDecision: w213Copy.closeValue || valueDecision,
+      valueDecision: consultantVisibleCopyW346(w213Copy.closeValue || valueDecision, 260),
       roiAuditCards,
       competitiveCards,
       objectionPath,
       roiThesis: roiAudit.headline,
-      groundedRoiSummary: w213Copy.roiAnswer || grounded.groundedRoiSummary,
-      groundedCompetitiveSummary: w213Copy.competitiveAnswer || grounded.groundedCompetitiveSummary,
+      groundedRoiSummary: consultantVisibleCopyW346(w213Copy.roiAnswer || grounded.groundedRoiSummary, 320),
+      groundedCompetitiveSummary: consultantVisibleCopyW346(w213Copy.competitiveAnswer || grounded.groundedCompetitiveSummary, 320),
       valueAgenda: [
-        `Objective: ${objective}`,
-        `Start with ${customer}'s stated pain: ${pain}`,
-        w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`,
+        `Objective: ${consultantVisibleCopyW346(objective, 220)}`,
+        `Start with ${customer}'s stated pain: ${consultantVisibleCopyW346(pain, 220)}`,
+        consultantVisibleCopyW346(w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`, 220),
         `Tie the proof to ${lane.valueLens}`,
-        `Decision criteria: ${criteria}`,
+        `Decision criteria: ${consultantVisibleCopyW346(criteria, 220)}`,
         `Close by confirming the next operational decision the prospect can now make.`
       ],
       competitiveReview: [
@@ -20139,7 +20212,7 @@
       ],
       objections: story.likelyObjections.concat(competitive.objectionCopy.slice(0, 1)),
       discoveryQuestions: [
-        w213Copy.discoveryQuestion || `Where does ${product.demandMoment} break down today?`,
+        consultantVisibleCopyW346(w213Copy.discoveryQuestion || `Where does ${product.demandMoment} break down today?`, 180),
         `Who owns the decision when ${lane.proofAnchor} readiness is unclear?`,
         story.nextQuestion
       ],
@@ -22283,6 +22356,25 @@
     const authority = stateAuthorityModel(state);
     const briefPrepared = !!state.briefPrepared;
     const handoff = dccRunnerHandoffPacketV1(state, lane, page, recommendation);
+    const postImport = postImportConfidenceModelW346(state, lane, page, recommendation);
+    if (postImport.importedProofReady) {
+      return {
+        state: 'records_imported',
+        statusLabel: 'Records ready',
+        stepLabel: 'Run',
+        primaryLabel: 'Run demo',
+        primaryAction: 'run_demo',
+        primaryDisabled: false,
+        secondaryLabel: 'Review records',
+        summaryActionLabel: 'Run demo',
+        nextAction: postImport.nextActionLabel,
+        nextCopy: postImport.nextActionCopy,
+        demoPathLabel: `${consultantLabel(handoff.selectedPack)} / ${handoff.selectedScenario}`,
+        demoPathCopy: 'Imported NetSuite proof records are ready for the live path.',
+        showIntake: false,
+        customer: intake.customer
+      };
+    }
     if (readiness.tone !== 'ready') {
       return {
         state: 'enter_sales_request',
@@ -22343,8 +22435,8 @@
       primaryDisabled: false,
       secondaryLabel: 'Edit request',
       summaryActionLabel: 'Run demo',
-        nextAction: 'Run demo or build records.',
-        nextCopy: 'The demo path is confirmed. Run the story, build demo records, or review value guidance.',
+      nextAction: 'Run demo or build records.',
+      nextCopy: 'The demo path is confirmed. Run the story, build demo records, or review value guidance.',
       demoPathLabel: `${consultantLabel(handoff.selectedPack)} / ${handoff.selectedScenario}`,
       demoPathCopy: 'Lane, proof path, and demo path are aligned.',
       showIntake: false,
@@ -22399,7 +22491,7 @@
       const authority = stateAuthorityModel(state);
       const handoff = dccRunnerHandoffPacketV1(state, lane, page, recommendation);
       const productionIntake = productionConsultantIntakeV1(state, lane, naming);
-      const requestSignal = productionIntake.requiredInputs.conversationNotes;
+      const requestSignal = consultantVisibleCopyW346(productionIntake.requiredInputs.conversationNotes, 180);
       const contextCaptured = productionIntake.consultantFacingRequiredInputs.length - productionIntake.missing.length;
       const primaryAction = authority.confirmedLaneId
         ? `
@@ -23136,6 +23228,7 @@
     const briefPrepared = !!state.briefPrepared;
     const hasStateBlocker = authority.handoffBlockers && authority.handoffBlockers.length;
     const flow = oneActionIntakeFlowModel(state, lane, page, recommendation);
+    const postImport = postImportConfidenceModelW346(state, lane, page, recommendation);
     const primaryAction = !briefPrepared
       ? ''
       : authority.confirmedLaneId
@@ -23146,11 +23239,13 @@
         `
         : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(lane.id)}">Confirm demo path</button>`;
     const classificationLabel = briefPrepared ? (evidence.recommendedLaneName || lane.name) : 'Waiting for brief';
-    const confidenceLabel = briefPrepared ? consultantLabel(evidence.confidence.state) : 'Not prepared';
-    const confidenceDetail = briefPrepared ? `${consultantLabel(evidence.confidence.scoreLabel)} / ${consultantLabel(evidence.confidence.source || 'none')}` : 'Build demo plan';
+    const confidenceLabel = briefPrepared ? postImport.planConfidenceLabel : 'Not prepared';
+    const confidenceDetail = briefPrepared ? postImport.planConfidenceDetail : 'Build demo plan';
     const dccPackLabel = flow.demoPathLabel;
     const dccPackCopy = !briefPrepared
       ? flow.demoPathCopy
+      : postImport.importedProofReady
+        ? flow.demoPathCopy
       : hasStateBlocker
         ? 'Confirm the lane before building records.'
         : 'Lane, proof path, and demo path are aligned.';
@@ -23160,7 +23255,7 @@
           <div class="idb-section-title">30-second plan</div>
           <div class="idb-status-key">Prospect</div>
           <div class="idb-strong">${escapeHtml(intake.customer || 'Enter prospect')}</div>
-          <div class="idb-copy">${escapeHtml(intake.scObjective || 'Prepare the proof path from website and notes.')}</div>
+          <div class="idb-copy">${escapeHtml(consultantVisibleCopyW346(intake.scObjective || 'Prepare the proof path from website and notes.', 180))}</div>
           <div class="idb-status-strip">
             <div class="idb-status-cell">
               <div class="idb-status-key">Classification</div>
@@ -23175,9 +23270,15 @@
             <div class="idb-status-cell">
               <div class="idb-status-key">Next action</div>
               <div class="idb-status-value">${escapeHtml(flow.nextAction)}</div>
-              <div class="idb-copy">${escapeHtml(briefPrepared ? (evidence.confirmationPrompt || flow.nextCopy) : flow.nextCopy)}</div>
+              <div class="idb-copy">${escapeHtml(briefPrepared ? (postImport.importedProofReady ? flow.nextCopy : (evidence.confirmationPrompt || flow.nextCopy)) : flow.nextCopy)}</div>
             </div>
           </div>
+          ${postImport.importedProofReady ? `
+          <div class="idb-chip-row">
+            <span class="idb-chip idb-ready">Build/import verified</span>
+            <span class="idb-mini-chip">Website evidence: ${escapeHtml(consultantLabel(postImport.websiteConfidenceState))}</span>
+            <span class="idb-mini-chip">Open links verified</span>
+          </div>` : ''}
           <div class="idb-run-action-card">
             <div class="idb-status-key">Demo path</div>
             <div class="idb-strong">${escapeHtml(dccPackLabel)}</div>
@@ -24456,7 +24557,7 @@
             <img class="idb-forge-logo" src="${FORGE_BRAND_IMAGE_SRC}" alt="${escapeHtml(FORGE_BRAND_ALT_TEXT)}">
           </div>
           <div class="idb-header-meta">
-            <div class="idb-version-pill">${escapeHtml(CONTRACT.product.version || 'V1.0.0')}</div>
+            <div class="idb-version-pill">${escapeHtml(drawerDisplayVersionW346())}</div>
             <button
               class="idb-bug-button"
               type="button"
@@ -24483,6 +24584,7 @@
     const recommendation = recommendMove(lane, pageContext);
     const payload = {
       product: CONTRACT.product,
+      installedDrawerDisplayVersionW346: installedDrawerPostImportUxCleanupW346(),
       installedDrawerRuntimeMarkerW332: installedDrawerRuntimeMarkerW332(),
       installedDrawerVersionFingerprintW339: installedDrawerVersionFingerprintW339(),
       installedDrawerCurrentBlockMarkerW342: installedDrawerCurrentBlockMarkerW342(),
@@ -26095,6 +26197,10 @@
       installedDrawerRuntimeMarkerW332,
       installedDrawerVersionFingerprintW339,
       installedDrawerCurrentBlockMarkerW342,
+      installedDrawerPostImportUxCleanupW346,
+      postImportConfidenceModelW346,
+      consultantVisibleCopyW346,
+      drawerDisplayVersionW346,
       runnerProofNamingMarkerW341,
       consultantProofRecordDisplayNameW341,
       verifiedRecordLinkAuthorityV1,

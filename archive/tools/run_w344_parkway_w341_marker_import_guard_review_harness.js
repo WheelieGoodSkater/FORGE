@@ -72,9 +72,9 @@ function main() {
     'runner uses W341 componentItemName directly for distribution support item');
 
   assertCase(results, 'drawer-version-bumped-for-auto-update',
-    /@version\s+1\.0\.3/.test(userscript) &&
+    /@version\s+1\.0\.[3-9]/.test(userscript) &&
       /raw\.githubusercontent\.com\/WheelieGoodSkater\/FORGE\/main\/idb-drawer\.user\.js/.test(userscript),
-    'drawer auto-update metadata points at GitHub raw and version is 1.0.3');
+    'drawer auto-update metadata points at GitHub raw and version is at least 1.0.3');
 
   assertCase(results, 'w344-report-documents-next-upload-block',
     /W344: Parkway W341 Marker Import Guard Review/.test(report) &&

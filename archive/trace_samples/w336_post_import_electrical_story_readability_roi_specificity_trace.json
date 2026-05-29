@@ -1,0 +1,46 @@
+{
+  "schema": "forge.w336.post-import-electrical-story-readability-roi-specificity.trace.v1",
+  "status": "post_import_story_readability_polish_ready",
+  "liveEvidence": {
+    "customer": "Keystone Electrical Supply",
+    "traceFile": "/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1780012482222.json",
+    "runtimeMarker": "W332 post-import story polish active",
+    "finalStatus": "dcc_final_names_imported",
+    "readinessState": "records_imported",
+    "oldLaneConfirmationCtaAbsent": true,
+    "openLinksValidAfterImport": true
+  },
+  "polish": {
+    "postImportCtaHeadline": "Open Product SKU, then prove branch availability.",
+    "proofAction": "Open Product SKU; prove branch availability.",
+    "safeClaim": "Use imported records; confirm lane and ROI.",
+    "stopGuardrail": "No ROI, write, creation, or availability claim beyond evidence.",
+    "evidenceReceiptLaneLabel": "Industrial Distribution & Branch Fulfillment / Low",
+    "primaryDisplayAliases": [
+      "Product SKU",
+      "Branch Availability / Replenishment Flow",
+      "Fulfillment Support SKU"
+    ],
+    "noteSpecificCompetitivePressure": [
+      "supplier portals",
+      "transfer spreadsheets",
+      "text threads",
+      "branch inventory checks",
+      "manual counter promise tracking"
+    ],
+    "genericFallbackBlockedWhenNotesAreSpecific": true
+  },
+  "guardrails": {
+    "w144SubmitRefreshImportUnchanged": true,
+    "w151W214W245ValidationUnchanged": true,
+    "returnedRecordImportUnchanged": true,
+    "openLinksAfterValidImportOnly": true,
+    "sourceLanePacksMutated": false,
+    "runnerChanged": false,
+    "adapterChanged": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  }
+}

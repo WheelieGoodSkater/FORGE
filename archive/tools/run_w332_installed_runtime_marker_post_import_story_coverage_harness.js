@@ -97,7 +97,7 @@ function main() {
 
   assertCase(results, 'post-import-story-surface-uses-imported-record-guidance',
     !/Confirm lane before opening proof records/.test(runHtml) &&
-      /Use imported records: open/.test(story.openTarget) &&
+      /Open Product SKU, then prove branch availability/.test(story.openTarget) &&
       /Open the returned record and prove only what the receipt supports/.test(firstGlance.nextAction) &&
       /lane and ROI claims still need buyer confirmation/i.test(story.safeClaim),
     JSON.stringify({ openTarget: story.openTarget, nextAction: firstGlance.nextAction, safeClaim: story.safeClaim }));

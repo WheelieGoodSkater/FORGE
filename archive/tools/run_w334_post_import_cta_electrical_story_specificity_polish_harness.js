@@ -79,14 +79,14 @@ function main() {
   assertCase(results, 'post-import-cta-is-compact-and-mobile-readable',
     /Live proof CTA/.test(runHtml) &&
       maxTextLength(ctaCellTexts) <= 125 &&
-      /Open the Product SKU, then prove availability and replenishment/.test(runHtml) &&
-      /Records support counter availability; lane and ROI still need confirmation/.test(runHtml) &&
-      /Do not claim ROI, writes, record creation, or availability beyond confirmed evidence/.test(runHtml),
+      /Open Product SKU; prove branch availability/.test(runHtml) &&
+      /Use imported records; confirm lane and ROI/.test(runHtml) &&
+      /No ROI, write, creation, or availability claim beyond evidence/.test(runHtml),
     JSON.stringify({ maxLength: maxTextLength(ctaCellTexts), compactProof: story.compactProofActionW334 }));
 
   assertCase(results, 'old-lane-confirmation-cta-remains-absent-after-valid-import',
     !/Confirm lane before opening proof records/.test(runHtml) &&
-      /Use imported records: open/.test(story.openTarget) &&
+      /Open Product SKU, then prove branch availability/.test(story.openTarget) &&
       /Open the returned record and prove only what the receipt supports/.test(runHtml),
     JSON.stringify({ openTarget: story.openTarget }));
 
@@ -111,7 +111,7 @@ function main() {
 
   assertCase(results, 'roi-and-no-claim-language-remains-claim-safe',
     /baseline before claiming savings|baseline before they can be claimed/i.test(valueHtml + runHtml) &&
-      /lane and ROI claims still need confirmation|lane and ROI still need confirmation/i.test(runHtml) &&
+      /confirm lane and ROI|lane and ROI claims still need confirmation|lane and ROI still need confirmation/i.test(runHtml) &&
       !/NetSuite\.\./.test(runHtml),
     'claim safety and punctuation remain polished');
 

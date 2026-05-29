@@ -86,7 +86,7 @@ function main() {
 
   assertCase(results, 'post-import-cta-uses-imported-record-guidance',
     story.status === 'story_ready_needs_lane_confirmation' &&
-      /Use imported records: open/.test(story.openTarget) &&
+      /Open Product SKU, then prove branch availability/.test(story.openTarget) &&
       !/^Confirm lane before opening proof records/.test(story.openTarget) &&
       /lane and ROI claims still need buyer confirmation/i.test(story.safeClaim),
     JSON.stringify({ status: story.status, openTarget: story.openTarget, safeClaim: story.safeClaim }));

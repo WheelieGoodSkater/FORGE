@@ -1,0 +1,39 @@
+{
+  "schema": "forge.w339.installed-drawer-version-fingerprint.trace.v1",
+  "status": "package_ready_for_marker_verified_smoke",
+  "w338TraceFile": "/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1780065906050.json",
+  "w338Decision": {
+    "writebackImportOpenLinks": "keep",
+    "installedUx": "needs_attention_installed_version_drift_or_cache"
+  },
+  "installedDrawerVersionFingerprintW339": {
+    "schema": "forge.installed-drawer-version-fingerprint.w339.v1",
+    "markerId": "W339_IMPORTED_PROOF_RECORD_UX",
+    "marker": "W339 imported proof record UX active",
+    "buildLabel": "W337/W339 imported-proof-record UX",
+    "copyFingerprint": [
+      "Use imported proof records",
+      "Use returned NetSuite proof records",
+      "Run will use these imported proof records",
+      "Imported NetSuite proof records"
+    ],
+    "w332ContinuityMarker": "W332 post-import story polish active"
+  },
+  "uploadPackage": "upload_packages/forge_w339_installed_drawer_version_fingerprint_upload_2026-05-29.zip",
+  "nextSmokeGate": {
+    "upload": "drawer_only",
+    "verifyBeforeBuild": "Installed drawer fingerprint: W339 imported proof record UX active",
+    "stopIfMissing": true
+  },
+  "guardrails": {
+    "w144SubmitRefreshImportChanged": false,
+    "w151W214W245ValidationChanged": false,
+    "runnerChanged": false,
+    "adapterChanged": false,
+    "sourceLanePacksMutated": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false
+  }
+}

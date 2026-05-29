@@ -1,0 +1,42 @@
+{
+  "schema": "forge.w337.electrical-story-final-ux-polish-baseline-lock.trace.v1",
+  "liveEvidence": {
+    "customer": "Apex Contractor Electrical Supply",
+    "traceFile": "/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1780063482812.json",
+    "decision": "keep",
+    "installedMarker": "W332 post-import story polish active",
+    "recordsImported": true,
+    "openLinksValid": true,
+    "oldLaneConfirmationCtaAbsent": true,
+    "evidenceReceiptLabelFixed": true,
+    "roiCompetitiveNoteSpecific": true
+  },
+  "polish": {
+    "buildRunLanguage": "Normal consultant surfaces use imported proof record language instead of final generated name language.",
+    "primaryAliases": [
+      "Product SKU",
+      "Branch Availability / Replenishment Flow",
+      "Fulfillment Support SKU"
+    ],
+    "collapsedStorySummaries": [
+      "Say this live: open, prove, close",
+      "Guided demo sequence: frame, open, prove",
+      "Evidence receipt: confidence and proof source"
+    ],
+    "rawGeneratedDataPreserved": true,
+    "weakEvidenceHonestyPreserved": true,
+    "roiBaselineCautionPreserved": true
+  },
+  "guardrails": {
+    "w144SubmitRefreshImportChanged": false,
+    "w151W214W245ValidationChanged": false,
+    "runnerChanged": false,
+    "adapterChanged": false,
+    "sourceLanePacksMutated": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false,
+    "returnedRecordImportBehaviorChanged": false
+  }
+}

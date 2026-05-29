@@ -1,0 +1,77 @@
+{
+  "schema": "forge.w338.marker-verified-electrical-story-live-smoke-review.trace.v1",
+  "status": "reviewed_needs_attention_installed_version_proof",
+  "traceFile": "/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1780065906050.json",
+  "screenshotsReviewed": [
+    "user-provided Plan screenshot",
+    "user-provided Build screenshot",
+    "user-provided ROI/Competitive screenshot",
+    "user-provided Run screenshots",
+    "user-provided Trace screenshot"
+  ],
+  "customer": "Summit Ridge Electrical Supply",
+  "liveSmokeDecision": {
+    "writebackImportOpenLinks": "keep",
+    "w337InstalledUx": "needs_attention",
+    "overall": "needs_attention_before_next_story_expansion"
+  },
+  "connectionFindings": {
+    "markerExported": "W332 post-import story polish active",
+    "recordsImported": true,
+    "completedResultImported": true,
+    "openLinksValid": true,
+    "distributionLabelsSafe": true,
+    "roiCompetitiveNoteSpecific": true
+  },
+  "returnedRecords": [
+    {
+      "label": "Customer",
+      "name": "Summit Ridge Electrical Supply Customer Account",
+      "id": "2823",
+      "openLinkSupported": true
+    },
+    {
+      "label": "Sales Order",
+      "name": "SO2696",
+      "id": "83230",
+      "openLinkSupported": true
+    },
+    {
+      "label": "Product SKU",
+      "name": "Summit Ridge Electrical Supply Product Availability SKU - YINDUSTR-R15MAF-EA4",
+      "id": "4548",
+      "openLinkSupported": true
+    },
+    {
+      "label": "Branch Availability / Replenishment Flow",
+      "name": "Branch Availability / Replenishment Flow - Summit Ridge Elect - YINDUSTR-R15MAF-EA4",
+      "id": "4549",
+      "openLinkSupported": true
+    },
+    {
+      "label": "Fulfillment Support SKU",
+      "name": "Summit Ridge Electrical Supply Fulfillment Support SKU - YINDUSTR-R15MAF-EA4",
+      "id": "4550",
+      "openLinkSupported": true
+    }
+  ],
+  "uxFindings": {
+    "oldRunCopyStillVisibleInScreenshots": true,
+    "oldBuildCopyStillVisibleInScreenshots": true,
+    "currentSourceRendersW337CopyForUploadedTrace": true,
+    "rootCauseDecision": "installed_drawer_version_drift_or_cache",
+    "nextOptimizedBlock": "add explicit W339 installed marker and copy fingerprint before another live story judgment"
+  },
+  "guardrails": {
+    "w144SubmitRefreshImportChanged": false,
+    "w151W214W245ValidationChanged": false,
+    "runnerChanged": false,
+    "adapterChanged": false,
+    "sourceLanePacksMutated": false,
+    "runtimeAuthorityChangesIntroduced": false,
+    "drawerCreatedRecordsIntroduced": false,
+    "drawerTransactionWritesIntroduced": false,
+    "fakeOpenLinksIntroduced": false,
+    "returnedRecordImportBehaviorChanged": false
+  }
+}

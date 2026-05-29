@@ -103,7 +103,9 @@
     "harness:prospect-specific-proof-record-names-w341": "node archive/tools/run_w341_prospect_specific_proof_record_names_harness.js",
     "harness:runner-naming-marker-trace-focus-w342": "node archive/tools/run_w342_runner_naming_marker_trace_focus_harness.js",
     "harness:parkway-completed-result-import-guard-review-w343": "node archive/tools/run_w343_parkway_completed_result_import_guard_review_harness.js",
-    "harness:parkway-w341-marker-import-guard-review-w344": "node archive/tools/run_w344_parkway_w341_marker_import_guard_review_harness.js"
+    "harness:parkway-w341-marker-import-guard-review-w344": "node archive/tools/run_w344_parkway_w341_marker_import_guard_review_harness.js",
+    "suitecloud:sync-filecabinet": "node tools/sync_suitecloud_filecabinet.js",
+    "suitecloud:verify-filecabinet": "node tools/sync_suitecloud_filecabinet.js && node --check src/FileCabinet/SuiteScripts/Intelligent\\ Demo\\ Builder/idb-drawer.user.js && node --check src/FileCabinet/SuiteScripts/Intelligent\\ Demo\\ Builder/idb_governed_runner_adapter_w144_suitelet.js && node --check src/FileCabinet/SuiteScripts/Intelligent\\ Demo\\ Builder/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js"
   },
   "keywords": [
     "netsuite",

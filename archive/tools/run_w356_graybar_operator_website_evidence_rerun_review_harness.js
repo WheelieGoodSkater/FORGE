@@ -51,8 +51,8 @@ function main() {
   const suppliedEvents = supplied.events || [];
 
   assertCase(results, 'w356-live-marker-is-w355-in-both-traces',
-    /@version\s+1\.0\.7/.test(userscript) &&
-      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.7 / W355' &&
+    /@version\s+1\.0\.8/.test(userscript) &&
+      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.8 / W357' &&
       noSupplied.installedDrawerDisplayVersionW346.visibleVersionLabel === 'Drawer 1.0.7 / W355' &&
       supplied.installedDrawerDisplayVersionW346.visibleVersionLabel === 'Drawer 1.0.7 / W355',
     JSON.stringify({

@@ -97,8 +97,8 @@ function main() {
   const weakLanguageLeak = graybarSurfaceText.match(/\bweak lane evidence\b|\bwebsite appears weak\b|\bpublic website appears weak\b/i);
 
   assertCase(results, 'w353-userscript-version-and-marker-advance',
-    /@version\s+1\.0\.7/.test(userscript) &&
-      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.7 / W355' &&
+    /@version\s+1\.0\.8/.test(userscript) &&
+      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.8 / W357' &&
       /isResolverLimitedWebsiteEvidenceW353/.test(userscript),
     JSON.stringify({ marker: hooks.drawerDisplayVersionW346() }));
 
@@ -109,7 +109,13 @@ function main() {
       graybarEvidence.confidence.failureState === 'thin' &&
       graybarEvidence.confidence.displayText === 'Resolver limited' &&
       graybarEvidence.whatIdbSaw.includes('Website read: resolver-limited local fallback') &&
-      /not proof that the public website is weak/.test(graybarEvidence.whyThisClassification || ''),
+      (
+        /not proof that the public website is weak/.test(graybarEvidence.whyThisClassification || '') ||
+        /advisory support, not as proof that the public website was fetched/.test(graybarEvidence.whyThisClassification || '')
+      ) &&
+      graybarEvidence.advisory &&
+      graybarEvidence.advisory.advisoryOnly === true &&
+      graybarEvidence.advisory.canConfirmWebsite === false,
     JSON.stringify(graybarEvidence));
 
   assertCase(results, 'w353-graybar-plan-separates-build-import-from-resolver-limited-website-read',

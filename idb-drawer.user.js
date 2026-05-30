@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.7
+// @version      1.0.8
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.7';
-  const CURRENT_UX_BLOCK_W346 = 'W355';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.8';
+  const CURRENT_UX_BLOCK_W346 = 'W357';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1274,6 +1274,8 @@
     const evidence = websiteEvidenceUxModel(state, lane);
     const imported = hasImportedProofRecordsW346(state, lane, page, recommendation);
     const resolverLimited = isResolverLimitedWebsiteEvidenceW353(evidence);
+    const advisory = evidence.advisory || {};
+    const advisorySupported = advisory.status === 'advisory_supported';
     return {
       schema: 'forge.w346.post-import-confidence-separation.v1',
       importedProofReady: imported,
@@ -1283,17 +1285,28 @@
       websiteConfidenceSource: evidence.confidence.source || 'none',
       websiteEvidenceLabel: websiteEvidenceDisplayLabelW353(evidence),
       websiteEvidenceDetail: websiteEvidenceDisplayDetailW353(evidence),
+      advisoryConfidenceState: advisory.status || 'not_needed',
+      advisoryConfidenceLabel: advisorySupported ? advisory.confidenceLabel : '',
+      advisoryConfidenceScore: advisory.scoreLabel || 'none',
+      advisoryConfidenceDetail: advisorySupported ? advisory.visualLabel : '',
+      advisoryOnly: advisory.advisoryOnly === true,
       resolverLimitedWebsiteEvidence: resolverLimited,
       resolverLimitedCopy: resolverLimitedCopyW353(evidence),
       requiresWebsiteConfirmation: evidence.confidence.requiresConfirmation === true,
       planConfidenceLabel: imported ? 'Build verified' : consultantLabel(evidence.confidence.state),
       planConfidenceDetail: imported
-        ? websiteEvidenceDisplayDetailW353(evidence)
-        : `${consultantLabel(evidence.confidence.scoreLabel)} / ${consultantLabel(evidence.confidence.source || 'none')}`,
+        ? advisorySupported
+          ? `${websiteEvidenceDisplayDetailW353(evidence)}; ${advisory.visualLabel}`
+          : websiteEvidenceDisplayDetailW353(evidence)
+        : advisorySupported
+          ? `${websiteEvidenceDisplayDetailW353(evidence)}; ${advisory.visualLabel}`
+          : `${consultantLabel(evidence.confidence.scoreLabel)} / ${consultantLabel(evidence.confidence.source || 'none')}`,
       nextActionLabel: imported ? 'Run imported proof records.' : '',
       nextActionCopy: imported
         ? resolverLimited
-          ? 'Build/import is verified. Website read is resolver-limited; confirm public evidence before ROI claims.'
+          ? advisorySupported
+            ? 'Build/import is verified. Advisory supports the lane, but public website fetch is resolver-limited; confirm public evidence before ROI claims.'
+            : 'Build/import is verified. Website read is resolver-limited; confirm public evidence before ROI claims.'
           : 'Build/import is verified. Keep website uncertainty visible before ROI claims.'
         : ''
     };
@@ -2543,6 +2556,116 @@
     };
   }
 
+  function nllmAssistedWebsiteConfidenceW357(state, lane) {
+    const intake = normalizedIntake(state);
+    const profile = websiteSignalProfile(state);
+    const runtime = resolverRuntimePatch(state);
+    const suggested = suggestedLaneCandidate(state);
+    const suggestedLane = lane || (suggested && suggested.lane) || laneById(profile.laneId) || null;
+    const domain = profile.domain || websiteDomain(intake.website).replace(/^www\./, '');
+    const notesText = String(intake.notes || '').toLowerCase();
+    const websiteText = `${domain} ${String(intake.website || '').toLowerCase()}`;
+    const sourceText = `${websiteText} ${notesText}`;
+    const resolverLimited = runtime.mode === 'local_fallback_only' &&
+      (profile.failureState === 'thin' || profile.confidence === 'low') &&
+      !runtime.tokenConfigured;
+    const operatorSupplied = Boolean(intake.websiteEvidence);
+    const publicEvidenceStrong = profile.confidence === 'high' && profile.laneId && !resolverLimited;
+    if (!intake.website || !intake.notes || operatorSupplied || publicEvidenceStrong) {
+      return {
+        schema: 'idb.w357-nllm-assisted-website-confidence.v1',
+        status: 'not_needed',
+        visible: false,
+        source: 'none',
+        advisoryOnly: true,
+        canConfirmWebsite: false,
+        confidenceLabel: 'None',
+        scoreLabel: 'none',
+        laneId: '',
+        laneName: '',
+        productSeed: '',
+        productFamily: '',
+        demandMoment: '',
+        reason: '',
+        evidenceTerms: [],
+        noRegression: {
+          notesCannotConfirmWebsite: true,
+          noWriteAuthority: true,
+          noImportValidationChange: true
+        }
+      };
+    }
+    const distributionTerms = browserWebsiteEvidenceTerms(sourceText, [
+      'branch', 'branches', 'distribution', 'distributor', 'counter', 'warehouse', 'inventory',
+      'availability', 'available', 'replenishment', 'fulfillment', 'locations', 'stock', 'order'
+    ]);
+    const electricalTerms = browserWebsiteEvidenceTerms(sourceText, [
+      'electrical', 'wire', 'cable', 'conduit', 'lighting', 'switchgear', 'automation',
+      'contractor', 'contractors', 'industrial', 'safety'
+    ]);
+    const productTerms = browserWebsiteEvidenceTerms(sourceText, [
+      'product', 'products', 'sku', 'catalog', 'supplies', 'material', 'materials',
+      'substitute', 'substitutes', 'parts'
+    ]);
+    const demandTerms = browserWebsiteEvidenceTerms(sourceText, [
+      'promise', 'order', 'orders', 'fulfillment', 'pickup', 'delivery', 'availability',
+      'replenishment', 'confidence', 'status'
+    ]);
+    const groupCount = [
+      distributionTerms.length > 0,
+      electricalTerms.length > 0,
+      productTerms.length > 0,
+      demandTerms.length > 0
+    ].filter(Boolean).length;
+    const termCount = distributionTerms.length + electricalTerms.length + productTerms.length + demandTerms.length;
+    const supported = Boolean(suggestedLane && groupCount >= 2 && termCount >= 5);
+    const high = supported && groupCount >= 3 && termCount >= 8;
+    const laneName = suggestedLane ? suggestedLane.name : '';
+    return {
+      schema: 'idb.w357-nllm-assisted-website-confidence.v1',
+      status: supported ? 'advisory_supported' : 'advisory_insufficient',
+      visible: supported || resolverLimited,
+      source: 'nllm_advisory_inference',
+      advisoryOnly: true,
+      resolverLimited,
+      canConfirmWebsite: false,
+      requiresPublicEvidenceConfirmation: true,
+      confidenceLabel: supported ? 'Advisory supported' : 'Advisory insufficient',
+      scoreLabel: high ? 'high' : supported ? 'medium' : 'low',
+      laneId: suggestedLane ? suggestedLane.id : '',
+      laneName,
+      productSeed: electricalTerms.length
+        ? 'Electrical Product Availability SKU'
+        : productTerms.length
+          ? 'Product Availability SKU'
+          : '',
+      productFamily: electricalTerms.length
+        ? 'Electrical Distribution Branch Fulfillment'
+        : distributionTerms.length
+          ? 'Industrial Distribution Branch Fulfillment'
+          : '',
+      demandMoment: demandTerms.length
+        ? 'branch availability and fulfillment confidence'
+        : distributionTerms.length
+          ? 'branch availability confidence'
+          : '',
+      reason: supported
+        ? `N/LLM advisory inference supports ${laneName || 'the selected lane'} from URL/domain and request language, but public website fetch is still not confirmed.`
+        : 'N/LLM advisory inference does not have enough website/category support to strengthen the resolver-limited read.',
+      evidenceTerms: uniqueValues(distributionTerms.concat(electricalTerms, productTerms, demandTerms)).slice(0, 12),
+      visualLabel: supported
+        ? `Advisory: ${high ? 'Supported / High' : 'Supported / Medium'}`
+        : 'Advisory: Needs evidence',
+      noRegression: {
+        notesCannotConfirmWebsite: true,
+        advisoryCannotOverrideBuildImport: true,
+        advisoryCannotCreateOpenLinks: true,
+        noWriteAuthority: true,
+        nllmAdvisoryOnly: true
+      }
+    };
+  }
+
   function websitePackageClassifier(state) {
     const signal = websiteSignalProfile(state);
     const resolved = governedWebsiteResolver(state);
@@ -2614,6 +2737,7 @@
     const intake = normalizedIntake(state);
     const profile = websiteSignalProfile(state);
     const confidence = websiteConfidenceModel(state);
+    const advisory = nllmAssistedWebsiteConfidenceW357(state, lane);
     const classifier = websitePackageClassifier(state);
     const runtime = resolverRuntimePatch(state);
     const websiteUrl = intake.website || '';
@@ -2643,6 +2767,10 @@
     if (intake.websiteEvidence) {
       evidenceItems.push(`Pasted evidence: ${intake.websiteEvidence.slice(0, 180)}`);
     }
+    if (advisory.visible) {
+      evidenceItems.push(`N/LLM advisory: ${advisory.confidenceLabel} / ${consultantLabel(advisory.scoreLabel)}`);
+      if (advisory.evidenceTerms.length) evidenceItems.push(`Advisory signals: ${advisory.evidenceTerms.join(', ')}`);
+    }
     const competingCandidates = (confidence.competingCandidates || classifier.competingCandidates || [])
       .filter((candidate) => candidate && candidate.laneId)
       .slice(0, 4)
@@ -2654,11 +2782,17 @@
       }));
     const missingEvidence = [];
     if (!intake.website) missingEvidence.push('Enter the prospect website.');
-    if (resolverLimited) missingEvidence.push('Resolver is limited to local fallback. Add hosted/remote resolver evidence or paste website/category evidence before treating the public website as weak.');
+    if (resolverLimited && advisory.status === 'advisory_supported') {
+      missingEvidence.push('Public website fetch is resolver-limited; advisory inference supports the lane, but confirm public evidence before ROI claims.');
+    } else if (resolverLimited) {
+      missingEvidence.push('Resolver is limited to local fallback. Add hosted/remote resolver evidence or paste website/category evidence before treating the public website as weak.');
+    }
     if (confidence.state === WEBSITE_CONFIDENCE_STATE.INSUFFICIENT) missingEvidence.push('Add homepage, category, product, title, meta, or SC-supplied website evidence.');
     if (confidence.requiresConfirmation) missingEvidence.push('Confirm the website category before ROI, competitive, or write preparation proceeds.');
     if (!profile.product) missingEvidence.push('Capture product/category terms from the website.');
-    const why = resolverLimited
+    const why = resolverLimited && advisory.status === 'advisory_supported'
+      ? `${advisory.reason} Treat this as advisory support, not as proof that the public website was fetched.`
+      : resolverLimited
       ? 'FORGE could not fetch enough website/category evidence in local fallback mode. This is resolver-limited evidence, not proof that the public website is weak.'
       : confidence.reason || (profile.laneId
       ? `Website evidence supports ${laneById(profile.laneId) ? laneById(profile.laneId).name : profile.laneId}.`
@@ -2675,6 +2809,7 @@
       productSeed: confidence.productSeed || profile.product || '',
       productFamily: confidence.productFamily || profile.productFamily || '',
       demandMoment: confidence.demandMoment || profile.demandMoment || '',
+      advisory,
       confidence: {
         state: confidence.state,
         scoreLabel: profile.confidence || 'none',
@@ -2688,7 +2823,13 @@
         resolverStatus: runtime.status,
         hostedOnlyMode: Boolean(runtime.hostedOnlyMode),
         tokenConfigured: Boolean(runtime.tokenConfigured),
-        failureState: profile.failureState || runtime.failureState || ''
+        failureState: profile.failureState || runtime.failureState || '',
+        advisoryState: advisory.status,
+        advisoryLabel: advisory.confidenceLabel,
+        advisoryScoreLabel: advisory.scoreLabel,
+        advisorySource: advisory.source,
+        advisoryOnly: advisory.advisoryOnly,
+        advisoryCanConfirmWebsite: advisory.canConfirmWebsite
       },
       competingCandidates,
       missingEvidence,
@@ -23390,11 +23531,22 @@
     const classificationLabel = briefPrepared ? (evidence.recommendedLaneName || lane.name) : 'Waiting for brief';
     const confidenceLabel = briefPrepared ? postImport.planConfidenceLabel : 'Not prepared';
     const confidenceDetail = briefPrepared ? postImport.planConfidenceDetail : 'Build demo plan';
+    const advisoryChip = briefPrepared && postImport.advisoryConfidenceDetail
+      ? `<span class="idb-mini-chip">${escapeHtml(postImport.advisoryConfidenceDetail)}</span>`
+      : '';
+    const planConfidenceChips = briefPrepared ? `
+          <div class="idb-chip-row idb-w357-plan-confidence-row">
+            ${postImport.importedProofReady ? '<span class="idb-chip idb-ready">Build/import verified</span>' : ''}
+            <span class="idb-mini-chip">Website read: ${escapeHtml(postImport.websiteEvidenceLabel)}</span>
+            ${advisoryChip}
+            ${postImport.importedProofReady ? '<span class="idb-mini-chip">Open links verified</span>' : ''}
+          </div>` : '';
     const resolverLimitedNote = postImport.resolverLimitedWebsiteEvidence ? `
       <div class="idb-run-action-card">
         <div class="idb-status-key">Website read</div>
         <div class="idb-strong">Resolver limited</div>
         <div class="idb-copy">${escapeHtml(postImport.resolverLimitedCopy)}</div>
+        ${postImport.advisoryConfidenceDetail ? `<div class="idb-copy"><strong>${escapeHtml(postImport.advisoryConfidenceDetail)}:</strong> N/LLM advisory can guide the talk track, but it does not confirm public website evidence or proof links.</div>` : ''}
       </div>
     ` : '';
     const dccPackLabel = flow.demoPathLabel;
@@ -23429,12 +23581,7 @@
               <div class="idb-copy">${escapeHtml(briefPrepared ? (postImport.importedProofReady ? flow.nextCopy : (evidence.confirmationPrompt || flow.nextCopy)) : flow.nextCopy)}</div>
             </div>
           </div>
-          ${postImport.importedProofReady ? `
-          <div class="idb-chip-row">
-            <span class="idb-chip idb-ready">Build/import verified</span>
-            <span class="idb-mini-chip">Website read: ${escapeHtml(postImport.websiteEvidenceLabel)}</span>
-            <span class="idb-mini-chip">Open links verified</span>
-          </div>` : ''}
+          ${planConfidenceChips}
           ${resolverLimitedNote}
           <div class="idb-run-action-card">
             <div class="idb-status-key">Demo path</div>
@@ -23851,6 +23998,8 @@
   function renderConsultantStorySurfaceW248(story, options) {
     if (!story || !story.openTarget || !story.proofMove) return '';
     const resolverLimited = !!(options && options.resolverLimitedWebsiteEvidence);
+    const advisory = options && options.advisoryWebsiteEvidence || {};
+    const advisorySupported = advisory.status === 'advisory_supported';
     const storyCopy = (value) => {
       const text = String(value || '');
       if (!resolverLimited) return text;
@@ -23939,7 +24088,9 @@
         </details>
         <div class="idb-chip-row">
           <span class="idb-mini-chip">N/LLM: advisory only</span>
+          ${advisorySupported ? `<span class="idb-mini-chip">${escapeHtml(advisory.visualLabel)}</span>` : ''}
         </div>
+        ${advisorySupported ? `<div class="idb-copy">Advisory inference can guide this talk track, but confirm public evidence before ROI claims.</div>` : ''}
         <div class="idb-copy">${escapeHtml(storyCopy(uncertainty))}</div>
         ${receiptHtml}
       </div>
@@ -23964,8 +24115,9 @@
       : navigation.reviewObjects.slice(0, 6);
     const reviewWebsiteEvidence = websiteEvidenceUxModel(state, lane);
     const reviewResolverLimited = isResolverLimitedWebsiteEvidenceW353(reviewWebsiteEvidence);
+    const reviewAdvisory = reviewWebsiteEvidence.advisory || {};
     const consultantStorySurfaceHtml = finalNamesImported && w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: reviewResolverLimited })
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: reviewResolverLimited, advisoryWebsiteEvidence: reviewAdvisory })
       : '';
     const preparedObjects = preparedRecords.map((record) => consultantRunNavigationDisplayW334(record));
     const finalRecordRows = preparedRecords.map((record) => `
@@ -24248,6 +24400,8 @@
 
   function renderConsultantEvidenceUx(state, lane) {
     const model = websiteEvidenceUxModel(state, lane);
+    const advisory = model.advisory || {};
+    const advisorySupported = advisory.status === 'advisory_supported';
     const stateClass = model.confidence.state === WEBSITE_CONFIDENCE_STATE.RECOMMENDED
       ? 'ready'
       : model.confidence.state === WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION
@@ -24272,21 +24426,31 @@
       <div class="idb-card idb-w53-evidence-ux">
         <div class="idb-section-title">Website read</div>
         <div class="idb-chip-row" aria-label="Website intelligence confidence and uncertainty">
-          <span class="idb-chip idb-${stateClass}">${escapeHtml(consultantLabel(model.confidence.state))}</span>
-          <span class="idb-mini-chip">${escapeHtml(consultantLabel(model.confidence.source || 'none'))}</span>
+          <span class="idb-chip idb-${stateClass}">Public read: ${escapeHtml(websiteEvidenceDisplayLabelW353(model))}</span>
           <span class="idb-mini-chip">${escapeHtml(consultantLabel(model.confidence.scoreLabel))}</span>
-          ${resolverLimited ? '<span class="idb-mini-chip">Resolver limited</span>' : ''}
+          ${advisorySupported ? `<span class="idb-mini-chip">${escapeHtml(advisory.visualLabel)}</span>` : ''}
           <span class="idb-mini-chip">${model.confidence.requiresConfirmation ? 'Confirm before handoff' : 'No confirmation needed'}</span>
         </div>
         <div class="idb-run-action-card idb-w53-why-classification">
           <div class="idb-status-key">Why this lane</div>
           <div class="idb-strong">${escapeHtml(model.recommendedLaneName || 'No lane selected from website evidence yet')}</div>
           <div class="idb-copy">${escapeHtml(model.whyThisClassification)}</div>
-          ${resolverLimited ? `<div class="idb-copy">${escapeHtml(resolverLimitedCopyW353(model))}</div>` : ''}
+          ${resolverLimited && !advisorySupported ? `<div class="idb-copy">${escapeHtml(resolverLimitedCopyW353(model))}</div>` : ''}
+          ${advisorySupported ? `
+            <div class="idb-copy"><strong>${escapeHtml(advisory.visualLabel)}:</strong> ${escapeHtml(advisory.reason)}</div>
+            <div class="idb-chip-row">
+              <span class="idb-mini-chip">Advisory only</span>
+              <span class="idb-mini-chip">Public fetch still limited</span>
+              <span class="idb-mini-chip">No claim proof</span>
+            </div>
+          ` : ''}
         </div>
-        <div class="idb-build-detail">
-          ${model.whatIdbSaw.map((item) => `<span class="idb-detail-line">${escapeHtml(item)}</span>`).join('')}
-        </div>
+        <details class="idb-technical-details">
+          <summary>Evidence details</summary>
+          <div class="idb-build-detail">
+            ${model.whatIdbSaw.map((item) => `<span class="idb-detail-line">${escapeHtml(item)}</span>`).join('')}
+          </div>
+        </details>
         <details class="idb-technical-details" ${model.competingCandidates.length ? 'open' : ''}>
           <summary>Other possible lanes</summary>
           <div class="idb-record-group">${candidateRows}</div>
@@ -24465,6 +24629,8 @@
     const value = valueReviewPacket(state, lane, page, recommendation);
     const websiteEvidence = websiteEvidenceUxModel(state, lane);
     const resolverLimited = isResolverLimitedWebsiteEvidenceW353(websiteEvidence);
+    const advisory = websiteEvidence.advisory || {};
+    const advisorySupported = advisory.status === 'advisory_supported';
     const liveCopy = liveActionCopy(action.id, value, lane, page, selectedMove, recommendation);
     const script = liveRunScript(state, lane, page, selectedMove, recommendation, action);
     const coach = runCoachV3Model(state, lane, page, selectedMove, recommendation, action);
@@ -24476,7 +24642,7 @@
       ? consultantPartialResultReviewRunModelW216V1(state.dccFinalNamingResult, state, lane, page, recommendation)
       : null;
     const consultantStorySurfaceHtml = w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited })
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory })
       : '';
     if (!finalNavigation.runCanUseImportedFinalNames) {
       const waitingForLinks = buildStatus && buildStatus.automation && buildStatus.automation.runnerTaskCaptured;
@@ -24539,6 +24705,7 @@
             <div class="idb-status-key">Website read</div>
             <div class="idb-strong">Resolver limited</div>
             <div class="idb-copy">${escapeHtml(resolverLimitedCopyW353(websiteEvidence))}</div>
+            ${advisorySupported ? `<div class="idb-copy"><strong>${escapeHtml(advisory.visualLabel)}:</strong> Advisory inference supports the lane, but it is not public website proof.</div>` : ''}
           </div>
         ` : ''}
       </div>
@@ -26199,6 +26366,7 @@
       resolveWebsiteEvidenceViaServiceAdapter,
       validateResolverServiceEvidence,
       operatorSuppliedWebsiteEvidenceReadinessW355,
+      nllmAssistedWebsiteConfidenceW357,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

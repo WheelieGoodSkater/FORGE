@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.6
+// @version      1.0.7
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.6';
-  const CURRENT_UX_BLOCK_W346 = 'W353';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.7';
+  const CURRENT_UX_BLOCK_W346 = 'W355';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -2710,19 +2710,99 @@
     return uniqueValues(terms.filter((term) => lower.includes(term)));
   }
 
+  function operatorSuppliedWebsiteEvidenceReadinessW355(intake, domain) {
+    const evidenceText = String(intake && intake.websiteEvidence || '').trim();
+    if (evidenceText.length < 80) return null;
+    const lower = evidenceText.toLowerCase();
+    const distributionTerms = browserWebsiteEvidenceTerms(lower, [
+      'branch', 'branches', 'distribution', 'distributor', 'warehouse', 'stock', 'stocking', 'inventory',
+      'availability', 'available', 'replenishment', 'fulfillment', 'locations', 'supply chain'
+    ]);
+    const electricalTerms = browserWebsiteEvidenceTerms(lower, [
+      'electrical', 'wire', 'cable', 'conduit', 'lighting', 'switchgear', 'automation', 'datacomm',
+      'industrial supply', 'contractor', 'contractors', 'mro', 'safety'
+    ]);
+    const productTerms = browserWebsiteEvidenceTerms(lower, [
+      'product', 'products', 'sku', 'catalog', 'category', 'categories', 'supplies', 'material', 'materials',
+      'parts', 'substitute', 'substitutes'
+    ]);
+    const demandTerms = browserWebsiteEvidenceTerms(lower, [
+      'order', 'orders', 'fulfillment', 'customer promise', 'contractor promise', 'same day', 'next day',
+      'delivery', 'pickup', 'availability', 'replenishment'
+    ]);
+    const groups = [
+      distributionTerms.length > 0,
+      electricalTerms.length > 0,
+      productTerms.length > 0,
+      demandTerms.length > 0
+    ].filter(Boolean).length;
+    const termCount = distributionTerms.length + electricalTerms.length + productTerms.length + demandTerms.length;
+    if (groups < 2 || termCount < 4) return null;
+    const confidenceScore = groups >= 3 && termCount >= 7 ? 0.91 : 0.78;
+    const confidenceState = confidenceScore >= 0.9
+      ? WEBSITE_CONFIDENCE_STATE.RECOMMENDED
+      : WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION;
+    const evidenceSummary = compactText(evidenceText, 180);
+    return {
+      schema: 'idb.w355-operator-supplied-website-evidence-readiness.v1',
+      ready: true,
+      domain,
+      laneId: 'industrial_distribution',
+      confidenceScore,
+      confidenceState,
+      productSeed: electricalTerms.length
+        ? 'Electrical Product Availability SKU'
+        : 'Product Availability SKU',
+      productFamily: electricalTerms.length
+        ? 'Electrical Distribution Branch Fulfillment'
+        : 'Industrial Distribution Branch Fulfillment',
+      demandMoment: demandTerms.length
+        ? 'branch availability and fulfillment confidence'
+        : 'branch availability confidence',
+      evidenceSummary,
+      evidenceTerms: uniqueValues(distributionTerms.concat(electricalTerms, productTerms, demandTerms)).slice(0, 12),
+      extractedEvidence: {
+        pageTitle: domain ? `${domain} operator supplied website evidence` : 'Operator supplied website evidence',
+        metaDescription: evidenceSummary,
+        h1Text: [],
+        h2Text: [],
+        navigationLabels: uniqueValues(productTerms.concat(electricalTerms)).slice(0, 10),
+        productCategoryTerms: uniqueValues(productTerms.concat(electricalTerms)).slice(0, 10),
+        industryLanguage: uniqueValues(distributionTerms.concat(electricalTerms)).slice(0, 10),
+        locationServiceClues: distributionTerms,
+        ecommerceSignals: browserWebsiteEvidenceTerms(lower, ['catalog', 'order', 'orders', 'pickup', 'delivery']),
+        manufacturingSignals: [],
+        distributionSignals: distributionTerms
+      },
+      noRegression: {
+        operatorSuppliedEvidenceOnly: true,
+        notesCannotRaiseWebsiteConfidence: true,
+        noWriteAuthority: true,
+        nllmAdvisoryOnly: true
+      }
+    };
+  }
+
   function localWebsiteEvidenceV1FromState(state) {
     const intake = normalizedIntake(state);
     if (!intake.website) return null;
     const requestKey = resolverServiceRequestKey(state);
     const resolved = governedWebsiteResolver(Object.assign({}, state, { websiteEvidenceV1: null }));
     const domain = websiteDomain(intake.website).replace(/^www\./, '');
+    const operatorEvidence = operatorSuppliedWebsiteEvidenceReadinessW355(intake, domain);
     const sourceText = `${domain} ${intake.websiteEvidence} ${resolved ? resolved.evidence : ''} ${resolved ? resolved.productSeed || resolved.product || '' : ''} ${resolved ? resolved.productFamily || '' : ''}`;
     const productTerms = browserWebsiteEvidenceTerms(sourceText, [
       'apparel', 'accessories', 'boots', 'boot', 'footwear', 'shoes', 'shoe', 'workwear', 'outdoor gear', 'style', 'size', 'color', 'collection',
       'bicycle', 'bikes', 'cycling', 'cooler', 'drinkware', 'industrial supply', 'distribution', 'warehouse', 'manufacturing', 'production', 'assembly',
-      'lab', 'scientific', 'instrument', 'reagents'
+      'lab', 'scientific', 'instrument', 'reagents', 'electrical', 'wire', 'cable', 'conduit', 'lighting', 'switchgear'
     ]);
-    const laneCandidates = resolved && resolved.laneId
+    const laneCandidates = operatorEvidence
+      ? [{
+        laneId: operatorEvidence.laneId,
+        score: operatorEvidence.confidenceScore,
+        evidence: operatorEvidence.evidenceTerms.slice(0, 4)
+      }]
+      : resolved && resolved.laneId
       ? [{
         laneId: resolved.laneId,
         score: resolved.confidence === 'high' ? 0.9 : resolved.confidence === 'medium' ? 0.74 : 0.55,
@@ -2733,25 +2813,27 @@
         evidence: [candidate.evidence || candidate.categoryId || 'competing website candidate']
       })))
       : [];
-    const stateLabel = resolved && resolved.confidence === 'high'
+    const stateLabel = operatorEvidence
+      ? operatorEvidence.confidenceState
+      : resolved && resolved.confidence === 'high'
       ? WEBSITE_CONFIDENCE_STATE.RECOMMENDED
       : resolved
         ? WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION
         : WEBSITE_CONFIDENCE_STATE.INSUFFICIENT;
     return {
       schema: 'idb.website-evidence.v1',
-      resolverVersion: 'w60.drawer-runtime-local.v1',
+      resolverVersion: operatorEvidence ? 'w355.operator-supplied-website-evidence.v1' : 'w60.drawer-runtime-local.v1',
       inputUrl: intake.website,
       normalizedUrl: intake.website,
       domain,
-      fetchStatus: resolved ? 'runtime_resolved' : 'thin',
+      fetchStatus: operatorEvidence ? 'operator_supplied_website_evidence' : resolved ? 'runtime_resolved' : 'thin',
       fetchErrors: [],
       pagesSampled: [{
-        role: 'url_domain_and_runtime_hint',
+        role: operatorEvidence ? 'operator_supplied_public_website_category_text' : 'url_domain_and_runtime_hint',
         url: intake.website,
-        status: resolved ? 200 : 0
+        status: operatorEvidence || resolved ? 200 : 0
       }],
-      extractedEvidence: {
+      extractedEvidence: operatorEvidence ? operatorEvidence.extractedEvidence : {
         pageTitle: resolved ? `${domain} website evidence` : '',
         metaDescription: resolved ? resolved.evidence : '',
         h1Text: [],
@@ -2766,27 +2848,29 @@
       },
       signals: {
         laneCandidates,
-        productSeed: resolved ? resolved.productSeed || resolved.product || '' : '',
-        productFamily: resolved ? resolved.productFamily || '' : '',
-        demandMoment: resolved ? resolved.demandMoment || '' : ''
+        productSeed: operatorEvidence ? operatorEvidence.productSeed : resolved ? resolved.productSeed || resolved.product || '' : '',
+        productFamily: operatorEvidence ? operatorEvidence.productFamily : resolved ? resolved.productFamily || '' : '',
+        demandMoment: operatorEvidence ? operatorEvidence.demandMoment : resolved ? resolved.demandMoment || '' : ''
       },
       confidence: {
         state: stateLabel,
         score: laneCandidates[0] ? laneCandidates[0].score : 0,
         requiresConfirmation: stateLabel !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED
       },
-      failureState: resolved ? null : 'thin',
+      failureState: operatorEvidence || resolved ? null : 'thin',
       sourceUrls: [intake.website],
       capturedAt: nowIso(),
       resolverAdapter: {
         schema: 'idb.w64-drawer-resolver-service-adapter.v1',
         serviceName: WEBSITE_RESOLVER_SERVICE_VERSION,
-        mode: 'local_fallback',
+        mode: operatorEvidence ? 'operator_supplied_local_fallback' : 'local_fallback',
         requestKey,
         endpointConfigured: resolverServiceAdapterConfig().endpointConfigured,
         localFallbackEnabled: true,
+        operatorSuppliedWebsiteEvidence: Boolean(operatorEvidence),
         notesAuthority: 'story_only_no_identity_override'
       },
+      operatorSuppliedWebsiteEvidenceW355: operatorEvidence,
       writeAuthority: 'none',
       nllmAdvisoryOnly: true,
       noRegression: {
@@ -2794,6 +2878,7 @@
         noWriteAuthority: true,
         noHiddenLaneOverride: true,
         notesCannotOwnIdentification: true,
+        operatorSuppliedWebsiteEvidenceOnly: Boolean(operatorEvidence),
         transactionWriteEnabled: false
       }
     };
@@ -22632,6 +22717,13 @@
           <label class="idb-label">Conversation Notes
             <textarea class="idb-textarea" data-idb-intake="notes" placeholder="Who is the buyer, what is breaking, what should the demo prove, and what decision are they trying to make?">${escapeHtml(intake.notes)}</textarea>
           </label>
+          <details class="idb-technical-details idb-w355-operator-website-evidence">
+            <summary>Optional website/category evidence</summary>
+            <div class="idb-copy">Paste public homepage, category, product, title, or meta text when the resolver is limited. This can improve website confidence only; it cannot create records, validate Open links, or write transactions.</div>
+            <label class="idb-label">Website/category evidence
+              <textarea class="idb-textarea" data-idb-intake="websiteEvidence" placeholder="Paste public website/category text, not conversation notes">${escapeHtml(intake.websiteEvidence)}</textarea>
+            </label>
+          </details>
           <details class="idb-technical-details idb-w200-admin-debug-intake">
             <summary>Admin/debug: legacy intake fields</summary>
             <div class="idb-copy">These fields are retained for trace compatibility only. Production IDB infers proof, objective, and decision context from the three required inputs.</div>
@@ -22647,9 +22739,6 @@
               </label>
               <label class="idb-label">Competitor / incumbent
                 <input class="idb-input" data-idb-intake="competitor" value="${escapeHtml(intake.competitor)}" placeholder="Spreadsheets, legacy ERP, point solution, etc.">
-              </label>
-              <label class="idb-label">Optional website/category evidence
-                <textarea class="idb-textarea" data-idb-intake="websiteEvidence" placeholder="Paste product/category text only if the website is unclear">${escapeHtml(intake.websiteEvidence)}</textarea>
               </label>
             </div>
           </details>
@@ -26109,6 +26198,7 @@
       resolverServiceAdapterConfig,
       resolveWebsiteEvidenceViaServiceAdapter,
       validateResolverServiceEvidence,
+      operatorSuppliedWebsiteEvidenceReadinessW355,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

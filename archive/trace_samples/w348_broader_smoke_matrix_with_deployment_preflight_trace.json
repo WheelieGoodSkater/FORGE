@@ -1,0 +1,94 @@
+{
+  "schema": "forge.w348.broader-smoke-matrix-with-deployment-preflight.trace.v1",
+  "block": "W348",
+  "status": "matrix_ready_controlled_live_next",
+  "generatedAt": "2026-05-29T00:00:00.000-04:00",
+  "preflight": {
+    "suiteCloudMirror": "passed",
+    "deploymentSyncGuard": "passed",
+    "drawerHash": "a414a57df467eeea12d6beae6a178ad687cbc250b1f40665795cdc37ec077c3a",
+    "adapterHash": "ed1a081a47bb8b9e5556a428244e163e20bcc7d209148445e3f7271973bd2f14",
+    "runnerHash": "a2a89a081252cb957ec9e65fa155565db4a424c0b612703e80fe2659bf20b226",
+    "liveDownloadsProvided": false
+  },
+  "baseline": {
+    "lockedTrace": "archive/trace_samples/w345_parkway_w344_successful_live_smoke_evidence_trace.json",
+    "drawerMarker": "Drawer 1.0.4 / W346",
+    "deploymentGuard": "W347"
+  },
+  "matrix": [
+    {
+      "id": "w348-control-parkway",
+      "prospect": "Parkway Contractor Supply",
+      "lane": "Industrial Distribution & Branch Fulfillment",
+      "source": "W345 locked Parkway W344 live smoke",
+      "evidence": "archive/trace_samples/w345_parkway_w344_successful_live_smoke_evidence_trace.json",
+      "grade": "pass",
+      "result": "completed_result_imported",
+      "records": 5,
+      "openLinks": "verified",
+      "useForW348": "control_baseline"
+    },
+    {
+      "id": "w348-historical-crescent",
+      "prospect": "Crescent Electric Supply",
+      "lane": "Electrical distribution / branch availability",
+      "source": "W330 archived live smoke review",
+      "evidence": "archive/trace_samples/w330_crescent_live_smoke_evidence_review_trace.json",
+      "grade": "path_pass_story_historical_attention",
+      "result": "records_imported",
+      "records": 5,
+      "openLinks": "verified",
+      "useForW348": "historical_import_path_evidence_not_current_w346_live_proof"
+    },
+    {
+      "id": "w348-historical-summit",
+      "prospect": "Summit Ridge Electrical Supply",
+      "lane": "Electrical distribution / branch availability",
+      "source": "W338 marker-verified live smoke review",
+      "evidence": "archive/trace_samples/w338_marker_verified_electrical_story_live_smoke_review_trace.json",
+      "grade": "path_pass_install_drift_historical_attention",
+      "result": "records_imported",
+      "records": 5,
+      "openLinks": "verified",
+      "useForW348": "historical_import_path_evidence_not_current_w346_live_proof"
+    },
+    {
+      "id": "w348-blocked-beacon-ridge",
+      "prospect": "Beacon Ridge",
+      "lane": "Dealer hardgoods candidate",
+      "source": "W328/W329 evidence gate",
+      "evidence": "archive/trace_samples/w329_review_uploaded_beacon_ridge_or_rerun_trace.json",
+      "grade": "blocked_missing_evidence",
+      "result": "not_accepted_as_smoke_pass",
+      "records": 0,
+      "openLinks": "not_verified",
+      "useForW348": "blocked_until_operator_uploads_trace_and_screenshots"
+    }
+  ],
+  "passFailGates": {
+    "pass": [
+      "W347 preflight passes before smoke",
+      "Drawer shows Drawer 1.0.4 / W346 before smoke",
+      "W151 accepts completed result",
+      "W214 semantic operating mode does not block valid completed import",
+      "W245 records are display-ready before Open links appear",
+      "W341/W342 naming markers remain visible or exported where required",
+      "W344 supporting SKU role remains supporting_sku",
+      "W345 Parkway baseline remains reproducible",
+      "W346 consultant copy separates build/import confidence from website evidence confidence"
+    ],
+    "fail": [
+      "Any fake Open link appears before numeric ids and supported NetSuite URLs",
+      "Drawer creates records or writes transactions",
+      "Deployment sync guard fails",
+      "Current live smoke lacks trace export",
+      "Historical traces are treated as current W346/W347 live proof"
+    ]
+  },
+  "recommendation": {
+    "decision": "proceed_to_one_controlled_live_scenario_before_full_matrix",
+    "next": "Run W349 as one controlled W347-preflighted live smoke on an adjacent distribution/electrical prospect, then upload trace and screenshots for grading.",
+    "why": "The repo and deployment mirror are synchronized, Parkway is locked as a pass, and historical non-Parkway smokes show the path can work but are not current W346/W347 live proof."
+  }
+}

@@ -20,6 +20,11 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+function userscriptVersionAtLeast(source, minimumPatch) {
+  const match = source.match(/@version\s+1\.0\.(\d+)/);
+  return match && Number(match[1]) >= minimumPatch;
+}
+
 function main() {
   const results = [];
   const hooks = loadHooks();
@@ -72,7 +77,7 @@ function main() {
     'runner uses W341 componentItemName directly for distribution support item');
 
   assertCase(results, 'drawer-version-bumped-for-auto-update',
-    /@version\s+1\.0\.[3-9]/.test(userscript) &&
+    userscriptVersionAtLeast(userscript, 3) &&
       /raw\.githubusercontent\.com\/WheelieGoodSkater\/FORGE\/main\/idb-drawer\.user\.js/.test(userscript),
     'drawer auto-update metadata points at GitHub raw and version is at least 1.0.3');
 

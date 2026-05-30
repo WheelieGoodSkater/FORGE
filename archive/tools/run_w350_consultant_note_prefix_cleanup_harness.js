@@ -84,8 +84,8 @@ function main() {
     .filter((item) => item.match);
 
   assertCase(results, 'w350-userscript-version-and-marker-bumped-for-auto-update',
-    /@version\s+1\.0\.9/.test(userscript) &&
-      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.9 / W361' &&
+    /@version\s+1\.0\.10/.test(userscript) &&
+      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.10 / W362' &&
       /stripConsultantNotePrefixesW350/.test(userscript),
     JSON.stringify({ version: /@version\s+([^\n]+)/.exec(userscript) && RegExp.$1, marker: hooks.drawerDisplayVersionW346() }));
 

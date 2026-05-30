@@ -130,7 +130,7 @@ function main() {
     JSON.stringify(trace.websiteEvidenceUx));
 
   assertCase(results, 'w352-current-source-w350-renders-graybar-without-prefix-leaks',
-    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.9 / W361' &&
+    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.10 / W362' &&
       currentSourceLeaks.length === 0 &&
       currentSourceSurfaces.some(([, text]) => /Graybar Electric/.test(text)) &&
       currentSourceSurfaces.some(([, text]) => /Website read: Resolver limited/.test(text)),

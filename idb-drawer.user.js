@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.9
+// @version      1.0.10
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.9';
-  const CURRENT_UX_BLOCK_W346 = 'W361';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.10';
+  const CURRENT_UX_BLOCK_W346 = 'W362';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -20008,6 +20008,83 @@
     };
   }
 
+  function standardCompetitiveAlternativesW362(state, lane, competitive) {
+    const intake = normalizedIntake(state);
+    const customer = String(intake.customer || '').toLowerCase();
+    const text = `${intake.customer || ''} ${intake.website || ''} ${intake.notes || ''} ${lane && lane.name || ''}`.toLowerCase();
+    const fromExisting = arrayValue(competitive && competitive.competitivePrep && competitive.competitivePrep.alternatives);
+    let standard = [];
+    if (/industrial|distribution|branch|fulfillment|mro|electrical|counter|contractor|supply/.test(text) || lane.id === 'products_cpg') {
+      standard = ['Grainger', 'Fastenal', 'MSC Industrial', 'Graybar', 'supplier portals', 'branch inventory spreadsheets'];
+    } else if (/manufactur|assembly|bom|wip|production/.test(text)) {
+      standard = ['Microsoft Dynamics 365', 'SAP Business One', 'Odoo', 'manufacturing point solutions', 'spreadsheets'];
+    } else if (/apparel|footwear|style|variant|ecommerce/.test(text)) {
+      standard = ['Shopify inventory apps', 'PLM tools', 'Microsoft Dynamics 365', 'Odoo', 'spreadsheets'];
+    } else {
+      standard = ['spreadsheets', 'QuickBooks', 'Odoo', 'Microsoft Dynamics 365', 'point solutions'];
+    }
+    return Array.from(new Set(standard.concat(fromExisting)))
+      .filter((item) => item && customer.indexOf(String(item).toLowerCase().replace(/\s+(company|co\.?|inc\.?|industrial)$/i, '')) === -1)
+      .slice(0, 6);
+  }
+
+  function competitiveAdvisoryModelW362(state, lane, value) {
+    const packet = value || valueReviewPacket(state, lane, state && state.pageContext || {}, recommendMove(lane, state && state.pageContext || {}));
+    const competitive = packet.competitive || competitiveIntelligenceV3Model(state, lane, packet.story || {});
+    const evidence = websiteEvidenceUxModel(state, lane);
+    const alternatives = standardCompetitiveAlternativesW362(state, lane, competitive);
+    const publicEvidenceStrong = evidence && evidence.confidence && evidence.confidence.state === WEBSITE_CONFIDENCE_STATE.RECOMMENDED && evidence.confidence.scoreLabel === 'high';
+    const sourceLabel = publicEvidenceStrong ? 'Public evidence plus advisory context' : 'N/LLM advisory from lane, URL/domain, and request language';
+    const authorityLabel = competitive.namedCompetitor ? 'Verify named competitor before claiming' : 'Advisory prep only';
+    const netSuiteContrast = `Use ${lane.proofAnchor} to keep availability, promise, fulfillment, and financial impact in one NetSuite path.`;
+    const competitorText = alternatives.slice(0, 4).join(', ');
+    return {
+      schema: 'idb.w362-consultant-safe-competitive-intelligence.v1',
+      status: 'advisory_competitive_ready',
+      advisoryOnly: true,
+      publicEvidenceStrong,
+      sourceLabel,
+      authorityLabel,
+      alternatives,
+      headline: competitive.namedCompetitor ? 'Named competitive context' : 'Likely competitive pressure',
+      valueCue: `Be ready to contrast NetSuite with ${competitorText || 'manual and point-solution workflows'} without making unsupported competitor claims.`,
+      runCue: `If competitive pressure comes up, ask which workflow they trust today, then prove the same decision through ${lane.proofAnchor}.`,
+      netSuiteContrast,
+      caution: 'Do not claim a competitor lacks a feature or that the buyer uses a specific alternative unless the buyer confirms it.',
+      sourceBasis: arrayValue(competitive.sourceBasis).concat([sourceLabel, authorityLabel]),
+      chips: [
+        { title: 'Alternatives', copy: competitorText || 'manual workflows and point solutions' },
+        { title: 'NetSuite contrast', copy: netSuiteContrast },
+        { title: 'Claim guard', copy: 'Advisory only; confirm before competitor-specific claims.' }
+      ]
+    };
+  }
+
+  function renderW362CompetitiveAdvisoryCard(model, options) {
+    const opts = options || {};
+    const title = opts.title || 'Competitive intelligence';
+    return `
+      <div class="idb-run-action-card idb-w362-competitive-card">
+        <div class="idb-status-key">${escapeHtml(title)}</div>
+        <div class="idb-strong">${escapeHtml(model.headline)}</div>
+        <div class="idb-w362-competitive-chips" role="group" aria-label="Competitive advisory chips">
+          ${model.chips.map((chip) => `
+            <button class="idb-w362-competitive-chip" type="button" title="${escapeHtml(chip.copy)}">
+              <span class="idb-w361-chip-title">${escapeHtml(chip.title)}</span>
+              <span class="idb-w361-chip-copy">${escapeHtml(compactText(chip.copy, 78))}</span>
+            </button>
+          `).join('')}
+        </div>
+        <div class="idb-w362-competitive-note">${escapeHtml(opts.note || model.runCue)}</div>
+        <div class="idb-chip-row">
+          <span class="idb-mini-chip">N/LLM advisory only</span>
+          <span class="idb-mini-chip">${escapeHtml(model.authorityLabel)}</span>
+          <span class="idb-mini-chip">${escapeHtml(model.sourceLabel)}</span>
+        </div>
+      </div>
+    `;
+  }
+
   function groundedValueEvidenceModel(state, lane, product, story, roiAudit, competitive) {
     const evidenceUx = websiteEvidenceUxModel(state, lane);
     const authority = stateAuthorityModel(state);
@@ -21026,6 +21103,34 @@
         font-size: 9px;
         line-height: 1.18;
         overflow-wrap: anywhere;
+      }
+      .idb-w362-competitive-card {
+        border-color: #d8e1e6;
+        background: #f7fafb;
+      }
+      .idb-w362-competitive-chips {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 5px;
+        margin-top: 7px;
+      }
+      .idb-w362-competitive-chip {
+        border: 1px solid #d8e1e6;
+        border-radius: 7px;
+        background: #fff;
+        color: #17202d;
+        min-height: 32px;
+        padding: 6px;
+        font-size: 9px;
+        font-weight: 900;
+        text-align: left;
+      }
+      .idb-w362-competitive-note {
+        margin-top: 6px;
+        color: #536579;
+        font-size: 10px;
+        font-weight: 750;
+        line-height: 1.3;
       }
       .idb-action-chip {
         min-height: 32px;
@@ -23451,6 +23556,7 @@
     const roiHypothesis = value.groundedRoiSummary;
     const netsuiteContrast = grounded.whyNetSuiteEvidence[0] || value.groundedCompetitiveSummary;
     const competitivePrep = competitive.competitivePrep || competitiveFudPrep(state, lane, story);
+    const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const whyThisMatters = [
       `Business risk - ${compactText(audit.claim || roiHypothesis, 150)}`,
       `Operational proof - ${compactText(audit.proofStep || demoProof, 150)}`,
@@ -23486,6 +23592,7 @@
         <div class="idb-card idb-accent idb-w96-value-coach idb-w115-consultant-value-coach">
           <div class="idb-section-title">Consultant value coach</div>
           ${liveValueCockpit}
+          ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cockpit', note: competitiveAdvisory.valueCue })}
           <div class="idb-run-action-card">
             <div class="idb-status-key">Talk track</div>
             <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
@@ -24804,6 +24911,7 @@
 
   function renderRunView(state, lane, page, recommendation, selectedMove, action, summary) {
     const value = valueReviewPacket(state, lane, page, recommendation);
+    const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const websiteEvidence = websiteEvidenceUxModel(state, lane);
     const resolverLimited = isResolverLimitedWebsiteEvidenceW353(websiteEvidence);
     const advisory = websiteEvidence.advisory || {};
@@ -24860,6 +24968,7 @@
           ${renderRunActionChips(state)}
         </div>
         ${renderW361ScriptChips(script)}
+        ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
         <div class="idb-run-action-card">
           <div class="idb-status-key">Selected script</div>
           <div class="idb-strong">${escapeHtml(script.title)}</div>
@@ -26534,6 +26643,8 @@
       validateResolverServiceEvidence,
       operatorSuppliedWebsiteEvidenceReadinessW355,
       nllmAssistedWebsiteConfidenceW357,
+      competitiveAdvisoryModelW362,
+      standardCompetitiveAlternativesW362,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

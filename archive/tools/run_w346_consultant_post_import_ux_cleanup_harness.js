@@ -49,12 +49,12 @@ function main() {
   const scriptText = [script.title, script.say, script.show, script.close].join(' ');
 
   assertCase(results, 'userscript-visible-version-is-current-not-legacy-header',
-    /@version\s+1\.0\.9/.test(userscript) &&
-      marker.userscriptVersion === '1.0.9' &&
-      marker.visibleVersionLabel === 'Drawer 1.0.9 / W361' &&
-      /Drawer 1\.0\.9 \/ W361/.test(drawer) &&
+    /@version\s+1\.0\.10/.test(userscript) &&
+      marker.userscriptVersion === '1.0.10' &&
+      marker.visibleVersionLabel === 'Drawer 1.0.10 / W362' &&
+      /Drawer 1\.0\.10 \/ W362/.test(drawer) &&
       !/idb-version-pill">V1\.0\.0</.test(drawer),
-    JSON.stringify({ marker, headerHasW361: /Drawer 1\.0\.9 \/ W361/.test(drawer) }));
+    JSON.stringify({ marker, headerHasW362: /Drawer 1\.0\.10 \/ W362/.test(drawer) }));
 
   assertCase(results, 'post-import-plan-separates-build-and-website-confidence',
     postImport.importedProofReady === true &&

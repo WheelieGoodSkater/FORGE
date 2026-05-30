@@ -62,7 +62,8 @@ function forbiddenNotePrefixMatch(text) {
 function main() {
   const results = [];
   const hooks = loadHooks();
-  const trace = readArchiveJson('trace_samples', 'w352_graybar_strong_website_smoke_version_drift_trace.json');
+  const staleTrace = readArchiveJson('trace_samples', 'w352_graybar_strong_website_smoke_version_drift_trace.json');
+  const trace = readArchiveJson('trace_samples', 'w352_graybar_current_drawer_resolver_fallback_rerun_trace.json');
   const report = readArchiveText('reports', 'w352_graybar_strong_website_smoke_review.md');
   const integrated = trace.state && trace.state.integratedBuildRunnerResult || {};
   const guard = integrated.resultImportGuard || {};
@@ -76,15 +77,26 @@ function main() {
     .map(([surface, text]) => ({ surface, match: forbiddenNotePrefixMatch(text), sample: text }))
     .filter((item) => item.match);
 
-  assertCase(results, 'w352-graybar-trace-captures-stale-live-drawer',
-    trace.exportedAt === '2026-05-30T12:40:08.849Z' &&
+  assertCase(results, 'w352-first-graybar-trace-captures-stale-live-drawer',
+    staleTrace.exportedAt === '2026-05-30T12:40:08.849Z' &&
+      staleTrace.events &&
+      staleTrace.events.length === 23 &&
+      staleTrace.state &&
+      staleTrace.state.intake &&
+      staleTrace.state.intake.customer === 'Graybar Electric' &&
+      staleTrace.installedDrawerDisplayVersionW346 &&
+      staleTrace.installedDrawerDisplayVersionW346.visibleVersionLabel === 'Drawer 1.0.4 / W346',
+    JSON.stringify({ exportedAt: staleTrace.exportedAt, events: staleTrace.events && staleTrace.events.length, drawer: staleTrace.installedDrawerDisplayVersionW346 }));
+
+  assertCase(results, 'w352-corrected-rerun-is-current-w350-drawer',
+    trace.exportedAt === '2026-05-30T12:50:09.692Z' &&
       trace.events &&
-      trace.events.length === 23 &&
+      trace.events.length === 35 &&
       trace.state &&
       trace.state.intake &&
       trace.state.intake.customer === 'Graybar Electric' &&
       trace.installedDrawerDisplayVersionW346 &&
-      trace.installedDrawerDisplayVersionW346.visibleVersionLabel === 'Drawer 1.0.4 / W346',
+      trace.installedDrawerDisplayVersionW346.visibleVersionLabel === 'Drawer 1.0.5 / W350',
     JSON.stringify({ exportedAt: trace.exportedAt, events: trace.events && trace.events.length, drawer: trace.installedDrawerDisplayVersionW346 }));
 
   assertCase(results, 'w352-build-import-and-open-links-pass-despite-version-drift',
@@ -125,11 +137,11 @@ function main() {
     JSON.stringify(currentSourceLeaks.map((item) => ({ surface: item.surface, match: item.match && item.match[0], sample: item.sample.slice(Math.max(0, item.match ? item.match.index - 120 : 0), item.match ? item.match.index + 160 : 160) }))));
 
   assertCase(results, 'w352-report-identifies-version-drift-and-resolver-plan',
-    /Do not treat this as a clean W352 pass/.test(report) &&
-      /deployment\/version drift problem/.test(report) &&
+    /Treat W352 as a build\/import pass with a website resolver readiness blocker/.test(report) &&
+      /The rerun corrected this and proved W350 is live/.test(report) &&
       /Resolver mode: `local_fallback_only`/.test(report) &&
-      /W353: Add a pre-smoke live install gate/.test(report) &&
-      /W354: Add a website resolver readiness gate/.test(report),
+      /W353: Add a pre-smoke live install and resolver-readiness gate/.test(report) &&
+      /W354: Re-run Graybar with both gates satisfied/.test(report),
     report.slice(0, 2000));
 
   assertCase(results, 'w352-no-regression-boundaries-preserved',

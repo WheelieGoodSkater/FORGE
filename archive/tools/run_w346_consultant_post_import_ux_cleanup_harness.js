@@ -48,13 +48,13 @@ function main() {
   const runText = stripTags(run);
   const scriptText = [script.title, script.say, script.show, script.close].join(' ');
 
-  assertCase(results, 'userscript-visible-version-is-w346-not-legacy-header',
-    /@version\s+1\.0\.4/.test(userscript) &&
-      marker.userscriptVersion === '1.0.4' &&
-      marker.visibleVersionLabel === 'Drawer 1.0.4 / W346' &&
-      /Drawer 1\.0\.4 \/ W346/.test(drawer) &&
+  assertCase(results, 'userscript-visible-version-is-current-not-legacy-header',
+    /@version\s+1\.0\.5/.test(userscript) &&
+      marker.userscriptVersion === '1.0.5' &&
+      marker.visibleVersionLabel === 'Drawer 1.0.5 / W350' &&
+      /Drawer 1\.0\.5 \/ W350/.test(drawer) &&
       !/idb-version-pill">V1\.0\.0</.test(drawer),
-    JSON.stringify({ marker, headerHasW346: /Drawer 1\.0\.4 \/ W346/.test(drawer) }));
+    JSON.stringify({ marker, headerHasW350: /Drawer 1\.0\.5 \/ W350/.test(drawer) }));
 
   assertCase(results, 'post-import-plan-separates-build-and-website-confidence',
     postImport.importedProofReady === true &&

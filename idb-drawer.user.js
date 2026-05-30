@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.4
+// @version      1.0.5
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.4';
-  const CURRENT_UX_BLOCK_W346 = 'W346';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.5';
+  const CURRENT_UX_BLOCK_W346 = 'W350';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -4790,6 +4790,20 @@
     return `${text.slice(0, Math.max(0, max - 3)).trim()}...`;
   }
 
+  function stripConsultantNotePrefixesW350(value) {
+    let text = String(value || '');
+    const notePrefix = '(?:Buyer|Pain|Proof|Value|Competitive|Decision\\s+criteria|Stop|ROI|Current\\s+pain|ROI\\s+angle|Competitive\\s+angle)';
+    const leadingPrefix = new RegExp(`^\\s*${notePrefix}\\s*:\\s*`, 'i');
+    const embeddedPrefix = new RegExp(`(:\\s*)${notePrefix}\\s*:\\s*`, 'gi');
+    const sentencePrefix = new RegExp(`([.!?]\\s*)${notePrefix}\\s*:\\s*`, 'gi');
+    for (let index = 0; index < 4; index += 1) {
+      const next = text.replace(leadingPrefix, '').replace(embeddedPrefix, '$1').replace(sentencePrefix, '$1');
+      if (next === text) break;
+      text = next;
+    }
+    return text;
+  }
+
   function consultantVisibleCopyW346(value, limit) {
     let text = String(value || '')
       .replace(/\r/g, '')
@@ -4800,11 +4814,15 @@
       .replace(/\bCompetitor\s*\/\s*Current\s+Tools\b\s*/gi, '')
       .replace(/\bCOV\s*\/\s*Call\s+Notes\b\s*/gi, '')
       .replace(/\bOptional\s+Website\s*\/\s*Category\s+Evidence\b\s*/gi, '')
+      .replace(/^\s*(?:Buyer|Pain|Proof|Value|Competitive|Decision\s+criteria|Stop|ROI|Current\s+pain|ROI\s+angle|Competitive\s+angle)\s*:\s*/gi, '')
+      .replace(/(:\s*)(?:Buyer|Pain|Proof|Value|Competitive|Decision\s+criteria|Stop|ROI|Current\s+pain|ROI\s+angle|Competitive\s+angle)\s*:\s*/gi, '$1')
+      .replace(/([.!?]\s*)(?:Buyer|Pain|Proof|Value|Competitive|Decision\s+criteria|Stop|ROI|Current\s+pain|ROI\s+angle|Competitive\s+angle)\s*:\s*/gi, '$1')
       .replace(/\s*\n+\s*/g, ' ')
       .replace(/\s+/g, ' ')
       .replace(/\s+\./g, '.')
       .replace(/\.{2,}/g, '.')
       .trim();
+    text = stripConsultantNotePrefixesW350(text).trim();
     if (text && !/[.!?]$/.test(text)) text += '.';
     return compactText(text, limit || 240);
   }
@@ -4851,11 +4869,11 @@
       firstNoteSentenceMatching(notes, [/competitive/i, /current\s+way/i, /spreadsheet/i, /disconnected/i], 'Contrast NetSuite against disconnected workflows without inventing unsupported claims.'), 180);
     const buyer = consultantVisibleCopyW346(firstNoteSentenceMatching(notes, [/buyer/i, /vp/i, /operations/i, /finance/i, /sell/i], `${customer} is evaluating whether the NetSuite path can support the proof.`), 180);
     const consultantBrief = [
-      `Buyer: ${buyer}`,
-      `Pain: ${pain}`,
-      `Proof: ${proof}`,
-      `Value: ${roi}`
-    ].filter((line) => !/: $/.test(line));
+      buyer,
+      pain,
+      proof,
+      roi
+    ].filter(Boolean);
     return {
       schema: 'idb.consultant-notes-digest.v1',
       customer,
@@ -19599,7 +19617,7 @@
       `What happens when ${signal.toLowerCase()} changes during the customer conversation?`
     ];
     const topMoves = [
-      `Open with ${customerSeed(intake.customer)}'s stated pain: ${consultantVisibleCopyW346(pain, 180)}`,
+      `Open with ${customerSeed(intake.customer)}'s stated risk - ${consultantVisibleCopyW346(pain, 180)}`,
       `Prove ${lane.proofAnchor} using ${product.product} and ${recommendation.move}.`,
       `Close on the decision: ${decisionCriteria}`
     ];
@@ -19769,16 +19787,16 @@
         ? `${competitive.competitorSafeContrast} Keep the comparison on workflow risk and the ${lane.proofAnchor} proof path.`
         : 'Capture competitor/incumbent context, then keep claims to safe workflow contrast.',
       whyThisRoiEvidence: [
-        `Value source: ${valueReadyFromNotes ? 'consultant notes and SC request context' : 'needs consultant notes'}.`,
-        `Website evidence: ${evidence.join(' | ') || 'not enough cited website evidence yet'}.`,
-        `Conversation pain: ${story.pain}.`,
-        `Baseline needed: ${roiAudit.baselineNeeded}.`
+        `Value source - ${valueReadyFromNotes ? 'consultant notes and SC request context' : 'needs consultant notes'}.`,
+        `Website evidence - ${evidence.join(' | ') || 'not enough cited website evidence yet'}.`,
+        `Conversation signal - ${consultantVisibleCopyW346(story.pain, 220)}`,
+        `Baseline needed - ${roiAudit.baselineNeeded}.`
       ],
       whyNetSuiteEvidence: [
-        `NetSuite proof path: ${industryWinTheme(lane).proof}`,
-        `Proof anchor: ${lane.proofAnchor}.`,
-        `Recommended move: ${roiAudit.proofStep}.`,
-        `Source state: ${competitive.verifiedState}.`
+        `NetSuite proof path - ${industryWinTheme(lane).proof}`,
+        `Proof anchor - ${lane.proofAnchor}.`,
+        `Recommended move - ${roiAudit.proofStep}.`,
+        `Source state - ${competitive.verifiedState}.`
       ],
       unsupportedClaimBlocker,
       traceExportCoverage: {
@@ -19802,7 +19820,7 @@
     const copies = {
       open: {
         title: 'Open with the business risk',
-      copy: `Start with ${value.customer}'s stated pain: ${consultantVisibleCopyW346(value.pain, 180)} Then make ${product} the proof moment where NetSuite connects demand, operations, and financial impact.`
+      copy: `Start with ${value.customer}'s stated risk - ${consultantVisibleCopyW346(value.pain, 180)} Then make ${product} the proof moment where NetSuite connects demand, operations, and financial impact.`
       },
       prove: {
         title: 'Prove the NetSuite path',
@@ -19964,7 +19982,7 @@
       },
       prove: w213Run.prove || {
         title: 'Prove the NetSuite path',
-        say: `Use ${proofObject} to prove ${lane.proofAnchor} against the stated pain: ${value.pain}. Tie the proof to ${value.decisionCriteria} and show how NetSuite keeps the decision in one operating path.`,
+        say: `Use ${proofObject} to prove ${lane.proofAnchor} against the stated risk - ${value.pain}. Tie the proof to ${value.decisionCriteria} and show how NetSuite keeps the decision in one operating path.`,
         show: finalPivots || coach.currentPageCue,
         close: `Ask whether this path is enough for ${value.customer} to trust ${value.roiAudit.metricProxy} without a manual reconciliation.`
       },
@@ -20149,23 +20167,23 @@
     const w213Coach = consultantStoryRoiCompetitiveQualityPassW213V1(state, lane, pageContext, recommendation);
     const w213Copy = w213Coach.updatedConsultantCopyModel;
     const valueProofStack = [
-      `ERP proof: ${industryWin.proof}`,
-      `Operational proof: ${lane.proofAnchor} through ${recommendation.move}.`,
-      `Financial proof: connect ${product.demandMoment} to margin, fulfillment, revenue timing, or working-capital conversation.`
+      `ERP proof - ${industryWin.proof}`,
+      `Operational proof - ${lane.proofAnchor} through ${recommendation.move}.`,
+      `Financial proof - connect ${product.demandMoment} to margin, fulfillment, revenue timing, or working-capital conversation.`
     ];
     const talkTrackLead = consultantVisibleCopyW346(w213Copy.talkTrack, 360);
     const valueDecision = `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
     const roiAuditCards = [
-      `Why now: ${pain}`,
-      `ROI basis: ${roiAudit.metricProxy}; baseline needed: ${roiAudit.baselineNeeded}`,
-      `Proof step: ${roiAudit.proofStep}`,
-      `Guardrail: ${roiAudit.caution}`
+      `Why now - ${pain}`,
+      `ROI basis - ${roiAudit.metricProxy}; baseline needed - ${roiAudit.baselineNeeded}`,
+      `Proof step - ${roiAudit.proofStep}`,
+      `Guardrail - ${roiAudit.caution}`
     ];
     const competitiveCards = [
-      `NetSuite proof: ${industryWin.proof}`,
-      `Safe contrast: ${competitive.competitorSafeContrast}`,
-      `Source state: ${competitive.verifiedState}`,
-      `Source basis: ${competitive.sourceBasis.join(', ')}`
+      `NetSuite proof - ${industryWin.proof}`,
+      `Safe contrast - ${competitive.competitorSafeContrast}`,
+      `Source state - ${competitive.verifiedState}`,
+      `Source basis - ${competitive.sourceBasis.join(', ')}`
     ];
     const objectionPath = [
       `Anchor: ${story.likelyObjections[0]}`,
@@ -20196,19 +20214,19 @@
       groundedRoiSummary: consultantVisibleCopyW346(w213Copy.roiAnswer || grounded.groundedRoiSummary, 320),
       groundedCompetitiveSummary: consultantVisibleCopyW346(w213Copy.competitiveAnswer || grounded.groundedCompetitiveSummary, 320),
       valueAgenda: [
-        `Objective: ${consultantVisibleCopyW346(objective, 220)}`,
-        `Start with ${customer}'s stated pain: ${consultantVisibleCopyW346(pain, 220)}`,
+        `Objective - ${consultantVisibleCopyW346(objective, 220)}`,
+        `Start with ${customer}'s stated risk - ${consultantVisibleCopyW346(pain, 220)}`,
         consultantVisibleCopyW346(w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`, 220),
         `Tie the proof to ${lane.valueLens}`,
-        `Decision criteria: ${consultantVisibleCopyW346(criteria, 220)}`,
+        `Decision criteria - ${consultantVisibleCopyW346(criteria, 220)}`,
         `Close by confirming the next operational decision the prospect can now make.`
       ],
       competitiveReview: [
         competitive.industryWinThemes[0],
         competitive.industryWinThemes[1],
         competitive.competitorSafeContrast,
-        `Source basis: ${competitive.sourceBasis.join(', ')}.`,
-        `Verified state: ${competitive.verifiedState}.`
+        `Source basis - ${competitive.sourceBasis.join(', ')}.`,
+        `Verified state - ${competitive.verifiedState}.`
       ],
       objections: story.likelyObjections.concat(competitive.objectionCopy.slice(0, 1)),
       discoveryQuestions: [
@@ -23018,10 +23036,10 @@
     const netsuiteContrast = grounded.whyNetSuiteEvidence[0] || value.groundedCompetitiveSummary;
     const competitivePrep = competitive.competitivePrep || competitiveFudPrep(state, lane, story);
     const whyThisMatters = [
-      `Business risk: ${compactText(audit.claim || roiHypothesis, 150)}`,
-      `Operational proof: ${compactText(audit.proofStep || demoProof, 150)}`,
-      `NetSuite contrast: ${compactText(netsuiteContrast, 150)}`,
-      `Baseline to capture: ${compactText(audit.baselineNeeded || 'Capture the current delay, cost, or risk baseline before claiming savings.', 150)}`
+      `Business risk - ${compactText(audit.claim || roiHypothesis, 150)}`,
+      `Operational proof - ${compactText(audit.proofStep || demoProof, 150)}`,
+      `NetSuite contrast - ${compactText(netsuiteContrast, 150)}`,
+      `Baseline to capture - ${compactText(audit.baselineNeeded || 'Capture the current delay, cost, or risk baseline before claiming savings.', 150)}`
     ];
     return `
       <div class="idb-cockpit-section">
@@ -23116,8 +23134,8 @@
                 <div class="idb-status-key">ROI most important</div>
                 <div class="idb-copy">${escapeHtml(value.groundedRoiSummary)}</div>
                 <div class="idb-chip-row">
-                  <span class="idb-mini-chip">Value: ${escapeHtml(consultantLabel(audit.confidence))}</span>
-                  <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(grounded.confidenceState))}</span><!-- Source: ${escapeHtml(grounded.confidenceState)} -->
+                  <span class="idb-mini-chip">Confidence - ${escapeHtml(consultantLabel(audit.confidence))}</span>
+                  <span class="idb-mini-chip">Source - ${escapeHtml(consultantLabel(grounded.confidenceState))}</span><!-- Source - ${escapeHtml(grounded.confidenceState)} -->
                   <span class="idb-mini-chip">${escapeHtml(audit.metricProxy)}</span>
                   <span class="idb-mini-chip">Advisory only</span>
                 </div>
@@ -23769,7 +23787,7 @@
           </div>
           <div class="idb-copy"><strong>Objection:</strong> ${escapeHtml(sequence.likelyBuyerObjection)}</div>
           <div class="idb-copy"><strong>Safe response:</strong> ${escapeHtml(sequence.safeObjectionResponse)}</div>
-          <div class="idb-copy"><strong>Stop:</strong> ${escapeHtml(sequence.stopCondition)}</div>
+          <div class="idb-copy"><strong>Guardrail:</strong> ${escapeHtml(sequence.stopCondition)}</div>
           <div class="idb-copy"><strong>Uncertainty:</strong> ${escapeHtml(sequence.uncertaintyResponse)}</div>
         </details>
         <div class="idb-chip-row">
@@ -23858,7 +23876,7 @@
     const notesDigest = consultantNotesDigestV1(state, lane, websiteProductNamingEvidence(state, lane));
     const requestSummaryRows = notesDigest.consultantBrief.length
       ? notesDigest.consultantBrief
-      : [`Proof: Prepare the ${lane.name} proof path for ${intake.customer || 'this prospect'}.`];
+      : [`Prepare the ${lane.name} proof path for ${intake.customer || 'this prospect'}.`];
     const compareSummary = finalNamesImported
       ? 'Use the imported names to confirm the build result and plan the live path.'
       : 'Operator compares the handoff to the build preview. The drawer does not open, submit, queue, or write.';

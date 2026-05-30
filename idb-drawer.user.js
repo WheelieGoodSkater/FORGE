@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.8
+// @version      1.0.9
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.8';
-  const CURRENT_UX_BLOCK_W346 = 'W357';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.9';
+  const CURRENT_UX_BLOCK_W346 = 'W361';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -20949,6 +20949,84 @@
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 5px;
       }
+      .idb-w361-path-flow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 5px;
+        margin-bottom: 8px;
+      }
+      .idb-w361-path-node {
+        position: relative;
+        border: 1px solid #cbd7df;
+        border-radius: 7px;
+        background: #fff;
+        padding: 7px 18px 7px 7px;
+        min-height: 42px;
+      }
+      .idb-w361-path-node:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #0b5f79;
+        font-size: 13px;
+        font-weight: 900;
+      }
+      .idb-w361-path-label {
+        color: #65768a;
+        font-size: 9px;
+        font-weight: 850;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+      }
+      .idb-w361-path-name {
+        margin-top: 2px;
+        color: #16212f;
+        font-size: 10px;
+        font-weight: 850;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+      }
+      .idb-w361-script-chips,
+      .idb-w361-value-chips {
+        display: grid;
+        gap: 5px;
+        margin-top: 7px;
+      }
+      .idb-w361-script-chips {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .idb-w361-value-chips {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .idb-w361-script-chip,
+      .idb-w361-value-chip {
+        border: 1px solid #d8e1e6;
+        border-radius: 7px;
+        background: #fbfcfb;
+        color: #17202d;
+        min-height: 30px;
+        padding: 6px;
+        font-size: 9px;
+        font-weight: 900;
+        text-align: left;
+      }
+      .idb-w361-chip-title {
+        display: block;
+        color: #65768a;
+        font-size: 8px;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+      }
+      .idb-w361-chip-copy {
+        display: block;
+        margin-top: 2px;
+        color: #16212f;
+        font-size: 9px;
+        line-height: 1.18;
+        overflow-wrap: anywhere;
+      }
       .idb-action-chip {
         min-height: 32px;
         border: 1px solid #cbd7df;
@@ -22384,6 +22462,72 @@
     `).join('');
   }
 
+  function renderW361NetSuitePathFlow(finalNavigation) {
+    const objects = arrayValue(finalNavigation && finalNavigation.scriptPivotObjects);
+    if (!objects.length) return `
+      <div class="idb-run-action-card idb-w361-netsuite-path">
+        <div class="idb-status-key">NetSuite path</div>
+        <div class="idb-copy">Imported proof records are required before the live path appears.</div>
+      </div>
+    `;
+    const preferredLabels = ['Customer', 'Sales Order', 'Product SKU', 'Availability/Replenishment Flow'];
+    const selected = [];
+    preferredLabels.forEach((label) => {
+      const found = objects.find((item) => consultantRunNavigationLabelW332(item).indexOf(label) >= 0 || label.indexOf(consultantRunNavigationLabelW332(item)) >= 0);
+      if (found && !selected.includes(found)) selected.push(found);
+    });
+    objects.forEach((item) => {
+      if (selected.length < 4 && !selected.includes(item)) selected.push(item);
+    });
+    return `
+      <div class="idb-w361-path-flow idb-w361-netsuite-path" aria-label="NetSuite path flow">
+        ${selected.slice(0, 4).map((item) => `
+          <div class="idb-w361-path-node">
+            <span class="idb-w361-path-label">${escapeHtml(consultantRunNavigationLabelW332(item))}</span>
+            <span class="idb-w361-path-name">${escapeHtml(consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item))}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function renderW361ScriptChips(script) {
+    const rows = [
+      ['Say', script && script.say],
+      ['Show', script && script.show],
+      ['Close', script && script.close]
+    ];
+    return `
+      <div class="idb-w361-script-chips" role="group" aria-label="Say Show Close script chips">
+        ${rows.map(([label, copy]) => `
+          <button class="idb-w361-script-chip" type="button" title="${escapeHtml(copy || '')}">
+            <span class="idb-w361-chip-title">${escapeHtml(label)}</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(copy || '', 72))}</span>
+          </button>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function renderW361ImportedProofRecords(finalNavigation) {
+    if (!(finalNavigation && finalNavigation.runCanUseImportedFinalNames)) return '';
+    const objects = arrayValue(finalNavigation.scriptPivotObjects);
+    return `
+      <details class="idb-technical-details idb-w116-final-navigation idb-w361-imported-proof-records">
+        <summary>Use imported proof records (${escapeHtml(objects.length)})</summary>
+        <div class="idb-copy">Use returned NetSuite proof records for the next object pivot.</div>
+        <ol class="idb-value-list">
+          ${objects.map((item) => `
+            <li>
+              <span>${escapeHtml(consultantRunNavigationDisplayW334(item))}</span>
+              ${renderRecordLinkAuthority(item)}
+            </li>
+          `).join('')}
+        </ol>
+      </details>
+    `;
+  }
+
   function updateGuidedIntakeRecommendation(root, state) {
     const currentLane = getLane(state);
     const model = guidedIntakeModel(state, currentLane);
@@ -23313,10 +23457,35 @@
       `NetSuite contrast - ${compactText(netsuiteContrast, 150)}`,
       `Baseline to capture - ${compactText(audit.baselineNeeded || 'Capture the current delay, cost, or risk baseline before claiming savings.', 150)}`
     ];
+    const liveValueCockpit = `
+      <div class="idb-run-action-card idb-w361-live-value-cockpit">
+        <div class="idb-status-key">Live value answer</div>
+        <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
+        <div class="idb-w361-value-chips" role="group" aria-label="Live value answer chips">
+          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(topMove)}">
+            <span class="idb-w361-chip-title">Next move</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(topMove, 78))}</span>
+          </button>
+          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(netsuiteContrast)}">
+            <span class="idb-w361-chip-title">NetSuite answer</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(netsuiteContrast, 78))}</span>
+          </button>
+          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(roiHypothesis)}">
+            <span class="idb-w361-chip-title">ROI answer</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(roiHypothesis, 78))}</span>
+          </button>
+          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(cautionCopy)}">
+            <span class="idb-w361-chip-title">Caution</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(cautionCopy, 78))}</span>
+          </button>
+        </div>
+      </div>
+    `;
     return `
       <div class="idb-cockpit-section">
         <div class="idb-card idb-accent idb-w96-value-coach idb-w115-consultant-value-coach">
           <div class="idb-section-title">Consultant value coach</div>
+          ${liveValueCockpit}
           <div class="idb-run-action-card">
             <div class="idb-status-key">Talk track</div>
             <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
@@ -23998,6 +24167,7 @@
   function renderConsultantStorySurfaceW248(story, options) {
     if (!story || !story.openTarget || !story.proofMove) return '';
     const resolverLimited = !!(options && options.resolverLimitedWebsiteEvidence);
+    const compactAudit = !!(options && options.compactAudit);
     const advisory = options && options.advisoryWebsiteEvidence || {};
     const advisorySupported = advisory.status === 'advisory_supported';
     const storyCopy = (value) => {
@@ -24033,7 +24203,7 @@
           </div>
         </details>
       ` : '';
-    return `
+    const surfaceHtml = `
       <div class="idb-run-action-card idb-w248-story-surface">
         <div class="idb-status-key">Live proof CTA</div>
         <div class="idb-strong">${escapeHtml(storyCopy(firstGlance.openTarget))}</div>
@@ -24094,6 +24264,13 @@
         <div class="idb-copy">${escapeHtml(storyCopy(uncertainty))}</div>
         ${receiptHtml}
       </div>
+    `;
+    if (!compactAudit) return surfaceHtml;
+    return `
+      <details class="idb-technical-details idb-w361-proof-audit">
+        <summary>Proof guardrails and evidence receipt</summary>
+        ${surfaceHtml}
+      </details>
     `;
   }
 
@@ -24642,7 +24819,7 @@
       ? consultantPartialResultReviewRunModelW216V1(state.dccFinalNamingResult, state, lane, page, recommendation)
       : null;
     const consultantStorySurfaceHtml = w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory })
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory, compactAudit: true })
       : '';
     if (!finalNavigation.runCanUseImportedFinalNames) {
       const waitingForLinks = buildStatus && buildStatus.automation && buildStatus.automation.runnerTaskCaptured;
@@ -24676,30 +24853,19 @@
     }
     return `
       <div class="idb-card idb-accent idb-w97-run-selector">
+        <div class="idb-section-title">NetSuite path</div>
+        ${renderW361NetSuitePathFlow(finalNavigation)}
         <div class="idb-section-title">Live controls</div>
         <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
           ${renderRunActionChips(state)}
         </div>
+        ${renderW361ScriptChips(script)}
         <div class="idb-run-action-card">
           <div class="idb-status-key">Selected script</div>
           <div class="idb-strong">${escapeHtml(script.title)}</div>
           <div class="idb-copy">${escapeHtml(script.say)}</div>
         </div>
-        ${finalNavigation.runCanUseImportedFinalNames ? `
-          <div class="idb-run-action-card idb-w116-final-navigation">
-            <div class="idb-status-key">Use imported proof records</div>
-            <div class="idb-copy">Use returned NetSuite proof records for the next object pivot.</div>
-            <ol class="idb-value-list">
-              ${finalNavigation.scriptPivotObjects.map((item) => `
-                <li>
-                  <span>${escapeHtml(consultantRunNavigationDisplayW334(item))}</span>
-                  ${renderRecordLinkAuthority(item)}
-                </li>
-              `).join('')}
-            </ol>
-          </div>
-        ` : ''}
-        ${consultantStorySurfaceHtml}
+        ${renderW361ImportedProofRecords(finalNavigation)}
         ${resolverLimited ? `
           <div class="idb-run-action-card idb-w353-resolver-limited">
             <div class="idb-status-key">Website read</div>
@@ -24708,6 +24874,7 @@
             ${advisorySupported ? `<div class="idb-copy"><strong>${escapeHtml(advisory.visualLabel)}:</strong> Advisory inference supports the lane, but it is not public website proof.</div>` : ''}
           </div>
         ` : ''}
+        ${consultantStorySurfaceHtml}
       </div>
       <div class="idb-card idb-accent idb-w56-run-script-first">
         <div class="idb-section-title">Live script first</div>

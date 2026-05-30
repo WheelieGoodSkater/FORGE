@@ -94,8 +94,8 @@ function main() {
   const suppliedAdvisory = hooks.nllmAssistedWebsiteConfidenceW357(graybarSupplied.state, graybarSupplied.lane);
 
   assertCase(results, 'w357-current-marker-and-hook-advance',
-    /@version\s+1\.0\.8/.test(userscript) &&
-      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.8 / W357' &&
+    /@version\s+1\.0\.9/.test(userscript) &&
+      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.9 / W361' &&
       /nllmAssistedWebsiteConfidenceW357/.test(userscript),
     JSON.stringify({ marker: hooks.drawerDisplayVersionW346() }));
 

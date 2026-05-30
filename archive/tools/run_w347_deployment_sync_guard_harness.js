@@ -58,10 +58,10 @@ function main() {
     JSON.stringify(missingDownload.targets.find((target) => target.id === 'drawer')));
 
   assertCase(results, 'w347-drawer-baseline-and-auto-update-metadata-locked',
-    userscript.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.8';") &&
-      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W357';") &&
+    userscript.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.9';") &&
+      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W361';") &&
       userscript.includes('return `Drawer ${DRAWER_USERSCRIPT_VERSION} / ${CURRENT_UX_BLOCK_W346}`;') &&
-      /@version\s+1\.0\.8/.test(userscript) &&
+      /@version\s+1\.0\.9/.test(userscript) &&
       /@updateURL\s+https:\/\/raw\.githubusercontent\.com\/WheelieGoodSkater\/FORGE\/main\/idb-drawer\.user\.js/.test(userscript) &&
       /@downloadURL\s+https:\/\/raw\.githubusercontent\.com\/WheelieGoodSkater\/FORGE\/main\/idb-drawer\.user\.js/.test(userscript),
     EXPECTED_VISIBLE_MARKER);

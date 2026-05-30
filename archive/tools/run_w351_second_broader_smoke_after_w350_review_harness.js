@@ -88,7 +88,7 @@ function main() {
   assertCase(results, 'w351-deployment-preflight-remains-green-for-w350',
     deployment.status === 'PASS' &&
       deployment.baseline &&
-      deployment.baseline.visibleMarker === 'Drawer 1.0.5 / W350' &&
+      deployment.baseline.visibleMarker === 'Drawer 1.0.6 / W353' &&
       deployment.targets.every((target) => target.root.sha256 === target.mirror.sha256),
     JSON.stringify({ status: deployment.status, baseline: deployment.baseline }));
 
@@ -140,7 +140,7 @@ function main() {
   assertCase(results, 'w351-w350-note-prefix-cleanup-holds-on-current-surfaces',
     prefixLeaks.length === 0 &&
       surfaces.some(([, text]) => /Build\/import verified/.test(text)) &&
-      surfaces.some(([, text]) => /Website evidence: Needs confirmation/.test(text)) &&
+      surfaces.some(([, text]) => /(Website evidence: Needs confirmation|Website read: Resolver limited)/.test(text)) &&
       surfaces.some(([, text]) => /Use imported proof records/.test(text)),
     JSON.stringify(prefixLeaks.map((item) => ({ surface: item.surface, match: item.match && item.match[0], sample: item.sample.slice(Math.max(0, item.match ? item.match.index - 120 : 0), item.match ? item.match.index + 160 : 160) }))));
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.5
+// @version      1.0.6
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.5';
-  const CURRENT_UX_BLOCK_W346 = 'W350';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.6';
+  const CURRENT_UX_BLOCK_W346 = 'W353';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1245,9 +1245,35 @@
     return finalNaming.finalNamesImported === true && arrayValue(finalNaming.displayReadyRecords).some((record) => record.safeToOpen === true);
   }
 
+  function isResolverLimitedWebsiteEvidenceW353(evidence) {
+    const confidence = evidence && evidence.confidence || {};
+    return confidence.resolverMode === 'local_fallback_only' &&
+      (confidence.failureState === 'thin' || confidence.scoreLabel === 'low') &&
+      confidence.tokenConfigured === false;
+  }
+
+  function websiteEvidenceDisplayLabelW353(evidence) {
+    if (isResolverLimitedWebsiteEvidenceW353(evidence)) return 'Resolver limited';
+    return consultantLabel(evidence && evidence.confidence && evidence.confidence.state || 'none');
+  }
+
+  function websiteEvidenceDisplayDetailW353(evidence) {
+    const confidence = evidence && evidence.confidence || {};
+    if (isResolverLimitedWebsiteEvidenceW353(evidence)) {
+      return `Website read: Resolver limited / ${consultantLabel(confidence.scoreLabel || 'low')}`;
+    }
+    return `Website evidence: ${consultantLabel(confidence.state)} / ${consultantLabel(confidence.scoreLabel)}`;
+  }
+
+  function resolverLimitedCopyW353(evidence) {
+    if (!isResolverLimitedWebsiteEvidenceW353(evidence)) return '';
+    return 'FORGE could not fetch enough website/category evidence in local fallback mode. Treat this as resolver-limited, not as proof that the public website is weak.';
+  }
+
   function postImportConfidenceModelW346(state, lane, page, recommendation) {
     const evidence = websiteEvidenceUxModel(state, lane);
     const imported = hasImportedProofRecordsW346(state, lane, page, recommendation);
+    const resolverLimited = isResolverLimitedWebsiteEvidenceW353(evidence);
     return {
       schema: 'forge.w346.post-import-confidence-separation.v1',
       importedProofReady: imported,
@@ -1255,14 +1281,20 @@
       websiteConfidenceState: evidence.confidence.state,
       websiteConfidenceScore: evidence.confidence.scoreLabel,
       websiteConfidenceSource: evidence.confidence.source || 'none',
+      websiteEvidenceLabel: websiteEvidenceDisplayLabelW353(evidence),
+      websiteEvidenceDetail: websiteEvidenceDisplayDetailW353(evidence),
+      resolverLimitedWebsiteEvidence: resolverLimited,
+      resolverLimitedCopy: resolverLimitedCopyW353(evidence),
       requiresWebsiteConfirmation: evidence.confidence.requiresConfirmation === true,
       planConfidenceLabel: imported ? 'Build verified' : consultantLabel(evidence.confidence.state),
       planConfidenceDetail: imported
-        ? `Website evidence: ${consultantLabel(evidence.confidence.state)} / ${consultantLabel(evidence.confidence.scoreLabel)}`
+        ? websiteEvidenceDisplayDetailW353(evidence)
         : `${consultantLabel(evidence.confidence.scoreLabel)} / ${consultantLabel(evidence.confidence.source || 'none')}`,
       nextActionLabel: imported ? 'Run imported proof records.' : '',
       nextActionCopy: imported
-        ? 'Build/import is verified. Keep website uncertainty visible before ROI claims.'
+        ? resolverLimited
+          ? 'Build/import is verified. Website read is resolver-limited; confirm public evidence before ROI claims.'
+          : 'Build/import is verified. Keep website uncertainty visible before ROI claims.'
         : ''
     };
   }
@@ -2586,9 +2618,13 @@
     const runtime = resolverRuntimePatch(state);
     const websiteUrl = intake.website || '';
     const sourceUrls = profile.sourceUrls && profile.sourceUrls.length ? profile.sourceUrls : websiteUrl ? [websiteUrl] : [];
+    const resolverLimited = runtime.mode === 'local_fallback_only' &&
+      (profile.failureState === 'thin' || profile.confidence === 'low') &&
+      !runtime.tokenConfigured;
     const evidenceItems = [
       profile.domain ? `Domain: ${profile.domain}` : 'Domain: not available',
       runtime.mode ? `Resolver: ${runtime.mode} / ${runtime.status || 'idle'}` : 'Resolver: not requested',
+      resolverLimited ? 'Website read: resolver-limited local fallback' : '',
       profile.failureState ? `Failure state: ${profile.failureState}` : '',
       profile.evidence ? `Evidence: ${profile.evidence}` : 'Evidence: not enough website/category text yet',
       profile.product ? `Product seed: ${profile.product}` : 'Product seed: needs evidence',
@@ -2618,12 +2654,15 @@
       }));
     const missingEvidence = [];
     if (!intake.website) missingEvidence.push('Enter the prospect website.');
+    if (resolverLimited) missingEvidence.push('Resolver is limited to local fallback. Add hosted/remote resolver evidence or paste website/category evidence before treating the public website as weak.');
     if (confidence.state === WEBSITE_CONFIDENCE_STATE.INSUFFICIENT) missingEvidence.push('Add homepage, category, product, title, meta, or SC-supplied website evidence.');
     if (confidence.requiresConfirmation) missingEvidence.push('Confirm the website category before ROI, competitive, or write preparation proceeds.');
     if (!profile.product) missingEvidence.push('Capture product/category terms from the website.');
-    const why = confidence.reason || (profile.laneId
+    const why = resolverLimited
+      ? 'FORGE could not fetch enough website/category evidence in local fallback mode. This is resolver-limited evidence, not proof that the public website is weak.'
+      : confidence.reason || (profile.laneId
       ? `Website evidence supports ${laneById(profile.laneId) ? laneById(profile.laneId).name : profile.laneId}.`
-        : 'The drawer does not have enough website evidence to classify confidently.');
+      : 'The drawer does not have enough website evidence to classify confidently.');
     return {
       schema: 'idb.w53-consultant-evidence-ux.v1',
       status: confidence.state,
@@ -2639,6 +2678,9 @@
       confidence: {
         state: confidence.state,
         scoreLabel: profile.confidence || 'none',
+        displayLabel: resolverLimited ? 'resolver_limited' : confidence.state,
+        displayText: resolverLimited ? 'Resolver limited' : consultantLabel(confidence.state),
+        resolverLimited,
         requiresConfirmation: confidence.requiresConfirmation,
         source: confidence.source,
         resolverSource: confidence.resolverSource,
@@ -23259,6 +23301,13 @@
     const classificationLabel = briefPrepared ? (evidence.recommendedLaneName || lane.name) : 'Waiting for brief';
     const confidenceLabel = briefPrepared ? postImport.planConfidenceLabel : 'Not prepared';
     const confidenceDetail = briefPrepared ? postImport.planConfidenceDetail : 'Build demo plan';
+    const resolverLimitedNote = postImport.resolverLimitedWebsiteEvidence ? `
+      <div class="idb-run-action-card">
+        <div class="idb-status-key">Website read</div>
+        <div class="idb-strong">Resolver limited</div>
+        <div class="idb-copy">${escapeHtml(postImport.resolverLimitedCopy)}</div>
+      </div>
+    ` : '';
     const dccPackLabel = flow.demoPathLabel;
     const dccPackCopy = !briefPrepared
       ? flow.demoPathCopy
@@ -23294,9 +23343,10 @@
           ${postImport.importedProofReady ? `
           <div class="idb-chip-row">
             <span class="idb-chip idb-ready">Build/import verified</span>
-            <span class="idb-mini-chip">Website evidence: ${escapeHtml(consultantLabel(postImport.websiteConfidenceState))}</span>
+            <span class="idb-mini-chip">Website read: ${escapeHtml(postImport.websiteEvidenceLabel)}</span>
             <span class="idb-mini-chip">Open links verified</span>
           </div>` : ''}
+          ${resolverLimitedNote}
           <div class="idb-run-action-card">
             <div class="idb-status-key">Demo path</div>
             <div class="idb-strong">${escapeHtml(dccPackLabel)}</div>
@@ -23709,8 +23759,16 @@
     `;
   }
 
-  function renderConsultantStorySurfaceW248(story) {
+  function renderConsultantStorySurfaceW248(story, options) {
     if (!story || !story.openTarget || !story.proofMove) return '';
+    const resolverLimited = !!(options && options.resolverLimitedWebsiteEvidence);
+    const storyCopy = (value) => {
+      const text = String(value || '');
+      if (!resolverLimited) return text;
+      return text
+        .replace(/\bweak lane evidence\b/gi, 'resolver-limited website evidence')
+        .replace(/\bweak evidence\b/gi, 'resolver-limited website evidence');
+    };
     const coachingShape = storyCoachingRuntimeShapeW298(story);
     const firstGlance = coachingShape.w255FirstGlance;
     const script = coachingShape.w256LiveDemoScript;
@@ -23740,36 +23798,36 @@
     return `
       <div class="idb-run-action-card idb-w248-story-surface">
         <div class="idb-status-key">Live proof CTA</div>
-        <div class="idb-strong">${escapeHtml(firstGlance.openTarget)}</div>
+        <div class="idb-strong">${escapeHtml(storyCopy(firstGlance.openTarget))}</div>
         <div class="idb-status-strip idb-w258-first-glance-cta">
           <div class="idb-status-cell">
             <div class="idb-status-key">Proof action</div>
-            <div class="idb-copy">${escapeHtml(proofAction)}</div>
+            <div class="idb-copy">${escapeHtml(storyCopy(proofAction))}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Safe claim</div>
-            <div class="idb-copy">${escapeHtml(safeClaim)}</div>
+            <div class="idb-copy">${escapeHtml(storyCopy(safeClaim))}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Stop</div>
-            <div class="idb-copy">${escapeHtml(stopGuardrail)}</div>
+            <div class="idb-copy">${escapeHtml(storyCopy(stopGuardrail))}</div>
           </div>
         </div>
         <div class="idb-chip-row idb-w255-first-glance">
           <span class="idb-mini-chip">Evidence confidence: ${escapeHtml(confidence)}</span>
-          <span class="idb-mini-chip">Receipt: ${escapeHtml(firstGlance.receiptSummary)}</span>
-          <span class="idb-mini-chip">Next: ${escapeHtml(firstGlance.nextAction)}</span>
+          <span class="idb-mini-chip">Receipt: ${escapeHtml(storyCopy(firstGlance.receiptSummary))}</span>
+          <span class="idb-mini-chip">Next: ${escapeHtml(storyCopy(firstGlance.nextAction))}</span>
         </div>
         <details class="idb-technical-details idb-w256-live-demo-script">
           <summary>Say this live: open, prove, close</summary>
           <div class="idb-record-group">
-            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Open</span><span class="idb-build-statement">${escapeHtml(script.lines.whatToOpen)}</span></span><span class="idb-plan-role">Script</span></div>
-            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Say</span><span class="idb-build-statement">${escapeHtml(script.lines.openingLine)}</span></span><span class="idb-plan-role">Script</span></div>
-            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Prove</span><span class="idb-build-statement">${escapeHtml(script.lines.whatToProve)}</span></span><span class="idb-plan-role">Script</span></div>
-            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Claim</span><span class="idb-build-statement">${escapeHtml(script.lines.safeBuyerClaim)}</span></span><span class="idb-plan-role">Script</span></div>
-            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">So what</span><span class="idb-build-statement">${escapeHtml(script.lines.valueSoWhat)}</span></span><span class="idb-plan-role">Script</span></div>
-            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Stop</span><span class="idb-build-statement">${escapeHtml(script.lines.stopGuardrail)}</span></span><span class="idb-plan-role">Script</span></div>
-            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Uncertainty</span><span class="idb-build-statement">${escapeHtml(script.lines.uncertaintyLine)}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Open</span><span class="idb-build-statement">${escapeHtml(storyCopy(script.lines.whatToOpen))}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Say</span><span class="idb-build-statement">${escapeHtml(storyCopy(script.lines.openingLine))}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Prove</span><span class="idb-build-statement">${escapeHtml(storyCopy(script.lines.whatToProve))}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Claim</span><span class="idb-build-statement">${escapeHtml(storyCopy(script.lines.safeBuyerClaim))}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">So what</span><span class="idb-build-statement">${escapeHtml(storyCopy(script.lines.valueSoWhat))}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Stop</span><span class="idb-build-statement">${escapeHtml(storyCopy(script.lines.stopGuardrail))}</span></span><span class="idb-plan-role">Script</span></div>
+            <div class="idb-plan-row idb-compressed-row"><span><span class="idb-build-label">Uncertainty</span><span class="idb-build-statement">${escapeHtml(storyCopy(script.lines.uncertaintyLine))}</span></span><span class="idb-plan-role">Script</span></div>
           </div>
         </details>
         <details class="idb-technical-details idb-w257-guided-demo-sequence">
@@ -23779,21 +23837,21 @@
               <div class="idb-plan-row idb-compressed-row">
                 <span>
                   <span class="idb-build-label">${escapeHtml(step.label)}. ${escapeHtml(step.title)}</span>
-                  <span class="idb-build-statement">${escapeHtml(step.line)}</span>
+                  <span class="idb-build-statement">${escapeHtml(storyCopy(step.line))}</span>
                 </span>
                 <span class="idb-plan-role">Live</span>
               </div>
             `).join('')}
           </div>
-          <div class="idb-copy"><strong>Objection:</strong> ${escapeHtml(sequence.likelyBuyerObjection)}</div>
-          <div class="idb-copy"><strong>Safe response:</strong> ${escapeHtml(sequence.safeObjectionResponse)}</div>
-          <div class="idb-copy"><strong>Guardrail:</strong> ${escapeHtml(sequence.stopCondition)}</div>
-          <div class="idb-copy"><strong>Uncertainty:</strong> ${escapeHtml(sequence.uncertaintyResponse)}</div>
+          <div class="idb-copy"><strong>Objection:</strong> ${escapeHtml(storyCopy(sequence.likelyBuyerObjection))}</div>
+          <div class="idb-copy"><strong>Safe response:</strong> ${escapeHtml(storyCopy(sequence.safeObjectionResponse))}</div>
+          <div class="idb-copy"><strong>Guardrail:</strong> ${escapeHtml(storyCopy(sequence.stopCondition))}</div>
+          <div class="idb-copy"><strong>Uncertainty:</strong> ${escapeHtml(storyCopy(sequence.uncertaintyResponse))}</div>
         </details>
         <div class="idb-chip-row">
           <span class="idb-mini-chip">N/LLM: advisory only</span>
         </div>
-        <div class="idb-copy">${escapeHtml(uncertainty)}</div>
+        <div class="idb-copy">${escapeHtml(storyCopy(uncertainty))}</div>
         ${receiptHtml}
       </div>
     `;
@@ -23815,8 +23873,10 @@
     const preparedRecords = finalNamesImported && w216ReviewRun
       ? w216ReviewRun.consultantReview.visibleRecords.slice(0, 8)
       : navigation.reviewObjects.slice(0, 6);
+    const reviewWebsiteEvidence = websiteEvidenceUxModel(state, lane);
+    const reviewResolverLimited = isResolverLimitedWebsiteEvidenceW353(reviewWebsiteEvidence);
     const consultantStorySurfaceHtml = finalNamesImported && w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface)
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: reviewResolverLimited })
       : '';
     const preparedObjects = preparedRecords.map((record) => consultantRunNavigationDisplayW334(record));
     const finalRecordRows = preparedRecords.map((record) => `
@@ -24104,6 +24164,7 @@
       : model.confidence.state === WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION
         ? 'partial'
         : 'open';
+    const resolverLimited = isResolverLimitedWebsiteEvidenceW353(model);
     const candidateRows = model.competingCandidates.length
       ? model.competingCandidates.map((candidate) => `
         <div class="idb-plan-row idb-compressed-row">
@@ -24125,12 +24186,14 @@
           <span class="idb-chip idb-${stateClass}">${escapeHtml(consultantLabel(model.confidence.state))}</span>
           <span class="idb-mini-chip">${escapeHtml(consultantLabel(model.confidence.source || 'none'))}</span>
           <span class="idb-mini-chip">${escapeHtml(consultantLabel(model.confidence.scoreLabel))}</span>
+          ${resolverLimited ? '<span class="idb-mini-chip">Resolver limited</span>' : ''}
           <span class="idb-mini-chip">${model.confidence.requiresConfirmation ? 'Confirm before handoff' : 'No confirmation needed'}</span>
         </div>
         <div class="idb-run-action-card idb-w53-why-classification">
           <div class="idb-status-key">Why this lane</div>
           <div class="idb-strong">${escapeHtml(model.recommendedLaneName || 'No lane selected from website evidence yet')}</div>
           <div class="idb-copy">${escapeHtml(model.whyThisClassification)}</div>
+          ${resolverLimited ? `<div class="idb-copy">${escapeHtml(resolverLimitedCopyW353(model))}</div>` : ''}
         </div>
         <div class="idb-build-detail">
           ${model.whatIdbSaw.map((item) => `<span class="idb-detail-line">${escapeHtml(item)}</span>`).join('')}
@@ -24311,6 +24374,8 @@
 
   function renderRunView(state, lane, page, recommendation, selectedMove, action, summary) {
     const value = valueReviewPacket(state, lane, page, recommendation);
+    const websiteEvidence = websiteEvidenceUxModel(state, lane);
+    const resolverLimited = isResolverLimitedWebsiteEvidenceW353(websiteEvidence);
     const liveCopy = liveActionCopy(action.id, value, lane, page, selectedMove, recommendation);
     const script = liveRunScript(state, lane, page, selectedMove, recommendation, action);
     const coach = runCoachV3Model(state, lane, page, selectedMove, recommendation, action);
@@ -24322,7 +24387,7 @@
       ? consultantPartialResultReviewRunModelW216V1(state.dccFinalNamingResult, state, lane, page, recommendation)
       : null;
     const consultantStorySurfaceHtml = w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface)
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited })
       : '';
     if (!finalNavigation.runCanUseImportedFinalNames) {
       const waitingForLinks = buildStatus && buildStatus.automation && buildStatus.automation.runnerTaskCaptured;
@@ -24380,6 +24445,13 @@
           </div>
         ` : ''}
         ${consultantStorySurfaceHtml}
+        ${resolverLimited ? `
+          <div class="idb-run-action-card idb-w353-resolver-limited">
+            <div class="idb-status-key">Website read</div>
+            <div class="idb-strong">Resolver limited</div>
+            <div class="idb-copy">${escapeHtml(resolverLimitedCopyW353(websiteEvidence))}</div>
+          </div>
+        ` : ''}
       </div>
       <div class="idb-card idb-accent idb-w56-run-script-first">
         <div class="idb-section-title">Live script first</div>
@@ -26217,6 +26289,10 @@
       installedDrawerCurrentBlockMarkerW342,
       installedDrawerPostImportUxCleanupW346,
       postImportConfidenceModelW346,
+      isResolverLimitedWebsiteEvidenceW353,
+      websiteEvidenceDisplayLabelW353,
+      websiteEvidenceDisplayDetailW353,
+      resolverLimitedCopyW353,
       consultantVisibleCopyW346,
       drawerDisplayVersionW346,
       runnerProofNamingMarkerW341,

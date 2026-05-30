@@ -49,19 +49,19 @@ function main() {
   const scriptText = [script.title, script.say, script.show, script.close].join(' ');
 
   assertCase(results, 'userscript-visible-version-is-current-not-legacy-header',
-    /@version\s+1\.0\.5/.test(userscript) &&
-      marker.userscriptVersion === '1.0.5' &&
-      marker.visibleVersionLabel === 'Drawer 1.0.5 / W350' &&
-      /Drawer 1\.0\.5 \/ W350/.test(drawer) &&
+    /@version\s+1\.0\.6/.test(userscript) &&
+      marker.userscriptVersion === '1.0.6' &&
+      marker.visibleVersionLabel === 'Drawer 1.0.6 / W353' &&
+      /Drawer 1\.0\.6 \/ W353/.test(drawer) &&
       !/idb-version-pill">V1\.0\.0</.test(drawer),
-    JSON.stringify({ marker, headerHasW350: /Drawer 1\.0\.5 \/ W350/.test(drawer) }));
+    JSON.stringify({ marker, headerHasW353: /Drawer 1\.0\.6 \/ W353/.test(drawer) }));
 
   assertCase(results, 'post-import-plan-separates-build-and-website-confidence',
     postImport.importedProofReady === true &&
       postImport.buildImportConfidence === 'verified' &&
       postImport.planConfidenceLabel === 'Build verified' &&
       /Build\/import verified/.test(planText) &&
-      /Website evidence: Needs confirmation/.test(planText) &&
+      /(Website evidence: Needs confirmation|Website read: Resolver limited)/.test(planText) &&
       /Run imported proof records/.test(planText),
     JSON.stringify({ postImport, planText: planText.slice(0, 1200) }));
 

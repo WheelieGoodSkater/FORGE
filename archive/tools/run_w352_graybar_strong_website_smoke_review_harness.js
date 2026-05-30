@@ -130,10 +130,10 @@ function main() {
     JSON.stringify(trace.websiteEvidenceUx));
 
   assertCase(results, 'w352-current-source-w350-renders-graybar-without-prefix-leaks',
-    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.5 / W350' &&
+    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.6 / W353' &&
       currentSourceLeaks.length === 0 &&
       currentSourceSurfaces.some(([, text]) => /Graybar Electric/.test(text)) &&
-      currentSourceSurfaces.some(([, text]) => /Website evidence: Needs confirmation/.test(text)),
+      currentSourceSurfaces.some(([, text]) => /Website read: Resolver limited/.test(text)),
     JSON.stringify(currentSourceLeaks.map((item) => ({ surface: item.surface, match: item.match && item.match[0], sample: item.sample.slice(Math.max(0, item.match ? item.match.index - 120 : 0), item.match ? item.match.index + 160 : 160) }))));
 
   assertCase(results, 'w352-report-identifies-version-drift-and-resolver-plan',

@@ -84,21 +84,21 @@ function main() {
     .filter((item) => item.match);
 
   assertCase(results, 'w350-userscript-version-and-marker-bumped-for-auto-update',
-    /@version\s+1\.0\.5/.test(userscript) &&
-      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.5 / W350' &&
+    /@version\s+1\.0\.6/.test(userscript) &&
+      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.6 / W353' &&
       /stripConsultantNotePrefixesW350/.test(userscript),
     JSON.stringify({ version: /@version\s+([^\n]+)/.exec(userscript) && RegExp.$1, marker: hooks.drawerDisplayVersionW346() }));
 
   assertCase(results, 'w350-border-states-surfaces-do-not-leak-note-prefixes',
     borderSurfaces.every(([, text]) => !forbiddenNotePrefixMatch(text)) &&
       /Branch teams need one trusted view/.test(borderSurfaces.map(([, text]) => text).join(' ')) &&
-      /Website evidence: Needs confirmation/.test(borderSurfaces.find(([surface]) => surface === 'plan')[1]),
+      /(Website evidence: Needs confirmation|Website read: Resolver limited)/.test(borderSurfaces.find(([surface]) => surface === 'plan')[1]),
     JSON.stringify(borderSurfaces.map(([surface, text]) => ({ surface, leak: forbiddenNotePrefixMatch(text) && forbiddenNotePrefixMatch(text)[0], sample: text.slice(0, 500) }))));
 
   assertCase(results, 'w350-parkway-surfaces-do-not-leak-note-prefixes',
     parkwaySurfaces.every(([, text]) => !forbiddenNotePrefixMatch(text)) &&
       /Parkway Contractor Supply/.test(parkwaySurfaces.map(([, text]) => text).join(' ')) &&
-      /Website evidence: Needs confirmation/.test(parkwaySurfaces.find(([surface]) => surface === 'plan')[1]),
+      /(Website evidence: Needs confirmation|Website read: Resolver limited)/.test(parkwaySurfaces.find(([surface]) => surface === 'plan')[1]),
     JSON.stringify(parkwaySurfaces.map(([surface, text]) => ({ surface, leak: forbiddenNotePrefixMatch(text) && forbiddenNotePrefixMatch(text)[0], sample: text.slice(0, 500) }))));
 
   assertCase(results, 'w350-no-prefix-leaks-across-baseline-surfaces',

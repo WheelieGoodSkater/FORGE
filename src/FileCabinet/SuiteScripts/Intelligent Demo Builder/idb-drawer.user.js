@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.11
+// @version      1.0.12
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.11';
-  const CURRENT_UX_BLOCK_W346 = 'W363';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.12';
+  const CURRENT_UX_BLOCK_W346 = 'W365';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1051,10 +1051,10 @@
       },
       dealer_hardgoods: {
         dccFamilyKey: 'dealerHardgoods',
-        dccScenario: 'Dealer-Ready Fulfillment',
+        dccScenario: 'Dealer Channel Availability',
         dccMode: 'Balanced',
         dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
-        recordsToPlan: ['Customer Record', 'Sales Order View', 'Product / SKU', 'Inventory / Fulfillment', 'Product / SKU Availability', 'Dealer / Channel Replenishment', 'Distribution Setup']
+        recordsToPlan: ['Customer Record', 'Sales Order View', 'Product / SKU', 'Dealer / Channel Allocation', 'Replenishment Position', 'Supplier Lead-Time Signal', 'Channel Fulfillment Setup']
       },
       apparel_accessories: {
         dccFamilyKey: 'apparelAccessories',
@@ -1154,12 +1154,12 @@
         id: 'dealer_hardgoods',
         name: 'Dealer Hardgoods & Channel Fulfillment',
         proofAnchor: 'Product / SKU',
-        promise: 'Product/SKU availability, dealer/channel replenishment, and fulfillment confidence protect channel promise.',
-        valueLens: 'Protect channel revenue by connecting SKU availability, allocation, replenishment, and fulfillment confidence.',
-        competitiveLens: 'Show dealer-channel truth directly instead of collapsing the story into branch distribution.',
-        validateLive: 'Validate product availability, dealer allocation, replenishment timing, and channel fulfillment in one hardgoods path.',
-        storyline: 'Lead with dealer/channel hardgoods through product availability, allocation, replenishment timing, and fulfillment confidence.',
-        signals: ['dealer/channel context', 'product/SKU promise', 'allocation', 'replenishment timing', 'supplier risk', 'hardgoods', 'durable goods', 'wholesale fulfillment', 'surfboards', 'skateboards'],
+        promise: 'Dealer/channel SKU availability, allocation, replenishment timing, and supplier lead-time confidence protect the channel promise.',
+        valueLens: 'Protect dealer revenue by connecting channel allocation, product/SKU availability, replenishment timing, supplier lead-time risk, and fulfillment confidence.',
+        competitiveLens: 'Show dealer-channel truth directly instead of flattening the story into generic branch distribution or manual allocation calls.',
+        validateLive: 'Validate dealer/channel availability, allocation, replenishment timing, supplier lead-time exposure, and fulfillment confidence in one hardgoods path.',
+        storyline: 'Lead with dealer/channel hardgoods through product availability, allocation pressure, replenishment timing, supplier lead-time exposure, and channel fulfillment confidence.',
+        signals: ['dealer/channel context', 'product/SKU promise', 'allocation', 'replenishment timing', 'supplier lead-time pressure', 'channel fulfillment', 'hardgoods', 'durable goods', 'wholesale fulfillment', 'surfboards', 'skateboards'],
         guardrails: ['Do not collapse dealer-channel truth into branch distribution, field service, food, or regulated release language.'],
         moves: ['Customer Record', 'Sales Order View', 'Product / SKU'],
         modules: ['Order Management', 'Inventory']
@@ -1390,10 +1390,10 @@
       exceptions: ['Branch stock is not where demand is.', 'Supplier timing changes the promise date.', 'Transfer or replenishment decisions affect customer commitment.']
     },
     dealer_hardgoods: {
-      headline: 'NetSuite wins by keeping SKU availability, channel allocation, replenishment, and order promise in one operating view.',
-      proof: 'Use Product / SKU to show how channel-ready availability supports dealer commitments without manual reconciliation.',
+      headline: 'NetSuite wins by keeping dealer/channel SKU availability, allocation, replenishment timing, supplier lead-time risk, and order promise in one operating view.',
+      proof: 'Use Product / SKU to show dealer/channel availability, allocation pressure, replenishment timing, and supplier lead-time exposure without manual reconciliation.',
       sourceBasis: ['NetSuite Inventory Management', 'NetSuite Order Management', 'NetSuite ERP unified suite'],
-      exceptions: ['Dealer allocation competes with direct demand.', 'SKU availability changes by channel.', 'Replenishment timing affects channel confidence.']
+      exceptions: ['Dealer allocation competes with direct or ecommerce demand.', 'Supplier lead time changes the next channel promise.', 'A replenishment gap puts dealer confidence at risk.']
     },
     apparel_accessories: {
       headline: 'NetSuite wins by connecting style, matrix item, size/color availability, allocation, replenishment, and channel promise.',
@@ -5012,9 +5012,9 @@
       },
       {
         match: /dealer|channel|allocation|fulfillment|replenishment/,
-        product: `${lane.proofAnchor}`,
-        productFamily: lane.proofAnchor,
-        demandMoment: 'customer promise readiness',
+        product: lane.id === 'dealer_hardgoods' ? 'Dealer Channel Availability SKU' : `${lane.proofAnchor}`,
+        productFamily: lane.id === 'dealer_hardgoods' ? 'Dealer Hardgoods Channel Availability' : lane.proofAnchor,
+        demandMoment: lane.id === 'dealer_hardgoods' ? 'dealer allocation and supplier lead-time confidence' : 'customer promise readiness',
         source: 'conversation_notes_signal',
         confidence: 'medium',
         fallbackReason: ''
@@ -14374,12 +14374,12 @@
   const W213_MODE_COACHING_RULES = {
     dealer_hardgoods: {
       industryContext: 'dealer hardgoods and channel fulfillment',
-      storyAnchor: 'seasonal dealer demand, channel availability, allocation, and replenishment timing',
-      proofMoment: 'show customer demand flowing into item availability and dealer fulfillment confidence',
-      roiQuestion: 'Which stockout, backorder, allocation delay, or manual channel reconciliation is costing the team the most right now?',
-      competitiveContrast: 'NetSuite wins by keeping dealer demand, item availability, order promise, and financial impact in one operating path instead of splitting the work across ecommerce, spreadsheets, and inventory add-ons.',
-      objectionPattern: 'If the buyer doubts availability, acknowledge the concern and ask which channel they trust least today, then prove the demand-to-promise path in NetSuite.',
-      runVerb: 'prove dealer availability and replenishment confidence'
+      storyAnchor: 'dealer/channel availability, allocation pressure, replenishment timing, supplier lead-time risk, and channel fulfillment confidence',
+      proofMoment: 'show dealer demand flowing into SKU availability, allocation position, replenishment timing, and fulfillment confidence',
+      roiQuestion: 'Which dealer allocation gap, supplier lead-time change, replenishment miss, or manual channel promise check is costing the team the most right now?',
+      competitiveContrast: 'NetSuite wins by keeping dealer demand, SKU availability, channel allocation, replenishment timing, order promise, and financial impact in one operating path instead of splitting the work across portals, spreadsheets, and inventory add-ons.',
+      objectionPattern: 'If the buyer doubts availability, acknowledge the concern and ask which dealer or channel promise they trust least today, then prove the demand-to-allocation-to-replenishment path in NetSuite.',
+      runVerb: 'prove dealer allocation, replenishment, and channel fulfillment confidence'
     },
     apparel_style_matrix: {
       industryContext: 'apparel and footwear style/SKU readiness',
@@ -19935,6 +19935,37 @@
     return NETSUITE_WIN_THEMES[lane.id] || NETSUITE_WIN_THEMES.products_cpg;
   }
 
+  function dealerHardgoodsStoryPolishW365(state, lane, value) {
+    if (!lane || lane.id !== 'dealer_hardgoods') {
+      return {
+        schema: 'idb.w365-dealer-hardgoods-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Dealer Channel Availability SKU';
+    return {
+      schema: 'idb.w365-dealer-hardgoods-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_only_story_layer',
+      proofLabel: 'Dealer/channel availability',
+      pathFlow: ['Dealer demand', 'Product/SKU availability', 'Allocation position', 'Replenishment timing', 'Supplier lead-time risk', 'Channel fulfillment'],
+      riskPressure: 'dealer allocation gaps, replenishment misses, supplier lead-time swings, and channel promise risk',
+      valueDecision: `Use ${product} to help ${customer} trust dealer/channel availability, allocation position, replenishment timing, and supplier lead-time exposure before making the next channel promise.`,
+      proofMove: `Prove dealer/channel availability with ${lane.proofAnchor}; then connect allocation position, replenishment timing, supplier lead-time risk, and channel fulfillment confidence.`,
+      safeClaim: 'Use imported NetSuite records to guide the dealer/channel story; confirm real dealer allocation and supplier lead-time evidence before ROI or availability claims.',
+      competitorPressure: ['dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'manual channel promise calls'],
+      netsuiteContrast: `Keep dealer demand, ${lane.proofAnchor}, allocation, replenishment, supplier lead-time risk, and financial impact in one NetSuite path.`,
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true
+      }
+    };
+  }
+
   function likelyCompetitivePressure(state, lane) {
     const intake = normalizedIntake(state);
     const combined = `${intake.competitor || ''} ${intake.notes || ''} ${intake.decisionCriteria || ''}`.toLowerCase();
@@ -19943,6 +19974,7 @@
     const electricalDistribution = /electrical|contractor|counter|breaker|breakers|conduit|panel|panels|wire|fitting|fittings|supplier portal|branch transfer|callback|callbacks|alternate|substitute|margin/i.test(combined);
     const apparel = lane.id === 'apparel_accessories' || /apparel|footwear|style|size|color|variant|ecommerce|shopify/.test(combined);
     const manufacturing = /manufactur|assembly|bom|wip|production|routing/.test(combined);
+    const dealerHardgoods = lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time|replenishment/.test(combined);
     const distribution = /dealer|distributor|warehouse|branch|fulfillment|channel/.test(combined);
     const alternatives = [];
     if (supplied && !manualWorkflow) alternatives.push(supplied);
@@ -19951,7 +19983,8 @@
       if (alternatives.length) return Array.from(new Set(alternatives)).slice(0, 6);
     }
     if (manualWorkflow) alternatives.push('spreadsheets and manual inventory reports', 'QuickBooks plus spreadsheets');
-    if (apparel) alternatives.push('Shopify or ecommerce apps plus inventory add-ons', 'Odoo', 'Microsoft Dynamics 365', 'SAP Business One', 'niche apparel or PLM tools');
+    if (dealerHardgoods) alternatives.push('dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo');
+    else if (apparel) alternatives.push('Shopify or ecommerce apps plus inventory add-ons', 'Odoo', 'Microsoft Dynamics 365', 'SAP Business One', 'niche apparel or PLM tools');
     else if (manufacturing) alternatives.push('Odoo', 'Microsoft Dynamics 365', 'SAP Business One', 'manufacturing point solutions');
     else if (distribution) alternatives.push('QuickBooks plus warehouse tools', 'Odoo', 'Microsoft Dynamics 365', 'dealer/distribution point solutions');
     else alternatives.push('spreadsheets', 'QuickBooks', 'Odoo', 'Microsoft Dynamics 365', 'SAP Business One');
@@ -20014,7 +20047,9 @@
     const text = `${intake.customer || ''} ${intake.website || ''} ${intake.notes || ''} ${lane && lane.name || ''}`.toLowerCase();
     const fromExisting = arrayValue(competitive && competitive.competitivePrep && competitive.competitivePrep.alternatives);
     let standard = [];
-    if (/industrial|distribution|branch|fulfillment|mro|electrical|counter|contractor|supply/.test(text) || lane.id === 'products_cpg') {
+    if (lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time/.test(text)) {
+      standard = ['dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo'];
+    } else if (/industrial|distribution|branch|fulfillment|mro|electrical|counter|contractor|supply/.test(text) || lane.id === 'products_cpg') {
       standard = ['Grainger', 'Fastenal', 'MSC Industrial', 'Graybar', 'supplier portals', 'branch inventory spreadsheets'];
     } else if (/manufactur|assembly|bom|wip|production/.test(text)) {
       standard = ['Microsoft Dynamics 365', 'SAP Business One', 'Odoo', 'manufacturing point solutions', 'spreadsheets'];
@@ -20036,7 +20071,10 @@
     const publicEvidenceStrong = evidence && evidence.confidence && evidence.confidence.state === WEBSITE_CONFIDENCE_STATE.RECOMMENDED && evidence.confidence.scoreLabel === 'high';
     const sourceLabel = publicEvidenceStrong ? 'Public evidence plus advisory context' : 'N/LLM advisory from lane, URL/domain, and request language';
     const authorityLabel = competitive.namedCompetitor ? 'Verify named competitor before claiming' : 'Advisory prep only';
-    const netSuiteContrast = `Use ${lane.proofAnchor} to keep availability, promise, fulfillment, and financial impact in one NetSuite path.`;
+    const dealerPolish = dealerHardgoodsStoryPolishW365(state, lane, packet);
+    const netSuiteContrast = dealerPolish.active
+      ? dealerPolish.netsuiteContrast
+      : `Use ${lane.proofAnchor} to keep availability, promise, fulfillment, and financial impact in one NetSuite path.`;
     const competitorText = alternatives.slice(0, 4).join(', ');
     return {
       schema: 'idb.w362-consultant-safe-competitive-intelligence.v1',
@@ -20300,6 +20338,7 @@
 
   function liveRunScript(state, lane, pageContext, selectedMove, recommendation, action) {
     const value = valueReviewPacket(state, lane, pageContext, recommendation);
+    const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
     const actionCopy = liveActionCopy(action.id, value, lane, pageContext, selectedMove, recommendation);
     const coach = runCoachV3Model(state, lane, pageContext, selectedMove, recommendation, action);
     const packetIdentity = packetIdentityFor(state, lane);
@@ -20356,6 +20395,22 @@
       selectedScript.show = finalPivots;
       if (w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.nextSteps.length) {
         selectedScript.close = w216ReviewRun.consultantRun.nextSteps.join(' / ');
+      }
+    }
+    if (dealerPolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s dealer/channel pressure: ${dealerPolish.riskPressure}. Keep this as a channel availability and supplier lead-time story, not a generic branch distribution tour.`;
+        selectedScript.close = 'Ask which dealer allocation, replenishment, or supplier lead-time promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = dealerPolish.proofMove;
+        selectedScript.show = `Move through ${dealerPolish.pathFlow.slice(0, 5).join(' -> ')}.`;
+        selectedScript.close = `Ask whether the imported NetSuite proof gives ${value.customer} enough trust to make the next dealer/channel promise without manual reconciliation.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions dealer availability, ask which channel promise they reconcile by hand today, then return to allocation, replenishment timing, and supplier lead-time risk in NetSuite.';
+        selectedScript.close = 'Confirm what evidence would make dealer/channel availability trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the channel decision ${value.customer} can now make: ${dealerPolish.valueDecision}`;
+        selectedScript.close = 'Capture the current allocation miss, replenishment delay, supplier lead-time change, or manual-effort baseline before claiming savings.';
       }
     }
     selectedScript.say = consultantVisibleCopyW346(selectedScript.say, 320);
@@ -20513,13 +20568,16 @@
     const grounded = groundedValueEvidenceModel(state, lane, product, story, roiAudit, competitive);
     const w213Coach = consultantStoryRoiCompetitiveQualityPassW213V1(state, lane, pageContext, recommendation);
     const w213Copy = w213Coach.updatedConsultantCopyModel;
+    const dealerPolish = dealerHardgoodsStoryPolishW365(state, lane, { product: product.product });
     const valueProofStack = [
       `ERP proof - ${industryWin.proof}`,
       `Operational proof - ${lane.proofAnchor} through ${recommendation.move}.`,
       `Financial proof - connect ${product.demandMoment} to margin, fulfillment, revenue timing, or working-capital conversation.`
     ];
     const talkTrackLead = consultantVisibleCopyW346(w213Copy.talkTrack, 360);
-    const valueDecision = `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
+    const valueDecision = dealerPolish.active
+      ? dealerPolish.valueDecision
+      : `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
     const roiAuditCards = [
       `Why now - ${pain}`,
       `ROI basis - ${roiAudit.metricProxy}; baseline needed - ${roiAudit.baselineNeeded}`,
@@ -20546,6 +20604,7 @@
       objective: consultantVisibleCopyW346(objective, 260),
       story,
       competitive,
+      dealerHardgoodsPolishW365: dealerPolish,
       grounded,
       competitorContext: competitive.competitorSafeContrast,
       decisionCriteria: consultantVisibleCopyW346(criteria, 260),
@@ -20553,7 +20612,7 @@
       w213Coach,
       valueProofStack,
       talkTrackLead,
-      valueDecision: consultantVisibleCopyW346(w213Copy.closeValue || valueDecision, 260),
+      valueDecision: consultantVisibleCopyW346(dealerPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
       roiAuditCards,
       competitiveCards,
       objectionPath,
@@ -20563,7 +20622,7 @@
       valueAgenda: [
         `Objective - ${consultantVisibleCopyW346(objective, 220)}`,
         `Start with ${customer}'s stated risk - ${consultantVisibleCopyW346(pain, 220)}`,
-        consultantVisibleCopyW346(w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`, 220),
+        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
         `Tie the proof to ${lane.valueLens}`,
         `Decision criteria - ${consultantVisibleCopyW346(criteria, 220)}`,
         `Close by confirming the next operational decision the prospect can now make.`
@@ -23595,6 +23654,7 @@
     const netsuiteContrast = grounded.whyNetSuiteEvidence[0] || value.groundedCompetitiveSummary;
     const competitivePrep = competitive.competitivePrep || competitiveFudPrep(state, lane, story);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
+    const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
     const whyThisMatters = [
       `Business risk - ${compactText(audit.claim || roiHypothesis, 150)}`,
       `Operational proof - ${compactText(audit.proofStep || demoProof, 150)}`,
@@ -23630,6 +23690,14 @@
         <div class="idb-card idb-accent idb-w96-value-coach idb-w115-consultant-value-coach">
           <div class="idb-section-title">Consultant value coach</div>
           ${liveValueCockpit}
+          ${dealerPolish.active ? `
+            <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
+              <div class="idb-status-key">Dealer/channel lens</div>
+              <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
+              <div class="idb-copy">${escapeHtml(dealerPolish.riskPressure)}</div>
+              <div class="idb-copy">${escapeHtml(dealerPolish.netsuiteContrast)}</div>
+            </div>
+          ` : ''}
           ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive lens', note: competitiveAdvisory.valueCue, compact: true })}
           <div class="idb-run-action-card">
             <div class="idb-status-key">Talk track</div>
@@ -24955,6 +25023,7 @@
 
   function renderRunView(state, lane, page, recommendation, selectedMove, action, summary) {
     const value = valueReviewPacket(state, lane, page, recommendation);
+    const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const websiteEvidence = websiteEvidenceUxModel(state, lane);
     const resolverLimited = isResolverLimitedWebsiteEvidenceW353(websiteEvidence);
@@ -25007,6 +25076,14 @@
       <div class="idb-card idb-accent idb-w97-run-selector">
         <div class="idb-section-title">NetSuite path</div>
         ${renderW361NetSuitePathFlow(finalNavigation)}
+        ${dealerPolish.active ? `
+          <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
+            <div class="idb-status-key">Dealer/channel proof path</div>
+            <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
+            <div class="idb-copy">${escapeHtml(dealerPolish.pathFlow.join(' -> '))}</div>
+            <div class="idb-copy">${escapeHtml(dealerPolish.safeClaim)}</div>
+          </div>
+        ` : ''}
         <div class="idb-section-title">Live controls</div>
         <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
           ${renderRunActionChips(state)}
@@ -26728,6 +26805,7 @@
       nllmAssistedWebsiteConfidenceW357,
       competitiveAdvisoryModelW362,
       standardCompetitiveAlternativesW362,
+      dealerHardgoodsStoryPolishW365,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

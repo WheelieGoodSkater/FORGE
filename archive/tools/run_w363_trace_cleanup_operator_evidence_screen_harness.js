@@ -54,15 +54,15 @@ function main() {
   const samples = [graybar, fastenal, msc];
 
   assertCase(results, 'w363-source-marker-advances',
-    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.11 / W363' &&
-      /@version\s+1\.0\.11/.test(userscript) &&
-      userscript.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.11';") &&
-      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W363';"),
+    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.12 / W365' &&
+      /@version\s+1\.0\.12/.test(userscript) &&
+      userscript.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.12';") &&
+      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W365';"),
     hooks.drawerDisplayVersionW346());
 
   assertCase(results, 'w363-trace-normal-view-is-operator-evidence-first',
     samples.every((sample) => /Operator evidence/.test(sample.traceText) &&
-      /Drawer 1\.0\.11 \/ W363/.test(sample.traceText) &&
+      /Drawer 1\.0\.12 \/ W365/.test(sample.traceText) &&
       /Records imported/.test(sample.traceText) &&
       /Open links verified/.test(sample.traceText) &&
       /Website read/.test(sample.traceText) &&

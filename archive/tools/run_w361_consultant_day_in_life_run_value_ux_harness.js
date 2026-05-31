@@ -77,10 +77,10 @@ function main() {
   const mscEvidence = hooks.websiteEvidenceUxModel(msc.state, msc.lane);
 
   assertCase(results, 'w361-source-marker-advances-current-drawer-only',
-    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.11 / W363' &&
-      userscript.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.11';") &&
-      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W363';") &&
-      /@version\s+1\.0\.11/.test(userscript),
+    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.12 / W365' &&
+      userscript.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.12';") &&
+      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W365';") &&
+      /@version\s+1\.0\.12/.test(userscript),
     hooks.drawerDisplayVersionW346());
 
   assertCase(results, 'w361-run-starts-with-netsuite-path-flow',

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.12
+// @version      1.0.13
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.12';
-  const CURRENT_UX_BLOCK_W346 = 'W365';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.13';
+  const CURRENT_UX_BLOCK_W346 = 'W367';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -21089,17 +21089,17 @@
       }
       .idb-w361-path-flow {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 5px;
-        margin-bottom: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+        gap: 8px;
+        margin: 7px 0 10px;
       }
       .idb-w361-path-node {
         position: relative;
-        border: 1px solid #cbd7df;
+        border: 1px solid #b8c8d2;
         border-radius: 7px;
         background: #fff;
-        padding: 7px 18px 7px 7px;
-        min-height: 42px;
+        padding: 8px 22px 8px 8px;
+        min-height: 56px;
       }
       .idb-w361-path-node:not(:last-child)::after {
         content: ">";
@@ -21112,7 +21112,7 @@
         font-weight: 900;
       }
       .idb-w361-path-label {
-        color: #65768a;
+        color: #536579;
         font-size: 9px;
         font-weight: 850;
         letter-spacing: .04em;
@@ -21121,7 +21121,7 @@
       .idb-w361-path-name {
         margin-top: 2px;
         color: #16212f;
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 850;
         line-height: 1.2;
         overflow-wrap: anywhere;
@@ -21133,22 +21133,32 @@
         margin-top: 7px;
       }
       .idb-w361-script-chips {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
       }
       .idb-w361-value-chips {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
       }
       .idb-w361-script-chip,
       .idb-w361-value-chip {
-        border: 1px solid #d8e1e6;
+        border: 1px solid #cbd7df;
         border-radius: 7px;
         background: #fbfcfb;
         color: #17202d;
-        min-height: 30px;
-        padding: 6px;
+        min-height: 44px;
+        padding: 7px;
         font-size: 9px;
         font-weight: 900;
         text-align: left;
+      }
+      .idb-w367-value-decision-card {
+        background: #fff;
+      }
+      .idb-w367-presenter-steps {
+        margin-bottom: 9px;
+      }
+      .idb-w367-presenter-steps .idb-w361-script-chip {
+        background: #fff;
+        min-height: 52px;
       }
       .idb-w361-chip-title {
         display: block;
@@ -22700,11 +22710,11 @@
       ['Close', script && script.close]
     ];
     return `
-      <div class="idb-w361-script-chips" role="group" aria-label="Say Show Close script chips">
+      <div class="idb-w361-script-chips idb-w367-presenter-steps" role="group" aria-label="Say Show Close presenter steps">
         ${rows.map(([label, copy]) => `
           <button class="idb-w361-script-chip" type="button" title="${escapeHtml(copy || '')}">
             <span class="idb-w361-chip-title">${escapeHtml(label)}</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(copy || '', 72))}</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(copy || '', 92))}</span>
           </button>
         `).join('')}
       </div>
@@ -23666,21 +23676,25 @@
         <div class="idb-status-key">Live value answer</div>
         <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
         <div class="idb-w361-value-chips" role="group" aria-label="Live value answer chips">
-          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(topMove)}">
+          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(topMove)}">
             <span class="idb-w361-chip-title">Next move</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(topMove, 78))}</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(topMove, 58))}</span>
           </button>
-          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(netsuiteContrast)}">
+          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(netsuiteContrast)}">
             <span class="idb-w361-chip-title">NetSuite answer</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(netsuiteContrast, 78))}</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(netsuiteContrast, 58))}</span>
           </button>
-          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(roiHypothesis)}">
+          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(roiHypothesis)}">
             <span class="idb-w361-chip-title">ROI answer</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(roiHypothesis, 78))}</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(roiHypothesis, 58))}</span>
           </button>
-          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(cautionCopy)}">
+          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(cautionCopy)}">
             <span class="idb-w361-chip-title">Caution</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(cautionCopy, 78))}</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(cautionCopy, 58))}</span>
+          </button>
+          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(competitiveAdvisory.valueCue || competitive.competitorSafeContrast || value.groundedCompetitiveSummary)}">
+            <span class="idb-w361-chip-title">Competitive pressure</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(competitiveAdvisory.valueCue || competitive.competitorSafeContrast || value.groundedCompetitiveSummary, 58))}</span>
           </button>
         </div>
       </div>
@@ -23691,50 +23705,59 @@
           <div class="idb-section-title">Consultant value coach</div>
           ${liveValueCockpit}
           ${dealerPolish.active ? `
-            <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
+            <details class="idb-technical-details idb-w367-dealer-lens-detail">
+              <summary>Dealer/channel lens</summary>
+              <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
               <div class="idb-status-key">Dealer/channel lens</div>
               <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
               <div class="idb-copy">${escapeHtml(dealerPolish.riskPressure)}</div>
               <div class="idb-copy">${escapeHtml(dealerPolish.netsuiteContrast)}</div>
-            </div>
+              </div>
+            </details>
           ` : ''}
-          ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive lens', note: competitiveAdvisory.valueCue, compact: true })}
-          <div class="idb-run-action-card">
-            <div class="idb-status-key">Talk track</div>
-            <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
-            <div class="idb-copy">${escapeHtml(value.talkTrackLead)}</div>
-          </div>
-          <div class="idb-summary-card-grid">
-            <div class="idb-value-section">
-              <div class="idb-status-key">Discovery question</div>
-              <div class="idb-copy">${escapeHtml(askNext)}</div>
+          <details class="idb-technical-details idb-w367-competitive-detail">
+            <summary>Competitive lens and prep</summary>
+            ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive lens', note: competitiveAdvisory.valueCue, compact: true })}
+          </details>
+          <details class="idb-technical-details idb-w367-talk-track-detail">
+            <summary>Talk track, discovery, and proof moves</summary>
+            <div class="idb-run-action-card">
+              <div class="idb-status-key">Talk track</div>
+              <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
+              <div class="idb-copy">${escapeHtml(value.talkTrackLead)}</div>
             </div>
-            <div class="idb-value-section idb-competitive-section">
-              <div class="idb-status-key">Objection answer</div>
-              <div class="idb-copy">${escapeHtml(firstObjection)}</div>
+            <div class="idb-summary-card-grid">
+              <div class="idb-value-section">
+                <div class="idb-status-key">Discovery question</div>
+                <div class="idb-copy">${escapeHtml(askNext)}</div>
+              </div>
+              <div class="idb-value-section idb-competitive-section">
+                <div class="idb-status-key">Objection answer</div>
+                <div class="idb-copy">${escapeHtml(firstObjection)}</div>
+              </div>
             </div>
-          </div>
-          <div class="idb-summary-card-grid">
-            <div class="idb-value-section">
-              <div class="idb-status-key">Proof move</div>
-              <div class="idb-copy">${escapeHtml(demoProof)}</div>
+            <div class="idb-summary-card-grid">
+              <div class="idb-value-section">
+                <div class="idb-status-key">Proof move</div>
+                <div class="idb-copy">${escapeHtml(demoProof)}</div>
+              </div>
+              <div class="idb-value-section idb-competitive-section">
+                <div class="idb-status-key">ROI hypothesis</div>
+                <div class="idb-copy">${escapeHtml(roiHypothesis)}</div>
+              </div>
             </div>
-            <div class="idb-value-section idb-competitive-section">
-              <div class="idb-status-key">ROI hypothesis</div>
-              <div class="idb-copy">${escapeHtml(roiHypothesis)}</div>
+            <div class="idb-summary-card-grid">
+              <div class="idb-value-section">
+                <div class="idb-status-key">NetSuite contrast</div>
+                <div class="idb-copy">${escapeHtml(netsuiteContrast)}</div>
+              </div>
+              <div class="idb-value-section idb-competitive-section">
+                <div class="idb-status-key">Caution</div>
+                <div class="idb-strong">${escapeHtml(consultantLabel(grounded.unsupportedClaimBlocker.status))}</div>
+                <div class="idb-copy">${escapeHtml(cautionCopy)}</div>
+              </div>
             </div>
-          </div>
-          <div class="idb-summary-card-grid">
-            <div class="idb-value-section">
-              <div class="idb-status-key">NetSuite contrast</div>
-              <div class="idb-copy">${escapeHtml(netsuiteContrast)}</div>
-            </div>
-            <div class="idb-value-section idb-competitive-section">
-              <div class="idb-status-key">Caution</div>
-              <div class="idb-strong">${escapeHtml(consultantLabel(grounded.unsupportedClaimBlocker.status))}</div>
-              <div class="idb-copy">${escapeHtml(cautionCopy)}</div>
-            </div>
-          </div>
+          </details>
           <details class="idb-technical-details idb-competitive-prep-card">
             <summary>Competitive prep detail</summary>
             <div class="idb-run-action-card">
@@ -25075,21 +25098,28 @@
     return `
       <div class="idb-card idb-accent idb-w97-run-selector">
         <div class="idb-section-title">NetSuite path</div>
+        <div class="idb-copy">Open the imported records in order, then use the selected live control below.</div>
         ${renderW361NetSuitePathFlow(finalNavigation)}
         ${dealerPolish.active ? `
-          <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
-            <div class="idb-status-key">Dealer/channel proof path</div>
-            <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
-            <div class="idb-copy">${escapeHtml(dealerPolish.pathFlow.join(' -> '))}</div>
-            <div class="idb-copy">${escapeHtml(dealerPolish.safeClaim)}</div>
-          </div>
+          <details class="idb-technical-details idb-w367-run-dealer-detail">
+            <summary>Dealer/channel proof path</summary>
+            <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
+              <div class="idb-status-key">Dealer/channel proof path</div>
+              <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
+              <div class="idb-copy">${escapeHtml(dealerPolish.pathFlow.join(' -> '))}</div>
+              <div class="idb-copy">${escapeHtml(dealerPolish.safeClaim)}</div>
+            </div>
+          </details>
         ` : ''}
         <div class="idb-section-title">Live controls</div>
         <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
           ${renderRunActionChips(state)}
         </div>
         ${renderW361ScriptChips(script)}
-        ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
+        <details class="idb-technical-details idb-w367-run-competitive-detail">
+          <summary>Competitive cue</summary>
+          ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
+        </details>
         <div class="idb-run-action-card">
           <div class="idb-status-key">Selected script</div>
           <div class="idb-strong">${escapeHtml(script.title)}</div>

@@ -127,7 +127,9 @@
     "harness:consultant-safe-competitive-intelligence-w362": "node archive/tools/run_w362_consultant_safe_competitive_intelligence_harness.js",
     "harness:trace-cleanup-operator-evidence-w363": "node archive/tools/run_w363_trace_cleanup_operator_evidence_screen_harness.js",
     "harness:lane-expansion-readiness-smoke-minimizing-w364": "node archive/tools/run_w364_lane_expansion_readiness_smoke_minimizing_growth_plan_harness.js",
-    "harness:dealer-hardgoods-fixture-only-lane-polish-w365": "node archive/tools/run_w365_dealer_hardgoods_fixture_only_lane_polish_harness.js"
+    "harness:dealer-hardgoods-fixture-only-lane-polish-w365": "node archive/tools/run_w365_dealer_hardgoods_fixture_only_lane_polish_harness.js",
+    "harness:targeted-dealer-channel-live-smoke-w366": "node archive/tools/run_w366_targeted_dealer_channel_live_smoke_review_harness.js",
+    "harness:consultant-cockpit-density-run-polish-w367": "node archive/tools/run_w367_consultant_cockpit_density_run_polish_harness.js"
   },
   "keywords": [
     "netsuite",

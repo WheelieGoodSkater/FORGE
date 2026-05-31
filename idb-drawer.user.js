@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.14
+// @version      1.0.15
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.14';
-  const CURRENT_UX_BLOCK_W346 = 'W368';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.15';
+  const CURRENT_UX_BLOCK_W346 = 'W369';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -19966,6 +19966,39 @@
     };
   }
 
+  function apparelRetailStoryPolishW369(state, lane, value) {
+    if (!lane || lane.id !== 'apparel_accessories') {
+      return {
+        schema: 'idb.w369-apparel-retail-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Style / SKU Matrix';
+    return {
+      schema: 'idb.w369-apparel-retail-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Style/size/color availability',
+      pathFlow: ['Style family', 'Size/color variants', 'Store and ecommerce availability', 'Seasonal assortment', 'Replenishment timing', 'Margin and transfer risk'],
+      riskPressure: 'size/color gaps, ecommerce promise misses, store transfer surprises, replenishment delays, and margin exposure',
+      valueDecision: `Use ${product} to help ${customer} trust style, size, color, store/ecommerce availability, replenishment timing, and transfer risk before promising the next shopper order.`,
+      proofMove: `Prove apparel availability with ${lane.proofAnchor}; then connect size/color variants, seasonal assortment, store/ecommerce promise, replenishment timing, and margin exposure.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the apparel story; confirm real style, size/color, store, ecommerce, and margin evidence before ROI or availability claims.',
+      competitorPressure: ['Shopify reports', 'Lightspeed', 'QuickBooks plus spreadsheets', 'ecommerce inventory apps', 'manual store transfer sheets'],
+      netsuiteContrast: `Keep style/SKU matrix, size/color availability, store and ecommerce promise, replenishment timing, and financial impact in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'supplier portals', 'channel fulfillment', 'ingredient batch', 'assembly routing'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false
+      }
+    };
+  }
+
   function likelyCompetitivePressure(state, lane) {
     const intake = normalizedIntake(state);
     const combined = `${intake.competitor || ''} ${intake.notes || ''} ${intake.decisionCriteria || ''}`.toLowerCase();
@@ -20339,6 +20372,7 @@
   function liveRunScript(state, lane, pageContext, selectedMove, recommendation, action) {
     const value = valueReviewPacket(state, lane, pageContext, recommendation);
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
+    const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
     const actionCopy = liveActionCopy(action.id, value, lane, pageContext, selectedMove, recommendation);
     const coach = runCoachV3Model(state, lane, pageContext, selectedMove, recommendation, action);
     const packetIdentity = packetIdentityFor(state, lane);
@@ -20411,6 +20445,22 @@
       } else if (action.id === 'close_value') {
         selectedScript.say = `Summarize the channel decision ${value.customer} can now make: ${dealerPolish.valueDecision}`;
         selectedScript.close = 'Capture the current allocation miss, replenishment delay, supplier lead-time change, or manual-effort baseline before claiming savings.';
+      }
+    }
+    if (apparelPolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s apparel retail pressure: ${apparelPolish.riskPressure}. Keep this as a style, size/color, and store/ecommerce promise story, not a dealer/channel tour.`;
+        selectedScript.close = 'Ask which size, color, store, ecommerce, or transfer promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = apparelPolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(apparelPolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to make the next style, size/color, or store/ecommerce promise without spreadsheet reconciliation.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions apparel availability, ask which size/color or store/ecommerce promise they reconcile by hand today, then return to variant availability, replenishment timing, transfer risk, and margin exposure in NetSuite.';
+        selectedScript.close = 'Confirm what evidence would make style, size/color, and store/ecommerce availability trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the retail decision ${value.customer} can now make: ${apparelPolish.valueDecision}`;
+        selectedScript.close = 'Capture the current stockout, transfer delay, replenishment miss, ecommerce promise miss, or margin baseline before claiming savings.';
       }
     }
     selectedScript.say = consultantVisibleCopyW346(selectedScript.say, 320);
@@ -20569,6 +20619,7 @@
     const w213Coach = consultantStoryRoiCompetitiveQualityPassW213V1(state, lane, pageContext, recommendation);
     const w213Copy = w213Coach.updatedConsultantCopyModel;
     const dealerPolish = dealerHardgoodsStoryPolishW365(state, lane, { product: product.product });
+    const apparelPolish = apparelRetailStoryPolishW369(state, lane, { product: product.product });
     const valueProofStack = [
       `ERP proof - ${industryWin.proof}`,
       `Operational proof - ${lane.proofAnchor} through ${recommendation.move}.`,
@@ -20577,6 +20628,8 @@
     const talkTrackLead = consultantVisibleCopyW346(w213Copy.talkTrack, 360);
     const valueDecision = dealerPolish.active
       ? dealerPolish.valueDecision
+      : apparelPolish.active
+        ? apparelPolish.valueDecision
       : `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
     const roiAuditCards = [
       `Why now - ${pain}`,
@@ -20605,6 +20658,7 @@
       story,
       competitive,
       dealerHardgoodsPolishW365: dealerPolish,
+      apparelRetailPolishW369: apparelPolish,
       grounded,
       competitorContext: competitive.competitorSafeContrast,
       decisionCriteria: consultantVisibleCopyW346(criteria, 260),
@@ -20612,7 +20666,7 @@
       w213Coach,
       valueProofStack,
       talkTrackLead,
-      valueDecision: consultantVisibleCopyW346(dealerPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
+      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
       roiAuditCards,
       competitiveCards,
       objectionPath,
@@ -20622,7 +20676,7 @@
       valueAgenda: [
         `Objective - ${consultantVisibleCopyW346(objective, 220)}`,
         `Start with ${customer}'s stated risk - ${consultantVisibleCopyW346(pain, 220)}`,
-        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
+        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
         `Tie the proof to ${lane.valueLens}`,
         `Decision criteria - ${consultantVisibleCopyW346(criteria, 220)}`,
         `Close by confirming the next operational decision the prospect can now make.`
@@ -23723,6 +23777,7 @@
     const competitivePrep = competitive.competitivePrep || competitiveFudPrep(state, lane, story);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
+    const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
     const whyThisMatters = [
       `Business risk - ${compactText(audit.claim || roiHypothesis, 150)}`,
       `Operational proof - ${compactText(audit.proofStep || demoProof, 150)}`,
@@ -23770,6 +23825,17 @@
               <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
               <div class="idb-copy">${escapeHtml(dealerPolish.riskPressure)}</div>
               <div class="idb-copy">${escapeHtml(dealerPolish.netsuiteContrast)}</div>
+              </div>
+            </details>
+          ` : ''}
+          ${apparelPolish.active ? `
+            <details class="idb-technical-details idb-w369-apparel-lens-detail">
+              <summary>Apparel/retail lens</summary>
+              <div class="idb-run-action-card idb-w369-apparel-retail-card">
+                <div class="idb-status-key">Apparel/retail lens</div>
+                <div class="idb-strong">${escapeHtml(apparelPolish.proofLabel)}</div>
+                <div class="idb-copy">${escapeHtml(apparelPolish.riskPressure)}</div>
+                <div class="idb-copy">${escapeHtml(apparelPolish.netsuiteContrast)}</div>
               </div>
             </details>
           ` : ''}
@@ -25105,6 +25171,7 @@
   function renderRunView(state, lane, page, recommendation, selectedMove, action, summary) {
     const value = valueReviewPacket(state, lane, page, recommendation);
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
+    const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const websiteEvidence = websiteEvidenceUxModel(state, lane);
     const resolverLimited = isResolverLimitedWebsiteEvidenceW353(websiteEvidence);
@@ -25166,6 +25233,17 @@
               <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
               ${renderW368DealerProofFlow(dealerPolish)}
               <div class="idb-copy">${escapeHtml(dealerPolish.safeClaim)}</div>
+            </div>
+          </details>
+        ` : ''}
+        ${apparelPolish.active ? `
+          <details class="idb-technical-details idb-w369-run-apparel-detail">
+            <summary>Apparel/retail proof path</summary>
+            <div class="idb-run-action-card idb-w369-apparel-retail-card">
+              <div class="idb-status-key">Apparel/retail proof path</div>
+              <div class="idb-strong">${escapeHtml(apparelPolish.proofLabel)}</div>
+              ${renderW368DealerProofFlow(apparelPolish)}
+              <div class="idb-copy">${escapeHtml(apparelPolish.safeClaim)}</div>
             </div>
           </details>
         ` : ''}
@@ -26894,6 +26972,7 @@
       competitiveAdvisoryModelW362,
       standardCompetitiveAlternativesW362,
       dealerHardgoodsStoryPolishW365,
+      apparelRetailStoryPolishW369,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

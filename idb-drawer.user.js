@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.13
+// @version      1.0.14
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.13';
-  const CURRENT_UX_BLOCK_W346 = 'W367';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.14';
+  const CURRENT_UX_BLOCK_W346 = 'W368';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -15149,7 +15149,7 @@
       consultantRun: {
         headline: partial ? 'Use available records' : 'Build results are ready.',
         nextSteps,
-        show: visibleRecords.slice(0, 4).map((record) => `${record.consultantLabel}: ${record.name}`).join(' -> '),
+        show: visibleRecords.slice(0, 4).map((record) => `${record.consultantLabel}: ${record.name}`).join(', '),
         liveDemoCoaching: normalizedImport.liveDemoCoaching,
         consultantStorySurface: normalizedImport.consultantStorySurfaceW247,
         missingProofTerms,
@@ -20289,7 +20289,7 @@
   }
 
   function pageAwareRunCue(value, lane, pageContext, selectedMove, recommendation) {
-    const path = lane.moves.slice(0, 3).join(' -> ');
+    const path = humanJoinW334(lane.moves.slice(0, 3));
     const genericCue = `Open ${recommendation.move} next. If you are on a dashboard or unrelated page, navigate to ${recommendation.move} for ${value.customer}, then pivot through ${path} to prove ${lane.proofAnchor}.`;
     const pageMoves = {
       customer_record: `Use the Customer Record to ground ${value.customer}'s operating context before moving into ${lane.proofAnchor}.`,
@@ -20403,7 +20403,7 @@
         selectedScript.close = 'Ask which dealer allocation, replenishment, or supplier lead-time promise is hardest to trust today.';
       } else if (action.id === 'prove') {
         selectedScript.say = dealerPolish.proofMove;
-        selectedScript.show = `Move through ${dealerPolish.pathFlow.slice(0, 5).join(' -> ')}.`;
+        selectedScript.show = `Move through ${humanJoinW334(dealerPolish.pathFlow.slice(0, 5))}.`;
         selectedScript.close = `Ask whether the imported NetSuite proof gives ${value.customer} enough trust to make the next dealer/channel promise without manual reconciliation.`;
       } else if (action.id === 'handle_objection') {
         selectedScript.say = 'If the buyer questions dealer availability, ask which channel promise they reconcile by hand today, then return to allocation, replenishment timing, and supplier lead-time risk in NetSuite.';
@@ -21089,27 +21089,57 @@
       }
       .idb-w361-path-flow {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
-        gap: 8px;
-        margin: 7px 0 10px;
+        grid-template-columns: 1fr;
+        gap: 7px;
+        margin: 9px 0 10px;
+        padding-left: 18px;
+        position: relative;
+      }
+      .idb-w361-path-flow::before {
+        content: "";
+        position: absolute;
+        left: 7px;
+        top: 13px;
+        bottom: 13px;
+        width: 2px;
+        border-radius: 999px;
+        background: #b8c8d2;
       }
       .idb-w361-path-node {
         position: relative;
         border: 1px solid #b8c8d2;
         border-radius: 7px;
         background: #fff;
-        padding: 8px 22px 8px 8px;
-        min-height: 56px;
+        padding: 8px 9px 8px 10px;
+        min-height: 50px;
       }
       .idb-w361-path-node:not(:last-child)::after {
-        content: ">";
+        content: "";
         position: absolute;
-        right: 6px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #0b5f79;
-        font-size: 13px;
-        font-weight: 900;
+        left: -12px;
+        top: 29px;
+        bottom: -13px;
+        width: 2px;
+        background: #006685;
+        opacity: .35;
+      }
+      .idb-w361-path-step {
+        position: absolute;
+        left: -19px;
+        top: 10px;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        border: 2px solid #006685;
+        border-radius: 999px;
+        background: #fff;
+        color: #006685;
+        font-size: 9px;
+        font-weight: 950;
+        line-height: 1;
       }
       .idb-w361-path-label {
         color: #536579;
@@ -21159,6 +21189,23 @@
       .idb-w367-presenter-steps .idb-w361-script-chip {
         background: #fff;
         min-height: 52px;
+      }
+      .idb-w368-dealer-proof-flow {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+        gap: 6px;
+        margin-top: 7px;
+      }
+      .idb-w368-dealer-proof-step {
+        border: 1px solid #d8e1e6;
+        border-radius: 7px;
+        background: #fff;
+        color: #17202d;
+        min-height: 34px;
+        padding: 6px;
+        font-size: 9px;
+        font-weight: 900;
+        line-height: 1.2;
       }
       .idb-w361-chip-title {
         display: block;
@@ -22693,8 +22740,9 @@
     });
     return `
       <div class="idb-w361-path-flow idb-w361-netsuite-path" aria-label="NetSuite path flow">
-        ${selected.slice(0, 4).map((item) => `
+        ${selected.slice(0, 4).map((item, index) => `
           <div class="idb-w361-path-node">
+            <span class="idb-w361-path-step">${escapeHtml(index + 1)}</span>
             <span class="idb-w361-path-label">${escapeHtml(consultantRunNavigationLabelW332(item))}</span>
             <span class="idb-w361-path-name">${escapeHtml(consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item))}</span>
           </div>
@@ -22717,6 +22765,16 @@
             <span class="idb-w361-chip-copy">${escapeHtml(compactText(copy || '', 92))}</span>
           </button>
         `).join('')}
+      </div>
+    `;
+  }
+
+  function renderW368DealerProofFlow(dealerPolish) {
+    const steps = arrayValue(dealerPolish && dealerPolish.pathFlow);
+    if (!steps.length) return '';
+    return `
+      <div class="idb-w368-dealer-proof-flow" aria-label="Dealer channel proof flow">
+        ${steps.slice(0, 6).map((step) => `<span class="idb-w368-dealer-proof-step">${escapeHtml(step)}</span>`).join('')}
       </div>
     `;
   }
@@ -25106,7 +25164,7 @@
             <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
               <div class="idb-status-key">Dealer/channel proof path</div>
               <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
-              <div class="idb-copy">${escapeHtml(dealerPolish.pathFlow.join(' -> '))}</div>
+              ${renderW368DealerProofFlow(dealerPolish)}
               <div class="idb-copy">${escapeHtml(dealerPolish.safeClaim)}</div>
             </div>
           </details>

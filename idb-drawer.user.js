@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.15
+// @version      1.0.17
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.15';
-  const CURRENT_UX_BLOCK_W346 = 'W369';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.17';
+  const CURRENT_UX_BLOCK_W346 = 'W371';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1062,6 +1062,13 @@
         dccMode: 'Balanced',
         dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Style / SKU Matrix', 'Size / Color Variants', 'Allocation / Replenishment', 'Channel / Location Availability', 'Collection Launch Setup']
+      },
+      parts_service: {
+        dccFamilyKey: 'partsService',
+        dccScenario: 'Service Parts Readiness',
+        dccMode: 'Balanced',
+        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        recordsToPlan: ['Customer Record', 'Work Order View', 'Installed Equipment', 'Service Part / SKU', 'Truck / Warehouse Availability', 'Backorder / Purchasing Signal', 'Warranty / Service Margin Setup']
       }
     }
   };
@@ -1177,6 +1184,20 @@
         guardrails: ['Do not collapse apparel and accessories into industrial equipment, generic branch distribution, food batching, or regulated release proof.'],
         moves: ['Customer Record', 'Sales Order View', 'Style / SKU Matrix'],
         modules: ['Order Management', 'Inventory']
+      },
+      {
+        id: 'parts_service',
+        name: 'Parts & Service / Field Service',
+        proofAnchor: 'Work Order / Parts Availability',
+        promise: 'Work order, installed equipment, truck and warehouse parts, warranty, and purchasing signals protect technician readiness.',
+        valueLens: 'Improve first-time fix confidence by connecting customer equipment history, work order demand, parts availability, warranty exposure, and replenishment or purchasing action.',
+        competitiveLens: 'Show service readiness in one NetSuite path instead of forcing techs to reconcile dispatch notes, spreadsheets, and inventory calls.',
+        validateLive: 'Validate work order context, installed equipment, truck or warehouse parts availability, backorder risk, warranty exposure, and service margin in one parts/service path.',
+        storyline: 'Lead with parts and field service through customer equipment history, work order readiness, technician parts confidence, emergency response, warranty exposure, and service margin protection.',
+        signals: ['field service context', 'service parts', 'work order', 'installed equipment', 'technician readiness', 'truck stock', 'warehouse availability', 'first-time fix', 'warranty', 'backordered parts'],
+        guardrails: ['Do not collapse service readiness into dealer-channel allocation, apparel variants, seasonal retail, food batching, or generic branch fulfillment language.'],
+        moves: ['Customer Record', 'Work Order View', 'Work Order / Parts Availability'],
+        modules: ['Order Management', 'Inventory', 'Field Service']
       }
     ]
   };
@@ -5171,12 +5192,14 @@
     lifeSciencesManufacturing: 'Life Sciences Manufacturing',
     distribution: 'Distribution',
     apparelAccessories: 'Apparel & Accessories',
+    partsService: 'Parts & Service',
     services: 'Services',
     products_cpg: 'Products CPG',
     apparel_accessories: 'Apparel & Accessories',
     food_beverage: 'Food & Beverage',
     dealer_hardgoods: 'Dealer Hardgoods',
     industrial_distribution: 'Industrial Distribution',
+    parts_service: 'Parts & Service',
     recommended: 'Recommended',
     needs_confirmation: 'Needs confirmation',
     insufficient_evidence: 'Needs more input',
@@ -13420,7 +13443,7 @@
   }
 
   function isSupportedNetSuiteRecordPath(url) {
-    return /\/app\/(common\/entity\/custjob|accounting\/transactions\/salesord|common\/item\/item)\.nl\?/i.test(String(url || ''));
+    return /\/app\/(common\/entity\/custjob|accounting\/transactions\/salesord|accounting\/transactions\/workord|common\/item\/item|common\/custom\/custrecordentry)\.nl\?/i.test(String(url || ''));
   }
 
   function currentNetSuiteOrigin() {
@@ -19999,6 +20022,39 @@
     };
   }
 
+  function partsServiceStoryPolishW370(state, lane, value) {
+    if (!lane || lane.id !== 'parts_service') {
+      return {
+        schema: 'idb.w370-parts-service-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Work Order / Parts Availability';
+    return {
+      schema: 'idb.w370-parts-service-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Work order and service parts readiness',
+      pathFlow: ['Customer equipment history', 'Work order demand', 'Truck and warehouse parts', 'Backorder and purchasing signal', 'Warranty exposure', 'First-time fix and service margin'],
+      riskPressure: 'technician readiness gaps, missing truck or warehouse parts, emergency call delays, backordered parts, warranty exposure, and service margin leakage',
+      valueDecision: `Use ${product} to help ${customer} trust customer equipment history, work order demand, truck or warehouse parts availability, backorder risk, warranty exposure, and service margin before dispatching the next technician promise.`,
+      proofMove: `Prove service readiness with ${lane.proofAnchor}; then connect installed equipment, work order demand, truck/warehouse parts, backorder or purchasing action, warranty exposure, and first-time fix confidence.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the parts/service story; confirm real work order, installed equipment, parts location, warranty, backorder, and service-margin evidence before ROI or first-time-fix claims.',
+      competitorPressure: ['ServiceTitan or dispatch app', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'manual parts calls', 'inventory add-ons'],
+      netsuiteContrast: `Keep customer equipment history, work order demand, parts availability, backorder or purchasing action, warranty exposure, and service margin in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'supplier portals', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false
+      }
+    };
+  }
+
   function likelyCompetitivePressure(state, lane) {
     const intake = normalizedIntake(state);
     const combined = `${intake.competitor || ''} ${intake.notes || ''} ${intake.decisionCriteria || ''}`.toLowerCase();
@@ -20008,6 +20064,7 @@
     const apparel = lane.id === 'apparel_accessories' || /apparel|footwear|style|size|color|variant|ecommerce|shopify/.test(combined);
     const manufacturing = /manufactur|assembly|bom|wip|production|routing/.test(combined);
     const dealerHardgoods = lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time|replenishment/.test(combined);
+    const partsService = lane.id === 'parts_service' || /field service|service manager|work order|dispatch|technician|truck stock|installed equipment|first-time fix|warranty|backorder|parts availability|servicetitan/.test(combined);
     const distribution = /dealer|distributor|warehouse|branch|fulfillment|channel/.test(combined);
     const alternatives = [];
     if (supplied && !manualWorkflow) alternatives.push(supplied);
@@ -20017,6 +20074,7 @@
     }
     if (manualWorkflow) alternatives.push('spreadsheets and manual inventory reports', 'QuickBooks plus spreadsheets');
     if (dealerHardgoods) alternatives.push('dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo');
+    else if (partsService) alternatives.push('ServiceTitan or dispatch app', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'manual parts calls', 'inventory add-ons');
     else if (apparel) alternatives.push('Shopify or ecommerce apps plus inventory add-ons', 'Odoo', 'Microsoft Dynamics 365', 'SAP Business One', 'niche apparel or PLM tools');
     else if (manufacturing) alternatives.push('Odoo', 'Microsoft Dynamics 365', 'SAP Business One', 'manufacturing point solutions');
     else if (distribution) alternatives.push('QuickBooks plus warehouse tools', 'Odoo', 'Microsoft Dynamics 365', 'dealer/distribution point solutions');
@@ -20082,6 +20140,8 @@
     let standard = [];
     if (lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time/.test(text)) {
       standard = ['dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo'];
+    } else if (lane.id === 'parts_service' || /field service|service manager|work order|dispatch|technician|truck stock|installed equipment|first-time fix|warranty|backorder|servicetitan/.test(text)) {
+      standard = ['ServiceTitan', 'dispatch apps', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'inventory add-ons', 'manual parts calls'];
     } else if (/industrial|distribution|branch|fulfillment|mro|electrical|counter|contractor|supply/.test(text) || lane.id === 'products_cpg') {
       standard = ['Grainger', 'Fastenal', 'MSC Industrial', 'Graybar', 'supplier portals', 'branch inventory spreadsheets'];
     } else if (/manufactur|assembly|bom|wip|production/.test(text)) {
@@ -20105,8 +20165,14 @@
     const sourceLabel = publicEvidenceStrong ? 'Public evidence plus advisory context' : 'N/LLM advisory from lane, URL/domain, and request language';
     const authorityLabel = competitive.namedCompetitor ? 'Verify named competitor before claiming' : 'Advisory prep only';
     const dealerPolish = dealerHardgoodsStoryPolishW365(state, lane, packet);
+    const apparelPolish = apparelRetailStoryPolishW369(state, lane, packet);
+    const partsServicePolish = partsServiceStoryPolishW370(state, lane, packet);
     const netSuiteContrast = dealerPolish.active
       ? dealerPolish.netsuiteContrast
+      : apparelPolish.active
+        ? apparelPolish.netsuiteContrast
+      : partsServicePolish.active
+        ? partsServicePolish.netsuiteContrast
       : `Use ${lane.proofAnchor} to keep availability, promise, fulfillment, and financial impact in one NetSuite path.`;
     const competitorText = alternatives.slice(0, 4).join(', ');
     return {
@@ -20373,6 +20439,7 @@
     const value = valueReviewPacket(state, lane, pageContext, recommendation);
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
     const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
+    const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
     const actionCopy = liveActionCopy(action.id, value, lane, pageContext, selectedMove, recommendation);
     const coach = runCoachV3Model(state, lane, pageContext, selectedMove, recommendation, action);
     const packetIdentity = packetIdentityFor(state, lane);
@@ -20461,6 +20528,22 @@
       } else if (action.id === 'close_value') {
         selectedScript.say = `Summarize the retail decision ${value.customer} can now make: ${apparelPolish.valueDecision}`;
         selectedScript.close = 'Capture the current stockout, transfer delay, replenishment miss, ecommerce promise miss, or margin baseline before claiming savings.';
+      }
+    }
+    if (partsServicePolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s parts/service pressure: ${partsServicePolish.riskPressure}. Keep this as a work order, installed equipment, and technician readiness story, not a dealer/channel or retail availability tour.`;
+        selectedScript.close = 'Ask which work order, truck stock, warehouse part, warranty, or backorder promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = partsServicePolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(partsServicePolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to dispatch the next technician promise without manual parts calls.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions service readiness, ask which work order or truck/warehouse part they reconcile by hand today, then return to installed equipment, parts availability, backorder or purchasing action, warranty exposure, and first-time fix confidence in NetSuite.';
+        selectedScript.close = 'Confirm what evidence would make work order and service parts readiness trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the service decision ${value.customer} can now make: ${partsServicePolish.valueDecision}`;
+        selectedScript.close = 'Capture the current first-time-fix miss, emergency delay, parts call-around time, warranty exposure, backorder delay, or service-margin baseline before claiming savings.';
       }
     }
     selectedScript.say = consultantVisibleCopyW346(selectedScript.say, 320);
@@ -20620,6 +20703,7 @@
     const w213Copy = w213Coach.updatedConsultantCopyModel;
     const dealerPolish = dealerHardgoodsStoryPolishW365(state, lane, { product: product.product });
     const apparelPolish = apparelRetailStoryPolishW369(state, lane, { product: product.product });
+    const partsServicePolish = partsServiceStoryPolishW370(state, lane, { product: product.product });
     const valueProofStack = [
       `ERP proof - ${industryWin.proof}`,
       `Operational proof - ${lane.proofAnchor} through ${recommendation.move}.`,
@@ -20630,6 +20714,8 @@
       ? dealerPolish.valueDecision
       : apparelPolish.active
         ? apparelPolish.valueDecision
+      : partsServicePolish.active
+        ? partsServicePolish.valueDecision
       : `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
     const roiAuditCards = [
       `Why now - ${pain}`,
@@ -20659,6 +20745,7 @@
       competitive,
       dealerHardgoodsPolishW365: dealerPolish,
       apparelRetailPolishW369: apparelPolish,
+      partsServicePolishW370: partsServicePolish,
       grounded,
       competitorContext: competitive.competitorSafeContrast,
       decisionCriteria: consultantVisibleCopyW346(criteria, 260),
@@ -20666,7 +20753,7 @@
       w213Coach,
       valueProofStack,
       talkTrackLead,
-      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
+      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active || partsServicePolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
       roiAuditCards,
       competitiveCards,
       objectionPath,
@@ -20676,7 +20763,7 @@
       valueAgenda: [
         `Objective - ${consultantVisibleCopyW346(objective, 220)}`,
         `Start with ${customer}'s stated risk - ${consultantVisibleCopyW346(pain, 220)}`,
-        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
+        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : partsServicePolish.active ? partsServicePolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
         `Tie the proof to ${lane.valueLens}`,
         `Decision criteria - ${consultantVisibleCopyW346(criteria, 220)}`,
         `Close by confirming the next operational decision the prospect can now make.`
@@ -21209,6 +21296,86 @@
         font-weight: 850;
         line-height: 1.2;
         overflow-wrap: anywhere;
+      }
+      .idb-w371-path-open {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+      }
+      .idb-w361-path-node.idb-w371-path-clickable {
+        border-color: #0b5f79;
+        background: #fbfdff;
+        cursor: pointer;
+      }
+      .idb-w361-path-node.idb-w371-path-clickable:hover {
+        background: #eef7f9;
+        box-shadow: 0 1px 0 rgba(11, 95, 121, .12);
+      }
+      .idb-w371-open-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 5px;
+        border: 1px solid #0b5f79;
+        border-radius: 999px;
+        color: #0b5f79;
+        background: #fff;
+        padding: 2px 7px;
+        font-size: 9px;
+        font-weight: 900;
+        line-height: 1;
+      }
+      .idb-w371-unavailable-badge {
+        display: inline-flex;
+        margin-top: 5px;
+        border: 1px solid #cbd7df;
+        border-radius: 999px;
+        color: #536579;
+        background: #f7f8f6;
+        padding: 2px 7px;
+        font-size: 9px;
+        font-weight: 850;
+        line-height: 1;
+      }
+      .idb-w371-consultant-flow {
+        display: grid;
+        gap: 7px;
+        margin-top: 6px;
+      }
+      .idb-w371-flow-row {
+        border: 1px solid #cbd7df;
+        border-left: 4px solid #0b5f79;
+        border-radius: 7px;
+        background: #fff;
+        padding: 8px;
+      }
+      .idb-w371-flow-row.idb-w371-roi-row {
+        border-left-color: #4f7f52;
+        background: #fbfdf9;
+      }
+      .idb-w371-flow-row.idb-w371-competitive-row {
+        border-left-color: #7a5f15;
+        background: #fffdf6;
+      }
+      .idb-w371-flow-label {
+        color: #536579;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+      }
+      .idb-w371-flow-copy {
+        margin-top: 3px;
+        color: #17202d;
+        font-size: 12px;
+        line-height: 1.34;
+        font-weight: 720;
+      }
+      .idb-w371-flow-meta {
+        margin-top: 4px;
+        color: #536579;
+        font-size: 10px;
+        line-height: 1.3;
       }
       .idb-w361-script-chips,
       .idb-w361-value-chips {
@@ -22792,15 +22959,34 @@
     objects.forEach((item) => {
       if (selected.length < 4 && !selected.includes(item)) selected.push(item);
     });
+    const renderPathNode = (item, index) => {
+      const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
+      const label = consultantRunNavigationLabelW332(item);
+      const name = consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item);
+      const inner = `
+        <span class="idb-w361-path-step">${escapeHtml(index + 1)}</span>
+        <span class="idb-w361-path-label">${escapeHtml(label)}</span>
+        <span class="idb-w361-path-name">${escapeHtml(name)}</span>
+        ${authority.openable
+          ? '<span class="idb-w371-open-badge">Open</span>'
+          : `<span class="idb-w371-unavailable-badge" title="${escapeHtml(authority.reason || 'No verified Open URL returned.')}">${escapeHtml(authority.displayLabel || 'No Open link')}</span>`}
+      `;
+      if (authority.openable) {
+        return `
+          <a class="idb-w361-path-node idb-w371-path-open idb-w371-path-clickable" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer" aria-label="Open ${escapeHtml(label)} ${escapeHtml(name)}">
+            ${inner}
+          </a>
+        `;
+      }
+      return `
+        <div class="idb-w361-path-node idb-w371-path-unavailable" aria-label="${escapeHtml(label)} ${escapeHtml(name)}">
+          ${inner}
+        </div>
+      `;
+    };
     return `
       <div class="idb-w361-path-flow idb-w361-netsuite-path" aria-label="NetSuite path flow">
-        ${selected.slice(0, 4).map((item, index) => `
-          <div class="idb-w361-path-node">
-            <span class="idb-w361-path-step">${escapeHtml(index + 1)}</span>
-            <span class="idb-w361-path-label">${escapeHtml(consultantRunNavigationLabelW332(item))}</span>
-            <span class="idb-w361-path-name">${escapeHtml(consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item))}</span>
-          </div>
-        `).join('')}
+        ${selected.slice(0, 4).map(renderPathNode).join('')}
       </div>
     `;
   }
@@ -23778,37 +23964,46 @@
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
     const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
+    const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
     const whyThisMatters = [
       `Business risk - ${compactText(audit.claim || roiHypothesis, 150)}`,
       `Operational proof - ${compactText(audit.proofStep || demoProof, 150)}`,
       `NetSuite contrast - ${compactText(netsuiteContrast, 150)}`,
       `Baseline to capture - ${compactText(audit.baselineNeeded || 'Capture the current delay, cost, or risk baseline before claiming savings.', 150)}`
     ];
-    const liveValueCockpit = `
-      <div class="idb-run-action-card idb-w361-live-value-cockpit">
-        <div class="idb-status-key">Live value answer</div>
-        <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
-        <div class="idb-w361-value-chips" role="group" aria-label="Live value answer chips">
-          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(topMove)}">
-            <span class="idb-w361-chip-title">Next move</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(topMove, 58))}</span>
-          </button>
-          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(netsuiteContrast)}">
-            <span class="idb-w361-chip-title">NetSuite answer</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(netsuiteContrast, 58))}</span>
-          </button>
-          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(roiHypothesis)}">
-            <span class="idb-w361-chip-title">ROI answer</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(roiHypothesis, 58))}</span>
-          </button>
-          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(cautionCopy)}">
-            <span class="idb-w361-chip-title">Caution</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(cautionCopy, 58))}</span>
-          </button>
-          <button class="idb-w361-value-chip idb-w367-value-decision-card" type="button" title="${escapeHtml(competitiveAdvisory.valueCue || competitive.competitorSafeContrast || value.groundedCompetitiveSummary)}">
-            <span class="idb-w361-chip-title">Competitive pressure</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(competitiveAdvisory.valueCue || competitive.competitorSafeContrast || value.groundedCompetitiveSummary, 58))}</span>
-          </button>
+    const competitiveWatchOut = competitiveAdvisory.runCue || competitive.competitorSafeContrast || value.groundedCompetitiveSummary;
+    const largestValueToProve = audit.claim || roiHypothesis;
+    const consultantFlow = `
+      <div class="idb-w371-consultant-flow idb-w371-roi-competitive-flow" aria-label="Talk track discovery proof ROI and competitive flow">
+        <div class="idb-w371-flow-row">
+          <div class="idb-w371-flow-label">Talk track</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(value.talkTrackLead || value.valueDecision)}</div>
+          <div class="idb-w371-flow-meta">Open with the business risk, then keep the proof tied to the next decision.</div>
+        </div>
+        <div class="idb-w371-flow-row">
+          <div class="idb-w371-flow-label">Discovery</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(askNext)}</div>
+          <div class="idb-w371-flow-meta">Ask this before moving into proof so the demo lands on the buyer's real operating doubt.</div>
+        </div>
+        <div class="idb-w371-flow-row">
+          <div class="idb-w371-flow-label">Proof move</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(demoProof)}</div>
+          <div class="idb-w371-flow-meta">${escapeHtml(netsuiteContrast)}</div>
+        </div>
+        <div class="idb-w371-flow-row idb-w371-roi-row">
+          <div class="idb-w371-flow-label">Largest value to prove</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(largestValueToProve)}</div>
+          <div class="idb-w371-flow-meta">Baseline to capture: ${escapeHtml(audit.baselineNeeded || 'customer-confirmed current delay, cost, or risk baseline')}</div>
+        </div>
+        <div class="idb-w371-flow-row idb-w371-competitive-row">
+          <div class="idb-w371-flow-label">Objection handle</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(firstObjection)}</div>
+          <div class="idb-w371-flow-meta">${escapeHtml(competitiveWatchOut)}</div>
+        </div>
+        <div class="idb-w371-flow-row">
+          <div class="idb-w371-flow-label">Claim caution</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(cautionCopy)}</div>
+          <div class="idb-w371-flow-meta">${escapeHtml(consultantLabel(competitive.verifiedState))} / ${escapeHtml(consultantLabel(grounded.confidenceState))}</div>
         </div>
       </div>
     `;
@@ -23816,7 +24011,8 @@
       <div class="idb-cockpit-section">
         <div class="idb-card idb-accent idb-w96-value-coach idb-w115-consultant-value-coach">
           <div class="idb-section-title">Consultant value coach</div>
-          ${liveValueCockpit}
+          <div class="idb-status-key">Talk track, discovery, and proof moves</div>
+          ${consultantFlow}
           ${dealerPolish.active ? `
             <details class="idb-technical-details idb-w367-dealer-lens-detail">
               <summary>Dealer/channel lens</summary>
@@ -23839,48 +24035,20 @@
               </div>
             </details>
           ` : ''}
+          ${partsServicePolish.active ? `
+            <details class="idb-technical-details idb-w370-parts-service-lens-detail">
+              <summary>Parts/service lens</summary>
+              <div class="idb-run-action-card idb-w370-parts-service-card">
+                <div class="idb-status-key">Parts/service lens</div>
+                <div class="idb-strong">${escapeHtml(partsServicePolish.proofLabel)}</div>
+                <div class="idb-copy">${escapeHtml(partsServicePolish.riskPressure)}</div>
+                <div class="idb-copy">${escapeHtml(partsServicePolish.netsuiteContrast)}</div>
+              </div>
+            </details>
+          ` : ''}
           <details class="idb-technical-details idb-w367-competitive-detail">
             <summary>Competitive lens and prep</summary>
             ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive lens', note: competitiveAdvisory.valueCue, compact: true })}
-          </details>
-          <details class="idb-technical-details idb-w367-talk-track-detail">
-            <summary>Talk track, discovery, and proof moves</summary>
-            <div class="idb-run-action-card">
-              <div class="idb-status-key">Talk track</div>
-              <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
-              <div class="idb-copy">${escapeHtml(value.talkTrackLead)}</div>
-            </div>
-            <div class="idb-summary-card-grid">
-              <div class="idb-value-section">
-                <div class="idb-status-key">Discovery question</div>
-                <div class="idb-copy">${escapeHtml(askNext)}</div>
-              </div>
-              <div class="idb-value-section idb-competitive-section">
-                <div class="idb-status-key">Objection answer</div>
-                <div class="idb-copy">${escapeHtml(firstObjection)}</div>
-              </div>
-            </div>
-            <div class="idb-summary-card-grid">
-              <div class="idb-value-section">
-                <div class="idb-status-key">Proof move</div>
-                <div class="idb-copy">${escapeHtml(demoProof)}</div>
-              </div>
-              <div class="idb-value-section idb-competitive-section">
-                <div class="idb-status-key">ROI hypothesis</div>
-                <div class="idb-copy">${escapeHtml(roiHypothesis)}</div>
-              </div>
-            </div>
-            <div class="idb-summary-card-grid">
-              <div class="idb-value-section">
-                <div class="idb-status-key">NetSuite contrast</div>
-                <div class="idb-copy">${escapeHtml(netsuiteContrast)}</div>
-              </div>
-              <div class="idb-value-section idb-competitive-section">
-                <div class="idb-status-key">Caution</div>
-                <div class="idb-strong">${escapeHtml(consultantLabel(grounded.unsupportedClaimBlocker.status))}</div>
-                <div class="idb-copy">${escapeHtml(cautionCopy)}</div>
-              </div>
-            </div>
           </details>
           <details class="idb-technical-details idb-competitive-prep-card">
             <summary>Competitive prep detail</summary>
@@ -25172,6 +25340,7 @@
     const value = valueReviewPacket(state, lane, page, recommendation);
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
     const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
+    const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const websiteEvidence = websiteEvidenceUxModel(state, lane);
     const resolverLimited = isResolverLimitedWebsiteEvidenceW353(websiteEvidence);
@@ -25247,6 +25416,17 @@
             </div>
           </details>
         ` : ''}
+        ${partsServicePolish.active ? `
+          <details class="idb-technical-details idb-w370-run-parts-service-detail">
+            <summary>Parts/service proof path</summary>
+            <div class="idb-run-action-card idb-w370-parts-service-card">
+              <div class="idb-status-key">Parts/service proof path</div>
+              <div class="idb-strong">${escapeHtml(partsServicePolish.proofLabel)}</div>
+              ${renderW368DealerProofFlow(partsServicePolish)}
+              <div class="idb-copy">${escapeHtml(partsServicePolish.safeClaim)}</div>
+            </div>
+          </details>
+        ` : ''}
         <div class="idb-section-title">Live controls</div>
         <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
           ${renderRunActionChips(state)}
@@ -25259,7 +25439,7 @@
         <div class="idb-run-action-card">
           <div class="idb-status-key">Selected script</div>
           <div class="idb-strong">${escapeHtml(script.title)}</div>
-          <div class="idb-copy">${escapeHtml(script.say)}</div>
+          <div class="idb-copy">Use the Say / Show / Close steps above. Close on: ${escapeHtml(script.close)}</div>
         </div>
         ${renderW361ImportedProofRecords(finalNavigation)}
         ${resolverLimited ? `
@@ -26973,6 +27153,7 @@
       standardCompetitiveAlternativesW362,
       dealerHardgoodsStoryPolishW365,
       apparelRetailStoryPolishW369,
+      partsServiceStoryPolishW370,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

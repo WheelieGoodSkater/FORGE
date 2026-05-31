@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.10
+// @version      1.0.11
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.10';
-  const CURRENT_UX_BLOCK_W346 = 'W362';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.11';
+  const CURRENT_UX_BLOCK_W346 = 'W363';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -20063,20 +20063,22 @@
   function renderW362CompetitiveAdvisoryCard(model, options) {
     const opts = options || {};
     const title = opts.title || 'Competitive intelligence';
+    const compact = opts.compact ? ' idb-w363-compact-competitive' : '';
+    const maxCopy = opts.compact ? 46 : 78;
     return `
-      <div class="idb-run-action-card idb-w362-competitive-card">
+      <div class="idb-run-action-card idb-w362-competitive-card${compact}">
         <div class="idb-status-key">${escapeHtml(title)}</div>
         <div class="idb-strong">${escapeHtml(model.headline)}</div>
         <div class="idb-w362-competitive-chips" role="group" aria-label="Competitive advisory chips">
           ${model.chips.map((chip) => `
             <button class="idb-w362-competitive-chip" type="button" title="${escapeHtml(chip.copy)}">
               <span class="idb-w361-chip-title">${escapeHtml(chip.title)}</span>
-              <span class="idb-w361-chip-copy">${escapeHtml(compactText(chip.copy, 78))}</span>
+              <span class="idb-w361-chip-copy">${escapeHtml(compactText(chip.copy, maxCopy))}</span>
             </button>
           `).join('')}
         </div>
         <div class="idb-w362-competitive-note">${escapeHtml(opts.note || model.runCue)}</div>
-        <div class="idb-chip-row">
+        <div class="idb-chip-row ${opts.compact ? 'idb-admin-only' : ''}" ${opts.compact ? 'hidden' : ''}>
           <span class="idb-mini-chip">N/LLM advisory only</span>
           <span class="idb-mini-chip">${escapeHtml(model.authorityLabel)}</span>
           <span class="idb-mini-chip">${escapeHtml(model.sourceLabel)}</span>
@@ -21108,11 +21110,23 @@
         border-color: #d8e1e6;
         background: #f7fafb;
       }
+      .idb-w362-competitive-card.idb-w363-compact-competitive {
+        padding: 8px;
+      }
+      .idb-w363-compact-competitive .idb-strong {
+        font-size: 13px;
+        line-height: 1.16;
+      }
       .idb-w362-competitive-chips {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 5px;
         margin-top: 7px;
+      }
+      .idb-w363-compact-competitive .idb-w362-competitive-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
       }
       .idb-w362-competitive-chip {
         border: 1px solid #d8e1e6;
@@ -21125,12 +21139,36 @@
         font-weight: 900;
         text-align: left;
       }
+      .idb-w363-compact-competitive .idb-w362-competitive-chip {
+        flex: 1 1 74px;
+        min-height: 28px;
+        padding: 5px;
+      }
       .idb-w362-competitive-note {
         margin-top: 6px;
         color: #536579;
         font-size: 10px;
         font-weight: 750;
         line-height: 1.3;
+      }
+      .idb-w363-compact-competitive .idb-w362-competitive-note {
+        font-size: 9px;
+      }
+      .idb-w363-evidence-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+        margin-top: 9px;
+      }
+      .idb-w363-evidence-cell {
+        border: 1px solid #d8e1e6;
+        border-radius: 7px;
+        background: #f8fbfc;
+        padding: 8px;
+        min-height: 54px;
+      }
+      .idb-w363-trace-details {
+        margin-top: 9px;
       }
       .idb-action-chip {
         min-height: 32px;
@@ -23592,7 +23630,7 @@
         <div class="idb-card idb-accent idb-w96-value-coach idb-w115-consultant-value-coach">
           <div class="idb-section-title">Consultant value coach</div>
           ${liveValueCockpit}
-          ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cockpit', note: competitiveAdvisory.valueCue })}
+          ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive lens', note: competitiveAdvisory.valueCue, compact: true })}
           <div class="idb-run-action-card">
             <div class="idb-status-key">Talk track</div>
             <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
@@ -23629,16 +23667,19 @@
               <div class="idb-copy">${escapeHtml(cautionCopy)}</div>
             </div>
           </div>
-          <div class="idb-run-action-card idb-competitive-prep-card">
-            <div class="idb-status-key">Competitive prep</div>
-            <div class="idb-strong">${escapeHtml(competitivePrep.label)}</div>
-            <div class="idb-copy">Likely pressure to be ready for: ${escapeHtml(competitivePrep.alternatives.slice(0, 5).join(', '))}.</div>
-            <div class="idb-copy">${escapeHtml(competitivePrep.netSuiteWin)}</div>
-            <div class="idb-chip-row">
-              <span class="idb-mini-chip">${escapeHtml(competitivePrep.basis)}</span>
-              <span class="idb-mini-chip">${escapeHtml(competitivePrep.assumptionLabel)}</span>
+          <details class="idb-technical-details idb-competitive-prep-card">
+            <summary>Competitive prep detail</summary>
+            <div class="idb-run-action-card">
+              <div class="idb-status-key">Competitive prep</div>
+              <div class="idb-strong">${escapeHtml(competitivePrep.label)}</div>
+              <div class="idb-copy">Likely pressure to be ready for: ${escapeHtml(competitivePrep.alternatives.slice(0, 5).join(', '))}.</div>
+              <div class="idb-copy">${escapeHtml(competitivePrep.netSuiteWin)}</div>
+              <div class="idb-chip-row">
+                <span class="idb-mini-chip">${escapeHtml(competitivePrep.basis)}</span>
+                <span class="idb-mini-chip">${escapeHtml(competitivePrep.assumptionLabel)}</span>
+              </div>
             </div>
-          </div>
+          </details>
         </div>
         <details class="idb-technical-details idb-w120-why-matters">
           <summary>Why this matters</summary>
@@ -23649,28 +23690,31 @@
             </ol>
           </div>
         </details>
-        <div class="idb-card idb-accent idb-w56-value-summary">
-          <div class="idb-section-title">Live value answer</div>
-          <div class="idb-run-action-card">
-            <div class="idb-status-key">Next move</div>
-            <div class="idb-copy">${escapeHtml(topMove)}</div>
-          </div>
-          <div class="idb-summary-card-grid">
-            <div class="idb-value-section">
-              <div class="idb-status-key">One ROI answer</div>
-              <div class="idb-copy">${escapeHtml(roiHypothesis)}</div>
+        <details class="idb-technical-details idb-w56-value-summary">
+          <summary>Expanded value answer</summary>
+          <div class="idb-card idb-accent">
+            <div class="idb-section-title">Live value answer</div>
+            <div class="idb-run-action-card">
+              <div class="idb-status-key">Next move</div>
+              <div class="idb-copy">${escapeHtml(topMove)}</div>
             </div>
-            <div class="idb-value-section idb-competitive-section">
-              <div class="idb-status-key">One NetSuite answer</div>
-              <div class="idb-copy">${escapeHtml(netsuiteContrast)}</div>
+            <div class="idb-summary-card-grid">
+              <div class="idb-value-section">
+                <div class="idb-status-key">One ROI answer</div>
+                <div class="idb-copy">${escapeHtml(roiHypothesis)}</div>
+              </div>
+              <div class="idb-value-section idb-competitive-section">
+                <div class="idb-status-key">One NetSuite answer</div>
+                <div class="idb-copy">${escapeHtml(netsuiteContrast)}</div>
+              </div>
+            </div>
+            <div class="idb-run-action-card">
+              <div class="idb-status-key">One blocker / caution</div>
+              <div class="idb-strong">${escapeHtml(consultantLabel(grounded.unsupportedClaimBlocker.status))}</div>
+              <div class="idb-copy">${escapeHtml(cautionCopy)}</div>
             </div>
           </div>
-          <div class="idb-run-action-card">
-            <div class="idb-status-key">One blocker / caution</div>
-            <div class="idb-strong">${escapeHtml(consultantLabel(grounded.unsupportedClaimBlocker.status))}</div>
-            <div class="idb-copy">${escapeHtml(cautionCopy)}</div>
-          </div>
-        </div>
+        </details>
         <details class="idb-technical-details idb-value-audit-shell">
           <summary>Details: value evidence, proof stack, and claim guard</summary>
           <div class="idb-card idb-value-accent">
@@ -25082,20 +25126,51 @@
     const versionFingerprint = installedDrawerVersionFingerprintW339();
     const currentBlockMarker = installedDrawerCurrentBlockMarkerW342();
     const runnerNamingMarker = runnerProofNamingMarkerW341(state);
+    const websiteEvidence = websiteEvidenceUxModel(state, lane);
+    const importedRecords = arrayValue(finalNaming.displayReadyRecords);
+    const verifiedOpenCount = importedRecords.filter((record) => record && record.safeToOpen === true && record.linkAuthorityStatus === 'verified_openable').length;
+    const importedLabel = finalNaming.finalNamesImported ? 'Records imported' : 'Records waiting';
+    const openLabel = verifiedOpenCount ? `${verifiedOpenCount} Open links verified` : 'Open links waiting';
+    const publicReadLabel = websiteEvidence.confidence.resolverLimited
+      ? 'Public read: resolver limited'
+      : `Public read: ${consultantLabel(websiteEvidence.confidence.state)}`;
+    const advisoryLabel = websiteEvidence.confidence.advisoryState === 'advisory_supported'
+      ? `Advisory: ${consultantLabel(websiteEvidence.confidence.advisoryScoreLabel || 'supported')}`
+      : 'Advisory: not needed';
     return `
-      <div class="idb-card">
-        <div class="idb-section-title">Trace actions only</div>
+      <div class="idb-card idb-accent">
+        <div class="idb-section-title">Operator evidence</div>
         <div class="idb-copy">${showAdminResultImport
           ? 'Admin/debug fallback: export debug evidence and import a completed runner result only when the automatic Build return path is unavailable.'
-          : 'Export trace evidence for support. Normal Build starts the saved build path and brings back final links automatically.'}</div>
+          : 'Use this to confirm the installed drawer, imported records, evidence state, and support export before a smoke review.'}</div>
         <div class="idb-chip-row">
-          <span class="idb-chip idb-open">${traceCount()} events</span>
-          <span class="idb-chip idb-open">${escapeHtml(consultantLabel(packet.packetMode))}</span>
-          <span class="idb-chip idb-open">${escapeHtml(consultantLabel(packet.stopGo))}</span>
-          <span class="idb-chip idb-open">${escapeHtml(consultantLabel(adapter.state))}</span>
-          <span class="idb-chip idb-${w263Trace.w262ReadinessState === 'ready_to_build_records' ? 'ready' : 'partial'}">${escapeHtml(consultantLabel(w263Trace.w262ReadinessState))}</span>
-          <span class="idb-chip idb-ready">${escapeHtml(currentBlockMarker.marker)}</span>
-          <span class="idb-chip idb-${runnerNamingMarker.active ? 'ready' : 'open'}">${escapeHtml(runnerNamingMarker.marker)}</span>
+          <span class="idb-chip idb-ready">${escapeHtml(drawerDisplayVersionW346())}</span>
+          <span class="idb-chip idb-${finalNaming.finalNamesImported ? 'ready' : 'open'}">${escapeHtml(importedLabel)}</span>
+          <span class="idb-chip idb-${verifiedOpenCount ? 'ready' : 'open'}">${escapeHtml(openLabel)}</span>
+          <span class="idb-chip idb-${websiteEvidence.confidence.resolverLimited ? 'partial' : websiteEvidence.confidence.state === WEBSITE_CONFIDENCE_STATE.RECOMMENDED ? 'ready' : 'open'}">${escapeHtml(publicReadLabel)}</span>
+          <span class="idb-chip idb-open">${escapeHtml(advisoryLabel)}</span>
+        </div>
+        <div class="idb-w363-evidence-grid">
+          <div class="idb-w363-evidence-cell">
+            <div class="idb-status-key">Installed</div>
+            <div class="idb-strong">${escapeHtml(drawerDisplayVersionW346())}</div>
+            <div class="idb-copy">${escapeHtml(currentBlockMarker.active ? 'Current block marker active' : 'Current block marker missing')}</div>
+          </div>
+          <div class="idb-w363-evidence-cell">
+            <div class="idb-status-key">Build result</div>
+            <div class="idb-strong">${escapeHtml(importedLabel)}</div>
+            <div class="idb-copy">${escapeHtml(openLabel)}</div>
+          </div>
+          <div class="idb-w363-evidence-cell">
+            <div class="idb-status-key">Website read</div>
+            <div class="idb-strong">${escapeHtml(websiteEvidence.confidence.displayText || consultantLabel(websiteEvidence.confidence.state))}</div>
+            <div class="idb-copy">${escapeHtml(websiteEvidence.confirmationPrompt || websiteEvidence.whyThisClassification)}</div>
+          </div>
+          <div class="idb-w363-evidence-cell">
+            <div class="idb-status-key">Support export</div>
+            <div class="idb-strong">${traceCount()} events</div>
+            <div class="idb-copy">Full trace detail is preserved in export.</div>
+          </div>
         </div>
         <div class="idb-actions">
           ${showAdminResultImport ? '<button class="idb-primary" data-idb-export-dcc-handoff>Export debug handoff</button>' : ''}
@@ -25107,10 +25182,18 @@
         ${showAdminResultImport ? `<label class="idb-checkbox-line"><input type="checkbox" data-idb-operator-summary-diagnostics ${state.includeOperatorSummaryDiagnostics ? 'checked' : ''}> Include diagnostics appendix</label>` : ''}
         ${copyStatus ? `<div class="idb-footer-note">${escapeHtml(copyStatus)}</div>` : ''}
         <div class="idb-footer-note">Clear session resets setup, lane choice, review packet, and trace for the next prospect.</div>
-        <div class="idb-footer-note">Current installed block: ${escapeHtml(currentBlockMarker.marker)}</div>
-        <div class="idb-footer-note">Runner naming marker: ${escapeHtml(runnerNamingMarker.marker)}</div>
-        <div class="idb-footer-note idb-admin-only" hidden>Previous drawer marker: ${escapeHtml(runtimeMarker.marker)} / ${escapeHtml(versionFingerprint.marker)}</div>
-        <div class="idb-footer-note">Adapter profile: ${escapeHtml(w263Trace.selectedAdapterProfile && w263Trace.selectedAdapterProfile.profileLabel || 'Not selected')} ${w263Trace.endpointConfigured ? '(endpoint configured)' : '(endpoint missing)'}</div>
+        <details class="idb-technical-details idb-w363-trace-details">
+          <summary>Evidence details and markers</summary>
+          <div class="idb-build-detail">
+            <span class="idb-detail-line"><strong>Packet:</strong> ${escapeHtml(consultantLabel(packet.packetMode))} / ${escapeHtml(consultantLabel(packet.stopGo))}</span>
+            <span class="idb-detail-line"><strong>Adapter:</strong> ${escapeHtml(w263Trace.selectedAdapterProfile && w263Trace.selectedAdapterProfile.profileLabel || 'Not selected')} ${w263Trace.endpointConfigured ? '(endpoint configured)' : '(endpoint missing)'}</span>
+            <span class="idb-detail-line"><strong>Readiness:</strong> ${escapeHtml(consultantLabel(w263Trace.w262ReadinessState))}</span>
+            <span class="idb-detail-line"><strong>Runner marker:</strong> ${escapeHtml(runnerNamingMarker.marker)}</span>
+            <span class="idb-detail-line"><strong>Current marker:</strong> ${escapeHtml(currentBlockMarker.marker)}</span>
+            <span class="idb-detail-line"><strong>Previous marker:</strong> ${escapeHtml(runtimeMarker.marker)} / ${escapeHtml(versionFingerprint.marker)}</span>
+            <span class="idb-detail-line"><strong>Website detail:</strong> ${escapeHtml(websiteEvidence.whatIdbSaw.slice(0, 4).join(' | '))}</span>
+          </div>
+        </details>
       </div>
       ${showAdminResultImport ? `<div class="idb-card idb-accent idb-w116-final-naming-import">
         <div class="idb-section-title">Completed runner result import</div>

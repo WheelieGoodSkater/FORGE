@@ -83,10 +83,10 @@ function main() {
   const samples = [graybar, fastenal, msc];
 
   assertCase(results, 'w362-source-marker-and-hooks-advance',
-    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.10 / W362' &&
-      userscript.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.10';") &&
-      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W362';") &&
-      /@version\s+1\.0\.10/.test(userscript) &&
+    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.11 / W363' &&
+      userscript.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.11';") &&
+      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W363';") &&
+      /@version\s+1\.0\.11/.test(userscript) &&
       /competitiveAdvisoryModelW362/.test(userscript) &&
       /standardCompetitiveAlternativesW362/.test(userscript),
     hooks.drawerDisplayVersionW346());
@@ -102,11 +102,11 @@ function main() {
       !msc.competitive.alternatives.includes('MSC Industrial'),
     JSON.stringify(samples.map((sample) => ({ customer: sample.value.customer, alternatives: sample.competitive.alternatives }))));
 
-  assertCase(results, 'w362-value-surface-adds-competitive-cockpit-after-live-value',
+  assertCase(results, 'w362-value-surface-adds-compact-competitive-lens-after-live-value',
     samples.every((sample) => /idb-w362-competitive-card/.test(sample.valueHtml) &&
-      /Competitive cockpit/.test(sample.valueText) &&
+      /Competitive lens/.test(sample.valueText) &&
       sample.valueText.indexOf('Live value answer') > -1 &&
-      sample.valueText.indexOf('Competitive cockpit') > sample.valueText.indexOf('Live value answer') &&
+      sample.valueText.indexOf('Competitive lens') > sample.valueText.indexOf('Live value answer') &&
       /Alternatives .* NetSuite contrast .* Claim guard/.test(sample.valueText)),
     msc.valueText.slice(0, 2400));
 

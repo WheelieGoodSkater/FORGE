@@ -61,9 +61,9 @@ function main() {
   assertCase(results, 'previous-w332-w339-markers-not-visible-as-normal-trace-chips',
     !/<span class="idb-chip idb-ready">W332 post-import story polish active<\/span>/.test(traceHtml) &&
       !/<span class="idb-chip idb-ready">W339 imported proof record UX active<\/span>/.test(traceHtml) &&
-      /Previous drawer marker:/.test(traceHtml) &&
-      /hidden>Previous drawer marker/.test(traceHtml),
-    'older markers retained only in hidden/export-safe context');
+      /Evidence details and markers/.test(traceText) &&
+      /Previous marker: W332 post-import story polish active \/ W339 imported proof record UX active/.test(traceText),
+    'older markers retained only in collapsed support context');
 
   assertCase(results, 'runner-naming-marker-visible-and-exportable',
     exportedMarker.marker === 'W341 runner naming marker not returned' &&

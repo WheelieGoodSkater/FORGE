@@ -90,8 +90,9 @@ function main() {
 
   assertCase(results, 'current-block-marker-visible-and-w339-retained-as-support-context',
     /W342 runner naming verification active/.test(traceHtml) &&
-      /Current installed block: W342 runner naming verification active/.test(traceText) &&
-      /Previous drawer marker: W332 post-import story polish active \/ W339 imported proof record UX active/.test(traceText) &&
+      /Evidence details and markers/.test(traceText) &&
+      /Current marker: W342 runner naming verification active/.test(traceText) &&
+      /Previous marker: W332 post-import story polish active \/ W339 imported proof record UX active/.test(traceText) &&
       !/Installed drawer fingerprint: W339 imported proof record UX active/.test(traceText),
     traceText);
 

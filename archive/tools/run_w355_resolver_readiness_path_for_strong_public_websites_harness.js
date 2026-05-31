@@ -102,8 +102,8 @@ function main() {
   const operatorReadiness = hooks.operatorSuppliedWebsiteEvidenceReadinessW355(suppliedState.intake, 'graybar.com');
 
   assertCase(results, 'w355-current-marker-and-version-advance',
-    /@version\s+1\.0\.10/.test(userscript) &&
-      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.10 / W362' &&
+    /@version\s+1\.0\.11/.test(userscript) &&
+      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.11 / W363' &&
       /operatorSuppliedWebsiteEvidenceReadinessW355/.test(userscript),
     JSON.stringify({ marker: hooks.drawerDisplayVersionW346() }));
 

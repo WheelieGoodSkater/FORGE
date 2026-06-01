@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.21
+// @version      1.0.22
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.21';
-  const CURRENT_UX_BLOCK_W346 = 'W375';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.22';
+  const CURRENT_UX_BLOCK_W346 = 'W376';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -20147,6 +20147,42 @@
     };
   }
 
+  function industrialEquipmentStoryPolishW376(state, lane, value) {
+    if (!lane || lane.id !== 'industrial_equipment') {
+      return {
+        schema: 'idb.w376-industrial-equipment-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Assembly';
+    return {
+      schema: 'idb.w376-industrial-equipment-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Configured equipment assembly readiness',
+      pathFlow: ['Customer configuration demand', 'Assembly item', 'Component availability', 'Supplier lead time', 'Build or work-center schedule', 'Inspection or test readiness', 'Delivery promise'],
+      riskPressure: 'configured-order changes, component shortages, supplier lead-time swings, build schedule slips, inspection/test readiness gaps, and delivery promise risk',
+      valueDecision: `Use ${product} to help ${customer} trust configured equipment demand, component availability, supplier lead time, build schedule, inspection or test readiness, and delivery confidence before committing the next equipment promise.`,
+      proofMove: `Prove configured equipment assembly readiness with ${lane.proofAnchor}; then connect customer configuration demand, component availability, supplier timing, build schedule, inspection or test readiness, and delivery promise confidence.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the industrial equipment story; confirm real configuration, component, supplier, build schedule, inspection/test, and delivery evidence before ROI or readiness claims.',
+      competitorPressure: ['QuickBooks plus spreadsheets', 'Odoo or manufacturing add-ons', 'Microsoft Dynamics 365', 'engineering BOM spreadsheets', 'supplier status email threads'],
+      netsuiteContrast: `Keep configured demand, assembly, components, supplier lead time, build schedule, inspection/test readiness, and delivery promise confidence in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise', 'work order dispatch', 'technician truck stock', 'first-time fix', 'clinic supply', 'dental distributor portal', 'ingredient batch', 'QA hold', 'finished-good production'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false,
+        w371RoiRunUxPreserved: true,
+        w373StoryContractPreserved: true,
+        w375SharedRendererPreserved: true
+      }
+    };
+  }
+
   function crossLaneStoryPolishContractW373(state, lane, value) {
     const legacySupportLeakTerms = [
       'Industrial Distributor',
@@ -20161,7 +20197,8 @@
       apparelRetailStoryPolishW369(state, lane, value),
       partsServiceStoryPolishW370(state, lane, value),
       medicalDentalStoryPolishW372(state, lane, value),
-      foodBeverageStoryPolishW374(state, lane, value)
+      foodBeverageStoryPolishW374(state, lane, value),
+      industrialEquipmentStoryPolishW376(state, lane, value)
     ];
     const active = candidates.find((item) => item && item.active) || {
       schema: 'idb.w373-cross-lane-story-polish-contract.v1',
@@ -20211,6 +20248,7 @@
     const partsService = lane.id === 'parts_service' || /field service|service manager|work order|dispatch|technician|truck stock|installed equipment|first-time fix|warranty|backorder|parts availability|servicetitan/.test(combined);
     const medicalDental = lane.id === 'medical_dental_supply' || /dental|clinic|sterilization|handpiece|handpieces|chair|chairs|medical supply|dental supply|substitute product|equipment warranty|compliance|backorder/.test(combined);
     const foodBeverage = lane.id === 'food_beverage' || /food|beverage|ingredient|packaging|case pack|batch|lot|qa|quality hold|line schedule|finished good|promotion ship|copacker|co-packer|fishbowl|batchmaster/.test(combined);
+    const industrialEquipment = lane.id === 'industrial_equipment' || /industrial equipment|configured equipment|assembly|bom|component|supplier lead|build schedule|work-center|work center|inspection|test readiness|delivery promise|engineering change/.test(combined);
     const distribution = /dealer|distributor|warehouse|branch|fulfillment|channel/.test(combined);
     const alternatives = [];
     if (supplied && !manualWorkflow) alternatives.push(supplied);
@@ -20219,7 +20257,8 @@
       if (alternatives.length) return Array.from(new Set(alternatives)).slice(0, 6);
     }
     if (manualWorkflow) alternatives.push('spreadsheets and manual inventory reports', 'QuickBooks plus spreadsheets');
-    if (dealerHardgoods) alternatives.push('dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo');
+    if (industrialEquipment) alternatives.push('QuickBooks plus spreadsheets', 'Odoo or manufacturing add-ons', 'Microsoft Dynamics 365', 'engineering BOM spreadsheets', 'supplier status email threads');
+    else if (dealerHardgoods) alternatives.push('dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo');
     else if (foodBeverage) alternatives.push('QuickBooks plus spreadsheets', 'Fishbowl or inventory add-ons', 'BatchMaster or food production tools', 'co-packer schedule spreadsheets', 'manual QA hold reports');
     else if (medicalDental) alternatives.push('QuickBooks plus spreadsheets', 'Shopify or ecommerce reports', 'dental distributor portal', 'inventory add-ons', 'manual substitute checks');
     else if (partsService) alternatives.push('ServiceTitan or dispatch app', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'manual parts calls', 'inventory add-ons');
@@ -20286,7 +20325,9 @@
     const text = `${intake.customer || ''} ${intake.website || ''} ${intake.notes || ''} ${lane && lane.name || ''}`.toLowerCase();
     const fromExisting = arrayValue(competitive && competitive.competitivePrep && competitive.competitivePrep.alternatives);
     let standard = [];
-    if (lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time/.test(text)) {
+    if (lane.id === 'industrial_equipment' || /industrial equipment|configured equipment|assembly|bom|component|supplier lead|build schedule|work-center|work center|inspection|test readiness|delivery promise|engineering change/.test(text)) {
+      standard = ['QuickBooks plus spreadsheets', 'Odoo manufacturing add-ons', 'Microsoft Dynamics 365', 'engineering BOM spreadsheets', 'supplier status email threads'];
+    } else if (lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time/.test(text)) {
       standard = ['dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo'];
     } else if (lane.id === 'food_beverage' || /food|beverage|ingredient|packaging|case pack|batch|lot|qa|quality hold|line schedule|finished good|promotion ship|copacker|co-packer|fishbowl|batchmaster/.test(text)) {
       standard = ['QuickBooks plus spreadsheets', 'Fishbowl inventory add-ons', 'BatchMaster food production tools', 'co-packer schedule spreadsheets', 'manual QA hold reports'];
@@ -20321,6 +20362,7 @@
     const partsServicePolish = partsServiceStoryPolishW370(state, lane, packet);
     const medicalDentalPolish = medicalDentalStoryPolishW372(state, lane, packet);
     const foodBeveragePolish = foodBeverageStoryPolishW374(state, lane, packet);
+    const industrialEquipmentPolish = industrialEquipmentStoryPolishW376(state, lane, packet);
     const netSuiteContrast = dealerPolish.active
       ? dealerPolish.netsuiteContrast
       : apparelPolish.active
@@ -20331,6 +20373,8 @@
         ? medicalDentalPolish.netsuiteContrast
       : foodBeveragePolish.active
         ? foodBeveragePolish.netsuiteContrast
+      : industrialEquipmentPolish.active
+        ? industrialEquipmentPolish.netsuiteContrast
       : `Use ${lane.proofAnchor} to keep availability, promise, fulfillment, and financial impact in one NetSuite path.`;
     const competitorText = alternatives.slice(0, 4).join(', ');
     return {
@@ -20600,6 +20644,7 @@
     const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
     const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
     const foodBeveragePolish = value.foodBeveragePolishW374 || foodBeverageStoryPolishW374(state, lane, value);
+    const industrialEquipmentPolish = value.industrialEquipmentPolishW376 || industrialEquipmentStoryPolishW376(state, lane, value);
     const actionCopy = liveActionCopy(action.id, value, lane, pageContext, selectedMove, recommendation);
     const coach = runCoachV3Model(state, lane, pageContext, selectedMove, recommendation, action);
     const packetIdentity = packetIdentityFor(state, lane);
@@ -20736,6 +20781,22 @@
       } else if (action.id === 'close_value') {
         selectedScript.say = `Summarize the food/beverage decision ${value.customer} can now make: ${foodBeveragePolish.valueDecision}`;
         selectedScript.close = 'Capture the current ingredient miss, packaging delay, batch or line change, QA hold, lot release issue, ship-date miss, or manual-check baseline before claiming savings.';
+      }
+    }
+    if (industrialEquipmentPolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s industrial equipment pressure: ${industrialEquipmentPolish.riskPressure}. Keep this as configured equipment, components, supplier timing, build schedule, inspection/test, and delivery readiness, not dealer, retail, service, clinic, or food production.`;
+        selectedScript.close = 'Ask which configuration, component, supplier lead time, build schedule, inspection/test, or delivery promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = industrialEquipmentPolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(industrialEquipmentPolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to commit the next configured equipment delivery without manual reconciliation.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions equipment readiness, ask which configuration, component, supplier, build schedule, inspection/test, or delivery detail they reconcile by hand today, then return to the NetSuite proof path.';
+        selectedScript.close = 'Confirm what evidence would make configured equipment assembly readiness trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the equipment decision ${value.customer} can now make: ${industrialEquipmentPolish.valueDecision}`;
+        selectedScript.close = 'Capture the current engineering change, component shortage, supplier delay, build schedule slip, inspection/test miss, delivery delay, or manual-check baseline before claiming savings.';
       }
     }
     selectedScript.say = consultantVisibleCopyW346(selectedScript.say, 320);
@@ -20898,6 +20959,7 @@
     const partsServicePolish = partsServiceStoryPolishW370(state, lane, { product: product.product });
     const medicalDentalPolish = medicalDentalStoryPolishW372(state, lane, { product: product.product });
     const foodBeveragePolish = foodBeverageStoryPolishW374(state, lane, { product: product.product });
+    const industrialEquipmentPolish = industrialEquipmentStoryPolishW376(state, lane, { product: product.product });
     const storyContractW373 = crossLaneStoryPolishContractW373(state, lane, { product: product.product });
     const valueProofStack = [
       `ERP proof - ${industryWin.proof}`,
@@ -20915,6 +20977,8 @@
         ? medicalDentalPolish.valueDecision
       : foodBeveragePolish.active
         ? foodBeveragePolish.valueDecision
+      : industrialEquipmentPolish.active
+        ? industrialEquipmentPolish.valueDecision
       : `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
     const roiAuditCards = [
       `Why now - ${pain}`,
@@ -20947,6 +21011,7 @@
       partsServicePolishW370: partsServicePolish,
       medicalDentalPolishW372: medicalDentalPolish,
       foodBeveragePolishW374: foodBeveragePolish,
+      industrialEquipmentPolishW376: industrialEquipmentPolish,
       storyContractW373,
       grounded,
       competitorContext: competitive.competitorSafeContrast,
@@ -20955,7 +21020,7 @@
       w213Coach,
       valueProofStack,
       talkTrackLead,
-      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active || partsServicePolish.active || medicalDentalPolish.active || foodBeveragePolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
+      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active || partsServicePolish.active || medicalDentalPolish.active || foodBeveragePolish.active || industrialEquipmentPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
       roiAuditCards,
       competitiveCards,
       objectionPath,
@@ -20965,7 +21030,7 @@
       valueAgenda: [
         `Objective - ${consultantVisibleCopyW346(objective, 220)}`,
         `Start with ${customer}'s stated risk - ${consultantVisibleCopyW346(pain, 220)}`,
-        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : partsServicePolish.active ? partsServicePolish.proofMove : medicalDentalPolish.active ? medicalDentalPolish.proofMove : foodBeveragePolish.active ? foodBeveragePolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
+        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : partsServicePolish.active ? partsServicePolish.proofMove : medicalDentalPolish.active ? medicalDentalPolish.proofMove : foodBeveragePolish.active ? foodBeveragePolish.proofMove : industrialEquipmentPolish.active ? industrialEquipmentPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
         `Tie the proof to ${lane.valueLens}`,
         `Decision criteria - ${consultantVisibleCopyW346(criteria, 220)}`,
         `Close by confirming the next operational decision the prospect can now make.`
@@ -23228,6 +23293,7 @@
     if (/parts-service/i.test(source)) return 'Parts/service';
     if (/medical-dental/i.test(source)) return 'Medical/dental';
     if (/food-beverage/i.test(source)) return 'Food/beverage';
+    if (/industrial-equipment/i.test(source)) return 'Industrial equipment';
     return 'Lane story';
   }
 
@@ -23238,6 +23304,7 @@
     if (source.indexOf('parts-service') >= 0) return 'idb-w370-parts-service-card';
     if (source.indexOf('medical-dental') >= 0) return 'idb-w372-medical-dental-card';
     if (source.indexOf('food-beverage') >= 0) return 'idb-w374-food-beverage-card';
+    if (source.indexOf('industrial-equipment') >= 0) return 'idb-w376-industrial-equipment-card';
     return 'idb-w375-story-contract-card';
   }
 
@@ -27391,6 +27458,7 @@
       partsServiceStoryPolishW370,
       medicalDentalStoryPolishW372,
       foodBeverageStoryPolishW374,
+      industrialEquipmentStoryPolishW376,
       crossLaneStoryPolishContractW373,
       renderW375StoryContractLens,
       renderW375StoryContractProofPath,

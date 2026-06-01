@@ -135,7 +135,8 @@
     "harness:second-fixture-first-industry-lane-cross-lane-story-separation-w370": "node archive/tools/run_w370_second_fixture_first_industry_lane_cross_lane_story_separation_harness.js",
     "harness:roi-competitive-flow-run-path-link-polish-w371": "node archive/tools/run_w371_roi_competitive_flow_run_path_link_polish_harness.js",
     "harness:third-fixture-first-medical-dental-roi-run-regression-w372": "node archive/tools/run_w372_third_fixture_first_medical_dental_roi_run_regression_harness.js",
-    "harness:cross-lane-story-framework-support-cleanup-w373": "node archive/tools/run_w373_cross_lane_story_framework_support_cleanup_harness.js"
+    "harness:cross-lane-story-framework-support-cleanup-w373": "node archive/tools/run_w373_cross_lane_story_framework_support_cleanup_harness.js",
+    "harness:fourth-fixture-first-food-beverage-story-framework-regression-w374": "node archive/tools/run_w374_fourth_fixture_first_food_beverage_story_framework_regression_harness.js"
   },
   "keywords": [
     "netsuite",

@@ -335,24 +335,32 @@ const LANE_PACKS = Object.freeze([
     label: 'Apparel Style Matrix',
     operatingMode: 'apparel_style_matrix',
     websiteSignals: {
-      domains: ['ariat.com', 'vans.com', 'patagonia.com'],
-      categoryTerms: ['apparel', 'footwear', 'style', 'size', 'color', 'collection'],
-      evidenceTerms: ['style readiness', 'size color availability', 'allocation', 'seasonal launch']
+      domains: ['ariat.com', 'vans.com', 'patagonia.com', 'harborfinchoutfitters.com'],
+      categoryTerms: ['apparel', 'footwear', 'style', 'size', 'color', 'collection', 'store availability', 'ecommerce', 'seasonal assortment', 'store transfer', 'replenishment', 'margin exposure'],
+      evidenceTerms: ['style readiness', 'size color availability', 'allocation', 'seasonal launch', 'store/ecommerce promise', 'transfer risk', 'store availability', 'margin exposure']
     },
     recordRoles: {
       required: ['customer', 'sales_order', 'style_sku', 'style_matrix_or_availability_flow'],
-      optional: ['supporting_style_or_color_sku'],
-      invalid: ['finished_good_without_style_evidence', 'work_order', 'ingredient_or_component_item']
+      optional: ['supporting_style_or_color_sku', 'store_ecommerce_availability_context', 'transfer_risk_context', 'seasonal_assortment_context', 'margin_exposure_context'],
+      invalid: [
+        'finished_good_without_style_evidence',
+        'work_order_or_dispatch_without_service_evidence',
+        'ingredient_or_component_item',
+        'dealer_availability_or_replenishment_flow',
+        'clinic_supply_or_equipment_item_without_medical_dental_evidence',
+        'lot_release_or_qa_validation_without_life_sciences_evidence',
+        'configured_equipment_assembly_without_industrial_evidence'
+      ]
     },
     vocabulary: {
-      allowed: ['style', 'size', 'color', 'collection', 'variant availability'],
-      forbidden: ['ingredient batch', 'industrial assembly', 'branch transfer']
+      allowed: ['style', 'size', 'color', 'collection', 'variant availability', 'store availability', 'store/ecommerce promise', 'transfer risk', 'seasonal assortment', 'margin exposure'],
+      forbidden: ['ingredient batch', 'industrial assembly', 'dealer allocation', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'QA release', 'lot/release readiness', 'configured equipment assembly']
     },
     liveDemo: {
-      proofMove: 'Open the style or matrix item and prove size/color availability, allocation, and launch promise.',
-      storyAnchor: 'The consultant should show matrix truth for variants rather than generic SKU availability.',
-      roiSoWhat: 'Protect launch and seasonal revenue by exposing variant gaps before customers encounter them.',
-      competitiveContrast: 'NetSuite keeps style, variant availability, allocation, and order promise in one path.'
+      proofMove: 'Open the style or matrix item and prove size/color availability, store/ecommerce promise, transfer risk, seasonal assortment readiness, and margin exposure.',
+      storyAnchor: 'The consultant should show matrix truth for variants and channel promise before store or ecommerce availability is trusted.',
+      roiSoWhat: 'Protect launch, margin, and customer promise confidence by exposing variant, transfer, and store/ecommerce availability gaps before customers encounter them.',
+      competitiveContrast: 'NetSuite keeps style, variant availability, store/ecommerce promise, transfer risk, and replenishment context in one path instead of a spreadsheet or Shopify-report lookup.'
     }
   }),
   pack({

@@ -263,7 +263,7 @@ function main() {
       readiness.dealer_hardgoods.status === 'ready_now' &&
       readiness.food_beverage.status === 'ready_now' &&
       readiness.industrial_equipment.status === 'ready_now' &&
-      readiness.apparel_accessories.status === 'ready_with_fixture_only_proof' &&
+      ['ready_with_fixture_only_proof', 'ready_now'].indexOf(readiness.apparel_accessories.status) >= 0 &&
       ['needs_scoped_source_pack_cleanup', 'ready_now'].indexOf(readiness.medical_dental_supply.status) >= 0,
     JSON.stringify(readiness, null, 2));
 

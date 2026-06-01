@@ -317,7 +317,7 @@ function main() {
     readinessByLane.dealer_hardgoods.status === 'ready_now' &&
       readinessByLane.food_beverage.status === 'ready_now' &&
       readinessByLane.industrial_equipment.status === 'ready_now' &&
-      readinessByLane.apparel_accessories.status === 'ready_with_fixture_only_proof' &&
+      ['ready_with_fixture_only_proof', 'ready_now'].indexOf(readinessByLane.apparel_accessories.status) >= 0 &&
       ['needs_scoped_source_pack_cleanup', 'ready_now'].indexOf(readinessByLane.parts_service.status) >= 0 &&
       ['needs_scoped_source_pack_cleanup', 'ready_now'].indexOf(readinessByLane.medical_dental_supply.status) >= 0 &&
       ['needs_scoped_source_pack_cleanup', 'ready_now'].indexOf(readinessByLane.life_sciences.status) >= 0,

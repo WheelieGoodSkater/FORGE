@@ -144,7 +144,8 @@
     "harness:source-lane-pack-readiness-w379": "node archive/tools/run_w379_source_lane_pack_readiness_harness.js",
     "harness:life-sciences-source-pack-cleanup-w380": "node archive/tools/run_w380_life_sciences_source_pack_cleanup_harness.js",
     "harness:parts-service-source-pack-cleanup-w381": "node archive/tools/run_w381_parts_service_source_pack_cleanup_harness.js",
-    "harness:medical-dental-source-pack-cleanup-w382": "node archive/tools/run_w382_medical_dental_source_pack_cleanup_harness.js"
+    "harness:medical-dental-source-pack-cleanup-w382": "node archive/tools/run_w382_medical_dental_source_pack_cleanup_harness.js",
+    "harness:apparel-retail-source-pack-extension-w383": "node archive/tools/run_w383_apparel_retail_source_pack_extension_harness.js"
   },
   "keywords": [
     "netsuite",

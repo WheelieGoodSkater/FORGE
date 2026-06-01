@@ -233,6 +233,40 @@ const LANE_PACKS = Object.freeze([
     }
   }),
   pack({
+    packId: 'parts-service-field-operations',
+    laneId: 'parts_service',
+    subIndustryId: 'parts-service-field-operations',
+    label: 'Parts & Service Field Operations',
+    operatingMode: 'services_field',
+    websiteSignals: {
+      domains: ['bayviewkitchenservice.com'],
+      categoryTerms: ['field service', 'service operations', 'repair service', 'commercial kitchen service', 'equipment service', 'installed equipment', 'work order', 'technician', 'service parts', 'truck stock', 'warehouse parts', 'emergency repair', 'warranty'],
+      evidenceTerms: ['work order readiness', 'installed equipment history', 'truck/warehouse parts availability', 'backordered parts', 'warranty exposure', 'first-time fix risk', 'emergency response', 'service margin']
+    },
+    recordRoles: {
+      required: ['customer', 'work_order', 'installed_equipment', 'service_part'],
+      optional: ['truck_stock_context', 'warehouse_parts_context', 'backorder_context', 'warranty_context', 'emergency_response_context', 'service_margin_context'],
+      invalid: [
+        'dealer_availability_or_replenishment_flow',
+        'style_matrix_or_availability_flow',
+        'clinic_supply_substitute_without_medical_dental_evidence',
+        'food_formula_or_batch_without_food_evidence',
+        'lot_release_or_qa_validation_without_life_sciences_evidence',
+        'configured_equipment_assembly_without_industrial_evidence'
+      ]
+    },
+    vocabulary: {
+      allowed: ['work order readiness', 'installed equipment history', 'technician readiness', 'truck stock', 'warehouse parts availability', 'backordered parts', 'warranty exposure', 'emergency response', 'first-time fix risk', 'service margin'],
+      forbidden: ['dealer allocation', 'channel fulfillment', 'style/color/size', 'store/ecommerce promise', 'clinic supply substitutes', 'food batch', 'QA release', 'lot/release readiness', 'configured equipment assembly']
+    },
+    liveDemo: {
+      proofMove: 'Open the work order, installed equipment, and service part to prove technician readiness, truck or warehouse parts availability, backorder exposure, warranty context, and first-time-fix risk.',
+      storyAnchor: 'The buyer needs confidence that the technician can arrive with the right parts and service context before the customer promise is made.',
+      roiSoWhat: 'Protect emergency response, service margin, and first-time-fix confidence by finding part, warranty, or backorder gaps before dispatch.',
+      competitiveContrast: 'NetSuite connects work order demand, installed equipment, service parts, truck or warehouse availability, warranty context, and service-margin risk without a separate spreadsheet or dispatch handoff.'
+    }
+  }),
+  pack({
     packId: 'dealer-hardgoods',
     laneId: 'dealer_hardgoods',
     subIndustryId: 'dealer-hardgoods',

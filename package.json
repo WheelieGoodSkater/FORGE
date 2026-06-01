@@ -142,7 +142,8 @@
     "harness:lane-story-authoring-readiness-w377": "node archive/tools/run_w377_lane_story_authoring_readiness_harness.js",
     "harness:life-sciences-pre-pack-readiness-w378": "node archive/tools/run_w378_life_sciences_pre_pack_readiness_harness.js",
     "harness:source-lane-pack-readiness-w379": "node archive/tools/run_w379_source_lane_pack_readiness_harness.js",
-    "harness:life-sciences-source-pack-cleanup-w380": "node archive/tools/run_w380_life_sciences_source_pack_cleanup_harness.js"
+    "harness:life-sciences-source-pack-cleanup-w380": "node archive/tools/run_w380_life_sciences_source_pack_cleanup_harness.js",
+    "harness:parts-service-source-pack-cleanup-w381": "node archive/tools/run_w381_parts_service_source_pack_cleanup_harness.js"
   },
   "keywords": [
     "netsuite",

@@ -48,11 +48,11 @@ function packById(id) {
 
 function packText(pack) {
   return JSON.stringify({
-    websiteSignals: pack.websiteSignals,
-    recordRoles: pack.recordRoles,
-    vocabulary: pack.vocabulary,
-    liveDemo: pack.liveDemo,
-    nllmAdvisory: pack.nllmAdvisory
+    websiteSignals: pack && pack.websiteSignals,
+    recordRoles: pack && pack.recordRoles,
+    vocabulary: pack && pack.vocabulary,
+    liveDemo: pack && pack.liveDemo,
+    nllmAdvisory: pack && pack.nllmAdvisory
   }).toLowerCase();
 }
 
@@ -80,35 +80,43 @@ function reviewLane(laneId, expectedRoles, expectedTerms, gapTerms) {
   } else if (directPackCount && roleCoverageRatio >= 0.6 && termCoverageRatio >= 0.5) {
     status = 'ready_with_fixture_only_proof';
   }
-  return {
-    laneId,
-    directPackCount,
-    packIds: packs.map((pack) => pack.packId),
-    roleCoverageRatio,
-    termCoverageRatio,
-    status
-  };
+  return { laneId, directPackCount, packIds: packs.map((pack) => pack.packId), roleCoverageRatio, termCoverageRatio, status };
 }
 
 function main() {
   const results = [];
   const hooks = loadHooks();
+  const partsPack = packById('parts-service-field-operations');
   const lifePack = packById('life-sciences-regulated-supply-release');
-  const meridianRecords = [
-    openRecordFixture('customer', 'Customer', 'Meridian BioSystems Customer Account', '7401', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7401'),
-    openRecordFixture('sales_order', 'Sales Order', 'SO-W378 Meridian Diagnostic Kit Order', '7402', 'https://td3021666.app.netsuite.com/app/accounting/transactions/salesord.nl?id=7402'),
-    openRecordFixture('lot_release', 'Lot / Release', 'Meridian Diagnostic Kit Lot Release Record', '7403', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7403'),
-    openRecordFixture('approved_inventory', 'Approved Inventory', 'Meridian Approved Reagent Inventory', '7404', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7404'),
-    openRecordFixture('qa_validation', 'QA / Validation Documentation', 'Meridian QA Validation Documentation Packet', '7405', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7405')
+  const bayviewRecords = [
+    openRecordFixture('customer', 'Customer', 'Bayview Customer Account', '7001', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7001'),
+    openRecordFixture('work_order', 'Work Order', 'WO-W370 Bayview Repair', '7002', 'https://td3021666.app.netsuite.com/app/accounting/transactions/workord.nl?id=7002'),
+    openRecordFixture('installed_equipment', 'Installed Equipment', 'Bayview Installed Oven', '7003', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7003'),
+    openRecordFixture('service_part', 'Service Part / SKU', 'Bayview Igniter SKU', '7004', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7004')
   ];
+  const bayview = fixture(hooks, {
+    label: 'Bayview Parts/Service',
+    laneId: 'parts_service',
+    customer: 'Bayview Commercial Kitchen Service',
+    website: 'https://www.bayviewkitchenservice.com',
+    notes: 'Service manager needs work order, installed equipment, truck/warehouse parts, backorder, warranty, and first-time fix readiness.',
+    websiteEvidence: 'Commercial kitchen service, repair service, work orders, installed equipment, technician readiness, service parts, truck stock, warehouse parts, warranty, emergency repair, and first-time fix risk.',
+    records: bayviewRecords
+  });
   const meridian = fixture(hooks, {
     label: 'Meridian Life Sciences',
     laneId: 'life_sciences',
     customer: 'Meridian BioSystems',
     website: 'https://www.meridianbiosystems.com',
-    notes: "Talked to ops/quality person maybe Priya or Paula. They make or distribute diagnostic kits, lab instruments, reagents, maybe some regulated consumables. Big issue is customer service promises shipments before anyone knows lot status, expiration, validation paperwork, QA release, or what location has approved inventory. They use spreadsheets, maybe QuickBooks or an older quality system. Need demo around customer order, lot/release readiness, inventory availability, expiration, QA/validation docs, and shipment confidence. Competitor maybe spreadsheets, SAP, quality system, not sure.",
+    notes: 'Diagnostic kits, lab instruments, reagents, lot status, expiration, validation paperwork, QA release, approved inventory, and shipment confidence.',
     websiteEvidence: 'Diagnostic kits, lab instruments, reagents, regulated consumables, lot status, expiration, validation paperwork, QA release, approved inventory, traceability, and shipment confidence.',
-    records: meridianRecords
+    records: [
+      openRecordFixture('customer', 'Customer', 'Meridian BioSystems Customer Account', '7401', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7401'),
+      openRecordFixture('sales_order', 'Sales Order', 'SO-W378 Meridian Diagnostic Kit Order', '7402', 'https://td3021666.app.netsuite.com/app/accounting/transactions/salesord.nl?id=7402'),
+      openRecordFixture('lot_release', 'Lot / Release', 'Meridian Diagnostic Kit Lot Release Record', '7403', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7403'),
+      openRecordFixture('approved_inventory', 'Approved Inventory', 'Meridian Approved Reagent Inventory', '7404', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7404'),
+      openRecordFixture('qa_validation', 'QA / Validation Documentation', 'Meridian QA Validation Documentation Packet', '7405', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7405')
+    ]
   });
   const atlas = fixture(hooks, {
     label: 'Atlas Industrial Equipment',
@@ -152,20 +160,6 @@ function main() {
       openRecordFixture('substitute_product', 'Substitute Product', 'Northstar Substitute SKU', '7104', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7104')
     ]
   });
-  const bayview = fixture(hooks, {
-    label: 'Bayview Parts/Service',
-    laneId: 'parts_service',
-    customer: 'Bayview Commercial Kitchen Service',
-    website: 'https://www.bayviewkitchenservice.com',
-    notes: 'Service manager needs work order, installed equipment, truck/warehouse parts, backorder, warranty, and first-time fix readiness.',
-    websiteEvidence: 'Commercial kitchen service, work orders, installed equipment, service parts.',
-    records: [
-      openRecordFixture('customer', 'Customer', 'Bayview Customer Account', '7001', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7001'),
-      openRecordFixture('work_order', 'Work Order', 'WO-W370 Bayview Repair', '7002', 'https://td3021666.app.netsuite.com/app/accounting/transactions/workord.nl?id=7002'),
-      openRecordFixture('installed_equipment', 'Installed Equipment', 'Bayview Installed Oven', '7003', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7003'),
-      openRecordFixture('service_part', 'Service Part / SKU', 'Bayview Igniter SKU', '7004', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7004')
-    ]
-  });
   const harbor = fixture(hooks, {
     label: 'Harbor Apparel/Retail',
     laneId: 'apparel_accessories',
@@ -187,23 +181,23 @@ function main() {
     traceScenario(hooks, 'w359_fastenal_broader_smoke_advisory_confidence_accepted_trace.json', 'Fastenal'),
     traceScenario(hooks, 'w360_msc_second_adjacent_distribution_smoke_trace.json', 'MSC')
   ];
-  const scenarios = [meridian, atlas, willow, northstar, bayview, harbor].concat(baselines);
-  const sharedRendererScenarios = [meridian, atlas, willow, northstar, bayview, harbor].concat(baselines.slice(0, 2));
-  const lifePackText = packText(lifePack || {});
+  const scenarios = [bayview, meridian, atlas, willow, northstar, harbor].concat(baselines);
+  const sharedRendererScenarios = [bayview, meridian, atlas, willow, northstar, harbor].concat(baselines.slice(0, 2));
+  const partsPackText = packText(partsPack);
   const strongResolution = resolveLanePackFromEvidence({
-    website: 'https://www.meridianbiosystems.com',
-    categoryText: 'Diagnostic kits, lab instruments, reagents, regulated consumables, lot status, QA release, validation documentation, expiration, traceability.',
-    signals: ['lot/release readiness', 'approved inventory', 'QA/validation documentation', 'shipment confidence']
+    website: 'https://www.bayviewkitchenservice.com',
+    categoryText: 'Commercial kitchen service, equipment service, installed equipment, work order, technician, service parts, truck stock, warehouse parts, emergency repair, warranty.',
+    signals: ['work order readiness', 'installed equipment history', 'truck/warehouse parts availability', 'backordered parts', 'first-time fix risk']
   });
   const weakResolution = resolveLanePackFromEvidence({
     website: 'https://example.invalid',
-    categoryText: 'maybe lab stuff',
+    categoryText: 'maybe equipment stuff',
     signals: []
   });
   const storySurface = consultantStorySurfaceFromLanePack({
-    website: 'https://www.meridianbiosystems.com',
-    categoryText: 'Diagnostic kits, lab instruments, reagents, regulated consumables, QA release, validation documentation, traceability.'
-  }, lifePack, { displayReadyRecords: meridianRecords });
+    website: 'https://www.bayviewkitchenservice.com',
+    categoryText: 'Commercial kitchen service, repair service, installed equipment, work order, technician, service parts, truck stock, warranty.'
+  }, partsPack, { displayReadyRecords: bayviewRecords });
   const readiness = {
     dealer_hardgoods: reviewLane('dealer_hardgoods', [
       ['customer'], ['sales_order'], ['product_sku'], ['dealer_availability_or_replenishment_flow'], ['allocation_support_sku', 'channel_context']
@@ -212,8 +206,8 @@ function main() {
       ['customer'], ['sales_order'], ['style_sku'], ['style_matrix_or_availability_flow'], ['supporting_style_or_color_sku']
     ], ['style', 'size', 'color', 'variant availability'], ['ecommerce', 'transfer', 'store availability']),
     parts_service: reviewLane('parts_service', [
-      ['customer'], ['work_order'], ['installed_equipment'], ['service_part'], ['truck', 'warehouse', 'backorder', 'warranty']
-    ], ['work order', 'installed equipment', 'truck', 'warehouse', 'warranty', 'first-time fix']),
+      ['customer'], ['work_order'], ['installed_equipment'], ['service_part'], ['truck_stock_context'], ['warehouse_parts_context'], ['backorder_context'], ['warranty_context']
+    ], ['work order readiness', 'installed equipment history', 'truck/warehouse parts availability', 'backordered parts', 'warranty exposure', 'first-time fix risk', 'emergency response', 'service margin']),
     medical_dental_supply: reviewLane('medical_dental_supply', [
       ['customer'], ['sales_order'], ['clinic_supply', 'equipment'], ['substitute'], ['backorder', 'multi-location', 'warranty', 'compliance']
     ], ['clinic', 'substitute', 'backorder', 'multi-location', 'warranty']),
@@ -228,29 +222,30 @@ function main() {
     ], ['lot/release readiness', 'approved inventory', 'expiration risk', 'QA/validation documentation', 'traceability', 'shipment confidence'])
   };
 
-  assertCase(results, 'w380-life-sciences-source-pack-present-and-valid',
-    !!lifePack &&
-      lifePack.laneId === 'life_sciences' &&
-      lifePack.label === 'Life Sciences Regulated Supply & Release' &&
-      lifePack.operatingMode === 'discrete_manufacturing' &&
-      validateLanePack(lifePack).valid === true,
-    JSON.stringify(lifePack || null, null, 2));
+  assertCase(results, 'w381-parts-service-source-pack-present-and-valid',
+    !!partsPack &&
+      partsPack.laneId === 'parts_service' &&
+      partsPack.label === 'Parts & Service Field Operations' &&
+      partsPack.operatingMode === 'services_field' &&
+      validateLanePack(partsPack).valid === true,
+    JSON.stringify(partsPack || null, null, 2));
 
-  assertCase(results, 'w380-life-sciences-proof-role-coverage',
-    includesAll(lifePackText, ['customer', 'sales_order', 'lot_or_release_record', 'approved_inventory_item', 'expiration_or_shelf_life_context', 'qa_validation_documentation', 'traceability_context', 'shipment_confidence_context']),
-    lifePackText);
+  assertCase(results, 'w381-parts-service-proof-role-coverage',
+    includesAll(partsPackText, ['customer', 'work_order', 'installed_equipment', 'service_part', 'truck_stock_context', 'warehouse_parts_context', 'backorder_context', 'warranty_context', 'emergency_response_context', 'service_margin_context']),
+    partsPackText);
 
-  assertCase(results, 'w380-life-sciences-signal-vocabulary-and-anti-leak-coverage',
-    includesAll(lifePackText, ['diagnostic kits', 'lab instruments', 'reagents', 'regulated consumables', 'lot status', 'QA release'.toLowerCase(), 'validation documentation', 'expiration', 'traceability', 'lot/release readiness', 'approved inventory', 'shipment confidence']) &&
-      includesAll(lifePackText, ['regulated order demand', 'expiration risk', 'dealer allocation', 'style/color/size', 'store/ecommerce promise', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'food batch', 'configured equipment assembly']),
-    lifePackText);
+  assertCase(results, 'w381-parts-service-signal-vocabulary-and-anti-leak-coverage',
+    includesAll(partsPackText, ['field service', 'service operations', 'repair service', 'commercial kitchen service', 'equipment service', 'installed equipment', 'work order', 'technician', 'service parts', 'truck stock', 'warehouse parts', 'emergency repair', 'warranty']) &&
+      includesAll(partsPackText, ['work order readiness', 'installed equipment history', 'truck/warehouse parts availability', 'backordered parts', 'warranty exposure', 'first-time fix risk', 'emergency response', 'service margin']) &&
+      includesAll(partsPackText, ['dealer allocation', 'channel fulfillment', 'style/color/size', 'store/ecommerce promise', 'clinic supply substitutes', 'food batch', 'QA release'.toLowerCase(), 'lot/release readiness', 'configured equipment assembly']),
+    partsPackText);
 
-  assertCase(results, 'w380-lane-pack-resolution-and-story-surface-safety',
-    strongResolution.packId === 'life-sciences-regulated-supply-release' &&
+  assertCase(results, 'w381-lane-pack-resolution-and-story-surface-safety',
+    strongResolution.packId === 'parts-service-field-operations' &&
       strongResolution.status === 'resolved' &&
       weakResolution.status !== 'resolved' &&
       storySurface.status === 'story_ready' &&
-      /lot\/release|approved inventory|QA release|validation documentation|traceability|shipment confidence/i.test(JSON.stringify(storySurface)) &&
+      /work order|installed equipment|service part|truck|warehouse|warranty|first-time-fix|service-margin/i.test(JSON.stringify(storySurface)) &&
       !/guarantee|guaranteed|measured roi|will increase/i.test([
         storySurface.proofMove,
         storySurface.safeClaim,
@@ -260,26 +255,29 @@ function main() {
       /Do not claim .*measured ROI without evidence/i.test(storySurface.doNotClaim || ''),
     JSON.stringify({ strongResolution, weakResolution, storySurface }, null, 2));
 
-  assertCase(results, 'w380-w379-readiness-map-updated-without-other-lane-regression',
-    readiness.life_sciences.status === 'ready_now' &&
+  assertCase(results, 'w381-readiness-map-updated-without-other-lane-regression',
+    readiness.parts_service.status === 'ready_now' &&
+      readiness.parts_service.packIds.indexOf('parts-service-field-operations') >= 0 &&
+      readiness.life_sciences.status === 'ready_now' &&
       readiness.life_sciences.packIds.indexOf('life-sciences-regulated-supply-release') >= 0 &&
       readiness.dealer_hardgoods.status === 'ready_now' &&
       readiness.food_beverage.status === 'ready_now' &&
       readiness.industrial_equipment.status === 'ready_now' &&
       readiness.apparel_accessories.status === 'ready_with_fixture_only_proof' &&
-      ['needs_scoped_source_pack_cleanup', 'ready_now'].indexOf(readiness.parts_service.status) >= 0 &&
       readiness.medical_dental_supply.status === 'needs_scoped_source_pack_cleanup',
     JSON.stringify(readiness, null, 2));
 
-  assertCase(results, 'w380-w378-life-sciences-and-w371-run-value-preserved',
-    /Regulated lot and release readiness/i.test(meridian.valueText + meridian.runText) &&
+  assertCase(results, 'w381-bayview-life-sciences-and-w371-run-value-preserved',
+    /work order|installed equipment|truck|warehouse|first-time fix/i.test(bayview.valueText + bayview.runText) &&
+      /Regulated lot and release readiness/i.test(meridian.valueText + meridian.runText) &&
+      lifePack && validateLanePack(lifePack).valid === true &&
       scenarios.every((scenario) => /idb-w371-roi-competitive-flow/.test(scenario.valueHtml)) &&
       sharedRendererScenarios.every((scenario) => /W375 shared story renderer/.test(scenario.valueHtml + scenario.runHtml)) &&
       sharedRendererScenarios.every((scenario) => scenario.value.storyContractW373.authoringReadinessW377.ready === true) &&
       scenarios.every((scenario) => clickablePathCount(scenario.runHtml) >= 4),
-    meridian.valueText.slice(0, 2200));
+    bayview.valueText.slice(0, 2200));
 
-  assertCase(results, 'w380-open-link-claim-safety-confidence-and-no-fake-links',
+  assertCase(results, 'w381-open-link-claim-safety-confidence-and-no-fake-links',
     scenarios.every((scenario) => importedOpenLinksValid(scenario.state)) &&
       scenarios.every((scenario) => /Measured savings require|before claiming savings|Baseline to capture/i.test(textOf(scenario))) &&
       scenarios.every((scenario) => /Advisory only|advisory|Assumption|Inferred|confidence/i.test(textOf(scenario))) &&
@@ -287,7 +285,7 @@ function main() {
       LANE_PACKS.every((pack) => pack.nllmAdvisory.writeAuthority === 'none' && pack.nllmAdvisory.creationAllowed === false),
     JSON.stringify(readiness, null, 2));
 
-  printResults('W380 Life Sciences source-pack readiness cleanup harness', results);
+  printResults('W381 Parts/Service source-pack readiness cleanup harness', results);
 }
 
 main();

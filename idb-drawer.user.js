@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.17
+// @version      1.0.18
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.17';
-  const CURRENT_UX_BLOCK_W346 = 'W371';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.18';
+  const CURRENT_UX_BLOCK_W346 = 'W372';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1069,6 +1069,13 @@
         dccMode: 'Balanced',
         dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Work Order View', 'Installed Equipment', 'Service Part / SKU', 'Truck / Warehouse Availability', 'Backorder / Purchasing Signal', 'Warranty / Service Margin Setup']
+      },
+      medical_dental_supply: {
+        dccFamilyKey: 'medicalDentalSupply',
+        dccScenario: 'Clinic Supply Availability',
+        dccMode: 'Balanced',
+        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        recordsToPlan: ['Customer Record', 'Sales Order View', 'Clinic Supply Item', 'Substitute Product', 'Multi-Location Availability', 'Backorder / Replenishment Signal', 'Equipment Warranty Context']
       }
     }
   };
@@ -1198,6 +1205,20 @@
         guardrails: ['Do not collapse service readiness into dealer-channel allocation, apparel variants, seasonal retail, food batching, or generic branch fulfillment language.'],
         moves: ['Customer Record', 'Work Order View', 'Work Order / Parts Availability'],
         modules: ['Order Management', 'Inventory', 'Field Service']
+      },
+      {
+        id: 'medical_dental_supply',
+        name: 'Specialty Medical / Dental Equipment & Supplies',
+        proofAnchor: 'Clinic Supply Availability',
+        promise: 'Clinic supply availability, substitute products, backorder risk, replenishment, equipment history, and warranty-sensitive items protect customer promise confidence.',
+        valueLens: 'Protect clinic service levels by connecting customer orders, item availability, substitutes, replenishment, backorder exposure, and equipment or warranty context.',
+        competitiveLens: 'Show medical/dental supply control in one NetSuite path instead of splitting clinic promise decisions across spreadsheets, ecommerce reports, and distributor portals.',
+        validateLive: 'Validate clinic supply availability, substitute product options, multi-location stock, replenishment, backorder risk, equipment history, warranty context, and customer promise confidence in one path.',
+        storyline: 'Lead with medical/dental supply through clinic order demand, item availability, substitutes, regulated or warranty-sensitive items, replenishment risk, and equipment context.',
+        signals: ['dental supplies', 'medical supplies', 'clinic supply availability', 'sterilization', 'handpieces', 'chairs', 'substitute product', 'equipment warranty', 'backorder', 'multi-location stock', 'replenishment'],
+        guardrails: ['Do not collapse medical/dental supply into dealer allocation, apparel variants, field-service dispatch, technician truck stock, or generic branch fulfillment language.'],
+        moves: ['Customer Record', 'Sales Order View', 'Clinic Supply Availability'],
+        modules: ['Order Management', 'Inventory']
       }
     ]
   };
@@ -5193,6 +5214,7 @@
     distribution: 'Distribution',
     apparelAccessories: 'Apparel & Accessories',
     partsService: 'Parts & Service',
+    medicalDentalSupply: 'Medical / Dental Supply',
     services: 'Services',
     products_cpg: 'Products CPG',
     apparel_accessories: 'Apparel & Accessories',
@@ -5200,6 +5222,7 @@
     dealer_hardgoods: 'Dealer Hardgoods',
     industrial_distribution: 'Industrial Distribution',
     parts_service: 'Parts & Service',
+    medical_dental_supply: 'Medical / Dental Supply',
     recommended: 'Recommended',
     needs_confirmation: 'Needs confirmation',
     insufficient_evidence: 'Needs more input',
@@ -20055,6 +20078,40 @@
     };
   }
 
+  function medicalDentalStoryPolishW372(state, lane, value) {
+    if (!lane || lane.id !== 'medical_dental_supply') {
+      return {
+        schema: 'idb.w372-medical-dental-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Clinic Supply Availability';
+    return {
+      schema: 'idb.w372-medical-dental-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Clinic supply availability',
+      pathFlow: ['Clinic order demand', 'Supply item availability', 'Substitute product', 'Multi-location stock', 'Backorder and replenishment', 'Equipment and warranty context'],
+      riskPressure: 'clinic stockouts, backordered supplies, substitute uncertainty, warranty-sensitive equipment context, multi-location stock gaps, and customer promise risk',
+      valueDecision: `Use ${product} to help ${customer} trust clinic supply availability, substitute options, backorder risk, multi-location stock, replenishment timing, equipment history, and warranty-sensitive customer promises before confirming the next clinic order.`,
+      proofMove: `Prove clinic supply availability with ${lane.proofAnchor}; then connect item availability, substitute product options, multi-location stock, replenishment or backorder risk, equipment history, warranty context, and customer promise confidence.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the medical/dental supply story; confirm real clinic supply, substitute, stock location, backorder, equipment, warranty, and compliance evidence before ROI or availability claims.',
+      competitorPressure: ['QuickBooks plus spreadsheets', 'Shopify or ecommerce reports', 'dental distributor portal', 'inventory add-ons', 'manual substitute checks'],
+      netsuiteContrast: `Keep clinic order demand, item availability, substitutes, multi-location stock, backorder or replenishment action, equipment history, and warranty context in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'supplier portals', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise', 'work order dispatch', 'technician truck stock', 'first-time fix'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false,
+        w371RoiRunUxPreserved: true
+      }
+    };
+  }
+
   function likelyCompetitivePressure(state, lane) {
     const intake = normalizedIntake(state);
     const combined = `${intake.competitor || ''} ${intake.notes || ''} ${intake.decisionCriteria || ''}`.toLowerCase();
@@ -20065,6 +20122,7 @@
     const manufacturing = /manufactur|assembly|bom|wip|production|routing/.test(combined);
     const dealerHardgoods = lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time|replenishment/.test(combined);
     const partsService = lane.id === 'parts_service' || /field service|service manager|work order|dispatch|technician|truck stock|installed equipment|first-time fix|warranty|backorder|parts availability|servicetitan/.test(combined);
+    const medicalDental = lane.id === 'medical_dental_supply' || /dental|clinic|sterilization|handpiece|handpieces|chair|chairs|medical supply|dental supply|substitute product|equipment warranty|compliance|backorder/.test(combined);
     const distribution = /dealer|distributor|warehouse|branch|fulfillment|channel/.test(combined);
     const alternatives = [];
     if (supplied && !manualWorkflow) alternatives.push(supplied);
@@ -20074,6 +20132,7 @@
     }
     if (manualWorkflow) alternatives.push('spreadsheets and manual inventory reports', 'QuickBooks plus spreadsheets');
     if (dealerHardgoods) alternatives.push('dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo');
+    else if (medicalDental) alternatives.push('QuickBooks plus spreadsheets', 'Shopify or ecommerce reports', 'dental distributor portal', 'inventory add-ons', 'manual substitute checks');
     else if (partsService) alternatives.push('ServiceTitan or dispatch app', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'manual parts calls', 'inventory add-ons');
     else if (apparel) alternatives.push('Shopify or ecommerce apps plus inventory add-ons', 'Odoo', 'Microsoft Dynamics 365', 'SAP Business One', 'niche apparel or PLM tools');
     else if (manufacturing) alternatives.push('Odoo', 'Microsoft Dynamics 365', 'SAP Business One', 'manufacturing point solutions');
@@ -20140,6 +20199,8 @@
     let standard = [];
     if (lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time/.test(text)) {
       standard = ['dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo'];
+    } else if (lane.id === 'medical_dental_supply' || /dental|clinic|sterilization|handpiece|handpieces|chair|chairs|medical supply|dental supply|substitute product|equipment warranty|compliance|backorder/.test(text)) {
+      standard = ['dental distributor portal', 'QuickBooks plus spreadsheets', 'Shopify ecommerce reports', 'inventory add-ons', 'manual substitute checks'];
     } else if (lane.id === 'parts_service' || /field service|service manager|work order|dispatch|technician|truck stock|installed equipment|first-time fix|warranty|backorder|servicetitan/.test(text)) {
       standard = ['ServiceTitan', 'dispatch apps', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'inventory add-ons', 'manual parts calls'];
     } else if (/industrial|distribution|branch|fulfillment|mro|electrical|counter|contractor|supply/.test(text) || lane.id === 'products_cpg') {
@@ -20167,12 +20228,15 @@
     const dealerPolish = dealerHardgoodsStoryPolishW365(state, lane, packet);
     const apparelPolish = apparelRetailStoryPolishW369(state, lane, packet);
     const partsServicePolish = partsServiceStoryPolishW370(state, lane, packet);
+    const medicalDentalPolish = medicalDentalStoryPolishW372(state, lane, packet);
     const netSuiteContrast = dealerPolish.active
       ? dealerPolish.netsuiteContrast
       : apparelPolish.active
         ? apparelPolish.netsuiteContrast
       : partsServicePolish.active
         ? partsServicePolish.netsuiteContrast
+      : medicalDentalPolish.active
+        ? medicalDentalPolish.netsuiteContrast
       : `Use ${lane.proofAnchor} to keep availability, promise, fulfillment, and financial impact in one NetSuite path.`;
     const competitorText = alternatives.slice(0, 4).join(', ');
     return {
@@ -20440,6 +20504,7 @@
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
     const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
     const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
+    const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
     const actionCopy = liveActionCopy(action.id, value, lane, pageContext, selectedMove, recommendation);
     const coach = runCoachV3Model(state, lane, pageContext, selectedMove, recommendation, action);
     const packetIdentity = packetIdentityFor(state, lane);
@@ -20544,6 +20609,22 @@
       } else if (action.id === 'close_value') {
         selectedScript.say = `Summarize the service decision ${value.customer} can now make: ${partsServicePolish.valueDecision}`;
         selectedScript.close = 'Capture the current first-time-fix miss, emergency delay, parts call-around time, warranty exposure, backorder delay, or service-margin baseline before claiming savings.';
+      }
+    }
+    if (medicalDentalPolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s medical/dental supply pressure: ${medicalDentalPolish.riskPressure}. Keep this as a clinic supply, substitute, backorder, and warranty-sensitive equipment story, not a dealer/channel, retail, or field-service dispatch tour.`;
+        selectedScript.close = 'Ask which clinic supply, substitute, stock location, backorder, equipment history, or warranty promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = medicalDentalPolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(medicalDentalPolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to confirm the next clinic order without manual substitute or backorder checks.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions clinic supply availability, ask which item, substitute, stock location, backorder, equipment, or warranty detail they reconcile by hand today, then return to the NetSuite proof path.';
+        selectedScript.close = 'Confirm what evidence would make clinic supply availability and substitute confidence trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the clinic supply decision ${value.customer} can now make: ${medicalDentalPolish.valueDecision}`;
+        selectedScript.close = 'Capture the current stockout, backorder delay, substitute miss, warranty-sensitive equipment issue, location-transfer delay, or manual-check baseline before claiming savings.';
       }
     }
     selectedScript.say = consultantVisibleCopyW346(selectedScript.say, 320);
@@ -20704,6 +20785,7 @@
     const dealerPolish = dealerHardgoodsStoryPolishW365(state, lane, { product: product.product });
     const apparelPolish = apparelRetailStoryPolishW369(state, lane, { product: product.product });
     const partsServicePolish = partsServiceStoryPolishW370(state, lane, { product: product.product });
+    const medicalDentalPolish = medicalDentalStoryPolishW372(state, lane, { product: product.product });
     const valueProofStack = [
       `ERP proof - ${industryWin.proof}`,
       `Operational proof - ${lane.proofAnchor} through ${recommendation.move}.`,
@@ -20716,6 +20798,8 @@
         ? apparelPolish.valueDecision
       : partsServicePolish.active
         ? partsServicePolish.valueDecision
+      : medicalDentalPolish.active
+        ? medicalDentalPolish.valueDecision
       : `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
     const roiAuditCards = [
       `Why now - ${pain}`,
@@ -20746,6 +20830,7 @@
       dealerHardgoodsPolishW365: dealerPolish,
       apparelRetailPolishW369: apparelPolish,
       partsServicePolishW370: partsServicePolish,
+      medicalDentalPolishW372: medicalDentalPolish,
       grounded,
       competitorContext: competitive.competitorSafeContrast,
       decisionCriteria: consultantVisibleCopyW346(criteria, 260),
@@ -20753,7 +20838,7 @@
       w213Coach,
       valueProofStack,
       talkTrackLead,
-      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active || partsServicePolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
+      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active || partsServicePolish.active || medicalDentalPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
       roiAuditCards,
       competitiveCards,
       objectionPath,
@@ -20763,7 +20848,7 @@
       valueAgenda: [
         `Objective - ${consultantVisibleCopyW346(objective, 220)}`,
         `Start with ${customer}'s stated risk - ${consultantVisibleCopyW346(pain, 220)}`,
-        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : partsServicePolish.active ? partsServicePolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
+        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : partsServicePolish.active ? partsServicePolish.proofMove : medicalDentalPolish.active ? medicalDentalPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
         `Tie the proof to ${lane.valueLens}`,
         `Decision criteria - ${consultantVisibleCopyW346(criteria, 220)}`,
         `Close by confirming the next operational decision the prospect can now make.`
@@ -23965,6 +24050,7 @@
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
     const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
     const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
+    const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
     const whyThisMatters = [
       `Business risk - ${compactText(audit.claim || roiHypothesis, 150)}`,
       `Operational proof - ${compactText(audit.proofStep || demoProof, 150)}`,
@@ -24043,6 +24129,17 @@
                 <div class="idb-strong">${escapeHtml(partsServicePolish.proofLabel)}</div>
                 <div class="idb-copy">${escapeHtml(partsServicePolish.riskPressure)}</div>
                 <div class="idb-copy">${escapeHtml(partsServicePolish.netsuiteContrast)}</div>
+              </div>
+            </details>
+          ` : ''}
+          ${medicalDentalPolish.active ? `
+            <details class="idb-technical-details idb-w372-medical-dental-lens-detail">
+              <summary>Medical/dental lens</summary>
+              <div class="idb-run-action-card idb-w372-medical-dental-card">
+                <div class="idb-status-key">Medical/dental lens</div>
+                <div class="idb-strong">${escapeHtml(medicalDentalPolish.proofLabel)}</div>
+                <div class="idb-copy">${escapeHtml(medicalDentalPolish.riskPressure)}</div>
+                <div class="idb-copy">${escapeHtml(medicalDentalPolish.netsuiteContrast)}</div>
               </div>
             </details>
           ` : ''}
@@ -25341,6 +25438,7 @@
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
     const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
     const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
+    const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const websiteEvidence = websiteEvidenceUxModel(state, lane);
     const resolverLimited = isResolverLimitedWebsiteEvidenceW353(websiteEvidence);
@@ -25424,6 +25522,17 @@
               <div class="idb-strong">${escapeHtml(partsServicePolish.proofLabel)}</div>
               ${renderW368DealerProofFlow(partsServicePolish)}
               <div class="idb-copy">${escapeHtml(partsServicePolish.safeClaim)}</div>
+            </div>
+          </details>
+        ` : ''}
+        ${medicalDentalPolish.active ? `
+          <details class="idb-technical-details idb-w372-run-medical-dental-detail">
+            <summary>Medical/dental proof path</summary>
+            <div class="idb-run-action-card idb-w372-medical-dental-card">
+              <div class="idb-status-key">Medical/dental proof path</div>
+              <div class="idb-strong">${escapeHtml(medicalDentalPolish.proofLabel)}</div>
+              ${renderW368DealerProofFlow(medicalDentalPolish)}
+              <div class="idb-copy">${escapeHtml(medicalDentalPolish.safeClaim)}</div>
             </div>
           </details>
         ` : ''}
@@ -27154,6 +27263,7 @@
       dealerHardgoodsStoryPolishW365,
       apparelRetailStoryPolishW369,
       partsServiceStoryPolishW370,
+      medicalDentalStoryPolishW372,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

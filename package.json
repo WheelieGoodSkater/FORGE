@@ -133,7 +133,8 @@
     "harness:final-dealer-hardgoods-live-smoke-expansion-handoff-w368": "node archive/tools/run_w368_final_dealer_hardgoods_live_smoke_expansion_handoff_harness.js",
     "harness:fixture-first-industry-expansion-lane-story-ui-polish-w369": "node archive/tools/run_w369_fixture_first_industry_expansion_lane_story_ui_polish_harness.js",
     "harness:second-fixture-first-industry-lane-cross-lane-story-separation-w370": "node archive/tools/run_w370_second_fixture_first_industry_lane_cross_lane_story_separation_harness.js",
-    "harness:roi-competitive-flow-run-path-link-polish-w371": "node archive/tools/run_w371_roi_competitive_flow_run_path_link_polish_harness.js"
+    "harness:roi-competitive-flow-run-path-link-polish-w371": "node archive/tools/run_w371_roi_competitive_flow_run_path_link_polish_harness.js",
+    "harness:third-fixture-first-medical-dental-roi-run-regression-w372": "node archive/tools/run_w372_third_fixture_first_medical_dental_roi_run_regression_harness.js"
   },
   "keywords": [
     "netsuite",

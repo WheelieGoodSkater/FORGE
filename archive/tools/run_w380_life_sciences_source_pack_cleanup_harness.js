@@ -12,7 +12,9 @@ const {
 
 const {
   LANE_PACKS,
-  validateLanePack
+  validateLanePack,
+  resolveLanePackFromEvidence,
+  consultantStorySurfaceFromLanePack
 } = require('../../src/contracts/lanePacks');
 
 function fixture(hooks, config) {
@@ -32,167 +34,6 @@ function clickablePathCount(html) {
   return (String(html || '').match(/idb-w371-path-clickable/g) || []).length;
 }
 
-function packsForLane(laneId) {
-  return LANE_PACKS.filter((pack) => pack.laneId === laneId);
-}
-
-function packText(pack) {
-  return JSON.stringify({
-    websiteSignals: pack.websiteSignals,
-    recordRoles: pack.recordRoles,
-    vocabulary: pack.vocabulary,
-    liveDemo: pack.liveDemo
-  }).toLowerCase();
-}
-
-function hasAny(pack, terms) {
-  const text = packText(pack);
-  return terms.some((term) => text.includes(String(term).toLowerCase()));
-}
-
-function roleReady(pack, roleTerms) {
-  const roles = []
-    .concat(pack.recordRoles.required || [])
-    .concat(pack.recordRoles.optional || [])
-    .join(' ')
-    .toLowerCase();
-  return roleTerms.some((term) => roles.includes(String(term).toLowerCase()));
-}
-
-const READINESS_LANES = [
-  {
-    id: 'dealer_hardgoods',
-    label: 'Dealer Hardgoods',
-    expectedRoles: [
-      ['customer'],
-      ['sales_order'],
-      ['product_sku'],
-      ['dealer_availability_or_replenishment_flow'],
-      ['allocation_support_sku', 'channel_context']
-    ],
-    expectedTerms: ['dealer availability', 'allocation', 'channel replenishment', 'durable SKU'],
-    expectedStatus: 'ready_now'
-  },
-  {
-    id: 'apparel_accessories',
-    label: 'Apparel/Retail',
-    expectedRoles: [
-      ['customer'],
-      ['sales_order'],
-      ['style_sku'],
-      ['style_matrix_or_availability_flow'],
-      ['supporting_style_or_color_sku']
-    ],
-    expectedTerms: ['style', 'size', 'color', 'variant availability'],
-    gapTerms: ['ecommerce', 'transfer', 'store availability'],
-    expectedStatus: 'ready_with_fixture_only_proof'
-  },
-  {
-    id: 'parts_service',
-    label: 'Parts/Service',
-    expectedRoles: [
-      ['customer'],
-      ['work_order'],
-      ['installed_equipment'],
-      ['service_part'],
-      ['truck', 'warehouse', 'backorder', 'warranty']
-    ],
-    expectedTerms: ['work order', 'installed equipment', 'truck', 'warehouse', 'warranty', 'first-time fix'],
-    expectedStatus: 'needs_scoped_source_pack_cleanup'
-  },
-  {
-    id: 'medical_dental_supply',
-    label: 'Medical/Dental',
-    expectedRoles: [
-      ['customer'],
-      ['sales_order'],
-      ['clinic_supply', 'equipment'],
-      ['substitute'],
-      ['backorder', 'multi-location', 'warranty', 'compliance']
-    ],
-    expectedTerms: ['clinic', 'substitute', 'backorder', 'multi-location', 'warranty'],
-    expectedStatus: 'needs_scoped_source_pack_cleanup'
-  },
-  {
-    id: 'food_beverage',
-    label: 'Food/Beverage',
-    expectedRoles: [
-      ['customer'],
-      ['sales_order'],
-      ['finished_food_or_batch_item'],
-      ['ingredient_or_component_item'],
-      ['formula_or_batch_structure', 'lot_or_availability_context', 'work_order_or_wip_object']
-    ],
-    expectedTerms: ['ingredient readiness', 'batch', 'packaging timing', 'finished-good availability'],
-    expectedStatus: 'ready_now'
-  },
-  {
-    id: 'industrial_equipment',
-    label: 'Industrial Equipment',
-    expectedRoles: [
-      ['customer'],
-      ['sales_order'],
-      ['finished_or_assembly_item'],
-      ['component_item'],
-      ['bom_or_assembly_structure', 'work_order_or_wip_object', 'routing', 'work_center']
-    ],
-    expectedTerms: ['configured equipment', 'assembly', 'component availability', 'supplier timing'],
-    expectedStatus: 'ready_now'
-  },
-  {
-    id: 'life_sciences',
-    label: 'Life Sciences',
-    expectedRoles: [
-      ['customer'],
-      ['sales_order'],
-      ['lot_release', 'lot_or_release'],
-      ['approved_inventory'],
-      ['expiration'],
-      ['qa_validation', 'validation'],
-      ['traceability']
-    ],
-    expectedTerms: ['lot', 'release', 'approved inventory', 'expiration', 'qa', 'validation', 'traceability'],
-    expectedStatus: 'needs_scoped_source_pack_cleanup'
-  }
-];
-
-function reviewLane(lane) {
-  const packs = packsForLane(lane.id);
-  const directPackCount = packs.length;
-  const validPacks = packs.filter((pack) => validateLanePack(pack).valid);
-  const roleCoverage = packs.length
-    ? lane.expectedRoles.map((roleTerms) => packs.some((pack) => roleReady(pack, roleTerms)))
-    : lane.expectedRoles.map(() => false);
-  const termCoverage = packs.length
-    ? lane.expectedTerms.map((term) => packs.some((pack) => hasAny(pack, [term])))
-    : lane.expectedTerms.map(() => false);
-  const gapTermsPresent = packs.length && lane.gapTerms
-    ? lane.gapTerms.filter((term) => packs.some((pack) => hasAny(pack, [term])))
-    : [];
-  const roleCoverageRatio = roleCoverage.filter(Boolean).length / roleCoverage.length;
-  const termCoverageRatio = termCoverage.filter(Boolean).length / termCoverage.length;
-  let status = 'needs_scoped_source_pack_cleanup';
-  if (directPackCount && roleCoverageRatio >= 0.8 && termCoverageRatio >= 0.75 && (!lane.gapTerms || gapTermsPresent.length === lane.gapTerms.length)) {
-    status = 'ready_now';
-  } else if (directPackCount && roleCoverageRatio >= 0.6 && termCoverageRatio >= 0.5) {
-    status = 'ready_with_fixture_only_proof';
-  }
-  return {
-    laneId: lane.id,
-    label: lane.label,
-    directPackCount,
-    packIds: packs.map((pack) => pack.packId),
-    validPackCount: validPacks.length,
-    roleCoverage,
-    termCoverage,
-    gapTermsMissing: lane.gapTerms ? lane.gapTerms.filter((term) => gapTermsPresent.indexOf(term) < 0) : [],
-    roleCoverageRatio,
-    termCoverageRatio,
-    status,
-    expectedStatus: lane.expectedStatus
-  };
-}
-
 function importedOpenLinksValid(state) {
   const records = state && state.dccFinalNamingResult && state.dccFinalNamingResult.displayReadyRecords || [];
   return records.length >= 4 && records.every((record) =>
@@ -201,9 +42,65 @@ function importedOpenLinksValid(state) {
     /^https:\/\/td3021666\.app\.netsuite\.com\/app\//.test(String(record.supportedOpenUrl || record.openableUrl || record.url || '')));
 }
 
+function packById(id) {
+  return LANE_PACKS.find((pack) => pack.packId === id);
+}
+
+function packText(pack) {
+  return JSON.stringify({
+    websiteSignals: pack.websiteSignals,
+    recordRoles: pack.recordRoles,
+    vocabulary: pack.vocabulary,
+    liveDemo: pack.liveDemo,
+    nllmAdvisory: pack.nllmAdvisory
+  }).toLowerCase();
+}
+
+function includesAll(text, terms) {
+  return terms.every((term) => text.includes(String(term).toLowerCase()));
+}
+
+function reviewLane(laneId, expectedRoles, expectedTerms, gapTerms) {
+  const packs = LANE_PACKS.filter((pack) => pack.laneId === laneId);
+  const directPackCount = packs.length;
+  const roles = packs.map((pack) => []
+    .concat(pack.recordRoles.required || [])
+    .concat(pack.recordRoles.optional || [])
+    .join(' ')
+    .toLowerCase()).join(' ');
+  const text = packs.map(packText).join(' ');
+  const roleCoverage = expectedRoles.map((terms) => terms.some((term) => roles.includes(String(term).toLowerCase())));
+  const termCoverage = expectedTerms.map((term) => text.includes(String(term).toLowerCase()));
+  const gapTermsPresent = (gapTerms || []).filter((term) => text.includes(String(term).toLowerCase()));
+  const roleCoverageRatio = roleCoverage.filter(Boolean).length / roleCoverage.length;
+  const termCoverageRatio = termCoverage.filter(Boolean).length / termCoverage.length;
+  let status = 'needs_scoped_source_pack_cleanup';
+  if (directPackCount && roleCoverageRatio >= 0.8 && termCoverageRatio >= 0.75 && (!gapTerms || gapTermsPresent.length === gapTerms.length)) {
+    status = 'ready_now';
+  } else if (directPackCount && roleCoverageRatio >= 0.6 && termCoverageRatio >= 0.5) {
+    status = 'ready_with_fixture_only_proof';
+  }
+  return {
+    laneId,
+    directPackCount,
+    packIds: packs.map((pack) => pack.packId),
+    roleCoverageRatio,
+    termCoverageRatio,
+    status
+  };
+}
+
 function main() {
   const results = [];
   const hooks = loadHooks();
+  const lifePack = packById('life-sciences-regulated-supply-release');
+  const meridianRecords = [
+    openRecordFixture('customer', 'Customer', 'Meridian BioSystems Customer Account', '7401', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7401'),
+    openRecordFixture('sales_order', 'Sales Order', 'SO-W378 Meridian Diagnostic Kit Order', '7402', 'https://td3021666.app.netsuite.com/app/accounting/transactions/salesord.nl?id=7402'),
+    openRecordFixture('lot_release', 'Lot / Release', 'Meridian Diagnostic Kit Lot Release Record', '7403', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7403'),
+    openRecordFixture('approved_inventory', 'Approved Inventory', 'Meridian Approved Reagent Inventory', '7404', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7404'),
+    openRecordFixture('qa_validation', 'QA / Validation Documentation', 'Meridian QA Validation Documentation Packet', '7405', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7405')
+  ];
   const meridian = fixture(hooks, {
     label: 'Meridian Life Sciences',
     laneId: 'life_sciences',
@@ -211,13 +108,7 @@ function main() {
     website: 'https://www.meridianbiosystems.com',
     notes: "Talked to ops/quality person maybe Priya or Paula. They make or distribute diagnostic kits, lab instruments, reagents, maybe some regulated consumables. Big issue is customer service promises shipments before anyone knows lot status, expiration, validation paperwork, QA release, or what location has approved inventory. They use spreadsheets, maybe QuickBooks or an older quality system. Need demo around customer order, lot/release readiness, inventory availability, expiration, QA/validation docs, and shipment confidence. Competitor maybe spreadsheets, SAP, quality system, not sure.",
     websiteEvidence: 'Diagnostic kits, lab instruments, reagents, regulated consumables, lot status, expiration, validation paperwork, QA release, approved inventory, traceability, and shipment confidence.',
-    records: [
-      openRecordFixture('customer', 'Customer', 'Meridian BioSystems Customer Account', '7401', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7401'),
-      openRecordFixture('sales_order', 'Sales Order', 'SO-W378 Meridian Diagnostic Kit Order', '7402', 'https://td3021666.app.netsuite.com/app/accounting/transactions/salesord.nl?id=7402'),
-      openRecordFixture('lot_release', 'Lot / Release', 'Meridian Diagnostic Kit Lot Release Record', '7403', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7403'),
-      openRecordFixture('approved_inventory', 'Approved Inventory', 'Meridian Approved Reagent Inventory', '7404', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7404'),
-      openRecordFixture('qa_validation', 'QA / Validation Documentation', 'Meridian QA Validation Documentation Packet', '7405', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7405')
-    ]
+    records: meridianRecords
   });
   const atlas = fixture(hooks, {
     label: 'Atlas Industrial Equipment',
@@ -296,62 +187,107 @@ function main() {
     traceScenario(hooks, 'w359_fastenal_broader_smoke_advisory_confidence_accepted_trace.json', 'Fastenal'),
     traceScenario(hooks, 'w360_msc_second_adjacent_distribution_smoke_trace.json', 'MSC')
   ];
-
   const scenarios = [meridian, atlas, willow, northstar, bayview, harbor].concat(baselines);
   const sharedRendererScenarios = [meridian, atlas, willow, northstar, bayview, harbor].concat(baselines.slice(0, 2));
-  const readiness = READINESS_LANES.map(reviewLane);
-  const readinessByLane = Object.fromEntries(readiness.map((entry) => [entry.laneId, entry]));
+  const lifePackText = packText(lifePack || {});
+  const strongResolution = resolveLanePackFromEvidence({
+    website: 'https://www.meridianbiosystems.com',
+    categoryText: 'Diagnostic kits, lab instruments, reagents, regulated consumables, lot status, QA release, validation documentation, expiration, traceability.',
+    signals: ['lot/release readiness', 'approved inventory', 'QA/validation documentation', 'shipment confidence']
+  });
+  const weakResolution = resolveLanePackFromEvidence({
+    website: 'https://example.invalid',
+    categoryText: 'maybe lab stuff',
+    signals: []
+  });
+  const storySurface = consultantStorySurfaceFromLanePack({
+    website: 'https://www.meridianbiosystems.com',
+    categoryText: 'Diagnostic kits, lab instruments, reagents, regulated consumables, QA release, validation documentation, traceability.'
+  }, lifePack, { displayReadyRecords: meridianRecords });
+  const readiness = {
+    dealer_hardgoods: reviewLane('dealer_hardgoods', [
+      ['customer'], ['sales_order'], ['product_sku'], ['dealer_availability_or_replenishment_flow'], ['allocation_support_sku', 'channel_context']
+    ], ['dealer availability', 'allocation', 'channel replenishment', 'durable SKU']),
+    apparel_accessories: reviewLane('apparel_accessories', [
+      ['customer'], ['sales_order'], ['style_sku'], ['style_matrix_or_availability_flow'], ['supporting_style_or_color_sku']
+    ], ['style', 'size', 'color', 'variant availability'], ['ecommerce', 'transfer', 'store availability']),
+    parts_service: reviewLane('parts_service', [
+      ['customer'], ['work_order'], ['installed_equipment'], ['service_part'], ['truck', 'warehouse', 'backorder', 'warranty']
+    ], ['work order', 'installed equipment', 'truck', 'warehouse', 'warranty', 'first-time fix']),
+    medical_dental_supply: reviewLane('medical_dental_supply', [
+      ['customer'], ['sales_order'], ['clinic_supply', 'equipment'], ['substitute'], ['backorder', 'multi-location', 'warranty', 'compliance']
+    ], ['clinic', 'substitute', 'backorder', 'multi-location', 'warranty']),
+    food_beverage: reviewLane('food_beverage', [
+      ['customer'], ['sales_order'], ['finished_food_or_batch_item'], ['ingredient_or_component_item'], ['formula_or_batch_structure', 'lot_or_availability_context', 'work_order_or_wip_object']
+    ], ['ingredient readiness', 'batch', 'packaging timing', 'finished-good availability']),
+    industrial_equipment: reviewLane('industrial_equipment', [
+      ['customer'], ['sales_order'], ['finished_or_assembly_item'], ['component_item'], ['bom_or_assembly_structure', 'work_order_or_wip_object', 'routing', 'work_center']
+    ], ['configured equipment', 'assembly', 'component availability', 'supplier timing']),
+    life_sciences: reviewLane('life_sciences', [
+      ['customer'], ['sales_order'], ['lot_or_release_record'], ['approved_inventory_item'], ['expiration_or_shelf_life_context'], ['qa_validation_documentation'], ['traceability_context']
+    ], ['lot/release readiness', 'approved inventory', 'expiration risk', 'QA/validation documentation', 'traceability', 'shipment confidence'])
+  };
 
-  assertCase(results, 'w379-source-pack-lane-coverage-reviewed',
-    readiness.length === 7 &&
-      readinessByLane.dealer_hardgoods.directPackCount > 0 &&
-      readinessByLane.apparel_accessories.directPackCount > 0 &&
-      readinessByLane.food_beverage.directPackCount > 0 &&
-      readinessByLane.industrial_equipment.directPackCount > 0 &&
-      readinessByLane.parts_service.directPackCount === 0 &&
-      readinessByLane.medical_dental_supply.directPackCount === 0 &&
-      readinessByLane.life_sciences.directPackCount >= 0,
+  assertCase(results, 'w380-life-sciences-source-pack-present-and-valid',
+    !!lifePack &&
+      lifePack.laneId === 'life_sciences' &&
+      lifePack.label === 'Life Sciences Regulated Supply & Release' &&
+      lifePack.operatingMode === 'discrete_manufacturing' &&
+      validateLanePack(lifePack).valid === true,
+    JSON.stringify(lifePack || null, null, 2));
+
+  assertCase(results, 'w380-life-sciences-proof-role-coverage',
+    includesAll(lifePackText, ['customer', 'sales_order', 'lot_or_release_record', 'approved_inventory_item', 'expiration_or_shelf_life_context', 'qa_validation_documentation', 'traceability_context', 'shipment_confidence_context']),
+    lifePackText);
+
+  assertCase(results, 'w380-life-sciences-signal-vocabulary-and-anti-leak-coverage',
+    includesAll(lifePackText, ['diagnostic kits', 'lab instruments', 'reagents', 'regulated consumables', 'lot status', 'QA release'.toLowerCase(), 'validation documentation', 'expiration', 'traceability', 'lot/release readiness', 'approved inventory', 'shipment confidence']) &&
+      includesAll(lifePackText, ['regulated order demand', 'expiration risk', 'dealer allocation', 'style/color/size', 'store/ecommerce promise', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'food batch', 'configured equipment assembly']),
+    lifePackText);
+
+  assertCase(results, 'w380-lane-pack-resolution-and-story-surface-safety',
+    strongResolution.packId === 'life-sciences-regulated-supply-release' &&
+      strongResolution.status === 'resolved' &&
+      weakResolution.status !== 'resolved' &&
+      storySurface.status === 'story_ready' &&
+      /lot\/release|approved inventory|QA release|validation documentation|traceability|shipment confidence/i.test(JSON.stringify(storySurface)) &&
+      !/guarantee|guaranteed|measured roi|will increase/i.test([
+        storySurface.proofMove,
+        storySurface.safeClaim,
+        storySurface.buyerFacingSoWhat,
+        storySurface.competitiveContrast
+      ].join(' ')) &&
+      /Do not claim .*measured ROI without evidence/i.test(storySurface.doNotClaim || ''),
+    JSON.stringify({ strongResolution, weakResolution, storySurface }, null, 2));
+
+  assertCase(results, 'w380-w379-readiness-map-updated-without-other-lane-regression',
+    readiness.life_sciences.status === 'ready_now' &&
+      readiness.life_sciences.packIds.indexOf('life-sciences-regulated-supply-release') >= 0 &&
+      readiness.dealer_hardgoods.status === 'ready_now' &&
+      readiness.food_beverage.status === 'ready_now' &&
+      readiness.industrial_equipment.status === 'ready_now' &&
+      readiness.apparel_accessories.status === 'ready_with_fixture_only_proof' &&
+      readiness.parts_service.status === 'needs_scoped_source_pack_cleanup' &&
+      readiness.medical_dental_supply.status === 'needs_scoped_source_pack_cleanup',
     JSON.stringify(readiness, null, 2));
 
-  assertCase(results, 'w379-expected-proof-role-coverage-visible',
-    readinessByLane.dealer_hardgoods.status === 'ready_now' &&
-      readinessByLane.food_beverage.status === 'ready_now' &&
-      readinessByLane.industrial_equipment.status === 'ready_now' &&
-      readinessByLane.apparel_accessories.status === 'ready_with_fixture_only_proof' &&
-      readinessByLane.parts_service.status === 'needs_scoped_source_pack_cleanup' &&
-      readinessByLane.medical_dental_supply.status === 'needs_scoped_source_pack_cleanup' &&
-      ['needs_scoped_source_pack_cleanup', 'ready_now'].indexOf(readinessByLane.life_sciences.status) >= 0,
-    JSON.stringify(readiness, null, 2));
-
-  assertCase(results, 'w379-fixture-to-pack-alignment-gaps-not-hidden',
-    readiness.filter((entry) => entry.status === 'needs_scoped_source_pack_cleanup').length >= 2 &&
-      (readinessByLane.life_sciences.packIds.length === 0 || readinessByLane.life_sciences.status === 'ready_now') &&
-      /lot\/release|QA\/validation|traceability|shipment confidence/i.test(textOf(meridian)) &&
-      /noDrawerWrites|noTransactionWrites|noFakeOpenLinks/.test(JSON.stringify(meridian.value.storyContractW373)),
-    JSON.stringify(readiness, null, 2));
-
-  assertCase(results, 'w379-open-link-authority-preserved',
-    scenarios.every((scenario) => importedOpenLinksValid(scenario.state)) &&
-      scenarios.every((scenario) => clickablePathCount(scenario.runHtml) >= 4) &&
-      scenarios.every((scenario) => /idb-w371-open-badge/.test(scenario.runHtml)),
-    scenarios.map((scenario) => `${scenario.label}:${clickablePathCount(scenario.runHtml)}`).join(', '));
-
-  assertCase(results, 'w379-w371-w373-w375-w377-w378-preserved',
-    scenarios.every((scenario) => /idb-w371-roi-competitive-flow/.test(scenario.valueHtml)) &&
+  assertCase(results, 'w380-w378-life-sciences-and-w371-run-value-preserved',
+    /Regulated lot and release readiness/i.test(meridian.valueText + meridian.runText) &&
+      scenarios.every((scenario) => /idb-w371-roi-competitive-flow/.test(scenario.valueHtml)) &&
       sharedRendererScenarios.every((scenario) => /W375 shared story renderer/.test(scenario.valueHtml + scenario.runHtml)) &&
-      sharedRendererScenarios.every((scenario) => scenario.value.storyContractW373.storyContractConsistent === true) &&
       sharedRendererScenarios.every((scenario) => scenario.value.storyContractW373.authoringReadinessW377.ready === true) &&
-      /Regulated lot and release readiness/i.test(meridian.valueText + meridian.runText),
-    sharedRendererScenarios.map((scenario) => scenario.label).join(', '));
+      scenarios.every((scenario) => clickablePathCount(scenario.runHtml) >= 4),
+    meridian.valueText.slice(0, 2200));
 
-  assertCase(results, 'w379-claim-safety-confidence-and-no-fake-links',
-    scenarios.every((scenario) => /Measured savings require|before claiming savings|Baseline to capture/i.test(textOf(scenario))) &&
+  assertCase(results, 'w380-open-link-claim-safety-confidence-and-no-fake-links',
+    scenarios.every((scenario) => importedOpenLinksValid(scenario.state)) &&
+      scenarios.every((scenario) => /Measured savings require|before claiming savings|Baseline to capture/i.test(textOf(scenario))) &&
       scenarios.every((scenario) => /Advisory only|advisory|Assumption|Inferred|confidence/i.test(textOf(scenario))) &&
       LANE_PACKS.every((pack) => validateLanePack(pack).valid) &&
       LANE_PACKS.every((pack) => pack.nllmAdvisory.writeAuthority === 'none' && pack.nllmAdvisory.creationAllowed === false),
     JSON.stringify(readiness, null, 2));
 
-  printResults('W379 source/lane-pack readiness review harness', results);
+  printResults('W380 Life Sciences source-pack readiness cleanup harness', results);
 }
 
 main();

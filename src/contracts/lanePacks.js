@@ -199,6 +199,40 @@ const LANE_PACKS = Object.freeze([
     }
   }),
   pack({
+    packId: 'life-sciences-regulated-supply-release',
+    laneId: 'life_sciences',
+    subIndustryId: 'life-sciences-regulated-supply-release',
+    label: 'Life Sciences Regulated Supply & Release',
+    operatingMode: 'discrete_manufacturing',
+    websiteSignals: {
+      domains: ['meridianbiosystems.com'],
+      categoryTerms: ['life sciences', 'diagnostic kits', 'lab instruments', 'reagents', 'regulated consumables', 'lot status', 'QA release', 'validation documentation', 'expiration', 'traceability'],
+      evidenceTerms: ['lot/release readiness', 'approved inventory', 'expiration risk', 'QA/validation documentation', 'traceability', 'shipment confidence']
+    },
+    recordRoles: {
+      required: ['customer', 'sales_order', 'lot_or_release_record', 'approved_inventory_item'],
+      optional: ['expiration_or_shelf_life_context', 'qa_validation_documentation', 'traceability_context', 'shipment_confidence_context'],
+      invalid: [
+        'dealer_availability_or_replenishment_flow',
+        'style_matrix_or_availability_flow',
+        'work_order_or_dispatch_without_service_evidence',
+        'clinic_supply_substitute_without_medical_dental_evidence',
+        'food_formula_or_batch_without_food_evidence',
+        'configured_equipment_assembly_without_industrial_evidence'
+      ]
+    },
+    vocabulary: {
+      allowed: ['regulated order demand', 'lot/release readiness', 'approved inventory', 'expiration risk', 'QA release', 'validation documentation', 'traceability', 'shipment confidence'],
+      forbidden: ['dealer allocation', 'style/color/size', 'store/ecommerce promise', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'food batch', 'configured equipment assembly']
+    },
+    liveDemo: {
+      proofMove: 'Open the lot/release record and approved inventory item to prove QA release, expiration, validation documentation, traceability, and shipment confidence before the customer promise is made.',
+      storyAnchor: 'The buyer needs confidence that regulated demand can ship from approved inventory with release status, expiration, and documentation visible.',
+      roiSoWhat: 'Protect shipment confidence and rework exposure by finding lot, release, expiration, or validation gaps before customer service promises supply.',
+      competitiveContrast: 'NetSuite connects regulated order demand, approved inventory, QA release, validation documentation, traceability, and shipment confidence without a separate spreadsheet or quality-system handoff.'
+    }
+  }),
+  pack({
     packId: 'dealer-hardgoods',
     laneId: 'dealer_hardgoods',
     subIndustryId: 'dealer-hardgoods',

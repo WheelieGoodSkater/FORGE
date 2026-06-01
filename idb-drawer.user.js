@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.20
+// @version      1.0.21
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.20';
-  const CURRENT_UX_BLOCK_W346 = 'W374';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.21';
+  const CURRENT_UX_BLOCK_W346 = 'W375';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -23221,6 +23221,66 @@
     `;
   }
 
+  function storyContractUiLabelW375(storyContract) {
+    const source = String(storyContract && storyContract.sourceSchema || storyContract && storyContract.schema || '');
+    if (/dealer-hardgoods/i.test(source)) return 'Dealer/channel';
+    if (/apparel-retail/i.test(source)) return 'Apparel/retail';
+    if (/parts-service/i.test(source)) return 'Parts/service';
+    if (/medical-dental/i.test(source)) return 'Medical/dental';
+    if (/food-beverage/i.test(source)) return 'Food/beverage';
+    return 'Lane story';
+  }
+
+  function storyContractUiClassW375(storyContract) {
+    const source = String(storyContract && storyContract.sourceSchema || storyContract && storyContract.schema || '').toLowerCase();
+    if (source.indexOf('dealer-hardgoods') >= 0) return 'idb-w365-dealer-hardgoods-card';
+    if (source.indexOf('apparel-retail') >= 0) return 'idb-w369-apparel-retail-card';
+    if (source.indexOf('parts-service') >= 0) return 'idb-w370-parts-service-card';
+    if (source.indexOf('medical-dental') >= 0) return 'idb-w372-medical-dental-card';
+    if (source.indexOf('food-beverage') >= 0) return 'idb-w374-food-beverage-card';
+    return 'idb-w375-story-contract-card';
+  }
+
+  function renderW375StoryContractLens(storyContract) {
+    if (!storyContract || !storyContract.active) return '';
+    const label = storyContractUiLabelW375(storyContract);
+    return `
+      <details class="idb-technical-details idb-w375-story-contract-lens-detail">
+        <summary>${escapeHtml(label)} lens</summary>
+        <div class="idb-run-action-card ${escapeHtml(storyContractUiClassW375(storyContract))}">
+          <div class="idb-status-key">${escapeHtml(label)} lens</div>
+          <div class="idb-strong">${escapeHtml(storyContract.proofLabel)}</div>
+          <div class="idb-copy">${escapeHtml(storyContract.riskPressure)}</div>
+          <div class="idb-copy">${escapeHtml(storyContract.netsuiteContrast)}</div>
+          <div class="idb-chip-row">
+            <span class="idb-mini-chip">W375 shared story renderer</span>
+            <span class="idb-mini-chip">${escapeHtml(consultantLabel(storyContract.sourceSchema || storyContract.schema))}</span>
+          </div>
+        </div>
+      </details>
+    `;
+  }
+
+  function renderW375StoryContractProofPath(storyContract) {
+    if (!storyContract || !storyContract.active) return '';
+    const label = storyContractUiLabelW375(storyContract);
+    return `
+      <details class="idb-technical-details idb-w375-story-contract-proof-detail">
+        <summary>${escapeHtml(label)} proof path</summary>
+        <div class="idb-run-action-card ${escapeHtml(storyContractUiClassW375(storyContract))}">
+          <div class="idb-status-key">${escapeHtml(label)} proof path</div>
+          <div class="idb-strong">${escapeHtml(storyContract.proofLabel)}</div>
+          ${renderW368DealerProofFlow(storyContract)}
+          <div class="idb-copy">${escapeHtml(storyContract.safeClaim)}</div>
+          <div class="idb-chip-row">
+            <span class="idb-mini-chip">W375 shared story renderer</span>
+            <span class="idb-mini-chip">Source packs unchanged</span>
+          </div>
+        </div>
+      </details>
+    `;
+  }
+
   function renderW361ImportedProofRecords(finalNavigation) {
     if (!(finalNavigation && finalNavigation.runCanUseImportedFinalNames)) return '';
     const objects = arrayValue(finalNavigation.scriptPivotObjects);
@@ -24164,11 +24224,6 @@
     const netsuiteContrast = grounded.whyNetSuiteEvidence[0] || value.groundedCompetitiveSummary;
     const competitivePrep = competitive.competitivePrep || competitiveFudPrep(state, lane, story);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
-    const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
-    const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
-    const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
-    const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
-    const foodBeveragePolish = value.foodBeveragePolishW374 || foodBeverageStoryPolishW374(state, lane, value);
     const storyContractW373 = value.storyContractW373 || crossLaneStoryPolishContractW373(state, lane, value);
     const whyThisMatters = [
       `Business risk - ${compactText(audit.claim || roiHypothesis, 150)}`,
@@ -24218,61 +24273,7 @@
           <div class="idb-section-title">Consultant value coach</div>
           <div class="idb-status-key">Talk track, discovery, and proof moves</div>
           ${consultantFlow}
-          ${dealerPolish.active ? `
-            <details class="idb-technical-details idb-w367-dealer-lens-detail">
-              <summary>Dealer/channel lens</summary>
-              <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
-              <div class="idb-status-key">Dealer/channel lens</div>
-              <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
-              <div class="idb-copy">${escapeHtml(dealerPolish.riskPressure)}</div>
-              <div class="idb-copy">${escapeHtml(dealerPolish.netsuiteContrast)}</div>
-              </div>
-            </details>
-          ` : ''}
-          ${apparelPolish.active ? `
-            <details class="idb-technical-details idb-w369-apparel-lens-detail">
-              <summary>Apparel/retail lens</summary>
-              <div class="idb-run-action-card idb-w369-apparel-retail-card">
-                <div class="idb-status-key">Apparel/retail lens</div>
-                <div class="idb-strong">${escapeHtml(apparelPolish.proofLabel)}</div>
-                <div class="idb-copy">${escapeHtml(apparelPolish.riskPressure)}</div>
-                <div class="idb-copy">${escapeHtml(apparelPolish.netsuiteContrast)}</div>
-              </div>
-            </details>
-          ` : ''}
-          ${partsServicePolish.active ? `
-            <details class="idb-technical-details idb-w370-parts-service-lens-detail">
-              <summary>Parts/service lens</summary>
-              <div class="idb-run-action-card idb-w370-parts-service-card">
-                <div class="idb-status-key">Parts/service lens</div>
-                <div class="idb-strong">${escapeHtml(partsServicePolish.proofLabel)}</div>
-                <div class="idb-copy">${escapeHtml(partsServicePolish.riskPressure)}</div>
-                <div class="idb-copy">${escapeHtml(partsServicePolish.netsuiteContrast)}</div>
-              </div>
-            </details>
-          ` : ''}
-          ${medicalDentalPolish.active ? `
-            <details class="idb-technical-details idb-w372-medical-dental-lens-detail">
-              <summary>Medical/dental lens</summary>
-              <div class="idb-run-action-card idb-w372-medical-dental-card">
-                <div class="idb-status-key">Medical/dental lens</div>
-                <div class="idb-strong">${escapeHtml(medicalDentalPolish.proofLabel)}</div>
-                <div class="idb-copy">${escapeHtml(medicalDentalPolish.riskPressure)}</div>
-                <div class="idb-copy">${escapeHtml(medicalDentalPolish.netsuiteContrast)}</div>
-              </div>
-            </details>
-          ` : ''}
-          ${foodBeveragePolish.active ? `
-            <details class="idb-technical-details idb-w374-food-beverage-lens-detail">
-              <summary>Food/beverage lens</summary>
-              <div class="idb-run-action-card idb-w374-food-beverage-card">
-                <div class="idb-status-key">Food/beverage lens</div>
-                <div class="idb-strong">${escapeHtml(foodBeveragePolish.proofLabel)}</div>
-                <div class="idb-copy">${escapeHtml(foodBeveragePolish.riskPressure)}</div>
-                <div class="idb-copy">${escapeHtml(foodBeveragePolish.netsuiteContrast)}</div>
-              </div>
-            </details>
-          ` : ''}
+          ${renderW375StoryContractLens(storyContractW373)}
           <details class="idb-technical-details idb-w367-competitive-detail">
             <summary>Competitive lens and prep</summary>
             ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive lens', note: competitiveAdvisory.valueCue, compact: true })}
@@ -25606,11 +25607,6 @@
 
   function renderRunView(state, lane, page, recommendation, selectedMove, action, summary) {
     const value = valueReviewPacket(state, lane, page, recommendation);
-    const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
-    const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
-    const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
-    const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
-    const foodBeveragePolish = value.foodBeveragePolishW374 || foodBeverageStoryPolishW374(state, lane, value);
     const storyContractW373 = value.storyContractW373 || crossLaneStoryPolishContractW373(state, lane, value);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const websiteEvidence = websiteEvidenceUxModel(state, lane);
@@ -25665,61 +25661,7 @@
         <div class="idb-section-title">NetSuite path</div>
         <div class="idb-copy">Open the imported records in order, then use the selected live control below.</div>
         ${renderW361NetSuitePathFlow(finalNavigation)}
-        ${dealerPolish.active ? `
-          <details class="idb-technical-details idb-w367-run-dealer-detail">
-            <summary>Dealer/channel proof path</summary>
-            <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
-              <div class="idb-status-key">Dealer/channel proof path</div>
-              <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
-              ${renderW368DealerProofFlow(dealerPolish)}
-              <div class="idb-copy">${escapeHtml(dealerPolish.safeClaim)}</div>
-            </div>
-          </details>
-        ` : ''}
-        ${apparelPolish.active ? `
-          <details class="idb-technical-details idb-w369-run-apparel-detail">
-            <summary>Apparel/retail proof path</summary>
-            <div class="idb-run-action-card idb-w369-apparel-retail-card">
-              <div class="idb-status-key">Apparel/retail proof path</div>
-              <div class="idb-strong">${escapeHtml(apparelPolish.proofLabel)}</div>
-              ${renderW368DealerProofFlow(apparelPolish)}
-              <div class="idb-copy">${escapeHtml(apparelPolish.safeClaim)}</div>
-            </div>
-          </details>
-        ` : ''}
-        ${partsServicePolish.active ? `
-          <details class="idb-technical-details idb-w370-run-parts-service-detail">
-            <summary>Parts/service proof path</summary>
-            <div class="idb-run-action-card idb-w370-parts-service-card">
-              <div class="idb-status-key">Parts/service proof path</div>
-              <div class="idb-strong">${escapeHtml(partsServicePolish.proofLabel)}</div>
-              ${renderW368DealerProofFlow(partsServicePolish)}
-              <div class="idb-copy">${escapeHtml(partsServicePolish.safeClaim)}</div>
-            </div>
-          </details>
-        ` : ''}
-        ${medicalDentalPolish.active ? `
-          <details class="idb-technical-details idb-w372-run-medical-dental-detail">
-            <summary>Medical/dental proof path</summary>
-            <div class="idb-run-action-card idb-w372-medical-dental-card">
-              <div class="idb-status-key">Medical/dental proof path</div>
-              <div class="idb-strong">${escapeHtml(medicalDentalPolish.proofLabel)}</div>
-              ${renderW368DealerProofFlow(medicalDentalPolish)}
-              <div class="idb-copy">${escapeHtml(medicalDentalPolish.safeClaim)}</div>
-            </div>
-          </details>
-        ` : ''}
-        ${foodBeveragePolish.active ? `
-          <details class="idb-technical-details idb-w374-run-food-beverage-detail">
-            <summary>Food/beverage proof path</summary>
-            <div class="idb-run-action-card idb-w374-food-beverage-card">
-              <div class="idb-status-key">Food/beverage proof path</div>
-              <div class="idb-strong">${escapeHtml(foodBeveragePolish.proofLabel)}</div>
-              ${renderW368DealerProofFlow(foodBeveragePolish)}
-              <div class="idb-copy">${escapeHtml(foodBeveragePolish.safeClaim)}</div>
-            </div>
-          </details>
-        ` : ''}
+        ${renderW375StoryContractProofPath(storyContractW373)}
         <div class="idb-section-title">Live controls</div>
         <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
           ${renderRunActionChips(state)}
@@ -27450,6 +27392,8 @@
       medicalDentalStoryPolishW372,
       foodBeverageStoryPolishW374,
       crossLaneStoryPolishContractW373,
+      renderW375StoryContractLens,
+      renderW375StoryContractProofPath,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

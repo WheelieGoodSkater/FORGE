@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.18
+// @version      1.0.19
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.18';
-  const CURRENT_UX_BLOCK_W346 = 'W372';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.19';
+  const CURRENT_UX_BLOCK_W346 = 'W373';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -20112,6 +20112,57 @@
     };
   }
 
+  function crossLaneStoryPolishContractW373(state, lane, value) {
+    const legacySupportLeakTerms = [
+      'Industrial Distributor',
+      'Industrial Distribution',
+      'production routing',
+      'ingredient batch',
+      'fashion collection',
+      'branch availability'
+    ];
+    const candidates = [
+      dealerHardgoodsStoryPolishW365(state, lane, value),
+      apparelRetailStoryPolishW369(state, lane, value),
+      partsServiceStoryPolishW370(state, lane, value),
+      medicalDentalStoryPolishW372(state, lane, value)
+    ];
+    const active = candidates.find((item) => item && item.active) || {
+      schema: 'idb.w373-cross-lane-story-polish-contract.v1',
+      active: false,
+      proofLabel: lane && lane.proofAnchor || '',
+      pathFlow: [],
+      riskPressure: '',
+      valueDecision: '',
+      proofMove: '',
+      safeClaim: '',
+      competitorPressure: [],
+      netsuiteContrast: '',
+      antiLeakTerms: [],
+      noRegression: {}
+    };
+    const requiredFields = ['proofLabel', 'pathFlow', 'riskPressure', 'valueDecision', 'proofMove', 'safeClaim', 'competitorPressure', 'netsuiteContrast', 'noRegression'];
+    const missingFields = requiredFields.filter((field) => {
+      const current = active[field];
+      return Array.isArray(current) ? current.length === 0 : !current;
+    });
+    return Object.assign({}, active, {
+      schema: 'idb.w373-cross-lane-story-polish-contract.v1',
+      sourceSchema: active.schema || '',
+      storyContractConsistent: active.active ? missingFields.length === 0 : true,
+      missingFields,
+      antiLeakTerms: Array.from(new Set(arrayValue(active.antiLeakTerms).concat(legacySupportLeakTerms))),
+      noRegression: Object.assign({}, active.noRegression || {}, {
+        storyContractW373: true,
+        collapsedSupportCleanupOnly: true,
+        sourceLanePacksMutated: false,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true
+      })
+    });
+  }
+
   function likelyCompetitivePressure(state, lane) {
     const intake = normalizedIntake(state);
     const combined = `${intake.competitor || ''} ${intake.notes || ''} ${intake.decisionCriteria || ''}`.toLowerCase();
@@ -20786,6 +20837,7 @@
     const apparelPolish = apparelRetailStoryPolishW369(state, lane, { product: product.product });
     const partsServicePolish = partsServiceStoryPolishW370(state, lane, { product: product.product });
     const medicalDentalPolish = medicalDentalStoryPolishW372(state, lane, { product: product.product });
+    const storyContractW373 = crossLaneStoryPolishContractW373(state, lane, { product: product.product });
     const valueProofStack = [
       `ERP proof - ${industryWin.proof}`,
       `Operational proof - ${lane.proofAnchor} through ${recommendation.move}.`,
@@ -20831,6 +20883,7 @@
       apparelRetailPolishW369: apparelPolish,
       partsServicePolishW370: partsServicePolish,
       medicalDentalPolishW372: medicalDentalPolish,
+      storyContractW373,
       grounded,
       competitorContext: competitive.competitorSafeContrast,
       decisionCriteria: consultantVisibleCopyW346(criteria, 260),
@@ -24051,6 +24104,7 @@
     const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
     const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
     const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
+    const storyContractW373 = value.storyContractW373 || crossLaneStoryPolishContractW373(state, lane, value);
     const whyThisMatters = [
       `Business risk - ${compactText(audit.claim || roiHypothesis, 150)}`,
       `Operational proof - ${compactText(audit.proofStep || demoProof, 150)}`,
@@ -24795,18 +24849,30 @@
     `;
   }
 
+  function laneConsistentSupportCopyW373(value, activeLaneStory) {
+    const text = String(value || '');
+    if (!activeLaneStory || !activeLaneStory.active || !activeLaneStory.proofLabel || !activeLaneStory.antiLeakTerms || !activeLaneStory.antiLeakTerms.length) return text;
+    const antiLeakPattern = new RegExp(activeLaneStory.antiLeakTerms.map((term) => String(term || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'i');
+    if (!antiLeakPattern.test(text)) return text;
+    return `${activeLaneStory.proofLabel}: keep this support detail lane-consistent; confirm source evidence before borrowing another lane's wording.`;
+  }
+
   function renderConsultantStorySurfaceW248(story, options) {
     if (!story || !story.openTarget || !story.proofMove) return '';
     const resolverLimited = !!(options && options.resolverLimitedWebsiteEvidence);
     const compactAudit = !!(options && options.compactAudit);
     const advisory = options && options.advisoryWebsiteEvidence || {};
+    const activeLaneStory = options && options.activeLaneStoryPolishW373 || {};
+    const laneSupportCleanupActive = !!(activeLaneStory && activeLaneStory.active && activeLaneStory.proofLabel);
     const advisorySupported = advisory.status === 'advisory_supported';
     const storyCopy = (value) => {
       const text = String(value || '');
-      if (!resolverLimited) return text;
-      return text
+      const resolverText = resolverLimited
+        ? text
         .replace(/\bweak lane evidence\b/gi, 'resolver-limited website evidence')
-        .replace(/\bweak evidence\b/gi, 'resolver-limited website evidence');
+        .replace(/\bweak evidence\b/gi, 'resolver-limited website evidence')
+        : text;
+      return laneConsistentSupportCopyW373(resolverText, activeLaneStory);
     };
     const coachingShape = storyCoachingRuntimeShapeW298(story);
     const firstGlance = coachingShape.w255FirstGlance;
@@ -24815,14 +24881,41 @@
     const confidence = story.nllmAdvisory && story.nllmAdvisory.confidence ? consultantLabel(story.nllmAdvisory.confidence) : 'Unclear';
     const uncertainty = story.nllmAdvisory && story.nllmAdvisory.uncertainty ? story.nllmAdvisory.uncertainty : 'Ask for confirmation when evidence is weak.';
     const receipt = coachingShape.w254EvidenceReceipt && coachingShape.w254EvidenceReceipt.status === 'receipt_ready' ? coachingShape.w254EvidenceReceipt : null;
-    const proofAction = story.compactProofActionW334 || (sequence && sequence.steps && sequence.steps[2] ? sequence.steps[2].line : firstGlance.proveMove);
-    const safeClaim = story.compactSafeClaimW334 || firstGlance.safeClaim;
-    const stopGuardrail = story.compactStopGuardrailW334 || firstGlance.doNotClaimGuardrail;
+    const proofAction = laneSupportCleanupActive
+      ? activeLaneStory.proofMove
+      : story.compactProofActionW334 || (sequence && sequence.steps && sequence.steps[2] ? sequence.steps[2].line : firstGlance.proveMove);
+    const safeClaim = laneSupportCleanupActive
+      ? activeLaneStory.safeClaim
+      : story.compactSafeClaimW334 || firstGlance.safeClaim;
+    const stopGuardrail = laneSupportCleanupActive
+      ? `Do not claim measured ROI, writes, record creation, or availability beyond returned records and confirmed ${activeLaneStory.proofLabel} evidence.`
+      : story.compactStopGuardrailW334 || firstGlance.doNotClaimGuardrail;
+    const receiptSummary = laneSupportCleanupActive
+      ? `${activeLaneStory.proofLabel} / ${confidence}`
+      : firstGlance.receiptSummary;
+    const nextAction = laneSupportCleanupActive
+      ? `Open returned records and prove only what the active ${activeLaneStory.proofLabel} story supports.`
+      : firstGlance.nextAction;
+    const receiptRows = receipt ? arrayValue(receipt.rows).map((row) => {
+      if (!laneSupportCleanupActive) return row;
+      if (row && row.id === 'lane_pack_confidence') {
+        return Object.assign({}, row, {
+          value: `${activeLaneStory.proofLabel} / ${confidence}`
+        });
+      }
+      const cleanedValue = row && row.value ? laneConsistentSupportCopyW373(row.value, activeLaneStory) : '';
+      if (row && row.value && cleanedValue !== String(row.value)) {
+        return Object.assign({}, row, {
+          value: cleanedValue
+        });
+      }
+      return row;
+    }) : [];
     const receiptHtml = receipt ? `
         <details class="idb-technical-details idb-w254-evidence-receipt">
           <summary>Evidence receipt: confidence and proof source</summary>
           <div class="idb-record-group">
-            ${arrayValue(receipt.rows).map((row) => `
+            ${receiptRows.map((row) => `
               <div class="idb-plan-row idb-compressed-row">
                 <span>
                   <span class="idb-build-label">${escapeHtml(row.label)}</span>
@@ -24854,8 +24947,9 @@
         </div>
         <div class="idb-chip-row idb-w255-first-glance">
           <span class="idb-mini-chip">Evidence confidence: ${escapeHtml(confidence)}</span>
-          <span class="idb-mini-chip">Receipt: ${escapeHtml(storyCopy(firstGlance.receiptSummary))}</span>
-          <span class="idb-mini-chip">Next: ${escapeHtml(storyCopy(firstGlance.nextAction))}</span>
+          <span class="idb-mini-chip">Receipt: ${escapeHtml(storyCopy(receiptSummary))}</span>
+          <span class="idb-mini-chip">Next: ${escapeHtml(storyCopy(nextAction))}</span>
+          ${laneSupportCleanupActive ? '<span class="idb-mini-chip">Lane-consistent support</span>' : ''}
         </div>
         <details class="idb-technical-details idb-w256-live-demo-script">
           <summary>Say this live: open, prove, close</summary>
@@ -24924,8 +25018,9 @@
     const reviewWebsiteEvidence = websiteEvidenceUxModel(state, lane);
     const reviewResolverLimited = isResolverLimitedWebsiteEvidenceW353(reviewWebsiteEvidence);
     const reviewAdvisory = reviewWebsiteEvidence.advisory || {};
+    const reviewStoryContractW373 = crossLaneStoryPolishContractW373(state, lane, valueReviewPacket(state, lane, page, recommendation));
     const consultantStorySurfaceHtml = finalNamesImported && w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: reviewResolverLimited, advisoryWebsiteEvidence: reviewAdvisory })
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: reviewResolverLimited, advisoryWebsiteEvidence: reviewAdvisory, activeLaneStoryPolishW373: reviewStoryContractW373 })
       : '';
     const preparedObjects = preparedRecords.map((record) => consultantRunNavigationDisplayW334(record));
     const finalRecordRows = preparedRecords.map((record) => `
@@ -25439,6 +25534,7 @@
     const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
     const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
     const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
+    const storyContractW373 = value.storyContractW373 || crossLaneStoryPolishContractW373(state, lane, value);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const websiteEvidence = websiteEvidenceUxModel(state, lane);
     const resolverLimited = isResolverLimitedWebsiteEvidenceW353(websiteEvidence);
@@ -25455,7 +25551,7 @@
       ? consultantPartialResultReviewRunModelW216V1(state.dccFinalNamingResult, state, lane, page, recommendation)
       : null;
     const consultantStorySurfaceHtml = w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory, compactAudit: true })
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory, compactAudit: true, activeLaneStoryPolishW373: storyContractW373 })
       : '';
     if (!finalNavigation.runCanUseImportedFinalNames) {
       const waitingForLinks = buildStatus && buildStatus.automation && buildStatus.automation.runnerTaskCaptured;
@@ -25636,7 +25732,7 @@
         <div class="idb-card idb-guard-accent">
           <div class="idb-section-title">Guardrails</div>
           <div class="idb-guardrail-row">
-            ${lane.guardrails.map((guardrail, index) => `<button class="idb-chip idb-guard" data-idb-guardrail="${index}">${escapeHtml(guardrail)}</button>`).join('')}
+            ${lane.guardrails.map((guardrail, index) => `<button class="idb-chip idb-guard" data-idb-guardrail="${index}">${escapeHtml(laneConsistentSupportCopyW373(guardrail, storyContractW373))}</button>`).join('')}
           </div>
         </div>
       </details>
@@ -27264,6 +27360,7 @@
       apparelRetailStoryPolishW369,
       partsServiceStoryPolishW370,
       medicalDentalStoryPolishW372,
+      crossLaneStoryPolishContractW373,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

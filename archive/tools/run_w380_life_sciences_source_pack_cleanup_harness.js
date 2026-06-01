@@ -268,7 +268,7 @@ function main() {
       readiness.industrial_equipment.status === 'ready_now' &&
       readiness.apparel_accessories.status === 'ready_with_fixture_only_proof' &&
       ['needs_scoped_source_pack_cleanup', 'ready_now'].indexOf(readiness.parts_service.status) >= 0 &&
-      readiness.medical_dental_supply.status === 'needs_scoped_source_pack_cleanup',
+      ['needs_scoped_source_pack_cleanup', 'ready_now'].indexOf(readiness.medical_dental_supply.status) >= 0,
     JSON.stringify(readiness, null, 2));
 
   assertCase(results, 'w380-w378-life-sciences-and-w371-run-value-preserved',

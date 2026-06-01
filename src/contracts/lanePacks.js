@@ -267,6 +267,41 @@ const LANE_PACKS = Object.freeze([
     }
   }),
   pack({
+    packId: 'medical-dental-supply-equipment',
+    laneId: 'medical_dental_supply',
+    subIndustryId: 'medical-dental-supply-equipment',
+    label: 'Medical/Dental Supply & Equipment',
+    operatingMode: 'distribution_replenishment',
+    websiteSignals: {
+      domains: ['northstardentalsupply.com'],
+      categoryTerms: ['medical supply', 'dental supply', 'dental equipment', 'clinic supply', 'sterilization supplies', 'handpieces', 'chairs', 'small equipment', 'substitute products', 'backorders', 'multi-location stock', 'warranty', 'compliance context'],
+      evidenceTerms: ['clinic supply availability', 'equipment availability', 'substitute product readiness', 'backorder risk', 'multi-location stock', 'warranty context', 'compliance-sensitive item context', 'customer promise confidence']
+    },
+    recordRoles: {
+      required: ['customer', 'sales_order', 'clinic_supply_or_equipment_item', 'substitute_product'],
+      optional: ['backorder_context', 'multi_location_stock_context', 'warranty_context', 'compliance_context', 'equipment_history_context', 'customer_promise_context'],
+      invalid: [
+        'dealer_availability_or_replenishment_flow',
+        'style_matrix_or_availability_flow',
+        'work_order_or_dispatch_without_service_evidence',
+        'technician_truck_stock_without_parts_service_evidence',
+        'food_formula_or_batch_without_food_evidence',
+        'lot_release_or_qa_validation_without_life_sciences_evidence',
+        'configured_equipment_assembly_without_industrial_evidence'
+      ]
+    },
+    vocabulary: {
+      allowed: ['clinic supply availability', 'dental equipment availability', 'substitute product readiness', 'backorder risk', 'multi-location stock', 'warranty context', 'compliance-sensitive item context', 'equipment history', 'customer promise confidence'],
+      forbidden: ['dealer allocation', 'channel fulfillment', 'style/color/size', 'store/ecommerce promise', 'technician truck stock', 'first-time fix', 'food batch', 'QA release', 'lot/release readiness', 'configured equipment assembly']
+    },
+    liveDemo: {
+      proofMove: 'Open the clinic supply or equipment item and substitute product to prove availability, backorder risk, multi-location stock, warranty context, and customer promise confidence.',
+      storyAnchor: 'The buyer needs confidence that clinic supply or dental equipment demand can be promised with substitute, warranty, compliance-sensitive, and stock-position context visible.',
+      roiSoWhat: 'Protect customer promise confidence and margin exposure by finding substitute, backorder, warranty, or multi-location stock gaps before the clinic commitment is made.',
+      competitiveContrast: 'NetSuite connects clinic supply demand, equipment availability, substitute products, backorder risk, warranty context, and customer promise confidence without a separate spreadsheet or distributor-portal lookup.'
+    }
+  }),
+  pack({
     packId: 'dealer-hardgoods',
     laneId: 'dealer_hardgoods',
     subIndustryId: 'dealer-hardgoods',

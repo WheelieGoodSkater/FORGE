@@ -86,14 +86,24 @@ function reviewLane(laneId, expectedRoles, expectedTerms, gapTerms) {
 function main() {
   const results = [];
   const hooks = loadHooks();
+  const medicalPack = packById('medical-dental-supply-equipment');
   const partsPack = packById('parts-service-field-operations');
   const lifePack = packById('life-sciences-regulated-supply-release');
-  const bayviewRecords = [
-    openRecordFixture('customer', 'Customer', 'Bayview Customer Account', '7001', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7001'),
-    openRecordFixture('work_order', 'Work Order', 'WO-W370 Bayview Repair', '7002', 'https://td3021666.app.netsuite.com/app/accounting/transactions/workord.nl?id=7002'),
-    openRecordFixture('installed_equipment', 'Installed Equipment', 'Bayview Installed Oven', '7003', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7003'),
-    openRecordFixture('service_part', 'Service Part / SKU', 'Bayview Igniter SKU', '7004', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7004')
+  const northstarRecords = [
+    openRecordFixture('customer', 'Customer', 'Northstar Dental Supply Customer Account', '7101', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7101'),
+    openRecordFixture('sales_order', 'Sales Order', 'SO-W372 Northstar Clinic Supply Order', '7102', 'https://td3021666.app.netsuite.com/app/accounting/transactions/salesord.nl?id=7102'),
+    openRecordFixture('clinic_supply_item', 'Clinic Supply Item', 'Northstar Sterilization Supply Item', '7103', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7103'),
+    openRecordFixture('substitute_product', 'Substitute Product', 'Northstar Substitute SKU', '7104', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7104')
   ];
+  const northstar = fixture(hooks, {
+    label: 'Northstar Medical/Dental',
+    laneId: 'medical_dental_supply',
+    customer: 'Northstar Dental Supply & Equipment',
+    website: 'https://www.northstardentalsupply.com',
+    notes: 'Clinics need dental supply availability, substitutes, backorders, multi-location stock, warranty context, compliance-sensitive item context, and customer promise confidence.',
+    websiteEvidence: 'Dental supply, dental equipment, clinic supply, sterilization supplies, handpieces, chairs, small equipment, substitute products, backorders, multi-location stock, warranty, and compliance context.',
+    records: northstarRecords
+  });
   const bayview = fixture(hooks, {
     label: 'Bayview Parts/Service',
     laneId: 'parts_service',
@@ -101,7 +111,12 @@ function main() {
     website: 'https://www.bayviewkitchenservice.com',
     notes: 'Service manager needs work order, installed equipment, truck/warehouse parts, backorder, warranty, and first-time fix readiness.',
     websiteEvidence: 'Commercial kitchen service, repair service, work orders, installed equipment, technician readiness, service parts, truck stock, warehouse parts, warranty, emergency repair, and first-time fix risk.',
-    records: bayviewRecords
+    records: [
+      openRecordFixture('customer', 'Customer', 'Bayview Customer Account', '7001', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7001'),
+      openRecordFixture('work_order', 'Work Order', 'WO-W370 Bayview Repair', '7002', 'https://td3021666.app.netsuite.com/app/accounting/transactions/workord.nl?id=7002'),
+      openRecordFixture('installed_equipment', 'Installed Equipment', 'Bayview Installed Oven', '7003', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7003'),
+      openRecordFixture('service_part', 'Service Part / SKU', 'Bayview Igniter SKU', '7004', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7004')
+    ]
   });
   const meridian = fixture(hooks, {
     label: 'Meridian Life Sciences',
@@ -146,20 +161,6 @@ function main() {
       openRecordFixture('ingredient_packaging', 'Ingredient / Packaging Structure', 'Willow Creek Packaging Readiness', '7204', 'https://td3021666.app.netsuite.com/app/common/custom/custrecordentry.nl?id=7204')
     ]
   });
-  const northstar = fixture(hooks, {
-    label: 'Northstar Medical/Dental',
-    laneId: 'medical_dental_supply',
-    customer: 'Northstar Dental Supply & Equipment',
-    website: 'https://www.northstardentalsupply.com',
-    notes: 'Clinics need dental supply availability, substitutes, backorders, multi-location stock, and warranty context.',
-    websiteEvidence: 'Dental supplies, substitutes, backorder, multi-location stock.',
-    records: [
-      openRecordFixture('customer', 'Customer', 'Northstar Dental Supply Customer Account', '7101', 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=7101'),
-      openRecordFixture('sales_order', 'Sales Order', 'SO-W372 Northstar Clinic Supply Order', '7102', 'https://td3021666.app.netsuite.com/app/accounting/transactions/salesord.nl?id=7102'),
-      openRecordFixture('clinic_supply_item', 'Clinic Supply Item', 'Northstar Sterilization Supply Item', '7103', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7103'),
-      openRecordFixture('substitute_product', 'Substitute Product', 'Northstar Substitute SKU', '7104', 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=7104')
-    ]
-  });
   const harbor = fixture(hooks, {
     label: 'Harbor Apparel/Retail',
     laneId: 'apparel_accessories',
@@ -181,23 +182,23 @@ function main() {
     traceScenario(hooks, 'w359_fastenal_broader_smoke_advisory_confidence_accepted_trace.json', 'Fastenal'),
     traceScenario(hooks, 'w360_msc_second_adjacent_distribution_smoke_trace.json', 'MSC')
   ];
-  const scenarios = [bayview, meridian, atlas, willow, northstar, harbor].concat(baselines);
-  const sharedRendererScenarios = [bayview, meridian, atlas, willow, northstar, harbor].concat(baselines.slice(0, 2));
-  const partsPackText = packText(partsPack);
+  const scenarios = [northstar, bayview, meridian, atlas, willow, harbor].concat(baselines);
+  const sharedRendererScenarios = [northstar, bayview, meridian, atlas, willow, harbor].concat(baselines.slice(0, 2));
+  const medicalPackText = packText(medicalPack);
   const strongResolution = resolveLanePackFromEvidence({
-    website: 'https://www.bayviewkitchenservice.com',
-    categoryText: 'Commercial kitchen service, equipment service, installed equipment, work order, technician, service parts, truck stock, warehouse parts, emergency repair, warranty.',
-    signals: ['work order readiness', 'installed equipment history', 'truck/warehouse parts availability', 'backordered parts', 'first-time fix risk']
+    website: 'https://www.northstardentalsupply.com',
+    categoryText: 'Dental supply, dental equipment, clinic supply, sterilization supplies, handpieces, chairs, small equipment, substitute products, backorders, multi-location stock, warranty, compliance context.',
+    signals: ['clinic supply availability', 'equipment availability', 'substitute product readiness', 'backorder risk', 'customer promise confidence']
   });
   const weakResolution = resolveLanePackFromEvidence({
     website: 'https://example.invalid',
-    categoryText: 'maybe equipment stuff',
+    categoryText: 'maybe dental stuff',
     signals: []
   });
   const storySurface = consultantStorySurfaceFromLanePack({
-    website: 'https://www.bayviewkitchenservice.com',
-    categoryText: 'Commercial kitchen service, repair service, installed equipment, work order, technician, service parts, truck stock, warranty.'
-  }, partsPack, { displayReadyRecords: bayviewRecords });
+    website: 'https://www.northstardentalsupply.com',
+    categoryText: 'Dental supply, dental equipment, clinic supply, sterilization supplies, substitute products, backorders, multi-location stock, warranty.'
+  }, medicalPack, { displayReadyRecords: northstarRecords });
   const readiness = {
     dealer_hardgoods: reviewLane('dealer_hardgoods', [
       ['customer'], ['sales_order'], ['product_sku'], ['dealer_availability_or_replenishment_flow'], ['allocation_support_sku', 'channel_context']
@@ -209,8 +210,8 @@ function main() {
       ['customer'], ['work_order'], ['installed_equipment'], ['service_part'], ['truck_stock_context'], ['warehouse_parts_context'], ['backorder_context'], ['warranty_context']
     ], ['work order readiness', 'installed equipment history', 'truck/warehouse parts availability', 'backordered parts', 'warranty exposure', 'first-time fix risk', 'emergency response', 'service margin']),
     medical_dental_supply: reviewLane('medical_dental_supply', [
-      ['customer'], ['sales_order'], ['clinic_supply', 'equipment'], ['substitute'], ['backorder', 'multi-location', 'warranty', 'compliance']
-    ], ['clinic', 'substitute', 'backorder', 'multi-location', 'warranty']),
+      ['customer'], ['sales_order'], ['clinic_supply_or_equipment_item'], ['substitute_product'], ['backorder_context'], ['multi_location_stock_context'], ['warranty_context'], ['compliance_context']
+    ], ['clinic supply availability', 'equipment availability', 'substitute product readiness', 'backorder risk', 'multi-location stock', 'warranty context', 'compliance-sensitive item context', 'customer promise confidence']),
     food_beverage: reviewLane('food_beverage', [
       ['customer'], ['sales_order'], ['finished_food_or_batch_item'], ['ingredient_or_component_item'], ['formula_or_batch_structure', 'lot_or_availability_context', 'work_order_or_wip_object']
     ], ['ingredient readiness', 'batch', 'packaging timing', 'finished-good availability']),
@@ -222,30 +223,30 @@ function main() {
     ], ['lot/release readiness', 'approved inventory', 'expiration risk', 'QA/validation documentation', 'traceability', 'shipment confidence'])
   };
 
-  assertCase(results, 'w381-parts-service-source-pack-present-and-valid',
-    !!partsPack &&
-      partsPack.laneId === 'parts_service' &&
-      partsPack.label === 'Parts & Service Field Operations' &&
-      partsPack.operatingMode === 'services_field' &&
-      validateLanePack(partsPack).valid === true,
-    JSON.stringify(partsPack || null, null, 2));
+  assertCase(results, 'w382-medical-dental-source-pack-present-and-valid',
+    !!medicalPack &&
+      medicalPack.laneId === 'medical_dental_supply' &&
+      medicalPack.label === 'Medical/Dental Supply & Equipment' &&
+      medicalPack.operatingMode === 'distribution_replenishment' &&
+      validateLanePack(medicalPack).valid === true,
+    JSON.stringify(medicalPack || null, null, 2));
 
-  assertCase(results, 'w381-parts-service-proof-role-coverage',
-    includesAll(partsPackText, ['customer', 'work_order', 'installed_equipment', 'service_part', 'truck_stock_context', 'warehouse_parts_context', 'backorder_context', 'warranty_context', 'emergency_response_context', 'service_margin_context']),
-    partsPackText);
+  assertCase(results, 'w382-medical-dental-proof-role-coverage',
+    includesAll(medicalPackText, ['customer', 'sales_order', 'clinic_supply_or_equipment_item', 'substitute_product', 'backorder_context', 'multi_location_stock_context', 'warranty_context', 'compliance_context', 'equipment_history_context', 'customer_promise_context']),
+    medicalPackText);
 
-  assertCase(results, 'w381-parts-service-signal-vocabulary-and-anti-leak-coverage',
-    includesAll(partsPackText, ['field service', 'service operations', 'repair service', 'commercial kitchen service', 'equipment service', 'installed equipment', 'work order', 'technician', 'service parts', 'truck stock', 'warehouse parts', 'emergency repair', 'warranty']) &&
-      includesAll(partsPackText, ['work order readiness', 'installed equipment history', 'truck/warehouse parts availability', 'backordered parts', 'warranty exposure', 'first-time fix risk', 'emergency response', 'service margin']) &&
-      includesAll(partsPackText, ['dealer allocation', 'channel fulfillment', 'style/color/size', 'store/ecommerce promise', 'clinic supply substitutes', 'food batch', 'QA release'.toLowerCase(), 'lot/release readiness', 'configured equipment assembly']),
-    partsPackText);
+  assertCase(results, 'w382-medical-dental-signal-vocabulary-and-anti-leak-coverage',
+    includesAll(medicalPackText, ['medical supply', 'dental supply', 'dental equipment', 'clinic supply', 'sterilization supplies', 'handpieces', 'chairs', 'small equipment', 'substitute products', 'backorders', 'multi-location stock', 'warranty', 'compliance context']) &&
+      includesAll(medicalPackText, ['clinic supply availability', 'equipment availability', 'substitute product readiness', 'backorder risk', 'warranty context', 'compliance-sensitive item context', 'customer promise confidence']) &&
+      includesAll(medicalPackText, ['dealer allocation', 'channel fulfillment', 'style/color/size', 'store/ecommerce promise', 'technician truck stock', 'first-time fix', 'food batch', 'QA release'.toLowerCase(), 'lot/release readiness', 'configured equipment assembly']),
+    medicalPackText);
 
-  assertCase(results, 'w381-lane-pack-resolution-and-story-surface-safety',
-    strongResolution.packId === 'parts-service-field-operations' &&
+  assertCase(results, 'w382-lane-pack-resolution-and-story-surface-safety',
+    strongResolution.packId === 'medical-dental-supply-equipment' &&
       strongResolution.status === 'resolved' &&
       weakResolution.status !== 'resolved' &&
       storySurface.status === 'story_ready' &&
-      /work order|installed equipment|service part|truck|warehouse|warranty|first-time-fix|service-margin/i.test(JSON.stringify(storySurface)) &&
+      /clinic supply|dental equipment|substitute|backorder|multi-location|warranty|customer promise/i.test(JSON.stringify(storySurface)) &&
       !/guarantee|guaranteed|measured roi|will increase/i.test([
         storySurface.proofMove,
         storySurface.safeClaim,
@@ -255,29 +256,32 @@ function main() {
       /Do not claim .*measured ROI without evidence/i.test(storySurface.doNotClaim || ''),
     JSON.stringify({ strongResolution, weakResolution, storySurface }, null, 2));
 
-  assertCase(results, 'w381-readiness-map-updated-without-other-lane-regression',
-    readiness.parts_service.status === 'ready_now' &&
+  assertCase(results, 'w382-readiness-map-updated-without-other-lane-regression',
+    readiness.medical_dental_supply.status === 'ready_now' &&
+      readiness.medical_dental_supply.packIds.indexOf('medical-dental-supply-equipment') >= 0 &&
+      readiness.parts_service.status === 'ready_now' &&
       readiness.parts_service.packIds.indexOf('parts-service-field-operations') >= 0 &&
       readiness.life_sciences.status === 'ready_now' &&
       readiness.life_sciences.packIds.indexOf('life-sciences-regulated-supply-release') >= 0 &&
       readiness.dealer_hardgoods.status === 'ready_now' &&
       readiness.food_beverage.status === 'ready_now' &&
       readiness.industrial_equipment.status === 'ready_now' &&
-      readiness.apparel_accessories.status === 'ready_with_fixture_only_proof' &&
-      ['needs_scoped_source_pack_cleanup', 'ready_now'].indexOf(readiness.medical_dental_supply.status) >= 0,
+      readiness.apparel_accessories.status === 'ready_with_fixture_only_proof',
     JSON.stringify(readiness, null, 2));
 
-  assertCase(results, 'w381-bayview-life-sciences-and-w371-run-value-preserved',
-    /work order|installed equipment|truck|warehouse|first-time fix/i.test(bayview.valueText + bayview.runText) &&
+  assertCase(results, 'w382-northstar-parts-life-sciences-and-w371-run-value-preserved',
+    /clinic supply|substitute|backorder|multi-location|warranty/i.test(northstar.valueText + northstar.runText) &&
+      /work order|installed equipment|truck|warehouse|first-time fix/i.test(bayview.valueText + bayview.runText) &&
       /Regulated lot and release readiness/i.test(meridian.valueText + meridian.runText) &&
+      partsPack && validateLanePack(partsPack).valid === true &&
       lifePack && validateLanePack(lifePack).valid === true &&
       scenarios.every((scenario) => /idb-w371-roi-competitive-flow/.test(scenario.valueHtml)) &&
       sharedRendererScenarios.every((scenario) => /W375 shared story renderer/.test(scenario.valueHtml + scenario.runHtml)) &&
       sharedRendererScenarios.every((scenario) => scenario.value.storyContractW373.authoringReadinessW377.ready === true) &&
       scenarios.every((scenario) => clickablePathCount(scenario.runHtml) >= 4),
-    bayview.valueText.slice(0, 2200));
+    northstar.valueText.slice(0, 2200));
 
-  assertCase(results, 'w381-open-link-claim-safety-confidence-and-no-fake-links',
+  assertCase(results, 'w382-open-link-claim-safety-confidence-and-no-fake-links',
     scenarios.every((scenario) => importedOpenLinksValid(scenario.state)) &&
       scenarios.every((scenario) => /Measured savings require|before claiming savings|Baseline to capture/i.test(textOf(scenario))) &&
       scenarios.every((scenario) => /Advisory only|advisory|Assumption|Inferred|confidence/i.test(textOf(scenario))) &&
@@ -285,7 +289,7 @@ function main() {
       LANE_PACKS.every((pack) => pack.nllmAdvisory.writeAuthority === 'none' && pack.nllmAdvisory.creationAllowed === false),
     JSON.stringify(readiness, null, 2));
 
-  printResults('W381 Parts/Service source-pack readiness cleanup harness', results);
+  printResults('W382 Medical/Dental source-pack readiness cleanup harness', results);
 }
 
 main();

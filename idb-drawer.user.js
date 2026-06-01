@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.22
+// @version      1.0.24
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.22';
-  const CURRENT_UX_BLOCK_W346 = 'W376';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.24';
+  const CURRENT_UX_BLOCK_W346 = 'W378';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -20183,6 +20183,100 @@
     };
   }
 
+  function lifeSciencesStoryPolishW378(state, lane, value) {
+    if (!lane || lane.id !== 'life_sciences') {
+      return {
+        schema: 'idb.w378-life-sciences-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Lot / Release';
+    return {
+      schema: 'idb.w378-life-sciences-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Regulated lot and release readiness',
+      pathFlow: ['Regulated order demand', 'Lot/release record', 'Approved inventory', 'Expiration risk', 'QA/validation documentation', 'Traceability', 'Shipment confidence'],
+      riskPressure: 'lot status uncertainty, expiration exposure, QA release delays, validation-document gaps, traceability risk, and regulated shipment promise pressure',
+      valueDecision: `Use ${product} to help ${customer} trust regulated order demand, lot/release readiness, approved inventory, expiration exposure, QA/validation documentation, traceability, and shipment confidence before confirming the next regulated customer promise.`,
+      proofMove: `Prove regulated lot/release readiness with ${lane.proofAnchor}; then connect approved inventory, expiration risk, QA/validation documentation, traceability, and shipment confidence.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the Life Sciences story; confirm real lot, release, expiration, validation, QA, traceability, and shipment evidence before ROI or regulated-readiness claims.',
+      competitorPressure: ['spreadsheets and manual QA release reports', 'SAP or legacy ERP', 'quality management system', 'LIMS or lab system', 'QuickBooks plus spreadsheets'],
+      netsuiteContrast: `Keep regulated order demand, lot/release readiness, approved inventory, expiration risk, QA/validation documentation, traceability, and shipment confidence in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise', 'work order dispatch', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'dental distributor portal', 'ingredient batch', 'food batch', 'configured equipment assembly', 'engineering BOM'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false,
+        w371RoiRunUxPreserved: true,
+        w373StoryContractPreserved: true,
+        w375SharedRendererPreserved: true,
+        w377AuthoringTemplateReady: true
+      }
+    };
+  }
+
+  function laneStoryAuthoringTemplateW377() {
+    return {
+      schema: 'idb.w377-lane-story-authoring-template.v1',
+      requiredFields: ['proofLabel', 'pathFlow', 'riskPressure', 'valueDecision', 'proofMove', 'safeClaim', 'competitorPressure', 'netsuiteContrast', 'antiLeakTerms', 'noRegression'],
+      fixtureFields: ['customer', 'website', 'messySalesNotes', 'websiteEvidence', 'scObjective', 'decisionCriteria', 'records'],
+      requiredNoRegressionFlags: ['storyLayerOnly', 'noDrawerWrites', 'noTransactionWrites', 'noFakeOpenLinks', 'completedResultValidationUnchanged', 'sourceLanePacksMutated'],
+      liveSmokeRequiredWhen: [
+        'runner invocation changes',
+        'adapter transport changes',
+        'record creation behavior changes',
+        'completed-result import validation changes',
+        'Open-link authority checks change',
+        'source lane pack mutation changes live generated records'
+      ],
+      noRegression: {
+        authoringTemplateOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        sourceLanePacksMutated: false
+      }
+    };
+  }
+
+  function laneStoryAuthoringReadinessW377(storyContract) {
+    const template = laneStoryAuthoringTemplateW377();
+    if (!storyContract || !storyContract.active) {
+      return {
+        schema: 'idb.w377-lane-story-authoring-readiness.v1',
+        status: 'inactive_story_contract',
+        ready: true,
+        missingFields: [],
+        missingNoRegressionFlags: [],
+        templateSchema: template.schema
+      };
+    }
+    const missingFields = template.requiredFields.filter((field) => {
+      const value = storyContract[field];
+      return Array.isArray(value) ? value.length === 0 : !value;
+    });
+    const missingNoRegressionFlags = template.requiredNoRegressionFlags.filter((flag) => {
+      if (flag === 'sourceLanePacksMutated') return !(storyContract.noRegression && storyContract.noRegression[flag] === false);
+      return !(storyContract.noRegression && storyContract.noRegression[flag] === true);
+    });
+    const enoughAntiLeakTerms = arrayValue(storyContract.antiLeakTerms).length >= 4;
+    return {
+      schema: 'idb.w377-lane-story-authoring-readiness.v1',
+      status: missingFields.length || missingNoRegressionFlags.length || !enoughAntiLeakTerms ? 'needs_story_authoring_cleanup' : 'story_authoring_ready',
+      ready: missingFields.length === 0 && missingNoRegressionFlags.length === 0 && enoughAntiLeakTerms,
+      missingFields,
+      missingNoRegressionFlags,
+      antiLeakTermCount: arrayValue(storyContract.antiLeakTerms).length,
+      templateSchema: template.schema,
+      nextLaneWorkMode: 'fixture_first_unless_runner_import_or_open_link_integration_risk_changes'
+    };
+  }
+
   function crossLaneStoryPolishContractW373(state, lane, value) {
     const legacySupportLeakTerms = [
       'Industrial Distributor',
@@ -20198,7 +20292,8 @@
       partsServiceStoryPolishW370(state, lane, value),
       medicalDentalStoryPolishW372(state, lane, value),
       foodBeverageStoryPolishW374(state, lane, value),
-      industrialEquipmentStoryPolishW376(state, lane, value)
+      industrialEquipmentStoryPolishW376(state, lane, value),
+      lifeSciencesStoryPolishW378(state, lane, value)
     ];
     const active = candidates.find((item) => item && item.active) || {
       schema: 'idb.w373-cross-lane-story-polish-contract.v1',
@@ -20219,20 +20314,26 @@
       const current = active[field];
       return Array.isArray(current) ? current.length === 0 : !current;
     });
+    const normalizedNoRegression = Object.assign({}, active.noRegression || {}, {
+      storyContractW373: true,
+      collapsedSupportCleanupOnly: true,
+      sourceLanePacksMutated: false,
+      noDrawerWrites: true,
+      noTransactionWrites: true,
+      noFakeOpenLinks: true,
+      w377AuthoringTemplateReady: true
+    });
     return Object.assign({}, active, {
       schema: 'idb.w373-cross-lane-story-polish-contract.v1',
       sourceSchema: active.schema || '',
       storyContractConsistent: active.active ? missingFields.length === 0 : true,
       missingFields,
       antiLeakTerms: Array.from(new Set(arrayValue(active.antiLeakTerms).concat(legacySupportLeakTerms))),
-      noRegression: Object.assign({}, active.noRegression || {}, {
-        storyContractW373: true,
-        collapsedSupportCleanupOnly: true,
-        sourceLanePacksMutated: false,
-        noDrawerWrites: true,
-        noTransactionWrites: true,
-        noFakeOpenLinks: true
-      })
+      noRegression: normalizedNoRegression,
+      authoringReadinessW377: laneStoryAuthoringReadinessW377(Object.assign({}, active, {
+        antiLeakTerms: Array.from(new Set(arrayValue(active.antiLeakTerms).concat(legacySupportLeakTerms))),
+        noRegression: normalizedNoRegression
+      }))
     });
   }
 
@@ -20249,6 +20350,7 @@
     const medicalDental = lane.id === 'medical_dental_supply' || /dental|clinic|sterilization|handpiece|handpieces|chair|chairs|medical supply|dental supply|substitute product|equipment warranty|compliance|backorder/.test(combined);
     const foodBeverage = lane.id === 'food_beverage' || /food|beverage|ingredient|packaging|case pack|batch|lot|qa|quality hold|line schedule|finished good|promotion ship|copacker|co-packer|fishbowl|batchmaster/.test(combined);
     const industrialEquipment = lane.id === 'industrial_equipment' || /industrial equipment|configured equipment|assembly|bom|component|supplier lead|build schedule|work-center|work center|inspection|test readiness|delivery promise|engineering change/.test(combined);
+    const lifeSciences = lane.id === 'life_sciences' || /life science|diagnostic|reagent|regulated|lot status|lot\/release|release readiness|expiration|validation|qa release|traceability|lims|quality system/.test(combined);
     const distribution = /dealer|distributor|warehouse|branch|fulfillment|channel/.test(combined);
     const alternatives = [];
     if (supplied && !manualWorkflow) alternatives.push(supplied);
@@ -20257,7 +20359,8 @@
       if (alternatives.length) return Array.from(new Set(alternatives)).slice(0, 6);
     }
     if (manualWorkflow) alternatives.push('spreadsheets and manual inventory reports', 'QuickBooks plus spreadsheets');
-    if (industrialEquipment) alternatives.push('QuickBooks plus spreadsheets', 'Odoo or manufacturing add-ons', 'Microsoft Dynamics 365', 'engineering BOM spreadsheets', 'supplier status email threads');
+    if (lifeSciences) alternatives.push('spreadsheets and manual QA release reports', 'SAP or legacy ERP', 'quality management system', 'LIMS or lab system', 'QuickBooks plus spreadsheets');
+    else if (industrialEquipment) alternatives.push('QuickBooks plus spreadsheets', 'Odoo or manufacturing add-ons', 'Microsoft Dynamics 365', 'engineering BOM spreadsheets', 'supplier status email threads');
     else if (dealerHardgoods) alternatives.push('dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo');
     else if (foodBeverage) alternatives.push('QuickBooks plus spreadsheets', 'Fishbowl or inventory add-ons', 'BatchMaster or food production tools', 'co-packer schedule spreadsheets', 'manual QA hold reports');
     else if (medicalDental) alternatives.push('QuickBooks plus spreadsheets', 'Shopify or ecommerce reports', 'dental distributor portal', 'inventory add-ons', 'manual substitute checks');
@@ -20325,7 +20428,9 @@
     const text = `${intake.customer || ''} ${intake.website || ''} ${intake.notes || ''} ${lane && lane.name || ''}`.toLowerCase();
     const fromExisting = arrayValue(competitive && competitive.competitivePrep && competitive.competitivePrep.alternatives);
     let standard = [];
-    if (lane.id === 'industrial_equipment' || /industrial equipment|configured equipment|assembly|bom|component|supplier lead|build schedule|work-center|work center|inspection|test readiness|delivery promise|engineering change/.test(text)) {
+    if (lane.id === 'life_sciences' || /life science|diagnostic|reagent|regulated|lot status|lot\/release|release readiness|expiration|validation|qa release|traceability|lims|quality system/.test(text)) {
+      standard = ['spreadsheets and manual QA release reports', 'SAP or legacy ERP', 'quality management system', 'LIMS or lab system', 'QuickBooks plus spreadsheets'];
+    } else if (lane.id === 'industrial_equipment' || /industrial equipment|configured equipment|assembly|bom|component|supplier lead|build schedule|work-center|work center|inspection|test readiness|delivery promise|engineering change/.test(text)) {
       standard = ['QuickBooks plus spreadsheets', 'Odoo manufacturing add-ons', 'Microsoft Dynamics 365', 'engineering BOM spreadsheets', 'supplier status email threads'];
     } else if (lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time/.test(text)) {
       standard = ['dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo'];
@@ -20645,6 +20750,7 @@
     const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
     const foodBeveragePolish = value.foodBeveragePolishW374 || foodBeverageStoryPolishW374(state, lane, value);
     const industrialEquipmentPolish = value.industrialEquipmentPolishW376 || industrialEquipmentStoryPolishW376(state, lane, value);
+    const lifeSciencesPolish = value.lifeSciencesPolishW378 || lifeSciencesStoryPolishW378(state, lane, value);
     const actionCopy = liveActionCopy(action.id, value, lane, pageContext, selectedMove, recommendation);
     const coach = runCoachV3Model(state, lane, pageContext, selectedMove, recommendation, action);
     const packetIdentity = packetIdentityFor(state, lane);
@@ -20797,6 +20903,22 @@
       } else if (action.id === 'close_value') {
         selectedScript.say = `Summarize the equipment decision ${value.customer} can now make: ${industrialEquipmentPolish.valueDecision}`;
         selectedScript.close = 'Capture the current engineering change, component shortage, supplier delay, build schedule slip, inspection/test miss, delivery delay, or manual-check baseline before claiming savings.';
+      }
+    }
+    if (lifeSciencesPolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s regulated release pressure: ${lifeSciencesPolish.riskPressure}. Keep this as lot/release, approved inventory, expiration, QA/validation, traceability, and shipment confidence, not dealer, retail, service, clinic, food, or equipment assembly.`;
+        selectedScript.close = 'Ask which lot status, expiration, QA release, validation document, traceability, or shipment promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = lifeSciencesPolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(lifeSciencesPolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to confirm the next regulated shipment without manual release reconciliation.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions regulated readiness, ask which lot, expiration, QA release, validation document, traceability, or shipment detail they reconcile by hand today, then return to the NetSuite proof path.';
+        selectedScript.close = 'Confirm what evidence would make regulated lot and release readiness trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the regulated shipment decision ${value.customer} can now make: ${lifeSciencesPolish.valueDecision}`;
+        selectedScript.close = 'Capture the current lot hold, expiration risk, QA release delay, validation-document gap, traceability miss, shipment delay, or manual-check baseline before claiming savings.';
       }
     }
     selectedScript.say = consultantVisibleCopyW346(selectedScript.say, 320);
@@ -20960,6 +21082,7 @@
     const medicalDentalPolish = medicalDentalStoryPolishW372(state, lane, { product: product.product });
     const foodBeveragePolish = foodBeverageStoryPolishW374(state, lane, { product: product.product });
     const industrialEquipmentPolish = industrialEquipmentStoryPolishW376(state, lane, { product: product.product });
+    const lifeSciencesPolish = lifeSciencesStoryPolishW378(state, lane, { product: product.product });
     const storyContractW373 = crossLaneStoryPolishContractW373(state, lane, { product: product.product });
     const valueProofStack = [
       `ERP proof - ${industryWin.proof}`,
@@ -20979,6 +21102,8 @@
         ? foodBeveragePolish.valueDecision
       : industrialEquipmentPolish.active
         ? industrialEquipmentPolish.valueDecision
+      : lifeSciencesPolish.active
+        ? lifeSciencesPolish.valueDecision
       : `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
     const roiAuditCards = [
       `Why now - ${pain}`,
@@ -21012,6 +21137,7 @@
       medicalDentalPolishW372: medicalDentalPolish,
       foodBeveragePolishW374: foodBeveragePolish,
       industrialEquipmentPolishW376: industrialEquipmentPolish,
+      lifeSciencesPolishW378: lifeSciencesPolish,
       storyContractW373,
       grounded,
       competitorContext: competitive.competitorSafeContrast,
@@ -21020,7 +21146,7 @@
       w213Coach,
       valueProofStack,
       talkTrackLead,
-      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active || partsServicePolish.active || medicalDentalPolish.active || foodBeveragePolish.active || industrialEquipmentPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
+      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active || partsServicePolish.active || medicalDentalPolish.active || foodBeveragePolish.active || industrialEquipmentPolish.active || lifeSciencesPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
       roiAuditCards,
       competitiveCards,
       objectionPath,
@@ -21030,7 +21156,7 @@
       valueAgenda: [
         `Objective - ${consultantVisibleCopyW346(objective, 220)}`,
         `Start with ${customer}'s stated risk - ${consultantVisibleCopyW346(pain, 220)}`,
-        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : partsServicePolish.active ? partsServicePolish.proofMove : medicalDentalPolish.active ? medicalDentalPolish.proofMove : foodBeveragePolish.active ? foodBeveragePolish.proofMove : industrialEquipmentPolish.active ? industrialEquipmentPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
+        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : partsServicePolish.active ? partsServicePolish.proofMove : medicalDentalPolish.active ? medicalDentalPolish.proofMove : foodBeveragePolish.active ? foodBeveragePolish.proofMove : industrialEquipmentPolish.active ? industrialEquipmentPolish.proofMove : lifeSciencesPolish.active ? lifeSciencesPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
         `Tie the proof to ${lane.valueLens}`,
         `Decision criteria - ${consultantVisibleCopyW346(criteria, 220)}`,
         `Close by confirming the next operational decision the prospect can now make.`
@@ -23294,6 +23420,7 @@
     if (/medical-dental/i.test(source)) return 'Medical/dental';
     if (/food-beverage/i.test(source)) return 'Food/beverage';
     if (/industrial-equipment/i.test(source)) return 'Industrial equipment';
+    if (/life-sciences/i.test(source)) return 'Life Sciences';
     return 'Lane story';
   }
 
@@ -23305,6 +23432,7 @@
     if (source.indexOf('medical-dental') >= 0) return 'idb-w372-medical-dental-card';
     if (source.indexOf('food-beverage') >= 0) return 'idb-w374-food-beverage-card';
     if (source.indexOf('industrial-equipment') >= 0) return 'idb-w376-industrial-equipment-card';
+    if (source.indexOf('life-sciences') >= 0) return 'idb-w378-life-sciences-card';
     return 'idb-w375-story-contract-card';
   }
 
@@ -27459,7 +27587,10 @@
       medicalDentalStoryPolishW372,
       foodBeverageStoryPolishW374,
       industrialEquipmentStoryPolishW376,
+      lifeSciencesStoryPolishW378,
       crossLaneStoryPolishContractW373,
+      laneStoryAuthoringTemplateW377,
+      laneStoryAuthoringReadinessW377,
       renderW375StoryContractLens,
       renderW375StoryContractProofPath,
       groundedValueEvidenceModel,

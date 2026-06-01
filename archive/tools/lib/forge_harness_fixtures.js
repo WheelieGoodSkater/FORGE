@@ -21,6 +21,16 @@ function readArchiveJson(...parts) {
   return JSON.parse(readArchiveText(...parts));
 }
 
+function stripHtml(html) {
+  return String(html || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function assertCase(results, id, pass, evidence) {
   results.push({ id, pass: Boolean(pass), evidence: evidence || '' });
 }
@@ -178,6 +188,119 @@ function motionContext(hooks, state) {
   return { lane, page, recommendation };
 }
 
+function openRecordFixture(role, label, name, id, url, recordType) {
+  const resolvedType = recordType ||
+    (/Sales Order/i.test(label) ? 'salesorder'
+      : /Customer/i.test(label) ? 'customer'
+      : /Work Order/i.test(label) ? 'workorder'
+      : /Assembly/i.test(label) ? 'assemblyitem'
+      : /Schedule|Inspection|Test|Context|Flow|Matrix|QA|Lot/i.test(label) ? 'customrecord'
+      : 'inventoryitem');
+  return {
+    schema: 'idb.w245-display-ready-record.v1',
+    role,
+    canonicalRole: role,
+    consultantLabel: label,
+    label,
+    name,
+    recordName: name,
+    id,
+    internalId: id,
+    recordType: resolvedType,
+    url,
+    supportedOpenUrl: url,
+    source: 'dcc_final',
+    linkAuthorityStatus: 'verified_openable',
+    sourceConfidence: 'verified_open_link',
+    normalConsultantVisible: true,
+    safeToOpen: true,
+    linkAuthority: { status: 'verified_openable', openable: true, url }
+  };
+}
+
+function storyFixtureState(hooks, config) {
+  const state = Object.assign(hooks.defaultState(), {
+    open: true,
+    selectedLaneId: config.laneId,
+    laneSelectionSource: config.source || 'fixture_story_layer_no_live_smoke',
+    selectedMoveIndex: config.selectedMoveIndex == null ? 2 : config.selectedMoveIndex,
+    selectedActionId: config.selectedActionId || 'prove',
+    briefPrepared: true,
+    intake: Object.assign({
+      customer: config.customer,
+      website: config.website,
+      notes: config.notes,
+      websiteEvidence: config.websiteEvidence,
+      scObjective: config.scObjective || `Prepare a fixture-first ${config.laneId} demo story.`,
+      decisionCriteria: config.decisionCriteria || `Keep ${config.laneId} distinct.`,
+      competitor: config.competitor || '',
+      timelineUrgency: ''
+    }, config.intake || {}),
+    pageContext: Object.assign({
+      title: 'NetSuite Home',
+      url: 'https://td3021666.app.netsuite.com/app/center/card.nl',
+      pageType: 'NetSuite page',
+      contextId: 'generic_netsuite_page',
+      confidence: 'low'
+    }, config.pageContext || {})
+  });
+  const lane = hooks.getLane(state);
+  const recommendation = hooks.recommendMove(lane, state.pageContext);
+  state.acceptedPacket = hooks.buildAcceptedPacketContext(state, lane, state.pageContext, recommendation);
+  state.dccFinalNamingResult = {
+    schema: 'idb.dcc-final-naming-result.v1',
+    status: 'dcc_final_names_imported',
+    displayStatus: 'Final generated names imported',
+    importedAt: config.importedAt || '2026-06-01T17:00:00.000Z',
+    source: config.source || 'fixture_story_layer_no_live_smoke',
+    finalNamesImported: true,
+    runStatus: 'completed',
+    prospect: config.prospect || `${config.customer} Customer Account`,
+    scenario: config.scenario || lane.proofAnchor,
+    familyKey: config.laneId,
+    generated: { extId: '', agenda: '' },
+    displayObjects: config.records.slice(0, 4),
+    componentItems: config.records.slice(4),
+    locationPlanningRecords: [],
+    displayReadyRecords: config.records,
+    warnings: [],
+    errors: [],
+    recoverableBlockers: [],
+    noRegression: {
+      importOnly: true,
+      noIdbWrites: true,
+      noSuiteScriptInvocationFromIdb: true,
+      noTransactionWritesFromIdb: true
+    }
+  };
+  hooks.reconcileStateAuthority(state);
+  return state;
+}
+
+function storyScenarioFromState(hooks, state, label) {
+  const lane = hooks.getLane(state);
+  const page = state.pageContext || {};
+  const recommendation = hooks.recommendMove(lane, page);
+  const action = { id: state.selectedActionId || 'prove', label: 'Prove' };
+  const selectedMove = lane.moves[state.selectedMoveIndex] || lane.moves[0];
+  const value = hooks.valueReviewPacket(state, lane, page, recommendation);
+  const runHtml = hooks.renderRunView(state, lane, page, recommendation, selectedMove, action, '');
+  const valueHtml = hooks.renderValueReviewView(state, lane, page, recommendation);
+  const traceHtml = hooks.renderTraceView(state, lane, page, recommendation);
+  return {
+    label,
+    state,
+    lane,
+    value,
+    runHtml,
+    valueHtml,
+    traceHtml,
+    runText: stripHtml(runHtml),
+    valueText: stripHtml(valueHtml),
+    traceText: stripHtml(traceHtml)
+  };
+}
+
 function completedMotionResult(options = {}) {
   const prefix = String(options.prefix || '266');
   const salesOrderName = options.salesOrderName || `SO-W${prefix} Motion Branch Availability`;
@@ -279,11 +402,15 @@ module.exports = {
   read,
   readArchiveText,
   readArchiveJson,
+  stripHtml,
   assertCase,
   printResults,
   loadHooks,
   motionState,
   motionContext,
+  openRecordFixture,
+  storyFixtureState,
+  storyScenarioFromState,
   completedMotionResult,
   invalidMotionResult,
   submitResponse,

@@ -149,7 +149,8 @@
     "harness:pack-readiness-packaging-w384": "node archive/tools/run_w384_pack_readiness_packaging_harness.js",
     "harness:pack-ready-artifact-manifest-w385": "node archive/tools/run_w385_pack_ready_artifact_manifest_harness.js",
     "harness:pack-ready-artifact-package-w386": "node archive/tools/run_w386_pack_ready_artifact_package_harness.js",
-    "harness:release-prep-package-handoff-w387": "node archive/tools/run_w387_release_prep_package_handoff_harness.js"
+    "harness:release-prep-package-handoff-w387": "node archive/tools/run_w387_release_prep_package_handoff_harness.js",
+    "harness:final-source-pack-readiness-handoff-w388": "node archive/tools/run_w388_final_source_pack_readiness_handoff_harness.js"
   },
   "keywords": [
     "netsuite",

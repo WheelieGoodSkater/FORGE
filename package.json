@@ -155,7 +155,8 @@
     "harness:fixture-first-expansion-restart-w390": "node archive/tools/run_w390_fixture_first_expansion_restart_harness.js",
     "harness:building-materials-fixture-story-proof-w391": "node archive/tools/run_w391_building_materials_fixture_story_proof_harness.js",
     "harness:keystone-smoke-wip-routing-safety-gate-w392": "node archive/tools/run_w392_keystone_smoke_wip_routing_safety_gate_harness.js",
-    "harness:wip-routing-best-effort-diagnostics-w393": "node archive/tools/run_w393_wip_routing_best_effort_diagnostics_harness.js"
+    "harness:wip-routing-best-effort-diagnostics-w393": "node archive/tools/run_w393_wip_routing_best_effort_diagnostics_harness.js",
+    "harness:building-materials-source-pack-toggle-guard-w394": "node archive/tools/run_w394_building_materials_source_pack_toggle_guard_harness.js"
   },
   "keywords": [
     "netsuite",

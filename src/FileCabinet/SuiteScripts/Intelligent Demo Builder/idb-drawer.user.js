@@ -1049,6 +1049,13 @@
         dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Inventory / Fulfillment', 'Branch / Inventory Availability', 'Supplier / Replenishment Control', 'Inventory Position', 'Branch Fulfillment Setup']
       },
+      building_materials: {
+        dccFamilyKey: 'buildingMaterials',
+        dccScenario: 'Contractor Project Fulfillment',
+        dccMode: 'Balanced',
+        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        recordsToPlan: ['Customer Record', 'Contractor Account', 'Job Order', 'Branch Item Availability', 'Special Order / Substitution', 'Will-Call / Jobsite Delivery', 'Project Fulfillment Setup']
+      },
       dealer_hardgoods: {
         dccFamilyKey: 'dealerHardgoods',
         dccScenario: 'Dealer Channel Availability',
@@ -1148,6 +1155,20 @@
         signals: ['branch/distribution context', 'supplier lead time', 'replenishment', 'transfer-aware inventory', 'fulfillment confidence'],
         guardrails: ['Do not drift into manufacturing, food, field-service, dealer-channel, or lab-release language.'],
         moves: ['Customer Record', 'Sales Order View', 'Inventory / Fulfillment'],
+        modules: ['Order Management', 'Inventory']
+      },
+      {
+        id: 'building_materials',
+        name: 'Building Materials & Contractor Project Fulfillment',
+        proofAnchor: 'Contractor Job Order',
+        promise: 'Contractor account demand, job order readiness, branch item availability, special-order status, substitutions, and will-call or jobsite delivery protect the project promise.',
+        valueLens: 'Protect job promise confidence and margin by proving branch availability, special-order or substitution status, and delivery readiness before the contractor commitment.',
+        competitiveLens: 'Show contractor project fulfillment in one NetSuite path instead of branch calls, old POS lookups, spreadsheets, Epicor, or Spruce.',
+        validateLive: 'Validate contractor account demand, job order readiness, branch availability, special-order status, substitutions, will-call pickup, jobsite delivery, and margin confidence in one Building Materials path.',
+        storyline: 'Lead with Building Materials through contractor account demand, job order readiness, branch item availability, substitutions, special-order timing, will-call pickup, jobsite delivery, and margin protection.',
+        signals: ['building materials', 'lumber', 'doors', 'windows', 'fasteners', 'tools', 'contractor supply', 'special order materials', 'branch availability', 'will-call pickup', 'jobsite delivery', 'substitutions', 'project fulfillment', 'margin leakage'],
+        guardrails: ['Do not drift into dealer allocation, style/color/size, technician truck stock, clinic supply, lot release, food batch, configured equipment assembly, manufacturing routing, or WIP language without explicit evidence.'],
+        moves: ['Customer Record', 'Contractor Account', 'Job Order', 'Branch Item Availability'],
         modules: ['Order Management', 'Inventory']
       },
       {
@@ -1505,6 +1526,16 @@
       sourceAuthority: 'website_primary'
     },
     {
+      laneId: 'building_materials',
+      domains: ['keystonebuildingsupply.com'],
+      patterns: /keystonebuildingsupply\.com|building materials|lumber|doors|windows|fasteners|tools|contractor supply|special order materials|branch availability|jobsite delivery|will[-\s]?call|substitution|substitutions|project fulfillment|contractor account|job order|margin leakage/i,
+      evidence: 'website shows building materials, contractor supply, branch availability, special orders, will-call, jobsite delivery, substitution, or project fulfillment signals',
+      product: 'Contractor Job Order Availability Path',
+      productFamily: 'Building Materials Contractor Supply',
+      demandMoment: 'contractor job promise confidence',
+      sourceAuthority: 'website_primary'
+    },
+    {
       laneId: 'dealer_hardgoods',
       domains: ['homedepot.com', 'milwaukeetool.com', 'dewalt.com'],
       patterns: /homedepot\.com|milwaukeetool\.com|dewalt\.com|tools|power tools|hardware|home improvement|jobsite|equipment|parts|dealer|retail availability|product sku/i,
@@ -1616,6 +1647,16 @@
       productFamily: 'Branch Inventory Fulfillment',
       demandMoment: 'branch fulfillment confidence',
       sourceAuthority: 'website_category'
+    },
+    {
+      categoryId: 'building_materials_contractor_supply',
+      laneId: 'building_materials',
+      patterns: /building materials|lumber|doors|windows|fasteners|tools|contractor supply|contractor account|job order|special order|branch availability|jobsite delivery|will[-\s]?call|substitution|substitutions|project fulfillment|margin leakage/i,
+      evidence: 'website/category tokens show building materials, contractor account, job order, branch availability, special order, will-call, jobsite delivery, substitutions, or project fulfillment signals',
+      product: 'Contractor Job Order Availability Path',
+      productFamily: 'Building Materials Contractor Supply',
+      demandMoment: 'contractor job promise confidence',
+      sourceAuthority: 'website_category'
     }
   ];
 
@@ -1688,6 +1729,19 @@
       recordRoles: { required: ['customer', 'sales_order', 'branch_or_product_sku', 'replenishment_or_availability_flow'], optional: ['supporting_sku', 'location_planning_context'], invalid: ['assembly', 'work_order', 'ingredient', 'batch', 'style_matrix_or_availability_flow'] },
       vocabulary: { allowed: ['branch availability', 'replenishment', 'supplier lead time', 'fulfillment confidence'], forbidden: ['production routing', 'ingredient batch', 'fashion collection'] },
       liveDemo: { proofMove: 'Open the product or availability flow and prove branch promise, supplier timing, and replenishment action.', storyAnchor: 'The buyer needs to know which location can fulfill, when replenishment lands, and what exception needs action.', roiSoWhat: 'Protect service levels and margin by resolving supplier and branch exceptions before the order misses.', competitiveContrast: 'NetSuite shows branch availability, supplier timing, and fulfillment control instead of a generic warehouse snapshot.' }
+    },
+    {
+      schema: W246_LANE_PACK_SCHEMA_VERSION,
+      packVersion: '1.0.0',
+      packId: 'building-materials-contractor-supply-project-fulfillment',
+      laneId: 'building_materials',
+      subIndustryId: 'building-materials-contractor-supply-project-fulfillment',
+      label: 'Building Materials Contractor Supply & Project Fulfillment',
+      operatingMode: 'distribution_replenishment',
+      websiteSignals: { domains: ['keystonebuildingsupply.com'], categoryTerms: ['building materials', 'lumber', 'doors', 'windows', 'fasteners', 'tools', 'contractor supply', 'special order materials', 'branch availability', 'jobsite delivery', 'will-call pickup', 'substitutions', 'project fulfillment', 'margin leakage'], evidenceTerms: ['contractor account demand', 'job order readiness', 'branch item availability', 'special order status', 'will-call pickup', 'jobsite delivery readiness', 'substitution readiness', 'project fulfillment confidence'] },
+      recordRoles: { required: ['customer', 'contractor_account', 'job_order', 'branch_item_availability'], optional: ['special_order_or_substitution', 'will_call_or_jobsite_delivery', 'margin_context', 'project_fulfillment_context', 'branch_transfer_context', 'contractor_promise_context'], invalid: ['dealer_allocation_or_channel_fulfillment_without_dealer_evidence', 'style_matrix_or_size_color_variant_without_apparel_evidence', 'work_order_or_dispatch_without_parts_service_evidence', 'technician_truck_stock_without_parts_service_evidence', 'clinic_supply_substitute_without_medical_dental_evidence', 'lot_release_or_qa_validation_without_life_sciences_evidence', 'food_formula_or_batch_without_food_evidence', 'configured_equipment_assembly_without_industrial_evidence', 'manufacturing_routing_or_wip_without_explicit_fabrication_evidence'] },
+      vocabulary: { allowed: ['contractor account demand', 'job order readiness', 'branch item availability', 'special order status', 'will-call pickup', 'jobsite delivery readiness', 'substitutions', 'project fulfillment confidence', 'margin leakage', 'contractor promise confidence'], forbidden: ['dealer allocation', 'channel fulfillment', 'style/color/size', 'store/ecommerce promise', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'QA release', 'lot/release readiness', 'validation documentation', 'food batch', 'ingredient readiness', 'configured equipment assembly', 'manufacturing routing', 'WIP', 'work center'] },
+      liveDemo: { proofMove: 'Open the contractor account, job order, branch item availability, special order or substitution status, and will-call or jobsite delivery readiness before the contractor commitment is made.', storyAnchor: 'The buyer needs confidence that a contractor job promise is backed by branch availability, substitution status, special-order timing, and delivery readiness.', roiSoWhat: 'Protect job promise confidence and margin by proving branch availability, special order or substitution status, and delivery readiness before the contractor commitment.', competitiveContrast: 'NetSuite connects contractor account demand, job order readiness, branch availability, special orders, substitutions, will-call pickup, jobsite delivery, and margin context instead of splitting the promise across an old POS, spreadsheets, branch calls, Epicor, or Spruce.' }
     },
     {
       schema: W246_LANE_PACK_SCHEMA_VERSION,
@@ -2366,6 +2420,19 @@
     return resolved && resolved.sourceKind === 'website_category_classifier' ? resolved : null;
   }
 
+  function buildingMaterialsContractorEvidenceW394(state) {
+    const intake = normalizedIntake(state || {});
+    const text = [
+      intake.website,
+      intake.notes,
+      intake.websiteEvidence,
+      websiteEvidenceV1Text(state || {})
+    ].join(' ').toLowerCase();
+    const hasBuildingMaterials = /keystonebuildingsupply\.com|building materials|lumber|doors|windows|fasteners|contractor supply|special order materials|branch availability|jobsite delivery|will[-\s]?call|substitutions|project fulfillment|contractor account|job order|margin leakage/.test(text);
+    const hasManufacturing = /fabrication|custom shop|production routing|work center|wip|build\/test|build test|inspection|configured equipment assembly|manufacturing/.test(text);
+    return hasBuildingMaterials && !hasManufacturing;
+  }
+
   function websiteEvidenceV1Profile(state) {
     const intake = normalizedIntake(state);
     const evidence = state && state.websiteEvidenceV1;
@@ -2378,6 +2445,37 @@
       : confidenceState === WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION
         ? 'medium'
         : 'low';
+    if (confidenceState !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED && buildingMaterialsContractorEvidenceW394(state)) {
+      return {
+        authority: 'website_evidence_v1_with_w394_building_materials_guard',
+        resolverVersion: evidence.resolverVersion || 'websiteEvidenceV1-runtime',
+        resolverSource: 'websiteEvidenceV1',
+        laneId: 'building_materials',
+        domain: evidence.domain || websiteDomain(intake.website),
+        evidence: 'Resolver-limited evidence contained Building Materials contractor/project fulfillment signals; W394 keeps it out of manufacturing fallback.',
+        suppliedWebsiteEvidence: intake.websiteEvidence,
+        product: 'Contractor Job Order',
+        productFamily: 'Building Materials Contractor Supply',
+        demandMoment: 'Project fulfillment confidence',
+        confidence: 'medium',
+        confidenceState,
+        confidenceScore: Math.max(Number(evidence.confidence && evidence.confidence.score) || 0, 0.68),
+        fallbackReason: '',
+        sourceUrls: evidence.sourceUrls || [intake.website],
+        extractedEvidence: evidence.extractedEvidence || {},
+        resolverAdapter: evidence.resolverAdapter || {},
+        failureState: evidence.failureState || '',
+        fetchErrors: evidence.fetchErrors || [],
+        competingCandidates: candidates.slice(0, 4).map((candidate) => ({
+          laneId: candidate.laneId,
+          sourceKind: 'websiteEvidenceV1',
+          score: candidate.score,
+          evidence: (candidate.evidence || []).join(', ') || 'Competing resolver-limited website evidence candidate'
+        })),
+        websiteEvidenceOwnedFields: ['laneId', 'productSeed', 'productFamily', 'demandMoment'],
+        notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach']
+      };
+    }
     if (!best) {
       return {
         authority: 'website_evidence_v1',
@@ -3272,6 +3370,10 @@
     if (lane.id === 'industrial_distribution' && /vans\.com|footwear|shoe|sneaker|apparel|clothing|skateboarding|style|size|color/.test(websiteSource)) websiteScore -= 8;
     if (lane.id === 'industrial_distribution' && /milkbone\.com|milk-bone|dog treat|dog biscuit|pet treat/.test(websiteSource)) websiteScore -= 8;
     if (lane.id === 'industrial_distribution' && /yeti\.com|cooler|coolers|drinkware|tumbler|bottle|mug|outdoor gear/.test(websiteSource)) websiteScore -= 8;
+    if (lane.id === 'building_materials' && /building materials|lumber|doors|windows|fasteners|tools|contractor supply|special order|branch availability|jobsite delivery|will[-\s]?call|substitution|substitutions|project fulfillment|contractor account|job order|margin leakage/.test(`${websiteSource} ${fallbackSource}`)) websiteScore += websiteHint && websiteHint.laneId === lane.id ? 2 : 10;
+    if (lane.id === 'building_materials' && /contractor|job order|branch promises?|missing pieces|substituted|delayed|another branch|special order|will[-\s]?call|jobsite delivery|margin|epicor|spruce/.test(notesSource)) notesScore += websiteHint && websiteHint.laneId === lane.id ? 2 : 8;
+    if (lane.id === 'building_materials' && /fabrication|custom shop|production routing|work center|wip|build\/test|build test|inspection|configured equipment assembly/.test(`${websiteSource} ${notesSource}`)) notesScore -= 2;
+    if (lane.id === 'industrial_equipment' && /building materials|lumber|doors|windows|contractor supply|jobsite delivery|will[-\s]?call|job order|special order/.test(`${websiteSource} ${notesSource}`) && !/fabrication|custom shop|production routing|work center|wip|configured equipment assembly/.test(`${websiteSource} ${notesSource}`)) notesScore -= 10;
     if (lane.id === 'food_beverage' && /yerbamadre\.com|guayaki\.com|yerba\s*madre|guayak[ií]|yerba\s*mate|ready[-\s]?to[-\s]?drink|rtd|beverage|drink|tea|organic\s+yerba|regenerative\s+organic/.test(websiteSource)) websiteScore += websiteHint && websiteHint.laneId === lane.id ? 2 : 10;
     if (lane.id === 'dealer_hardgoods' && /yerbamadre\.com|guayaki\.com|yerba\s*madre|guayak[ií]|yerba\s*mate|ready[-\s]?to[-\s]?drink|rtd|beverage|drink|tea|organic\s+yerba|regenerative\s+organic/.test(websiteSource)) websiteScore -= 10;
     if (lane.id === 'products_cpg' && /hardgoods|durable|surfboard|skateboard|wholesale/.test(websiteSource)) websiteScore -= 4;
@@ -3316,6 +3418,21 @@
   }
 
   function suggestedLaneCandidate(state) {
+    if (buildingMaterialsContractorEvidenceW394(state)) {
+      const buildingLane = laneById('building_materials');
+      if (buildingLane) {
+        const breakdown = laneSignalBreakdown(buildingLane, state);
+        return {
+          lane: buildingLane,
+          score: Math.max(10, breakdown.total),
+          breakdown: Object.assign({}, breakdown, {
+            total: Math.max(10, breakdown.total),
+            confidence: breakdown.confidence === 'none' ? 'medium' : breakdown.confidence,
+            reasons: (breakdown.reasons || []).concat('W394 Building Materials contractor/project fulfillment guard')
+          })
+        };
+      }
+    }
     const profile = websiteSignalProfile(state);
     if (profile && profile.resolverSource === 'websiteEvidenceV1' && profile.laneId) {
       const lane = laneById(profile.laneId);
@@ -4882,10 +4999,39 @@
     return FUNCTIONAL_SETUP_CONTRACT.lanes[lane.id] || FUNCTIONAL_SETUP_CONTRACT.lanes.products_cpg;
   }
 
+  function buildingMaterialsManufacturingEvidenceW394(state, lane) {
+    if (!lane || lane.id !== 'building_materials') return true;
+    const intake = normalizedIntake(state || {});
+    const websiteEvidence = websiteProductNamingEvidence(state || {}, lane);
+    const packageClassifier = websitePackageClassifier(state || {});
+    const text = [
+      intake.website,
+      intake.notes,
+      intake.websiteEvidence,
+      websiteEvidence.productSeed,
+      websiteEvidence.productFamily,
+      websiteEvidence.demandMoment,
+      packageClassifier.categoryId,
+      packageClassifier.productFamily
+    ].join(' ').toLowerCase();
+    return /fabrication|custom shop|shop work|assembly|production routing|work center|wip|build\/test|build test|inspection|configured equipment assembly|manufacturing/.test(text);
+  }
+
   function resolvedToggles(state, lane) {
     const base = setupContractForLane(lane).dccToggles;
     const overrides = state.toggles && state.toggles[lane.id] ? state.toggles[lane.id] : {};
-    return Object.assign({}, base, overrides);
+    const merged = Object.assign({}, base, overrides);
+    if (lane && lane.id === 'building_materials' && !buildingMaterialsManufacturingEvidenceW394(state, lane)) {
+      return Object.assign({}, merged, {
+        enableManufacturing: false,
+        enableWip: false,
+        manufacturingWipGuardW394: {
+          status: 'manufacturing_wip_suppressed_for_building_materials',
+          reason: 'Building Materials defaults to contractor/project fulfillment; Manufacturing/WIP require explicit fabrication, assembly, shop work, production routing, work center, WIP, build/test, inspection, or configured equipment evidence.'
+        }
+      });
+    }
+    return merged;
   }
 
   function missingSetupContext(state) {
@@ -6074,6 +6220,7 @@
         createNewHeroItem: !!toggles.createNewHeroItem,
         enableManufacturing: !!toggles.enableManufacturing,
         enableWip: !!toggles.enableWip,
+        manufacturingWipGuardW394: toggles.manufacturingWipGuardW394 || null,
         prospect: intake.customer || '',
         website: intake.website || '',
         signalText: [
@@ -14601,11 +14748,16 @@
   function selectedBuildTogglesForOperatingModeW214(state, payload, lane) {
     const selected = selectedBuildTogglesForNamingGuardW211(state, payload, lane);
     const resolved = resolvedToggles(state, lane);
+    const manufacturingAllowed = buildingMaterialsManufacturingEvidenceW394(state, lane);
     return {
       schema: 'idb.w214-selected-build-toggles.v1',
       createNewHeroItem: resolved.createNewHeroItem === true,
-      enableManufacturing: selected.enableManufacturing === true || resolved.enableManufacturing === true,
-      enableWip: selected.enableWip === true || resolved.enableWip === true,
+      enableManufacturing: manufacturingAllowed && (selected.enableManufacturing === true || resolved.enableManufacturing === true),
+      enableWip: manufacturingAllowed && (selected.enableWip === true || resolved.enableWip === true),
+      manufacturingWipGuardW394: manufacturingAllowed ? null : {
+        status: 'manufacturing_wip_suppressed_for_building_materials',
+        reason: 'Building Materials contractor/project fulfillment evidence does not support Manufacturing/WIP.'
+      },
       selectedLaneId: selected.selectedLaneId || lane && lane.id || ''
     };
   }

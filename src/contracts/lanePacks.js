@@ -118,6 +118,43 @@ const LANE_PACKS = Object.freeze([
     }
   }),
   pack({
+    packId: 'building-materials-contractor-supply-project-fulfillment',
+    laneId: 'building_materials',
+    subIndustryId: 'building-materials-contractor-supply-project-fulfillment',
+    label: 'Building Materials Contractor Supply & Project Fulfillment',
+    operatingMode: 'distribution_replenishment',
+    websiteSignals: {
+      domains: ['keystonebuildingsupply.com'],
+      categoryTerms: ['building materials', 'lumber', 'doors', 'windows', 'fasteners', 'tools', 'contractor supply', 'special order materials', 'branch availability', 'jobsite delivery', 'will-call pickup', 'substitutions', 'project fulfillment', 'margin leakage'],
+      evidenceTerms: ['contractor account demand', 'job order readiness', 'branch item availability', 'special order status', 'will-call pickup', 'jobsite delivery readiness', 'substitution readiness', 'project fulfillment confidence']
+    },
+    recordRoles: {
+      required: ['customer', 'contractor_account', 'job_order', 'branch_item_availability'],
+      optional: ['special_order_or_substitution', 'will_call_or_jobsite_delivery', 'margin_context', 'project_fulfillment_context', 'branch_transfer_context', 'contractor_promise_context'],
+      invalid: [
+        'dealer_allocation_or_channel_fulfillment_without_dealer_evidence',
+        'style_matrix_or_size_color_variant_without_apparel_evidence',
+        'work_order_or_dispatch_without_parts_service_evidence',
+        'technician_truck_stock_without_parts_service_evidence',
+        'clinic_supply_substitute_without_medical_dental_evidence',
+        'lot_release_or_qa_validation_without_life_sciences_evidence',
+        'food_formula_or_batch_without_food_evidence',
+        'configured_equipment_assembly_without_industrial_evidence',
+        'manufacturing_routing_or_wip_without_explicit_fabrication_evidence'
+      ]
+    },
+    vocabulary: {
+      allowed: ['contractor account demand', 'job order readiness', 'branch item availability', 'special order status', 'will-call pickup', 'jobsite delivery readiness', 'substitutions', 'project fulfillment confidence', 'margin leakage', 'contractor promise confidence'],
+      forbidden: ['dealer allocation', 'channel fulfillment', 'style/color/size', 'store/ecommerce promise', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'QA release', 'lot/release readiness', 'validation documentation', 'food batch', 'ingredient readiness', 'configured equipment assembly', 'manufacturing routing', 'WIP', 'work center']
+    },
+    liveDemo: {
+      proofMove: 'Open the contractor account, job order, branch item availability, special order or substitution status, and will-call or jobsite delivery readiness before the contractor commitment is made.',
+      storyAnchor: 'The buyer needs confidence that a contractor job promise is backed by branch availability, substitution status, special-order timing, and delivery readiness.',
+      roiSoWhat: 'Protect job promise confidence and margin by proving branch availability, special order or substitution status, and delivery readiness before the contractor commitment.',
+      competitiveContrast: 'NetSuite connects contractor account demand, job order readiness, branch availability, special orders, substitutions, will-call pickup, jobsite delivery, and margin context instead of splitting the promise across an old POS, spreadsheets, branch calls, Epicor, or Spruce.'
+    }
+  }),
+  pack({
     packId: 'cpg-distributor',
     laneId: 'products_cpg',
     subIndustryId: 'cpg-distributor',

@@ -148,7 +148,8 @@
     "harness:apparel-retail-source-pack-extension-w383": "node archive/tools/run_w383_apparel_retail_source_pack_extension_harness.js",
     "harness:pack-readiness-packaging-w384": "node archive/tools/run_w384_pack_readiness_packaging_harness.js",
     "harness:pack-ready-artifact-manifest-w385": "node archive/tools/run_w385_pack_ready_artifact_manifest_harness.js",
-    "harness:pack-ready-artifact-package-w386": "node archive/tools/run_w386_pack_ready_artifact_package_harness.js"
+    "harness:pack-ready-artifact-package-w386": "node archive/tools/run_w386_pack_ready_artifact_package_harness.js",
+    "harness:release-prep-package-handoff-w387": "node archive/tools/run_w387_release_prep_package_handoff_harness.js"
   },
   "keywords": [
     "netsuite",

@@ -1412,105 +1412,142 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       })
     });
 
-    // Step 4: Reuse existing managed routing when possible; only create+attach if none exists
-    const routing = existingRoutingId
-      ? record.load({ type: 'manufacturingrouting', id: Number(existingRoutingId), isDynamic: true })
-      : record.create({ type: 'manufacturingrouting', isDynamic: true });
+    const chosen = {
+      centers: [c1, c2, c3],
+      templates: [t1, t2, t3],
+      ops: opNames
+    };
 
-    routing.setValue({ fieldId: 'subsidiary', value: subs });
-    routing.setValue({ fieldId: 'billofmaterials', value: Number(bomId) });
+    // Step 4: Reuse existing managed routing when possible; only create+attach if none exists.
+    // W393 keeps routing best-effort: a rejected BOM/routing field must not hard-fail safe core records.
+    let routingStage = existingRoutingId ? 'load_existing_routing' : 'create_routing';
+    let routing = null;
+    let routingId = null;
+    try {
+      routing = existingRoutingId
+        ? record.load({ type: 'manufacturingrouting', id: Number(existingRoutingId), isDynamic: true })
+        : record.create({ type: 'manufacturingrouting', isDynamic: true });
 
-    // "location" is multi-select; pass array if we have one
-    if (loc) safeTry(() => routing.setValue({ fieldId: 'location', value: [loc] }));
+      routingStage = 'set_subsidiary';
+      routing.setValue({ fieldId: 'subsidiary', value: subs });
 
-    const routingHeaderFields = safeTryReturn(() => routing.getFields()) || [];
-    const routingDefaultField = firstExisting(routingHeaderFields, ['default', 'isdefault', 'masterdefault']);
+      routingStage = 'set_billofmaterials';
+      routing.setValue({ fieldId: 'billofmaterials', value: Number(bomId) });
 
-    routing.setValue({ fieldId: 'name', value: routingName });
-    if (routingDefaultField) {
-      routing.setValue({ fieldId: routingDefaultField, value: true });
-    }
-    safeTry(() => routing.setValue({ fieldId: 'memo', value: routingMemo }));
+      // "location" is multi-select; pass array if we have one
+      if (loc) {
+        routingStage = 'set_location';
+        safeTry(() => routing.setValue({ fieldId: 'location', value: [loc] }));
+      }
 
-    log.audit({
-      title: `Routing header default field resolution [${VERSION}]`,
-      details: JSON.stringify({ routingDefaultField, routingHeaderFields })
-    });
+      routingStage = 'resolve_header_fields';
+      const routingHeaderFields = safeTryReturn(() => routing.getFields()) || [];
+      const routingDefaultField = firstExisting(routingHeaderFields, ['default', 'isdefault', 'masterdefault']);
 
-    const stepSublist = 'routingstep';
-    clearRoutingSteps(routing, stepSublist);
-
-    function resolveRoutingStepFieldIds(routingRec, sublistId) {
-      const fields = safeTryReturn(() => routingRec.getSublistFields({ sublistId })) || [];
-
-      const setupCandidates = ['setuptimemin', 'setuptime', 'setuptimeminutes'];
-      const runRateCandidates = ['runrate', 'runratemin', 'runrateperunit'];
-
-      const setupField = firstExisting(fields, setupCandidates);
-      const runRateField = firstExisting(fields, runRateCandidates);
+      routingStage = 'set_name';
+      routing.setValue({ fieldId: 'name', value: routingName });
+      if (routingDefaultField) {
+        routingStage = 'set_default';
+        routing.setValue({ fieldId: routingDefaultField, value: true });
+      }
+      safeTry(() => routing.setValue({ fieldId: 'memo', value: routingMemo }));
 
       log.audit({
-        title: `Routing step field resolution [${VERSION}]`,
-        details: JSON.stringify({ sublistId, setupField, runRateField, fields })
+        title: `Routing header default field resolution [${VERSION}]`,
+        details: JSON.stringify({ routingDefaultField, routingHeaderFields })
       });
 
-      return { setupField, runRateField };
-    }
+      const stepSublist = 'routingstep';
+      routingStage = 'clear_routing_steps';
+      clearRoutingSteps(routing, stepSublist);
 
-    const stepFieldIds = resolveRoutingStepFieldIds(routing, stepSublist);
+      function resolveRoutingStepFieldIds(routingRec, sublistId) {
+        const fields = safeTryReturn(() => routingRec.getSublistFields({ sublistId })) || [];
 
-    function addStep(seq, opName, centerId, templateId) {
-      routing.selectNewLine({ sublistId: stepSublist });
+        const setupCandidates = ['setuptimemin', 'setuptime', 'setuptimeminutes'];
+        const runRateCandidates = ['runrate', 'runratemin', 'runrateperunit'];
 
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(seq) });
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(opName).slice(0, 60) });
+        const setupField = firstExisting(fields, setupCandidates);
+        const runRateField = firstExisting(fields, runRateCandidates);
 
-      // LIST fields must be set AFTER subsidiary is chosen (we already did)
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: Number(centerId) });
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: Number(templateId) });
+        log.audit({
+          title: `Routing step field resolution [${VERSION}]`,
+          details: JSON.stringify({ sublistId, setupField, runRateField, fields })
+        });
 
-      if (!stepFieldIds.setupField) throw new Error('Could not resolve routing step setup-time field ID');
-      if (!stepFieldIds.runRateField) throw new Error('Could not resolve routing step run-rate field ID');
+        return { setupField, runRateField };
+      }
 
-      // Mandatory float fields: keep demo-safe decimal values low and deterministic
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.setupField, value: 0.5 });
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.runRateField, value: 1.0 });
+      routingStage = 'resolve_routing_step_fields';
+      const stepFieldIds = resolveRoutingStepFieldIds(routing, stepSublist);
+
+      function addStep(seq, opName, centerId, templateId) {
+        routingStage = 'add_routing_step';
+        routing.selectNewLine({ sublistId: stepSublist });
+
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(seq) });
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(opName).slice(0, 60) });
+
+        // LIST fields must be set AFTER subsidiary is chosen (we already did)
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: Number(centerId) });
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: Number(templateId) });
+
+        if (!stepFieldIds.setupField) throw new Error('Could not resolve routing step setup-time field ID');
+        if (!stepFieldIds.runRateField) throw new Error('Could not resolve routing step run-rate field ID');
+
+        // Mandatory float fields: keep demo-safe decimal values low and deterministic
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.setupField, value: 0.5 });
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.runRateField, value: 1.0 });
+
+        log.audit({
+          title: `Routing step values before commit [${VERSION}]`,
+          details: JSON.stringify({
+            seq,
+            opName,
+            centerId: Number(centerId),
+            templateId: Number(templateId),
+            setupField: stepFieldIds.setupField,
+            setupValue: 0.5,
+            runRateField: stepFieldIds.runRateField,
+            runRateValue: 1.0
+          })
+        });
+
+        routingStage = 'commit_routing_step';
+        routing.commitLine({ sublistId: stepSublist });
+      }
+
+      addStep(10, opNames.op10 || 'Blending',    c1.id, t1.id);
+      addStep(20, opNames.op20 || 'Dispensing',  c2.id, t2.id);
+      addStep(30, opNames.op30 || 'Packaging',   c3.id, t3.id);
+
+      routingStage = 'save_routing';
+      routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
 
       log.audit({
-        title: `Routing step values before commit [${VERSION}]`,
+        title: existingRoutingId ? `Routing reused+updated [${VERSION}]` : `Routing created [${VERSION}]`,
         details: JSON.stringify({
-          seq,
-          opName,
-          centerId: Number(centerId),
-          templateId: Number(templateId),
-          setupField: stepFieldIds.setupField,
-          setupValue: 0.5,
-          runRateField: stepFieldIds.runRateField,
-          runRateValue: 1.0
+          routingId,
+          existingRoutingId,
+          chosen
         })
       });
-
-      routing.commitLine({ sublistId: stepSublist });
-    }
-
-    addStep(10, opNames.op10 || 'Blending',    c1.id, t1.id);
-    addStep(20, opNames.op20 || 'Dispensing',  c2.id, t2.id);
-    addStep(30, opNames.op30 || 'Packaging',   c3.id, t3.id);
-
-    const routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
-
-    log.audit({
-      title: existingRoutingId ? `Routing reused+updated [${VERSION}]` : `Routing created [${VERSION}]`,
-      details: JSON.stringify({
-        routingId,
+    } catch (e) {
+      return buildWipRoutingBestEffortFailure({
+        failureStage: routingStage,
+        error: e,
+        subsidiaryId: subs,
+        locationId: loc,
+        bomId,
+        assemblyId,
         existingRoutingId,
-        chosen: {
-          centers: [c1, c2, c3],
-          templates: [t1, t2, t3],
-          ops: opNames
-        }
-      })
-    });
+        routingId,
+        routingName,
+        chosen,
+        wipRequested: true,
+        coreRecordsCreatedSafely: !!(assemblyId && bomId)
+      });
+    }
 
     // Step 5: Only attach when the assembly has no existing managed routing
     let attachResult = 'not-attempted';
@@ -1528,12 +1565,44 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingId,
       existingRoutingId: existingRoutingId ? Number(existingRoutingId) : null,
       decision: existingRoutingId ? 'reused-existing-routing' : 'created-new-routing',
+      status: 'attached',
       attachResult,
-      chosen: {
-        centers: [c1, c2, c3],
-        templates: [t1, t2, t3],
-        ops: opNames
-      }
+      chosen
+    };
+  }
+
+  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely }) {
+    const diagnostic = {
+      status: 'failed_best_effort',
+      failureStage: failureStage || 'unknown',
+      errorName: error && error.name ? String(error.name) : '',
+      errorMessage: error && error.message ? String(error.message) : String(error || ''),
+      assemblyId: Number(assemblyId || 0) || null,
+      bomId: Number(bomId || 0) || null,
+      subsidiaryId: Number(subsidiaryId || 0) || null,
+      locationId: Number(locationId || 0) || null,
+      routingId: Number(routingId || 0) || null,
+      existingRoutingId: Number(existingRoutingId || 0) || null,
+      routingName: routingName || '',
+      wipRequested: !!wipRequested,
+      coreRecordsCreatedSafely: !!coreRecordsCreatedSafely,
+      recommendedOperatorNextStep: 'Review BOM validity for the assembly, subsidiary, location, and manufacturing routing before re-running WIP routing.'
+    };
+
+    log.error({
+      title: `WIP routing best-effort failure [${VERSION}]`,
+      details: JSON.stringify(diagnostic)
+    });
+
+    return {
+      status: 'failed_best_effort',
+      decision: 'failed_best_effort',
+      routingId: null,
+      existingRoutingId: diagnostic.existingRoutingId,
+      attachResult: 'not-attached-routing-failed',
+      chosen: chosen || null,
+      routingFailure: diagnostic,
+      diagnostics: diagnostic
     };
   }
 
@@ -3578,6 +3647,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const lastAttempt = attempts.length ? attempts[attempts.length - 1] : null;
     const assemblyVerification = assemblyBomTelemetry && assemblyBomTelemetry.verification ? assemblyBomTelemetry.verification : null;
     const previewReady = !!(imageEnrichment && imageEnrichment.assemblyPreviewReady);
+    const routingFailure = routingResult && routingResult.routingFailure ? routingResult.routingFailure : null;
+    const routingStatus = routingResult
+      ? (routingResult.status || (routingResult.routingId ? 'attached' : routingResult.decision || 'unknown'))
+      : (enableWip ? 'requested-no-result' : 'not-attempted');
+    const routingOperatorState = !enableWip
+      ? 'not-required'
+      : (routingResult && routingResult.routingId
+          ? 'ready'
+          : (routingFailure
+              ? `failed-best-effort at ${routingFailure.failureStage || 'unknown'}: ${routingFailure.errorMessage || 'see routing diagnostics'}`
+              : (routingResult && routingResult.decision ? routingResult.decision : 'pending')));
     return {
       version: VERSION,
       releaseTrain: RELEASE_TRAIN,
@@ -3602,9 +3682,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       assemblyBomVerification: assemblyVerification,
       assemblyBomVerified: !!(assemblyVerification && Number(assemblyVerification.matchingLine) >= 0),
       routingDecision: routingResult ? routingResult.decision : (enableWip ? 'requested-no-result' : 'not-attempted'),
+      routingStatus,
       routingId: routingResult && routingResult.routingId ? Number(routingResult.routingId) : null,
       existingRoutingId: routingResult && routingResult.existingRoutingId ? Number(routingResult.existingRoutingId) : null,
       routingAttachResult: routingResult ? (routingResult.attachResult || '') : '',
+      routingFailure,
+      routingDiagnostics: routingResult && routingResult.diagnostics ? routingResult.diagnostics : null,
       assemblyPreviewReady: previewReady,
       assemblyPreviewUrl: imageEnrichment && imageEnrichment.assemblyUrl ? String(imageEnrichment.assemblyUrl) : '',
       signoffReady: !!enableManufacturing && !!(assemblyVerification && Number(assemblyVerification.matchingLine) >= 0) && (workOrder.status === 'saved') && (!enableWip || !!(routingResult && routingResult.routingId)),
@@ -3615,7 +3698,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
             `BOM verified=${assemblyVerification && Number(assemblyVerification.matchingLine) >= 0 ? 'yes' : 'no'}`,
             `WO status=${workOrder.status || 'unknown'}`,
             `WO path=${workOrder.finalLabel || 'n/a'}`,
-            `Routing=${enableWip ? (routingResult && routingResult.routingId ? 'ready' : (routingResult && routingResult.decision ? routingResult.decision : 'pending')) : 'not-required'}`
+            `Routing=${routingOperatorState}`
           ].join(' | ')
     };
   }

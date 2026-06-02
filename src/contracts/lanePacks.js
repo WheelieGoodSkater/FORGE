@@ -155,6 +155,44 @@ const LANE_PACKS = Object.freeze([
     }
   }),
   pack({
+    packId: 'wholesale-janitorial-contract-replenishment',
+    laneId: 'wholesale_janitorial',
+    subIndustryId: 'wholesale-janitorial-contract-replenishment',
+    label: 'Wholesale Janitorial Contract Replenishment',
+    operatingMode: 'distribution_replenishment',
+    websiteSignals: {
+      domains: ['brightlinefacilitysupply.com', 'metrocarejanitorialsupply.com'],
+      categoryTerms: ['wholesale janitorial', 'facility supply', 'janitorial supply', 'janitorial supplies', 'facility maintenance', 'restroom paper', 'soaps', 'cleaning chemicals', 'floor care', 'liners', 'dispensers', 'gloves', 'safety supplies', 'property management', 'schools', 'healthcare offices', 'contract replenishment', 'recurring order', 'route delivery', 'substitute product', 'backorder', 'replenishment cadence', 'contracted pricing', 'preferred items'],
+      evidenceTerms: ['contract customer demand', 'recurring order readiness', 'facility/location supply availability', 'preferred item or contracted item context', 'substitute product readiness', 'backorder exposure', 'replenishment cadence', 'route/delivery readiness', 'margin leakage', 'customer promise confidence', 'contracted pricing context']
+    },
+    recordRoles: {
+      required: ['customer', 'contract_account', 'recurring_order', 'facility_item_availability'],
+      optional: ['preferred_or_substitute_item', 'backorder_or_replenishment_status', 'route_or_delivery_readiness', 'margin_context', 'customer_promise_context', 'contract_pricing_context'],
+      invalid: [
+        'contractor_job_order_without_building_materials_evidence',
+        'will_call_or_jobsite_delivery_without_building_materials_evidence',
+        'dealer_availability_or_channel_fulfillment_without_dealer_evidence',
+        'style_matrix_or_store_ecommerce_without_retail_evidence',
+        'work_order_or_dispatch_without_parts_service_evidence',
+        'clinic_supply_substitute_without_medical_dental_evidence',
+        'lot_release_or_qa_validation_without_life_sciences_evidence',
+        'food_formula_or_batch_without_food_evidence',
+        'configured_equipment_assembly_without_industrial_evidence',
+        'manufacturing_routing_or_wip_without_explicit_manufacturing_evidence'
+      ]
+    },
+    vocabulary: {
+      allowed: ['contract customer demand', 'contract account', 'recurring order', 'facility/location supply availability', 'preferred item', 'contracted item', 'substitute product readiness', 'backorder exposure', 'replenishment cadence', 'route delivery readiness', 'delivery route readiness', 'margin leakage', 'customer promise confidence', 'contracted pricing context'],
+      forbidden: ['contractor job order', 'will-call pickup', 'jobsite delivery', 'dealer allocation', 'channel fulfillment', 'style/color/size', 'store/ecommerce promise', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'QA release', 'lot/release readiness', 'validation documentation', 'traceability', 'food batch', 'ingredient readiness', 'configured equipment assembly', 'manufacturing routing', 'WIP', 'work center']
+    },
+    liveDemo: {
+      proofMove: 'Open the contract account, recurring order, facility item availability, preferred or substitute item, backorder or replenishment status, and route or delivery readiness before the recurring customer promise is made.',
+      storyAnchor: 'The buyer needs confidence that recurring facility supply promises are backed by approved items, substitutions, backorder status, replenishment cadence, and delivery route readiness.',
+      roiSoWhat: 'Protect recurring customer promise confidence and margin by proving facility availability, substitute readiness, backorder exposure, replenishment cadence, and delivery readiness before the next contract shipment.',
+      competitiveContrast: 'NetSuite connects contract customer demand, recurring order readiness, preferred or substitute items, replenishment status, delivery route readiness, and margin context instead of splitting the promise across QuickBooks, spreadsheets, route sheets, route apps, or janitorial distributor software.'
+    }
+  }),
+  pack({
     packId: 'cpg-distributor',
     laneId: 'products_cpg',
     subIndustryId: 'cpg-distributor',

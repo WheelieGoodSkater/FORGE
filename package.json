@@ -165,7 +165,8 @@
     "harness:wholesale-janitorial-source-pack-readiness-decision-w400": "node archive/tools/run_w400_wholesale_janitorial_source_pack_readiness_decision_harness.js",
     "harness:wholesale-janitorial-second-fixture-decision-w401": "node archive/tools/run_w401_wholesale_janitorial_second_fixture_decision_harness.js",
     "harness:wholesale-janitorial-source-pack-cleanup-w402": "node archive/tools/run_w402_wholesale_janitorial_source_pack_cleanup_harness.js",
-    "harness:wholesale-janitorial-readiness-delta-package-w403": "node archive/tools/run_w403_wholesale_janitorial_readiness_delta_package_harness.js"
+    "harness:wholesale-janitorial-readiness-delta-package-w403": "node archive/tools/run_w403_wholesale_janitorial_readiness_delta_package_harness.js",
+    "harness:hvac-mechanical-fixture-first-selection-w404": "node archive/tools/run_w404_hvac_mechanical_fixture_first_selection_harness.js"
   },
   "keywords": [
     "netsuite",

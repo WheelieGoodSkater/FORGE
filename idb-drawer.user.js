@@ -20372,6 +20372,43 @@
     };
   }
 
+  function buildingMaterialsStoryPolishW395(state, lane, value) {
+    if (!lane || lane.id !== 'building_materials') {
+      return {
+        schema: 'idb.w395-building-materials-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Contractor Job Order';
+    return {
+      schema: 'idb.w395-building-materials-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Contractor project fulfillment readiness',
+      pathFlow: ['Contractor account', 'Job order demand', 'Branch item availability', 'Special order or substitution', 'Will-call pickup', 'Jobsite delivery', 'Margin and project promise'],
+      riskPressure: 'branch shortages, missing job materials, substitution surprises, special-order date moves, will-call misses, jobsite delivery delays, and margin leakage',
+      valueDecision: `Use ${product} to help ${customer} trust contractor account demand, job order readiness, branch item availability, special-order or substitution status, will-call pickup, jobsite delivery readiness, and margin before making the next project promise.`,
+      proofMove: `Prove contractor project fulfillment with ${lane.proofAnchor}; then connect contractor account, job order, branch item availability, special-order or substitution status, will-call pickup, jobsite delivery readiness, and margin exposure.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the Building Materials story; confirm real contractor account, job order, branch availability, special-order, substitution, pickup, delivery, and margin evidence before ROI or project-readiness claims.',
+      competitorPressure: ['Epicor or Spruce', 'old POS plus spreadsheets', 'QuickBooks plus branch calls', 'manual special-order trackers', 'counter promise notes'],
+      netsuiteContrast: `Keep contractor account demand, job order readiness, branch availability, special order or substitution status, will-call pickup, jobsite delivery readiness, and margin impact in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise', 'work order dispatch', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'QA release', 'lot/release readiness', 'food batch', 'ingredient readiness', 'configured equipment assembly', 'manufacturing routing', 'WIP', 'work center'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false,
+        w371RoiRunUxPreserved: true,
+        w373StoryContractPreserved: true,
+        w375SharedRendererPreserved: true,
+        w394ManufacturingWipGuardPreserved: true
+      }
+    };
+  }
+
   function laneStoryAuthoringTemplateW377() {
     return {
       schema: 'idb.w377-lane-story-authoring-template.v1',
@@ -20445,7 +20482,8 @@
       medicalDentalStoryPolishW372(state, lane, value),
       foodBeverageStoryPolishW374(state, lane, value),
       industrialEquipmentStoryPolishW376(state, lane, value),
-      lifeSciencesStoryPolishW378(state, lane, value)
+      lifeSciencesStoryPolishW378(state, lane, value),
+      buildingMaterialsStoryPolishW395(state, lane, value)
     ];
     const active = candidates.find((item) => item && item.active) || {
       schema: 'idb.w373-cross-lane-story-polish-contract.v1',

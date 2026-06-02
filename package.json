@@ -160,7 +160,8 @@
     "harness:building-materials-second-fixture-regression-w395": "node archive/tools/run_w395_building_materials_second_fixture_regression_harness.js",
     "harness:building-materials-pack-readiness-w396": "node archive/tools/run_w396_building_materials_pack_readiness_harness.js",
     "harness:building-materials-readiness-delta-package-w397": "node archive/tools/run_w397_building_materials_readiness_delta_package_harness.js",
-    "harness:fixture-first-expansion-restart-after-building-materials-package-w398": "node archive/tools/run_w398_fixture_first_expansion_restart_after_building_materials_package_harness.js"
+    "harness:fixture-first-expansion-restart-after-building-materials-package-w398": "node archive/tools/run_w398_fixture_first_expansion_restart_after_building_materials_package_harness.js",
+    "harness:wholesale-janitorial-fixture-story-proof-w399": "node archive/tools/run_w399_wholesale_janitorial_fixture_story_proof_harness.js"
   },
   "keywords": [
     "netsuite",

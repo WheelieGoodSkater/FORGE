@@ -193,6 +193,44 @@ const LANE_PACKS = Object.freeze([
     }
   }),
   pack({
+    packId: 'hvac-mechanical-contractor-supply-service-readiness',
+    laneId: 'hvac_mechanical_supply',
+    subIndustryId: 'hvac-mechanical-contractor-supply-service-readiness',
+    label: 'HVAC Mechanical Contractor Supply & Service Readiness',
+    operatingMode: 'distribution_replenishment',
+    websiteSignals: {
+      domains: ['summitmechanicalsupply.com', 'horizonairmechanicalsupply.com'],
+      categoryTerms: ['HVAC supply', 'mechanical supply', 'HVAC equipment', 'condensers', 'air handlers', 'motors', 'belts', 'filters', 'thermostats', 'duct parts', 'refrigerant', 'install supplies', 'contractor supply', 'service techs', 'counter sales', 'branch stock', 'vendor portals', 'replacement parts', 'warranty replacement', 'backorders', 'replenishment', 'pickup', 'jobsite delivery'],
+      evidenceTerms: ['contractor account demand', 'job quote readiness', 'job or service order readiness', 'HVAC equipment availability', 'replacement/service part availability', 'branch/location stock', 'reserved inventory risk', 'substitute option', 'warranty/replacement context', 'backorder/replenishment status', 'pickup/jobsite delivery readiness', 'install/service promise confidence', 'margin leakage', 'refrigerant caution']
+    },
+    recordRoles: {
+      required: ['customer', 'contractor_account', 'job_or_service_order', 'hvac_equipment_availability', 'replacement_or_service_part', 'branch_location_stock'],
+      optional: ['reserved_or_substitute_option', 'warranty_or_replacement_context', 'backorder_or_replenishment_status', 'pickup_or_jobsite_delivery', 'install_service_promise_context', 'margin_context', 'refrigerant_or_regulated_item_caution'],
+      invalid: [
+        'building_materials_job_order_without_hvac_evidence',
+        'wholesale_janitorial_contract_replenishment_without_janitorial_evidence',
+        'dealer_allocation_or_channel_fulfillment_without_dealer_evidence',
+        'style_matrix_or_store_ecommerce_without_retail_evidence',
+        'dispatch_work_order_or_truck_stock_without_parts_service_evidence',
+        'clinic_supply_substitute_without_medical_dental_evidence',
+        'lot_release_or_qa_validation_without_life_sciences_evidence',
+        'food_formula_or_batch_without_food_evidence',
+        'configured_equipment_assembly_without_industrial_evidence',
+        'manufacturing_routing_or_wip_without_explicit_manufacturing_evidence'
+      ]
+    },
+    vocabulary: {
+      allowed: ['contractor account demand', 'job quote readiness', 'job or service order readiness', 'HVAC equipment availability', 'replacement part availability', 'service part availability', 'branch/location stock', 'reserved inventory risk', 'substitute option', 'warranty/replacement context', 'backorder/replenishment status', 'pickup readiness', 'jobsite delivery readiness', 'install/service promise confidence', 'margin leakage', 'refrigerant caution'],
+      forbidden: ['lumber', 'doors', 'windows', 'special order materials', 'contract replenishment', 'recurring order', 'route delivery readiness', 'restroom paper', 'cleaning chemicals', 'dealer allocation', 'channel fulfillment', 'style/color/size', 'store/ecommerce promise', 'clinic supply substitutes', 'QA release', 'lot/release readiness', 'validation documentation', 'traceability', 'food batch', 'ingredient readiness', 'packaging readiness', 'configured equipment assembly', 'engineering BOM', 'manufacturing routing', 'WIP', 'work center']
+    },
+    liveDemo: {
+      proofMove: 'Open the contractor account, job or service order, HVAC equipment availability, replacement or service part, branch/location stock, reserved or substitute option, warranty or replacement context, backorder or replenishment status, and pickup or jobsite delivery readiness before the contractor or technician commitment is made.',
+      storyAnchor: 'The buyer needs confidence that install or service promises are backed by equipment availability, replacement parts, stock position, warranty or replacement context, backorder status, and pickup or jobsite delivery readiness.',
+      roiSoWhat: 'Protect install or service promise confidence and margin by proving HVAC equipment availability, replacement part availability, branch stock, substitute options, warranty context, replenishment status, and pickup or delivery readiness before the contractor commitment.',
+      competitiveContrast: 'NetSuite connects contractor account demand, job or service order readiness, HVAC equipment, replacement parts, branch stock, warranty context, replenishment status, and pickup or delivery readiness instead of splitting the promise across QuickBooks, spreadsheets, counter POS, vendor portals, Ferguson, or Johnstone.'
+    }
+  }),
+  pack({
     packId: 'cpg-distributor',
     laneId: 'products_cpg',
     subIndustryId: 'cpg-distributor',

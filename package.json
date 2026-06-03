@@ -167,7 +167,8 @@
     "harness:wholesale-janitorial-source-pack-cleanup-w402": "node archive/tools/run_w402_wholesale_janitorial_source_pack_cleanup_harness.js",
     "harness:wholesale-janitorial-readiness-delta-package-w403": "node archive/tools/run_w403_wholesale_janitorial_readiness_delta_package_harness.js",
     "harness:hvac-mechanical-fixture-first-selection-w404": "node archive/tools/run_w404_hvac_mechanical_fixture_first_selection_harness.js",
-    "harness:hvac-mechanical-fixture-story-proof-w405": "node archive/tools/run_w405_hvac_mechanical_fixture_story_proof_harness.js"
+    "harness:hvac-mechanical-fixture-story-proof-w405": "node archive/tools/run_w405_hvac_mechanical_fixture_story_proof_harness.js",
+    "harness:hvac-mechanical-second-fixture-decision-w406": "node archive/tools/run_w406_hvac_mechanical_second_fixture_decision_harness.js"
   },
   "keywords": [
     "netsuite",

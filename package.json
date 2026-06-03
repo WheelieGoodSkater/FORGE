@@ -170,7 +170,8 @@
     "harness:hvac-mechanical-fixture-story-proof-w405": "node archive/tools/run_w405_hvac_mechanical_fixture_story_proof_harness.js",
     "harness:hvac-mechanical-second-fixture-decision-w406": "node archive/tools/run_w406_hvac_mechanical_second_fixture_decision_harness.js",
     "harness:hvac-mechanical-source-pack-cleanup-w407": "node archive/tools/run_w407_hvac_mechanical_source_pack_cleanup_harness.js",
-    "harness:hvac-mechanical-readiness-delta-package-w408": "node archive/tools/run_w408_hvac_mechanical_readiness_delta_package_harness.js"
+    "harness:hvac-mechanical-readiness-delta-package-w408": "node archive/tools/run_w408_hvac_mechanical_readiness_delta_package_harness.js",
+    "harness:comfortable-lane-hardening-matrix-w409": "node archive/tools/run_w409_comfortable_lane_hardening_matrix_harness.js"
   },
   "keywords": [
     "netsuite",

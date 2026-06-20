@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.12
+// @version      1.0.25
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.12';
-  const CURRENT_UX_BLOCK_W346 = 'W365';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.25';
+  const CURRENT_UX_BLOCK_W346 = 'W413';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1069,6 +1069,20 @@
         dccMode: 'Balanced',
         dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Style / SKU Matrix', 'Size / Color Variants', 'Allocation / Replenishment', 'Channel / Location Availability', 'Collection Launch Setup']
+      },
+      parts_service: {
+        dccFamilyKey: 'partsService',
+        dccScenario: 'Service Parts Readiness',
+        dccMode: 'Balanced',
+        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        recordsToPlan: ['Customer Record', 'Work Order View', 'Installed Equipment', 'Service Part / SKU', 'Truck / Warehouse Availability', 'Backorder / Purchasing Signal', 'Warranty / Service Margin Setup']
+      },
+      medical_dental_supply: {
+        dccFamilyKey: 'medicalDentalSupply',
+        dccScenario: 'Clinic Supply Availability',
+        dccMode: 'Balanced',
+        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        recordsToPlan: ['Customer Record', 'Sales Order View', 'Clinic Supply Item', 'Substitute Product', 'Multi-Location Availability', 'Backorder / Replenishment Signal', 'Equipment Warranty Context']
       }
     }
   };
@@ -1197,6 +1211,34 @@
         signals: ['apparel context', 'accessories context', 'style', 'size/color', 'seasonal collection', 'allocation', 'channel availability', 'footwear', 'shoes', 'sneakers', 'skateboarding', 'vans'],
         guardrails: ['Do not collapse apparel and accessories into industrial equipment, generic branch distribution, food batching, or regulated release proof.'],
         moves: ['Customer Record', 'Sales Order View', 'Style / SKU Matrix'],
+        modules: ['Order Management', 'Inventory']
+      },
+      {
+        id: 'parts_service',
+        name: 'Parts & Service / Field Service',
+        proofAnchor: 'Work Order / Parts Availability',
+        promise: 'Work order, installed equipment, truck and warehouse parts, warranty, and purchasing signals protect technician readiness.',
+        valueLens: 'Improve first-time fix confidence by connecting customer equipment history, work order demand, parts availability, warranty exposure, and replenishment or purchasing action.',
+        competitiveLens: 'Show service readiness in one NetSuite path instead of forcing techs to reconcile dispatch notes, spreadsheets, and inventory calls.',
+        validateLive: 'Validate work order context, installed equipment, truck or warehouse parts availability, backorder risk, warranty exposure, and service margin in one parts/service path.',
+        storyline: 'Lead with parts and field service through customer equipment history, work order readiness, technician parts confidence, emergency response, warranty exposure, and service margin protection.',
+        signals: ['field service context', 'service parts', 'work order', 'installed equipment', 'technician readiness', 'truck stock', 'warehouse availability', 'first-time fix', 'warranty', 'backordered parts'],
+        guardrails: ['Do not collapse service readiness into dealer-channel allocation, apparel variants, seasonal retail, food batching, or generic branch fulfillment language.'],
+        moves: ['Customer Record', 'Work Order View', 'Work Order / Parts Availability'],
+        modules: ['Order Management', 'Inventory', 'Field Service']
+      },
+      {
+        id: 'medical_dental_supply',
+        name: 'Specialty Medical / Dental Equipment & Supplies',
+        proofAnchor: 'Clinic Supply Availability',
+        promise: 'Clinic supply availability, substitute products, backorder risk, replenishment, equipment history, and warranty-sensitive items protect customer promise confidence.',
+        valueLens: 'Protect clinic service levels by connecting customer orders, item availability, substitutes, replenishment, backorder exposure, and equipment or warranty context.',
+        competitiveLens: 'Show medical/dental supply control in one NetSuite path instead of splitting clinic promise decisions across spreadsheets, ecommerce reports, and distributor portals.',
+        validateLive: 'Validate clinic supply availability, substitute product options, multi-location stock, replenishment, backorder risk, equipment history, warranty context, and customer promise confidence in one path.',
+        storyline: 'Lead with medical/dental supply through clinic order demand, item availability, substitutes, regulated or warranty-sensitive items, replenishment risk, and equipment context.',
+        signals: ['dental supplies', 'medical supplies', 'clinic supply availability', 'sterilization', 'handpieces', 'chairs', 'substitute product', 'equipment warranty', 'backorder', 'multi-location stock', 'replenishment'],
+        guardrails: ['Do not collapse medical/dental supply into dealer allocation, apparel variants, field-service dispatch, technician truck stock, or generic branch fulfillment language.'],
+        moves: ['Customer Record', 'Sales Order View', 'Clinic Supply Availability'],
         modules: ['Order Management', 'Inventory']
       }
     ]
@@ -5317,12 +5359,16 @@
     lifeSciencesManufacturing: 'Life Sciences Manufacturing',
     distribution: 'Distribution',
     apparelAccessories: 'Apparel & Accessories',
+    partsService: 'Parts & Service',
+    medicalDentalSupply: 'Medical / Dental Supply',
     services: 'Services',
     products_cpg: 'Products CPG',
     apparel_accessories: 'Apparel & Accessories',
     food_beverage: 'Food & Beverage',
     dealer_hardgoods: 'Dealer Hardgoods',
     industrial_distribution: 'Industrial Distribution',
+    parts_service: 'Parts & Service',
+    medical_dental_supply: 'Medical / Dental Supply',
     recommended: 'Recommended',
     needs_confirmation: 'Needs confirmation',
     insufficient_evidence: 'Needs more input',
@@ -13550,7 +13596,7 @@
     const url = firstNonBlank(source.url, source.recordUrl, source.netSuiteUrl, source.netsuiteUrl);
     return {
       role,
-      label,
+      label: firstNonBlank(source.consultantLabel, source.displayLabel, source.label, label),
       name: cleanName || rawName,
       internalName: rawName && cleanName && rawName !== cleanName ? rawName : firstNonBlank(source.internalName, source.netSuiteGeneratedName),
       id,
@@ -13567,7 +13613,7 @@
   }
 
   function isSupportedNetSuiteRecordPath(url) {
-    return /\/app\/(common\/entity\/custjob|accounting\/transactions\/salesord|common\/item\/item)\.nl\?/i.test(String(url || ''));
+    return /\/app\/(common\/entity\/custjob|accounting\/transactions\/salesord|accounting\/transactions\/workord|common\/item\/item|common\/custom\/custrecordentry)\.nl\?/i.test(String(url || ''));
   }
 
   function currentNetSuiteOrigin() {
@@ -14065,6 +14111,8 @@
       return redactDccFinalNamingSecrets(input);
     }
     const payload = redactDccFinalNamingSecrets(input.dccFinalNamingResultV1 || input.dccFinalNamingResult || input.result || input);
+    const laneVocabularyPolicy = payload.runnerLaneVocabularyPolicy || payload.resultCapture && payload.resultCapture.runnerLaneVocabularyPolicy || {};
+    const finalRoleLabels = laneVocabularyPolicy.finalResultRoleLabels || {};
     const generated = payload.generated || payload.dccGenerated || {};
     const records = payload.records || payload.createdRecords || {};
     const payloadMode = firstNonBlank(payload.resolvedOperatingMode, payload.operatingMode, payload.buildOperatingMode, payload.mode);
@@ -14089,7 +14137,13 @@
       const source = item && typeof item === 'object' ? item : {};
       const rawRole = firstNonBlank(source.role, source.w214Role, source.w215MappedRole, source.legacyRole);
       const role = rawRole === 'supporting_sku' || rawRole === 'ingredient_or_component_item' ? rawRole : 'component_item';
-      const label = role === 'supporting_sku' ? 'Supporting SKU' : role === 'ingredient_or_component_item' ? 'Ingredient item' : `Component item ${index + 1}`;
+      const label = firstNonBlank(
+        source.consultantLabel,
+        source.displayLabel,
+        source.label,
+        finalRoleLabels.componentItem,
+        role === 'supporting_sku' ? 'Supporting SKU' : role === 'ingredient_or_component_item' ? 'Ingredient item' : `Component item ${index + 1}`
+      );
       return normalizeDccFinalObject(role, label, item);
     });
     const semanticLocation = findRunnerRecordByW215Aliases(payload, ['location_or_channel_context', 'location_planning_context', 'lot_or_availability_context']);
@@ -14107,8 +14161,8 @@
     const displayObjects = [
       normalizeDccFinalObject('customer', 'Customer', rootCustomer),
       normalizeDccFinalObject('sales_order', 'Sales Order / demo transaction', rootSalesOrder),
-      normalizeDccFinalObject('hero_item', 'Hero item', rootHero),
-      normalizeDccFinalObject('matrix_or_proof_item', 'Matrix item / proof item', rootMatrix)
+      normalizeDccFinalObject('hero_item', firstNonBlank(finalRoleLabels.heroItem, 'Hero item'), rootHero),
+      normalizeDccFinalObject('matrix_or_proof_item', firstNonBlank(finalRoleLabels.matrixProofItem, 'Matrix item / proof item'), rootMatrix)
     ];
     const semanticAssembly = findRunnerRecordByW215Aliases(payload, ['assembly_structure']);
     const semanticBom = findRunnerRecordByW215Aliases(payload, ['bom_or_assembly_structure']);
@@ -15221,7 +15275,7 @@
     return arrayValue(mapping && mapping.mappedRecords)
       .filter((record) => record && record.source === 'dcc_final' && record.linkAuthority && record.linkAuthority.openable && record.name)
       .map((record) => Object.assign({}, record, {
-        consultantLabel: modeAwareRecordLabelW216(record.w215MappedRole || record.w214Role || record.role, mapping.resolvedOperatingMode)
+        consultantLabel: firstNonBlank(record.consultantLabel, record.displayLabel, record.label, modeAwareRecordLabelW216(record.w215MappedRole || record.w214Role || record.role, mapping.resolvedOperatingMode))
       }));
   }
 
@@ -15301,7 +15355,7 @@
       consultantRun: {
         headline: partial ? 'Use available records' : 'Build results are ready.',
         nextSteps,
-        show: visibleRecords.slice(0, 4).map((record) => `${record.consultantLabel}: ${record.name}`).join(' -> '),
+        show: visibleRecords.slice(0, 4).map((record) => `${record.consultantLabel}: ${record.name}`).join(', '),
         liveDemoCoaching: normalizedImport.liveDemoCoaching,
         consultantStorySurface: normalizedImport.consultantStorySurfaceW247,
         missingProofTerms,
@@ -20118,6 +20172,369 @@
     };
   }
 
+  function apparelRetailStoryPolishW369(state, lane, value) {
+    if (!lane || lane.id !== 'apparel_accessories') {
+      return {
+        schema: 'idb.w369-apparel-retail-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Style / SKU Matrix';
+    return {
+      schema: 'idb.w369-apparel-retail-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Style/size/color availability',
+      pathFlow: ['Style family', 'Size/color variants', 'Store and ecommerce availability', 'Seasonal assortment', 'Replenishment timing', 'Margin and transfer risk'],
+      riskPressure: 'size/color gaps, ecommerce promise misses, store transfer surprises, replenishment delays, and margin exposure',
+      valueDecision: `Use ${product} to help ${customer} trust style, size, color, store/ecommerce availability, replenishment timing, and transfer risk before promising the next shopper order.`,
+      proofMove: `Prove apparel availability with ${lane.proofAnchor}; then connect size/color variants, seasonal assortment, store/ecommerce promise, replenishment timing, and margin exposure.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the apparel story; confirm real style, size/color, store, ecommerce, and margin evidence before ROI or availability claims.',
+      competitorPressure: ['Shopify reports', 'Lightspeed', 'QuickBooks plus spreadsheets', 'ecommerce inventory apps', 'manual store transfer sheets'],
+      netsuiteContrast: `Keep style/SKU matrix, size/color availability, store and ecommerce promise, replenishment timing, and financial impact in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'supplier portals', 'channel fulfillment', 'ingredient batch', 'assembly routing'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false
+      }
+    };
+  }
+
+  function partsServiceStoryPolishW370(state, lane, value) {
+    if (!lane || lane.id !== 'parts_service') {
+      return {
+        schema: 'idb.w370-parts-service-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Work Order / Parts Availability';
+    return {
+      schema: 'idb.w370-parts-service-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Work order and service parts readiness',
+      pathFlow: ['Customer equipment history', 'Work order demand', 'Truck and warehouse parts', 'Backorder and purchasing signal', 'Warranty exposure', 'First-time fix and service margin'],
+      riskPressure: 'technician readiness gaps, missing truck or warehouse parts, emergency call delays, backordered parts, warranty exposure, and service margin leakage',
+      valueDecision: `Use ${product} to help ${customer} trust customer equipment history, work order demand, truck or warehouse parts availability, backorder risk, warranty exposure, and service margin before dispatching the next technician promise.`,
+      proofMove: `Prove service readiness with ${lane.proofAnchor}; then connect installed equipment, work order demand, truck/warehouse parts, backorder or purchasing action, warranty exposure, and first-time fix confidence.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the parts/service story; confirm real work order, installed equipment, parts location, warranty, backorder, and service-margin evidence before ROI or first-time-fix claims.',
+      competitorPressure: ['ServiceTitan or dispatch app', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'manual parts calls', 'inventory add-ons'],
+      netsuiteContrast: `Keep customer equipment history, work order demand, parts availability, backorder or purchasing action, warranty exposure, and service margin in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'supplier portals', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false
+      }
+    };
+  }
+
+  function medicalDentalStoryPolishW372(state, lane, value) {
+    if (!lane || lane.id !== 'medical_dental_supply') {
+      return {
+        schema: 'idb.w372-medical-dental-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Clinic Supply Availability';
+    return {
+      schema: 'idb.w372-medical-dental-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Clinic supply availability',
+      pathFlow: ['Clinic order demand', 'Supply item availability', 'Substitute product', 'Multi-location stock', 'Backorder and replenishment', 'Equipment and warranty context'],
+      riskPressure: 'clinic stockouts, backordered supplies, substitute uncertainty, warranty-sensitive equipment context, multi-location stock gaps, and customer promise risk',
+      valueDecision: `Use ${product} to help ${customer} trust clinic supply availability, substitute options, backorder risk, multi-location stock, replenishment timing, equipment history, and warranty-sensitive customer promises before confirming the next clinic order.`,
+      proofMove: `Prove clinic supply availability with ${lane.proofAnchor}; then connect item availability, substitute product options, multi-location stock, replenishment or backorder risk, equipment history, warranty context, and customer promise confidence.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the medical/dental supply story; confirm real clinic supply, substitute, stock location, backorder, equipment, warranty, and compliance evidence before ROI or availability claims.',
+      competitorPressure: ['QuickBooks plus spreadsheets', 'Shopify or ecommerce reports', 'dental distributor portal', 'inventory add-ons', 'manual substitute checks'],
+      netsuiteContrast: `Keep clinic order demand, item availability, substitutes, multi-location stock, backorder or replenishment action, equipment history, and warranty context in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'supplier portals', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise', 'work order dispatch', 'technician truck stock', 'first-time fix'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false,
+        w371RoiRunUxPreserved: true
+      }
+    };
+  }
+
+  function foodBeverageStoryPolishW374(state, lane, value) {
+    if (!lane || lane.id !== 'food_beverage') {
+      return {
+        schema: 'idb.w374-food-beverage-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Finished Good';
+    return {
+      schema: 'idb.w374-food-beverage-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Finished-good production readiness',
+      pathFlow: ['Customer demand', 'Finished good', 'Ingredient availability', 'Packaging and case pack', 'Batch or line schedule', 'QA or lot readiness', 'Ship promise'],
+      riskPressure: 'ingredient shortages, packaging misses, batch or line schedule changes, QA holds, lot readiness gaps, and promotion ship-date risk',
+      valueDecision: `Use ${product} to help ${customer} trust ingredient availability, packaging/case-pack readiness, batch or line timing, QA or lot readiness, and finished-good ship confidence before committing the next promotion or customer order.`,
+      proofMove: `Prove finished-good readiness with ${lane.proofAnchor}; then connect customer demand, ingredient availability, packaging/case-pack readiness, batch or line schedule, QA or lot readiness, and ship promise confidence.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the food/beverage story; confirm real ingredient, packaging, batch, line, QA, lot, and customer-order evidence before ROI, availability, or production-readiness claims.',
+      competitorPressure: ['QuickBooks plus spreadsheets', 'Fishbowl or inventory add-ons', 'BatchMaster or food production tools', 'co-packer schedule spreadsheets', 'manual QA hold reports'],
+      netsuiteContrast: `Keep customer demand, finished goods, ingredients, packaging/case packs, batch or line timing, QA/lot readiness, and ship promise confidence in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'supplier portals', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise', 'work order dispatch', 'technician truck stock', 'first-time fix', 'clinic supply', 'dental distributor portal', 'equipment warranty'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false,
+        w371RoiRunUxPreserved: true,
+        w373StoryContractPreserved: true
+      }
+    };
+  }
+
+  function industrialEquipmentStoryPolishW376(state, lane, value) {
+    if (!lane || lane.id !== 'industrial_equipment') {
+      return {
+        schema: 'idb.w376-industrial-equipment-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Assembly';
+    return {
+      schema: 'idb.w376-industrial-equipment-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Configured equipment assembly readiness',
+      pathFlow: ['Customer configuration demand', 'Assembly item', 'Component availability', 'Supplier lead time', 'Build or work-center schedule', 'Inspection or test readiness', 'Delivery promise'],
+      riskPressure: 'configured-order changes, component shortages, supplier lead-time swings, build schedule slips, inspection/test readiness gaps, and delivery promise risk',
+      valueDecision: `Use ${product} to help ${customer} trust configured equipment demand, component availability, supplier lead time, build schedule, inspection or test readiness, and delivery confidence before committing the next equipment promise.`,
+      proofMove: `Prove configured equipment assembly readiness with ${lane.proofAnchor}; then connect customer configuration demand, component availability, supplier timing, build schedule, inspection or test readiness, and delivery promise confidence.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the industrial equipment story; confirm real configuration, component, supplier, build schedule, inspection/test, and delivery evidence before ROI or readiness claims.',
+      competitorPressure: ['QuickBooks plus spreadsheets', 'Odoo or manufacturing add-ons', 'Microsoft Dynamics 365', 'engineering BOM spreadsheets', 'supplier status email threads'],
+      netsuiteContrast: `Keep configured demand, assembly, components, supplier lead time, build schedule, inspection/test readiness, and delivery promise confidence in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise', 'work order dispatch', 'technician truck stock', 'first-time fix', 'clinic supply', 'dental distributor portal', 'ingredient batch', 'QA hold', 'finished-good production'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false,
+        w371RoiRunUxPreserved: true,
+        w373StoryContractPreserved: true,
+        w375SharedRendererPreserved: true
+      }
+    };
+  }
+
+  function lifeSciencesStoryPolishW378(state, lane, value) {
+    if (!lane || lane.id !== 'life_sciences') {
+      return {
+        schema: 'idb.w378-life-sciences-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Lot / Release';
+    return {
+      schema: 'idb.w378-life-sciences-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Regulated lot and release readiness',
+      pathFlow: ['Regulated order demand', 'Lot/release record', 'Approved inventory', 'Expiration risk', 'QA/validation documentation', 'Traceability', 'Shipment confidence'],
+      riskPressure: 'lot status uncertainty, expiration exposure, QA release delays, validation-document gaps, traceability risk, and regulated shipment promise pressure',
+      valueDecision: `Use ${product} to help ${customer} trust regulated order demand, lot/release readiness, approved inventory, expiration exposure, QA/validation documentation, traceability, and shipment confidence before confirming the next regulated customer promise.`,
+      proofMove: `Prove regulated lot/release readiness with ${lane.proofAnchor}; then connect approved inventory, expiration risk, QA/validation documentation, traceability, and shipment confidence.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the Life Sciences story; confirm real lot, release, expiration, validation, QA, traceability, and shipment evidence before ROI or regulated-readiness claims.',
+      competitorPressure: ['spreadsheets and manual QA release reports', 'SAP or legacy ERP', 'quality management system', 'LIMS or lab system', 'QuickBooks plus spreadsheets'],
+      netsuiteContrast: `Keep regulated order demand, lot/release readiness, approved inventory, expiration risk, QA/validation documentation, traceability, and shipment confidence in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise', 'work order dispatch', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'dental distributor portal', 'ingredient batch', 'food batch', 'configured equipment assembly', 'engineering BOM'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false,
+        w371RoiRunUxPreserved: true,
+        w373StoryContractPreserved: true,
+        w375SharedRendererPreserved: true,
+        w377AuthoringTemplateReady: true
+      }
+    };
+  }
+
+  function buildingMaterialsStoryPolishW395(state, lane, value) {
+    if (!lane || lane.id !== 'building_materials') {
+      return {
+        schema: 'idb.w395-building-materials-story-polish.v1',
+        active: false
+      };
+    }
+    const customer = customerSeed(normalizedIntake(state).customer);
+    const product = value && value.product || 'Contractor Job Order';
+    return {
+      schema: 'idb.w395-building-materials-story-polish.v1',
+      active: true,
+      laneMode: 'fixture_first_story_layer',
+      proofLabel: 'Contractor project fulfillment readiness',
+      pathFlow: ['Contractor account', 'Job order demand', 'Branch item availability', 'Special order or substitution', 'Will-call pickup', 'Jobsite delivery', 'Margin and project promise'],
+      riskPressure: 'branch shortages, missing job materials, substitution surprises, special-order date moves, will-call misses, jobsite delivery delays, and margin leakage',
+      valueDecision: `Use ${product} to help ${customer} trust contractor account demand, job order readiness, branch item availability, special-order or substitution status, will-call pickup, jobsite delivery readiness, and margin before making the next project promise.`,
+      proofMove: `Prove contractor project fulfillment with ${lane.proofAnchor}; then connect contractor account, job order, branch item availability, special-order or substitution status, will-call pickup, jobsite delivery readiness, and margin exposure.`,
+      safeClaim: 'Use fixture/imported NetSuite records to guide the Building Materials story; confirm real contractor account, job order, branch availability, special-order, substitution, pickup, delivery, and margin evidence before ROI or project-readiness claims.',
+      competitorPressure: ['Epicor or Spruce', 'old POS plus spreadsheets', 'QuickBooks plus branch calls', 'manual special-order trackers', 'counter promise notes'],
+      netsuiteContrast: `Keep contractor account demand, job order readiness, branch availability, special order or substitution status, will-call pickup, jobsite delivery readiness, and margin impact in one NetSuite path.`,
+      antiLeakTerms: ['dealer allocation', 'channel fulfillment', 'style/color/size variants', 'seasonal assortment', 'store/ecommerce promise', 'work order dispatch', 'technician truck stock', 'first-time fix', 'clinic supply substitutes', 'QA release', 'lot/release readiness', 'food batch', 'ingredient readiness', 'configured equipment assembly', 'manufacturing routing', 'WIP', 'work center'],
+      noRegression: {
+        storyLayerOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        completedResultValidationUnchanged: true,
+        sourceLanePacksMutated: false,
+        w371RoiRunUxPreserved: true,
+        w373StoryContractPreserved: true,
+        w375SharedRendererPreserved: true,
+        w394ManufacturingWipGuardPreserved: true
+      }
+    };
+  }
+
+  function laneStoryAuthoringTemplateW377() {
+    return {
+      schema: 'idb.w377-lane-story-authoring-template.v1',
+      requiredFields: ['proofLabel', 'pathFlow', 'riskPressure', 'valueDecision', 'proofMove', 'safeClaim', 'competitorPressure', 'netsuiteContrast', 'antiLeakTerms', 'noRegression'],
+      fixtureFields: ['customer', 'website', 'messySalesNotes', 'websiteEvidence', 'scObjective', 'decisionCriteria', 'records'],
+      requiredNoRegressionFlags: ['storyLayerOnly', 'noDrawerWrites', 'noTransactionWrites', 'noFakeOpenLinks', 'completedResultValidationUnchanged', 'sourceLanePacksMutated'],
+      liveSmokeRequiredWhen: [
+        'runner invocation changes',
+        'adapter transport changes',
+        'record creation behavior changes',
+        'completed-result import validation changes',
+        'Open-link authority checks change',
+        'source lane pack mutation changes live generated records'
+      ],
+      noRegression: {
+        authoringTemplateOnly: true,
+        noDrawerWrites: true,
+        noTransactionWrites: true,
+        noFakeOpenLinks: true,
+        sourceLanePacksMutated: false
+      }
+    };
+  }
+
+  function laneStoryAuthoringReadinessW377(storyContract) {
+    const template = laneStoryAuthoringTemplateW377();
+    if (!storyContract || !storyContract.active) {
+      return {
+        schema: 'idb.w377-lane-story-authoring-readiness.v1',
+        status: 'inactive_story_contract',
+        ready: true,
+        missingFields: [],
+        missingNoRegressionFlags: [],
+        templateSchema: template.schema
+      };
+    }
+    const missingFields = template.requiredFields.filter((field) => {
+      const value = storyContract[field];
+      return Array.isArray(value) ? value.length === 0 : !value;
+    });
+    const missingNoRegressionFlags = template.requiredNoRegressionFlags.filter((flag) => {
+      if (flag === 'sourceLanePacksMutated') return !(storyContract.noRegression && storyContract.noRegression[flag] === false);
+      return !(storyContract.noRegression && storyContract.noRegression[flag] === true);
+    });
+    const enoughAntiLeakTerms = arrayValue(storyContract.antiLeakTerms).length >= 4;
+    return {
+      schema: 'idb.w377-lane-story-authoring-readiness.v1',
+      status: missingFields.length || missingNoRegressionFlags.length || !enoughAntiLeakTerms ? 'needs_story_authoring_cleanup' : 'story_authoring_ready',
+      ready: missingFields.length === 0 && missingNoRegressionFlags.length === 0 && enoughAntiLeakTerms,
+      missingFields,
+      missingNoRegressionFlags,
+      antiLeakTermCount: arrayValue(storyContract.antiLeakTerms).length,
+      templateSchema: template.schema,
+      nextLaneWorkMode: 'fixture_first_unless_runner_import_or_open_link_integration_risk_changes'
+    };
+  }
+
+  function crossLaneStoryPolishContractW373(state, lane, value) {
+    const legacySupportLeakTerms = [
+      'Industrial Distributor',
+      'Industrial Distribution',
+      'production routing',
+      'ingredient batch',
+      'fashion collection',
+      'branch availability'
+    ];
+    const candidates = [
+      dealerHardgoodsStoryPolishW365(state, lane, value),
+      apparelRetailStoryPolishW369(state, lane, value),
+      partsServiceStoryPolishW370(state, lane, value),
+      medicalDentalStoryPolishW372(state, lane, value),
+      foodBeverageStoryPolishW374(state, lane, value),
+      industrialEquipmentStoryPolishW376(state, lane, value),
+      lifeSciencesStoryPolishW378(state, lane, value),
+      buildingMaterialsStoryPolishW395(state, lane, value)
+    ];
+    const active = candidates.find((item) => item && item.active) || {
+      schema: 'idb.w373-cross-lane-story-polish-contract.v1',
+      active: false,
+      proofLabel: lane && lane.proofAnchor || '',
+      pathFlow: [],
+      riskPressure: '',
+      valueDecision: '',
+      proofMove: '',
+      safeClaim: '',
+      competitorPressure: [],
+      netsuiteContrast: '',
+      antiLeakTerms: [],
+      noRegression: {}
+    };
+    const requiredFields = ['proofLabel', 'pathFlow', 'riskPressure', 'valueDecision', 'proofMove', 'safeClaim', 'competitorPressure', 'netsuiteContrast', 'noRegression'];
+    const missingFields = requiredFields.filter((field) => {
+      const current = active[field];
+      return Array.isArray(current) ? current.length === 0 : !current;
+    });
+    const normalizedNoRegression = Object.assign({}, active.noRegression || {}, {
+      storyContractW373: true,
+      collapsedSupportCleanupOnly: true,
+      sourceLanePacksMutated: false,
+      noDrawerWrites: true,
+      noTransactionWrites: true,
+      noFakeOpenLinks: true,
+      w377AuthoringTemplateReady: true
+    });
+    return Object.assign({}, active, {
+      schema: 'idb.w373-cross-lane-story-polish-contract.v1',
+      sourceSchema: active.schema || '',
+      storyContractConsistent: active.active ? missingFields.length === 0 : true,
+      missingFields,
+      antiLeakTerms: Array.from(new Set(arrayValue(active.antiLeakTerms).concat(legacySupportLeakTerms))),
+      noRegression: normalizedNoRegression,
+      authoringReadinessW377: laneStoryAuthoringReadinessW377(Object.assign({}, active, {
+        antiLeakTerms: Array.from(new Set(arrayValue(active.antiLeakTerms).concat(legacySupportLeakTerms))),
+        noRegression: normalizedNoRegression
+      }))
+    });
+  }
+
   function likelyCompetitivePressure(state, lane) {
     const intake = normalizedIntake(state);
     const combined = `${intake.competitor || ''} ${intake.notes || ''} ${intake.decisionCriteria || ''}`.toLowerCase();
@@ -20127,6 +20544,11 @@
     const apparel = lane.id === 'apparel_accessories' || /apparel|footwear|style|size|color|variant|ecommerce|shopify/.test(combined);
     const manufacturing = /manufactur|assembly|bom|wip|production|routing/.test(combined);
     const dealerHardgoods = lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time|replenishment/.test(combined);
+    const partsService = lane.id === 'parts_service' || /field service|service manager|work order|dispatch|technician|truck stock|installed equipment|first-time fix|warranty|backorder|parts availability|servicetitan/.test(combined);
+    const medicalDental = lane.id === 'medical_dental_supply' || /dental|clinic|sterilization|handpiece|handpieces|chair|chairs|medical supply|dental supply|substitute product|equipment warranty|compliance|backorder/.test(combined);
+    const foodBeverage = lane.id === 'food_beverage' || /food|beverage|ingredient|packaging|case pack|batch|lot|qa|quality hold|line schedule|finished good|promotion ship|copacker|co-packer|fishbowl|batchmaster/.test(combined);
+    const industrialEquipment = lane.id === 'industrial_equipment' || /industrial equipment|configured equipment|assembly|bom|component|supplier lead|build schedule|work-center|work center|inspection|test readiness|delivery promise|engineering change/.test(combined);
+    const lifeSciences = lane.id === 'life_sciences' || /life science|diagnostic|reagent|regulated|lot status|lot\/release|release readiness|expiration|validation|qa release|traceability|lims|quality system/.test(combined);
     const distribution = /dealer|distributor|warehouse|branch|fulfillment|channel/.test(combined);
     const alternatives = [];
     if (supplied && !manualWorkflow) alternatives.push(supplied);
@@ -20135,7 +20557,12 @@
       if (alternatives.length) return Array.from(new Set(alternatives)).slice(0, 6);
     }
     if (manualWorkflow) alternatives.push('spreadsheets and manual inventory reports', 'QuickBooks plus spreadsheets');
-    if (dealerHardgoods) alternatives.push('dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo');
+    if (lifeSciences) alternatives.push('spreadsheets and manual QA release reports', 'SAP or legacy ERP', 'quality management system', 'LIMS or lab system', 'QuickBooks plus spreadsheets');
+    else if (industrialEquipment) alternatives.push('QuickBooks plus spreadsheets', 'Odoo or manufacturing add-ons', 'Microsoft Dynamics 365', 'engineering BOM spreadsheets', 'supplier status email threads');
+    else if (dealerHardgoods) alternatives.push('dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo');
+    else if (foodBeverage) alternatives.push('QuickBooks plus spreadsheets', 'Fishbowl or inventory add-ons', 'BatchMaster or food production tools', 'co-packer schedule spreadsheets', 'manual QA hold reports');
+    else if (medicalDental) alternatives.push('QuickBooks plus spreadsheets', 'Shopify or ecommerce reports', 'dental distributor portal', 'inventory add-ons', 'manual substitute checks');
+    else if (partsService) alternatives.push('ServiceTitan or dispatch app', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'manual parts calls', 'inventory add-ons');
     else if (apparel) alternatives.push('Shopify or ecommerce apps plus inventory add-ons', 'Odoo', 'Microsoft Dynamics 365', 'SAP Business One', 'niche apparel or PLM tools');
     else if (manufacturing) alternatives.push('Odoo', 'Microsoft Dynamics 365', 'SAP Business One', 'manufacturing point solutions');
     else if (distribution) alternatives.push('QuickBooks plus warehouse tools', 'Odoo', 'Microsoft Dynamics 365', 'dealer/distribution point solutions');
@@ -20199,8 +20626,18 @@
     const text = `${intake.customer || ''} ${intake.website || ''} ${intake.notes || ''} ${lane && lane.name || ''}`.toLowerCase();
     const fromExisting = arrayValue(competitive && competitive.competitivePrep && competitive.competitivePrep.alternatives);
     let standard = [];
-    if (lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time/.test(text)) {
+    if (lane.id === 'life_sciences' || /life science|diagnostic|reagent|regulated|lot status|lot\/release|release readiness|expiration|validation|qa release|traceability|lims|quality system/.test(text)) {
+      standard = ['spreadsheets and manual QA release reports', 'SAP or legacy ERP', 'quality management system', 'LIMS or lab system', 'QuickBooks plus spreadsheets'];
+    } else if (lane.id === 'industrial_equipment' || /industrial equipment|configured equipment|assembly|bom|component|supplier lead|build schedule|work-center|work center|inspection|test readiness|delivery promise|engineering change/.test(text)) {
+      standard = ['QuickBooks plus spreadsheets', 'Odoo manufacturing add-ons', 'Microsoft Dynamics 365', 'engineering BOM spreadsheets', 'supplier status email threads'];
+    } else if (lane.id === 'dealer_hardgoods' || /dealer|channel|allocation|hardgoods|durable|supplier lead|lead-time/.test(text)) {
       standard = ['dealer portals', 'supplier portals', 'allocation spreadsheets', 'inventory add-ons', 'QuickBooks plus spreadsheets', 'Odoo'];
+    } else if (lane.id === 'food_beverage' || /food|beverage|ingredient|packaging|case pack|batch|lot|qa|quality hold|line schedule|finished good|promotion ship|copacker|co-packer|fishbowl|batchmaster/.test(text)) {
+      standard = ['QuickBooks plus spreadsheets', 'Fishbowl inventory add-ons', 'BatchMaster food production tools', 'co-packer schedule spreadsheets', 'manual QA hold reports'];
+    } else if (lane.id === 'medical_dental_supply' || /dental|clinic|sterilization|handpiece|handpieces|chair|chairs|medical supply|dental supply|substitute product|equipment warranty|compliance|backorder/.test(text)) {
+      standard = ['dental distributor portal', 'QuickBooks plus spreadsheets', 'Shopify ecommerce reports', 'inventory add-ons', 'manual substitute checks'];
+    } else if (lane.id === 'parts_service' || /field service|service manager|work order|dispatch|technician|truck stock|installed equipment|first-time fix|warranty|backorder|servicetitan/.test(text)) {
+      standard = ['ServiceTitan', 'dispatch apps', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'inventory add-ons', 'manual parts calls'];
     } else if (/industrial|distribution|branch|fulfillment|mro|electrical|counter|contractor|supply/.test(text) || lane.id === 'products_cpg') {
       standard = ['Grainger', 'Fastenal', 'MSC Industrial', 'Graybar', 'supplier portals', 'branch inventory spreadsheets'];
     } else if (/manufactur|assembly|bom|wip|production/.test(text)) {
@@ -20224,8 +20661,23 @@
     const sourceLabel = publicEvidenceStrong ? 'Public evidence plus advisory context' : 'N/LLM advisory from lane, URL/domain, and request language';
     const authorityLabel = competitive.namedCompetitor ? 'Verify named competitor before claiming' : 'Advisory prep only';
     const dealerPolish = dealerHardgoodsStoryPolishW365(state, lane, packet);
+    const apparelPolish = apparelRetailStoryPolishW369(state, lane, packet);
+    const partsServicePolish = partsServiceStoryPolishW370(state, lane, packet);
+    const medicalDentalPolish = medicalDentalStoryPolishW372(state, lane, packet);
+    const foodBeveragePolish = foodBeverageStoryPolishW374(state, lane, packet);
+    const industrialEquipmentPolish = industrialEquipmentStoryPolishW376(state, lane, packet);
     const netSuiteContrast = dealerPolish.active
       ? dealerPolish.netsuiteContrast
+      : apparelPolish.active
+        ? apparelPolish.netsuiteContrast
+      : partsServicePolish.active
+        ? partsServicePolish.netsuiteContrast
+      : medicalDentalPolish.active
+        ? medicalDentalPolish.netsuiteContrast
+      : foodBeveragePolish.active
+        ? foodBeveragePolish.netsuiteContrast
+      : industrialEquipmentPolish.active
+        ? industrialEquipmentPolish.netsuiteContrast
       : `Use ${lane.proofAnchor} to keep availability, promise, fulfillment, and financial impact in one NetSuite path.`;
     const competitorText = alternatives.slice(0, 4).join(', ');
     return {
@@ -20441,7 +20893,7 @@
   }
 
   function pageAwareRunCue(value, lane, pageContext, selectedMove, recommendation) {
-    const path = lane.moves.slice(0, 3).join(' -> ');
+    const path = humanJoinW334(lane.moves.slice(0, 3));
     const genericCue = `Open ${recommendation.move} next. If you are on a dashboard or unrelated page, navigate to ${recommendation.move} for ${value.customer}, then pivot through ${path} to prove ${lane.proofAnchor}.`;
     const pageMoves = {
       customer_record: `Use the Customer Record to ground ${value.customer}'s operating context before moving into ${lane.proofAnchor}.`,
@@ -20491,6 +20943,12 @@
   function liveRunScript(state, lane, pageContext, selectedMove, recommendation, action) {
     const value = valueReviewPacket(state, lane, pageContext, recommendation);
     const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
+    const apparelPolish = value.apparelRetailPolishW369 || apparelRetailStoryPolishW369(state, lane, value);
+    const partsServicePolish = value.partsServicePolishW370 || partsServiceStoryPolishW370(state, lane, value);
+    const medicalDentalPolish = value.medicalDentalPolishW372 || medicalDentalStoryPolishW372(state, lane, value);
+    const foodBeveragePolish = value.foodBeveragePolishW374 || foodBeverageStoryPolishW374(state, lane, value);
+    const industrialEquipmentPolish = value.industrialEquipmentPolishW376 || industrialEquipmentStoryPolishW376(state, lane, value);
+    const lifeSciencesPolish = value.lifeSciencesPolishW378 || lifeSciencesStoryPolishW378(state, lane, value);
     const actionCopy = liveActionCopy(action.id, value, lane, pageContext, selectedMove, recommendation);
     const coach = runCoachV3Model(state, lane, pageContext, selectedMove, recommendation, action);
     const packetIdentity = packetIdentityFor(state, lane);
@@ -20555,7 +21013,7 @@
         selectedScript.close = 'Ask which dealer allocation, replenishment, or supplier lead-time promise is hardest to trust today.';
       } else if (action.id === 'prove') {
         selectedScript.say = dealerPolish.proofMove;
-        selectedScript.show = `Move through ${dealerPolish.pathFlow.slice(0, 5).join(' -> ')}.`;
+        selectedScript.show = `Move through ${humanJoinW334(dealerPolish.pathFlow.slice(0, 5))}.`;
         selectedScript.close = `Ask whether the imported NetSuite proof gives ${value.customer} enough trust to make the next dealer/channel promise without manual reconciliation.`;
       } else if (action.id === 'handle_objection') {
         selectedScript.say = 'If the buyer questions dealer availability, ask which channel promise they reconcile by hand today, then return to allocation, replenishment timing, and supplier lead-time risk in NetSuite.';
@@ -20563,6 +21021,102 @@
       } else if (action.id === 'close_value') {
         selectedScript.say = `Summarize the channel decision ${value.customer} can now make: ${dealerPolish.valueDecision}`;
         selectedScript.close = 'Capture the current allocation miss, replenishment delay, supplier lead-time change, or manual-effort baseline before claiming savings.';
+      }
+    }
+    if (apparelPolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s apparel retail pressure: ${apparelPolish.riskPressure}. Keep this as a style, size/color, and store/ecommerce promise story, not a dealer/channel tour.`;
+        selectedScript.close = 'Ask which size, color, store, ecommerce, or transfer promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = apparelPolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(apparelPolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to make the next style, size/color, or store/ecommerce promise without spreadsheet reconciliation.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions apparel availability, ask which size/color or store/ecommerce promise they reconcile by hand today, then return to variant availability, replenishment timing, transfer risk, and margin exposure in NetSuite.';
+        selectedScript.close = 'Confirm what evidence would make style, size/color, and store/ecommerce availability trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the retail decision ${value.customer} can now make: ${apparelPolish.valueDecision}`;
+        selectedScript.close = 'Capture the current stockout, transfer delay, replenishment miss, ecommerce promise miss, or margin baseline before claiming savings.';
+      }
+    }
+    if (partsServicePolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s parts/service pressure: ${partsServicePolish.riskPressure}. Keep this as a work order, installed equipment, and technician readiness story, not a dealer/channel or retail availability tour.`;
+        selectedScript.close = 'Ask which work order, truck stock, warehouse part, warranty, or backorder promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = partsServicePolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(partsServicePolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to dispatch the next technician promise without manual parts calls.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions service readiness, ask which work order or truck/warehouse part they reconcile by hand today, then return to installed equipment, parts availability, backorder or purchasing action, warranty exposure, and first-time fix confidence in NetSuite.';
+        selectedScript.close = 'Confirm what evidence would make work order and service parts readiness trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the service decision ${value.customer} can now make: ${partsServicePolish.valueDecision}`;
+        selectedScript.close = 'Capture the current first-time-fix miss, emergency delay, parts call-around time, warranty exposure, backorder delay, or service-margin baseline before claiming savings.';
+      }
+    }
+    if (medicalDentalPolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s medical/dental supply pressure: ${medicalDentalPolish.riskPressure}. Keep this as a clinic supply, substitute, backorder, and warranty-sensitive equipment story, not a dealer/channel, retail, or field-service dispatch tour.`;
+        selectedScript.close = 'Ask which clinic supply, substitute, stock location, backorder, equipment history, or warranty promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = medicalDentalPolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(medicalDentalPolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to confirm the next clinic order without manual substitute or backorder checks.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions clinic supply availability, ask which item, substitute, stock location, backorder, equipment, or warranty detail they reconcile by hand today, then return to the NetSuite proof path.';
+        selectedScript.close = 'Confirm what evidence would make clinic supply availability and substitute confidence trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the clinic supply decision ${value.customer} can now make: ${medicalDentalPolish.valueDecision}`;
+        selectedScript.close = 'Capture the current stockout, backorder delay, substitute miss, warranty-sensitive equipment issue, location-transfer delay, or manual-check baseline before claiming savings.';
+      }
+    }
+    if (foodBeveragePolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s food/beverage production pressure: ${foodBeveragePolish.riskPressure}. Keep this as ingredient, packaging, batch/line, QA, and finished-good readiness, not dealer, retail, service, clinic, or generic branch fulfillment.`;
+        selectedScript.close = 'Ask which ingredient, packaging, batch, line, QA hold, lot, or ship-date promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = foodBeveragePolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(foodBeveragePolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to commit the next promotion or customer order without manual production reconciliation.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions finished-good readiness, ask which ingredient, packaging, batch, line schedule, QA hold, or lot detail they reconcile by hand today, then return to the NetSuite proof path.';
+        selectedScript.close = 'Confirm what evidence would make finished-good production readiness trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the food/beverage decision ${value.customer} can now make: ${foodBeveragePolish.valueDecision}`;
+        selectedScript.close = 'Capture the current ingredient miss, packaging delay, batch or line change, QA hold, lot release issue, ship-date miss, or manual-check baseline before claiming savings.';
+      }
+    }
+    if (industrialEquipmentPolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s industrial equipment pressure: ${industrialEquipmentPolish.riskPressure}. Keep this as configured equipment, components, supplier timing, build schedule, inspection/test, and delivery readiness, not dealer, retail, service, clinic, or food production.`;
+        selectedScript.close = 'Ask which configuration, component, supplier lead time, build schedule, inspection/test, or delivery promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = industrialEquipmentPolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(industrialEquipmentPolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to commit the next configured equipment delivery without manual reconciliation.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions equipment readiness, ask which configuration, component, supplier, build schedule, inspection/test, or delivery detail they reconcile by hand today, then return to the NetSuite proof path.';
+        selectedScript.close = 'Confirm what evidence would make configured equipment assembly readiness trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the equipment decision ${value.customer} can now make: ${industrialEquipmentPolish.valueDecision}`;
+        selectedScript.close = 'Capture the current engineering change, component shortage, supplier delay, build schedule slip, inspection/test miss, delivery delay, or manual-check baseline before claiming savings.';
+      }
+    }
+    if (lifeSciencesPolish.active) {
+      if (action.id === 'open') {
+        selectedScript.say = `Open with ${value.customer}'s regulated release pressure: ${lifeSciencesPolish.riskPressure}. Keep this as lot/release, approved inventory, expiration, QA/validation, traceability, and shipment confidence, not dealer, retail, service, clinic, food, or equipment assembly.`;
+        selectedScript.close = 'Ask which lot status, expiration, QA release, validation document, traceability, or shipment promise is hardest to trust today.';
+      } else if (action.id === 'prove') {
+        selectedScript.say = lifeSciencesPolish.proofMove;
+        selectedScript.show = `Move through ${humanJoinW334(lifeSciencesPolish.pathFlow.slice(0, 5))}.`;
+        selectedScript.close = `Ask whether the NetSuite proof gives ${value.customer} enough trust to confirm the next regulated shipment without manual release reconciliation.`;
+      } else if (action.id === 'handle_objection') {
+        selectedScript.say = 'If the buyer questions regulated readiness, ask which lot, expiration, QA release, validation document, traceability, or shipment detail they reconcile by hand today, then return to the NetSuite proof path.';
+        selectedScript.close = 'Confirm what evidence would make regulated lot and release readiness trusted enough to move forward.';
+      } else if (action.id === 'close_value') {
+        selectedScript.say = `Summarize the regulated shipment decision ${value.customer} can now make: ${lifeSciencesPolish.valueDecision}`;
+        selectedScript.close = 'Capture the current lot hold, expiration risk, QA release delay, validation-document gap, traceability miss, shipment delay, or manual-check baseline before claiming savings.';
       }
     }
     selectedScript.say = consultantVisibleCopyW346(selectedScript.say, 320);
@@ -20721,6 +21275,13 @@
     const w213Coach = consultantStoryRoiCompetitiveQualityPassW213V1(state, lane, pageContext, recommendation);
     const w213Copy = w213Coach.updatedConsultantCopyModel;
     const dealerPolish = dealerHardgoodsStoryPolishW365(state, lane, { product: product.product });
+    const apparelPolish = apparelRetailStoryPolishW369(state, lane, { product: product.product });
+    const partsServicePolish = partsServiceStoryPolishW370(state, lane, { product: product.product });
+    const medicalDentalPolish = medicalDentalStoryPolishW372(state, lane, { product: product.product });
+    const foodBeveragePolish = foodBeverageStoryPolishW374(state, lane, { product: product.product });
+    const industrialEquipmentPolish = industrialEquipmentStoryPolishW376(state, lane, { product: product.product });
+    const lifeSciencesPolish = lifeSciencesStoryPolishW378(state, lane, { product: product.product });
+    const storyContractW373 = crossLaneStoryPolishContractW373(state, lane, { product: product.product });
     const valueProofStack = [
       `ERP proof - ${industryWin.proof}`,
       `Operational proof - ${lane.proofAnchor} through ${recommendation.move}.`,
@@ -20729,6 +21290,18 @@
     const talkTrackLead = consultantVisibleCopyW346(w213Copy.talkTrack, 360);
     const valueDecision = dealerPolish.active
       ? dealerPolish.valueDecision
+      : apparelPolish.active
+        ? apparelPolish.valueDecision
+      : partsServicePolish.active
+        ? partsServicePolish.valueDecision
+      : medicalDentalPolish.active
+        ? medicalDentalPolish.valueDecision
+      : foodBeveragePolish.active
+        ? foodBeveragePolish.valueDecision
+      : industrialEquipmentPolish.active
+        ? industrialEquipmentPolish.valueDecision
+      : lifeSciencesPolish.active
+        ? lifeSciencesPolish.valueDecision
       : `Use ${recommendation.move} to prove ${lane.proofAnchor}, then ask whether ${customer} can trust this NetSuite path for ${product.demandMoment}.`;
     const roiAuditCards = [
       `Why now - ${pain}`,
@@ -20757,6 +21330,13 @@
       story,
       competitive,
       dealerHardgoodsPolishW365: dealerPolish,
+      apparelRetailPolishW369: apparelPolish,
+      partsServicePolishW370: partsServicePolish,
+      medicalDentalPolishW372: medicalDentalPolish,
+      foodBeveragePolishW374: foodBeveragePolish,
+      industrialEquipmentPolishW376: industrialEquipmentPolish,
+      lifeSciencesPolishW378: lifeSciencesPolish,
+      storyContractW373,
       grounded,
       competitorContext: competitive.competitorSafeContrast,
       decisionCriteria: consultantVisibleCopyW346(criteria, 260),
@@ -20764,7 +21344,7 @@
       w213Coach,
       valueProofStack,
       talkTrackLead,
-      valueDecision: consultantVisibleCopyW346(dealerPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
+      valueDecision: consultantVisibleCopyW346(dealerPolish.active || apparelPolish.active || partsServicePolish.active || medicalDentalPolish.active || foodBeveragePolish.active || industrialEquipmentPolish.active || lifeSciencesPolish.active ? valueDecision : (w213Copy.closeValue || valueDecision), 260),
       roiAuditCards,
       competitiveCards,
       objectionPath,
@@ -20774,7 +21354,7 @@
       valueAgenda: [
         `Objective - ${consultantVisibleCopyW346(objective, 220)}`,
         `Start with ${customer}'s stated risk - ${consultantVisibleCopyW346(pain, 220)}`,
-        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
+        consultantVisibleCopyW346(dealerPolish.active ? dealerPolish.proofMove : apparelPolish.active ? apparelPolish.proofMove : partsServicePolish.active ? partsServicePolish.proofMove : medicalDentalPolish.active ? medicalDentalPolish.proofMove : foodBeveragePolish.active ? foodBeveragePolish.proofMove : industrialEquipmentPolish.active ? industrialEquipmentPolish.proofMove : lifeSciencesPolish.active ? lifeSciencesPolish.proofMove : (w213Copy.proofMove || `Show the ${lane.proofAnchor} proof path around ${product.product}.`), 220),
         `Tie the proof to ${lane.valueLens}`,
         `Decision criteria - ${consultantVisibleCopyW346(criteria, 220)}`,
         `Close by confirming the next operational decision the prospect can now make.`
@@ -21241,30 +21821,60 @@
       }
       .idb-w361-path-flow {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 5px;
-        margin-bottom: 8px;
+        grid-template-columns: 1fr;
+        gap: 7px;
+        margin: 9px 0 10px;
+        padding-left: 18px;
+        position: relative;
+      }
+      .idb-w361-path-flow::before {
+        content: "";
+        position: absolute;
+        left: 7px;
+        top: 13px;
+        bottom: 13px;
+        width: 2px;
+        border-radius: 999px;
+        background: #b8c8d2;
       }
       .idb-w361-path-node {
         position: relative;
-        border: 1px solid #cbd7df;
+        border: 1px solid #b8c8d2;
         border-radius: 7px;
         background: #fff;
-        padding: 7px 18px 7px 7px;
-        min-height: 42px;
+        padding: 8px 9px 8px 10px;
+        min-height: 50px;
       }
       .idb-w361-path-node:not(:last-child)::after {
-        content: ">";
+        content: "";
         position: absolute;
-        right: 6px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #0b5f79;
-        font-size: 13px;
-        font-weight: 900;
+        left: -12px;
+        top: 29px;
+        bottom: -13px;
+        width: 2px;
+        background: #006685;
+        opacity: .35;
+      }
+      .idb-w361-path-step {
+        position: absolute;
+        left: -19px;
+        top: 10px;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        border: 2px solid #006685;
+        border-radius: 999px;
+        background: #fff;
+        color: #006685;
+        font-size: 9px;
+        font-weight: 950;
+        line-height: 1;
       }
       .idb-w361-path-label {
-        color: #65768a;
+        color: #536579;
         font-size: 9px;
         font-weight: 850;
         letter-spacing: .04em;
@@ -21273,10 +21883,113 @@
       .idb-w361-path-name {
         margin-top: 2px;
         color: #16212f;
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 850;
         line-height: 1.2;
         overflow-wrap: anywhere;
+      }
+      .idb-w371-path-open {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+      }
+      .idb-w361-path-node.idb-w371-path-clickable {
+        border-color: #0b5f79;
+        background: #fbfdff;
+        cursor: pointer;
+      }
+      .idb-w361-path-node.idb-w371-path-clickable:hover {
+        background: #eef7f9;
+        box-shadow: 0 1px 0 rgba(11, 95, 121, .12);
+      }
+      .idb-w371-open-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 5px;
+        border: 1px solid #0b5f79;
+        border-radius: 999px;
+        color: #0b5f79;
+        background: #fff;
+        padding: 2px 7px;
+        font-size: 9px;
+        font-weight: 900;
+        line-height: 1;
+      }
+      .idb-w371-unavailable-badge {
+        display: inline-flex;
+        margin-top: 5px;
+        border: 1px solid #cbd7df;
+        border-radius: 999px;
+        color: #536579;
+        background: #f7f8f6;
+        padding: 2px 7px;
+        font-size: 9px;
+        font-weight: 850;
+        line-height: 1;
+      }
+      .idb-w371-consultant-flow {
+        display: grid;
+        gap: 7px;
+        margin-top: 6px;
+      }
+      .idb-w413-presenter-flow {
+        gap: 6px;
+      }
+      .idb-w371-flow-row {
+        border: 1px solid #cbd7df;
+        border-left: 4px solid #0b5f79;
+        border-radius: 7px;
+        background: #fff;
+        padding: 8px;
+      }
+      .idb-w413-presenter-flow .idb-w371-flow-row {
+        padding: 7px 8px;
+      }
+      .idb-w371-flow-row.idb-w371-roi-row {
+        border-left-color: #4f7f52;
+        background: #fbfdf9;
+      }
+      .idb-w371-flow-row.idb-w371-competitive-row {
+        border-left-color: #7a5f15;
+        background: #fffdf6;
+      }
+      .idb-w371-flow-label {
+        color: #536579;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+      }
+      .idb-w371-flow-copy {
+        margin-top: 3px;
+        color: #17202d;
+        font-size: 12px;
+        line-height: 1.34;
+        font-weight: 720;
+      }
+      .idb-w413-presenter-flow .idb-w371-flow-copy {
+        font-size: 11.5px;
+        line-height: 1.28;
+      }
+      .idb-w371-flow-meta {
+        margin-top: 4px;
+        color: #536579;
+        font-size: 10px;
+        line-height: 1.3;
+      }
+      .idb-w413-proof-cta-rows {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .idb-w413-proof-cta-rows .idb-status-cell {
+        min-height: auto;
+        padding: 8px;
+      }
+      .idb-w413-run-objective {
+        margin-top: 8px;
       }
       .idb-w361-script-chips,
       .idb-w361-value-chips {
@@ -21285,22 +21998,49 @@
         margin-top: 7px;
       }
       .idb-w361-script-chips {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
       }
       .idb-w361-value-chips {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
       }
       .idb-w361-script-chip,
       .idb-w361-value-chip {
-        border: 1px solid #d8e1e6;
+        border: 1px solid #cbd7df;
         border-radius: 7px;
         background: #fbfcfb;
         color: #17202d;
-        min-height: 30px;
-        padding: 6px;
+        min-height: 44px;
+        padding: 7px;
         font-size: 9px;
         font-weight: 900;
         text-align: left;
+      }
+      .idb-w367-value-decision-card {
+        background: #fff;
+      }
+      .idb-w367-presenter-steps {
+        margin-bottom: 9px;
+      }
+      .idb-w367-presenter-steps .idb-w361-script-chip {
+        background: #fff;
+        min-height: 52px;
+      }
+      .idb-w368-dealer-proof-flow {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+        gap: 6px;
+        margin-top: 7px;
+      }
+      .idb-w368-dealer-proof-step {
+        border: 1px solid #d8e1e6;
+        border-radius: 7px;
+        background: #fff;
+        color: #17202d;
+        min-height: 34px;
+        padding: 6px;
+        font-size: 9px;
+        font-weight: 900;
+        line-height: 1.2;
       }
       .idb-w361-chip-title {
         display: block;
@@ -22833,14 +23573,34 @@
     objects.forEach((item) => {
       if (selected.length < 4 && !selected.includes(item)) selected.push(item);
     });
+    const renderPathNode = (item, index) => {
+      const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
+      const label = consultantRunNavigationLabelW332(item);
+      const name = consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item);
+      const inner = `
+        <span class="idb-w361-path-step">${escapeHtml(index + 1)}</span>
+        <span class="idb-w361-path-label">${escapeHtml(label)}</span>
+        <span class="idb-w361-path-name">${escapeHtml(name)}</span>
+        ${authority.openable
+          ? '<span class="idb-w371-open-badge">Open</span>'
+          : `<span class="idb-w371-unavailable-badge" title="${escapeHtml(authority.reason || 'No verified Open URL returned.')}">${escapeHtml(authority.displayLabel || 'No Open link')}</span>`}
+      `;
+      if (authority.openable) {
+        return `
+          <a class="idb-w361-path-node idb-w371-path-open idb-w371-path-clickable" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer" aria-label="Open ${escapeHtml(label)} ${escapeHtml(name)}">
+            ${inner}
+          </a>
+        `;
+      }
+      return `
+        <div class="idb-w361-path-node idb-w371-path-unavailable" aria-label="${escapeHtml(label)} ${escapeHtml(name)}">
+          ${inner}
+        </div>
+      `;
+    };
     return `
       <div class="idb-w361-path-flow idb-w361-netsuite-path" aria-label="NetSuite path flow">
-        ${selected.slice(0, 4).map((item) => `
-          <div class="idb-w361-path-node">
-            <span class="idb-w361-path-label">${escapeHtml(consultantRunNavigationLabelW332(item))}</span>
-            <span class="idb-w361-path-name">${escapeHtml(consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item))}</span>
-          </div>
-        `).join('')}
+        ${selected.slice(0, 4).map(renderPathNode).join('')}
       </div>
     `;
   }
@@ -22852,14 +23612,88 @@
       ['Close', script && script.close]
     ];
     return `
-      <div class="idb-w361-script-chips" role="group" aria-label="Say Show Close script chips">
+      <div class="idb-w361-script-chips idb-w367-presenter-steps" role="group" aria-label="Say Show Close presenter steps">
         ${rows.map(([label, copy]) => `
           <button class="idb-w361-script-chip" type="button" title="${escapeHtml(copy || '')}">
             <span class="idb-w361-chip-title">${escapeHtml(label)}</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(copy || '', 72))}</span>
+            <span class="idb-w361-chip-copy">${escapeHtml(compactText(copy || '', 92))}</span>
           </button>
         `).join('')}
       </div>
+    `;
+  }
+
+  function renderW368DealerProofFlow(dealerPolish) {
+    const steps = arrayValue(dealerPolish && dealerPolish.pathFlow);
+    if (!steps.length) return '';
+    return `
+      <div class="idb-w368-dealer-proof-flow" aria-label="Dealer channel proof flow">
+        ${steps.slice(0, 6).map((step) => `<span class="idb-w368-dealer-proof-step">${escapeHtml(step)}</span>`).join('')}
+      </div>
+    `;
+  }
+
+  function storyContractUiLabelW375(storyContract) {
+    const source = String(storyContract && storyContract.sourceSchema || storyContract && storyContract.schema || '');
+    if (/dealer-hardgoods/i.test(source)) return 'Dealer/channel';
+    if (/apparel-retail/i.test(source)) return 'Apparel/retail';
+    if (/parts-service/i.test(source)) return 'Parts/service';
+    if (/medical-dental/i.test(source)) return 'Medical/dental';
+    if (/food-beverage/i.test(source)) return 'Food/beverage';
+    if (/industrial-equipment/i.test(source)) return 'Industrial equipment';
+    if (/life-sciences/i.test(source)) return 'Life Sciences';
+    return 'Lane story';
+  }
+
+  function storyContractUiClassW375(storyContract) {
+    const source = String(storyContract && storyContract.sourceSchema || storyContract && storyContract.schema || '').toLowerCase();
+    if (source.indexOf('dealer-hardgoods') >= 0) return 'idb-w365-dealer-hardgoods-card';
+    if (source.indexOf('apparel-retail') >= 0) return 'idb-w369-apparel-retail-card';
+    if (source.indexOf('parts-service') >= 0) return 'idb-w370-parts-service-card';
+    if (source.indexOf('medical-dental') >= 0) return 'idb-w372-medical-dental-card';
+    if (source.indexOf('food-beverage') >= 0) return 'idb-w374-food-beverage-card';
+    if (source.indexOf('industrial-equipment') >= 0) return 'idb-w376-industrial-equipment-card';
+    if (source.indexOf('life-sciences') >= 0) return 'idb-w378-life-sciences-card';
+    return 'idb-w375-story-contract-card';
+  }
+
+  function renderW375StoryContractLens(storyContract) {
+    if (!storyContract || !storyContract.active) return '';
+    const label = storyContractUiLabelW375(storyContract);
+    return `
+      <details class="idb-technical-details idb-w375-story-contract-lens-detail">
+        <summary>${escapeHtml(label)} lens</summary>
+        <div class="idb-run-action-card ${escapeHtml(storyContractUiClassW375(storyContract))}">
+          <div class="idb-status-key">${escapeHtml(label)} lens</div>
+          <div class="idb-strong">${escapeHtml(storyContract.proofLabel)}</div>
+          <div class="idb-copy">${escapeHtml(storyContract.riskPressure)}</div>
+          <div class="idb-copy">${escapeHtml(storyContract.netsuiteContrast)}</div>
+          <div class="idb-chip-row">
+            <span class="idb-mini-chip">W375 shared story renderer</span>
+            <span class="idb-mini-chip">${escapeHtml(consultantLabel(storyContract.sourceSchema || storyContract.schema))}</span>
+          </div>
+        </div>
+      </details>
+    `;
+  }
+
+  function renderW375StoryContractProofPath(storyContract) {
+    if (!storyContract || !storyContract.active) return '';
+    const label = storyContractUiLabelW375(storyContract);
+    return `
+      <details class="idb-technical-details idb-w375-story-contract-proof-detail">
+        <summary>${escapeHtml(label)} proof path</summary>
+        <div class="idb-run-action-card ${escapeHtml(storyContractUiClassW375(storyContract))}">
+          <div class="idb-status-key">${escapeHtml(label)} proof path</div>
+          <div class="idb-strong">${escapeHtml(storyContract.proofLabel)}</div>
+          ${renderW368DealerProofFlow(storyContract)}
+          <div class="idb-copy">${escapeHtml(storyContract.safeClaim)}</div>
+          <div class="idb-chip-row">
+            <span class="idb-mini-chip">W375 shared story renderer</span>
+            <span class="idb-mini-chip">Source packs unchanged</span>
+          </div>
+        </div>
+      </details>
     `;
   }
 
@@ -23806,34 +24640,56 @@
     const netsuiteContrast = grounded.whyNetSuiteEvidence[0] || value.groundedCompetitiveSummary;
     const competitivePrep = competitive.competitivePrep || competitiveFudPrep(state, lane, story);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
-    const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
+    const storyContractW373 = value.storyContractW373 || crossLaneStoryPolishContractW373(state, lane, value);
     const whyThisMatters = [
       `Business risk - ${compactText(audit.claim || roiHypothesis, 150)}`,
       `Operational proof - ${compactText(audit.proofStep || demoProof, 150)}`,
       `NetSuite contrast - ${compactText(netsuiteContrast, 150)}`,
       `Baseline to capture - ${compactText(audit.baselineNeeded || 'Capture the current delay, cost, or risk baseline before claiming savings.', 150)}`
     ];
-    const liveValueCockpit = `
-      <div class="idb-run-action-card idb-w361-live-value-cockpit">
-        <div class="idb-status-key">Live value answer</div>
-        <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
-        <div class="idb-w361-value-chips" role="group" aria-label="Live value answer chips">
-          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(topMove)}">
-            <span class="idb-w361-chip-title">Next move</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(topMove, 78))}</span>
-          </button>
-          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(netsuiteContrast)}">
-            <span class="idb-w361-chip-title">NetSuite answer</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(netsuiteContrast, 78))}</span>
-          </button>
-          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(roiHypothesis)}">
-            <span class="idb-w361-chip-title">ROI answer</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(roiHypothesis, 78))}</span>
-          </button>
-          <button class="idb-w361-value-chip" type="button" title="${escapeHtml(cautionCopy)}">
-            <span class="idb-w361-chip-title">Caution</span>
-            <span class="idb-w361-chip-copy">${escapeHtml(compactText(cautionCopy, 78))}</span>
-          </button>
+    const competitiveWatchOut = competitiveAdvisory.runCue || competitive.competitorSafeContrast || value.groundedCompetitiveSummary;
+    const largestValueToProve = audit.claim || roiHypothesis;
+    const presenterCopy = (copy, limit) => compactText(consultantVisibleCopyW346(copy || '', limit || 150)
+      .replace(/\bcan reduce demo risk around\b/gi, 'can protect')
+      .replace(/\breduce demo risk around\b/gi, 'protect')
+      .replace(/\bdemo demand\b/gi, 'customer demand')
+      .replace(/\bdemo risk\b/gi, 'buyer risk'), limit || 150);
+    const consultantFlow = `
+      <div class="idb-w371-consultant-flow idb-w371-roi-competitive-flow idb-w413-presenter-flow" aria-label="Presenter flow for ROI and competitive guidance">
+        <div class="idb-w371-flow-row">
+          <div class="idb-w371-flow-label">Say first</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(value.talkTrackLead || value.valueDecision, 150))}</div>
+          <div class="idb-w371-flow-meta">Open with the business risk, then keep the proof tied to the next decision.</div>
+        </div>
+        <div class="idb-w371-flow-row">
+          <div class="idb-w371-flow-label">Ask next</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(askNext, 130))}</div>
+          <div class="idb-w371-flow-meta">Ask this before moving into proof so the demo lands on the buyer's real operating doubt.</div>
+        </div>
+        <div class="idb-w371-flow-row">
+          <div class="idb-w371-flow-label">Show proof</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(demoProof, 135))}</div>
+          <div class="idb-w371-flow-meta">${escapeHtml(presenterCopy(netsuiteContrast, 140))}</div>
+        </div>
+        <div class="idb-w371-flow-row idb-w371-roi-row">
+          <div class="idb-w371-flow-label">Value to prove</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(largestValueToProve, 135))}</div>
+          <div class="idb-w371-flow-meta">Baseline to capture: ${escapeHtml(audit.baselineNeeded || 'customer-confirmed current delay, cost, or risk baseline')}</div>
+        </div>
+        <div class="idb-w371-flow-row idb-w371-competitive-row">
+          <div class="idb-w371-flow-label">Objection handle</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(firstObjection, 130))}</div>
+          <div class="idb-w371-flow-meta">Steer back to the workflow proof, not unsupported feature claims.</div>
+        </div>
+        <div class="idb-w371-flow-row idb-w371-competitive-row">
+          <div class="idb-w371-flow-label">Competitive watch-out</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(competitiveWatchOut, 135))}</div>
+          <div class="idb-w371-flow-meta">Advisory only unless the buyer confirms the incumbent or competitor.</div>
+        </div>
+        <div class="idb-w371-flow-row">
+          <div class="idb-w371-flow-label">Claim caution</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(cautionCopy, 125))}</div>
+          <div class="idb-w371-flow-meta">${escapeHtml(consultantLabel(competitive.verifiedState))} / ${escapeHtml(consultantLabel(grounded.confidenceState))}</div>
         </div>
       </div>
     `;
@@ -23841,52 +24697,13 @@
       <div class="idb-cockpit-section">
         <div class="idb-card idb-accent idb-w96-value-coach idb-w115-consultant-value-coach">
           <div class="idb-section-title">Consultant value coach</div>
-          ${liveValueCockpit}
-          ${dealerPolish.active ? `
-            <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
-              <div class="idb-status-key">Dealer/channel lens</div>
-              <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
-              <div class="idb-copy">${escapeHtml(dealerPolish.riskPressure)}</div>
-              <div class="idb-copy">${escapeHtml(dealerPolish.netsuiteContrast)}</div>
-            </div>
-          ` : ''}
-          ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive lens', note: competitiveAdvisory.valueCue, compact: true })}
-          <div class="idb-run-action-card">
-            <div class="idb-status-key">Talk track</div>
-            <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
-            <div class="idb-copy">${escapeHtml(value.talkTrackLead)}</div>
-          </div>
-          <div class="idb-summary-card-grid">
-            <div class="idb-value-section">
-              <div class="idb-status-key">Discovery question</div>
-              <div class="idb-copy">${escapeHtml(askNext)}</div>
-            </div>
-            <div class="idb-value-section idb-competitive-section">
-              <div class="idb-status-key">Objection answer</div>
-              <div class="idb-copy">${escapeHtml(firstObjection)}</div>
-            </div>
-          </div>
-          <div class="idb-summary-card-grid">
-            <div class="idb-value-section">
-              <div class="idb-status-key">Proof move</div>
-              <div class="idb-copy">${escapeHtml(demoProof)}</div>
-            </div>
-            <div class="idb-value-section idb-competitive-section">
-              <div class="idb-status-key">ROI hypothesis</div>
-              <div class="idb-copy">${escapeHtml(roiHypothesis)}</div>
-            </div>
-          </div>
-          <div class="idb-summary-card-grid">
-            <div class="idb-value-section">
-              <div class="idb-status-key">NetSuite contrast</div>
-              <div class="idb-copy">${escapeHtml(netsuiteContrast)}</div>
-            </div>
-            <div class="idb-value-section idb-competitive-section">
-              <div class="idb-status-key">Caution</div>
-              <div class="idb-strong">${escapeHtml(consultantLabel(grounded.unsupportedClaimBlocker.status))}</div>
-              <div class="idb-copy">${escapeHtml(cautionCopy)}</div>
-            </div>
-          </div>
+          <div class="idb-status-key">Talk track, discovery, and proof moves</div>
+          ${consultantFlow}
+          ${renderW375StoryContractLens(storyContractW373)}
+          <details class="idb-technical-details idb-w367-competitive-detail">
+            <summary>Competitive lens and prep</summary>
+            ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive lens', note: competitiveAdvisory.valueCue, compact: true })}
+          </details>
           <details class="idb-technical-details idb-competitive-prep-card">
             <summary>Competitive prep detail</summary>
             <div class="idb-run-action-card">
@@ -24535,18 +25352,30 @@
     `;
   }
 
+  function laneConsistentSupportCopyW373(value, activeLaneStory) {
+    const text = String(value || '');
+    if (!activeLaneStory || !activeLaneStory.active || !activeLaneStory.proofLabel || !activeLaneStory.antiLeakTerms || !activeLaneStory.antiLeakTerms.length) return text;
+    const antiLeakPattern = new RegExp(activeLaneStory.antiLeakTerms.map((term) => String(term || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'i');
+    if (!antiLeakPattern.test(text)) return text;
+    return `${activeLaneStory.proofLabel}: keep this support detail lane-consistent; confirm source evidence before borrowing another lane's wording.`;
+  }
+
   function renderConsultantStorySurfaceW248(story, options) {
     if (!story || !story.openTarget || !story.proofMove) return '';
     const resolverLimited = !!(options && options.resolverLimitedWebsiteEvidence);
     const compactAudit = !!(options && options.compactAudit);
     const advisory = options && options.advisoryWebsiteEvidence || {};
+    const activeLaneStory = options && options.activeLaneStoryPolishW373 || {};
+    const laneSupportCleanupActive = !!(activeLaneStory && activeLaneStory.active && activeLaneStory.proofLabel);
     const advisorySupported = advisory.status === 'advisory_supported';
     const storyCopy = (value) => {
       const text = String(value || '');
-      if (!resolverLimited) return text;
-      return text
+      const resolverText = resolverLimited
+        ? text
         .replace(/\bweak lane evidence\b/gi, 'resolver-limited website evidence')
-        .replace(/\bweak evidence\b/gi, 'resolver-limited website evidence');
+        .replace(/\bweak evidence\b/gi, 'resolver-limited website evidence')
+        : text;
+      return laneConsistentSupportCopyW373(resolverText, activeLaneStory);
     };
     const coachingShape = storyCoachingRuntimeShapeW298(story);
     const firstGlance = coachingShape.w255FirstGlance;
@@ -24555,14 +25384,41 @@
     const confidence = story.nllmAdvisory && story.nllmAdvisory.confidence ? consultantLabel(story.nllmAdvisory.confidence) : 'Unclear';
     const uncertainty = story.nllmAdvisory && story.nllmAdvisory.uncertainty ? story.nllmAdvisory.uncertainty : 'Ask for confirmation when evidence is weak.';
     const receipt = coachingShape.w254EvidenceReceipt && coachingShape.w254EvidenceReceipt.status === 'receipt_ready' ? coachingShape.w254EvidenceReceipt : null;
-    const proofAction = story.compactProofActionW334 || (sequence && sequence.steps && sequence.steps[2] ? sequence.steps[2].line : firstGlance.proveMove);
-    const safeClaim = story.compactSafeClaimW334 || firstGlance.safeClaim;
-    const stopGuardrail = story.compactStopGuardrailW334 || firstGlance.doNotClaimGuardrail;
+    const proofAction = laneSupportCleanupActive
+      ? activeLaneStory.proofMove
+      : story.compactProofActionW334 || (sequence && sequence.steps && sequence.steps[2] ? sequence.steps[2].line : firstGlance.proveMove);
+    const safeClaim = laneSupportCleanupActive
+      ? activeLaneStory.safeClaim
+      : story.compactSafeClaimW334 || firstGlance.safeClaim;
+    const stopGuardrail = laneSupportCleanupActive
+      ? `Do not claim measured ROI, writes, record creation, or availability beyond returned records and confirmed ${activeLaneStory.proofLabel} evidence.`
+      : story.compactStopGuardrailW334 || firstGlance.doNotClaimGuardrail;
+    const receiptSummary = laneSupportCleanupActive
+      ? `${activeLaneStory.proofLabel} / ${confidence}`
+      : firstGlance.receiptSummary;
+    const nextAction = laneSupportCleanupActive
+      ? `Open returned records and prove only what the active ${activeLaneStory.proofLabel} story supports.`
+      : firstGlance.nextAction;
+    const receiptRows = receipt ? arrayValue(receipt.rows).map((row) => {
+      if (!laneSupportCleanupActive) return row;
+      if (row && row.id === 'lane_pack_confidence') {
+        return Object.assign({}, row, {
+          value: `${activeLaneStory.proofLabel} / ${confidence}`
+        });
+      }
+      const cleanedValue = row && row.value ? laneConsistentSupportCopyW373(row.value, activeLaneStory) : '';
+      if (row && row.value && cleanedValue !== String(row.value)) {
+        return Object.assign({}, row, {
+          value: cleanedValue
+        });
+      }
+      return row;
+    }) : [];
     const receiptHtml = receipt ? `
         <details class="idb-technical-details idb-w254-evidence-receipt">
           <summary>Evidence receipt: confidence and proof source</summary>
           <div class="idb-record-group">
-            ${arrayValue(receipt.rows).map((row) => `
+            ${receiptRows.map((row) => `
               <div class="idb-plan-row idb-compressed-row">
                 <span>
                   <span class="idb-build-label">${escapeHtml(row.label)}</span>
@@ -24578,24 +25434,25 @@
       <div class="idb-run-action-card idb-w248-story-surface">
         <div class="idb-status-key">Live proof CTA</div>
         <div class="idb-strong">${escapeHtml(storyCopy(firstGlance.openTarget))}</div>
-        <div class="idb-status-strip idb-w258-first-glance-cta">
+        <div class="idb-status-strip idb-w258-first-glance-cta idb-w413-proof-cta-rows">
           <div class="idb-status-cell">
             <div class="idb-status-key">Proof action</div>
-            <div class="idb-copy">${escapeHtml(storyCopy(proofAction))}</div>
+            <div class="idb-copy">${escapeHtml(compactText(storyCopy(proofAction), 155))}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Safe claim</div>
-            <div class="idb-copy">${escapeHtml(storyCopy(safeClaim))}</div>
+            <div class="idb-copy">${escapeHtml(compactText(storyCopy(safeClaim), 155))}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Stop</div>
-            <div class="idb-copy">${escapeHtml(storyCopy(stopGuardrail))}</div>
+            <div class="idb-copy">${escapeHtml(compactText(storyCopy(stopGuardrail), 165))}</div>
           </div>
         </div>
         <div class="idb-chip-row idb-w255-first-glance">
           <span class="idb-mini-chip">Evidence confidence: ${escapeHtml(confidence)}</span>
-          <span class="idb-mini-chip">Receipt: ${escapeHtml(storyCopy(firstGlance.receiptSummary))}</span>
-          <span class="idb-mini-chip">Next: ${escapeHtml(storyCopy(firstGlance.nextAction))}</span>
+          <span class="idb-mini-chip">Receipt: ${escapeHtml(storyCopy(receiptSummary))}</span>
+          <span class="idb-mini-chip">Next: ${escapeHtml(storyCopy(nextAction))}</span>
+          ${laneSupportCleanupActive ? '<span class="idb-mini-chip">Lane-consistent support</span>' : ''}
         </div>
         <details class="idb-technical-details idb-w256-live-demo-script">
           <summary>Say this live: open, prove, close</summary>
@@ -24664,8 +25521,9 @@
     const reviewWebsiteEvidence = websiteEvidenceUxModel(state, lane);
     const reviewResolverLimited = isResolverLimitedWebsiteEvidenceW353(reviewWebsiteEvidence);
     const reviewAdvisory = reviewWebsiteEvidence.advisory || {};
+    const reviewStoryContractW373 = crossLaneStoryPolishContractW373(state, lane, valueReviewPacket(state, lane, page, recommendation));
     const consultantStorySurfaceHtml = finalNamesImported && w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: reviewResolverLimited, advisoryWebsiteEvidence: reviewAdvisory })
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: reviewResolverLimited, advisoryWebsiteEvidence: reviewAdvisory, activeLaneStoryPolishW373: reviewStoryContractW373 })
       : '';
     const preparedObjects = preparedRecords.map((record) => consultantRunNavigationDisplayW334(record));
     const finalRecordRows = preparedRecords.map((record) => `
@@ -25175,7 +26033,7 @@
 
   function renderRunView(state, lane, page, recommendation, selectedMove, action, summary) {
     const value = valueReviewPacket(state, lane, page, recommendation);
-    const dealerPolish = value.dealerHardgoodsPolishW365 || dealerHardgoodsStoryPolishW365(state, lane, value);
+    const storyContractW373 = value.storyContractW373 || crossLaneStoryPolishContractW373(state, lane, value);
     const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, value);
     const websiteEvidence = websiteEvidenceUxModel(state, lane);
     const resolverLimited = isResolverLimitedWebsiteEvidenceW353(websiteEvidence);
@@ -25192,7 +26050,7 @@
       ? consultantPartialResultReviewRunModelW216V1(state.dccFinalNamingResult, state, lane, page, recommendation)
       : null;
     const consultantStorySurfaceHtml = w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory, compactAudit: true })
+      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory, compactAudit: true, activeLaneStoryPolishW373: storyContractW373 })
       : '';
     if (!finalNavigation.runCanUseImportedFinalNames) {
       const waitingForLinks = buildStatus && buildStatus.automation && buildStatus.automation.runnerTaskCaptured;
@@ -25227,25 +26085,22 @@
     return `
       <div class="idb-card idb-accent idb-w97-run-selector">
         <div class="idb-section-title">NetSuite path</div>
+        <div class="idb-copy">Open the imported records in order, then use the selected live control below.</div>
         ${renderW361NetSuitePathFlow(finalNavigation)}
-        ${dealerPolish.active ? `
-          <div class="idb-run-action-card idb-w365-dealer-hardgoods-card">
-            <div class="idb-status-key">Dealer/channel proof path</div>
-            <div class="idb-strong">${escapeHtml(dealerPolish.proofLabel)}</div>
-            <div class="idb-copy">${escapeHtml(dealerPolish.pathFlow.join(' -> '))}</div>
-            <div class="idb-copy">${escapeHtml(dealerPolish.safeClaim)}</div>
-          </div>
-        ` : ''}
+        ${renderW375StoryContractProofPath(storyContractW373)}
         <div class="idb-section-title">Live controls</div>
         <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
           ${renderRunActionChips(state)}
         </div>
         ${renderW361ScriptChips(script)}
-        ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
-        <div class="idb-run-action-card">
-          <div class="idb-status-key">Selected script</div>
+        <details class="idb-technical-details idb-w367-run-competitive-detail">
+          <summary>Competitive cue</summary>
+          ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
+        </details>
+        <div class="idb-run-action-card idb-w413-run-objective">
+          <div class="idb-status-key">Presenter objective</div>
           <div class="idb-strong">${escapeHtml(script.title)}</div>
-          <div class="idb-copy">${escapeHtml(script.say)}</div>
+          <div class="idb-copy">${escapeHtml(script.decision || 'Use the selected live control and the Say / Show / Close steps above to land the next decision.')}</div>
         </div>
         ${renderW361ImportedProofRecords(finalNavigation)}
         ${resolverLimited ? `
@@ -25258,8 +26113,10 @@
         ` : ''}
         ${consultantStorySurfaceHtml}
       </div>
-      <div class="idb-card idb-accent idb-w56-run-script-first">
-        <div class="idb-section-title">Live script first</div>
+      <details class="idb-technical-details idb-w56-run-script-first">
+        <summary>Full Say / Show / Close script</summary>
+        <div class="idb-card idb-accent">
+        <div class="idb-section-title">Presenter script detail</div>
         <div class="idb-run-guide">
           <div class="idb-run-move">${escapeHtml(script.title)}</div>
           <div class="idb-copy">${escapeHtml(selectedMove)} / ${escapeHtml(lane.proofAnchor)}</div>
@@ -25281,7 +26138,8 @@
         <div class="idb-actions">
           <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
         </div>
-      </div>
+        </div>
+      </details>
       <details class="idb-technical-details">
         <summary>Audit: controls, moves, guardrails, and coaching</summary>
         <div class="idb-card idb-accent idb-live-control-first">
@@ -25333,7 +26191,7 @@
         <div class="idb-card idb-guard-accent">
           <div class="idb-section-title">Guardrails</div>
           <div class="idb-guardrail-row">
-            ${lane.guardrails.map((guardrail, index) => `<button class="idb-chip idb-guard" data-idb-guardrail="${index}">${escapeHtml(guardrail)}</button>`).join('')}
+            ${lane.guardrails.map((guardrail, index) => `<button class="idb-chip idb-guard" data-idb-guardrail="${index}">${escapeHtml(laneConsistentSupportCopyW373(guardrail, storyContractW373))}</button>`).join('')}
           </div>
         </div>
       </details>
@@ -26958,6 +27816,17 @@
       competitiveAdvisoryModelW362,
       standardCompetitiveAlternativesW362,
       dealerHardgoodsStoryPolishW365,
+      apparelRetailStoryPolishW369,
+      partsServiceStoryPolishW370,
+      medicalDentalStoryPolishW372,
+      foodBeverageStoryPolishW374,
+      industrialEquipmentStoryPolishW376,
+      lifeSciencesStoryPolishW378,
+      crossLaneStoryPolishContractW373,
+      laneStoryAuthoringTemplateW377,
+      laneStoryAuthoringReadinessW377,
+      renderW375StoryContractLens,
+      renderW375StoryContractProofPath,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

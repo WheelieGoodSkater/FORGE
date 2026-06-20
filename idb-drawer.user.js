@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.24
+// @version      1.0.25
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.24';
-  const CURRENT_UX_BLOCK_W346 = 'W378';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.25';
+  const CURRENT_UX_BLOCK_W346 = 'W413';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -13596,7 +13596,7 @@
     const url = firstNonBlank(source.url, source.recordUrl, source.netSuiteUrl, source.netsuiteUrl);
     return {
       role,
-      label,
+      label: firstNonBlank(source.consultantLabel, source.displayLabel, source.label, label),
       name: cleanName || rawName,
       internalName: rawName && cleanName && rawName !== cleanName ? rawName : firstNonBlank(source.internalName, source.netSuiteGeneratedName),
       id,
@@ -14111,6 +14111,8 @@
       return redactDccFinalNamingSecrets(input);
     }
     const payload = redactDccFinalNamingSecrets(input.dccFinalNamingResultV1 || input.dccFinalNamingResult || input.result || input);
+    const laneVocabularyPolicy = payload.runnerLaneVocabularyPolicy || payload.resultCapture && payload.resultCapture.runnerLaneVocabularyPolicy || {};
+    const finalRoleLabels = laneVocabularyPolicy.finalResultRoleLabels || {};
     const generated = payload.generated || payload.dccGenerated || {};
     const records = payload.records || payload.createdRecords || {};
     const payloadMode = firstNonBlank(payload.resolvedOperatingMode, payload.operatingMode, payload.buildOperatingMode, payload.mode);
@@ -14135,7 +14137,13 @@
       const source = item && typeof item === 'object' ? item : {};
       const rawRole = firstNonBlank(source.role, source.w214Role, source.w215MappedRole, source.legacyRole);
       const role = rawRole === 'supporting_sku' || rawRole === 'ingredient_or_component_item' ? rawRole : 'component_item';
-      const label = role === 'supporting_sku' ? 'Supporting SKU' : role === 'ingredient_or_component_item' ? 'Ingredient item' : `Component item ${index + 1}`;
+      const label = firstNonBlank(
+        source.consultantLabel,
+        source.displayLabel,
+        source.label,
+        finalRoleLabels.componentItem,
+        role === 'supporting_sku' ? 'Supporting SKU' : role === 'ingredient_or_component_item' ? 'Ingredient item' : `Component item ${index + 1}`
+      );
       return normalizeDccFinalObject(role, label, item);
     });
     const semanticLocation = findRunnerRecordByW215Aliases(payload, ['location_or_channel_context', 'location_planning_context', 'lot_or_availability_context']);
@@ -14153,8 +14161,8 @@
     const displayObjects = [
       normalizeDccFinalObject('customer', 'Customer', rootCustomer),
       normalizeDccFinalObject('sales_order', 'Sales Order / demo transaction', rootSalesOrder),
-      normalizeDccFinalObject('hero_item', 'Hero item', rootHero),
-      normalizeDccFinalObject('matrix_or_proof_item', 'Matrix item / proof item', rootMatrix)
+      normalizeDccFinalObject('hero_item', firstNonBlank(finalRoleLabels.heroItem, 'Hero item'), rootHero),
+      normalizeDccFinalObject('matrix_or_proof_item', firstNonBlank(finalRoleLabels.matrixProofItem, 'Matrix item / proof item'), rootMatrix)
     ];
     const semanticAssembly = findRunnerRecordByW215Aliases(payload, ['assembly_structure']);
     const semanticBom = findRunnerRecordByW215Aliases(payload, ['bom_or_assembly_structure']);
@@ -15267,7 +15275,7 @@
     return arrayValue(mapping && mapping.mappedRecords)
       .filter((record) => record && record.source === 'dcc_final' && record.linkAuthority && record.linkAuthority.openable && record.name)
       .map((record) => Object.assign({}, record, {
-        consultantLabel: modeAwareRecordLabelW216(record.w215MappedRole || record.w214Role || record.role, mapping.resolvedOperatingMode)
+        consultantLabel: firstNonBlank(record.consultantLabel, record.displayLabel, record.label, modeAwareRecordLabelW216(record.w215MappedRole || record.w214Role || record.role, mapping.resolvedOperatingMode))
       }));
   }
 
@@ -21925,12 +21933,18 @@
         gap: 7px;
         margin-top: 6px;
       }
+      .idb-w413-presenter-flow {
+        gap: 6px;
+      }
       .idb-w371-flow-row {
         border: 1px solid #cbd7df;
         border-left: 4px solid #0b5f79;
         border-radius: 7px;
         background: #fff;
         padding: 8px;
+      }
+      .idb-w413-presenter-flow .idb-w371-flow-row {
+        padding: 7px 8px;
       }
       .idb-w371-flow-row.idb-w371-roi-row {
         border-left-color: #4f7f52;
@@ -21954,11 +21968,28 @@
         line-height: 1.34;
         font-weight: 720;
       }
+      .idb-w413-presenter-flow .idb-w371-flow-copy {
+        font-size: 11.5px;
+        line-height: 1.28;
+      }
       .idb-w371-flow-meta {
         margin-top: 4px;
         color: #536579;
         font-size: 10px;
         line-height: 1.3;
+      }
+      .idb-w413-proof-cta-rows {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .idb-w413-proof-cta-rows .idb-status-cell {
+        min-height: auto;
+        padding: 8px;
+      }
+      .idb-w413-run-objective {
+        margin-top: 8px;
       }
       .idb-w361-script-chips,
       .idb-w361-value-chips {
@@ -24618,36 +24649,46 @@
     ];
     const competitiveWatchOut = competitiveAdvisory.runCue || competitive.competitorSafeContrast || value.groundedCompetitiveSummary;
     const largestValueToProve = audit.claim || roiHypothesis;
+    const presenterCopy = (copy, limit) => compactText(consultantVisibleCopyW346(copy || '', limit || 150)
+      .replace(/\bcan reduce demo risk around\b/gi, 'can protect')
+      .replace(/\breduce demo risk around\b/gi, 'protect')
+      .replace(/\bdemo demand\b/gi, 'customer demand')
+      .replace(/\bdemo risk\b/gi, 'buyer risk'), limit || 150);
     const consultantFlow = `
-      <div class="idb-w371-consultant-flow idb-w371-roi-competitive-flow" aria-label="Talk track discovery proof ROI and competitive flow">
+      <div class="idb-w371-consultant-flow idb-w371-roi-competitive-flow idb-w413-presenter-flow" aria-label="Presenter flow for ROI and competitive guidance">
         <div class="idb-w371-flow-row">
-          <div class="idb-w371-flow-label">Talk track</div>
-          <div class="idb-w371-flow-copy">${escapeHtml(value.talkTrackLead || value.valueDecision)}</div>
+          <div class="idb-w371-flow-label">Say first</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(value.talkTrackLead || value.valueDecision, 150))}</div>
           <div class="idb-w371-flow-meta">Open with the business risk, then keep the proof tied to the next decision.</div>
         </div>
         <div class="idb-w371-flow-row">
-          <div class="idb-w371-flow-label">Discovery</div>
-          <div class="idb-w371-flow-copy">${escapeHtml(askNext)}</div>
+          <div class="idb-w371-flow-label">Ask next</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(askNext, 130))}</div>
           <div class="idb-w371-flow-meta">Ask this before moving into proof so the demo lands on the buyer's real operating doubt.</div>
         </div>
         <div class="idb-w371-flow-row">
-          <div class="idb-w371-flow-label">Proof move</div>
-          <div class="idb-w371-flow-copy">${escapeHtml(demoProof)}</div>
-          <div class="idb-w371-flow-meta">${escapeHtml(netsuiteContrast)}</div>
+          <div class="idb-w371-flow-label">Show proof</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(demoProof, 135))}</div>
+          <div class="idb-w371-flow-meta">${escapeHtml(presenterCopy(netsuiteContrast, 140))}</div>
         </div>
         <div class="idb-w371-flow-row idb-w371-roi-row">
-          <div class="idb-w371-flow-label">Largest value to prove</div>
-          <div class="idb-w371-flow-copy">${escapeHtml(largestValueToProve)}</div>
+          <div class="idb-w371-flow-label">Value to prove</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(largestValueToProve, 135))}</div>
           <div class="idb-w371-flow-meta">Baseline to capture: ${escapeHtml(audit.baselineNeeded || 'customer-confirmed current delay, cost, or risk baseline')}</div>
         </div>
         <div class="idb-w371-flow-row idb-w371-competitive-row">
           <div class="idb-w371-flow-label">Objection handle</div>
-          <div class="idb-w371-flow-copy">${escapeHtml(firstObjection)}</div>
-          <div class="idb-w371-flow-meta">${escapeHtml(competitiveWatchOut)}</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(firstObjection, 130))}</div>
+          <div class="idb-w371-flow-meta">Steer back to the workflow proof, not unsupported feature claims.</div>
+        </div>
+        <div class="idb-w371-flow-row idb-w371-competitive-row">
+          <div class="idb-w371-flow-label">Competitive watch-out</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(competitiveWatchOut, 135))}</div>
+          <div class="idb-w371-flow-meta">Advisory only unless the buyer confirms the incumbent or competitor.</div>
         </div>
         <div class="idb-w371-flow-row">
           <div class="idb-w371-flow-label">Claim caution</div>
-          <div class="idb-w371-flow-copy">${escapeHtml(cautionCopy)}</div>
+          <div class="idb-w371-flow-copy">${escapeHtml(presenterCopy(cautionCopy, 125))}</div>
           <div class="idb-w371-flow-meta">${escapeHtml(consultantLabel(competitive.verifiedState))} / ${escapeHtml(consultantLabel(grounded.confidenceState))}</div>
         </div>
       </div>
@@ -25393,18 +25434,18 @@
       <div class="idb-run-action-card idb-w248-story-surface">
         <div class="idb-status-key">Live proof CTA</div>
         <div class="idb-strong">${escapeHtml(storyCopy(firstGlance.openTarget))}</div>
-        <div class="idb-status-strip idb-w258-first-glance-cta">
+        <div class="idb-status-strip idb-w258-first-glance-cta idb-w413-proof-cta-rows">
           <div class="idb-status-cell">
             <div class="idb-status-key">Proof action</div>
-            <div class="idb-copy">${escapeHtml(storyCopy(proofAction))}</div>
+            <div class="idb-copy">${escapeHtml(compactText(storyCopy(proofAction), 155))}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Safe claim</div>
-            <div class="idb-copy">${escapeHtml(storyCopy(safeClaim))}</div>
+            <div class="idb-copy">${escapeHtml(compactText(storyCopy(safeClaim), 155))}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Stop</div>
-            <div class="idb-copy">${escapeHtml(storyCopy(stopGuardrail))}</div>
+            <div class="idb-copy">${escapeHtml(compactText(storyCopy(stopGuardrail), 165))}</div>
           </div>
         </div>
         <div class="idb-chip-row idb-w255-first-glance">
@@ -26056,10 +26097,10 @@
           <summary>Competitive cue</summary>
           ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
         </details>
-        <div class="idb-run-action-card">
-          <div class="idb-status-key">Selected script</div>
+        <div class="idb-run-action-card idb-w413-run-objective">
+          <div class="idb-status-key">Presenter objective</div>
           <div class="idb-strong">${escapeHtml(script.title)}</div>
-          <div class="idb-copy">Use the Say / Show / Close steps above. Close on: ${escapeHtml(script.close)}</div>
+          <div class="idb-copy">${escapeHtml(script.decision || 'Use the selected live control and the Say / Show / Close steps above to land the next decision.')}</div>
         </div>
         ${renderW361ImportedProofRecords(finalNavigation)}
         ${resolverLimited ? `
@@ -26072,8 +26113,10 @@
         ` : ''}
         ${consultantStorySurfaceHtml}
       </div>
-      <div class="idb-card idb-accent idb-w56-run-script-first">
-        <div class="idb-section-title">Live script first</div>
+      <details class="idb-technical-details idb-w56-run-script-first">
+        <summary>Full Say / Show / Close script</summary>
+        <div class="idb-card idb-accent">
+        <div class="idb-section-title">Presenter script detail</div>
         <div class="idb-run-guide">
           <div class="idb-run-move">${escapeHtml(script.title)}</div>
           <div class="idb-copy">${escapeHtml(selectedMove)} / ${escapeHtml(lane.proofAnchor)}</div>
@@ -26095,7 +26138,8 @@
         <div class="idb-actions">
           <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
         </div>
-      </div>
+        </div>
+      </details>
       <details class="idb-technical-details">
         <summary>Audit: controls, moves, guardrails, and coaching</summary>
         <div class="idb-card idb-accent idb-live-control-first">

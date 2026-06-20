@@ -172,7 +172,11 @@
     "harness:hvac-mechanical-source-pack-cleanup-w407": "node archive/tools/run_w407_hvac_mechanical_source_pack_cleanup_harness.js",
     "harness:hvac-mechanical-readiness-delta-package-w408": "node archive/tools/run_w408_hvac_mechanical_readiness_delta_package_harness.js",
     "harness:comfortable-lane-hardening-matrix-w409": "node archive/tools/run_w409_comfortable_lane_hardening_matrix_harness.js",
-    "harness:larger-smoke-series-design-gate-w410": "node archive/tools/run_w410_larger_smoke_series_design_gate_harness.js"
+    "harness:larger-smoke-series-design-gate-w410": "node archive/tools/run_w410_larger_smoke_series_design_gate_harness.js",
+    "harness:larger-smoke-candidate-packet-w411": "node archive/tools/run_w411_larger_smoke_candidate_packet_harness.js",
+    "harness:first-two-smoke-review-ux-cleanup-plan-w412": "node archive/tools/run_w412_first_two_smoke_review_ux_cleanup_plan_harness.js",
+    "harness:consultant-ux-design-gate-w413": "node archive/tools/run_w413_consultant_ux_design_gate_harness.js",
+    "harness:naming-and-executable-cockpit-review-w414": "node archive/tools/run_w414_naming_and_executable_cockpit_review_harness.js"
   },
   "keywords": [
     "netsuite",

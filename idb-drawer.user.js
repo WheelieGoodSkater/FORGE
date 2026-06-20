@@ -22079,6 +22079,48 @@
         background: #fff;
         padding: 8px;
       }
+      .idb-w416-day-in-life {
+        display: grid;
+        gap: 10px;
+      }
+      .idb-w416-stage-card {
+        display: grid;
+        gap: 8px;
+      }
+      .idb-w416-stage-title {
+        color: #17202d;
+        font-size: 20px;
+        font-weight: 950;
+        line-height: 1.12;
+      }
+      .idb-w416-stage-copy {
+        color: #2f4155;
+        font-size: 13px;
+        line-height: 1.35;
+      }
+      .idb-w416-next-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        align-items: center;
+      }
+      .idb-w416-support-nav {
+        margin-top: 10px;
+      }
+      .idb-w416-support-nav .idb-state-tabs {
+        margin-top: 8px;
+      }
+      .idb-tab.idb-locked {
+        opacity: .55;
+        cursor: not-allowed;
+      }
+      .idb-w416-prereq-card {
+        border: 1px solid #d8e1e6;
+        border-left: 4px solid #7a5f15;
+        border-radius: 7px;
+        background: #fffdf6;
+        padding: 9px;
+      }
       .idb-w361-script-chips,
       .idb-w361-value-chips {
         display: grid;
@@ -23961,6 +24003,173 @@
       </div>
       <div class="idb-progress-rail" aria-hidden="true">
         ${views.map(([, label], index) => `<span class="idb-progress-step ${index < activeIndex ? 'idb-complete' : index === activeIndex ? 'idb-active' : ''}" title="${escapeHtml(label)}"></span>`).join('')}
+      </div>
+    `;
+  }
+
+  function consultantDayInLifeStageW416(state, lane, page, recommendation) {
+    const intake = normalizedIntake(state);
+    const readiness = setupReadiness(state);
+    const authority = stateAuthorityModel(state);
+    const finalNaming = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, page, recommendation);
+    const finalNavigation = dccFinalNavigationModel(state, lane, page, recommendation);
+    const oneClickBuild = oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1(state, lane, page, recommendation);
+    const w262BuildUx = adapterReadyRecordCreationUxW262(state, lane, page, recommendation);
+    const briefPrepared = !!(state && state.briefPrepared);
+    const confirmed = !!authority.confirmedLaneId;
+    let stage = 'enter_request';
+    if (finalNaming.finalNamesImported === true && finalNavigation.runCanUseImportedFinalNames === true) stage = 'demo_cockpit';
+    else if (oneClickBuild.status === 'build_failed_ask_admin' || oneClickBuild.status === 'records_returned_blocked') stage = 'fix_build';
+    else if (briefPrepared && confirmed) stage = w262BuildUx.stateFacts && w262BuildUx.stateFacts.runnerTaskCaptured ? 'waiting_for_records' : 'build_records';
+    else if (briefPrepared) stage = 'confirm_path';
+    const labels = {
+      enter_request: {
+        title: 'Enter the sales request',
+        copy: 'Add customer name, website, and messy notes. FORGE will prepare the lane, story, and build path from there.',
+        next: readiness.tone === 'ready' ? 'Build demo plan' : 'Complete customer, website, and notes'
+      },
+      confirm_path: {
+        title: 'Confirm the demo path',
+        copy: 'FORGE prepared a recommendation. Confirm it before build, ROI, competitive, or run guidance becomes primary.',
+        next: 'Confirm demo path'
+      },
+      build_records: {
+        title: 'Build demo records',
+        copy: 'Use the selected toggles, build records, then wait for verified Open links. ROI and run stay secondary until records return.',
+        next: w262BuildUx.actions && w262BuildUx.actions.showBuildButton ? 'Build records' : 'Review build readiness'
+      },
+      waiting_for_records: {
+        title: 'Wait for returned records',
+        copy: 'FORGE submitted the request. Refresh build status until completed record names and Open links return.',
+        next: 'Refresh build status'
+      },
+      fix_build: {
+        title: 'Fix the build setup',
+        copy: 'The runner stopped safely. Use the recovery action and support details; do not continue into ROI or Run as if proof exists.',
+        next: 'Review build issue'
+      },
+      demo_cockpit: {
+        title: 'Use the Demo Cockpit',
+        copy: 'Open returned records, tell the story, prove the top ROI point, and handle the competitive objection from one surface.',
+        next: 'Run the proof'
+      }
+    };
+    return {
+      schema: 'forge.w416.consultant-day-in-life-stage.v1',
+      stage,
+      label: labels[stage],
+      intakeReady: readiness.tone === 'ready',
+      briefPrepared,
+      confirmed,
+      finalNamesImported: finalNaming.finalNamesImported === true,
+      runCanUseImportedFinalNames: finalNavigation.runCanUseImportedFinalNames === true,
+      buildStatus: oneClickBuild.status,
+      buildLabel: oneClickBuild.label,
+      w262ReadinessState: w262BuildUx.readinessState,
+      customer: intake.customer,
+      website: intake.website,
+      supportTabsCollapsed: true
+    };
+  }
+
+  function renderW416StageHeader(stageModel) {
+    const stage = stageModel || {};
+    const label = stage.label || {};
+    const tone = stage.stage === 'demo_cockpit' ? 'ready' : stage.stage === 'fix_build' ? 'danger' : stage.intakeReady ? 'partial' : 'open';
+    return `
+      <div class="idb-card idb-accent idb-w416-stage-card">
+        <div class="idb-section-title">Consultant day in life</div>
+        <div class="idb-w416-stage-title">${escapeHtml(label.title || 'Prepare the demo')}</div>
+        <div class="idb-w416-stage-copy">${escapeHtml(label.copy || 'Follow the next action.')}</div>
+        <div class="idb-w416-next-row">
+          <span class="idb-chip idb-${escapeHtml(tone)}">Next: ${escapeHtml(label.next || 'Continue')}</span>
+          <span class="idb-mini-chip">${escapeHtml(consultantLabel(stage.stage || 'unknown'))}</span>
+          ${stage.customer ? `<span class="idb-mini-chip">${escapeHtml(stage.customer)}</span>` : ''}
+          ${stage.website ? `<span class="idb-mini-chip">${escapeHtml(websiteDomain(stage.website))}</span>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderW416PrerequisiteCard(title, copy, actionLabel) {
+    return `
+      <div class="idb-card idb-w416-prereq-card">
+        <div class="idb-section-title">Not ready yet</div>
+        <div class="idb-strong">${escapeHtml(title)}</div>
+        <div class="idb-copy">${escapeHtml(copy)}</div>
+        <div class="idb-actions">
+          <button class="idb-primary" data-idb-view="plan">${escapeHtml(actionLabel || 'Go to request')}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderW416SupportNavigation(state, stageModel) {
+    const active = normalizedView(state);
+    const finalReady = stageModel && stageModel.finalNamesImported && stageModel.runCanUseImportedFinalNames;
+    const buildReady = stageModel && stageModel.briefPrepared && stageModel.confirmed;
+    const valueReady = stageModel && stageModel.briefPrepared && stageModel.confirmed;
+    const views = [
+      ['plan', 'Request', true],
+      ['review', 'Build support', buildReady],
+      ['value', 'ROI support', valueReady],
+      ['run', 'Run support', finalReady],
+      ['trace', 'Trace/support', true]
+    ];
+    return `
+      <details class="idb-technical-details idb-w416-support-nav">
+        <summary>Support views</summary>
+        <div class="idb-copy">These are support surfaces. Normal prep should use the primary card above.</div>
+        <div class="idb-state-tabs" aria-label="Support views">
+          ${views.map(([view, label, enabled]) => `
+            <button class="idb-tab ${active === view ? 'idb-selected' : ''} ${enabled ? '' : 'idb-locked'}" data-idb-view="${escapeHtml(enabled ? view : 'plan')}" ${enabled ? '' : 'aria-disabled="true" title="Complete the current step first"'}>
+              ${escapeHtml(label)}
+            </button>
+          `).join('')}
+        </div>
+      </details>
+    `;
+  }
+
+  function renderW416ConsultantDayInLife(state, lane, page, recommendation, selectedMove, action, summary) {
+    const stageModel = consultantDayInLifeStageW416(state, lane, page, recommendation);
+    const stageHeader = renderW416StageHeader(stageModel);
+    if (stageModel.stage === 'enter_request') {
+      return `
+        <div class="idb-w416-day-in-life">
+          ${stageHeader}
+          ${renderDemoSetup(state, lane, page, recommendation)}
+        </div>
+      `;
+    }
+    if (stageModel.stage === 'confirm_path') {
+      return `
+        <div class="idb-w416-day-in-life">
+          ${stageHeader}
+          ${renderPlanView(state, lane, page, recommendation)}
+        </div>
+      `;
+    }
+    if (stageModel.stage === 'build_records' || stageModel.stage === 'waiting_for_records' || stageModel.stage === 'fix_build') {
+      return `
+        <div class="idb-w416-day-in-life">
+          ${stageHeader}
+          <div class="idb-card idb-accent">
+            <div class="idb-section-title">Build and proof readiness</div>
+            ${renderIntegratedBuildRunnerReturnStatus(state, lane, page, recommendation)}
+          </div>
+          <details class="idb-technical-details">
+            <summary>Request, value, and evidence support</summary>
+            ${renderPlanView(state, lane, page, recommendation)}
+            ${stageModel.confirmed ? renderValueReviewView(state, lane, page, recommendation) : ''}
+          </details>
+        </div>
+      `;
+    }
+    return `
+      <div class="idb-w416-day-in-life">
+        ${stageHeader}
+        ${renderRunView(state, lane, page, recommendation, selectedMove, action, summary)}
       </div>
     `;
   }
@@ -26241,10 +26450,7 @@
         : 'Build the demo records first. Run guidance will use live record names and Open links after the completed result is imported.';
       return `
         <div class="idb-card idb-accent idb-w97-run-selector">
-          <div class="idb-section-title">Live controls</div>
-          <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
-            ${renderRunActionChips(state)}
-          </div>
+          <div class="idb-section-title">Run readiness</div>
           <div class="idb-run-action-card">
             <div class="idb-status-key">Run readiness</div>
             <div class="idb-strong">${escapeHtml(headline)}</div>
@@ -26513,17 +26719,9 @@
     const selectedMove = lane.moves[state.selectedMoveIndex] || lane.moves[0];
     const action = getAction(state);
     const summary = runCoachSummary(state, lane, page, selectedMove, recommendation, action);
-    const activeView = normalizedView(state);
+    const stageModel = consultantDayInLifeStageW416(state, lane, page, recommendation);
     const feedbackPlaceholder = feedbackPlaceholderContractW259();
-    const activePanel = activeView === 'review'
-      ? renderReviewView(state, lane, page, recommendation)
-      : activeView === 'value'
-        ? renderValueReviewView(state, lane, page, recommendation)
-        : activeView === 'run'
-          ? renderRunView(state, lane, page, recommendation, selectedMove, action, summary)
-          : activeView === 'trace'
-            ? renderTraceView(state, lane, page, recommendation)
-            : renderPlanView(state, lane, page, recommendation);
+    const activePanel = renderW416ConsultantDayInLife(state, lane, page, recommendation, selectedMove, action, summary);
     return `
       <div class="idb-header">
         <div class="idb-title-row">
@@ -26545,8 +26743,8 @@
         </div>
       </div>
       <div class="idb-body">
-        ${renderStateTabs(state)}
         ${activePanel}
+        ${renderW416SupportNavigation(state, stageModel)}
       </div>
     `;
   }
@@ -28010,6 +28208,8 @@
       renderW375StoryContractLens,
       renderW375StoryContractProofPath,
       renderW415DemoCockpit,
+      consultantDayInLifeStageW416,
+      renderW416ConsultantDayInLife,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

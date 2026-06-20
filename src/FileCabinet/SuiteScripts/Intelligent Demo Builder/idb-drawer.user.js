@@ -21991,6 +21991,94 @@
       .idb-w413-run-objective {
         margin-top: 8px;
       }
+      .idb-w415-demo-cockpit {
+        display: grid;
+        gap: 9px;
+      }
+      .idb-w415-cockpit-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .idb-w415-cockpit-title {
+        color: #17202d;
+        font-size: 18px;
+        font-weight: 950;
+        line-height: 1.12;
+      }
+      .idb-w415-cockpit-subtitle {
+        margin-top: 3px;
+        color: #2f4155;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+      .idb-w415-cockpit-status {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .idb-w415-cockpit-story {
+        border: 1px solid #b8c8d2;
+        border-left: 4px solid #006685;
+        border-radius: 7px;
+        background: #fbfdff;
+        padding: 8px;
+      }
+      .idb-w415-cockpit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 7px;
+      }
+      .idb-w415-cockpit-panel {
+        border: 1px solid #cbd7df;
+        border-radius: 7px;
+        background: #fff;
+        padding: 8px;
+      }
+      .idb-w415-cockpit-panel.idb-w415-roi-panel {
+        border-left: 4px solid #4f7f52;
+        background: #fbfdf9;
+      }
+      .idb-w415-cockpit-panel.idb-w415-competitive-panel {
+        border-left: 4px solid #7a5f15;
+        background: #fffdf6;
+      }
+      .idb-w415-cockpit-records {
+        display: grid;
+        gap: 5px;
+      }
+      .idb-w415-cockpit-record-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #d8e1e6;
+        border-radius: 7px;
+        background: #fff;
+        padding: 7px 8px;
+      }
+      .idb-w415-record-name {
+        color: #17202d;
+        font-size: 11px;
+        font-weight: 850;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+      }
+      .idb-w415-record-label {
+        color: #536579;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+      }
+      .idb-w415-claim-caution {
+        border: 1px solid #cbd7df;
+        border-left: 4px solid #006685;
+        border-radius: 7px;
+        background: #fff;
+        padding: 8px;
+      }
       .idb-w361-script-chips,
       .idb-w361-value-chips {
         display: grid;
@@ -23713,6 +23801,99 @@
           `).join('')}
         </ol>
       </details>
+    `;
+  }
+
+  function renderW415DemoCockpit(model) {
+    const state = model && model.state || {};
+    const lane = model && model.lane || {};
+    const value = model && model.value || {};
+    const script = model && model.script || {};
+    const finalNavigation = model && model.finalNavigation || {};
+    const storyContract = model && model.storyContractW373 || {};
+    const websiteEvidence = model && model.websiteEvidence || {};
+    const competitiveAdvisory = model && model.competitiveAdvisory || {};
+    const objects = arrayValue(finalNavigation.scriptPivotObjects);
+    if (!(finalNavigation && finalNavigation.runCanUseImportedFinalNames) || !objects.length) return '';
+    const prospect = state.customerName || value.customer || 'Prospect';
+    const laneLabel = storyContract.proofLabel || lane.name || 'Selected story';
+    const openableCount = objects.filter((item) => {
+      const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
+      return authority.openable === true;
+    }).length;
+    const storyLine = script.say || value.talkTrackLead || value.valueDecision || storyContract.valueDecision || 'Open the returned records and prove the selected story.';
+    const proofLine = script.show || storyContract.proofMove || `Use ${lane.proofAnchor || 'the returned records'} to prove the buyer decision.`;
+    const cockpitCopy = (copy, limit) => compactText(consultantVisibleCopyW346(copy || '', limit || 140)
+      .replace(/\bcan reduce demo risk around\b/gi, 'can protect')
+      .replace(/\breduce demo risk around\b/gi, 'protect')
+      .replace(/\bdemo demand\b/gi, 'customer demand')
+      .replace(/\bdemo risk\b/gi, 'buyer risk'), limit || 140);
+    const roiCopy = cockpitCopy((value.roiAudit && value.roiAudit.claim) || value.groundedRoiSummary || storyContract.valueDecision || 'Prove the largest buyer value with returned NetSuite records.', 145);
+    const baselineCopy = value.roiAudit && value.roiAudit.baselineNeeded
+      ? value.roiAudit.baselineNeeded
+      : 'Capture a customer-confirmed baseline before claiming measured savings.';
+    const objectionCopy = cockpitCopy(arrayValue(value.objections)[0] || arrayValue(value.objectionPath)[0] || script.close || 'Ask what would still make the current workflow hard to trust.', 130);
+    const watchOutCopy = cockpitCopy(competitiveAdvisory.runCue || (value.competitive && value.competitive.competitorSafeContrast) || value.groundedCompetitiveSummary || 'Treat competitor pressure as advisory until the buyer confirms it.', 135);
+    const cautionCopy = cockpitCopy(value.grounded && value.grounded.unsupportedClaimBlocker && value.grounded.unsupportedClaimBlocker.blockedClaims && value.grounded.unsupportedClaimBlocker.blockedClaims[0]
+      || 'Measured savings require a customer baseline before they can be claimed.', 125);
+    const recordRows = objects.slice(0, 5).map((item) => {
+      const label = consultantRunNavigationLabelW332(item);
+      const name = consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item);
+      const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
+      return `
+        <div class="idb-w415-cockpit-record-row">
+          <span>
+            <span class="idb-w415-record-label">${escapeHtml(label)}</span>
+            <span class="idb-w415-record-name">${escapeHtml(name)}</span>
+          </span>
+          ${authority.openable
+            ? `<a class="idb-inline-link idb-w415-open-link" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer">Open</a>`
+            : `<span class="idb-mini-chip" title="${escapeHtml(authority.reason || 'No verified Open URL returned.')}">${escapeHtml(authority.displayLabel || 'No Open link')}</span>`}
+        </div>
+      `;
+    }).join('');
+    const confidenceLabel = websiteEvidence && websiteEvidence.confidence
+      ? `${websiteEvidence.confidence.displayText || websiteEvidence.status || 'Evidence'} / ${websiteEvidence.confidence.scoreLabel || 'unscored'}`
+      : 'Evidence state visible';
+    return `
+      <div class="idb-card idb-accent idb-w415-demo-cockpit">
+        <div class="idb-w415-cockpit-header">
+          <div>
+            <div class="idb-section-title">Demo Cockpit</div>
+            <div class="idb-w415-cockpit-title">${escapeHtml(prospect)}</div>
+            <div class="idb-w415-cockpit-subtitle">${escapeHtml(laneLabel)}</div>
+          </div>
+          <div class="idb-w415-cockpit-status" aria-label="Post-run proof status">
+            <span class="idb-mini-chip">Records ready</span>
+            <span class="idb-mini-chip">${escapeHtml(openableCount)} Open links verified</span>
+            <span class="idb-mini-chip">${escapeHtml(confidenceLabel)}</span>
+          </div>
+        </div>
+        <div class="idb-w415-cockpit-records" aria-label="Open records">
+          ${recordRows}
+        </div>
+        <div class="idb-w415-cockpit-story">
+          <div class="idb-status-key">Story with embedded records</div>
+          <div class="idb-strong">${escapeHtml(cockpitCopy(storyLine, 145))}</div>
+          <div class="idb-copy">${escapeHtml(cockpitCopy(proofLine, 150))}</div>
+        </div>
+        <div class="idb-w415-cockpit-grid">
+          <div class="idb-w415-cockpit-panel idb-w415-roi-panel">
+            <div class="idb-status-key">Top ROI point</div>
+            <div class="idb-strong">${escapeHtml(roiCopy)}</div>
+            <div class="idb-copy">Baseline: ${escapeHtml(compactText(baselineCopy, 120))}</div>
+          </div>
+          <div class="idb-w415-cockpit-panel idb-w415-competitive-panel">
+            <div class="idb-status-key">Competitive battlecard</div>
+            <div class="idb-strong">${escapeHtml(objectionCopy)}</div>
+            <div class="idb-copy">Watch-out: ${escapeHtml(watchOutCopy)}</div>
+          </div>
+        </div>
+        <div class="idb-w415-claim-caution">
+          <div class="idb-status-key">Claim caution</div>
+          <div class="idb-copy">${escapeHtml(cautionCopy)} Source confidence remains separate from advisory inference.</div>
+        </div>
+      </div>
     `;
   }
 
@@ -26083,9 +26264,10 @@
       `;
     }
     return `
+      ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
       <div class="idb-card idb-accent idb-w97-run-selector">
-        <div class="idb-section-title">NetSuite path</div>
-        <div class="idb-copy">Open the imported records in order, then use the selected live control below.</div>
+        <div class="idb-section-title">Supporting NetSuite path</div>
+        <div class="idb-copy">Use this when you want the full ordered path and live-control detail behind the cockpit.</div>
         ${renderW361NetSuitePathFlow(finalNavigation)}
         ${renderW375StoryContractProofPath(storyContractW373)}
         <div class="idb-section-title">Live controls</div>
@@ -27827,6 +28009,7 @@
       laneStoryAuthoringReadinessW377,
       renderW375StoryContractLens,
       renderW375StoryContractProofPath,
+      renderW415DemoCockpit,
       groundedValueEvidenceModel,
       governedWebsiteResolver,
       productIntelligence,

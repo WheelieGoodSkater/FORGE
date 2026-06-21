@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.32
+// @version      1.0.33
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.32';
-  const CURRENT_UX_BLOCK_W346 = 'W423';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.33';
+  const CURRENT_UX_BLOCK_W346 = 'W424';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -2485,6 +2485,70 @@
     return hasBuildingMaterials && !hasManufacturing;
   }
 
+  function websiteProductEvidenceCandidatesW424(evidence, intake) {
+    const extracted = evidence && evidence.extractedEvidence || {};
+    const signalProductNames = evidence && evidence.signals && evidence.signals.productNames;
+    const rawValues = []
+      .concat(arrayValue(extracted.productNames))
+      .concat(arrayValue(extracted.products))
+      .concat(arrayValue(extracted.productCards))
+      .concat(arrayValue(extracted.productCardNames))
+      .concat(arrayValue(extracted.anchorText))
+      .concat(arrayValue(extracted.imageAltText))
+      .concat(arrayValue(extracted.navigationLabels))
+      .concat(arrayValue(extracted.headings))
+      .concat(arrayValue(signalProductNames));
+    const productLike = rawValues
+      .map((value) => compactText(String(value || ''), 80))
+      .filter((value) => value && value.length >= 3)
+      .filter((value) => !/^(home|products?|recipes?|about|our story|where to buy|contact|shop|search|menu|retailers?)$/i.test(value))
+      .filter((value) => !/^(facebook|instagram|linkedin|youtube|twitter|x)$/i.test(value));
+    const text = [
+      extracted.pageTitle,
+      extracted.metaDescription,
+      arrayValue(extracted.productCategoryTerms).join(' '),
+      intake && intake.websiteEvidence
+    ].join(' ');
+    const family = /\b(chip|chips|kettle|snack|pretzel|popcorn)\b/i.test(text)
+      ? 'Packaged snacks'
+      : /\b(beverage|drink|juice|tea|coffee)\b/i.test(text)
+        ? 'Packaged beverages'
+        : /\b(food|grocery|retail|cpg|consumer goods)\b/i.test(text)
+          ? 'Packaged food and beverage'
+          : '';
+    const productSuffix = /\b(chip|chips|kettle)\b/i.test(text) ? 'Chips' : /\b(pretzel|pretzels)\b/i.test(text) ? 'Pretzels' : '';
+    const cleaned = uniqueValues(productLike.map((value) => {
+      let name = value
+        .replace(/\b(limited batch|limited edition|new|products?)\b/ig, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (productSuffix && !new RegExp(`\\b${productSuffix}\\b`, 'i').test(name)) name = `${name} ${productSuffix}`;
+      return compactText(name, 60);
+    })).filter((value) => value && !/^(chips|pretzels|popcorn|snacks|packaged food)$/i.test(value));
+    return {
+      productSeed: cleaned[0] || '',
+      productCandidates: cleaned.slice(0, 8),
+      productFamily: family,
+      demandMoment: family ? 'Retail availability and replenishment confidence' : ''
+    };
+  }
+
+  function isGenericProductSeedW424(value) {
+    return !value || /^(finished good|finished good variety pack|product\s*\/\s*sku|product availability sku|inventory\s*\/\s*fulfillment|packaged food and beverage|proof item)$/i.test(String(value || '').trim());
+  }
+
+  function applyWebsiteProductEvidenceW424(profile, evidence, intake) {
+    const candidates = websiteProductEvidenceCandidatesW424(evidence, intake);
+    const next = Object.assign({}, profile || {});
+    if (candidates.productSeed && isGenericProductSeedW424(next.product)) next.product = candidates.productSeed;
+    if (!next.productFamily && candidates.productFamily) next.productFamily = candidates.productFamily;
+    if (!next.demandMoment && candidates.demandMoment) next.demandMoment = candidates.demandMoment;
+    next.productNameCandidates = candidates.productCandidates;
+    next.websiteEvidenceOwnedFields = ['laneId', 'productSeed', 'productFamily', 'demandMoment'];
+    next.notesOwnedFields = ['pain', 'roi', 'competitive', 'objections', 'runCoach'];
+    return next;
+  }
+
   function websiteEvidenceV1Profile(state) {
     const intake = normalizedIntake(state);
     const evidence = state && state.websiteEvidenceV1;
@@ -2503,7 +2567,7 @@
       (deterministicWebsite.sourceKind === 'known_domain_website_primary' || deterministicWebsite.sourceKind === 'website_category_classifier') &&
       (!best || best.laneId !== deterministicWebsite.laneId || confidenceState !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED);
     if (websiteFirstDeterministicLane) {
-      return {
+      return applyWebsiteProductEvidenceW424({
         authority: 'website_evidence_v1_with_w423_website_first_category_guard',
         resolverVersion: evidence.resolverVersion || 'websiteEvidenceV1-runtime',
         resolverSource: 'websiteEvidenceV1',
@@ -2531,7 +2595,7 @@
         })),
         websiteEvidenceOwnedFields: ['laneId', 'productSeed', 'productFamily', 'demandMoment'],
         notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach']
-      };
+      }, evidence, intake);
     }
     if (confidenceState !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED && buildingMaterialsContractorEvidenceW394(state)) {
       return {
@@ -2590,7 +2654,7 @@
         notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach']
       };
     }
-    return {
+    return applyWebsiteProductEvidenceW424({
       authority: 'website_evidence_v1',
       resolverVersion: evidence.resolverVersion || 'websiteEvidenceV1-runtime',
       resolverSource: 'websiteEvidenceV1',
@@ -2622,7 +2686,7 @@
       })),
       websiteEvidenceOwnedFields: ['laneId', 'productSeed', 'productFamily', 'demandMoment'],
       notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach']
-    };
+    }, evidence, intake);
   }
 
   function websiteSignalProfile(state) {
@@ -6747,12 +6811,31 @@
         name: buildPacket.identity.prospect,
         website: buildPacket.identity.website
       },
+      identity: {
+        prospect: buildPacket.identity.prospect,
+        website: buildPacket.identity.website,
+        selectedLaneId: buildPacket.identity.selectedLaneId,
+        selectedLane: buildPacket.identity.selectedLane,
+        proofAnchor: buildPacket.identity.proofAnchor,
+        productSeed: buildPacket.identity.productSeed || '',
+        productFamily: buildPacket.identity.productFamily || '',
+        demandMoment: buildPacket.identity.demandMoment || '',
+        namingHints: buildPacket.identity.namingHints || {},
+        productAuthority: 'website_evidence_first_notes_story_only_nllm_advisory'
+      },
+      productSeed: buildPacket.identity.productSeed || '',
+      productFamily: buildPacket.identity.productFamily || '',
+      demandMoment: buildPacket.identity.demandMoment || '',
       demoPath: {
         laneId: buildPacket.stateAuthority.exportedLaneId || buildPacket.stateAuthority.confirmedLaneId || buildPacket.stateAuthority.selectedLaneId,
         laneName: buildPacket.stateAuthority.exportedLaneName || buildPacket.stateAuthority.confirmedLaneName || buildPacket.stateAuthority.selectedLaneName,
         proofAnchor: buildPacket.stateAuthority.selectedProofAnchor,
         familyKey: buildPacket.scenarioPackSelection.selectedScenarioPack,
         scenario: buildPacket.scenarioPackSelection.selectedScenario,
+        productSeed: buildPacket.identity.productSeed || '',
+        productFamily: buildPacket.identity.productFamily || '',
+        demandMoment: buildPacket.identity.demandMoment || '',
+        namingAuthority: buildPacket.identity.namingHints && buildPacket.identity.namingHints.authority || '',
         confirmed: !!(buildPacket.consultantConfirmation && buildPacket.consultantConfirmation.confirmed)
       },
       storyInputs: {
@@ -16398,6 +16481,45 @@
     };
   }
 
+  function proofQualityGateW424(finalResult, activeObjects) {
+    const objects = arrayValue(activeObjects);
+    const openableObjects = objects.filter((item) => {
+      const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
+      return authority.openable === true;
+    });
+    const genericNamePattern = /\b(Product Availability SKU|Branch Availability \/ Replenishment Flow|Safe Substitute Fulfillment Support SKU|Finished Good Variety Pack)\b/i;
+    const genericNameFailures = objects.filter((item) => genericNamePattern.test([
+      item && item.name,
+      item && item.label,
+      item && item.displayName
+    ].join(' ')));
+    const setupDiagnostics = objects
+      .map((item) => item && (item.setupDiagnostics || item.itemSetupDiagnostics))
+      .filter(Boolean);
+    const setupFailures = setupDiagnostics.filter((diagnostic) => {
+      const status = String(diagnostic.status || diagnostic.setupStatus || '').toLowerCase();
+      return /fail|weak|blocked|error|incomplete/.test(status) || diagnostic.setupOk === false || diagnostic.planningAutoCalcOff === false;
+    });
+    const blockers = [];
+    if (!objects.length) blockers.push('No returned proof records.');
+    if (objects.length && openableObjects.length < Math.min(objects.length, 5)) blockers.push('One or more returned records lacks verified Open-link authority.');
+    if (genericNameFailures.length) blockers.push('One or more returned record names is still generic.');
+    if (setupFailures.length) blockers.push('One or more generated items needs setup review.');
+    return {
+      schema: 'forge.w424.proof-quality-gate.v1',
+      status: blockers.length ? 'proof_needs_review' : 'proof_ready',
+      runReady: blockers.length === 0 && objects.length > 0,
+      proofNeedsReview: blockers.length > 0 && objects.length > 0,
+      blockers,
+      openableCount: openableObjects.length,
+      returnedRecordCount: objects.length,
+      genericNameFailureCount: genericNameFailures.length,
+      setupDiagnosticCount: setupDiagnostics.length,
+      setupFailureCount: setupFailures.length,
+      warnings: arrayValue(finalResult && finalResult.warnings)
+    };
+  }
+
   function dccFinalNavigationModel(state, lane, pageContext, recommendation) {
     const finalResult = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, pageContext, recommendation);
     const packet = dryRunObjectPacket(state, lane, pageContext, recommendation);
@@ -16426,12 +16548,15 @@
     const scriptPivotObjects = finalObjects.length
       ? activeObjects.filter((item) => item && item.linkAuthority && item.linkAuthority.openable === true)
       : activeObjects.slice(0, 4);
+    const proofQualityGate = proofQualityGateW424(finalResult, activeObjects);
     return {
       schema: 'idb.dcc-final-navigation-model.v1',
       status: finalObjects.length ? 'using_dcc_final_names' : 'using_provisional_preview_names',
       displayStatus: finalObjects.length ? 'Final generated names imported' : 'Final generated names not imported yet',
       source: finalObjects.length ? 'dcc_final_imported' : 'idb_provisional_preview',
-      runCanUseImportedFinalNames: finalObjects.length > 0,
+      runCanUseImportedFinalNames: finalObjects.length > 0 && proofQualityGate.runReady,
+      proofReviewAvailable: finalObjects.length > 0,
+      proofQualityGate,
       reviewObjects: activeObjects.slice(0, 6),
       scriptPivotObjects,
       linkAuthoritySummary,
@@ -23928,8 +24053,14 @@
     const storyContract = model && model.storyContractW373 || {};
     const websiteEvidence = model && model.websiteEvidence || {};
     const competitiveAdvisory = model && model.competitiveAdvisory || {};
-    const objects = arrayValue(finalNavigation.scriptPivotObjects);
-    if (!(finalNavigation && finalNavigation.runCanUseImportedFinalNames) || !objects.length) return '';
+    const proofGate = finalNavigation.proofQualityGate || {};
+    const objects = arrayValue(finalNavigation.scriptPivotObjects).length
+      ? arrayValue(finalNavigation.scriptPivotObjects)
+      : arrayValue(finalNavigation.reviewObjects).filter((item) => {
+        const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
+        return authority.openable === true;
+      });
+    if (!(finalNavigation && (finalNavigation.runCanUseImportedFinalNames || finalNavigation.proofReviewAvailable)) || !objects.length) return '';
     const prospect = state.customerName || value.customer || 'Prospect';
     const laneLabel = storyContract.proofLabel || lane.name || 'Selected story';
     const openableCount = objects.filter((item) => {
@@ -23979,8 +24110,9 @@
             <div class="idb-w415-cockpit-subtitle">${escapeHtml(laneLabel)}</div>
           </div>
           <div class="idb-w415-cockpit-status" aria-label="Post-run proof status">
-            <span class="idb-mini-chip">Records ready</span>
+            <span class="idb-mini-chip">${escapeHtml(proofGate.runReady ? 'Records ready' : 'Proof needs review')}</span>
             <span class="idb-mini-chip">${escapeHtml(openableCount)} Open links verified</span>
+            ${proofGate.runReady ? '' : `<span class="idb-mini-chip">Naming/setup check</span>`}
             <span class="idb-mini-chip">${escapeHtml(confidenceLabel)}</span>
           </div>
         </div>
@@ -24007,6 +24139,7 @@
         <div class="idb-w415-claim-caution">
           <div class="idb-status-key">Claim caution</div>
           <div class="idb-copy">${escapeHtml(cautionCopy)} Source confidence remains separate from advisory inference.</div>
+          ${proofGate.runReady ? '' : `<div class="idb-copy">Next: ${escapeHtml(arrayValue(proofGate.blockers)[0] || 'Review proof quality before presenting as clean.')}</div>`}
         </div>
       </div>
     `;
@@ -24094,6 +24227,7 @@
     const runnerTaskCaptured = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.runnerTaskCaptured);
     const completedResultReady = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.completedResultReady);
     if (finalNaming.finalNamesImported === true && finalNavigation.runCanUseImportedFinalNames === true) stage = 'demo_cockpit';
+    else if (finalNaming.finalNamesImported === true && finalNavigation.proofReviewAvailable === true) stage = 'proof_needs_review';
     else if (runnerTaskCaptured && !completedResultReady && oneClickBuild.status !== 'records_returned_blocked') stage = 'waiting_for_records';
     else if (oneClickBuild.status === 'build_failed_ask_admin' || oneClickBuild.status === 'records_returned_blocked') stage = 'fix_build';
     else if (briefPrepared && confirmed) stage = 'build_records';
@@ -24123,6 +24257,11 @@
         title: 'Fix the build setup',
         copy: 'The runner stopped safely. Use the recovery action and support details; do not continue into ROI or Run as if proof exists.',
         next: 'Review build issue'
+      },
+      proof_needs_review: {
+        title: 'Review proof quality',
+        copy: 'Records and Open links returned, but naming or setup needs review before treating the proof as demo-ready.',
+        next: 'Review proof quality'
       },
       demo_cockpit: {
         title: 'Use the Demo Cockpit',
@@ -26523,6 +26662,22 @@
     const consultantStorySurfaceHtml = w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
       ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory, compactAudit: true, activeLaneStoryPolishW373: storyContractW373 })
       : '';
+    if (!finalNavigation.runCanUseImportedFinalNames && finalNavigation.proofReviewAvailable) {
+      return `
+        ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
+        <details class="idb-technical-details idb-w417-support-troubleshoot">
+          <summary>Support / troubleshoot</summary>
+          <div class="idb-card idb-accent">
+            <div class="idb-section-title">Proof quality review</div>
+            <div class="idb-copy">Returned records and Open links exist, but FORGE detected naming or setup quality issues. Review the blocker before presenting this proof as clean.</div>
+            <ul class="idb-value-list">
+              ${arrayValue(finalNavigation.proofQualityGate && finalNavigation.proofQualityGate.blockers).map((blocker) => `<li>${escapeHtml(blocker)}</li>`).join('')}
+            </ul>
+          </div>
+          ${renderW361NetSuitePathFlow(finalNavigation)}
+        </details>
+      `;
+    }
     if (!finalNavigation.runCanUseImportedFinalNames) {
       const waitingForLinks = buildStatus && buildStatus.automation && buildStatus.automation.runnerTaskCaptured;
       const headline = waitingForLinks ? 'Record links are not back yet' : 'Build records before running';
@@ -28331,6 +28486,7 @@
       websitePackageClassifier,
       websiteEvidenceBridge,
       websiteEvidenceUxModel,
+      websiteProductEvidenceCandidatesW424,
       websiteConfidenceModel,
       stateAuthorityModel,
       reconcileStateAuthority,
@@ -28356,6 +28512,7 @@
       renderW375StoryContractLens,
       renderW375StoryContractProofPath,
       renderW415DemoCockpit,
+      proofQualityGateW424,
       consultantDayInLifeStageW416,
       renderW416ConsultantDayInLife,
       groundedValueEvidenceModel,

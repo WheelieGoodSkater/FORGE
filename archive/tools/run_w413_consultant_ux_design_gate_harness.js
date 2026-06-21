@@ -106,9 +106,9 @@ function main() {
   const scenarios = [rideNow, reMichel];
 
   assertCase(results, 'w413-marker-and-version-advanced',
-    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.25 / W413' &&
-      userscript.includes('// @version      1.0.25') &&
-      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W413';"),
+    /Drawer 1\.0\.(25|26|27|28|29|30|31|32|33) \/ W4(13|1[4-9]|2[0-4])/.test(hooks.drawerDisplayVersionW346()) &&
+      /\/\/ @version      1\.0\.(25|26|27|28|29|30|31|32|33)/.test(userscript) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W4(13|1[4-9]|2[0-4])';/.test(userscript),
     hooks.drawerDisplayVersionW346());
 
   assertCase(results, 'w413-filecabinet-mirror-synced',
@@ -148,18 +148,24 @@ function main() {
     scenarios.map((scenario) => `${scenario.label}\n${scenario.valueText.slice(0, 2600)}`).join('\n---\n'));
 
   assertCase(results, 'w413-run-duplicate-script-cleaned-up',
-    scenarios.every((scenario) => scenario.runText.includes('Presenter objective')) &&
-      scenarios.every((scenario) => scenario.runHtml.includes('<summary>Full Say / Show / Close script</summary>')) &&
+    scenarios.every((scenario) => scenario.navigation.proofQualityGate && scenario.navigation.proofQualityGate.proofNeedsReview
+      ? /Proof quality review|Proof needs review/.test(scenario.runText)
+      : scenario.runText.includes('Presenter objective')) &&
+      scenarios.every((scenario) => scenario.navigation.proofQualityGate && scenario.navigation.proofQualityGate.proofNeedsReview
+        ? scenario.runHtml.includes('<summary>Support / troubleshoot</summary>')
+        : scenario.runHtml.includes('<summary>Full Say / Show / Close script</summary>')) &&
       scenarios.every((scenario) => !scenario.runHtml.includes('<div class="idb-card idb-accent idb-w56-run-script-first">')) &&
       userscript.includes('Presenter objective') &&
-      userscript.includes('Full Say / Show / Close script'),
+      userscript.includes('Proof quality review'),
     scenarios.map((scenario) => `${scenario.label}\n${scenario.runText.slice(0, 2400)}`).join('\n---\n'));
 
   assertCase(results, 'w413-say-show-close-primary-steps-preserved',
-    scenarios.every((scenario) => scenario.runHtml.includes('idb-w367-presenter-steps') &&
-      /Say/.test(scenario.runText) &&
-      /Show/.test(scenario.runText) &&
-      /Close/.test(scenario.runText)),
+    scenarios.every((scenario) => scenario.navigation.proofQualityGate && scenario.navigation.proofQualityGate.proofNeedsReview
+      ? /Proof needs review|Review proof quality/.test(scenario.runText)
+      : scenario.runHtml.includes('idb-w367-presenter-steps') &&
+        /Say/.test(scenario.runText) &&
+        /Show/.test(scenario.runText) &&
+        /Close/.test(scenario.runText)),
     scenarios.map((scenario) => `${scenario.label}\n${scenario.runText.slice(0, 1800)}`).join('\n---\n'));
 
   assertCase(results, 'w413-run-open-links-preserved',
@@ -176,7 +182,9 @@ function main() {
     scenarios.map((scenario) => `${scenario.label}\n${scenario.reviewText.slice(0, 2400)}`).join('\n---\n'));
 
   assertCase(results, 'w413-imported-proof-records-collapsed',
-    scenarios.every((scenario) => detailsClosed(scenario.runHtml, 'Use imported proof records (5)')),
+    scenarios.every((scenario) => scenario.navigation.proofQualityGate && scenario.navigation.proofQualityGate.proofNeedsReview
+      ? detailsClosed(scenario.runHtml, 'Support / troubleshoot')
+      : detailsClosed(scenario.runHtml, 'Use imported proof records (5)')),
     scenarios.map((scenario) => `${scenario.label}: ${scenario.runHtml.includes('Use imported proof records (5)')}`).join('\n'));
 
   assertCase(results, 'w413-confidence-source-separation-preserved',

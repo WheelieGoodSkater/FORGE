@@ -54,6 +54,7 @@ function unknownSnackState(hooks) {
     extractedEvidence: {
       pageTitle: 'North Valley Snacks',
       metaDescription: 'Chips, pretzels, popcorn, packaged snack foods, and seasonal retail variety packs.',
+      productNames: ['Sea Salt Kettle Chips', 'Honey Mustard Pretzels', 'Movie Night Popcorn'],
       productCategoryTerms: ['chips', 'pretzels', 'popcorn', 'snacks', 'packaged food', 'seasonal flavors', 'case pack'],
       navigationLabels: ['Products', 'Retailers', 'Seasonal Flavors', 'Where to Buy']
     },
@@ -99,10 +100,10 @@ function main() {
   });
 
   assertCase(results, 'w423-version-marker-advanced',
-    drawer.includes('// @version      1.0.32') &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.32';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W423';"),
-    'Drawer should show W423 / 1.0.32 for install/update clarity.');
+    drawer.includes('// @version      1.0.33') &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.33';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W424';"),
+    'Drawer should show W424 / 1.0.33 while preserving W423 website-first behavior.');
 
   assertCase(results, 'w423-filecabinet-drawer-synced',
     drawer === fileCabinetDrawer,
@@ -111,8 +112,8 @@ function main() {
   assertCase(results, 'w423-unknown-domain-website-category-chooses-lane',
     profile.laneId === 'food_beverage' &&
       profile.authority === 'website_evidence_v1_with_w423_website_first_category_guard' &&
-      profile.product === 'Finished Good Variety Pack' &&
-      profile.productFamily === 'Packaged Food and Beverage',
+      profile.product === 'Sea Salt Kettle Chips' &&
+      /Packaged (snacks|Food and Beverage)/i.test(profile.productFamily),
     JSON.stringify(profile));
 
   assertCase(results, 'w423-bad-runtime-candidate-cannot-override-website-category',
@@ -186,7 +187,7 @@ ${results.map((result) => `| ${result.id} | ${result.pass ? 'PASS' : 'FAIL'} |`)
 - Completed-result import validation and Open-link authority remain intact.
 
 ## Recommendation
-Install/deploy \`1.0.32 / W423\`, clear drawer state, and run one test using an unlisted-but-clear website category. The expected behavior is website-first lane choice, notes-only value/story enrichment, and all build toggles off until the consultant chooses them.
+Install/deploy \`1.0.33 / W424\`, clear drawer state, and run one test using an unlisted-but-clear website category. The expected behavior is website-first lane choice, product-specific naming when website product names exist, notes-only value/story enrichment, and all build toggles off until the consultant chooses them.
 `;
   fs.writeFileSync(reportPath, report);
 

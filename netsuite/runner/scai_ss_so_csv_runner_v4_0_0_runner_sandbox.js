@@ -2982,6 +2982,49 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  function applyGeneratedInventoryItemSetupPersistence({ itemId, anchorHeroId, subsidiaryId, locationId, role }) {
+    const vendorId = mustFindByExternalId('vendor', ANCHORS.vendor);
+    const setupFields = HERO_AUTOCALC_FIELDS.concat(COMPONENT_AUTOCALC_FIELDS).filter((fid, index, list) => list.indexOf(fid) === index);
+    const bodyLocationOk = locationId ? !!safeTryReturn(() => {
+      record.submitFields({
+        type: 'inventoryitem',
+        id: Number(itemId),
+        values: { location: Number(locationId) },
+        options: { enableSourcing: true, ignoreMandatoryFields: true }
+      });
+      return true;
+    }) : false;
+    const locationPlanningCopied = !!safeTryReturn(() => cloneItemLocationPlanning({
+      sourceItemId: Number(anchorHeroId || itemId),
+      targetItemId: Number(itemId),
+      locationId: Number(locationId || 0)
+    }));
+    const planningAutoCalcOffResult = submitFalseFields('inventoryitem', Number(itemId), setupFields, `Generated ${role || 'item'} planning auto-calc off`);
+    const planningAutoCalcOff = setupFields.every(fid => planningAutoCalcOffResult.fieldsSetFalse.indexOf(fid) !== -1);
+    const preferredVendorOk = ensurePreferredVendorOnItem({ itemId: Number(itemId), vendorId: Number(vendorId), subsidiaryId: Number(subsidiaryId || 0) });
+    const validation = validateFreshHeroPersistence({ itemId: Number(itemId), vendorId: Number(vendorId), locationId: Number(locationId || 0) });
+    const setupOk = !!planningAutoCalcOff && !!preferredVendorOk;
+    const diagnostics = {
+      schema: 'forge.w424.generated-inventory-item-setup-diagnostics.v1',
+      status: setupOk ? 'setup_persisted' : 'setup_needs_review',
+      setupOk,
+      itemId: Number(itemId),
+      role: role || '',
+      vendorId: Number(vendorId),
+      bodyLocationOk,
+      locationPlanningCopied,
+      planningAutoCalcOff: !!planningAutoCalcOff,
+      planningAutoCalcFields: planningAutoCalcOffResult,
+      preferredVendorOk: !!preferredVendorOk,
+      validation
+    };
+    log.audit({
+      title: `IDB generated inventory item setup diagnostics [${VERSION}]`,
+      details: JSON.stringify(diagnostics)
+    });
+    return diagnostics;
+  }
+
   function ensurePreferredVendorOnItem({ itemId, vendorId, subsidiaryId }) {
     safeTry(() => record.submitFields({
       type: 'inventoryitem',
@@ -3290,7 +3333,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
             }
           }
 
-          copied.push({
+          validation.push({
             source: 'leadtime-trace',
             label: 'purchaseleadtime',
             fieldId: 'not-found',
@@ -3329,7 +3372,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       })
     });
 
-    return copied.length > 0;
+    return copied.some(item => item && item.source !== 'leadtime-trace') || !!locationSublistCopied || !!itemLocationConfigCopied;
   }
 
   function findItemLocationConfigId(recordType, itemId, locationId) {
@@ -4270,10 +4313,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function runnerLaneVocabularyPolicyV1(opts) {
     const request = opts && opts.confirmedBuildRequestJson || {};
     const demoPath = request.demoPath || {};
+    const stateAuthority = request.stateAuthority || {};
     const contract = request.resultValidationExpectations && request.resultValidationExpectations.recordContract || {};
     const selectedToggles = request.selectedToggles || {};
     const operatingMode = str(request.resolvedOperatingMode || contract.resolvedOperatingMode || '');
-    const laneId = str(demoPath.laneId || selectedToggles.selectedLaneId || request.selectedLaneId || '');
+    const laneId = str(demoPath.laneId || stateAuthority.exportedLaneId || stateAuthority.confirmedLaneId || stateAuthority.selectedLaneId || selectedToggles.selectedLaneId || request.selectedLaneId || '');
     const fallbackText = String([
       opts && opts.extId,
       opts && opts.prospect,
@@ -4316,8 +4360,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     else if (laneId === 'apparel_accessories') modeKey = 'apparel_style_matrix';
     else if (/apparel_style_matrix|apparel|style|size\s*\/\s*color/.test(text)) modeKey = 'apparel_style_matrix';
     else if (/dealer_hardgoods|dealer|hardgoods|allocation/.test(text)) modeKey = 'dealer_hardgoods';
+    else if (/food_batch_manufacturing|food|beverage|cpg|snack|chips|pretzel|popcorn|packaged/.test(text)) modeKey = enableManufacturing ? 'food_ingredient_manufacturing' : 'food_replenishment';
     else if (/distribution_replenishment|industrial_distribution|distribution|branch|replenishment|fulfillment|availability/.test(text)) modeKey = 'distribution_replenishment';
-    else if (/food_batch_manufacturing|food|beverage|cpg|ingredient|formula|batch/.test(text) && enableManufacturing) modeKey = 'food_ingredient_manufacturing';
     else if (/manufacturing|assembly|work order|routing|wip/.test(text) && (enableManufacturing || enableWip)) modeKey = enableWip ? 'wip_manufacturing' : 'manufacturing';
     if (!modeKey && !enableManufacturing && !enableWip) modeKey = 'distribution_replenishment';
     if (!modeKey) modeKey = '';
@@ -4406,8 +4450,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         schema: 'idb.runner-prospect-specific-proof-names.w414.v1',
         proofNoun: productSeed,
         heroItemName: trimLen(`${prospect} ${productSeed}`, 60),
-        matrixProofItemName: trimLen(`${prospect} Formula / Batch Readiness`, 60),
-        componentItemName: trimLen(`${prospect} Ingredient / Packaging Supply`, 60)
+        matrixProofItemName: trimLen(`${prospect} ${productSeed} Formula / Batch`, 60),
+        componentItemName: trimLen(`${prospect} ${productSeed} Ingredient / Packaging`, 60)
       };
     }
     if (modeKey === 'food_replenishment') {
@@ -4415,8 +4459,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         schema: 'idb.runner-prospect-specific-proof-names.w414.v1',
         proofNoun: productSeed,
         heroItemName: trimLen(`${prospect} ${productSeed}`, 60),
-        matrixProofItemName: trimLen(`${prospect} Promotion Availability / Replenishment`, 60),
-        componentItemName: trimLen(`${prospect} Packaging / Inbound Supply`, 60)
+        matrixProofItemName: trimLen(`${prospect} ${productSeed} Replenishment`, 60),
+        componentItemName: trimLen(`${prospect} ${productSeed} Packaging / Case Pack`, 60)
       };
     }
     if (modeKey === 'manufacturing' || modeKey === 'wip_manufacturing') {
@@ -4477,6 +4521,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       demoPath.productSeed,
       request.identity && request.identity.productSeed,
       request.productSeed,
+      demoPath.productFamily,
+      request.identity && request.identity.productFamily,
+      request.productFamily,
       opts && opts.productSeed,
       fallback
     ].map(str).filter(Boolean);
@@ -5560,7 +5607,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       extId,
       runUniqueSuffix: args.runUniqueSuffix,
       name: resultNames.assembly_name || `${prospect} Availability Flow`,
-      laneVocabularyPolicy
+      laneVocabularyPolicy,
+      anchorHeroId: args.ids && args.ids.heroItemId
     });
     const componentItem = ensureIdbComponentItemForResult({
       prospect,
@@ -5569,7 +5617,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       extId,
       runUniqueSuffix: args.runUniqueSuffix,
       name: firstNonEmpty(resultNames.component_names && resultNames.component_names[0], `${prospect} Fulfillment Support SKU`),
-      laneVocabularyPolicy
+      laneVocabularyPolicy,
+      anchorHeroId: args.ids && args.ids.heroItemId
     });
     const demoTransaction = buildPendingIdbDemoTransactionForResult({
       prospect,
@@ -5773,7 +5822,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
   }
 
-  function ensureIdbProofItemForResult({ prospect, subsidiaryId, locationId, extId, name, runUniqueSuffix, laneVocabularyPolicy }) {
+  function ensureIdbProofItemForResult({ prospect, subsidiaryId, locationId, extId, name, runUniqueSuffix, laneVocabularyPolicy, anchorHeroId }) {
     const roleLabel = laneVocabularyPolicy && laneVocabularyPolicy.finalResultRoleLabels && laneVocabularyPolicy.finalResultRoleLabels.matrixProofItem
       ? laneVocabularyPolicy.finalResultRoleLabels.matrixProofItem
       : 'Formula / Availability Context';
@@ -5788,13 +5837,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       externalId: buildUniqueExternalId('IDB_MATRIX', extId, runUniqueSuffix),
       name: buildUniqueRecordName(proofName, runUniqueSuffix, 83),
       subsidiaryId,
-      locationId: null,
+      locationId,
       role: 'matrixProofItem',
-      label: roleLabel
+      label: roleLabel,
+      setupPersistence: { anchorHeroId, locationId, subsidiaryId }
     });
   }
 
-  function ensureIdbComponentItemForResult({ prospect, subsidiaryId, locationId, extId, name, runUniqueSuffix, laneVocabularyPolicy }) {
+  function ensureIdbComponentItemForResult({ prospect, subsidiaryId, locationId, extId, name, runUniqueSuffix, laneVocabularyPolicy, anchorHeroId }) {
     const roleLabel = laneVocabularyPolicy && laneVocabularyPolicy.finalResultRoleLabels && laneVocabularyPolicy.finalResultRoleLabels.componentItem
       ? laneVocabularyPolicy.finalResultRoleLabels.componentItem
       : 'Ingredient / Packaging Component';
@@ -5809,13 +5859,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       externalId: buildUniqueExternalId('IDB_COMPONENT', extId, runUniqueSuffix),
       name: buildUniqueRecordName(componentName, runUniqueSuffix, 83),
       subsidiaryId,
-      locationId: null,
+      locationId,
       role: 'componentItem',
-      label: roleLabel
+      label: roleLabel,
+      setupPersistence: { anchorHeroId, locationId, subsidiaryId }
     });
   }
 
-  function ensureIdbInventoryItemForResult({ externalId, name, subsidiaryId, locationId, role, label }) {
+  function ensureIdbInventoryItemForResult({ externalId, name, subsidiaryId, locationId, role, label, setupPersistence }) {
     let id = findByExternalId('inventoryitem', externalId);
     if (!id) {
       id = saveIdbInventoryItemWithDuplicateFallbacks({
@@ -5833,13 +5884,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         options: { enableSourcing: true, ignoreMandatoryFields: true }
       }));
     }
-    return normalizeIdbRecord({
+    const setupDiagnostics = setupPersistence ? applyGeneratedInventoryItemSetupPersistence({
+      itemId: Number(id),
+      anchorHeroId: setupPersistence.anchorHeroId,
+      subsidiaryId: setupPersistence.subsidiaryId || subsidiaryId,
+      locationId: setupPersistence.locationId || locationId,
+      role
+    }) : null;
+    const normalized = normalizeIdbRecord({
       role,
       type: 'inventoryitem',
       name: readRecordDisplayName('inventoryitem', id, name),
       internalId: id,
       label
     });
+    if (setupDiagnostics) normalized.setupDiagnostics = setupDiagnostics;
+    return normalized;
   }
 
   function roleSpecificGeneratedItemName(roleLabel, baseName) {

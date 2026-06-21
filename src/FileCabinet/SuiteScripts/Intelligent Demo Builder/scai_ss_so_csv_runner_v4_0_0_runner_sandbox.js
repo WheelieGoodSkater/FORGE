@@ -1076,8 +1076,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         workOrderTelemetry = Object.assign({}, workOrderTelemetry, (workOrderResult && workOrderResult.saveTelemetry) || {});
         log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId }) });
       } catch (e) {
-        log.error({
-          title: `Work Order seed FAILED [${VERSION}]`,
+        log.audit({
+          title: `Work Order seed best-effort warning [${VERSION}]`,
           details: JSON.stringify({
             extId,
             assemblyId: Number(ids.assemblyId || 0),
@@ -1085,12 +1085,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
             bomRevId: Number(ids.bomRevId || 0),
             subsidiaryId: Number(subsidiaryId || 0),
             locationId: Number(locationId || 0),
+            nonFatal: true,
+            coreBuildContinues: true,
             errorName: e && e.name ? String(e.name) : '',
             errorMessage: e && e.message ? String(e.message) : String(e || '')
           })
         });
         workOrderTelemetry = Object.assign({}, workOrderTelemetry, (e && e.workOrderDiagnostics) || {}, {
-          status: 'failed',
+          status: 'best_effort_failed',
+          nonFatal: true,
+          coreBuildContinues: true,
           errorMessage: e && e.message ? String(e.message) : String(e || '')
         });
         woId = null;

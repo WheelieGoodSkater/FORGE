@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.28
+// @version      1.0.29
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.28';
-  const CURRENT_UX_BLOCK_W346 = 'W419';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.29';
+  const CURRENT_UX_BLOCK_W346 = 'W420';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -24027,9 +24027,12 @@
     const briefPrepared = !!(state && state.briefPrepared);
     const confirmed = !!authority.confirmedLaneId;
     let stage = 'enter_request';
+    const runnerTaskCaptured = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.runnerTaskCaptured);
+    const completedResultReady = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.completedResultReady);
     if (finalNaming.finalNamesImported === true && finalNavigation.runCanUseImportedFinalNames === true) stage = 'demo_cockpit';
+    else if (runnerTaskCaptured && !completedResultReady && oneClickBuild.status !== 'records_returned_blocked') stage = 'waiting_for_records';
     else if (oneClickBuild.status === 'build_failed_ask_admin' || oneClickBuild.status === 'records_returned_blocked') stage = 'fix_build';
-    else if (briefPrepared && confirmed) stage = w262BuildUx.stateFacts && w262BuildUx.stateFacts.runnerTaskCaptured ? 'waiting_for_records' : 'build_records';
+    else if (briefPrepared && confirmed) stage = 'build_records';
     else if (briefPrepared) stage = 'confirm_path';
     const labels = {
       enter_request: {
@@ -25499,7 +25502,7 @@
             ${showImportButton ? '<button class="idb-primary" data-idb-build-return-action="import_completed_runner_result">Finish build</button>' : ''}
             ${actions.showContinueToRun ? '<button class="idb-secondary" data-idb-view="run">Continue to Run</button>' : ''}
             ${actions.showContinueToRun ? '<span class="idb-mini-chip">Smoke can continue</span>' : ''}
-            ${oneClickBuild.automation && oneClickBuild.automation.showAskAdminMessage ? '<span class="idb-mini-chip">Build failed, ask admin</span>' : ''}
+            ${oneClickBuild.automation && oneClickBuild.automation.showAskAdminMessage && !w262BuildUx.stateFacts.runnerTaskCaptured ? '<span class="idb-mini-chip">Build failed, ask admin</span>' : ''}
           </div>
           ${invalidCompletedResultRecoveryHtml || importRecoverySurfaceHtml}
         </div>

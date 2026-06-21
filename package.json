@@ -180,7 +180,8 @@
     "harness:post-run-demo-cockpit-w415": "node archive/tools/run_w415_post_run_demo_cockpit_harness.js",
     "harness:consultant-day-in-life-simplification-w416": "node archive/tools/run_w416_consultant_day_in_life_simplification_harness.js",
     "harness:v2-cockpit-naming-recovery-w417": "node archive/tools/run_w417_v2_cockpit_naming_recovery_harness.js",
-    "harness:executable-consultant-flow-w418": "node archive/tools/run_w418_executable_consultant_flow_harness.js"
+    "harness:executable-consultant-flow-w418": "node archive/tools/run_w418_executable_consultant_flow_harness.js",
+    "harness:one-click-build-records-w419": "node archive/tools/run_w419_one_click_build_records_harness.js"
   },
   "keywords": [
     "netsuite",

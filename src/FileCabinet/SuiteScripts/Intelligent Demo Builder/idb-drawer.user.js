@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.27
+// @version      1.0.28
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.27';
-  const CURRENT_UX_BLOCK_W346 = 'W418';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.28';
+  const CURRENT_UX_BLOCK_W346 = 'W419';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -23982,7 +23982,7 @@
   }
 
   function updateBuildDemoPlanAction(root, state) {
-    const buildPlan = root.querySelector('[data-idb-build-demo-plan]');
+    const buildPlan = root.querySelector('[data-idb-build-demo-plan], [data-idb-one-click-build-records]');
     if (!buildPlan) return;
     const pageContext = currentPageContext();
     const lane = getLane(state);
@@ -24034,8 +24034,8 @@
     const labels = {
       enter_request: {
         title: 'Enter the FORGE request',
-        copy: 'Add customer name, website, messy notes, and build toggles. FORGE prepares the lane, story, and proof path from there.',
-        next: readiness.tone === 'ready' ? 'Run FORGE setup' : 'Complete customer, website, and notes'
+        copy: 'Add customer name, website, messy notes, and build toggles. One Build records action prepares the path and starts the approved build.',
+        next: readiness.tone === 'ready' ? 'Build records' : 'Complete customer, website, and notes'
       },
       confirm_path: {
         title: 'Confirm the FORGE path',
@@ -24392,20 +24392,20 @@
         customer: intake.customer
       };
     }
-    if (readiness.tone !== 'ready') {
+      if (readiness.tone !== 'ready') {
       return {
         state: 'enter_sales_request',
         statusLabel: 'Enter sales request',
         stepLabel: 'Request',
-        primaryLabel: 'Build demo plan',
-        primaryAction: 'build_demo_plan',
+        primaryLabel: 'Build records',
+        primaryAction: 'one_click_build_records',
         primaryDisabled: true,
         secondaryLabel: 'Autosaved locally',
         summaryActionLabel: 'Complete request',
         nextAction: 'Complete request.',
         nextCopy: readiness.label,
-        demoPathLabel: 'Build demo plan',
-        demoPathCopy: 'Fill in the request, then build the demo plan.',
+        demoPathLabel: 'Build records',
+        demoPathCopy: 'Fill in the request, then build records.',
         showIntake: true
       };
     }
@@ -24413,16 +24413,16 @@
       return {
         state: 'ready_to_prepare',
         statusLabel: 'Request ready',
-        stepLabel: 'Prepare',
-        primaryLabel: 'Run FORGE setup',
-        primaryAction: 'build_demo_plan',
+        stepLabel: 'Build',
+        primaryLabel: 'Build records',
+        primaryAction: 'one_click_build_records',
         primaryDisabled: false,
         secondaryLabel: 'Autosaved locally',
-        summaryActionLabel: 'Run FORGE setup',
-        nextAction: 'Run FORGE setup.',
-        nextCopy: 'The request is ready. Prepare the demo path from the website, notes, and selected toggles.',
-        demoPathLabel: 'Build demo plan',
-        demoPathCopy: 'One click saves the request, prepares the brief, and confirms the demo path when the evidence is safe.',
+        summaryActionLabel: 'Build records',
+        nextAction: 'Build records.',
+        nextCopy: 'FORGE will save the request, prepare the lane path, freeze the packet, and start the approved build.',
+        demoPathLabel: 'Build records',
+        demoPathCopy: 'One click saves the request, confirms the path when evidence is usable, and starts record build.',
         showIntake: true
       };
     }
@@ -24430,16 +24430,16 @@
       return {
         state: 'prepared_needs_confirmation',
         statusLabel: 'Brief prepared',
-        stepLabel: 'Confirm',
-        primaryLabel: 'Confirm FORGE path',
-        primaryAction: 'confirm_demo_path',
+        stepLabel: 'Build',
+        primaryLabel: 'Build records',
+        primaryAction: 'one_click_build_records',
         primaryDisabled: false,
         secondaryLabel: 'Edit request',
-        summaryActionLabel: 'Confirm FORGE path',
-        nextAction: 'Confirm FORGE path.',
-        nextCopy: 'Confirm the recommended lane before building records, ROI, competitive, or run guidance proceeds.',
+        summaryActionLabel: 'Build records',
+        nextAction: 'Build records.',
+        nextCopy: 'FORGE will use this click as confirmation of the prepared path and start the approved build.',
         demoPathLabel: `${consultantLabel(handoff.selectedPack)} / ${handoff.selectedScenario}`,
-        demoPathCopy: 'Confirm the demo path before building records.',
+        demoPathCopy: 'Prepared path is ready to build.',
         showIntake: false
       };
     }
@@ -24516,7 +24516,7 @@
           <button class="idb-secondary" data-idb-view="review">Build records</button>
           <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
         `
-        : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsLaneReview ? 'disabled' : ''}>Confirm FORGE path</button>`;
+        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext || intakeGuide.needsLaneReview ? 'disabled' : ''}>Build records</button>`;
       return `
         <div class="idb-card idb-accent idb-compact idb-w98-request-summary">
           <div class="idb-section-title">Request summary</div>
@@ -24649,8 +24649,8 @@
                 <button class="idb-secondary" data-idb-view="review">Build records</button>
                 <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
               `
-              : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext || intakeGuide.needsLaneReview ? 'disabled' : ''}>Confirm FORGE path</button>`
-            : `<button class="idb-primary" data-idb-build-demo-plan ${flow.primaryDisabled ? 'disabled' : ''}>Run FORGE setup</button>`}
+              : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext || intakeGuide.needsLaneReview ? 'disabled' : ''}>Build records</button>`
+            : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${flow.primaryDisabled ? 'disabled' : ''}>Build records</button>`}
           ${briefPrepared ? '<button class="idb-secondary" data-idb-edit-setup>Edit request</button>' : '<span class="idb-mini-chip">Draft autosaved</span>'}
           <button class="idb-secondary" data-idb-toggle-lanes>Change lane manually</button>
         </div>
@@ -25288,10 +25288,10 @@
                 <button class="idb-secondary" data-idb-view="review">Build records</button>
           <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
         `
-        : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(lane.id)}">Confirm FORGE path</button>`;
+        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(lane.id)}">Build records</button>`;
     const classificationLabel = briefPrepared ? (evidence.recommendedLaneName || lane.name) : 'Waiting for brief';
     const confidenceLabel = briefPrepared ? postImport.planConfidenceLabel : 'Not prepared';
-    const confidenceDetail = briefPrepared ? postImport.planConfidenceDetail : 'Run FORGE setup';
+    const confidenceDetail = briefPrepared ? postImport.planConfidenceDetail : 'Build records';
     const advisoryChip = briefPrepared && postImport.advisoryConfidenceDetail
       ? `<span class="idb-mini-chip">${escapeHtml(postImport.advisoryConfidenceDetail)}</span>`
       : '';
@@ -25472,7 +25472,7 @@
           ${renderToggleControls(state, lane)}
           <div class="idb-chip-row">
             <span class="idb-chip idb-${chipTone}">${escapeHtml(w262BuildUx.label)}</span>
-            <span class="idb-mini-chip">${w262BuildUx.stateFacts.requestReady ? 'Request ready' : 'Confirm demo path'}</span>
+            <span class="idb-mini-chip">${w262BuildUx.stateFacts.requestReady ? 'Request ready' : 'Path needs confirmation'}</span>
             <span class="idb-mini-chip">${escapeHtml(buildSetupChip)}</span>
             <span class="idb-mini-chip">Links appear when ready</span>
           </div>
@@ -27335,67 +27335,132 @@
       field.addEventListener('input', updateRealAdapterField);
       field.addEventListener('change', updateRealAdapterField);
     });
+    const prepareOneClickBuildRecordsPath = (selectedLaneId) => {
+      const pageContext = currentPageContext();
+      syncIntakeFromVisibleFields(root, state);
+      state.briefPrepared = true;
+      state.setupEditMode = false;
+      state.pageContext = pageContext;
+      ensureWebsiteEvidenceRuntime(state);
+      reconcileStateAuthority(state);
+      if (websiteSignalNeedsReview(state)) {
+        state.lanePickerOpen = true;
+        saveState(state);
+        trace('one_click_build_records_blocked_for_website_review_w419', {
+          intake: normalizedIntake(state),
+          websiteSignal: websiteSignalProfile(state),
+          reason: 'Unknown website should not auto-commit a lane from notes alone.',
+          noSubmit: true
+        });
+        draw(root, state);
+        return null;
+      }
+      const laneId = selectedLaneId || state.selectedLaneId;
+      state.selectedLaneId = laneId;
+      state.laneSelectionSource = 'consultant_one_click_build_records';
+      state.selectedMoveIndex = 0;
+      state.lanePickerOpen = false;
+      state.activeView = 'review';
+      const lane = getLane(state);
+      const recommendation = recommendMove(lane, pageContext);
+      state.selectedMoveIndex = recommendation.moveIndex;
+      state.acceptedPacket = buildAcceptedPacketContext(state, lane, pageContext, recommendation);
+      saveState(state);
+      tracePlanSummary('sales_request_saved', state, lane, pageContext, recommendation, {
+        mode: 'one_click_build_records',
+        briefPrepared: true,
+        writeAuthority: 'approved_server_adapter_only'
+      });
+      trace('demo_path_confirmed', {
+        selectedLaneId: lane.id,
+        selectedPack: state.acceptedPacket.packetIdentity && state.acceptedPacket.packetIdentity.packId,
+        selectedScenario: state.acceptedPacket.packetIdentity && state.acceptedPacket.packetIdentity.scenario,
+        packetId: state.acceptedPacket.packetId,
+        intake: normalizedIntake(state),
+        source: 'one_click_build_records_w419',
+        writeAuthority: 'approved_server_adapter_only',
+        noDrawerTransactionWrites: true
+      });
+      return { pageContext, lane, recommendation };
+    };
+    const submitBuildRecordsOnce = async (button, options) => {
+      const opts = options || {};
+      syncRealAdapterFieldsFromDom();
+      saveState(state);
+      const pageContext = opts.pageContext || currentPageContext();
+      const lane = opts.lane || getLane(state);
+      const recommendation = opts.recommendation || recommendMove(lane, pageContext);
+      const preflightRequest = confirmedBuildRequestJsonV1(state, lane, pageContext, recommendation);
+      ensureExplicitBuildAttemptProvenanceW320(state, preflightRequest);
+      const preflight = realSandboxServerAdapterExecutionWiringAndRunnerTaskIdCaptureV1(state, lane, pageContext, recommendation, {
+        adapterConfig: state.integratedBuildAdapterConfig || {},
+        operatorEvidence: state.integratedBuildOperatorApproval || {}
+      });
+      if (!preflight.readyForOneCall || !preflight.adapterRequestEnvelope) {
+        trace('w419_build_records_submit_blocked', {
+          source: opts.source || 'build_records_button',
+          status: preflight.status,
+          blockedReasons: preflight.blockedReasons,
+          noDrawerWrites: true,
+          noActiveOpenLinksWithoutRealUrls: true
+        });
+        draw(root, state);
+        return false;
+      }
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Building...';
+      }
+      const adapterPayload = await invokeW144ApprovedServerAdapterFromDrawerV1(preflight.adapterRequestEnvelope);
+      const transportResult = realSandboxServerAdapterExecutionWiringAndRunnerTaskIdCaptureV1(state, lane, pageContext, recommendation, {
+        adapterConfig: state.integratedBuildAdapterConfig || {},
+        operatorEvidence: state.integratedBuildOperatorApproval || {},
+        executeLiveCall: true,
+        transport: () => adapterPayload
+      });
+      if (transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.statePatch && transportResult.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult) {
+        state.integratedBuildRunnerResult = transportResult.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult;
+      } else if (adapterPayload && (adapterPayload.error || adapterPayload.status === 'adapter_error')) {
+        state.integratedBuildRunnerResult = Object.assign({}, adapterPayload, {
+          status: adapterPayload.status || 'adapter_error',
+          runnerTaskId: null,
+          resultCapture: Object.assign({ status: 'adapter_error' }, adapterPayload.resultCapture || {}),
+          finalGeneratedNamesJson: null,
+          activeOpenLinks: 0
+        });
+      }
+      state.pageContext = pageContext;
+      saveState(state);
+      trace('w189_w144_one_call_result', {
+        source: opts.source || 'build_records_button',
+        status: transportResult.status,
+        runnerTaskIdCaptured: transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.runnerTaskIdCaptured,
+        runnerTaskId: transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.runnerTaskId,
+        resultCaptureStatus: transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.resultCaptureStatus,
+        adapterHttpStatus: adapterPayload && adapterPayload.httpStatus,
+        adapterHttpOk: adapterPayload && adapterPayload.httpOk,
+        adapterStatus: adapterPayload && adapterPayload.status,
+        adapterErrorMessage: adapterPayload && adapterPayload.errorMessage,
+        noDrawerWrites: true,
+        noDrawerTransactionWrites: true,
+        noActiveOpenLinksWithoutRealUrls: true
+      });
+      draw(root, state);
+      return true;
+    };
+    root.querySelectorAll('[data-idb-one-click-build-records]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const selectedLaneId = button.getAttribute('data-idb-one-click-build-records') || state.selectedLaneId;
+        const prepared = prepareOneClickBuildRecordsPath(selectedLaneId);
+        if (!prepared) return;
+        await submitBuildRecordsOnce(button, Object.assign({}, prepared, { source: 'one_click_build_records_w419' }));
+      });
+    });
     root.querySelectorAll('[data-idb-real-adapter-action]').forEach((button) => {
       button.addEventListener('click', async () => {
         const actionId = button.getAttribute('data-idb-real-adapter-action');
         if (actionId !== 'submit_w144_once') return;
-        syncRealAdapterFieldsFromDom();
-        saveState(state);
-        const pageContext = currentPageContext();
-        const lane = getLane(state);
-        const recommendation = recommendMove(lane, pageContext);
-        const preflightRequest = confirmedBuildRequestJsonV1(state, lane, pageContext, recommendation);
-        ensureExplicitBuildAttemptProvenanceW320(state, preflightRequest);
-        const preflight = realSandboxServerAdapterExecutionWiringAndRunnerTaskIdCaptureV1(state, lane, pageContext, recommendation, {
-          adapterConfig: state.integratedBuildAdapterConfig || {},
-          operatorEvidence: state.integratedBuildOperatorApproval || {}
-        });
-        if (!preflight.readyForOneCall || !preflight.adapterRequestEnvelope) {
-          trace('w189_w144_submit_blocked', {
-            status: preflight.status,
-            blockedReasons: preflight.blockedReasons,
-            noDrawerWrites: true,
-            noActiveOpenLinksWithoutRealUrls: true
-          });
-          draw(root, state);
-          return;
-        }
-        button.disabled = true;
-        button.textContent = 'Submitting...';
-        const adapterPayload = await invokeW144ApprovedServerAdapterFromDrawerV1(preflight.adapterRequestEnvelope);
-        const transportResult = realSandboxServerAdapterExecutionWiringAndRunnerTaskIdCaptureV1(state, lane, pageContext, recommendation, {
-          adapterConfig: state.integratedBuildAdapterConfig || {},
-          operatorEvidence: state.integratedBuildOperatorApproval || {},
-          executeLiveCall: true,
-          transport: () => adapterPayload
-        });
-        if (transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.statePatch && transportResult.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult) {
-          state.integratedBuildRunnerResult = transportResult.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult;
-        } else if (adapterPayload && (adapterPayload.error || adapterPayload.status === 'adapter_error')) {
-          state.integratedBuildRunnerResult = Object.assign({}, adapterPayload, {
-            status: adapterPayload.status || 'adapter_error',
-            runnerTaskId: null,
-            resultCapture: Object.assign({ status: 'adapter_error' }, adapterPayload.resultCapture || {}),
-            finalGeneratedNamesJson: null,
-            activeOpenLinks: 0
-          });
-        }
-        state.pageContext = pageContext;
-        saveState(state);
-        trace('w189_w144_one_call_result', {
-          status: transportResult.status,
-          runnerTaskIdCaptured: transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.runnerTaskIdCaptured,
-          runnerTaskId: transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.runnerTaskId,
-          resultCaptureStatus: transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.resultCaptureStatus,
-          adapterHttpStatus: adapterPayload && adapterPayload.httpStatus,
-          adapterHttpOk: adapterPayload && adapterPayload.httpOk,
-          adapterStatus: adapterPayload && adapterPayload.status,
-          adapterErrorMessage: adapterPayload && adapterPayload.errorMessage,
-          noDrawerWrites: true,
-          noDrawerTransactionWrites: true,
-          noActiveOpenLinksWithoutRealUrls: true
-        });
-        draw(root, state);
+        await submitBuildRecordsOnce(button, { source: 'explicit_build_records_button' });
       });
     });
     root.querySelectorAll('[data-idb-build-return-action]').forEach((button) => {

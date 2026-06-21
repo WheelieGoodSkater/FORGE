@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.30
+// @version      1.0.32
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.30';
-  const CURRENT_UX_BLOCK_W346 = 'W421';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.32';
+  const CURRENT_UX_BLOCK_W346 = 'W423';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1018,70 +1018,70 @@
         dccFamilyKey: 'cpgProductsManufacturing',
         dccScenario: 'Promotion-to-Shelf Readiness',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: true, enableWip: false },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Finished Good', 'Packaging / Case Pack', 'Promotion / Replenishment', 'Retail Readiness Setup']
       },
       food_beverage: {
         dccFamilyKey: 'foodManufacturing',
         dccScenario: 'Promotion-Driven Food Manufacturing',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: true, enableWip: false },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Finished Good', 'Ingredient / Packaging Structure', 'Packaging & Line Details', 'Production Setup']
       },
       industrial_equipment: {
         dccFamilyKey: 'industrialManufacturing',
         dccScenario: 'Order-to-Assembly Readiness',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: true, enableWip: true },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Assembly', 'Component Structure', 'Assembly / Production Lineage', 'Machine / Unit', 'Controlled Assembly Details']
       },
       life_sciences: {
         dccFamilyKey: 'lifeSciencesManufacturing',
         dccScenario: 'Lot-to-Release Execution',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: true, enableWip: false },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Lot / Release', 'Validation / Compliance', 'Traceability / Serialization', 'Regulated Execution Setup']
       },
       industrial_distribution: {
         dccFamilyKey: 'distribution',
         dccScenario: 'Branch Availability Control',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Inventory / Fulfillment', 'Branch / Inventory Availability', 'Supplier / Replenishment Control', 'Inventory Position', 'Branch Fulfillment Setup']
       },
       building_materials: {
         dccFamilyKey: 'buildingMaterials',
         dccScenario: 'Contractor Project Fulfillment',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Contractor Account', 'Job Order', 'Branch Item Availability', 'Special Order / Substitution', 'Will-Call / Jobsite Delivery', 'Project Fulfillment Setup']
       },
       dealer_hardgoods: {
         dccFamilyKey: 'dealerHardgoods',
         dccScenario: 'Dealer Channel Availability',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Product / SKU', 'Dealer / Channel Allocation', 'Replenishment Position', 'Supplier Lead-Time Signal', 'Channel Fulfillment Setup']
       },
       apparel_accessories: {
         dccFamilyKey: 'apparelAccessories',
         dccScenario: 'Style-to-Availability Readiness',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Style / SKU Matrix', 'Size / Color Variants', 'Allocation / Replenishment', 'Channel / Location Availability', 'Collection Launch Setup']
       },
       parts_service: {
         dccFamilyKey: 'partsService',
         dccScenario: 'Service Parts Readiness',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Work Order View', 'Installed Equipment', 'Service Part / SKU', 'Truck / Warehouse Availability', 'Backorder / Purchasing Signal', 'Warranty / Service Margin Setup']
       },
       medical_dental_supply: {
         dccFamilyKey: 'medicalDentalSupply',
         dccScenario: 'Clinic Supply Availability',
         dccMode: 'Balanced',
-        dccToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+        dccToggles: { createNewHeroItem: false, enableManufacturing: false, enableWip: false },
         recordsToPlan: ['Customer Record', 'Sales Order View', 'Clinic Supply Item', 'Substitute Product', 'Multi-Location Availability', 'Backorder / Replenishment Signal', 'Equipment Warranty Context']
       }
     }
@@ -1509,6 +1509,16 @@
     },
     {
       laneId: 'food_beverage',
+      domains: ['herrs.com'],
+      patterns: /herrs\.com|herr'?s|herr foods|chips|pretzels|popcorn|snack|snacks|packaged food|seasonal flavors|retailers|distributors|case pack|finished good/i,
+      evidence: 'website shows Herr Foods packaged snacks, chips, pretzels, popcorn, seasonal flavors, retail, or distributor signals',
+      product: 'Snack Variety Pack',
+      productFamily: 'Packaged Snacks',
+      demandMoment: 'finished-good and retail replenishment readiness',
+      sourceAuthority: 'website_primary'
+    },
+    {
+      laneId: 'food_beverage',
       domains: ['keebler.com'],
       patterns: /keebler\.com|keebler|cookie|cracker|snack|biscuit|bakery|packaging/i,
       evidence: 'website shows cookies, crackers, snacks, bakery, or packaged food signals',
@@ -1653,7 +1663,7 @@
     {
       categoryId: 'packaged_food_beverage',
       laneId: 'food_beverage',
-      patterns: /food|beverage|drink|water|snack|cookie|cracker|candy|bakery|ingredient|flavor|packaging|canned|bottle|brew|coffee|tea|juice|yerba|mate|ready[-\s]?to[-\s]?drink|rtd|organic|regenerative/i,
+      patterns: /food|beverage|drink|water|snack|snacks|chip|chips|pretzel|pretzels|popcorn|cookie|cracker|candy|bakery|ingredient|flavor|packaging|case pack|finished good|seasonal flavors|canned|bottle|brew|coffee|tea|juice|yerba|mate|ready[-\s]?to[-\s]?drink|rtd|organic|regenerative/i,
       evidence: 'website/category tokens show packaged food, beverage, ingredient, flavor, or packaging signals',
       product: 'Finished Good Variety Pack',
       productFamily: 'Packaged Food and Beverage',
@@ -2487,6 +2497,42 @@
       : confidenceState === WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION
         ? 'medium'
         : 'low';
+    const deterministicWebsite = governedWebsiteResolver(state);
+    const websiteFirstDeterministicLane = deterministicWebsite &&
+      deterministicWebsite.laneId &&
+      (deterministicWebsite.sourceKind === 'known_domain_website_primary' || deterministicWebsite.sourceKind === 'website_category_classifier') &&
+      (!best || best.laneId !== deterministicWebsite.laneId || confidenceState !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED);
+    if (websiteFirstDeterministicLane) {
+      return {
+        authority: 'website_evidence_v1_with_w423_website_first_category_guard',
+        resolverVersion: evidence.resolverVersion || 'websiteEvidenceV1-runtime',
+        resolverSource: 'websiteEvidenceV1',
+        laneId: deterministicWebsite.laneId,
+        domain: evidence.domain || websiteDomain(intake.website),
+        evidence: `${deterministicWebsite.evidence}; W423 keeps website/category evidence ahead of notes-only contradictory language.`,
+        suppliedWebsiteEvidence: intake.websiteEvidence,
+        product: deterministicWebsite.product || '',
+        productFamily: deterministicWebsite.productFamily || '',
+        demandMoment: deterministicWebsite.demandMoment || '',
+        confidence: deterministicWebsite.sourceKind === 'known_domain_website_primary' ? 'high' : 'medium',
+        confidenceState,
+        confidenceScore: Math.max(Number(evidence.confidence && evidence.confidence.score) || 0, deterministicWebsite.sourceKind === 'known_domain_website_primary' ? 0.82 : 0.68),
+        fallbackReason: '',
+        sourceUrls: evidence.sourceUrls || [intake.website],
+        extractedEvidence: evidence.extractedEvidence || {},
+        resolverAdapter: evidence.resolverAdapter || {},
+        failureState: evidence.failureState || '',
+        fetchErrors: evidence.fetchErrors || [],
+        competingCandidates: candidates.slice(0, 4).map((candidate) => ({
+          laneId: candidate.laneId,
+          sourceKind: 'websiteEvidenceV1',
+          score: candidate.score,
+          evidence: (candidate.evidence || []).join(', ') || 'Competing resolver website evidence candidate'
+        })),
+        websiteEvidenceOwnedFields: ['laneId', 'productSeed', 'productFamily', 'demandMoment'],
+        notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach']
+      };
+    }
     if (confidenceState !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED && buildingMaterialsContractorEvidenceW394(state)) {
       return {
         authority: 'website_evidence_v1_with_w394_building_materials_guard',
@@ -3416,6 +3462,11 @@
     if (lane.id === 'building_materials' && /contractor|job order|branch promises?|missing pieces|substituted|delayed|another branch|special order|will[-\s]?call|jobsite delivery|margin|epicor|spruce/.test(notesSource)) notesScore += websiteHint && websiteHint.laneId === lane.id ? 2 : 8;
     if (lane.id === 'building_materials' && /fabrication|custom shop|production routing|work center|wip|build\/test|build test|inspection|configured equipment assembly/.test(`${websiteSource} ${notesSource}`)) notesScore -= 2;
     if (lane.id === 'industrial_equipment' && /building materials|lumber|doors|windows|contractor supply|jobsite delivery|will[-\s]?call|job order|special order/.test(`${websiteSource} ${notesSource}`) && !/fabrication|custom shop|production routing|work center|wip|configured equipment assembly/.test(`${websiteSource} ${notesSource}`)) notesScore -= 10;
+    if (lane.id === 'food_beverage' && /herrs\.com|herr'?s|herr foods|chips?|pretzels?|popcorn|snacks?|packaged food|seasonal flavors|finished goods?|case pack|retailers?|distributors?/.test(websiteSource)) websiteScore += websiteHint && websiteHint.laneId === lane.id ? 2 : 12;
+    if (lane.id === 'parts_service' && /herrs\.com|herr'?s|herr foods|chips?|pretzels?|popcorn|snacks?|packaged food|seasonal flavors/.test(websiteSource) && !/repair service|field service|work order|installed equipment|technician|truck stock|warranty|emergency repair|dispatch/.test(`${websiteSource} ${notesSource}`)) {
+      websiteScore -= 14;
+      notesScore -= 4;
+    }
     if (lane.id === 'food_beverage' && /yerbamadre\.com|guayaki\.com|yerba\s*madre|guayak[ií]|yerba\s*mate|ready[-\s]?to[-\s]?drink|rtd|beverage|drink|tea|organic\s+yerba|regenerative\s+organic/.test(websiteSource)) websiteScore += websiteHint && websiteHint.laneId === lane.id ? 2 : 10;
     if (lane.id === 'dealer_hardgoods' && /yerbamadre\.com|guayaki\.com|yerba\s*madre|guayak[ií]|yerba\s*mate|ready[-\s]?to[-\s]?drink|rtd|beverage|drink|tea|organic\s+yerba|regenerative\s+organic/.test(websiteSource)) websiteScore -= 10;
     if (lane.id === 'products_cpg' && /hardgoods|durable|surfboard|skateboard|wholesale/.test(websiteSource)) websiteScore -= 4;
@@ -5134,9 +5185,22 @@
       .join(' ');
   }
 
-  function customerSeed(customer) {
-    const clean = titleCase(customer || 'Prospect');
+  function consultantCanonicalCustomerSeedW422(customer) {
+    const raw = String(customer || '').trim();
+    if (/^herr'?s?\b/i.test(raw) || /^herr\s+foods?\b/i.test(raw)) return 'Herr Foods';
+    const withoutRunSuffix = raw
+      .replace(/\bW\d{2,5}\b/gi, ' ')
+      .replace(/\btimes\s+(?:one|two|three|four|five|six|seven|eight|nine|ten|\d+)\b/gi, ' ')
+      .replace(/\b(?:test|rerun|retry|run)\s+(?:one|two|three|four|five|\d+)\b/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const clean = titleCase(withoutRunSuffix || raw || 'Prospect');
+    if (/^Herrs?$/.test(clean) || /^Herr S$/.test(clean) || /^Herr Foods?/.test(clean)) return 'Herr Foods';
     return clean || 'Prospect';
+  }
+
+  function customerSeed(customer) {
+    return consultantCanonicalCustomerSeedW422(customer || 'Prospect');
   }
 
   function plannedRecordName(label, lane, customer, index, productSignal) {

@@ -291,9 +291,9 @@ const LANE_PACKS = Object.freeze([
     label: 'Food/Beverage Manufacturer',
     operatingMode: 'food_batch_manufacturing',
     websiteSignals: {
-      domains: ['mccormick.com', 'keebler.com', 'liquiddeath.com', 'yerbamadre.com', 'guayaki.com'],
-      categoryTerms: ['food', 'beverage', 'ingredient', 'flavor', 'packaging', 'batch'],
-      evidenceTerms: ['ingredient readiness', 'packaging timing', 'line continuity', 'finished-good availability']
+      domains: ['mccormick.com', 'keebler.com', 'herrs.com', 'liquiddeath.com', 'yerbamadre.com', 'guayaki.com'],
+      categoryTerms: ['food', 'beverage', 'snack', 'chips', 'pretzels', 'popcorn', 'ingredient', 'flavor', 'packaging', 'case pack', 'batch'],
+      evidenceTerms: ['ingredient readiness', 'packaging timing', 'line continuity', 'finished-good availability', 'retail replenishment', 'packaged snack availability']
     },
     recordRoles: {
       required: ['customer', 'sales_order', 'finished_food_or_batch_item', 'ingredient_or_component_item'],
@@ -301,8 +301,8 @@ const LANE_PACKS = Object.freeze([
       invalid: ['style_matrix_or_availability_flow', 'dealer_availability_or_replenishment_flow']
     },
     vocabulary: {
-      allowed: ['ingredient readiness', 'formula', 'batch', 'packaging timing', 'finished-good availability'],
-      forbidden: ['style matrix', 'dealer allocation', 'equipment routing unless WIP is explicit']
+      allowed: ['ingredient readiness', 'formula', 'batch', 'packaging timing', 'finished-good availability', 'packaged snack availability', 'retail replenishment'],
+      forbidden: ['style matrix', 'dealer allocation', 'work order', 'service parts', 'equipment routing unless WIP is explicit']
     },
     liveDemo: {
       proofMove: 'Open the finished food or beverage item and prove ingredient, packaging, formula/batch, and finished-good readiness.',

@@ -4321,7 +4321,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     else if (/manufacturing|assembly|work order|routing|wip/.test(text) && (enableManufacturing || enableWip)) modeKey = enableWip ? 'wip_manufacturing' : 'manufacturing';
     if (!modeKey && !enableManufacturing && !enableWip) modeKey = 'distribution_replenishment';
     if (!modeKey) modeKey = '';
-    const prospect = idbProofNameProspectW417(str(opts && opts.prospect) || 'IDB Prospect');
+    const prospect = idbCanonicalProspectNameW422(str(opts && opts.prospect) || 'IDB Prospect', opts && opts.website);
     const prospectSpecificProofNames = idbProspectSpecificProofNamesForModeW414(prospect, modeKey, opts || {});
     const finalResultRoleLabels = idbFinalResultRoleLabelsForModeW414(modeKey);
     const prospectSpecificProofNamingMarker = {
@@ -4449,9 +4449,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return null;
   }
 
+  function idbCanonicalProspectNameW422(prospect, website) {
+    const domain = extractDomain(website || '');
+    let clean = idbProofNameProspectW417(prospect);
+    clean = clean
+      .replace(/\b(?:times\s+)?(?:one|two|three|four|five|six|seven|eight|nine|ten|\d+)\b/ig, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (/herrs\.com$/i.test(domain) || /^herr'?s$/i.test(clean)) return 'Herr Foods';
+    return trimLen(clean || idbProofNameProspectW417(prospect) || 'IDB Prospect', 50);
+  }
+
   function idbProofNameProspectW417(prospect) {
     const clean = str(prospect)
       .replace(/\bW\d{2,5}\b/ig, ' ')
+      .replace(/\b(?:times\s+)?(?:one|two|three|four|five|six|seven|eight|nine|ten|\d+)\b/ig, ' ')
       .replace(/\b(reduced|rerun|retry|smoke|test|copy|demo)\b/ig, ' ')
       .replace(/\s+/g, ' ')
       .trim();
@@ -4487,7 +4499,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function idbNamingProspect(names, opts) {
     const fromOpts = str(opts && opts.prospect);
-    if (fromOpts) return trimLen(fromOpts, 50);
+    if (fromOpts) return idbCanonicalProspectNameW422(fromOpts, opts && opts.website);
     const candidates = [
       names && names.prospect,
       names && names.customerName,
@@ -4591,6 +4603,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (role === 'hero_item_name') return `${prospect} Style SKU`;
       if (role === 'assembly_name') return `${prospect} Omnichannel Availability Flow`;
       return `${prospect} Size / Color Variant`;
+    }
+    if (modeKey === 'food_replenishment') {
+      if (role === 'hero_item_name') return `${prospect} Snack Product Availability SKU`;
+      if (role === 'assembly_name') return `${prospect} Retail Replenishment Flow`;
+      return `${prospect} Packaging Supply Support SKU`;
     }
     if (role === 'hero_item_name') return `${prospect} Product Availability SKU`;
     if (role === 'assembly_name') return `${prospect} Availability Flow`;
@@ -4718,25 +4735,26 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function generateNamingPack({ prospect, website, signalText }) {
+    const canonicalProspect = idbCanonicalProspectNameW422(prospect, website);
     const clippedSignal = String(signalText || '').slice(0, 1200);
-    const vertical = detectNamingVertical({ prospect, website, signalText: clippedSignal });
+    const vertical = detectNamingVertical({ prospect: canonicalProspect, website, signalText: clippedSignal });
     if (vertical === 'retail') {
-      const retailHay = String([prospect || '', website || '', clippedSignal || ''].join(' ')).toLowerCase();
+      const retailHay = String([canonicalProspect || '', website || '', clippedSignal || ''].join(' ')).toLowerCase();
       const isHardgoodsRetail = /gordonandsmith|gordon and smith|yeti|skate|skateboard|longboard|surf|surfboard|boardsport|deck|wheel|wheels|truck|trucks|bearing|bearings|dealer locator|find a dealer|dealers|hardgoods|cooler|coolers|drinkware|tumbler|outdoor gear|gear case|cargo|backpack/.test(retailHay)
         && !/apparel|footwear|fashion|style|colorway|size curve|streetwear/.test(retailHay);
       return {
         _source: isHardgoodsRetail ? 'deterministic-retail-hardgoods-safe' : 'deterministic-retail-apparel-safe',
         _signalLen: clippedSignal.length,
         industry_category: 'Retail & Omnichannel Fulfillment',
-        hero_item_name: isHardgoodsRetail ? `${prospect} Channel Availability SKU` : `${prospect} Style SKU`,
-        assembly_name: isHardgoodsRetail ? `${prospect} Dealer Replenishment Flow` : `${prospect} Omnichannel Availability Flow`,
+        hero_item_name: isHardgoodsRetail ? `${canonicalProspect} Channel Availability SKU` : `${canonicalProspect} Style SKU`,
+        assembly_name: isHardgoodsRetail ? `${canonicalProspect} Dealer Replenishment Flow` : `${canonicalProspect} Omnichannel Availability Flow`,
         component_names: [
-          isHardgoodsRetail ? `${prospect} Allocation Support SKU` : `${prospect} Core Style`,
-          isHardgoodsRetail ? `${prospect} Fulfillment Support SKU` : `${prospect} Size / Color Variant`,
-          isHardgoodsRetail ? `${prospect} Product Availability SKU` : `${prospect} Channel Allocation Pack`
+          isHardgoodsRetail ? `${canonicalProspect} Allocation Support SKU` : `${canonicalProspect} Core Style`,
+          isHardgoodsRetail ? `${canonicalProspect} Fulfillment Support SKU` : `${canonicalProspect} Size / Color Variant`,
+          isHardgoodsRetail ? `${canonicalProspect} Product Availability SKU` : `${canonicalProspect} Channel Allocation Pack`
         ],
-        bom_name: isHardgoodsRetail ? `Product / SKU Structure - ${prospect}` : `Style / SKU Structure - ${prospect}`,
-        bom_revision_name: `Revision 1 - ${prospect}`
+        bom_name: isHardgoodsRetail ? `Product / SKU Structure - ${canonicalProspect}` : `Style / SKU Structure - ${canonicalProspect}`,
+        bom_revision_name: `Revision 1 - ${canonicalProspect}`
       };
     }
     if (vertical === 'food') {
@@ -4744,15 +4762,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         _source: 'deterministic-food-safe',
         _signalLen: clippedSignal.length,
         industry_category: 'Food, Beverage & CPG Manufacturing',
-        hero_item_name: `${prospect} Finished Good`,
-        assembly_name: `${prospect} Production Line`,
+        hero_item_name: `${canonicalProspect} Finished Good`,
+        assembly_name: `${canonicalProspect} Production Line`,
         component_names: [
-          `${prospect} Ingredient Blend`,
-          `${prospect} Packaging Component`,
-          `${prospect} Finished Case Pack`
+          `${canonicalProspect} Ingredient Blend`,
+          `${canonicalProspect} Packaging Component`,
+          `${canonicalProspect} Finished Case Pack`
         ],
-        bom_name: `Ingredient / Packaging Structure - ${prospect}`,
-        bom_revision_name: `Revision 1 - ${prospect}`
+        bom_name: `Ingredient / Packaging Structure - ${canonicalProspect}`,
+        bom_revision_name: `Revision 1 - ${canonicalProspect}`
       };
     }
     if (vertical === 'services') {
@@ -4760,15 +4778,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         _source: 'deterministic-services-safe',
         _signalLen: clippedSignal.length,
         industry_category: 'Field Service & Inventory Management',
-        hero_item_name: `${prospect} Service Kit`,
-        assembly_name: `${prospect} Service Replenishment Flow`,
+        hero_item_name: `${canonicalProspect} Service Kit`,
+        assembly_name: `${canonicalProspect} Service Replenishment Flow`,
         component_names: [
-          `${prospect} Consumables Pack`,
-          `${prospect} Replacement Parts Kit`,
-          `${prospect} Safety Gear Set`
+          `${canonicalProspect} Consumables Pack`,
+          `${canonicalProspect} Replacement Parts Kit`,
+          `${canonicalProspect} Safety Gear Set`
         ],
-        bom_name: `Service Replenishment Support - ${prospect}`,
-        bom_revision_name: `Revision 1 - ${prospect}`
+        bom_name: `Service Replenishment Support - ${canonicalProspect}`,
+        bom_revision_name: `Revision 1 - ${canonicalProspect}`
       };
     }
     if (vertical === 'life_sciences') {
@@ -4776,15 +4794,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         _source: 'deterministic-life-sciences-safe',
         _signalLen: clippedSignal.length,
         industry_category: 'Life Sciences & Diagnostics Manufacturing',
-        hero_item_name: `${prospect} Instrument Kit`,
-        assembly_name: `${prospect} Controlled Instrument Build`,
+        hero_item_name: `${canonicalProspect} Instrument Kit`,
+        assembly_name: `${canonicalProspect} Controlled Instrument Build`,
         component_names: [
-          `${prospect} Module Integration`,
-          `${prospect} Software Activation`,
-          `${prospect} Final Packaging & QC`
+          `${canonicalProspect} Module Integration`,
+          `${canonicalProspect} Software Activation`,
+          `${canonicalProspect} Final Packaging & QC`
         ],
-        bom_name: `Component Structure - ${prospect}`,
-        bom_revision_name: `Revision 1 - ${prospect}`
+        bom_name: `Component Structure - ${canonicalProspect}`,
+        bom_revision_name: `Revision 1 - ${canonicalProspect}`
       };
     }
     if (vertical === 'industrial') {
@@ -4792,30 +4810,30 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         _source: 'deterministic-industrial-safe',
         _signalLen: clippedSignal.length,
         industry_category: 'Heavy Machinery Manufacturing',
-        hero_item_name: `${prospect} Machine Unit`,
-        assembly_name: `${prospect} Controlled Assembly Execution`,
+        hero_item_name: `${canonicalProspect} Machine Unit`,
+        assembly_name: `${canonicalProspect} Controlled Assembly Execution`,
         component_names: [
-          `${prospect} Frame Welding`,
-          `${prospect} Hydraulic System Installation`,
-          `${prospect} Final Engine Integration`
+          `${canonicalProspect} Frame Welding`,
+          `${canonicalProspect} Hydraulic System Installation`,
+          `${canonicalProspect} Final Engine Integration`
         ],
-        bom_name: `Component Structure - ${prospect}`,
-        bom_revision_name: `Revision 1 - ${prospect}`
+        bom_name: `Component Structure - ${canonicalProspect}`,
+        bom_revision_name: `Revision 1 - ${canonicalProspect}`
       };
     }
     return {
       _source: 'deterministic',
       _signalLen: clippedSignal.length,
       industry_category: '',
-      hero_item_name: `${prospect} Finished Good`,
-      assembly_name: `${prospect} Assembly`,
+      hero_item_name: `${canonicalProspect} Finished Good`,
+      assembly_name: `${canonicalProspect} Assembly`,
       component_names: [
-        `${prospect} Component A`,
-        `${prospect} Component B`,
-        `${prospect} Component C`
+        `${canonicalProspect} Component A`,
+        `${canonicalProspect} Component B`,
+        `${canonicalProspect} Component C`
       ],
-      bom_name: `BOM - ${prospect}`,
-      bom_revision_name: `Revision 1 - ${prospect}`
+      bom_name: `BOM - ${canonicalProspect}`,
+      bom_revision_name: `Revision 1 - ${canonicalProspect}`
     };
   }
 
@@ -5729,7 +5747,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function ensureIdbCustomerForResult({ prospect, website, subsidiaryId, extId }) {
     const externalId = `IDB_CUSTOMER_${safeFileToken(extId)}`;
     let id = findByExternalId('customer', externalId);
-    const name = trimLen(`${prospect} Customer Account`, 83);
+    const name = trimLen(`${idbCanonicalProspectNameW422(prospect, website)} Customer Account`, 83);
     if (!id) {
       const rec = record.create({ type: record.Type.CUSTOMER, isDynamic: false });
       rec.setValue({ fieldId: 'externalid', value: externalId });

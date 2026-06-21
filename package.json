@@ -183,7 +183,9 @@
     "harness:executable-consultant-flow-w418": "node archive/tools/run_w418_executable_consultant_flow_harness.js",
     "harness:one-click-build-records-w419": "node archive/tools/run_w419_one_click_build_records_harness.js",
     "harness:optional-work-order-warning-w420": "node archive/tools/run_w420_optional_work_order_warning_harness.js",
-    "harness:w144-endpoint-repair-w421": "node archive/tools/run_w421_w144_endpoint_repair_harness.js"
+    "harness:w144-endpoint-repair-w421": "node archive/tools/run_w421_w144_endpoint_repair_harness.js",
+    "harness:default-toggles-food-routing-naming-w422": "node archive/tools/run_w422_default_toggles_food_routing_naming_harness.js",
+    "harness:website-first-unknown-domain-w423": "node archive/tools/run_w423_website_first_unknown_domain_harness.js"
   },
   "keywords": [
     "netsuite",

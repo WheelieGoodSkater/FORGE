@@ -20,6 +20,29 @@ function read(filePath) {
   return fs.readFileSync(filePath, 'utf8');
 }
 
+function drawerVersionAtLeast(source, minimumVersion, minimumBlock) {
+  const userscriptVersion = source.match(/\/\/ @version\s+([0-9.]+)/);
+  const runtimeVersion = source.match(/const DRAWER_USERSCRIPT_VERSION = '([0-9.]+)'/);
+  const runtimeBlock = source.match(/const CURRENT_UX_BLOCK_W346 = 'W(\d+)'/);
+  const compareVersion = (actual, minimum) => {
+    const actualParts = String(actual || '').split('.').map((part) => Number(part) || 0);
+    const minimumParts = String(minimum || '').split('.').map((part) => Number(part) || 0);
+    const length = Math.max(actualParts.length, minimumParts.length);
+    for (let index = 0; index < length; index += 1) {
+      const actualPart = actualParts[index] || 0;
+      const minimumPart = minimumParts[index] || 0;
+      if (actualPart !== minimumPart) return actualPart > minimumPart;
+    }
+    return true;
+  };
+  return userscriptVersion &&
+    runtimeVersion &&
+    userscriptVersion[1] === runtimeVersion[1] &&
+    compareVersion(runtimeVersion[1], minimumVersion) &&
+    runtimeBlock &&
+    Number(runtimeBlock[1]) >= minimumBlock;
+}
+
 function stripTags(html) {
   return String(html || '')
     .replace(/<[^>]+>/g, ' ')
@@ -127,9 +150,7 @@ function main() {
   const visible = stripTags(html);
 
   assertCase(results, 'w420-version-marker-advanced',
-    (drawer.includes('// @version      1.0.29') || drawer.includes('// @version      1.0.30')) &&
-      (drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.29';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.30';")) &&
-      (drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W420';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W421';")),
+    drawerVersionAtLeast(drawer, '1.0.29', 420),
     'Drawer should show W420 or later for install/update clarity while preserving optional Work Order warning recovery.');
 
   assertCase(results, 'w420-filecabinet-drawer-synced',

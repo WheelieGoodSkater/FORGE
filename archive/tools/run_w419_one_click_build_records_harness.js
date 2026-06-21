@@ -115,9 +115,9 @@ function main() {
   const preparedPrimary = primaryBeforeSupport(preparedNeedsConfirmation.html);
 
   assertCase(results, 'w419-version-marker-advanced',
-    (drawer.includes('// @version      1.0.28') || drawer.includes('// @version      1.0.29')) &&
-      (drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.28';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.29';")) &&
-      (drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W419';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W420';")),
+    (drawer.includes('// @version      1.0.28') || drawer.includes('// @version      1.0.29') || drawer.includes('// @version      1.0.30')) &&
+      (drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.28';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.29';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.30';")) &&
+      (drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W419';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W420';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W421';")),
     'Drawer should show W419 or later for install/update clarity while preserving one-click behavior.');
 
   assertCase(results, 'w419-filecabinet-drawer-synced',

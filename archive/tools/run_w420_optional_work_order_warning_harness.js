@@ -127,10 +127,10 @@ function main() {
   const visible = stripTags(html);
 
   assertCase(results, 'w420-version-marker-advanced',
-    drawer.includes('// @version      1.0.29') &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.29';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W420';"),
-    'Drawer should show W420 / 1.0.29 for install/update clarity.');
+    (drawer.includes('// @version      1.0.29') || drawer.includes('// @version      1.0.30')) &&
+      (drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.29';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.30';")) &&
+      (drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W420';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W421';")),
+    'Drawer should show W420 or later for install/update clarity while preserving optional Work Order warning recovery.');
 
   assertCase(results, 'w420-filecabinet-drawer-synced',
     drawer === fileCabinetDrawer,

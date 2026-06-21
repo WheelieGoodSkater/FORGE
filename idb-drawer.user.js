@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.29
+// @version      1.0.30
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.29';
-  const CURRENT_UX_BLOCK_W346 = 'W420';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.30';
+  const CURRENT_UX_BLOCK_W346 = 'W421';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -27389,6 +27389,19 @@
     const submitBuildRecordsOnce = async (button, options) => {
       const opts = options || {};
       syncRealAdapterFieldsFromDom();
+      const endpointBeforeRepair = state.integratedBuildAdapterConfig && state.integratedBuildAdapterConfig.endpointUrl || '';
+      ensureProductionBuildSavedAdminConfig(state);
+      state.integratedBuildAdapterConfig = applySelectedAdapterProfileToConfigW263(state.integratedBuildAdapterConfig || {}, opts.pageContext || currentPageContext());
+      if (!endpointBeforeRepair && state.integratedBuildAdapterConfig && state.integratedBuildAdapterConfig.endpointUrl) {
+        persistProductionBuildSavedAdminConfig(state);
+        trace('w421_released_w144_endpoint_repaired_before_submit', {
+          endpointConfigured: true,
+          endpointSource: 'released_w144_adapter_profile',
+          selectedAdapterProfileId: state.integratedBuildAdapterConfig.selectedAdapterProfileId || '',
+          noDrawerWrites: true,
+          noActiveOpenLinksWithoutRealUrls: true
+        });
+      }
       saveState(state);
       const pageContext = opts.pageContext || currentPageContext();
       const lane = opts.lane || getLane(state);

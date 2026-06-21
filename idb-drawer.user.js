@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.25
+// @version      1.0.27
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.25';
-  const CURRENT_UX_BLOCK_W346 = 'W413';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.27';
+  const CURRENT_UX_BLOCK_W346 = 'W418';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -22114,6 +22114,15 @@
         opacity: .55;
         cursor: not-allowed;
       }
+      .idb-w418-run-options {
+        border: 1px solid #d8e1e6;
+        border-radius: 7px;
+        background: #f8fbfc;
+        padding: 9px;
+      }
+      .idb-w418-run-options .idb-toggle-grid {
+        margin-top: 8px;
+      }
       .idb-w416-prereq-card {
         border: 1px solid #d8e1e6;
         border-left: 4px solid #7a5f15;
@@ -24024,22 +24033,22 @@
     else if (briefPrepared) stage = 'confirm_path';
     const labels = {
       enter_request: {
-        title: 'Enter the sales request',
-        copy: 'Add customer name, website, and messy notes. FORGE will prepare the lane, story, and build path from there.',
-        next: readiness.tone === 'ready' ? 'Build demo plan' : 'Complete customer, website, and notes'
+        title: 'Enter the FORGE request',
+        copy: 'Add customer name, website, messy notes, and build toggles. FORGE prepares the lane, story, and proof path from there.',
+        next: readiness.tone === 'ready' ? 'Run FORGE setup' : 'Complete customer, website, and notes'
       },
       confirm_path: {
-        title: 'Confirm the demo path',
-        copy: 'FORGE prepared a recommendation. Confirm it before build, ROI, competitive, or run guidance becomes primary.',
-        next: 'Confirm demo path'
+        title: 'Confirm the FORGE path',
+        copy: 'FORGE prepared a recommendation. Confirm it before records are built or live proof guidance becomes primary.',
+        next: 'Confirm path'
       },
       build_records: {
-        title: 'Build demo records',
-        copy: 'Use the selected toggles, build records, then wait for verified Open links. ROI and run stay secondary until records return.',
+        title: 'Run the FORGE build',
+        copy: 'Use the selected toggles, build records, then wait for verified Open links. The cockpit becomes primary when records return.',
         next: w262BuildUx.actions && w262BuildUx.actions.showBuildButton ? 'Build records' : 'Review build readiness'
       },
       waiting_for_records: {
-        title: 'Wait for returned records',
+        title: 'FORGE is building records',
         copy: 'FORGE submitted the request. Refresh build status until completed record names and Open links return.',
         next: 'Refresh build status'
       },
@@ -24405,13 +24414,13 @@
         state: 'ready_to_prepare',
         statusLabel: 'Request ready',
         stepLabel: 'Prepare',
-        primaryLabel: 'Build demo plan',
+        primaryLabel: 'Run FORGE setup',
         primaryAction: 'build_demo_plan',
         primaryDisabled: false,
         secondaryLabel: 'Autosaved locally',
-        summaryActionLabel: 'Build demo plan',
-        nextAction: 'Build demo plan.',
-        nextCopy: 'The request is ready. Build the demo plan from the website, request, and proof needs.',
+        summaryActionLabel: 'Run FORGE setup',
+        nextAction: 'Run FORGE setup.',
+        nextCopy: 'The request is ready. Prepare the demo path from the website, notes, and selected toggles.',
         demoPathLabel: 'Build demo plan',
         demoPathCopy: 'One click saves the request, prepares the brief, and confirms the demo path when the evidence is safe.',
         showIntake: true
@@ -24422,12 +24431,12 @@
         state: 'prepared_needs_confirmation',
         statusLabel: 'Brief prepared',
         stepLabel: 'Confirm',
-        primaryLabel: 'Confirm demo path',
+        primaryLabel: 'Confirm FORGE path',
         primaryAction: 'confirm_demo_path',
         primaryDisabled: false,
         secondaryLabel: 'Edit request',
-        summaryActionLabel: 'Confirm demo path',
-        nextAction: 'Confirm demo path.',
+        summaryActionLabel: 'Confirm FORGE path',
+        nextAction: 'Confirm FORGE path.',
         nextCopy: 'Confirm the recommended lane before building records, ROI, competitive, or run guidance proceeds.',
         demoPathLabel: `${consultantLabel(handoff.selectedPack)} / ${handoff.selectedScenario}`,
         demoPathCopy: 'Confirm the demo path before building records.',
@@ -24507,7 +24516,7 @@
           <button class="idb-secondary" data-idb-view="review">Build records</button>
           <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
         `
-        : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsLaneReview ? 'disabled' : ''}>Confirm demo path</button>`;
+        : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsLaneReview ? 'disabled' : ''}>Confirm FORGE path</button>`;
       return `
         <div class="idb-card idb-accent idb-compact idb-w98-request-summary">
           <div class="idb-section-title">Request summary</div>
@@ -24551,10 +24560,10 @@
     }
     return `
       <div class="idb-card idb-accent" aria-label="Setup builder">
-        <div class="idb-section-title">Build request</div>
+        <div class="idb-section-title">FORGE request</div>
         <div class="idb-chip-row">
           <span class="idb-chip idb-${readiness.tone}">${escapeHtml(flow.statusLabel)}</span>
-          <span class="idb-mini-chip">3 required inputs</span>
+          <span class="idb-mini-chip">3 inputs + toggles</span>
         </div>
         <div class="idb-intake-steps">
           <div class="idb-intake-step ${intake.customer ? 'idb-done' : ''}">
@@ -24580,6 +24589,11 @@
           <label class="idb-label">Conversation Notes
             <textarea class="idb-textarea" data-idb-intake="notes" placeholder="Who is the buyer, what is breaking, what should the demo prove, and what decision are they trying to make?">${escapeHtml(intake.notes)}</textarea>
           </label>
+          <div class="idb-w418-run-options" aria-label="FORGE run options">
+            <div class="idb-status-key">Run options</div>
+            <div class="idb-copy">Choose what FORGE should include before the build path is prepared.</div>
+            ${renderToggleControls(state, lane)}
+          </div>
           <details class="idb-technical-details idb-w355-operator-website-evidence">
             <summary>Optional website/category evidence</summary>
             <div class="idb-copy">Paste public homepage, category, product, title, or meta text when the resolver is limited. This can improve website confidence only; it cannot create records, validate Open links, or write transactions.</div>
@@ -24635,8 +24649,8 @@
                 <button class="idb-secondary" data-idb-view="review">Build records</button>
                 <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
               `
-              : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext || intakeGuide.needsLaneReview ? 'disabled' : ''}>Confirm demo path</button>`
-            : `<button class="idb-primary" data-idb-build-demo-plan ${flow.primaryDisabled ? 'disabled' : ''}>Build demo plan</button>`}
+              : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext || intakeGuide.needsLaneReview ? 'disabled' : ''}>Confirm FORGE path</button>`
+            : `<button class="idb-primary" data-idb-build-demo-plan ${flow.primaryDisabled ? 'disabled' : ''}>Run FORGE setup</button>`}
           ${briefPrepared ? '<button class="idb-secondary" data-idb-edit-setup>Edit request</button>' : '<span class="idb-mini-chip">Draft autosaved</span>'}
           <button class="idb-secondary" data-idb-toggle-lanes>Change lane manually</button>
         </div>
@@ -25274,10 +25288,10 @@
                 <button class="idb-secondary" data-idb-view="review">Build records</button>
           <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
         `
-        : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(lane.id)}">Confirm demo path</button>`;
+        : `<button class="idb-primary" data-idb-accept-lane-build="${escapeHtml(lane.id)}">Confirm FORGE path</button>`;
     const classificationLabel = briefPrepared ? (evidence.recommendedLaneName || lane.name) : 'Waiting for brief';
     const confidenceLabel = briefPrepared ? postImport.planConfidenceLabel : 'Not prepared';
-    const confidenceDetail = briefPrepared ? postImport.planConfidenceDetail : 'Build demo plan';
+    const confidenceDetail = briefPrepared ? postImport.planConfidenceDetail : 'Run FORGE setup';
     const advisoryChip = briefPrepared && postImport.advisoryConfidenceDetail
       ? `<span class="idb-mini-chip">${escapeHtml(postImport.advisoryConfidenceDetail)}</span>`
       : '';
@@ -26471,65 +26485,54 @@
     }
     return `
       ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
-      <div class="idb-card idb-accent idb-w97-run-selector">
-        <div class="idb-section-title">Supporting NetSuite path</div>
-        <div class="idb-copy">Use this when you want the full ordered path and live-control detail behind the cockpit.</div>
-        ${renderW361NetSuitePathFlow(finalNavigation)}
-        ${renderW375StoryContractProofPath(storyContractW373)}
-        <div class="idb-section-title">Live controls</div>
-        <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
-          ${renderRunActionChips(state)}
+      <details class="idb-technical-details idb-w417-support-troubleshoot">
+        <summary>Support / troubleshoot</summary>
+        <div class="idb-card idb-accent idb-w97-run-selector">
+          <div class="idb-section-title">Supporting NetSuite path</div>
+          <div class="idb-copy">Use this only when you need the full ordered path, live controls, or evidence detail behind the cockpit.</div>
+          ${renderW361NetSuitePathFlow(finalNavigation)}
+          ${renderW375StoryContractProofPath(storyContractW373)}
+          <details class="idb-technical-details idb-w417-live-control-support">
+            <summary>Live controls and full script</summary>
+            <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
+              ${renderRunActionChips(state)}
+            </div>
+            ${renderW361ScriptChips(script)}
+            <div class="idb-run-action-card idb-w413-run-objective">
+              <div class="idb-status-key">Presenter objective</div>
+              <div class="idb-strong">${escapeHtml(script.title)}</div>
+              <div class="idb-copy">${escapeHtml(script.decision || 'Use the selected live control and the Say / Show / Close steps above to land the next decision.')}</div>
+            </div>
+            <div class="idb-script-grid">
+              <div class="idb-script-cell">
+                <div class="idb-status-key">Say</div>
+                <div>${escapeHtml(script.say)}</div>
+              </div>
+              <div class="idb-script-cell">
+                <div class="idb-status-key">Show</div>
+                <div>${escapeHtml(script.show)}</div>
+              </div>
+              <div class="idb-script-cell">
+                <div class="idb-status-key">Close</div>
+                <div>${escapeHtml(script.close)}</div>
+              </div>
+            </div>
+          </details>
+          <details class="idb-technical-details idb-w367-run-competitive-detail">
+            <summary>Competitive cue</summary>
+            ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
+          </details>
+          ${renderW361ImportedProofRecords(finalNavigation)}
+          ${resolverLimited ? `
+            <div class="idb-run-action-card idb-w353-resolver-limited">
+              <div class="idb-status-key">Website read</div>
+              <div class="idb-strong">Resolver limited</div>
+              <div class="idb-copy">${escapeHtml(resolverLimitedCopyW353(websiteEvidence))}</div>
+              ${advisorySupported ? `<div class="idb-copy"><strong>${escapeHtml(advisory.visualLabel)}:</strong> Advisory inference supports the lane, but it is not public website proof.</div>` : ''}
+            </div>
+          ` : ''}
+          ${consultantStorySurfaceHtml}
         </div>
-        ${renderW361ScriptChips(script)}
-        <details class="idb-technical-details idb-w367-run-competitive-detail">
-          <summary>Competitive cue</summary>
-          ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
-        </details>
-        <div class="idb-run-action-card idb-w413-run-objective">
-          <div class="idb-status-key">Presenter objective</div>
-          <div class="idb-strong">${escapeHtml(script.title)}</div>
-          <div class="idb-copy">${escapeHtml(script.decision || 'Use the selected live control and the Say / Show / Close steps above to land the next decision.')}</div>
-        </div>
-        ${renderW361ImportedProofRecords(finalNavigation)}
-        ${resolverLimited ? `
-          <div class="idb-run-action-card idb-w353-resolver-limited">
-            <div class="idb-status-key">Website read</div>
-            <div class="idb-strong">Resolver limited</div>
-            <div class="idb-copy">${escapeHtml(resolverLimitedCopyW353(websiteEvidence))}</div>
-            ${advisorySupported ? `<div class="idb-copy"><strong>${escapeHtml(advisory.visualLabel)}:</strong> Advisory inference supports the lane, but it is not public website proof.</div>` : ''}
-          </div>
-        ` : ''}
-        ${consultantStorySurfaceHtml}
-      </div>
-      <details class="idb-technical-details idb-w56-run-script-first">
-        <summary>Full Say / Show / Close script</summary>
-        <div class="idb-card idb-accent">
-        <div class="idb-section-title">Presenter script detail</div>
-        <div class="idb-run-guide">
-          <div class="idb-run-move">${escapeHtml(script.title)}</div>
-          <div class="idb-copy">${escapeHtml(selectedMove)} / ${escapeHtml(lane.proofAnchor)}</div>
-        </div>
-        <div class="idb-script-grid">
-          <div class="idb-script-cell">
-            <div class="idb-status-key">Say</div>
-            <div>${escapeHtml(script.say)}</div>
-          </div>
-          <div class="idb-script-cell">
-            <div class="idb-status-key">Show</div>
-            <div>${escapeHtml(script.show)}</div>
-          </div>
-          <div class="idb-script-cell">
-            <div class="idb-status-key">Close</div>
-            <div>${escapeHtml(script.close)}</div>
-          </div>
-        </div>
-        <div class="idb-actions">
-          <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
-        </div>
-        </div>
-      </details>
-      <details class="idb-technical-details">
-        <summary>Audit: controls, moves, guardrails, and coaching</summary>
         <div class="idb-card idb-accent idb-live-control-first">
           <div class="idb-section-title">Selected action detail</div>
           <div class="idb-run-action-card">

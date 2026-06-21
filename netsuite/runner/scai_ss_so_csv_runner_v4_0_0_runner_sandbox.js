@@ -4306,23 +4306,27 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const enableManufacturing = !!(opts && opts.enableManufacturing === true);
     const enableWip = !!(opts && opts.enableWip === true);
     let modeKey = '';
-    if (/apparel_style_matrix|apparel|style|size\s*\/\s*color/.test(text)) modeKey = 'apparel_style_matrix';
-    if (/dealer_hardgoods|dealer|hardgoods|allocation/.test(text)) modeKey = 'dealer_hardgoods';
-    if (/distribution_replenishment|industrial_distribution|distribution|branch|replenishment|fulfillment|availability/.test(text)) modeKey = 'distribution_replenishment';
-    if (/food_batch_manufacturing|food|beverage|cpg|ingredient|formula|batch/.test(text) && enableManufacturing) modeKey = 'food_ingredient_manufacturing';
-    if (/manufacturing|assembly|work order|routing|wip/.test(text) && (enableManufacturing || enableWip)) modeKey = enableWip ? 'wip_manufacturing' : 'manufacturing';
+    if (laneId === 'industrial_equipment') modeKey = enableWip ? 'wip_manufacturing' : 'manufacturing';
+    else if (laneId === 'food_beverage' || laneId === 'products_cpg') modeKey = enableManufacturing ? 'food_ingredient_manufacturing' : 'food_replenishment';
+    else if (laneId === 'dealer_hardgoods') modeKey = 'dealer_hardgoods';
+    else if (laneId === 'apparel_accessories') modeKey = 'apparel_style_matrix';
+    else if (/apparel_style_matrix|apparel|style|size\s*\/\s*color/.test(text)) modeKey = 'apparel_style_matrix';
+    else if (/dealer_hardgoods|dealer|hardgoods|allocation/.test(text)) modeKey = 'dealer_hardgoods';
+    else if (/distribution_replenishment|industrial_distribution|distribution|branch|replenishment|fulfillment|availability/.test(text)) modeKey = 'distribution_replenishment';
+    else if (/food_batch_manufacturing|food|beverage|cpg|ingredient|formula|batch/.test(text) && enableManufacturing) modeKey = 'food_ingredient_manufacturing';
+    else if (/manufacturing|assembly|work order|routing|wip/.test(text) && (enableManufacturing || enableWip)) modeKey = enableWip ? 'wip_manufacturing' : 'manufacturing';
     if (!modeKey && !enableManufacturing && !enableWip) modeKey = 'distribution_replenishment';
     if (!modeKey) modeKey = '';
-    const prospect = str(opts && opts.prospect) || 'IDB Prospect';
-    const prospectSpecificProofNames = modeKey === 'distribution_replenishment'
-      ? idbDistributionProofNamesW341(prospect, opts || {})
-      : null;
+    const prospect = idbProofNameProspectW417(str(opts && opts.prospect) || 'IDB Prospect');
+    const prospectSpecificProofNames = idbProspectSpecificProofNamesForModeW414(prospect, modeKey, opts || {});
+    const finalResultRoleLabels = idbFinalResultRoleLabelsForModeW414(modeKey);
     const prospectSpecificProofNamingMarker = {
       schema: 'idb.runner-prospect-specific-proof-naming-marker.w341.v1',
       marker: prospectSpecificProofNames ? 'W341 prospect-specific proof naming active' : 'W341 prospect-specific proof naming inactive',
       active: !!prospectSpecificProofNames,
       modeKey,
-      proofNames: prospectSpecificProofNames
+      proofNames: prospectSpecificProofNames,
+      finalResultRoleLabels
     };
     return {
       schema: 'idb.runner-lane-vocabulary-policy.v1',
@@ -4336,11 +4340,135 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       invalidTerms,
       prospectSpecificProofNames,
       prospectSpecificProofNamingMarker,
-      finalResultRoleLabels: {
-        matrixProofItem: modeKey === 'distribution_replenishment' ? 'Branch Availability / Replenishment Flow' : '',
-        componentItem: modeKey === 'distribution_replenishment' ? 'Fulfillment Support SKU' : ''
-      }
+      finalResultRoleLabels
     };
+  }
+
+  function idbFinalResultRoleLabelsForModeW414(modeKey) {
+    if (modeKey === 'food_ingredient_manufacturing') {
+      return {
+        heroItem: 'Finished Food/Batch Item',
+        matrixProofItem: 'Formula or Batch Structure',
+        componentItem: 'Ingredient / Packaging Component'
+      };
+    }
+    if (modeKey === 'food_replenishment') {
+      return {
+        heroItem: 'Finished Good Item',
+        matrixProofItem: 'Promotion / Replenishment Readiness',
+        componentItem: 'Packaging / Supply Support'
+      };
+    }
+    if (modeKey === 'manufacturing') {
+      return {
+        heroItem: 'Configured Equipment Item',
+        matrixProofItem: 'Assembly / Component Readiness',
+        componentItem: 'Component Supply Item'
+      };
+    }
+    if (modeKey === 'wip_manufacturing') {
+      return {
+        heroItem: 'Configured Equipment Item',
+        matrixProofItem: 'WIP / Routing Readiness',
+        componentItem: 'Component Supply Item'
+      };
+    }
+    if (modeKey === 'dealer_hardgoods') {
+      return {
+        heroItem: 'Channel Availability SKU',
+        matrixProofItem: 'Dealer Replenishment Flow',
+        componentItem: 'Allocation Support SKU'
+      };
+    }
+    if (modeKey === 'apparel_style_matrix') {
+      return {
+        heroItem: 'Style SKU',
+        matrixProofItem: 'Omnichannel Availability Flow',
+        componentItem: 'Size / Color Variant'
+      };
+    }
+    return {
+      heroItem: 'Product SKU',
+      matrixProofItem: 'Branch Availability / Replenishment Flow',
+      componentItem: 'Fulfillment Support SKU'
+    };
+  }
+
+  function idbProspectSpecificProofNamesForModeW414(prospect, modeKey, opts) {
+    if (modeKey === 'distribution_replenishment') return idbDistributionProofNamesW341(prospect, opts || {});
+    const productSeed = idbProofNameProductSeedW417(opts || {}, 'Finished Good');
+    if (modeKey === 'food_ingredient_manufacturing') {
+      return {
+        schema: 'idb.runner-prospect-specific-proof-names.w414.v1',
+        proofNoun: productSeed,
+        heroItemName: trimLen(`${prospect} ${productSeed}`, 60),
+        matrixProofItemName: trimLen(`${prospect} Formula / Batch Readiness`, 60),
+        componentItemName: trimLen(`${prospect} Ingredient / Packaging Supply`, 60)
+      };
+    }
+    if (modeKey === 'food_replenishment') {
+      return {
+        schema: 'idb.runner-prospect-specific-proof-names.w414.v1',
+        proofNoun: productSeed,
+        heroItemName: trimLen(`${prospect} ${productSeed}`, 60),
+        matrixProofItemName: trimLen(`${prospect} Promotion Availability / Replenishment`, 60),
+        componentItemName: trimLen(`${prospect} Packaging / Inbound Supply`, 60)
+      };
+    }
+    if (modeKey === 'manufacturing' || modeKey === 'wip_manufacturing') {
+      return {
+        schema: 'idb.runner-prospect-specific-proof-names.w414.v1',
+        proofNoun: 'Configured Equipment',
+        heroItemName: trimLen(`${prospect} Configured Equipment`, 60),
+        matrixProofItemName: trimLen(modeKey === 'wip_manufacturing' ? `${prospect} WIP / Routing Readiness` : `${prospect} Assembly Readiness`, 60),
+        componentItemName: trimLen(`${prospect} Component Supply`, 60)
+      };
+    }
+    if (modeKey === 'dealer_hardgoods') {
+      return {
+        schema: 'idb.runner-prospect-specific-proof-names.w414.v1',
+        proofNoun: 'Channel Availability',
+        heroItemName: trimLen(`${prospect} Channel Availability SKU`, 60),
+        matrixProofItemName: trimLen(`${prospect} Dealer Replenishment Flow`, 60),
+        componentItemName: trimLen(`${prospect} Allocation Support SKU`, 60)
+      };
+    }
+    if (modeKey === 'apparel_style_matrix') {
+      return {
+        schema: 'idb.runner-prospect-specific-proof-names.w414.v1',
+        proofNoun: 'Style',
+        heroItemName: trimLen(`${prospect} Style SKU`, 60),
+        matrixProofItemName: trimLen(`${prospect} Omnichannel Availability Flow`, 60),
+        componentItemName: trimLen(`${prospect} Size / Color Variant`, 60)
+      };
+    }
+    return null;
+  }
+
+  function idbProofNameProspectW417(prospect) {
+    const clean = str(prospect)
+      .replace(/\bW\d{2,5}\b/ig, ' ')
+      .replace(/\b(reduced|rerun|retry|smoke|test|copy|demo)\b/ig, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return trimLen(clean || str(prospect) || 'IDB Prospect', 50);
+  }
+
+  function idbProofNameProductSeedW417(opts, fallback) {
+    const request = opts && opts.confirmedBuildRequestJson || {};
+    const demoPath = request.demoPath || {};
+    const candidates = [
+      demoPath.productSeed,
+      request.identity && request.identity.productSeed,
+      request.productSeed,
+      opts && opts.productSeed,
+      fallback
+    ].map(str).filter(Boolean);
+    const seed = candidates[0] || fallback || 'Proof Item';
+    return trimLen(seed
+      .replace(/\b(readiness|confidence|risk|reduced|demo)\b/ig, ' ')
+      .replace(/\s+/g, ' ')
+      .trim() || fallback || 'Proof Item', 40);
   }
 
   function idbNameHasPolicyForbiddenTerm(name, policy) {
@@ -4441,6 +4569,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const policy = arguments.length > 3 ? arguments[3] : null;
     const proofNames = policy && policy.prospectSpecificProofNames || null;
     if (modeKey === 'distribution_replenishment' && proofNames) {
+      if (role === 'hero_item_name') return proofNames.heroItemName;
+      if (role === 'assembly_name') return proofNames.matrixProofItemName;
+      return proofNames.componentItemName;
+    }
+    if (proofNames) {
       if (role === 'hero_item_name') return proofNames.heroItemName;
       if (role === 'assembly_name') return proofNames.matrixProofItemName;
       return proofNames.componentItemName;
@@ -5395,7 +5528,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       role: 'heroItem',
       type: 'inventoryitem',
       name: readRecordDisplayName('inventoryitem', args.ids && args.ids.heroItemId, resultNames.hero_item_name || `${prospect} Hero Item`),
-      internalId: args.ids && args.ids.heroItemId
+      internalId: args.ids && args.ids.heroItemId,
+      label: laneVocabularyPolicy && laneVocabularyPolicy.finalResultRoleLabels && laneVocabularyPolicy.finalResultRoleLabels.heroItem
     });
     const matrixProofItem = ensureIdbProofItemForResult({
       prospect,
@@ -5472,6 +5606,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         modeKey: laneVocabularyPolicy.modeKey,
         enableManufacturing: laneVocabularyPolicy.enableManufacturing,
         enableWip: laneVocabularyPolicy.enableWip,
+        finalResultRoleLabels: laneVocabularyPolicy.finalResultRoleLabels,
         prospectSpecificProofNames: laneVocabularyPolicy.prospectSpecificProofNames,
         prospectSpecificProofNamingMarker: laneVocabularyPolicy.prospectSpecificProofNamingMarker
       }
@@ -5500,6 +5635,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         modeKey: laneVocabularyPolicy.modeKey,
         enableManufacturing: laneVocabularyPolicy.enableManufacturing,
         enableWip: laneVocabularyPolicy.enableWip,
+        finalResultRoleLabels: laneVocabularyPolicy.finalResultRoleLabels,
         prospectSpecificProofNames: laneVocabularyPolicy.prospectSpecificProofNames,
         prospectSpecificProofNamingMarker: laneVocabularyPolicy.prospectSpecificProofNamingMarker
       },
@@ -5556,6 +5692,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         modeKey: laneVocabularyPolicy.modeKey,
         enableManufacturing: laneVocabularyPolicy.enableManufacturing,
         enableWip: laneVocabularyPolicy.enableWip,
+        finalResultRoleLabels: laneVocabularyPolicy.finalResultRoleLabels,
         prospectSpecificProofNames: laneVocabularyPolicy.prospectSpecificProofNames,
         prospectSpecificProofNamingMarker: laneVocabularyPolicy.prospectSpecificProofNamingMarker
       },
@@ -5618,16 +5755,20 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const roleLabel = laneVocabularyPolicy && laneVocabularyPolicy.finalResultRoleLabels && laneVocabularyPolicy.finalResultRoleLabels.matrixProofItem
       ? laneVocabularyPolicy.finalResultRoleLabels.matrixProofItem
       : 'Formula / Availability Context';
+    const policyProofName = laneVocabularyPolicy && laneVocabularyPolicy.prospectSpecificProofNames && laneVocabularyPolicy.prospectSpecificProofNames.matrixProofItemName
+      ? laneVocabularyPolicy.prospectSpecificProofNames.matrixProofItemName
+      : '';
     const fallbackName = laneVocabularyPolicy && laneVocabularyPolicy.modeKey === 'distribution_replenishment'
       ? `${prospect} Availability Flow`
       : `${prospect} Style / SKU Matrix Proof Item`;
-    const proofName = roleSpecificGeneratedItemName(roleLabel, name || fallbackName);
+    const proofName = policyProofName || roleSpecificGeneratedItemName(roleLabel, name || fallbackName);
     return ensureIdbInventoryItemForResult({
       externalId: buildUniqueExternalId('IDB_MATRIX', extId, runUniqueSuffix),
       name: buildUniqueRecordName(proofName, runUniqueSuffix, 83),
       subsidiaryId,
       locationId: null,
-      role: 'matrixProofItem'
+      role: 'matrixProofItem',
+      label: roleLabel
     });
   }
 
@@ -5635,7 +5776,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const roleLabel = laneVocabularyPolicy && laneVocabularyPolicy.finalResultRoleLabels && laneVocabularyPolicy.finalResultRoleLabels.componentItem
       ? laneVocabularyPolicy.finalResultRoleLabels.componentItem
       : 'Ingredient / Packaging Component';
-    const policyProofName = laneVocabularyPolicy && laneVocabularyPolicy.modeKey === 'distribution_replenishment' && laneVocabularyPolicy.prospectSpecificProofNames && laneVocabularyPolicy.prospectSpecificProofNames.componentItemName
+    const policyProofName = laneVocabularyPolicy && laneVocabularyPolicy.prospectSpecificProofNames && laneVocabularyPolicy.prospectSpecificProofNames.componentItemName
       ? laneVocabularyPolicy.prospectSpecificProofNames.componentItemName
       : '';
     const fallbackName = laneVocabularyPolicy && laneVocabularyPolicy.modeKey === 'distribution_replenishment'
@@ -5647,11 +5788,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       name: buildUniqueRecordName(componentName, runUniqueSuffix, 83),
       subsidiaryId,
       locationId: null,
-      role: 'componentItem'
+      role: 'componentItem',
+      label: roleLabel
     });
   }
 
-  function ensureIdbInventoryItemForResult({ externalId, name, subsidiaryId, locationId, role }) {
+  function ensureIdbInventoryItemForResult({ externalId, name, subsidiaryId, locationId, role, label }) {
     let id = findByExternalId('inventoryitem', externalId);
     if (!id) {
       id = saveIdbInventoryItemWithDuplicateFallbacks({
@@ -5673,7 +5815,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       role,
       type: 'inventoryitem',
       name: readRecordDisplayName('inventoryitem', id, name),
-      internalId: id
+      internalId: id,
+      label
     });
   }
 
@@ -5762,11 +5905,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function normalizeIdbRecord({ role, type, name, internalId, fallbackName }) {
+  function normalizeIdbRecord({ role, type, name, internalId, fallbackName, label }) {
     const id = Number(internalId || 0);
     const recordName = str(name) || str(fallbackName) || `${role || type} ${id}`;
     return {
       role: String(role || ''),
+      label: String(label || ''),
       type: String(type || ''),
       recordType: String(type || ''),
       name: recordName,

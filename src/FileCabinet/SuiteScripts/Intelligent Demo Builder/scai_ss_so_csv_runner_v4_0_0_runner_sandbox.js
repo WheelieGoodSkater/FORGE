@@ -4317,7 +4317,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     else if (/manufacturing|assembly|work order|routing|wip/.test(text) && (enableManufacturing || enableWip)) modeKey = enableWip ? 'wip_manufacturing' : 'manufacturing';
     if (!modeKey && !enableManufacturing && !enableWip) modeKey = 'distribution_replenishment';
     if (!modeKey) modeKey = '';
-    const prospect = str(opts && opts.prospect) || 'IDB Prospect';
+    const prospect = idbProofNameProspectW417(str(opts && opts.prospect) || 'IDB Prospect');
     const prospectSpecificProofNames = idbProspectSpecificProofNamesForModeW414(prospect, modeKey, opts || {});
     const finalResultRoleLabels = idbFinalResultRoleLabelsForModeW414(modeKey);
     const prospectSpecificProofNamingMarker = {
@@ -4396,11 +4396,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function idbProspectSpecificProofNamesForModeW414(prospect, modeKey, opts) {
     if (modeKey === 'distribution_replenishment') return idbDistributionProofNamesW341(prospect, opts || {});
+    const productSeed = idbProofNameProductSeedW417(opts || {}, 'Finished Good');
     if (modeKey === 'food_ingredient_manufacturing') {
       return {
         schema: 'idb.runner-prospect-specific-proof-names.w414.v1',
-        proofNoun: 'Finished Good',
-        heroItemName: trimLen(`${prospect} Finished Good`, 60),
+        proofNoun: productSeed,
+        heroItemName: trimLen(`${prospect} ${productSeed}`, 60),
         matrixProofItemName: trimLen(`${prospect} Formula / Batch Readiness`, 60),
         componentItemName: trimLen(`${prospect} Ingredient / Packaging Supply`, 60)
       };
@@ -4408,9 +4409,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (modeKey === 'food_replenishment') {
       return {
         schema: 'idb.runner-prospect-specific-proof-names.w414.v1',
-        proofNoun: 'Finished Good',
-        heroItemName: trimLen(`${prospect} Finished Good Availability`, 60),
-        matrixProofItemName: trimLen(`${prospect} Promo Replenishment Readiness`, 60),
+        proofNoun: productSeed,
+        heroItemName: trimLen(`${prospect} ${productSeed}`, 60),
+        matrixProofItemName: trimLen(`${prospect} Promotion Availability / Replenishment`, 60),
         componentItemName: trimLen(`${prospect} Packaging / Inbound Supply`, 60)
       };
     }
@@ -4442,6 +4443,32 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       };
     }
     return null;
+  }
+
+  function idbProofNameProspectW417(prospect) {
+    const clean = str(prospect)
+      .replace(/\bW\d{2,5}\b/ig, ' ')
+      .replace(/\b(reduced|rerun|retry|smoke|test|copy|demo)\b/ig, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return trimLen(clean || str(prospect) || 'IDB Prospect', 50);
+  }
+
+  function idbProofNameProductSeedW417(opts, fallback) {
+    const request = opts && opts.confirmedBuildRequestJson || {};
+    const demoPath = request.demoPath || {};
+    const candidates = [
+      demoPath.productSeed,
+      request.identity && request.identity.productSeed,
+      request.productSeed,
+      opts && opts.productSeed,
+      fallback
+    ].map(str).filter(Boolean);
+    const seed = candidates[0] || fallback || 'Proof Item';
+    return trimLen(seed
+      .replace(/\b(readiness|confidence|risk|reduced|demo)\b/ig, ' ')
+      .replace(/\s+/g, ' ')
+      .trim() || fallback || 'Proof Item', 40);
   }
 
   function idbNameHasPolicyForbiddenTerm(name, policy) {

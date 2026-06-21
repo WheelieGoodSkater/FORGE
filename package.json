@@ -178,7 +178,9 @@
     "harness:consultant-ux-design-gate-w413": "node archive/tools/run_w413_consultant_ux_design_gate_harness.js",
     "harness:naming-and-executable-cockpit-review-w414": "node archive/tools/run_w414_naming_and_executable_cockpit_review_harness.js",
     "harness:post-run-demo-cockpit-w415": "node archive/tools/run_w415_post_run_demo_cockpit_harness.js",
-    "harness:consultant-day-in-life-simplification-w416": "node archive/tools/run_w416_consultant_day_in_life_simplification_harness.js"
+    "harness:consultant-day-in-life-simplification-w416": "node archive/tools/run_w416_consultant_day_in_life_simplification_harness.js",
+    "harness:v2-cockpit-naming-recovery-w417": "node archive/tools/run_w417_v2_cockpit_naming_recovery_harness.js",
+    "harness:executable-consultant-flow-w418": "node archive/tools/run_w418_executable_consultant_flow_harness.js"
   },
   "keywords": [
     "netsuite",

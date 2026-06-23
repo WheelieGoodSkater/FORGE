@@ -28,22 +28,6 @@ The W423 run selected the correct broad Food/Beverage lane, but generic names an
 | w424-cockpit-gates-generic-names-as-review | PASS |
 | w424-no-live-smoke-or-upload-boundary | PASS |
 
-## Verification Commands
-```bash
-node --check idb-drawer.user.js
-node --check "src/FileCabinet/SuiteScripts/Intelligent Demo Builder/idb-drawer.user.js"
-node --check netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js
-node --check "src/FileCabinet/SuiteScripts/Intelligent Demo Builder/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js"
-node --check archive/tools/run_w424_forge_resurrection_hardening_harness.js
-npm run harness:forge-resurrection-hardening-w424
-npm run harness:consultant-ux-design-gate-w413
-npm run harness:one-click-build-records-w419
-npm run harness:optional-work-order-warning-w420
-npm run harness:w144-endpoint-repair-w421
-npm run harness:default-toggles-food-routing-naming-w422
-npm run harness:website-first-unknown-domain-w423
-```
-
 ## Boundaries
 - No live smoke was run.
 - No upload or deployment was performed.

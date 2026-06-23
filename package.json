@@ -186,7 +186,8 @@
     "harness:w144-endpoint-repair-w421": "node archive/tools/run_w421_w144_endpoint_repair_harness.js",
     "harness:default-toggles-food-routing-naming-w422": "node archive/tools/run_w422_default_toggles_food_routing_naming_harness.js",
     "harness:website-first-unknown-domain-w423": "node archive/tools/run_w423_website_first_unknown_domain_harness.js",
-    "harness:forge-resurrection-hardening-w424": "node archive/tools/run_w424_forge_resurrection_hardening_harness.js"
+    "harness:forge-resurrection-hardening-w424": "node archive/tools/run_w424_forge_resurrection_hardening_harness.js",
+    "harness:invalid-sub-location-guard-w425": "node archive/tools/run_w425_invalid_sub_location_guard_harness.js"
   },
   "keywords": [
     "netsuite",

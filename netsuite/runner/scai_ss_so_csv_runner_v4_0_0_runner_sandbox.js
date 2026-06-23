@@ -5920,6 +5920,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return /DUP_ITEM|Uniqueness error|same name\/parent combination|item with that name/i.test(String(text || ''));
   }
 
+  function isInvalidSubsidiaryLocationError(error) {
+    const text = [
+      error && error.name,
+      error && error.id,
+      error && error.code,
+      error && error.message,
+      error
+    ].filter(Boolean).join(' ');
+    return /INVALID_SUB|subsidiary restrictions|incompatible with those defined for location/i.test(String(text || ''));
+  }
+
   function saveIdbInventoryItemWithDuplicateFallbacks({ externalId, name, subsidiaryId, locationId, role }) {
     const baseExternalId = String(externalId || '').trim();
     const baseName = String(name || `${role || 'Generated'} Item`).trim();
@@ -5942,7 +5953,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         safeTry(() => rec.setValue({ fieldId: 'displayname', value: attemptName }));
         try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
         catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
-        if (locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: Number(locationId) }));
+        if (locationId) {
+          log.audit({
+            title: `IDB sidecar item location deferred [${VERSION}]`,
+            details: JSON.stringify({
+              role,
+              strategy: attempt.label,
+              locationId: Number(locationId),
+              reason: 'avoid_invalid_sub_location_save_blocker'
+            })
+          });
+        }
         const id = Number(rec.save({ enableSourcing: true, ignoreMandatoryFields: true }));
         log.audit({
           title: `IDB sidecar item save strategy [${VERSION}]`,
@@ -5955,6 +5976,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           name: String(e && (e.name || e.id) || ''),
           message: String(e && e.message || e || '').slice(0, 360)
         });
+        if (isInvalidSubsidiaryLocationError(e)) {
+          log.audit({
+            title: `IDB sidecar item invalid subsidiary/location guard [${VERSION}]`,
+            details: JSON.stringify({ role, strategy: attempt.label, locationId: Number(locationId || 0), error: failures[failures.length - 1] })
+          });
+        }
         if (!isDuplicateItemError(e)) throw e;
       }
     }

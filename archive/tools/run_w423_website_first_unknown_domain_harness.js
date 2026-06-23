@@ -100,10 +100,10 @@ function main() {
   });
 
   assertCase(results, 'w423-version-marker-advanced',
-    drawer.includes('// @version      1.0.34') &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.34';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W426';"),
-    'Drawer should show W426 / 1.0.34 while preserving W423 website-first behavior.');
+    drawer.includes('// @version      1.0.35') &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.35';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W427';"),
+    'Drawer should show W427 / 1.0.35 while preserving W423 website-first behavior.');
 
   assertCase(results, 'w423-filecabinet-drawer-synced',
     drawer === fileCabinetDrawer,
@@ -187,7 +187,7 @@ ${results.map((result) => `| ${result.id} | ${result.pass ? 'PASS' : 'FAIL'} |`)
 - Completed-result import validation and Open-link authority remain intact.
 
 ## Recommendation
-Install/deploy \`1.0.34 / W426\`, clear drawer state, and run one test using an unlisted-but-clear website category. The expected behavior is website-first lane choice, product-specific naming when website product names exist, notes-only value/story enrichment, and all build toggles off until the consultant chooses them.
+Install/deploy \`1.0.35 / W427\`, clear drawer state, and run one test using an unlisted-but-clear website category. The expected behavior is website-first lane choice, product-specific naming when website product names exist, notes-only value/story enrichment, and all build toggles off until the consultant chooses them.
 `;
   fs.writeFileSync(reportPath, report);
 

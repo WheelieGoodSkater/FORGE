@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.34
+// @version      1.0.35
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.34';
-  const CURRENT_UX_BLOCK_W346 = 'W426';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.35';
+  const CURRENT_UX_BLOCK_W346 = 'W427';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -10985,6 +10985,7 @@
           sourceRequestId: confirmedRequest.requestId || idempotencyToken,
           buildAttemptId: confirmedRequest.buildAttemptId || '',
           submittedAt: confirmedRequest.submittedAt || '',
+          confirmedBuildRequest: confirmedRequest,
           adapterResponseStatus: normalized.status,
           adapterSafeErrorState: normalized.status === 'adapter_transport_error_drawer_safe',
           resultCapture: Object.assign({}, transportResult && transportResult.resultCapture || {}, {
@@ -10994,6 +10995,7 @@
             sourceRequestId: confirmedRequest.requestId || idempotencyToken,
             buildAttemptId: confirmedRequest.buildAttemptId || '',
             submittedAt: confirmedRequest.submittedAt || '',
+            confirmedBuildRequest: confirmedRequest,
             resultCaptureStatus: normalized.resultCaptureStatus
           }),
         finalGeneratedNamesJson: null,
@@ -11206,8 +11208,19 @@
     const approvedEndpointModeReady = opts.approvedEndpointMode === 'approved_server_adapter_only' ||
       adapterConfig.approvedEndpointMode === 'approved_server_adapter_only' ||
       adapterConfig.adapterApproved === true;
-    const idempotencyToken = firstNonBlank(opts.idempotencyToken, adapterResult.idempotencyToken, adapterConfig.idempotencyToken);
-    const confirmedBuildRequest = opts.confirmedBuildRequest || confirmedBuildRequestJsonV1(state, lane, pageContext, recommendation);
+    const savedConfirmedBuildRequest = [
+      opts.confirmedBuildRequest,
+      adapterResult.confirmedBuildRequest,
+      adapterResult.resultCapture && adapterResult.resultCapture.confirmedBuildRequest
+    ].find((candidate) => candidate && candidate.schema === 'idb.confirmed-build-request.v1') || null;
+    const confirmedBuildRequest = savedConfirmedBuildRequest || confirmedBuildRequestJsonV1(state, lane, pageContext, recommendation);
+    const idempotencyToken = firstNonBlank(
+      opts.idempotencyToken,
+      adapterResult.idempotencyToken,
+      adapterResult.resultCapture && adapterResult.resultCapture.idempotencyToken,
+      confirmedBuildRequest && confirmedBuildRequest.requestId,
+      adapterConfig.idempotencyToken
+    );
     const buildAttemptId = firstNonBlank(
       opts.buildAttemptId,
       adapterResult.buildAttemptId,
@@ -11344,6 +11357,7 @@
         sourceRequestId,
         buildAttemptId,
         submittedAt,
+        confirmedBuildRequest,
         queueSubmitted: true,
         resultCapture: Object.assign({}, adapterResult.resultCapture || {}, normalized.resultCapture || {}, {
           runnerTaskId,
@@ -11351,6 +11365,7 @@
           sourceRequestId,
           buildAttemptId,
           submittedAt,
+          confirmedBuildRequest,
           status: completedResultPresent ? 'completed_result_capture_ready' : normalized.resultCaptureStatus || 'polling_pending',
           finalGeneratedNamesReady: completedResultPresent,
           finalGeneratedNamesJson: completedResultPresent ? completedResultJson : null
@@ -25666,8 +25681,12 @@
         w262BuildUx.stateFacts.runnerTaskCaptured === true ||
         w262BuildUx.stateFacts.completedResultReady === true;
       const buildSetupChip = approvedBuildTouched ? 'Build setup ready' : 'Preview only';
+      const resultCaptureStatus = savedRunnerResult && savedRunnerResult.resultCapture &&
+        (savedRunnerResult.resultCapture.lookupStatus || savedRunnerResult.resultCapture.status || savedRunnerResult.resultCapture.resultCaptureStatus) || '';
       const buildSetupCopy = w262BuildUx.stateFacts.runnerTaskCaptured
-        ? 'FORGE submitted through the approved build setup and is waiting for valid returned records.'
+        ? resultCaptureStatus === 'pending_transaction_resolution'
+          ? 'The runner returned the sidecar result; FORGE is waiting for the Sales Order import to resolve before Open links are shown.'
+          : 'FORGE submitted through the approved build setup and is waiting for valid returned records.'
         : approvedBuildTouched
           ? 'FORGE uses the approved build setup behind the scenes.'
           : 'Record creation is off in this install.';
@@ -25696,7 +25715,7 @@
             </div>
             <div class="idb-status-cell">
               <div class="idb-status-key">Links</div>
-              <div class="idb-status-value">${w262BuildUx.stateFacts.completedResultReady ? 'Ready to finish' : w262BuildUx.stateFacts.runnerTaskCaptured ? 'Waiting' : 'Hidden'}</div>
+              <div class="idb-status-value">${w262BuildUx.stateFacts.completedResultReady ? 'Ready' : resultCaptureStatus === 'pending_transaction_resolution' ? 'Resolving import' : w262BuildUx.stateFacts.runnerTaskCaptured ? 'Waiting' : 'Hidden'}</div>
               <div class="idb-copy">Open links appear only after real NetSuite records are returned.</div>
             </div>
           </div>
@@ -27808,10 +27827,31 @@
               }
             );
             if (pollControl.resultImportGuard && pollControl.resultImportGuard.importReady === true && completedResultJsonForImport) {
-              trace('completed_runner_result_ready_finish_build_required', {
-                status: pollControl.status,
-                completedResultStatus: pollControl.resultImportGuard.completedResultStatus,
-                finishBuildRequired: true,
+              const autoImport = idbPollsCompletedResultAndImportsFinalUrlsV1(
+                state,
+                lane,
+                pageContext,
+                recommendation,
+                {
+                  pollResult: w190Result,
+                  completedResultJson: completedResultJsonForImport,
+                  operatorChoseImport: true,
+                  actionId: 'import_completed_runner_result'
+                }
+              );
+              if (autoImport.statePatch && autoImport.statePatch.integratedBuildRunnerResult) {
+                state.integratedBuildRunnerResult = autoImport.statePatch.integratedBuildRunnerResult;
+              }
+              if (autoImport.statePatch && autoImport.statePatch.dccFinalNamingResult) {
+                state.dccFinalNamingResult = autoImport.statePatch.dccFinalNamingResult;
+              }
+              trace(autoImport.status === 'completed_result_imported_final_urls_ready'
+                ? 'completed_runner_result_auto_imported_on_refresh'
+                : 'completed_runner_result_auto_import_blocked_on_refresh', {
+                status: autoImport.status,
+                completedResultStatus: autoImport.importGuard && autoImport.importGuard.completedResultStatus || '',
+                commitAllowed: autoImport.importGuard && autoImport.importGuard.commitAllowed === true,
+                verifiedOpenLinkCount: autoImport.buildAndRunAfterImport && autoImport.buildAndRunAfterImport.verifiedOpenLinkCount || 0,
                 noDrawerWrites: true,
                 noDrawerTransactionWrites: true,
                 noActiveOpenLinksWithoutRealUrls: true

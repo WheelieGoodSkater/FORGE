@@ -35,4 +35,4 @@ W423 removes the need for a one-off Herr's rescue pattern by validating the actu
 - Completed-result import validation and Open-link authority remain intact.
 
 ## Recommendation
-Install/deploy `1.0.34 / W426`, clear drawer state, and run one test using an unlisted-but-clear website category. The expected behavior is website-first lane choice, product-specific naming when website product names exist, notes-only value/story enrichment, and all build toggles off until the consultant chooses them.
+Install/deploy `1.0.35 / W427`, clear drawer state, and run one test using an unlisted-but-clear website category. The expected behavior is website-first lane choice, product-specific naming when website product names exist, notes-only value/story enrichment, and all build toggles off until the consultant chooses them.

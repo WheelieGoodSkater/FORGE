@@ -78,9 +78,9 @@ function main() {
   const pkg = JSON.parse(read(path.join(root, 'package.json')));
 
   assertCase(results, 'w422-version-marker-advanced',
-    (drawer.includes('// @version      1.0.31') || drawer.includes('// @version      1.0.32') || drawer.includes('// @version      1.0.33')) &&
-      (drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.31';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.32';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.33';")) &&
-      (drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W422';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W423';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W424';")),
+    (drawer.includes('// @version      1.0.31') || drawer.includes('// @version      1.0.32') || drawer.includes('// @version      1.0.33') || drawer.includes('// @version      1.0.34')) &&
+      (drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.31';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.32';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.33';") || drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.34';")) &&
+      (drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W422';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W423';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W424';") || drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W426';")),
     'Drawer should show W422 or later for install/update clarity.');
 
   assertCase(results, 'w422-filecabinet-drawer-synced',

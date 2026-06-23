@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.33
+// @version      1.0.34
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.33';
-  const CURRENT_UX_BLOCK_W346 = 'W424';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.34';
+  const CURRENT_UX_BLOCK_W346 = 'W426';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -24226,9 +24226,10 @@
     let stage = 'enter_request';
     const runnerTaskCaptured = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.runnerTaskCaptured);
     const completedResultReady = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.completedResultReady);
+    const activeBuildWaiting = runnerTaskCaptured && !completedResultReady && finalNaming.finalNamesImported !== true;
     if (finalNaming.finalNamesImported === true && finalNavigation.runCanUseImportedFinalNames === true) stage = 'demo_cockpit';
     else if (finalNaming.finalNamesImported === true && finalNavigation.proofReviewAvailable === true) stage = 'proof_needs_review';
-    else if (runnerTaskCaptured && !completedResultReady && oneClickBuild.status !== 'records_returned_blocked') stage = 'waiting_for_records';
+    else if (activeBuildWaiting) stage = 'waiting_for_records';
     else if (oneClickBuild.status === 'build_failed_ask_admin' || oneClickBuild.status === 'records_returned_blocked') stage = 'fix_build';
     else if (briefPrepared && confirmed) stage = 'build_records';
     else if (briefPrepared) stage = 'confirm_path';

@@ -136,10 +136,10 @@ function main() {
   const dayInLifeHtml = hooks.renderW416ConsultantDayInLife(completedState, completedLane, page, completedRecommendation, completedLane.moves[0], { id: 'prove', label: 'Prove' }, '');
 
   assertCase(results, 'w424-version-marker-advanced',
-    drawer.includes('// @version      1.0.33') &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.33';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W424';"),
-    'Drawer should show W424 / 1.0.33 for install/update clarity.');
+    drawer.includes('// @version      1.0.34') &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.34';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W426';"),
+    'Drawer should show W426 / 1.0.34 for install/update clarity while preserving W424 behavior.');
 
   assertCase(results, 'w424-filecabinet-copies-synced',
     drawer === fileCabinetDrawer && runner === fileCabinetRunner,

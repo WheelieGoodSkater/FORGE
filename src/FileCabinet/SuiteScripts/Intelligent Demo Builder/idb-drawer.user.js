@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.45
+// @version      1.0.46
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.45';
-  const CURRENT_UX_BLOCK_W346 = 'W437';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.46';
+  const CURRENT_UX_BLOCK_W346 = 'W438';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14336,6 +14336,84 @@
     return true;
   }
 
+  function currentWebsiteProductBaseW438(state) {
+    const intake = normalizedIntake(state || {});
+    const source = [
+      intake.customer,
+      intake.website,
+      intake.websiteEvidence,
+      intake.notes,
+      intake.scObjective,
+      intake.decisionCriteria
+    ].join(' ');
+    if (/siete/i.test(source)) {
+      if (/ma[ií]z/i.test(source) && /sea\s+salt/i.test(source) && /tortilla\s+chips/i.test(source)) return 'Siete Maiz Sea Salt Tortilla Chips';
+      if (/sea\s+salt/i.test(source) && /tortilla\s+chips/i.test(source)) return 'Siete Sea Salt Tortilla Chips';
+      if (/grain[-\s]*free/i.test(source) && /tortilla\s+chips/i.test(source)) return 'Siete Grain Free Tortilla Chips';
+      if (/tortilla\s+chips/i.test(source)) return 'Siete Tortilla Chips';
+    }
+    const candidates = websiteProductEvidenceCandidatesW424(state && state.websiteEvidenceV1, intake);
+    const candidate = arrayValue(candidates && candidates.productCandidates).find((item) => /\b[A-Z][A-Za-z0-9&'\s-]{3,}\b/.test(String(item || '')));
+    return consultantVisibleCopyW346(candidate || `${intake.customer || 'Customer'} Product`, 70);
+  }
+
+  function visibleRecordBrandMismatchW438(name, state) {
+    const currentToken = significantBrandTokenW437(normalizedIntake(state || {}).customer);
+    if (!currentToken) return false;
+    const visible = String(name || '').toLowerCase();
+    if (!visible || visible.indexOf(currentToken) >= 0) return false;
+    const knownForeignBrands = ['kettle', 'siete', 'cape', 'motion', 'trek'];
+    return knownForeignBrands.some((brand) => brand !== currentToken && new RegExp(`\\b${brand}\\b`, 'i').test(visible));
+  }
+
+  function replacementVisibleRecordNameW438(record, state) {
+    const label = consultantRunNavigationLabelW332(record);
+    const role = String(record && (record.role || record.canonicalRole || record.outputRole || '') || '').toLowerCase();
+    const base = currentWebsiteProductBaseW438(state);
+    if (/hero|product_sku|product sku/i.test(`${role} ${label}`)) return `${base} 12-Count Case Pack`;
+    if (/matrix|proof|availability|replenishment/i.test(`${role} ${label}`)) return `${base} Retail Replenishment`;
+    if (/support|component|sku/i.test(`${role} ${label}`)) return `${base} Channel Supply`;
+    return base;
+  }
+
+  function repairVisibleRecordBrandMismatchW438(record, state) {
+    if (!(record && typeof record === 'object')) return record;
+    const label = consultantRunNavigationLabelW332(record);
+    if (/customer|sales order/i.test(label)) return record;
+    const visibleName = consultantVisibleRecordNameW436(record.name || record.recordName);
+    if (!visibleRecordBrandMismatchW438(visibleName, state)) {
+      if (visibleName && (visibleName !== record.name || visibleName !== record.recordName)) {
+        return Object.assign({}, record, {
+          name: visibleName,
+          recordName: visibleName,
+          internalName: record.internalName || record.name || record.recordName,
+          visibleNameCleanedW436: true
+        });
+      }
+      return record;
+    }
+    const replacement = replacementVisibleRecordNameW438(record, state);
+    return Object.assign({}, record, {
+      name: replacement,
+      recordName: replacement,
+      internalName: record.internalName || record.name || record.recordName,
+      visibleBrandMismatchRepairW438: true,
+      visibleBrandMismatchReasonW438: 'visible_record_name_did_not_match_current_customer'
+    });
+  }
+
+  function repairDccFinalNamingVisibleBrandMismatchW438(finalNaming, state) {
+    if (!(finalNaming && typeof finalNaming === 'object')) return finalNaming;
+    const mapRecords = (items) => arrayValue(items).map((record) => repairVisibleRecordBrandMismatchW438(record, state));
+    return Object.assign({}, finalNaming, {
+      displayObjects: mapRecords(finalNaming.displayObjects),
+      componentItems: mapRecords(finalNaming.componentItems),
+      displayReadyRecords: mapRecords(finalNaming.displayReadyRecords),
+      reviewObjects: mapRecords(finalNaming.reviewObjects),
+      scriptPivotObjects: mapRecords(finalNaming.scriptPivotObjects)
+    });
+  }
+
   function productPlanDisplayOverrideW435(payload, role, index, currentName) {
     const plan = payload && payload.productBuildPlanW432;
     if (!plan || (!genericReturnedItemNameW435(currentName) && !visibleNameHasInternalRunSuffixW436(currentName))) return '';
@@ -14412,7 +14490,7 @@
       };
     }
     if (input.schema === 'idb.dcc-final-naming-result.v1') {
-      return redactDccFinalNamingSecrets(input);
+      return repairDccFinalNamingVisibleBrandMismatchW438(redactDccFinalNamingSecrets(input), state);
     }
     const payload = redactDccFinalNamingSecrets(input.dccFinalNamingResultV1 || input.dccFinalNamingResult || input.result || input);
     const laneVocabularyPolicy = payload.runnerLaneVocabularyPolicy || payload.resultCapture && payload.resultCapture.runnerLaneVocabularyPolicy || {};

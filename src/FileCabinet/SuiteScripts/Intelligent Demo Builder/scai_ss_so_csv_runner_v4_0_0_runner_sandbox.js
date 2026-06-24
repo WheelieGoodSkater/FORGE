@@ -4334,15 +4334,29 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (productCandidates.indexOf(candidate) === -1) productCandidates.push(candidate);
       if (evidence && websiteTermsUsed.indexOf(evidence) === -1) websiteTermsUsed.push(evidence);
     };
-    if (/air\s*fried/.test(lower) && /sea\s*salt\s*&?\s*vinegar/.test(lower)) {
+    const isSiete = /siete/.test(lower);
+    const isKettle = /kettle/.test(lower);
+    if (!isSiete && /air\s*fried/.test(lower) && /sea\s*salt\s*&?\s*vinegar/.test(lower)) {
       addCandidate('Air Fried Sea Salt & Vinegar Kettle Chips', 'Air Fried Sea Salt & Vinegar');
     }
-    if (/sea\s*salt\s*&?\s*vinegar/.test(lower)) addCandidate('Sea Salt & Vinegar Kettle Chips', 'Sea Salt & Vinegar');
-    if (/jalape(?:n|ñ)o/.test(lower)) addCandidate('Jalapeno Kettle Chips', 'Jalapeno');
-    if (/himalayan\s+salt/.test(lower)) addCandidate('Himalayan Salt Kettle Chips', 'Himalayan Salt');
-    if (/texas\s+bbq/.test(lower)) addCandidate('Texas BBQ Kettle Chips', 'Texas BBQ');
+    if (!isSiete && /sea\s*salt\s*&?\s*vinegar/.test(lower)) addCandidate('Sea Salt & Vinegar Kettle Chips', 'Sea Salt & Vinegar');
+    if (!isSiete && /jalape(?:n|ñ)o/.test(lower)) addCandidate('Jalapeno Kettle Chips', 'Jalapeno');
+    if (!isSiete && /himalayan\s+salt/.test(lower)) addCandidate('Himalayan Salt Kettle Chips', 'Himalayan Salt');
+    if (!isSiete && /texas\s+bbq/.test(lower)) addCandidate('Texas BBQ Kettle Chips', 'Texas BBQ');
+    if (isSiete && /ma[ií]z/.test(lower) && /sea\s+salt/.test(lower) && /tortilla\s+chips?/.test(lower)) {
+      addCandidate('Siete Maiz Sea Salt Tortilla Chips', 'Siete Maiz Sea Salt Tortilla Chips');
+    }
+    if (isSiete && /sea\s+salt/.test(lower) && /tortilla\s+chips?/.test(lower)) {
+      addCandidate('Siete Sea Salt Tortilla Chips', 'Siete Sea Salt Tortilla Chips');
+    }
+    if (isSiete && /grain[-\s]*free/.test(lower) && /tortilla\s+chips?/.test(lower)) {
+      addCandidate('Siete Grain Free Tortilla Chips', 'Siete Grain Free Tortilla Chips');
+    }
+    if (isSiete && /taco\s+shells?/.test(lower)) addCandidate('Siete Taco Shells', 'Siete Taco Shells');
+    if (isSiete && /seasoning\s+mix/.test(lower)) addCandidate('Siete Seasoning Mixes', 'Siete Seasoning Mixes');
     const sellableUnit = /6\.5\s*oz/i.test(hay) ? '6.5 oz bag' : (/oz/i.test(hay) ? 'retail bag' : 'retail unit');
-    if (/kettle\s+chips?|potato\s+chips?|chips/.test(lower) && websiteTermsUsed.indexOf('kettle chips') === -1) websiteTermsUsed.push('kettle chips');
+    if (isSiete && /tortilla\s+chips?/.test(lower) && websiteTermsUsed.indexOf('tortilla chips') === -1) websiteTermsUsed.push('tortilla chips');
+    if ((isKettle || !isSiete) && /kettle\s+chips?|potato\s+chips?|chips/.test(lower) && websiteTermsUsed.indexOf('kettle chips') === -1 && !isSiete) websiteTermsUsed.push('kettle chips');
     return {
       schema: 'idb.w432-website-product-terms.v1',
       productCandidates,
@@ -4367,35 +4381,40 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const source = opts || {};
     const prospect = idbCanonicalProspectNameW422(source.prospect || 'IDB Prospect', source.website);
     const productTerms = extractWebsiteProductTermsW432(source);
-    const selectedProduct = str(source.productName || source.product_name || productTerms.selectedProductCandidate || source.productSeed || source.productFamily);
+    const selectedProduct = str(productTerms.selectedProductCandidate || source.productName || source.product_name || source.productSeed || source.productFamily);
     const genericProduct = /^(finished good|product \/ sku|product|inventory \/ fulfillment|assembly|proof item)$/i.test(selectedProduct);
     const productName = genericProduct || !selectedProduct ? `${prospect} Product` : selectedProduct;
-    const brandName = /kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : prospect.split(/\s+/).slice(0, 2).join(' ');
+    const brandName = /kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : (/siete/i.test(productName) || /siete/i.test(prospect) ? 'Siete' : prospect.split(/\s+/).slice(0, 2).join(' '));
     const shortProduct = productName
       .replace(/\bKettle\s+Brand\b/ig, 'Kettle')
       .replace(/\bKettle\s+Chips\b/ig, '')
+      .replace(/\bSiete\s+Foods\b/ig, 'Siete')
       .replace(/\s+/g, ' ')
       .trim();
     const productForNames = /kettle/i.test(brandName) && !/^kettle\b/i.test(shortProduct)
       ? `${brandName} ${shortProduct}`
+      : /siete/i.test(brandName) && !/^siete\b/i.test(shortProduct)
+        ? `${brandName} ${shortProduct}`
       : shortProduct;
-    const distributionBase = /sea salt/i.test(productForNames)
-      ? 'Kettle Air Fried Sea Salt & Vinegar'
+    const distributionBase = /siete/i.test(productForNames) && /ma[ií]z/i.test(productForNames) && /sea\s+salt/i.test(productForNames)
+        ? 'Siete Maiz Sea Salt Tortilla Chips'
+      : /sea salt/i.test(productForNames)
+        ? 'Kettle Air Fried Sea Salt & Vinegar'
       : productForNames;
     const alternateProductCandidates = productTerms.productCandidates.filter(function (candidate) {
       return candidate && candidate !== productTerms.selectedProductCandidate;
     });
     const componentNames = [
-      /sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Primary Material Input`,
-      /sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`,
-      /6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`
+      /siete/i.test(distributionBase) ? 'Siete Corn Masa Input' : (/sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Primary Material Input`),
+      /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`),
+      /siete/i.test(distributionBase) ? 'Sea Salt Seasoning and Retail Bag Packaging' : (/6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`)
     ];
     const plan = {
       schema: 'idb.w432-product-build-plan.v1',
       source: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
       confidence: productTerms.selectedProductCandidate ? 'high' : 'low',
       productName,
-      productFamily: /chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family'),
+      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family')),
       brandName,
       sellableUnit: productTerms.sellableUnit,
       casePackName: productTerms.casePackName,
@@ -4415,8 +4434,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       bomName: trimLen(`BOM - ${distributionBase}`, 80),
       bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
       workOrderName: trimLen(`WO - ${distributionBase}`, 80),
-      routingName: trimLen(`Routing - ${distributionBase} Chips`, 80),
-      operationNames: /sea salt/i.test(distributionBase)
+      routingName: trimLen(/siete/i.test(distributionBase) ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
+      operationNames: /siete/i.test(distributionBase)
+        ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
+        : /sea salt/i.test(distributionBase)
         ? ['Slice and Rinse', 'Kettle Cook', 'Air Finish', 'Season', 'Case Pack and QC']
         : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'],
       forbiddenLeakTerms: ['BEVERAGE', 'Finished Good Packaging / Case Pack', 'Production Line', 'Ingredient Blend', 'Packaging Component'],

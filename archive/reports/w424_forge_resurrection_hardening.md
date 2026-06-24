@@ -41,4 +41,4 @@ The W423 run selected the correct broad Food/Beverage lane, but generic names an
 - Completed-result import validation and Open-link authority remain intact.
 
 ## Recommendation
-Lock W437 if the harness passes, reinstall Drawer 1.0.45 / W437, then rerun one controlled Cape Cod-style Food/Beverage smoke. If N/LLM returns generic product names, treat that as a naming review issue, not a returned-record retrieval blocker.
+Lock W438 if the harness passes, reinstall Drawer 1.0.46 / W438, then rerun one controlled Cape Cod-style Food/Beverage smoke. If N/LLM returns generic product names, treat that as a naming review issue, not a returned-record retrieval blocker.

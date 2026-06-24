@@ -86,6 +86,18 @@ function main() {
 
   const terms = runnerHooks.extractWebsiteProductTermsW432(base);
   const plan = runnerHooks.productBuildPlanW432(base);
+  const sieteBase = {
+    prospect: 'Siete Foods',
+    website: 'https://www.sietefoods.com',
+    signalText: 'Siete Maiz Sea Salt Tortilla Chips, Grain Free Tortilla Chips, Taco Shells, and Seasoning Mixes.',
+    notes: 'Focus on Siete Maiz Sea Salt Tortilla Chips retail replenishment readiness.'
+  };
+  const sieteTerms = runnerHooks.extractWebsiteProductTermsW432(sieteBase);
+  const sietePlan = runnerHooks.productBuildPlanW432(sieteBase);
+  const sieteNewItemNames = runnerHooks.applyToggleAwareNamingGuardrails(
+    runnerHooks.generateNamingPack(sieteBase),
+    Object.assign({}, sieteBase, { enableManufacturing: false, enableWip: false })
+  );
   const newItemNames = runnerHooks.applyToggleAwareNamingGuardrails(
     runnerHooks.generateNamingPack(base),
     Object.assign({}, base, { enableManufacturing: false, enableWip: false })
@@ -146,11 +158,11 @@ function main() {
     creationAllowed: false
   });
 
-  assertCase(results, 'w437-marker-updated',
-    /@version\s+1\.0\.45/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.45';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W437';"),
-    'Drawer should identify W437 / 1.0.45 while preserving W432 product build plan naming.');
+  assertCase(results, 'w438-marker-updated',
+    /@version\s+1\.0\.46/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.46';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W438';"),
+    'Drawer should identify W438 / 1.0.46 while preserving W432 product build plan naming.');
 
   assertCase(results, 'w432-runner-test-hooks-present',
     runner.includes('__W432_TEST_HOOKS__') &&
@@ -163,6 +175,15 @@ function main() {
       /6\.5 oz bag/.test(terms.sellableUnit) &&
       terms.websiteTermsUsed.includes('kettle chips'),
     JSON.stringify(terms));
+
+  assertCase(results, 'w438-siete-product-terms-extracted-without-kettle-carryover',
+    /Siete Maiz Sea Salt Tortilla Chips/.test(sieteTerms.selectedProductCandidate) &&
+      /Siete Maiz Sea Salt Tortilla Chips 12-Count Case Pack/.test(sietePlan.distributionItemName) &&
+      /Siete Maiz Sea Salt Tortilla Chips Retail Replenishment/.test(sietePlan.distributionProofName) &&
+      /Siete Maiz Sea Salt Tortilla Chips Channel Supply/.test(sietePlan.distributionSupportName) &&
+      !/Kettle|Jalapeno/.test(JSON.stringify(sietePlan)) &&
+      /Siete Maiz Sea Salt Tortilla Chips/.test(JSON.stringify(sieteNewItemNames)),
+    JSON.stringify({ sieteTerms, sietePlan, sieteNewItemNames }));
 
   assertCase(results, 'w432-new-item-only-uses-distribution-language',
     /Air Fried Sea Salt & Vinegar/.test(newItemActiveText) &&
@@ -355,6 +376,37 @@ function main() {
       !/\bRUN\b/.test(stalePlanVisibleText) &&
       !/productBuildPlanDisplayOverrideW435\":true/.test(stalePlanVisibleText),
     stalePlanVisibleText);
+
+  const alreadyNormalizedStale = drawerHooks.dccFinalNamingResultV1({
+    schema: 'idb.dcc-final-naming-result.v1',
+    status: 'dcc_final_names_imported',
+    finalNamesImported: true,
+    displayObjects: [
+      { role: 'customer', consultantLabel: 'Customer', label: 'Customer', name: 'Siete Foods Customer Account', recordName: 'Siete Foods Customer Account', url: 'https://example.test/customer', linkAuthority: { openable: true, url: 'https://example.test/customer' } },
+      { role: 'sales_order', consultantLabel: 'Sales Order', label: 'Sales Order', name: 'SO27222', recordName: 'SO27222', url: 'https://example.test/so', linkAuthority: { openable: true, url: 'https://example.test/so' } },
+      { role: 'hero_item', consultantLabel: 'Product SKU', label: 'Product SKU', name: 'Kettle Jalapeno 12-Count Case Pack', recordName: 'Kettle Jalapeno 12-Count Case Pack', url: 'https://example.test/item', linkAuthority: { openable: true, url: 'https://example.test/item' } },
+      { role: 'matrix_or_proof_item', consultantLabel: 'Availability/Replenishment Flow', label: 'Availability/Replenishment Flow', name: 'Kettle Jalapeno Retail Replenishment', recordName: 'Kettle Jalapeno Retail Replenishment', url: 'https://example.test/proof', linkAuthority: { openable: true, url: 'https://example.test/proof' } }
+    ],
+    componentItems: [
+      { role: 'component_item', consultantLabel: 'Supporting SKU', label: 'Supporting SKU', name: 'Kettle Jalapeno Channel Supply', recordName: 'Kettle Jalapeno Channel Supply', url: 'https://example.test/support', linkAuthority: { openable: true, url: 'https://example.test/support' } }
+    ],
+    displayReadyRecords: []
+  }, sieteState, sieteContext.lane, sieteContext.page, sieteContext.recommendation);
+  const normalizedRepairText = JSON.stringify(alreadyNormalizedStale.displayObjects.concat(alreadyNormalizedStale.componentItems).map((record) => ({
+    role: record.role,
+    name: record.name,
+    recordName: record.recordName,
+    internalName: record.internalName,
+    visibleBrandMismatchRepairW438: record.visibleBrandMismatchRepairW438
+  })));
+  assertCase(results, 'w438-already-normalized-final-result-repairs-old-brand-visible-rows',
+    /Siete Maiz Sea Salt Tortilla Chips 12-Count Case Pack/.test(normalizedRepairText) &&
+      /Siete Maiz Sea Salt Tortilla Chips Retail Replenishment/.test(normalizedRepairText) &&
+      /Siete Maiz Sea Salt Tortilla Chips Channel Supply/.test(normalizedRepairText) &&
+      /Kettle Jalapeno 12-Count Case Pack/.test(normalizedRepairText) &&
+      !/\"name\":\"Kettle/.test(normalizedRepairText) &&
+      /visibleBrandMismatchRepairW438\":true/.test(normalizedRepairText),
+    normalizedRepairText);
 
   const nonMfgCockpitHtml = drawerHooks.renderW415DemoCockpit({
     state: { customerName: 'Kettle Brand Snacks' },

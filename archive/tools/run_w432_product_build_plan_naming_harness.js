@@ -158,11 +158,74 @@ function main() {
     creationAllowed: false
   });
 
-  assertCase(results, 'w439-marker-updated',
-    /@version\s+1\.0\.47/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.47';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W439';"),
-    'Drawer should identify W439 / 1.0.47 while preserving W432 product build plan naming.');
+  assertCase(results, 'w440-marker-updated',
+    /@version\s+1\.0\.48/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.48';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W440';"),
+    'Drawer should identify W440 / 1.0.48 while preserving W432 product build plan naming.');
+
+  const mfgToggleSyncState = motionState(drawerHooks, {
+    selectedLaneId: 'food_beverage',
+    intake: {
+      customer: 'Siete Foods',
+      website: 'https://www.sietefoods.com',
+      notes: 'Siete Maíz Sea Salt Tortilla Chips production readiness with components, BOM, and work order.'
+    },
+    toggles: {
+      food_beverage: {
+        createNewHeroItem: true,
+        enableManufacturing: false,
+        enableWip: false
+      }
+    },
+    websiteEvidenceV1: {
+      status: 'ready',
+      domain: 'www.sietefoods.com',
+      text: 'Siete Maíz Sea Salt Tortilla Chips.'
+    }
+  });
+  const fakeToggleRoot = {
+    querySelectorAll: (selector) => selector === '[data-idb-toggle]'
+      ? [
+        { getAttribute: () => 'createNewHeroItem', checked: true },
+        { getAttribute: () => 'enableManufacturing', checked: true },
+        { getAttribute: () => 'enableWip', checked: false }
+      ]
+      : []
+  };
+  drawerHooks.syncBuildTogglesFromVisibleFieldsW440(fakeToggleRoot, mfgToggleSyncState, 'food_beverage');
+  const mfgToggleSyncContext = motionContext(drawerHooks, mfgToggleSyncState);
+  const syncedConfirmedRequest = drawerHooks.confirmedBuildRequestJsonV1(
+    mfgToggleSyncState,
+    mfgToggleSyncContext.lane,
+    mfgToggleSyncContext.page,
+    mfgToggleSyncContext.recommendation
+  );
+  const syncedHandoff = drawerHooks.dccRunnerHandoffPacketV1(
+    mfgToggleSyncState,
+    mfgToggleSyncContext.lane,
+    mfgToggleSyncContext.page,
+    mfgToggleSyncContext.recommendation
+  );
+  const syncedReceipt = drawerHooks.selectedBuildToggleReceiptW440(
+    mfgToggleSyncState,
+    mfgToggleSyncContext.lane,
+    syncedConfirmedRequest
+  );
+  assertCase(results, 'w440-visible-toggle-sync-reaches-confirmed-request',
+    mfgToggleSyncState.toggles.food_beverage.enableManufacturing === true &&
+      syncedConfirmedRequest.selectedToggles.enableManufacturing === true &&
+      syncedHandoff.scheduledRunnerPreview.custscript_v3_runner_enable_mfg === 'T' &&
+      syncedReceipt.enableManufacturing === true &&
+      syncedReceipt.chips.includes('Manufacturing on'),
+    JSON.stringify({ toggles: mfgToggleSyncState.toggles.food_beverage, selectedToggles: syncedConfirmedRequest.selectedToggles, runnerPreview: syncedHandoff.scheduledRunnerPreview, syncedReceipt }));
+
+  assertCase(results, 'w440-runner-confirmed-request-toggles-authoritative',
+    typeof runnerHooks.confirmedBuildToggleValueW440 === 'function' &&
+      runnerHooks.confirmedBuildToggleValueW440({ selectedToggles: { enableManufacturing: true, enableWip: false, createNewHeroItem: true } }, ['enableManufacturing']) === true &&
+      runner.includes('confirmed_build_request: confirmedEnableManufacturingRaw') &&
+      runner.includes('const enableWipCandidates = {'),
+    'Runner should read selected toggles from custscript_v3_runner_idb_request_json before legacy script params.');
 
   assertCase(results, 'w432-runner-test-hooks-present',
     runner.includes('__W432_TEST_HOOKS__') &&

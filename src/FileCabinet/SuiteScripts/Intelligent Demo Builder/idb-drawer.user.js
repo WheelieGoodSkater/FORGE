@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.47
+// @version      1.0.48
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.47';
-  const CURRENT_UX_BLOCK_W346 = 'W439';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.48';
+  const CURRENT_UX_BLOCK_W346 = 'W440';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14891,6 +14891,92 @@
     return null;
   }
 
+  function boolFromUnknownW440(value) {
+    if (typeof value === 'boolean') return value;
+    const normalized = String(value == null ? '' : value).trim().toLowerCase();
+    if (!normalized) return null;
+    if (['t', 'true', 'yes', 'y', '1', 'on'].indexOf(normalized) >= 0) return true;
+    if (['f', 'false', 'no', 'n', '0', 'off'].indexOf(normalized) >= 0) return false;
+    return null;
+  }
+
+  function firstExplicitBoolW440(values) {
+    for (let index = 0; index < arrayValue(values).length; index += 1) {
+      const parsed = boolFromUnknownW440(values[index]);
+      if (typeof parsed === 'boolean') return parsed;
+    }
+    return null;
+  }
+
+  function selectedBuildToggleReceiptW440(state, lane, payload) {
+    const sourcePayload = payload || {};
+    const runnerResult = state && state.integratedBuildRunnerResult || {};
+    const runnerParams = runnerResult.runnerParams || {};
+    const capturedConfirmedRequest = runnerResult.confirmedBuildRequest ||
+      runnerResult.resultCapture && runnerResult.resultCapture.confirmedBuildRequest ||
+      sourcePayload.confirmedBuildRequest ||
+      sourcePayload.confirmedBuildRequestJson ||
+      null;
+    const confirmedRequest = confirmedBuildRequestForNamingGuardW211(state, capturedConfirmedRequest || sourcePayload) || capturedConfirmedRequest || {};
+    const confirmedToggles = confirmedRequest && confirmedRequest.selectedToggles || {};
+    const payloadToggles = sourcePayload.selectedToggles || sourcePayload.toggles || sourcePayload.buildToggles || {};
+    const resolved = lane && lane.id ? resolvedToggles(state || {}, lane) : {};
+    const createNewHeroItem = firstExplicitBoolW440([
+      confirmedToggles.createNewHeroItem,
+      confirmedToggles.createNewItem,
+      payloadToggles.createNewHeroItem,
+      payloadToggles.createNewItem,
+      runnerParams.custscript_v3_runner_create_new_hero,
+      resolved.createNewHeroItem
+    ]);
+    const enableManufacturing = firstExplicitBoolW440([
+      confirmedToggles.enableManufacturing,
+      confirmedToggles.manufacturing,
+      payloadToggles.enableManufacturing,
+      payloadToggles.manufacturing,
+      runnerParams.custscript_v3_runner_enable_mfg,
+      resolved.enableManufacturing
+    ]);
+    const enableWip = firstExplicitBoolW440([
+      confirmedToggles.enableWip,
+      confirmedToggles.enableWIP,
+      confirmedToggles.wip,
+      payloadToggles.enableWip,
+      payloadToggles.enableWIP,
+      payloadToggles.wip,
+      runnerParams.custscript_v3_runner_enable_wip,
+      resolved.enableWip
+    ]);
+    const mfg = enableManufacturing === true;
+    const wip = enableWip === true;
+    const mode = wip ? 'wip' : (mfg ? 'manufacturing' : 'distribution');
+    const source = confirmedRequest && confirmedRequest.schema === 'idb.confirmed-build-request.v1'
+      ? 'confirmed_build_request'
+      : Object.keys(runnerParams).length ? 'runner_params' : 'visible_state';
+    return {
+      schema: 'idb.w440-selected-build-toggle-receipt.v1',
+      source,
+      mode,
+      modeLabel: mode === 'wip' ? 'WIP routing' : mode === 'manufacturing' ? 'Manufacturing' : 'Distribution',
+      createNewHeroItem: createNewHeroItem === true,
+      enableManufacturing: mfg,
+      enableWip: wip,
+      chips: [
+        `New item ${createNewHeroItem === true ? 'on' : 'off'}`,
+        `Manufacturing ${mfg ? 'on' : 'off'}`,
+        `WIP ${wip ? 'on' : 'off'}`
+      ],
+      selectedLaneId: lane && lane.id || confirmedToggles.selectedLaneId || payloadToggles.selectedLaneId || ''
+    };
+  }
+
+  function renderBuildToggleReceiptChipsW440(receipt) {
+    const model = receipt || {};
+    const chips = arrayValue(model.chips);
+    if (!chips.length) return '';
+    return chips.map((chip) => `<span class="idb-mini-chip">${escapeHtml(chip)}</span>`).join('');
+  }
+
   function completedRunnerResultNamingGuardW211(finalNaming, state, lane, payload) {
     const toggles = selectedBuildTogglesForNamingGuardW211(state, payload, lane);
     const records = arrayValue(finalNaming && finalNaming.displayObjects).concat(arrayValue(finalNaming && finalNaming.componentItems));
@@ -24814,6 +24900,7 @@
     const confidenceLabel = websiteEvidence && websiteEvidence.confidence
       ? `${websiteEvidence.confidence.displayText || websiteEvidence.status || 'Evidence'} / ${websiteEvidence.confidence.scoreLabel || 'unscored'}`
       : 'Evidence state visible';
+    const toggleReceipt = selectedBuildToggleReceiptW440(state, lane, finalNavigation);
     return `
       <div class="idb-card idb-accent idb-w415-demo-cockpit">
         <div class="idb-w415-cockpit-header">
@@ -24825,6 +24912,7 @@
           <div class="idb-w415-cockpit-status" aria-label="Post-run proof status">
             <span class="idb-mini-chip">${escapeHtml(proofGate.runReady ? 'Records ready' : 'Proof needs review')}</span>
             <span class="idb-mini-chip">${escapeHtml(openableCount)} Open links verified</span>
+            ${renderBuildToggleReceiptChipsW440(toggleReceipt)}
             ${proofGate.runReady ? '' : `<span class="idb-mini-chip">Naming/setup check</span>`}
             <span class="idb-mini-chip">${escapeHtml(confidenceLabel)}</span>
           </div>
@@ -24888,6 +24976,30 @@
       nextIntake[key] = field.value;
     });
     state.intake = nextIntake;
+    return state;
+  }
+
+  function syncBuildTogglesFromVisibleFieldsW440(root, state, targetLaneId) {
+    if (!root || !state || typeof root.querySelectorAll !== 'function') return state;
+    const fields = Array.prototype.slice.call(root.querySelectorAll('[data-idb-toggle]') || []);
+    if (!fields.length) return state;
+    const currentLane = getLane(state);
+    const laneIds = [currentLane && currentLane.id, targetLaneId || state.selectedLaneId].filter(Boolean);
+    const uniqueLaneIds = laneIds.filter((laneId, index) => laneIds.indexOf(laneId) === index);
+    const patch = {};
+    fields.forEach((field) => {
+      const key = field.getAttribute('data-idb-toggle');
+      if (!key) return;
+      patch[key] = field.checked === true;
+    });
+    state.toggles = state.toggles || {};
+    uniqueLaneIds.forEach((laneId) => {
+      const laneForId = (CONTRACT.lanes || []).find((candidate) => candidate.id === laneId) || currentLane;
+      state.toggles[laneId] = Object.assign({}, resolvedToggles(state, laneForId), patch);
+      if (state.toggles[laneId].enableWip === true) state.toggles[laneId].enableManufacturing = true;
+    });
+    state.currentToggles = Object.assign({}, state.currentToggles || {}, patch);
+    if (state.currentToggles.enableWip === true) state.currentToggles.enableManufacturing = true;
     return state;
   }
 
@@ -25002,6 +25114,7 @@
       buildStatus: oneClickBuild.status,
       buildLabel: oneClickBuild.label,
       w262ReadinessState: w262BuildUx.readinessState,
+      selectedBuildToggleReceiptW440: selectedBuildToggleReceiptW440(state, lane, finalNavigation || finalNaming),
       customer: intake.customer,
       website: intake.website,
       supportTabsCollapsed: true
@@ -25021,6 +25134,7 @@
           <span class="idb-chip idb-${escapeHtml(tone)}">Next: ${escapeHtml(label.next || 'Continue')}</span>
           <span class="idb-mini-chip">${escapeHtml(consultantLabel(stage.stage || 'unknown'))}</span>
           ${stage.customer ? `<span class="idb-mini-chip">${escapeHtml(stage.customer)}</span>` : ''}
+          ${renderBuildToggleReceiptChipsW440(stage.selectedBuildToggleReceiptW440)}
           ${stage.website ? `<span class="idb-mini-chip">${escapeHtml(websiteDomain(stage.website))}</span>` : ''}
         </div>
       </div>
@@ -26359,6 +26473,7 @@
     const savedRunnerResult = state && state.integratedBuildRunnerResult || null;
     const savedCompletedResultJson = savedRunnerResult && (savedRunnerResult.finalGeneratedNamesJson ||
       savedRunnerResult.resultCapture && savedRunnerResult.resultCapture.finalGeneratedNamesJson) || null;
+    const toggleReceipt = selectedBuildToggleReceiptW440(state, lane, savedRunnerResult && (savedRunnerResult.confirmedBuildRequest || savedRunnerResult.resultCapture && savedRunnerResult.resultCapture.confirmedBuildRequest) || {});
     const savedCompletedGuard = validateDccFinalNamingImportPayload(savedCompletedResultJson, state, lane, page, recommendation);
     const pendingTransactionResolution = runnerResultPendingTransactionResolutionW430(savedRunnerResult);
     const invalidCompletedResultRecoveryHtml = savedCompletedResultJson && savedCompletedGuard.valid !== true && !pendingTransactionResolution ? `
@@ -26404,6 +26519,7 @@
           ${renderToggleControls(state, lane)}
           <div class="idb-chip-row">
             <span class="idb-chip idb-${chipTone}">${escapeHtml(w262BuildUx.label)}</span>
+            ${renderBuildToggleReceiptChipsW440(toggleReceipt)}
             <span class="idb-mini-chip">${w262BuildUx.stateFacts.requestReady ? 'Request ready' : 'Path needs confirmation'}</span>
             <span class="idb-mini-chip">${escapeHtml(buildSetupChip)}</span>
             <span class="idb-mini-chip">Links appear when ready</span>
@@ -27970,13 +28086,11 @@
     root.querySelectorAll('[data-idb-toggle]').forEach((field) => {
       field.addEventListener('change', () => {
         const lane = getLane(state);
-        const key = field.getAttribute('data-idb-toggle');
-        state.toggles = state.toggles || {};
-        state.toggles[lane.id] = Object.assign({}, resolvedToggles(state, lane), { [key]: field.checked });
+        syncBuildTogglesFromVisibleFieldsW440(root, state, lane.id);
         saveState(state);
         trace('setup_toggle_changed', {
           laneId: lane.id,
-          toggle: key,
+          toggle: field.getAttribute('data-idb-toggle'),
           value: field.checked,
           toggles: state.toggles[lane.id]
         });
@@ -28314,6 +28428,7 @@
     const prepareOneClickBuildRecordsPath = (selectedLaneId) => {
       const pageContext = currentPageContext();
       syncIntakeFromVisibleFields(root, state);
+      syncBuildTogglesFromVisibleFieldsW440(root, state, selectedLaneId || state.selectedLaneId);
       state.briefPrepared = true;
       state.setupEditMode = false;
       state.pageContext = pageContext;
@@ -28361,6 +28476,7 @@
     };
     const submitBuildRecordsOnce = async (button, options) => {
       const opts = options || {};
+      syncBuildTogglesFromVisibleFieldsW440(root, state, state.selectedLaneId);
       syncRealAdapterFieldsFromDom();
       const endpointBeforeRepair = state.integratedBuildAdapterConfig && state.integratedBuildAdapterConfig.endpointUrl || '';
       ensureProductionBuildSavedAdminConfig(state);
@@ -28378,8 +28494,11 @@
       saveState(state);
       const pageContext = opts.pageContext || currentPageContext();
       const lane = opts.lane || getLane(state);
+      syncBuildTogglesFromVisibleFieldsW440(root, state, lane.id);
       const recommendation = opts.recommendation || recommendMove(lane, pageContext);
       const preflightRequest = confirmedBuildRequestJsonV1(state, lane, pageContext, recommendation);
+      state.lastSubmittedBuildToggleReceiptW440 = selectedBuildToggleReceiptW440(state, lane, preflightRequest);
+      saveState(state);
       ensureExplicitBuildAttemptProvenanceW320(state, preflightRequest);
       const preflight = realSandboxServerAdapterExecutionWiringAndRunnerTaskIdCaptureV1(state, lane, pageContext, recommendation, {
         adapterConfig: state.integratedBuildAdapterConfig || {},
@@ -29576,6 +29695,8 @@
       consultantVisibleRecordNameW436,
       visibleProductAccentPolishW439,
       visibleProductNarrativeW439,
+      selectedBuildToggleReceiptW440,
+      syncBuildTogglesFromVisibleFieldsW440,
       productBuildPlanMatchesPayloadContextW437,
       verifiedRecordLinkAuthorityV1,
       finalGeneratedNamesNavigationIntegrationV1,

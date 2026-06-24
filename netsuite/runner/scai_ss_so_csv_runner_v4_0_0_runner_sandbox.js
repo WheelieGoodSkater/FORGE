@@ -689,6 +689,25 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return createNewHeroItem ? 'fresh-hero' : 'anchor-hero';
   }
 
+  function confirmedBuildToggleValueW440(request, names) {
+    const selected = request && request.selectedToggles || {};
+    const demoPathToggles = request && request.demoPath && request.demoPath.selectedToggles || {};
+    const runnerControls = request && request.runnerControls && request.runnerControls.selectedToggles || {};
+    const legacy = request && request.toggles || {};
+    const buckets = [selected, demoPathToggles, runnerControls, legacy];
+    const keys = names || [];
+    for (let bucketIndex = 0; bucketIndex < buckets.length; bucketIndex += 1) {
+      const bucket = buckets[bucketIndex] || {};
+      for (let keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+        const key = keys[keyIndex];
+        if (Object.prototype.hasOwnProperty.call(bucket, key) && hasExplicitBoolValue(bucket[key])) {
+          return bucket[key];
+        }
+      }
+    }
+    return '';
+  }
+
   function execute() {
     const s = runtime.getCurrentScript();
     const runnerParams = readRunnerParams();
@@ -721,17 +740,27 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       ? Number(workCenterSearchIdRaw)
       : workCenterSearchIdRaw;
 
-    // WIP flag (Suitelet should pass 'T' or 'F')
-    const enableWipRaw = s.getParameter({ name: 'custscript_v3_runner_enable_wip' });
+    const confirmedCreateNewHeroRaw = confirmedBuildToggleValueW440(confirmedBuildRequestJson, ['createNewHeroItem', 'createNewItem']);
+    const confirmedEnableManufacturingRaw = confirmedBuildToggleValueW440(confirmedBuildRequestJson, ['enableManufacturing', 'manufacturing']);
+    const confirmedEnableWipRaw = confirmedBuildToggleValueW440(confirmedBuildRequestJson, ['enableWip', 'enableWIP', 'wip']);
+
+    // WIP flag (confirmed request owns the consultant-selected mode; Suitelet params remain a compatibility path)
+    const enableWipCandidates = {
+      confirmed_build_request: confirmedEnableWipRaw,
+      custscript_v3_runner_enable_wip: s.getParameter({ name: 'custscript_v3_runner_enable_wip' })
+    };
+    const enableWipRaw = firstDefinedValue(Object.values(enableWipCandidates));
     const enableWip = normalizeBool(enableWipRaw);
 
     const createNewHeroCandidates = {
+      confirmed_build_request: confirmedCreateNewHeroRaw,
       custscript_v3_runner_create_new_hero: s.getParameter({ name: 'custscript_v3_runner_create_new_hero' })
     };
     const createNewHeroRaw = firstDefinedValue(Object.values(createNewHeroCandidates));
     const createNewHeroItem = normalizeBool(createNewHeroRaw);
 
     const enableManufacturingCandidates = {
+      confirmed_build_request: confirmedEnableManufacturingRaw,
       custscript_v3_runner_enable_mfg: s.getParameter({ name: 'custscript_v3_runner_enable_mfg' })
     };
     const enableManufacturingRaw = firstDefinedValue(Object.values(enableManufacturingCandidates));
@@ -748,10 +777,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       title: `Manufacturing flag resolution [${VERSION}]`,
       details: JSON.stringify({
         candidates: enableManufacturingCandidates,
+        enableWipCandidates,
+        createNewHeroCandidates,
         enableManufacturingRaw,
         enableManufacturingExplicit,
         enableManufacturingParam,
         enableManufacturingTextFallback,
+        confirmedSelectedToggles: confirmedBuildRequestJson && confirmedBuildRequestJson.selectedToggles || null,
         notesLen: String(notes || '').length,
         agendaLen: String(agenda || '').length,
         resolvedEnableManufacturing: finalEnableManufacturing
@@ -6949,6 +6981,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       kettleProductBuildPlanFixtureW432,
       productBuildPlanW432,
       visibleProductNarrativeW439,
+      confirmedBuildToggleValueW440,
       applyProductBuildPlanToNamingPackW432,
       validateProductBuildPlanForModeW432,
       generateNamingPack,

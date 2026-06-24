@@ -6,7 +6,9 @@ W432 introduces a mode-aware product build plan so runner-created names come fro
 ## Pass/Fail
 | Gate | Result |
 | --- | --- |
-| w439-marker-updated | PASS |
+| w440-marker-updated | PASS |
+| w440-visible-toggle-sync-reaches-confirmed-request | PASS |
+| w440-runner-confirmed-request-toggles-authoritative | PASS |
 | w432-runner-test-hooks-present | PASS |
 | w432-kettle-product-terms-extracted | PASS |
 | w438-siete-product-terms-extracted-without-kettle-carryover | PASS |

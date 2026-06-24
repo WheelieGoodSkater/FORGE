@@ -206,9 +206,9 @@ function main() {
   );
 
   assertCase(results, 'w428-drawer-marker-updated',
-    /@version\s+1\.0\.44/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.44';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W436';"),
+    /@version\s+1\.0\.45/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.45';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W437';"),
     'Drawer should identify the current install marker while preserving the refresh auto-import repair patch.');
 
   assertCase(results, 'w427-filecabinet-drawer-synced',
@@ -366,7 +366,7 @@ ${results.map((result) => `| ${result.id} | ${result.pass ? 'PASS' : 'FAIL'} |`)
 - No runner write path, adapter record creation, source pack, completed-result validation, or Open-link authority check was weakened.
 
 ## Recommendation
-Lock W436, reinstall Drawer 1.0.44 / W436 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner returns sidecar records, Refresh build status should import returned records into the cockpit even while transaction import resolution or naming review continues.
+Lock W437, reinstall Drawer 1.0.45 / W437 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner returns sidecar records, Refresh build status should import returned records into the cockpit even while transaction import resolution or naming review continues.
 `;
   fs.writeFileSync(reportPath, report);
 

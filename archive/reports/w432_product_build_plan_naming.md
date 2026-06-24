@@ -6,7 +6,7 @@ W432 introduces a mode-aware product build plan so runner-created names come fro
 ## Pass/Fail
 | Gate | Result |
 | --- | --- |
-| w436-marker-updated | PASS |
+| w437-marker-updated | PASS |
 | w432-runner-test-hooks-present | PASS |
 | w432-kettle-product-terms-extracted | PASS |
 | w432-new-item-only-uses-distribution-language | PASS |
@@ -18,6 +18,7 @@ W432 introduces a mode-aware product build plan so runner-created names come fro
 | w434-non-mfg-proof-support-prefers-product-plan-names | PASS |
 | w436-visible-names-strip-run-suffix | PASS |
 | w436-all-visible-item-roles-use-product-plan | PASS |
+| w437-stale-product-plan-does-not-repair-new-customer-to-old-product | PASS |
 | w436-non-mfg-copy-has-no-manufacturing-language | PASS |
 | w436-mfg-copy-keeps-manufacturing-language | PASS |
 | w436-wip-copy-keeps-routing-language | PASS |

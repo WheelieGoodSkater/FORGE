@@ -146,11 +146,11 @@ function main() {
     creationAllowed: false
   });
 
-  assertCase(results, 'w436-marker-updated',
-    /@version\s+1\.0\.44/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.44';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W436';"),
-    'Drawer should identify W436 / 1.0.44 while preserving W432 product build plan naming.');
+  assertCase(results, 'w437-marker-updated',
+    /@version\s+1\.0\.45/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.45';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W437';"),
+    'Drawer should identify W437 / 1.0.45 while preserving W432 product build plan naming.');
 
   assertCase(results, 'w432-runner-test-hooks-present',
     runner.includes('__W432_TEST_HOOKS__') &&
@@ -282,6 +282,79 @@ function main() {
       !/Branch Availability\s*\/\s*Replenishment Flow/.test(repairedVisibleText) &&
       !/Fulfillment Support SKU/.test(repairedVisibleText),
     repairedVisibleText);
+
+  const sieteState = motionState(drawerHooks, {
+    selectedLaneId: 'food_beverage',
+    intake: {
+      customer: 'Siete Foods',
+      website: 'https://www.sietefoods.com',
+      notes: 'Siete Maiz Sea Salt Tortilla Chips retail replenishment readiness.'
+    },
+    toggles: {
+      food_beverage: {
+        createNewHeroItem: true,
+        enableManufacturing: false,
+        enableWip: false
+      }
+    },
+    websiteEvidenceV1: {
+      status: 'ready',
+      domain: 'www.sietefoods.com',
+      text: 'Siete Maiz Sea Salt Tortilla Chips, Grain Free Tortilla Chips, Taco Shells, Seasoning Mixes.'
+    }
+  });
+  const sieteContext = motionContext(drawerHooks, sieteState);
+  const stalePlanImport = drawerHooks.dccFinalNamingResultV1({
+    schema: 'idb.runner-sidecar-result-json.v1',
+    status: 'partial_result_imported_for_display',
+    productBuildPlanW432: plan,
+    records: {
+      customer: {
+        role: 'customer',
+        type: 'customer',
+        name: 'Siete Foods Customer Account',
+        internalId: '9101',
+        url: 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=9101'
+      },
+      heroItem: {
+        role: 'heroItem',
+        type: 'inventoryitem',
+        name: 'Siete Maiz Sea Salt Tortilla Chips 12-Count Case Pack - SNACKS-SIETE-RUN1 - RUN',
+        internalId: '9102',
+        url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9102'
+      },
+      matrixProofItem: {
+        role: 'matrixProofItem',
+        type: 'inventoryitem',
+        name: 'Siete Maiz Sea Salt Tortilla Chips Retail Replenishment - SNACKS-SIETE-RUN1 - RUN',
+        internalId: '9103',
+        url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9103'
+      },
+      componentItem: {
+        role: 'componentItem',
+        type: 'inventoryitem',
+        name: 'Siete Maiz Sea Salt Tortilla Chips Channel Supply - SNACKS-SIETE-RUN1 - RUN',
+        internalId: '9104',
+        url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9104'
+      }
+    }
+  }, sieteState, sieteContext.lane, sieteContext.page, sieteContext.recommendation);
+  const stalePlanVisibleText = JSON.stringify(stalePlanImport.displayObjects.concat(stalePlanImport.componentItems).map((record) => ({
+    role: record.role,
+    name: record.name,
+    recordName: record.recordName,
+    productBuildPlanDisplayOverrideW435: record.productBuildPlanDisplayOverrideW435
+  })));
+  assertCase(results, 'w437-stale-product-plan-does-not-repair-new-customer-to-old-product',
+    drawerHooks.productBuildPlanMatchesPayloadContextW437({ productBuildPlanW432: plan }, sieteState, { name: 'Siete Foods Customer Account' }) === false &&
+      /Siete Maiz Sea Salt Tortilla Chips 12-Count Case Pack/.test(stalePlanVisibleText) &&
+      /Siete Maiz Sea Salt Tortilla Chips Retail Replenishment/.test(stalePlanVisibleText) &&
+      /Siete Maiz Sea Salt Tortilla Chips Channel Supply/.test(stalePlanVisibleText) &&
+      !/Kettle/.test(stalePlanVisibleText) &&
+      !/\bSNACKS-/.test(stalePlanVisibleText) &&
+      !/\bRUN\b/.test(stalePlanVisibleText) &&
+      !/productBuildPlanDisplayOverrideW435\":true/.test(stalePlanVisibleText),
+    stalePlanVisibleText);
 
   const nonMfgCockpitHtml = drawerHooks.renderW415DemoCockpit({
     state: { customerName: 'Kettle Brand Snacks' },

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.44
+// @version      1.0.45
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.44';
-  const CURRENT_UX_BLOCK_W346 = 'W436';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.45';
+  const CURRENT_UX_BLOCK_W346 = 'W437';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14288,6 +14288,54 @@
       .trim();
   }
 
+  function significantBrandTokenW437(value) {
+    const stop = {
+      the: true,
+      brand: true,
+      foods: true,
+      food: true,
+      snacks: true,
+      snack: true,
+      company: true,
+      co: true,
+      inc: true,
+      llc: true,
+      product: true,
+      products: true,
+      chips: true,
+      chip: true
+    };
+    return String(value || '')
+      .replace(/&/g, ' ')
+      .split(/[^a-z0-9]+/i)
+      .map((token) => token.toLowerCase())
+      .find((token) => token.length >= 4 && !stop[token]) || '';
+  }
+
+  function productBuildPlanMatchesPayloadContextW437(payload, state, rootCustomer) {
+    const plan = payload && payload.productBuildPlanW432;
+    if (!plan) return true;
+    const intake = normalizedIntake(state || {});
+    const planWebsite = plan.evidence && plan.evidence.website || plan.website || '';
+    const planDomain = websiteDomain(planWebsite).replace(/^www\./, '').toLowerCase();
+    const currentWebsite = firstNonBlank(intake.website, payload && payload.website, payload && payload.customer && payload.customer.website);
+    const currentDomain = websiteDomain(currentWebsite).replace(/^www\./, '').toLowerCase();
+    if (planDomain && currentDomain && planDomain !== currentDomain) return false;
+    const planToken = significantBrandTokenW437(firstNonBlank(plan.brandName, plan.productName, plan.productFamily));
+    const contextText = [
+      intake.customer,
+      currentWebsite,
+      payload && payload.prospect,
+      payload && payload.customerName,
+      payload && payload.customer && payload.customer.name,
+      rootCustomer && rootCustomer.name,
+      rootCustomer && rootCustomer.recordName
+    ].filter(Boolean).join(' ').toLowerCase();
+    const contextToken = significantBrandTokenW437(firstNonBlank(intake.customer, payload && payload.prospect, payload && payload.customerName, rootCustomer && rootCustomer.name));
+    if (planToken && contextText && contextText.indexOf(planToken) === -1 && contextToken && contextToken !== planToken) return false;
+    return true;
+  }
+
   function productPlanDisplayOverrideW435(payload, role, index, currentName) {
     const plan = payload && payload.productBuildPlanW432;
     if (!plan || (!genericReturnedItemNameW435(currentName) && !visibleNameHasInternalRunSuffixW436(currentName))) return '';
@@ -14384,6 +14432,12 @@
       return records[role] || legacyRecordByCanonicalRoleW244(records, targetRole, payloadMode, [role]);
     };
     const rootCustomer = firstReturnedRunnerObjectW215(payload.customer, payload.customerRecord, records.customer, byRole('customer'));
+    const productPlanContextMatchesW437 = productBuildPlanMatchesPayloadContextW437(payload, state, rootCustomer);
+    const displayPayload = productPlanContextMatchesW437 ? payload : Object.assign({}, payload, {
+      productBuildPlanW432: null,
+      staleProductBuildPlanW437: payload.productBuildPlanW432,
+      staleProductBuildPlanReasonW437: 'product_plan_does_not_match_current_customer_or_website'
+    });
     const rootSalesOrder = firstReturnedRunnerObjectW215(payload.salesOrder, payload.demoTransaction, payload.transaction, records.demoTransaction, records.salesOrder, byRole('sales_order'), byRole('transaction'));
     const rootHero = firstReturnedRunnerObjectW215(payload.heroItem, payload.hero, records.heroItem, byRole('hero_item'), findRunnerRecordByW215Aliases(payload, ['hero_sku', 'style_sku', 'product_sku', 'branch_or_product_sku', 'finished_or_assembly_item', 'finished_food_or_batch_item']));
     const rootMatrix = firstReturnedRunnerObjectW215(payload.matrixItem, payload.proofItem, payload.proofAnchor, records.matrixProofItem, records.matrixItem, byRole('matrix_item'), byRole('proof_item'), findRunnerRecordByW215Aliases(payload, ['availability_or_replenishment_flow', 'style_matrix_or_availability_flow', 'dealer_availability_or_replenishment_flow', 'replenishment_or_availability_flow', 'formula_or_batch_structure', 'bom_or_assembly_structure']));
@@ -14400,7 +14454,7 @@
         finalRoleLabels.componentItem,
         role === 'supporting_sku' ? 'Supporting SKU' : role === 'ingredient_or_component_item' ? 'Ingredient item' : `Component item ${index + 1}`
       );
-      return normalizeDccFinalObjectWithProductPlanW435(role, label, item, payload, index);
+      return normalizeDccFinalObjectWithProductPlanW435(role, label, item, displayPayload, index);
     });
     const semanticLocation = findRunnerRecordByW215Aliases(payload, ['location_or_channel_context', 'location_planning_context', 'lot_or_availability_context']);
     const locationPlanningRecords = arrayValue(payload.locationPlanningRecords || payload.locations || payload.planningRecords || payload.locationPlanning || (semanticLocation.name ? [semanticLocation] : [])).map((item, index) => normalizeDccFinalObject('location_planning', `Location / planning ${index + 1}`, item));
@@ -14415,24 +14469,24 @@
       };
     });
     const displayObjects = [
-      normalizeDccFinalObjectWithProductPlanW435('customer', 'Customer', rootCustomer, payload, 0),
-      normalizeDccFinalObjectWithProductPlanW435('sales_order', 'Sales Order / demo transaction', rootSalesOrder, payload, 0),
-      normalizeDccFinalObjectWithProductPlanW435('hero_item', firstNonBlank(finalRoleLabels.heroItem, 'Hero item'), rootHero, payload, 0),
-      normalizeDccFinalObjectWithProductPlanW435('matrix_or_proof_item', firstNonBlank(finalRoleLabels.matrixProofItem, 'Matrix item / proof item'), rootMatrix, payload, 0)
+      normalizeDccFinalObjectWithProductPlanW435('customer', 'Customer', rootCustomer, displayPayload, 0),
+      normalizeDccFinalObjectWithProductPlanW435('sales_order', 'Sales Order / demo transaction', rootSalesOrder, displayPayload, 0),
+      normalizeDccFinalObjectWithProductPlanW435('hero_item', firstNonBlank(finalRoleLabels.heroItem, 'Hero item'), rootHero, displayPayload, 0),
+      normalizeDccFinalObjectWithProductPlanW435('matrix_or_proof_item', firstNonBlank(finalRoleLabels.matrixProofItem, 'Matrix item / proof item'), rootMatrix, displayPayload, 0)
     ];
     const semanticAssembly = findRunnerRecordByW215Aliases(payload, ['assembly_structure']);
     const semanticBom = findRunnerRecordByW215Aliases(payload, ['bom_or_assembly_structure']);
     const semanticWip = findRunnerRecordByW215Aliases(payload, ['work_order_or_wip_object']);
-    if (payload.assembly || semanticAssembly.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('assembly', 'Assembly', firstReturnedRunnerObjectW215(payload.assembly, semanticAssembly, byRole('assembly')), payload, 0));
-    if (payload.bom || semanticBom.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('bom', 'BOM', firstReturnedRunnerObjectW215(payload.bom, semanticBom, byRole('bom')), payload, 0));
-    if (payload.bomRevision) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('bom_revision', 'BOM revision', firstReturnedRunnerObjectW215(payload.bomRevision, byRole('bom_revision')), payload, 0));
-    if (payload.workOrder || records.workOrder || records.work_order || semanticWip.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_order', 'Work Order', payload.workOrder || records.workOrder || records.work_order || semanticWip || byRole('work_order'), payload, 0));
+    if (payload.assembly || semanticAssembly.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('assembly', 'Assembly', firstReturnedRunnerObjectW215(payload.assembly, semanticAssembly, byRole('assembly')), displayPayload, 0));
+    if (payload.bom || semanticBom.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('bom', 'BOM', firstReturnedRunnerObjectW215(payload.bom, semanticBom, byRole('bom')), displayPayload, 0));
+    if (payload.bomRevision) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('bom_revision', 'BOM revision', firstReturnedRunnerObjectW215(payload.bomRevision, byRole('bom_revision')), displayPayload, 0));
+    if (payload.workOrder || records.workOrder || records.work_order || semanticWip.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_order', 'Work Order', payload.workOrder || records.workOrder || records.work_order || semanticWip || byRole('work_order'), displayPayload, 0));
     const semanticRouting = findRunnerRecordByW215Aliases(payload, ['routing']);
     const semanticWorkCenter = findRunnerRecordByW215Aliases(payload, ['work_center']);
     const semanticWipObject = findRunnerRecordByW215Aliases(payload, ['wip_object']);
-    if (payload.routing || records.routing || semanticRouting.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('routing', 'Routing', payload.routing || records.routing || byRole('routing') || semanticRouting, payload, 0));
-    if (payload.workCenter || records.workCenter || records.work_center || semanticWorkCenter.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_center', 'Work Center', payload.workCenter || records.workCenter || records.work_center || byRole('work_center') || semanticWorkCenter, payload, 0));
-    if (payload.wipObject || records.wipObject || records.wip_object || semanticWipObject.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('wip_object', 'WIP object', payload.wipObject || records.wipObject || records.wip_object || byRole('wip_object') || semanticWipObject, payload, 0));
+    if (payload.routing || records.routing || semanticRouting.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('routing', 'Routing', payload.routing || records.routing || byRole('routing') || semanticRouting, displayPayload, 0));
+    if (payload.workCenter || records.workCenter || records.work_center || semanticWorkCenter.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_center', 'Work Center', payload.workCenter || records.workCenter || records.work_center || byRole('work_center') || semanticWorkCenter, displayPayload, 0));
+    if (payload.wipObject || records.wipObject || records.wip_object || semanticWipObject.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('wip_object', 'WIP object', payload.wipObject || records.wipObject || records.wip_object || byRole('wip_object') || semanticWipObject, displayPayload, 0));
     const returnedCount = displayObjects.concat(componentItems, locationPlanningRecords).filter((item) => item.source === 'dcc_final').length;
     const warnings = arrayValue(payload.warnings || payload.warning).map((item) => String(item));
     const errors = arrayValue(payload.errors || payload.error).map((item) => String(item));
@@ -29227,6 +29281,7 @@
       runnerProofNamingMarkerW341,
       consultantProofRecordDisplayNameW341,
       consultantVisibleRecordNameW436,
+      productBuildPlanMatchesPayloadContextW437,
       verifiedRecordLinkAuthorityV1,
       finalGeneratedNamesNavigationIntegrationV1,
       finalGeneratedNamesOperatorCopyNavigationQaV1,

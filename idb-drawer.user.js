@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.38
+// @version      1.0.39
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.38';
-  const CURRENT_UX_BLOCK_W346 = 'W430';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.39';
+  const CURRENT_UX_BLOCK_W346 = 'W431';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -19972,6 +19972,113 @@
     return /pending_transaction_resolution|pending transaction resolution|csv_import_pending|csv import pending|sales order import pending/.test(statusText);
   }
 
+  function runnerSidecarDisplayResultJsonW431(runnerResult) {
+    const result = runnerResult || {};
+    const nested = result.result || result.payload || result.data || result.response || {};
+    const capture = result.resultCapture || {};
+    const nestedCapture = nested.resultCapture || {};
+    const candidate = result.finalGeneratedNamesJson ||
+      capture.finalGeneratedNamesJson ||
+      result.partialGeneratedNamesJson ||
+      capture.partialGeneratedNamesJson ||
+      result.sidecarGeneratedNamesJson ||
+      capture.sidecarGeneratedNamesJson ||
+      nested.finalGeneratedNamesJson ||
+      nestedCapture.finalGeneratedNamesJson ||
+      nested.partialGeneratedNamesJson ||
+      nestedCapture.partialGeneratedNamesJson ||
+      nested.sidecarGeneratedNamesJson ||
+      nestedCapture.sidecarGeneratedNamesJson ||
+      null;
+    if (!candidate || typeof candidate !== 'object') return null;
+    const pending = runnerResultPendingTransactionResolutionW430(result) ||
+      runnerResultPendingTransactionResolutionW430(nested) ||
+      runnerResultPendingTransactionResolutionW430(candidate);
+    const sidecar = Object.assign({}, candidate);
+    sidecar.schema = sidecar.schema || 'forge.completed-runner-result.v2';
+    sidecar.status = sidecar.status || (pending ? 'partial_result_imported_for_display' : 'completed');
+    sidecar.runStatus = sidecar.runStatus || (pending ? 'partial_result_imported_for_display' : 'completed');
+    sidecar.generatedRecordOwner = sidecar.generatedRecordOwner || sidecar.recordOwner || 'governed_runner_internal_build_engine';
+    sidecar.partialResultState = sidecar.partialResultState || (pending ? 'pending_transaction_resolution' : '');
+    sidecar.warnings = arrayValue(sidecar.warnings || sidecar.warning).concat(pending
+      ? ['Sales Order/import resolution is pending; showing returned records that already have NetSuite links.']
+      : []);
+    return sidecar;
+  }
+
+  function runnerSidecarBrandNamesAreUsableW431(finalNaming) {
+    const returned = arrayValue(finalNaming && finalNaming.displayObjects)
+      .concat(arrayValue(finalNaming && finalNaming.componentItems), arrayValue(finalNaming && finalNaming.locationPlanningRecords))
+      .filter((item) => item && item.source === 'dcc_final' && firstNonBlank(item.name, item.recordName));
+    const genericOnlyPattern = /^(?:finished good(?: item)?|finished good variety pack|product availability sku|branch availability\s*\/\s*replenishment flow|safe substitute fulfillment support sku|product\s*\/\s*sku|proof item|demo product|generic sku|inventory\s*\/\s*fulfillment|matrix item|component item|customer|sales order)$/i;
+    return returned.length > 0 && returned.some((item) => !genericOnlyPattern.test(String(firstNonBlank(item.name, item.recordName)).trim()));
+  }
+
+  function commitRunnerSidecarDisplayResultW431(state, lane, pageContext, recommendation, runnerResult, options) {
+    const opts = options || {};
+    const sidecarJson = opts.sidecarJson || runnerSidecarDisplayResultJsonW431(runnerResult);
+    if (!sidecarJson) {
+      return {
+        schema: 'idb.w431-sidecar-display-result-import.v1',
+        status: 'no_sidecar_result',
+        imported: false,
+        reason: 'No final, partial, or sidecar generated names were available.'
+      };
+    }
+    const finalNaming = dccFinalNamingResultV1(sidecarJson, state, lane, pageContext, recommendation);
+    if (!runnerSidecarBrandNamesAreUsableW431(finalNaming)) {
+      return {
+        schema: 'idb.w431-sidecar-display-result-import.v1',
+        status: 'sidecar_names_not_usable',
+        imported: false,
+        reason: 'Runner sidecar did not include brand/product-named records.',
+        returnedNames: arrayValue(finalNaming.displayObjects).concat(arrayValue(finalNaming.componentItems)).map((item) => item && item.name).filter(Boolean)
+      };
+    }
+    const patchedFinalNaming = Object.assign({}, finalNaming, {
+      status: 'dcc_sidecar_names_imported',
+      displayStatus: 'Returned runner records imported',
+      finalNamesImported: true,
+      partialResultImported: true,
+      sidecarResultImported: true,
+      importFailureRecovery: null,
+      warnings: arrayValue(finalNaming.warnings).concat(['FORGE imported returned records from the runner sidecar while transaction resolution continues.'])
+    });
+    const resultCapture = Object.assign(
+      {},
+      runnerResult && runnerResult.resultCapture || {},
+      {
+        partialGeneratedNamesJson: sidecarJson,
+        sidecarGeneratedNamesJson: sidecarJson,
+        sidecarDisplayImported: true,
+        sidecarDisplayImportedAt: nowIso()
+      }
+    );
+    const patchedRunnerResult = Object.assign({}, runnerResult || {}, {
+      status: runnerResult && runnerResult.status || sidecarJson.status,
+      finalGeneratedNamesJsonReady: true,
+      partialGeneratedNamesJson: sidecarJson,
+      sidecarGeneratedNamesJson: sidecarJson,
+      resultCapture
+    });
+    return {
+      schema: 'idb.w431-sidecar-display-result-import.v1',
+      status: 'sidecar_records_imported_for_display',
+      imported: true,
+      sidecarJson,
+      statePatch: {
+        dccFinalNamingResult: patchedFinalNaming,
+        integratedBuildRunnerResult: patchedRunnerResult
+      },
+      noRegression: {
+        importedReturnedRunnerRecords: true,
+        noDrawerRecordCreation: true,
+        noDrawerTransactionWrites: true,
+        genericFallbackNamesBlocked: true
+      }
+    };
+  }
+
   function namingAdvisorySummary(state, lane, packet) {
     const advisory = buildRecordNamingAdvisoryRequest(state, lane, packet);
     const naming = advisory.currentNamingEvidence || {};
@@ -27992,6 +28099,37 @@
                 noActiveOpenLinksWithoutRealUrls: true
               });
             }
+            if (!(state.dccFinalNamingResult && state.dccFinalNamingResult.finalNamesImported)) {
+              const sidecarImport = commitRunnerSidecarDisplayResultW431(
+                state,
+                lane,
+                pageContext,
+                recommendation,
+                state.integratedBuildRunnerResult || w190Result.normalizedResponse || {},
+                { source: 'refresh_build_status_w431' }
+              );
+              if (sidecarImport.imported === true && sidecarImport.statePatch) {
+                state.integratedBuildRunnerResult = sidecarImport.statePatch.integratedBuildRunnerResult;
+                state.dccFinalNamingResult = sidecarImport.statePatch.dccFinalNamingResult;
+                trace('runner_sidecar_brand_records_imported_on_refresh', {
+                  status: sidecarImport.status,
+                  partialResultImported: true,
+                  displayReadyRecordCount: arrayValue(state.dccFinalNamingResult.displayReadyRecords).length,
+                  returnedNames: arrayValue(state.dccFinalNamingResult.displayObjects).concat(arrayValue(state.dccFinalNamingResult.componentItems)).map((item) => item && item.name).filter(Boolean),
+                  noDrawerWrites: true,
+                  noDrawerTransactionWrites: true,
+                  noActiveOpenLinksWithoutRealUrls: true
+                });
+              } else {
+                trace('runner_sidecar_brand_records_import_skipped_on_refresh', {
+                  status: sidecarImport.status,
+                  reason: sidecarImport.reason || '',
+                  returnedNames: sidecarImport.returnedNames || [],
+                  noDrawerWrites: true,
+                  noDrawerTransactionWrites: true
+                });
+              }
+            }
             trace('w190_runner_result_capture_poll_checked', {
               status: w190Result.status,
               requestSent: w190Result.requestSent,
@@ -28008,6 +28146,28 @@
               noActiveOpenLinksWithoutRealUrls: true
             });
           } else {
+            if (!(state.dccFinalNamingResult && state.dccFinalNamingResult.finalNamesImported)) {
+              const savedSidecarImport = commitRunnerSidecarDisplayResultW431(
+                state,
+                lane,
+                pageContext,
+                recommendation,
+                state.integratedBuildRunnerResult || {},
+                { source: 'saved_sidecar_refresh_w431' }
+              );
+              if (savedSidecarImport.imported === true && savedSidecarImport.statePatch) {
+                state.integratedBuildRunnerResult = savedSidecarImport.statePatch.integratedBuildRunnerResult;
+                state.dccFinalNamingResult = savedSidecarImport.statePatch.dccFinalNamingResult;
+                trace('saved_runner_sidecar_brand_records_imported_on_refresh', {
+                  status: savedSidecarImport.status,
+                  partialResultImported: true,
+                  displayReadyRecordCount: arrayValue(state.dccFinalNamingResult.displayReadyRecords).length,
+                  returnedNames: arrayValue(state.dccFinalNamingResult.displayObjects).concat(arrayValue(state.dccFinalNamingResult.componentItems)).map((item) => item && item.name).filter(Boolean),
+                  noDrawerWrites: true,
+                  noDrawerTransactionWrites: true
+                });
+              }
+            }
             trace('w190_runner_result_capture_poll_blocked', {
               status: w190Preflight.status,
               blockedReasons: w190Preflight.blockedReasons,
@@ -28040,13 +28200,36 @@
               drawerTransactionWritesAttempted: false
             });
           } else {
-            trace('completed_runner_result_import_blocked_from_build_return', {
-              status: importCommit.status,
-              blockedReason: importCommit.blockedReason,
-              noDrawerWrites: true,
-              noDrawerTransactionWrites: true,
-              noActiveOpenLinksWithoutRealUrls: true
-            });
+            const sidecarImport = commitRunnerSidecarDisplayResultW431(
+              state,
+              lane,
+              pageContext,
+              recommendation,
+              state.integratedBuildRunnerResult || {},
+              { source: 'finish_build_sidecar_fallback_w431' }
+            );
+            if (sidecarImport.imported === true && sidecarImport.statePatch) {
+              state.integratedBuildRunnerResult = sidecarImport.statePatch.integratedBuildRunnerResult;
+              state.dccFinalNamingResult = sidecarImport.statePatch.dccFinalNamingResult;
+              trace('runner_sidecar_brand_records_imported_from_finish_build', {
+                status: sidecarImport.status,
+                partialResultImported: true,
+                displayReadyRecordCount: arrayValue(state.dccFinalNamingResult.displayReadyRecords).length,
+                returnedNames: arrayValue(state.dccFinalNamingResult.displayObjects).concat(arrayValue(state.dccFinalNamingResult.componentItems)).map((item) => item && item.name).filter(Boolean),
+                noDrawerWrites: true,
+                noDrawerTransactionWrites: true
+              });
+            } else {
+              trace('completed_runner_result_import_blocked_from_build_return', {
+                status: importCommit.status,
+                blockedReason: importCommit.blockedReason,
+                sidecarStatus: sidecarImport.status,
+                sidecarReason: sidecarImport.reason || '',
+                noDrawerWrites: true,
+                noDrawerTransactionWrites: true,
+                noActiveOpenLinksWithoutRealUrls: true
+              });
+            }
           }
         }
         state.pageContext = pageContext;
@@ -28706,6 +28889,9 @@
       buildRecordNamingAdvisoryRequest,
       nllmRecordNamingGroundingValidationW429,
       runnerResultPendingTransactionResolutionW430,
+      runnerSidecarDisplayResultJsonW431,
+      runnerSidecarBrandNamesAreUsableW431,
+      commitRunnerSidecarDisplayResultW431,
       integratedBuildOperatorGateV1,
       integratedBuildRunnerAdapterConfigV1,
       integratedBuildRunnerReturnClientBoundaryV1,

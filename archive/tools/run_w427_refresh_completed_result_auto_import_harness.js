@@ -30,6 +30,51 @@ function main() {
   const state = motionState(hooks);
   const context = motionContext(hooks, state);
   const completedResult = completedMotionResult({ prefix: '427' });
+  const kettleSidecarResult = {
+    schema: 'forge.completed-runner-result.v2',
+    status: 'pending_transaction_resolution',
+    runStatus: 'pending_transaction_resolution',
+    generatedRecordOwner: 'governed_runner_internal_build_engine',
+    resolvedOperatingMode: 'foodmanufacturing',
+    partialResultState: 'pending_transaction_resolution',
+    records: [
+      {
+        role: 'customer',
+        recordType: 'customer',
+        type: 'customer',
+        name: 'Kettle Brand Snacks Customer Account',
+        internalId: '4422',
+        url: 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=4422'
+      },
+      {
+        role: 'finished_food_or_batch_item',
+        recordType: 'inventoryitem',
+        type: 'inventoryitem',
+        name: 'Kettle Brand Snacks Finished Good',
+        internalId: '6884',
+        url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=6884'
+      },
+      {
+        role: 'formula_or_batch_structure',
+        recordType: 'inventoryitem',
+        type: 'inventoryitem',
+        name: 'Kettle Brand Snacks Finished Good Replenishment',
+        internalId: '6885',
+        url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=6885'
+      },
+      {
+        role: 'ingredient_or_component_item',
+        recordType: 'inventoryitem',
+        type: 'inventoryitem',
+        name: 'Kettle Brand Snacks Finished Good Packaging / Case Pack',
+        internalId: '6886',
+        url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=6886'
+      }
+    ],
+    transactionResolution: {
+      status: 'pending_transaction_resolution'
+    }
+  };
   const originalConfirmedRequest = {
     schema: 'idb.confirmed-build-request.v1',
     requestId: 'idb-build-motion-industries-distribution',
@@ -122,7 +167,12 @@ function main() {
         runnerTaskId: 'CSVIMPORT_W427_PENDING',
         idempotencyToken: originalConfirmedRequest.requestId,
         buildAttemptId: originalConfirmedRequest.buildAttemptId,
-        confirmedBuildRequest: originalConfirmedRequest
+        confirmedBuildRequest: originalConfirmedRequest,
+        partialGeneratedNamesJson: kettleSidecarResult,
+        sidecarGeneratedNamesJson: kettleSidecarResult,
+        transactionResolution: {
+          status: 'pending_transaction_resolution'
+        }
       }
     }
   });
@@ -139,11 +189,26 @@ function main() {
     waitingContext.page,
     waitingContext.recommendation
   );
+  const sidecarImport = hooks.commitRunnerSidecarDisplayResultW431(
+    waitingState,
+    waitingContext.lane,
+    waitingContext.page,
+    waitingContext.recommendation,
+    waitingState.integratedBuildRunnerResult,
+    { source: 'harness_w431' }
+  );
+  const sidecarImportedState = Object.assign({}, waitingState, sidecarImport.statePatch || {});
+  const sidecarImportedHtml = hooks.renderIntegratedBuildRunnerReturnStatus(
+    sidecarImportedState,
+    waitingContext.lane,
+    waitingContext.page,
+    waitingContext.recommendation
+  );
 
   assertCase(results, 'w428-drawer-marker-updated',
-    /@version\s+1\.0\.38/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.38';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W430';"),
+    /@version\s+1\.0\.39/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.39';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W431';"),
     'Drawer should identify the current install marker while preserving the refresh auto-import repair patch.');
 
   assertCase(results, 'w427-filecabinet-drawer-synced',
@@ -209,6 +274,43 @@ function main() {
       !/Paste the completed build result/i.test(waitingHtml),
     waitingHtml.slice(0, 1600));
 
+  assertCase(results, 'w431-refresh-imports-sidecar-brand-records-before-sales-order-resolution',
+    sidecarImport.imported === true &&
+      sidecarImport.statePatch &&
+      sidecarImport.statePatch.dccFinalNamingResult &&
+      sidecarImport.statePatch.dccFinalNamingResult.finalNamesImported === true &&
+      sidecarImport.statePatch.dccFinalNamingResult.partialResultImported === true &&
+      /Kettle Brand Snacks Finished Good/.test(JSON.stringify(sidecarImport.statePatch.dccFinalNamingResult)) &&
+      !/Paste the completed build result/i.test(sidecarImportedHtml),
+    JSON.stringify(sidecarImport));
+
+  assertCase(results, 'w431-sidecar-import-blocks-generic-fallback-names',
+    hooks.commitRunnerSidecarDisplayResultW431(
+      waitingState,
+      waitingContext.lane,
+      waitingContext.page,
+      waitingContext.recommendation,
+      {
+        resultCapture: {
+          status: 'pending_transaction_resolution',
+          partialGeneratedNamesJson: Object.assign({}, kettleSidecarResult, {
+            records: [
+              {
+                role: 'branch_or_product_sku',
+                recordType: 'inventoryitem',
+                type: 'inventoryitem',
+                name: 'Product Availability SKU',
+                internalId: '9991',
+                url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9991'
+              }
+            ]
+          })
+        }
+      },
+      { source: 'harness_w431_generic' }
+    ).imported === false,
+    'Generic-only sidecar names should not be imported as real brand/product records.');
+
   assertCase(results, 'w430-pending-transaction-resolution-stage-is-not-generic-building',
     waitingStage.stage === 'resolving_records' &&
       /resolving returned records/i.test(waitingStage.label.title) &&
@@ -238,7 +340,7 @@ ${results.map((result) => `| ${result.id} | ${result.pass ? 'PASS' : 'FAIL'} |`)
 - No runner write path, adapter record creation, source pack, completed-result validation, or Open-link authority check was weakened.
 
 ## Recommendation
-Lock W430, reinstall Drawer 1.0.38 / W430 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner completes, Refresh build status should either import the records into the cockpit or clearly show transaction import resolution is still pending.
+Lock W431, reinstall Drawer 1.0.39 / W431 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner returns sidecar records, Refresh build status should import brand-named records into the cockpit even while transaction import resolution continues.
 `;
   fs.writeFileSync(reportPath, report);
 

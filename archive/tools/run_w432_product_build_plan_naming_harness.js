@@ -89,8 +89,8 @@ function main() {
   const sieteBase = {
     prospect: 'Siete Foods',
     website: 'https://www.sietefoods.com',
-    signalText: 'Siete Maiz Sea Salt Tortilla Chips, Grain Free Tortilla Chips, Taco Shells, and Seasoning Mixes.',
-    notes: 'Focus on Siete Maiz Sea Salt Tortilla Chips retail replenishment readiness.'
+    signalText: 'Siete Maíz Sea Salt Tortilla Chips, Grain Free Tortilla Chips, Taco Shells, and Seasoning Mixes.',
+    notes: 'Focus on Siete Maíz Sea Salt Tortilla Chips retail replenishment readiness.'
   };
   const sieteTerms = runnerHooks.extractWebsiteProductTermsW432(sieteBase);
   const sietePlan = runnerHooks.productBuildPlanW432(sieteBase);
@@ -158,11 +158,11 @@ function main() {
     creationAllowed: false
   });
 
-  assertCase(results, 'w438-marker-updated',
-    /@version\s+1\.0\.46/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.46';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W438';"),
-    'Drawer should identify W438 / 1.0.46 while preserving W432 product build plan naming.');
+  assertCase(results, 'w439-marker-updated',
+    /@version\s+1\.0\.47/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.47';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W439';"),
+    'Drawer should identify W439 / 1.0.47 while preserving W432 product build plan naming.');
 
   assertCase(results, 'w432-runner-test-hooks-present',
     runner.includes('__W432_TEST_HOOKS__') &&
@@ -177,12 +177,12 @@ function main() {
     JSON.stringify(terms));
 
   assertCase(results, 'w438-siete-product-terms-extracted-without-kettle-carryover',
-    /Siete Maiz Sea Salt Tortilla Chips/.test(sieteTerms.selectedProductCandidate) &&
-      /Siete Maiz Sea Salt Tortilla Chips 12-Count Case Pack/.test(sietePlan.distributionItemName) &&
-      /Siete Maiz Sea Salt Tortilla Chips Retail Replenishment/.test(sietePlan.distributionProofName) &&
-      /Siete Maiz Sea Salt Tortilla Chips Channel Supply/.test(sietePlan.distributionSupportName) &&
+    /Siete Maíz Sea Salt Tortilla Chips/.test(sieteTerms.selectedProductCandidate) &&
+      /Siete Maíz Sea Salt Tortilla Chips 12-Count Case Pack/.test(sietePlan.distributionItemName) &&
+      /Siete Maíz Sea Salt Tortilla Chips Retail Replenishment/.test(sietePlan.distributionProofName) &&
+      /Siete Maíz Sea Salt Tortilla Chips Channel Supply/.test(sietePlan.distributionSupportName) &&
       !/Kettle|Jalapeno/.test(JSON.stringify(sietePlan)) &&
-      /Siete Maiz Sea Salt Tortilla Chips/.test(JSON.stringify(sieteNewItemNames)),
+      /Siete Maíz Sea Salt Tortilla Chips/.test(JSON.stringify(sieteNewItemNames)),
     JSON.stringify({ sieteTerms, sietePlan, sieteNewItemNames }));
 
   assertCase(results, 'w432-new-item-only-uses-distribution-language',
@@ -309,7 +309,7 @@ function main() {
     intake: {
       customer: 'Siete Foods',
       website: 'https://www.sietefoods.com',
-      notes: 'Siete Maiz Sea Salt Tortilla Chips retail replenishment readiness.'
+      notes: 'Siete Maíz Sea Salt Tortilla Chips retail replenishment readiness.'
     },
     toggles: {
       food_beverage: {
@@ -321,7 +321,7 @@ function main() {
     websiteEvidenceV1: {
       status: 'ready',
       domain: 'www.sietefoods.com',
-      text: 'Siete Maiz Sea Salt Tortilla Chips, Grain Free Tortilla Chips, Taco Shells, Seasoning Mixes.'
+      text: 'Siete Maíz Sea Salt Tortilla Chips, Grain Free Tortilla Chips, Taco Shells, Seasoning Mixes.'
     }
   });
   const sieteContext = motionContext(drawerHooks, sieteState);
@@ -340,21 +340,21 @@ function main() {
       heroItem: {
         role: 'heroItem',
         type: 'inventoryitem',
-        name: 'Siete Maiz Sea Salt Tortilla Chips 12-Count Case Pack - SNACKS-SIETE-RUN1 - RUN',
+        name: 'Siete Maíz Sea Salt Tortilla Chips 12-Count Case Pack - SNACKS-SIETE-RUN1 - RUN',
         internalId: '9102',
         url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9102'
       },
       matrixProofItem: {
         role: 'matrixProofItem',
         type: 'inventoryitem',
-        name: 'Siete Maiz Sea Salt Tortilla Chips Retail Replenishment - SNACKS-SIETE-RUN1 - RUN',
+        name: 'Siete Maíz Sea Salt Tortilla Chips Retail Replenishment - SNACKS-SIETE-RUN1 - RUN',
         internalId: '9103',
         url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9103'
       },
       componentItem: {
         role: 'componentItem',
         type: 'inventoryitem',
-        name: 'Siete Maiz Sea Salt Tortilla Chips Channel Supply - SNACKS-SIETE-RUN1 - RUN',
+        name: 'Siete Maíz Sea Salt Tortilla Chips Channel Supply - SNACKS-SIETE-RUN1 - RUN',
         internalId: '9104',
         url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9104'
       }
@@ -368,9 +368,9 @@ function main() {
   })));
   assertCase(results, 'w437-stale-product-plan-does-not-repair-new-customer-to-old-product',
     drawerHooks.productBuildPlanMatchesPayloadContextW437({ productBuildPlanW432: plan }, sieteState, { name: 'Siete Foods Customer Account' }) === false &&
-      /Siete Maiz Sea Salt Tortilla Chips 12-Count Case Pack/.test(stalePlanVisibleText) &&
-      /Siete Maiz Sea Salt Tortilla Chips Retail Replenishment/.test(stalePlanVisibleText) &&
-      /Siete Maiz Sea Salt Tortilla Chips Channel Supply/.test(stalePlanVisibleText) &&
+      /Siete Maíz Sea Salt Tortilla Chips 12-Count Case Pack/.test(stalePlanVisibleText) &&
+      /Siete Maíz Sea Salt Tortilla Chips Retail Replenishment/.test(stalePlanVisibleText) &&
+      /Siete Maíz Sea Salt Tortilla Chips Channel Supply/.test(stalePlanVisibleText) &&
       !/Kettle/.test(stalePlanVisibleText) &&
       !/\bSNACKS-/.test(stalePlanVisibleText) &&
       !/\bRUN\b/.test(stalePlanVisibleText) &&
@@ -397,15 +397,16 @@ function main() {
     name: record.name,
     recordName: record.recordName,
     internalName: record.internalName,
-    visibleBrandMismatchRepairW438: record.visibleBrandMismatchRepairW438
+    visibleBrandMismatchRepairW438: record.visibleBrandMismatchRepairW438,
+    visibleProductNarrativeRepairW439: record.visibleProductNarrativeRepairW439
   })));
   assertCase(results, 'w438-already-normalized-final-result-repairs-old-brand-visible-rows',
-    /Siete Maiz Sea Salt Tortilla Chips 12-Count Case Pack/.test(normalizedRepairText) &&
-      /Siete Maiz Sea Salt Tortilla Chips Retail Replenishment/.test(normalizedRepairText) &&
-      /Siete Maiz Sea Salt Tortilla Chips Channel Supply/.test(normalizedRepairText) &&
+    /Siete Maíz Sea Salt Tortilla Chips 12-Count Case Pack/.test(normalizedRepairText) &&
+      /Siete Maíz Sea Salt Tortilla Chips Retail Replenishment/.test(normalizedRepairText) &&
+      /Siete Maíz Sea Salt Tortilla Chips Channel Supply/.test(normalizedRepairText) &&
       /Kettle Jalapeno 12-Count Case Pack/.test(normalizedRepairText) &&
       !/\"name\":\"Kettle/.test(normalizedRepairText) &&
-      /visibleBrandMismatchRepairW438\":true/.test(normalizedRepairText),
+      /(visibleBrandMismatchRepairW438|visibleProductNarrativeRepairW439)\":true/.test(normalizedRepairText),
     normalizedRepairText);
 
   const nonMfgCockpitHtml = drawerHooks.renderW415DemoCockpit({
@@ -503,6 +504,200 @@ function main() {
       plan.roleProductSelections &&
       /Air Fried Sea Salt & Vinegar/i.test(plan.roleProductSelections.distributionItem),
     JSON.stringify({ alternateProductCandidates: plan.alternateProductCandidates, roleProductSelections: plan.roleProductSelections }));
+
+  function openRecord(role, label, name, urlSuffix, extra) {
+    const recordId = String(1000 + String(urlSuffix || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0));
+    const roleText = String(role || '').toLowerCase();
+    const path = /customer/.test(roleText)
+      ? 'app/common/entity/custjob.nl'
+      : /sales/.test(roleText)
+        ? 'app/accounting/transactions/salesord.nl'
+        : /bom/.test(roleText)
+          ? 'app/common/item/item.nl'
+          : /work_order|work order/.test(roleText)
+            ? 'app/accounting/transactions/workord.nl'
+            : /routing/.test(roleText)
+              ? 'app/common/custom/custrecordentry.nl'
+              : 'app/common/item/item.nl';
+    const safeUrl = `https://td3021666.app.netsuite.com/${path}?id=${recordId}`;
+    return Object.assign({
+      role,
+      consultantLabel: label,
+      label,
+      name,
+      recordName: name,
+      id: recordId,
+      internalId: recordId,
+      url: safeUrl,
+      source: 'dcc_final',
+      safeToOpen: true,
+      linkAuthorityStatus: 'verified_openable',
+      linkAuthority: { openable: true, url: safeUrl }
+    }, extra || {});
+  }
+
+  function sieteFinalResult(toggles, records) {
+    return {
+      schema: 'idb.dcc-final-naming-result.v1',
+      status: 'dcc_final_names_imported',
+      finalNamesImported: true,
+      prospect: 'Siete Foods',
+      displayObjects: records.displayObjects,
+      componentItems: records.componentItems || [],
+      locationPlanningRecords: [],
+      displayReadyRecords: [],
+      productBuildPlanW432: sietePlan,
+      toggles
+    };
+  }
+
+  function renderSieteSurface(toggles, records) {
+    const localState = motionState(drawerHooks, {
+      selectedLaneId: 'food_beverage',
+      intake: {
+        customer: 'Siete Foods',
+        website: 'https://www.sietefoods.com',
+        notes: 'Siete Maíz Sea Salt Tortilla Chips retail replenishment readiness.'
+      },
+      toggles: { food_beverage: toggles },
+      websiteEvidenceV1: {
+        status: 'ready',
+        domain: 'www.sietefoods.com',
+        text: 'Siete Maíz Sea Salt Tortilla Chips, Grain Free Tortilla Chips, Taco Shells, Seasoning Mixes.'
+      },
+      dccFinalNamingResult: sieteFinalResult(toggles, records)
+    });
+    const localContext = motionContext(drawerHooks, localState);
+    const finalNaming = drawerHooks.dccFinalNamingResultV1(localState.dccFinalNamingResult, localState, localContext.lane, localContext.page, localContext.recommendation);
+    const finalNavigation = drawerHooks.dccFinalNavigationModel(localState, localContext.lane, localContext.page, localContext.recommendation);
+    const cockpit = drawerHooks.renderW415DemoCockpit({
+      state: localState,
+      lane: localContext.lane,
+      value: {
+        customer: 'Siete Foods',
+        roiAudit: { claim: 'Finished Good readiness old copy should be replaced.', baselineNeeded: 'Customer-confirmed miss rate.' },
+        objections: ['Finished Good readiness old objection should be replaced.'],
+        groundedCompetitiveSummary: 'Finished Good proof should be replaced.',
+        grounded: {}
+      },
+      script: { say: 'Finished Good proof should be replaced.', show: 'Move through ingredient and batch records.' },
+      finalNavigation,
+      storyContractW373: { proofLabel: 'Finished-good production readiness', proofMove: 'Finished Good proof.' },
+      websiteEvidence: { confidence: { displayText: 'Needs confirmation', scoreLabel: 'medium' } },
+      competitiveAdvisory: { runCue: 'Finished Good readiness battlecard.' }
+    });
+    const run = drawerHooks.renderRunView(localState, localContext.lane, localContext.page, localContext.recommendation, localContext.lane.moves[0], { id: 'prove', label: 'Prove' }, 'summary');
+    return {
+      finalNaming,
+      text: stripHtml(`${cockpit} ${run}`)
+    };
+  }
+
+  const sieteDistributionSurface = renderSieteSurface(
+    { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+    {
+      displayObjects: [
+        openRecord('customer', 'Customer', 'Siete Foods Customer Account', 'customer'),
+        openRecord('sales_order', 'Sales Order', 'SO27221', 'sales-order'),
+        openRecord('hero_item', 'Product SKU', 'Siete Maíz Sea Salt Tortilla Chips 12-Count Case Pack - SNACKS-SIETE-RUN - RUN', 'item')
+      ],
+      componentItems: [
+        openRecord('matrix_or_proof_item', 'Availability/Replenishment Flow', 'Siete Maíz Sea Salt Tortilla Chips Retail Replenishment - SNACKS-SIETE-RUN - RUN', 'proof'),
+        openRecord('component_item', 'Supporting SKU', 'Siete Maíz Sea Salt Tortilla Chips Channel Supply - SNACKS-SIETE-RUN - RUN', 'support')
+      ]
+    }
+  );
+  const sieteDistributionText = sieteDistributionSurface.text;
+  assertCase(results, 'w439-siete-non-mfg-visible-everywhere',
+    /Siete Maíz Sea Salt Tortilla Chips/.test(sieteDistributionText) &&
+      /Retail Replenishment/.test(sieteDistributionText) &&
+      /Channel Supply/.test(sieteDistributionText) &&
+      /case-pack availability/i.test(sieteDistributionText) &&
+      /allocation/i.test(sieteDistributionText) &&
+      /fulfillment confidence/i.test(sieteDistributionText) &&
+      !/\b(Kettle|Finished Good|ingredient|batch|BOM|work order|routing|production readiness|BEVERAGE|SNACKS-)\b/i.test(sieteDistributionText),
+    sieteDistributionText);
+
+  const sieteMfgSurface = renderSieteSurface(
+    { createNewHeroItem: true, enableManufacturing: true, enableWip: false },
+    {
+      displayObjects: [
+        openRecord('customer', 'Customer', 'Siete Foods Customer Account', 'customer'),
+        openRecord('sales_order', 'Sales Order', 'SO27222', 'sales-order'),
+        openRecord('assembly', 'Assembly', 'Siete Maíz Sea Salt Tortilla Chips Finished Good', 'assembly'),
+        openRecord('bom', 'BOM', 'BOM - Siete Maíz Sea Salt Tortilla Chips', 'bom'),
+        openRecord('bom_revision', 'BOM revision', 'Revision 1 - Siete Maíz Sea Salt Tortilla Chips', 'bom-revision'),
+        openRecord('work_order', 'Work Order', 'WO - Siete Maíz Sea Salt Tortilla Chips', 'work-order')
+      ],
+      componentItems: [
+        openRecord('component_item', 'Component item 1', 'Siete Corn Masa Input', 'component-1', { componentIndex: 0 }),
+        openRecord('component_item', 'Component item 2', 'Avocado Oil Frying Input', 'component-2', { componentIndex: 1 }),
+        openRecord('component_item', 'Component item 3', 'Sea Salt Seasoning and Retail Bag Packaging', 'component-3', { componentIndex: 2 })
+      ]
+    }
+  );
+  const sieteMfgText = sieteMfgSurface.text;
+  assertCase(results, 'w439-siete-mfg-visible-everywhere',
+    /Siete Maíz Sea Salt Tortilla Chips Finished Good/.test(sieteMfgText) &&
+      /Siete Corn Masa Input/.test(sieteMfgText) &&
+      /Avocado Oil Frying Input/.test(sieteMfgText) &&
+      /Sea Salt Seasoning and Retail Bag Packaging/.test(sieteMfgText) &&
+      /BOM - Siete Maíz Sea Salt Tortilla Chips/.test(sieteMfgText) &&
+      /Revision 1 - Siete Maíz Sea Salt Tortilla Chips/.test(sieteMfgText) &&
+      /WO - Siete Maíz Sea Salt Tortilla Chips/.test(sieteMfgText) &&
+      !/\b(Kettle|Ingredient Blend|Packaging Component|BEVERAGE|Routing)\b/i.test(sieteMfgText),
+    sieteMfgText);
+
+  const sieteWipSurface = renderSieteSurface(
+    { createNewHeroItem: true, enableManufacturing: true, enableWip: true },
+    {
+      displayObjects: [
+        openRecord('customer', 'Customer', 'Siete Foods Customer Account', 'customer'),
+        openRecord('sales_order', 'Sales Order', 'SO27223', 'sales-order'),
+        openRecord('assembly', 'Assembly', 'Siete Maíz Sea Salt Tortilla Chips Finished Good', 'assembly'),
+        openRecord('routing', 'Routing', 'Routing - Siete Maíz Sea Salt Tortilla Chips', 'routing')
+      ],
+      componentItems: [
+        openRecord('component_item', 'Component item 1', 'Siete Corn Masa Input', 'component-1', { componentIndex: 0 })
+      ]
+    }
+  );
+  const sieteWipText = sieteWipSurface.text;
+  assertCase(results, 'w439-siete-wip-visible-everywhere',
+    /Routing - Siete Maíz Sea Salt Tortilla Chips/.test(sieteWipText) &&
+      /Mix Masa/.test(sieteWipText) &&
+      /Sheet and Cut Tortilla Chips/.test(sieteWipText) &&
+      /Fry in Avocado Oil/.test(sieteWipText) &&
+      /Season with Sea Salt/.test(sieteWipText) &&
+      /Bag, Case Pack, and QC/.test(sieteWipText) &&
+      !/\b(Kettle|BEVERAGE)\b/i.test(sieteWipText),
+    sieteWipText);
+
+  const nonMfgRunnerNarrative = runnerHooks.applyToggleAwareNamingGuardrails(
+    runnerHooks.generateNamingPack(sieteBase),
+    Object.assign({}, sieteBase, { enableManufacturing: false, enableWip: false })
+  )._visibleProductNarrativeW439;
+  const mfgRunnerNarrative = runnerHooks.applyToggleAwareNamingGuardrails(
+    runnerHooks.generateNamingPack(sieteBase),
+    Object.assign({}, sieteBase, { enableManufacturing: true, enableWip: false })
+  )._visibleProductNarrativeW439;
+  const wipRunnerNarrative = runnerHooks.applyToggleAwareNamingGuardrails(
+    runnerHooks.generateNamingPack(sieteBase),
+    Object.assign({}, sieteBase, { enableManufacturing: true, enableWip: true })
+  )._visibleProductNarrativeW439;
+  assertCase(results, 'w439-runner-sidecar-story-is-mode-aware',
+    !/Finished Good readiness/i.test(JSON.stringify(nonMfgRunnerNarrative)) &&
+      /Siete Maíz Sea Salt Tortilla Chips Finished Good/.test(JSON.stringify(mfgRunnerNarrative)) &&
+      /Routing - Siete Maíz Sea Salt Tortilla Chips/.test(JSON.stringify(wipRunnerNarrative)) &&
+      /Mix Masa/.test(JSON.stringify(wipRunnerNarrative)),
+    JSON.stringify({ nonMfgRunnerNarrative, mfgRunnerNarrative, wipRunnerNarrative }));
+
+  assertCase(results, 'w439-internal-trace-preserved',
+    /Kettle Jalapeno 12-Count Case Pack/.test(normalizedRepairText) &&
+      /Siete Maíz Sea Salt Tortilla Chips 12-Count Case Pack/.test(normalizedRepairText) &&
+      alreadyNormalizedStale.displayObjects.length === 4 &&
+      alreadyNormalizedStale.componentItems.length === 1,
+    normalizedRepairText);
 
   assertCase(results, 'w432-routing-consumes-product-plan-operations',
     runner.includes('opNames.op40') &&

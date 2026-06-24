@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.46
+// @version      1.0.47
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.46';
-  const CURRENT_UX_BLOCK_W346 = 'W438';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.47';
+  const CURRENT_UX_BLOCK_W346 = 'W439';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14279,13 +14279,21 @@
   function consultantVisibleRecordNameW436(name) {
     const value = String(name || '').trim();
     if (!value) return '';
-    return value
+    return visibleProductAccentPolishW439(value
       .replace(/\s+-\s+(?:SNACKS|BEVERAGE|FOOD(?:MANUFACTURING|[-_][A-Z]+)*|FOOD_BEVERAGE)-[A-Z0-9]+(?:-[A-Z0-9]+)*\s+-\s+RUN\b/ig, '')
       .replace(/\s+-\s+[A-Z0-9]{5,}(?:-[A-Z0-9]{2,})+\s+-\s+RUN\b/ig, '')
       .replace(/\s+-\s+(?:SNACKS|BEVERAGE|FOOD(?:MANUFACTURING|[-_][A-Z]+)*|FOOD_BEVERAGE)-[A-Z0-9]+(?:-[A-Z0-9]+)*$/ig, '')
       .replace(/\s+-\s+RUN\b/ig, '')
       .replace(/\s{2,}/g, ' ')
-      .trim();
+      .trim());
+  }
+
+  function visibleProductAccentPolishW439(name) {
+    const value = String(name || '');
+    if (!value) return '';
+    return value
+      .replace(/\bSiete\s+Maiz\b/g, 'Siete Maíz')
+      .replace(/\bSiete\s+MAIZ\b/g, 'Siete Maíz');
   }
 
   function significantBrandTokenW437(value) {
@@ -14347,10 +14355,16 @@
       intake.decisionCriteria
     ].join(' ');
     if (/siete/i.test(source)) {
-      if (/ma[ií]z/i.test(source) && /sea\s+salt/i.test(source) && /tortilla\s+chips/i.test(source)) return 'Siete Maiz Sea Salt Tortilla Chips';
+      if (/ma[ií]z/i.test(source) && /sea\s+salt/i.test(source) && /tortilla\s+chips/i.test(source)) return 'Siete Maíz Sea Salt Tortilla Chips';
       if (/sea\s+salt/i.test(source) && /tortilla\s+chips/i.test(source)) return 'Siete Sea Salt Tortilla Chips';
       if (/grain[-\s]*free/i.test(source) && /tortilla\s+chips/i.test(source)) return 'Siete Grain Free Tortilla Chips';
       if (/tortilla\s+chips/i.test(source)) return 'Siete Tortilla Chips';
+    }
+    if (/kettle/i.test(source)) {
+      if (/air\s*fried/i.test(source) && /sea\s*salt\s*&?\s*vinegar/i.test(source)) return 'Kettle Air Fried Sea Salt & Vinegar';
+      if (/jalape(?:n|ñ)o/i.test(source)) return 'Kettle Jalapeno';
+      if (/himalayan\s+salt/i.test(source)) return 'Kettle Himalayan Salt';
+      if (/texas\s+bbq/i.test(source)) return 'Kettle Texas BBQ';
     }
     const candidates = websiteProductEvidenceCandidatesW424(state && state.websiteEvidenceV1, intake);
     const candidate = arrayValue(candidates && candidates.productCandidates).find((item) => /\b[A-Z][A-Za-z0-9&'\s-]{3,}\b/.test(String(item || '')));
@@ -14370,10 +14384,10 @@
     const label = consultantRunNavigationLabelW332(record);
     const role = String(record && (record.role || record.canonicalRole || record.outputRole || '') || '').toLowerCase();
     const base = currentWebsiteProductBaseW438(state);
-    if (/hero|product_sku|product sku/i.test(`${role} ${label}`)) return `${base} 12-Count Case Pack`;
-    if (/matrix|proof|availability|replenishment/i.test(`${role} ${label}`)) return `${base} Retail Replenishment`;
-    if (/support|component|sku/i.test(`${role} ${label}`)) return `${base} Channel Supply`;
-    return base;
+    if (/hero|product_sku|product sku/i.test(`${role} ${label}`)) return visibleProductAccentPolishW439(`${base} 12-Count Case Pack`);
+    if (/matrix|proof|availability|replenishment/i.test(`${role} ${label}`)) return visibleProductAccentPolishW439(`${base} Retail Replenishment`);
+    if (/support|component|sku/i.test(`${role} ${label}`)) return visibleProductAccentPolishW439(`${base} Channel Supply`);
+    return visibleProductAccentPolishW439(base);
   }
 
   function repairVisibleRecordBrandMismatchW438(record, state) {
@@ -14402,15 +14416,175 @@
     });
   }
 
+  function visibleProductModeW439(state, lane, payload, objects) {
+    const toggles = selectedBuildTogglesForNamingGuardW211(state, payload || {}, lane || {});
+    const objectText = arrayValue(objects).map((item) => [
+      item && item.role,
+      item && item.canonicalRole,
+      item && item.consultantLabel,
+      item && item.name,
+      item && item.recordName
+    ].filter(Boolean).join(' ')).join(' ');
+    if (toggles.enableWip || /\b(routing|wip|operation names|work center)\b/i.test(objectText)) return 'wip';
+    if (toggles.enableManufacturing || /\b(assembly|bom|work\s*order|finished\s+good|component item|ingredient|raw material|material input)\b/i.test(objectText)) return 'manufacturing';
+    return 'distribution';
+  }
+
+  function visibleProductNarrativeW439(state, lane, finalNaming, payload) {
+    const intake = normalizedIntake(state || {});
+    const objects = arrayValue(finalNaming && finalNaming.scriptPivotObjects)
+      .concat(arrayValue(finalNaming && finalNaming.displayObjects))
+      .concat(arrayValue(finalNaming && finalNaming.componentItems))
+      .concat(arrayValue(payload && payload.scriptPivotObjects));
+    const mode = visibleProductModeW439(state, lane, payload || finalNaming || {}, objects);
+    const customerName = firstNonBlank(state && state.customerName, intake.customer, finalNaming && finalNaming.prospect, 'Prospect');
+    const objectProductCandidate = arrayValue(objects).map((item) => consultantVisibleRecordNameW436(firstNonBlank(item && item.name, item && item.recordName)))
+      .find((name) => /\b(Siete|Kettle)\b/i.test(name) && /\b(chips|vinegar|jalapeno|tortilla|salt)\b/i.test(name) && !visibleRecordBrandMismatchW438(name, state));
+    const productBaseName = visibleProductAccentPolishW439(firstNonBlank(objectProductCandidate, currentWebsiteProductBaseW438(state))
+      .replace(/\s+12[-\s]*Count\s+Case Pack\b/i, '')
+      .replace(/\s+Retail Replenishment\b/i, '')
+      .replace(/\s+Channel Supply\b/i, '')
+      .replace(/\s+Finished Good\b/i, '')
+      .replace(/^BOM\s+-\s+/i, '')
+      .replace(/^Revision\s+1\s+-\s+/i, '')
+      .replace(/^WO\s+-\s+/i, '')
+      .replace(/^Routing\s+-\s+/i, '')
+      .trim());
+    const productDisplayName = /\b12[-\s]*Count\s+Case Pack\b/i.test(productBaseName)
+      ? productBaseName
+      : `${productBaseName} 12-Count Case Pack`;
+    const isSiete = /\bSiete\b/i.test(productBaseName);
+    const componentNames = isSiete
+      ? ['Siete Corn Masa Input', 'Avocado Oil Frying Input', 'Sea Salt Seasoning and Retail Bag Packaging']
+      : [`${productBaseName} Primary Material Input`, `${productBaseName} Seasoning Blend`, `${productBaseName} Retail Bag and Case Packaging`];
+    const operationNames = isSiete
+      ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
+      : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'];
+    return {
+      schema: 'idb.w439-visible-product-narrative.v1',
+      customerName,
+      websiteDomain: websiteDomain(intake.website),
+      mode,
+      productBaseName,
+      productDisplayName,
+      distribution: {
+        itemName: productDisplayName,
+        proofName: `${productBaseName} Retail Replenishment`,
+        supportName: `${productBaseName} Channel Supply`,
+        cockpitSubtitle: 'Retail case-pack replenishment readiness',
+        storyHeadline: `Prove replenishment readiness for ${productDisplayName}; then connect customer demand, case-pack availability, allocation, and fulfillment confidence.`,
+        proofMove: 'Move through Customer demand, Sales Order, Product SKU, replenishment flow, and channel supply support while staying in distribution and fulfillment scope.',
+        roiClaim: `${customerName} can protect retail replenishment readiness.`,
+        competitiveQuestion: 'How do we know case-pack availability is current enough to trust?',
+        competitiveWatchOut: 'If competitive pressure comes up, ask which replenishment or fulfillment workflow they trust today, then prove the same decision through returned records.',
+        supportPathLabel: 'Retail case-pack replenishment proof'
+      },
+      manufacturing: {
+        assemblyName: `${productBaseName} Finished Good`,
+        componentNames,
+        bomName: `BOM - ${productBaseName}`,
+        bomRevisionName: `Revision 1 - ${productBaseName}`,
+        workOrderName: `WO - ${productBaseName}`,
+        cockpitSubtitle: 'Finished-good production readiness',
+        storyHeadline: `Prove production readiness for ${productBaseName} Finished Good; then connect customer demand, component availability, BOM structure, packaging readiness, and work order execution.`,
+        proofMove: 'Move through Customer demand, Finished Good, component availability, BOM structure, packaging readiness, and Work Order execution.',
+        roiClaim: `${customerName} can protect finished-good production readiness.`,
+        competitiveQuestion: 'How do we know finished-good production readiness is current enough to trust?',
+        competitiveWatchOut: 'If competitive pressure comes up, ask which production workflow they trust today, then prove the same decision through product-specific records.',
+        supportPathLabel: 'Finished-good production proof'
+      },
+      wip: {
+        routingName: `Routing - ${productBaseName}`,
+        operationNames,
+        cockpitSubtitle: 'WIP routing and production readiness',
+        storyHeadline: `Prove routed production readiness for ${productBaseName}; then connect component inputs, operation sequence, work order execution, and finished case-pack output.`,
+        proofMove: `Move through ${operationNames.join(', ')} with component inputs, Work Order execution, and finished case-pack output.`,
+        roiClaim: `${customerName} can protect routed production readiness.`,
+        competitiveQuestion: 'How do we know routed production readiness is current enough to trust?',
+        competitiveWatchOut: 'If competitive pressure comes up, ask which routing and operation workflow they trust today, then prove the same decision through returned records.',
+        supportPathLabel: 'WIP routing proof'
+      },
+      rejectedVisibleTerms: mode === 'distribution'
+        ? ['Finished Good', 'ingredient', 'batch', 'BOM', 'work order', 'routing', 'production readiness', 'BEVERAGE', 'SNACKS-']
+        : ['BEVERAGE', 'SNACKS-', 'Ingredient Blend', 'Packaging Component'],
+      noRegression: {
+        noStaleBrandVisibleNames: true,
+        modeLanguageMatchesToggles: true,
+        internalNamesPreserved: true
+      }
+    };
+  }
+
+  function visibleNarrativeRecordNameW439(record, narrative) {
+    if (!(record && typeof record === 'object') || !narrative) return '';
+    const label = consultantRunNavigationLabelW332(record);
+    const role = String(record.role || record.canonicalRole || record.outputRole || '').toLowerCase();
+    const key = `${role} ${label}`.toLowerCase();
+    const mode = narrative.mode;
+    if (/customer|sales order/.test(key)) return '';
+    if (mode === 'distribution') {
+      if (/hero|product_sku|product sku/.test(key)) return narrative.distribution.itemName;
+      if (/matrix|proof|availability|replenishment/.test(key)) return narrative.distribution.proofName;
+      if (/support|component|sku/.test(key)) return narrative.distribution.supportName;
+      return '';
+    }
+    if (/assembly|finished|hero/.test(key)) return narrative.manufacturing.assemblyName;
+    if (/bom_revision|bom revision/.test(key)) return narrative.manufacturing.bomRevisionName;
+    if (/\bbom\b/.test(key)) return narrative.manufacturing.bomName;
+    if (/work_order|work order|workorder/.test(key)) return narrative.manufacturing.workOrderName;
+    if (/routing/.test(key)) return narrative.wip.routingName;
+    if (/component|ingredient|material|support/.test(key)) {
+      const index = Math.max(0, Number(record.index || record.componentIndex || 0) || 0);
+      return narrative.manufacturing.componentNames[index] || narrative.manufacturing.componentNames[0] || '';
+    }
+    return '';
+  }
+
+  function repairVisibleProductNarrativeW439(record, state, narrative) {
+    if (!(record && typeof record === 'object')) return record;
+    const override = visibleNarrativeRecordNameW439(record, narrative);
+    const current = consultantVisibleRecordNameW436(record.name || record.recordName);
+    const strongProductIdentity = !!(narrative && narrative.productBaseName &&
+      !/\b(?:Customer|Prospect)?\s*Product\.?$/i.test(narrative.productBaseName) &&
+      !/\bProduct\.?$/i.test(narrative.productBaseName) &&
+      /\b(Maíz|Maiz|Sea Salt|Vinegar|Jalapeno|Jalapeño|Himalayan|Texas BBQ|Air Fried|Tortilla Chips|Lemon Herb|Butter Chips)\b/i.test(narrative.productBaseName));
+    const shouldOverride = strongProductIdentity && override && (
+      visibleRecordBrandMismatchW438(current, state) ||
+      visibleNameHasInternalRunSuffixW436(record.name || record.recordName)
+    );
+    if (!shouldOverride) {
+      if (current && (current !== record.name || current !== record.recordName)) {
+        return Object.assign({}, record, {
+          name: current,
+          recordName: current,
+          internalName: record.internalName || record.name || record.recordName,
+          visibleNameCleanedW436: true
+        });
+      }
+      return record;
+    }
+    const visible = consultantVisibleRecordNameW436(override);
+    return Object.assign({}, record, {
+      name: visible,
+      recordName: visible,
+      internalName: record.internalName || record.name || record.recordName,
+      visibleProductNarrativeRepairW439: true
+    });
+  }
+
   function repairDccFinalNamingVisibleBrandMismatchW438(finalNaming, state) {
     if (!(finalNaming && typeof finalNaming === 'object')) return finalNaming;
-    const mapRecords = (items) => arrayValue(items).map((record) => repairVisibleRecordBrandMismatchW438(record, state));
+    const narrative = visibleProductNarrativeW439(state, null, finalNaming, finalNaming);
+    const mapRecords = (items) => arrayValue(items)
+      .map((record) => repairVisibleRecordBrandMismatchW438(record, state))
+      .map((record) => repairVisibleProductNarrativeW439(record, state, narrative));
     return Object.assign({}, finalNaming, {
       displayObjects: mapRecords(finalNaming.displayObjects),
       componentItems: mapRecords(finalNaming.componentItems),
       displayReadyRecords: mapRecords(finalNaming.displayReadyRecords),
       reviewObjects: mapRecords(finalNaming.reviewObjects),
-      scriptPivotObjects: mapRecords(finalNaming.scriptPivotObjects)
+      scriptPivotObjects: mapRecords(finalNaming.scriptPivotObjects),
+      visibleProductNarrativeW439: narrative
     });
   }
 
@@ -14532,7 +14706,7 @@
         finalRoleLabels.componentItem,
         role === 'supporting_sku' ? 'Supporting SKU' : role === 'ingredient_or_component_item' ? 'Ingredient item' : `Component item ${index + 1}`
       );
-      return normalizeDccFinalObjectWithProductPlanW435(role, label, item, displayPayload, index);
+      return Object.assign({ componentIndex: index }, normalizeDccFinalObjectWithProductPlanW435(role, label, item, displayPayload, index));
     });
     const semanticLocation = findRunnerRecordByW215Aliases(payload, ['location_or_channel_context', 'location_planning_context', 'lot_or_availability_context']);
     const locationPlanningRecords = arrayValue(payload.locationPlanningRecords || payload.locations || payload.planningRecords || payload.locationPlanning || (semanticLocation.name ? [semanticLocation] : [])).map((item, index) => normalizeDccFinalObject('location_planning', `Location / planning ${index + 1}`, item));
@@ -14584,6 +14758,7 @@
         extId: firstNonBlank(payload.generatedExtId, generated.extId, generated.externalId, payload.extId),
         agenda: firstNonBlank(payload.generatedAgenda, generated.agenda, payload.agenda)
       },
+      productBuildPlanW432: displayPayload.productBuildPlanW432 || null,
       displayObjects,
       componentItems,
       locationPlanningRecords,
@@ -14609,7 +14784,7 @@
       }
     };
     result.displayReadyRecords = displayReadyRecordsFromFinalNamingW245(result, state, lane, pageContext, recommendation, payload);
-    return result;
+    return repairDccFinalNamingVisibleBrandMismatchW438(result, state);
   }
 
   function isDccRunnerHandoffPacketPayload(payload) {
@@ -20024,6 +20199,15 @@
         useAlternateProductsOnlyForDemoClarity: true,
         roleDifferentiationShouldPreferBusinessTerms: ['12-Count Case Pack', 'Retail Replenishment', 'Channel Supply']
       },
+      visibleProductNarrativeContractW439: {
+        schema: 'idb.w439-visible-product-narrative-contract.v1',
+        selectedTriggersOwnStoryLanguage: true,
+        currentCustomerAndWebsiteMustWinOverStaleImportedNames: true,
+        createNewItemOnlyVisibleStory: ['retail case-pack replenishment', 'case-pack availability', 'allocation', 'channel supply', 'fulfillment confidence'],
+        manufacturingVisibleStory: ['product-specific Finished Good', 'three product-specific components', 'BOM', 'BOM Revision', 'Work Order'],
+        wipVisibleStory: ['product-specific Routing', 'industry/product operation names'],
+        internalIdsRunTokensAndLaneCodesForbiddenInVisibleStory: true
+      },
       createNewItemOnly: {
         requiredNameBasis: ['website product/flavor/pack term', 'distribution/replenishment term'],
         allowedTerms: ['SKU', 'item', 'case pack', 'replenishment', 'availability', 'allocation', 'fulfillment', 'retail case', 'channel supply'],
@@ -21811,6 +21995,19 @@
         selectedScript.close = 'Capture the current lot hold, expiration risk, QA release delay, validation-document gap, traceability miss, shipment delay, or manual-check baseline before claiming savings.';
       }
     }
+    const visibleNarrativeW439 = visibleProductNarrativeW439(state, lane, { scriptPivotObjects: finalNavigation.scriptPivotObjects }, finalNavigation);
+    const selectedNarrativeW439 = visibleNarrativeW439[visibleNarrativeW439.mode] || visibleNarrativeW439.distribution;
+    let decisionW439 = `Confirm ${lane.proofAnchor} readiness through ${selectedMove}.`;
+    if (lane && lane.id === 'food_beverage' && selectedNarrativeW439) {
+      selectedScript.say = selectedNarrativeW439.storyHeadline || selectedScript.say;
+      selectedScript.show = selectedNarrativeW439.proofMove || selectedScript.show;
+      selectedScript.close = selectedNarrativeW439.competitiveQuestion || selectedScript.close;
+      decisionW439 = visibleNarrativeW439.mode === 'distribution'
+        ? `Confirm retail replenishment readiness through ${visibleNarrativeW439.distribution.itemName}.`
+        : visibleNarrativeW439.mode === 'wip'
+          ? `Confirm routed production readiness through ${visibleNarrativeW439.wip.routingName}.`
+          : `Confirm finished-good production readiness through ${visibleNarrativeW439.manufacturing.assemblyName}.`;
+    }
     selectedScript.say = consultantVisibleCopyW346(selectedScript.say, 320);
     selectedScript.show = consultantVisibleCopyW346(selectedScript.show, 260);
     selectedScript.close = consultantVisibleCopyW346(selectedScript.close, 220);
@@ -21821,7 +22018,7 @@
       show: selectedScript.show,
       exception: coach.painSpecificException,
       close: selectedScript.close,
-      decision: `Confirm ${lane.proofAnchor} readiness through ${selectedMove}.`,
+      decision: consultantVisibleCopyW346(decisionW439, 180),
       valueDecision: value.valueDecision,
       packetId: packetIdentity.packetId,
       topThreeMoves: value.story.topMoves.map((item) => consultantVisibleCopyW346(item, 220)),
@@ -24565,30 +24762,19 @@
       });
     if (!(finalNavigation && (finalNavigation.runCanUseImportedFinalNames || finalNavigation.proofReviewAvailable)) || !objects.length) return '';
     const prospect = state.customerName || value.customer || 'Prospect';
-    const objectText = objects.map((item) => [
-      item && item.role,
-      item && item.canonicalRole,
-      item && item.consultantLabel,
-      item && item.name,
-      item && item.recordName
-    ].filter(Boolean).join(' ')).join(' ');
-    const hasManufacturingReturnedRecord = /\b(assembly|bom|work\s*order|routing|wip|ingredient|raw\s+material|material\s+input|seasoning\s+blend)\b/i.test(objectText);
-    const hasDistributionReturnedRecord = /\b(case\s*pack|sku|replenishment|availability|channel\s+supply|retail\s+case|fulfillment)\b/i.test(objectText);
-    const useDistributionCockpitCopyW434 = lane && lane.id === 'food_beverage' && hasDistributionReturnedRecord && !hasManufacturingReturnedRecord;
-    const laneLabel = useDistributionCockpitCopyW434
-      ? 'Retail case-pack replenishment readiness'
-      : (storyContract.proofLabel || lane.name || 'Selected story');
+    const visibleNarrative = visibleProductNarrativeW439(state, lane, { scriptPivotObjects: objects }, finalNavigation);
+    const narrativeCopy = visibleNarrative[visibleNarrative.mode] || visibleNarrative.distribution;
+    const useDistributionCockpitCopyW434 = visibleNarrative.mode === 'distribution';
+    const laneLabel = narrativeCopy.cockpitSubtitle || storyContract.proofLabel || lane.name || 'Selected story';
     const openableCount = objects.filter((item) => {
       const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
       return authority.openable === true;
     }).length;
     let storyLine = script.say || value.talkTrackLead || value.valueDecision || storyContract.valueDecision || 'Open the returned records and prove the selected story.';
     let proofLine = script.show || storyContract.proofMove || `Use ${lane.proofAnchor || 'the returned records'} to prove the buyer decision.`;
-    if (useDistributionCockpitCopyW434) {
-      const primaryProduct = objects.find((item) => /\b(case\s*pack|sku|product)\b/i.test(`${item && item.consultantLabel || ''} ${item && item.name || ''}`)) || objects[0] || {};
-      const productName = consultantRunNavigationNameW334(primaryProduct) || consultantRunNavigationDisplayW334(primaryProduct) || lane.proofAnchor || 'returned SKU';
-      storyLine = `Prove replenishment readiness for ${productName}; then connect customer demand, case-pack availability, allocation, and fulfillment confidence.`;
-      proofLine = `Move through Customer demand, Sales Order, Product SKU, replenishment flow, and channel supply support without claiming manufacturing control.`;
+    if (narrativeCopy && narrativeCopy.storyHeadline) {
+      storyLine = narrativeCopy.storyHeadline;
+      proofLine = narrativeCopy.proofMove || proofLine;
     }
     const cockpitCopy = (copy, limit) => compactText(consultantVisibleCopyW346(copy || '', limit || 140)
       .replace(/\bcan reduce demo risk around\b/gi, 'can protect')
@@ -24601,16 +24787,17 @@
       : 'Capture a customer-confirmed baseline before claiming measured savings.';
     let objectionCopy = cockpitCopy(arrayValue(value.objections)[0] || arrayValue(value.objectionPath)[0] || script.close || 'Ask what would still make the current workflow hard to trust.', 130);
     let watchOutCopy = cockpitCopy(competitiveAdvisory.runCue || (value.competitive && value.competitive.competitorSafeContrast) || value.groundedCompetitiveSummary || 'Treat competitor pressure as advisory until the buyer confirms it.', 135);
-    if (useDistributionCockpitCopyW434) {
-      roiCopy = `${prospect} can protect retail replenishment readiness.`;
-      objectionCopy = 'How do we know case-pack availability is current enough to trust?';
-      watchOutCopy = 'If competitive pressure comes up, ask which replenishment or fulfillment workflow they trust today, then prove the same decision through returned records.';
+    if (narrativeCopy) {
+      roiCopy = narrativeCopy.roiClaim || roiCopy;
+      objectionCopy = narrativeCopy.competitiveQuestion || objectionCopy;
+      watchOutCopy = narrativeCopy.competitiveWatchOut || watchOutCopy;
     }
     const cautionCopy = cockpitCopy(value.grounded && value.grounded.unsupportedClaimBlocker && value.grounded.unsupportedClaimBlocker.blockedClaims && value.grounded.unsupportedClaimBlocker.blockedClaims[0]
       || 'Measured savings require a customer baseline before they can be claimed.', 125);
     const recordRows = objects.slice(0, 5).map((item) => {
       const label = consultantRunNavigationLabelW332(item);
-      const name = consultantVisibleRecordNameW436(consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item));
+      const repairedItem = repairVisibleProductNarrativeW439(item, state, visibleNarrative);
+      const name = consultantVisibleRecordNameW436(consultantRunNavigationNameW334(repairedItem) || consultantRunNavigationDisplayW334(repairedItem));
       const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
       return `
         <div class="idb-w415-cockpit-record-row">
@@ -27195,6 +27382,16 @@
     const finalNavigation = dccFinalNavigationModel(state, lane, page, recommendation);
     const buildStatus = oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1(state, lane, page, recommendation);
     const finalNaming = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, page, recommendation);
+    const visibleNarrativeW439 = visibleProductNarrativeW439(state, lane, { scriptPivotObjects: finalNavigation.scriptPivotObjects }, finalNavigation);
+    const selectedNarrativeW439 = visibleNarrativeW439[visibleNarrativeW439.mode] || visibleNarrativeW439.distribution;
+    const useVisibleNarrativeOnlyW439 = !!(selectedNarrativeW439 && lane && lane.id === 'food_beverage');
+    const supportStoryProofPathHtmlW439 = selectedNarrativeW439 && lane && lane.id === 'food_beverage'
+      ? `<div class="idb-run-action-card idb-w439-visible-narrative-path">
+          <div class="idb-status-key">${escapeHtml(selectedNarrativeW439.supportPathLabel || 'Product proof path')}</div>
+          <div class="idb-strong">${escapeHtml(selectedNarrativeW439.storyHeadline || '')}</div>
+          <div class="idb-copy">${escapeHtml(selectedNarrativeW439.proofMove || '')}</div>
+        </div>`
+      : renderW375StoryContractProofPath(storyContractW373);
     const w216ReviewRun = finalNavigation.runCanUseImportedFinalNames && finalNaming.finalNamesImported
       ? consultantPartialResultReviewRunModelW216V1(state.dccFinalNamingResult, state, lane, page, recommendation)
       : null;
@@ -27252,7 +27449,7 @@
           <div class="idb-section-title">Supporting NetSuite path</div>
           <div class="idb-copy">Use this only when you need the full ordered path, live controls, or evidence detail behind the cockpit.</div>
           ${renderW361NetSuitePathFlow(finalNavigation)}
-          ${renderW375StoryContractProofPath(storyContractW373)}
+          ${supportStoryProofPathHtmlW439}
           <details class="idb-technical-details idb-w417-live-control-support">
             <summary>Live controls and full script</summary>
             <div class="idb-run-selector-chips" role="group" aria-label="Live script mode">
@@ -27281,7 +27478,13 @@
           </details>
           <details class="idb-technical-details idb-w367-run-competitive-detail">
             <summary>Competitive cue</summary>
-            ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
+            ${useVisibleNarrativeOnlyW439
+              ? `<div class="idb-run-action-card">
+                  <div class="idb-status-key">Competitive cue</div>
+                  <div class="idb-strong">${escapeHtml(selectedNarrativeW439.competitiveQuestion || '')}</div>
+                  <div class="idb-copy">${escapeHtml(selectedNarrativeW439.competitiveWatchOut || 'Use the returned product-specific records to land the same decision.')}</div>
+                </div>`
+              : renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive cue', note: competitiveAdvisory.runCue })}
           </details>
           ${renderW361ImportedProofRecords(finalNavigation)}
           ${resolverLimited ? `
@@ -27292,13 +27495,13 @@
               ${advisorySupported ? `<div class="idb-copy"><strong>${escapeHtml(advisory.visualLabel)}:</strong> Advisory inference supports the lane, but it is not public website proof.</div>` : ''}
             </div>
           ` : ''}
-          ${consultantStorySurfaceHtml}
+          ${useVisibleNarrativeOnlyW439 ? '' : consultantStorySurfaceHtml}
         </div>
         <div class="idb-card idb-accent idb-live-control-first">
           <div class="idb-section-title">Selected action detail</div>
           <div class="idb-run-action-card">
-            <div class="idb-status-key">${escapeHtml(liveCopy.title)}</div>
-            <div class="idb-copy">${escapeHtml(liveCopy.copy)}</div>
+            <div class="idb-status-key">${escapeHtml(script.title || liveCopy.title)}</div>
+            <div class="idb-copy">${escapeHtml(script.say || liveCopy.copy)}</div>
           </div>
           <div class="idb-run-action-card idb-decision-card">
             <div class="idb-status-key">Decision to land</div>
@@ -27309,43 +27512,55 @@
           <div class="idb-section-title">Live run</div>
           <div class="idb-run-guide">
             <div class="idb-run-move">${escapeHtml(recommendation.move)}</div>
-            <div class="idb-copy">${escapeHtml(lane.proofAnchor)} proof / ${escapeHtml(page.pageType)} context</div>
+            <div class="idb-copy">${escapeHtml(selectedNarrativeW439 && selectedNarrativeW439.supportPathLabel || lane.proofAnchor)} / ${escapeHtml(page.pageType)} context</div>
           </div>
-          <div class="idb-copy">${escapeHtml(lane.validateLive)}</div>
+          <div class="idb-copy">${escapeHtml(selectedNarrativeW439 && selectedNarrativeW439.proofMove || lane.validateLive)}</div>
           <div class="idb-run-action-card idb-live-story-v4">
             <div class="idb-status-key">Top 3 live path</div>
             <ol class="idb-value-list">
-              <li><strong>Open:</strong> ${escapeHtml(value.story.topMoves[0])}</li>
-              <li><strong>Prove:</strong> ${escapeHtml(value.story.topMoves[1])}</li>
-              <li><strong>Close:</strong> ${escapeHtml(value.valueDecision)}</li>
+              <li><strong>Open:</strong> ${escapeHtml(selectedNarrativeW439 && selectedNarrativeW439.storyHeadline || value.story.topMoves[0])}</li>
+              <li><strong>Prove:</strong> ${escapeHtml(selectedNarrativeW439 && selectedNarrativeW439.proofMove || value.story.topMoves[1])}</li>
+              <li><strong>Close:</strong> ${escapeHtml(selectedNarrativeW439 && selectedNarrativeW439.competitiveQuestion || value.valueDecision)}</li>
             </ol>
           </div>
           <details class="idb-technical-details">
             <summary>Coach detail and exceptions</summary>
             <div class="idb-build-detail">
-              <span class="idb-detail-line"><strong>Packet:</strong> ${escapeHtml(packetIdentity.packetId)}</span>
-              <span class="idb-detail-line"><strong>Current page cue:</strong> ${escapeHtml(coach.currentPageCue)}</span>
-              <span class="idb-detail-line"><strong>Website proof phrase:</strong> ${escapeHtml(coach.websiteProofPhrase)}</span>
-              <span class="idb-detail-line"><strong>Pain-specific exception:</strong> ${escapeHtml(coach.painSpecificException)}</span>
-              <span class="idb-detail-line"><strong>Value close cue:</strong> ${escapeHtml(coach.closeOnValueCue)}</span>
+              <span class="idb-detail-line"><strong>Packet:</strong> ${escapeHtml(useVisibleNarrativeOnlyW439 ? visibleNarrativeW439.schema : packetIdentity.packetId)}</span>
+              <span class="idb-detail-line"><strong>Current page cue:</strong> ${escapeHtml(useVisibleNarrativeOnlyW439 ? selectedNarrativeW439.supportPathLabel : coach.currentPageCue)}</span>
+              <span class="idb-detail-line"><strong>Website proof phrase:</strong> ${escapeHtml(useVisibleNarrativeOnlyW439 ? selectedNarrativeW439.storyHeadline : coach.websiteProofPhrase)}</span>
+              <span class="idb-detail-line"><strong>Pain-specific exception:</strong> ${escapeHtml(useVisibleNarrativeOnlyW439 ? selectedNarrativeW439.competitiveQuestion : coach.painSpecificException)}</span>
+              <span class="idb-detail-line"><strong>Value close cue:</strong> ${escapeHtml(useVisibleNarrativeOnlyW439 ? selectedNarrativeW439.proofMove : coach.closeOnValueCue)}</span>
               <span class="idb-detail-line"><strong>Summary:</strong> ${escapeHtml(summary)}</span>
             </div>
-            <ol class="idb-value-list">
-              ${value.exceptions.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-            </ol>
+            ${useVisibleNarrativeOnlyW439
+              ? `<ol class="idb-value-list">
+                  <li>${escapeHtml(selectedNarrativeW439.storyHeadline || '')}</li>
+                  <li>${escapeHtml(selectedNarrativeW439.proofMove || '')}</li>
+                  <li>${escapeHtml(selectedNarrativeW439.competitiveQuestion || '')}</li>
+                </ol>`
+              : `<ol class="idb-value-list">
+                  ${value.exceptions.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
+                </ol>`}
           </details>
         </div>
-        <div class="idb-card">
-          <div class="idb-section-title">Today's moves</div>
-          <div class="idb-grid">${renderMoveButtons(lane, state)}</div>
-          <div class="idb-copy"><strong>Selected:</strong> ${escapeHtml(selectedMove)}</div>
-        </div>
-        <div class="idb-card idb-guard-accent">
-          <div class="idb-section-title">Guardrails</div>
-          <div class="idb-guardrail-row">
-            ${lane.guardrails.map((guardrail, index) => `<button class="idb-chip idb-guard" data-idb-guardrail="${index}">${escapeHtml(laneConsistentSupportCopyW373(guardrail, storyContractW373))}</button>`).join('')}
-          </div>
-        </div>
+        ${useVisibleNarrativeOnlyW439
+          ? `<div class="idb-card idb-guard-accent">
+              <div class="idb-section-title">Mode-trigger support</div>
+              <div class="idb-copy">${escapeHtml(selectedNarrativeW439.storyHeadline || '')}</div>
+              <div class="idb-copy">${escapeHtml(selectedNarrativeW439.proofMove || '')}</div>
+            </div>`
+          : `<div class="idb-card">
+              <div class="idb-section-title">Today's moves</div>
+              <div class="idb-grid">${renderMoveButtons(lane, state)}</div>
+              <div class="idb-copy"><strong>Selected:</strong> ${escapeHtml(selectedMove)}</div>
+            </div>
+            <div class="idb-card idb-guard-accent">
+              <div class="idb-section-title">Guardrails</div>
+              <div class="idb-guardrail-row">
+                ${lane.guardrails.map((guardrail, index) => `<button class="idb-chip idb-guard" data-idb-guardrail="${index}">${escapeHtml(laneConsistentSupportCopyW373(guardrail, storyContractW373))}</button>`).join('')}
+              </div>
+            </div>`}
       </details>
     `;
   }
@@ -29359,6 +29574,8 @@
       runnerProofNamingMarkerW341,
       consultantProofRecordDisplayNameW341,
       consultantVisibleRecordNameW436,
+      visibleProductAccentPolishW439,
+      visibleProductNarrativeW439,
       productBuildPlanMatchesPayloadContextW437,
       verifiedRecordLinkAuthorityV1,
       finalGeneratedNamesNavigationIntegrationV1,

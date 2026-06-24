@@ -6,7 +6,7 @@ W432 introduces a mode-aware product build plan so runner-created names come fro
 ## Pass/Fail
 | Gate | Result |
 | --- | --- |
-| w438-marker-updated | PASS |
+| w439-marker-updated | PASS |
 | w432-runner-test-hooks-present | PASS |
 | w432-kettle-product-terms-extracted | PASS |
 | w438-siete-product-terms-extracted-without-kettle-carryover | PASS |
@@ -25,6 +25,11 @@ W432 introduces a mode-aware product build plan so runner-created names come fro
 | w436-mfg-copy-keeps-manufacturing-language | PASS |
 | w436-wip-copy-keeps-routing-language | PASS |
 | w436-product-candidates-captured | PASS |
+| w439-siete-non-mfg-visible-everywhere | PASS |
+| w439-siete-mfg-visible-everywhere | PASS |
+| w439-siete-wip-visible-everywhere | PASS |
+| w439-runner-sidecar-story-is-mode-aware | PASS |
+| w439-internal-trace-preserved | PASS |
 | w432-routing-consumes-product-plan-operations | PASS |
 
 ## Boundaries

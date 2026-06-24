@@ -4344,7 +4344,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (!isSiete && /himalayan\s+salt/.test(lower)) addCandidate('Himalayan Salt Kettle Chips', 'Himalayan Salt');
     if (!isSiete && /texas\s+bbq/.test(lower)) addCandidate('Texas BBQ Kettle Chips', 'Texas BBQ');
     if (isSiete && /ma[ií]z/.test(lower) && /sea\s+salt/.test(lower) && /tortilla\s+chips?/.test(lower)) {
-      addCandidate('Siete Maiz Sea Salt Tortilla Chips', 'Siete Maiz Sea Salt Tortilla Chips');
+      addCandidate('Siete Maíz Sea Salt Tortilla Chips', 'Siete Maíz Sea Salt Tortilla Chips');
     }
     if (isSiete && /sea\s+salt/.test(lower) && /tortilla\s+chips?/.test(lower)) {
       addCandidate('Siete Sea Salt Tortilla Chips', 'Siete Sea Salt Tortilla Chips');
@@ -4366,6 +4366,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       websiteTermsUsed,
       rejectedGenericTerms: ['Finished Good', 'Production Line', 'Ingredient Blend', 'Packaging Component', 'BEVERAGE']
     };
+  }
+
+  function visibleProductAccentPolishW439(name) {
+    return str(name)
+      .replace(/\bSiete\s+Maiz\b/g, 'Siete Maíz')
+      .replace(/\bSiete\s+MAIZ\b/g, 'Siete Maíz');
   }
 
   function kettleProductBuildPlanFixtureW432(opts) {
@@ -4397,7 +4403,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         ? `${brandName} ${shortProduct}`
       : shortProduct;
     const distributionBase = /siete/i.test(productForNames) && /ma[ií]z/i.test(productForNames) && /sea\s+salt/i.test(productForNames)
-        ? 'Siete Maiz Sea Salt Tortilla Chips'
+        ? 'Siete Maíz Sea Salt Tortilla Chips'
       : /sea salt/i.test(productForNames)
         ? 'Kettle Air Fried Sea Salt & Vinegar'
       : productForNames;
@@ -4464,6 +4470,62 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return plan;
   }
 
+  function visibleProductNarrativeW439(plan, opts) {
+    const productPlan = plan || {};
+    const options = opts || {};
+    const enableManufacturing = options.enableManufacturing === true;
+    const enableWip = options.enableWip === true;
+    const mode = enableWip ? 'wip' : (enableManufacturing ? 'manufacturing' : 'distribution');
+    const productBase = visibleProductAccentPolishW439(str(productPlan.productName || productPlan.distributionItemName || 'Product').replace(/\s+12-Count Case Pack$/i, ''));
+    const distributionItem = visibleProductAccentPolishW439(productPlan.distributionItemName || `${productBase} 12-Count Case Pack`);
+    const componentNames = (Array.isArray(productPlan.componentNames) ? productPlan.componentNames : []).slice(0, 3).map(visibleProductAccentPolishW439);
+    const operationNames = (Array.isArray(productPlan.operationNames) ? productPlan.operationNames : []).map(visibleProductAccentPolishW439);
+    return {
+      schema: 'idb.w439-visible-product-narrative.v1',
+      mode,
+      productBaseName: productBase,
+      productDisplayName: distributionItem,
+      distribution: {
+        itemName: distributionItem,
+        proofName: visibleProductAccentPolishW439(productPlan.distributionProofName || `${productBase} Retail Replenishment`),
+        supportName: visibleProductAccentPolishW439(productPlan.distributionSupportName || `${productBase} Channel Supply`),
+        cockpitSubtitle: 'Retail case-pack replenishment readiness',
+        storyHeadline: `Prove replenishment readiness for ${distributionItem}; then connect customer demand, case-pack availability, allocation, and fulfillment confidence.`,
+        proofMove: 'Move through Customer demand, Sales Order, Product SKU, replenishment flow, and channel supply support while staying in distribution and fulfillment scope.',
+        roiClaim: 'Protect retail replenishment readiness.',
+        competitiveQuestion: 'How do we know case-pack availability is current enough to trust?',
+        supportPathLabel: 'Retail case-pack replenishment proof'
+      },
+      manufacturing: {
+        assemblyName: visibleProductAccentPolishW439(productPlan.assemblyItemName || `${productBase} Finished Good`),
+        componentNames,
+        bomName: visibleProductAccentPolishW439(productPlan.bomName || `BOM - ${productBase}`),
+        bomRevisionName: visibleProductAccentPolishW439(productPlan.bomRevisionName || `Revision 1 - ${productBase}`),
+        workOrderName: visibleProductAccentPolishW439(productPlan.workOrderName || `WO - ${productBase}`),
+        cockpitSubtitle: 'Finished-good production readiness',
+        storyHeadline: `Prove production readiness for ${productBase} Finished Good; then connect customer demand, component availability, BOM structure, packaging readiness, and work order execution.`,
+        proofMove: 'Move through Customer demand, Finished Good, component availability, BOM structure, packaging readiness, and Work Order execution.',
+        roiClaim: 'Protect finished-good production readiness.',
+        competitiveQuestion: 'How do we know finished-good production readiness is current enough to trust?',
+        supportPathLabel: 'Finished-good production proof'
+      },
+      wip: {
+        routingName: visibleProductAccentPolishW439(productPlan.routingName || `Routing - ${productBase}`),
+        operationNames,
+        cockpitSubtitle: 'WIP routing and production readiness',
+        storyHeadline: `Prove routed production readiness for ${productBase}; then connect component inputs, operation sequence, work order execution, and finished case-pack output.`,
+        proofMove: operationNames.length ? `Move through ${operationNames.join(', ')} with component inputs, Work Order execution, and finished case-pack output.` : '',
+        roiClaim: 'Protect routed production readiness.',
+        competitiveQuestion: 'How do we know routed production readiness is current enough to trust?',
+        supportPathLabel: 'WIP routing proof'
+      },
+      noRegression: {
+        internalNamesPreserved: true,
+        modeLanguageMatchesToggles: true
+      }
+    };
+  }
+
   function applyProductBuildPlanToNamingPackW432(names, opts) {
     const out = sanitizeNamingPayload(Object.assign({}, names || {}));
     const plan = productBuildPlanW432(Object.assign({}, opts || {}, out || {}, {
@@ -4491,6 +4553,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       50: plan.operationNames[4]
     } : null;
     out._w432Mode = enableWip ? 'wip' : (enableManufacturing ? 'manufacturing' : 'create_new_item_only');
+    out._visibleProductNarrativeW439 = visibleProductNarrativeW439(plan, { enableManufacturing, enableWip });
     return out;
   }
 
@@ -5945,6 +6008,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       },
       productBuildPlanW432: resultNames._productBuildPlanW432 || null,
       productBuildPlanValidationW432: resultNames._toggleAwareNamingGuardrail && resultNames._toggleAwareNamingGuardrail.productBuildPlanValidationW432 || null,
+      visibleProductNarrativeW439: resultNames._visibleProductNarrativeW439 || null,
       records,
       demoTransaction,
       heroItem,
@@ -6035,6 +6099,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         conversationNotes: str(args.notes),
         demoPath: args.flowState && args.flowState.label || ''
       },
+      visibleProductNarrativeW439: resultNames._visibleProductNarrativeW439 || null,
       sidecarGeneratedNamesJson,
       partialGeneratedNamesJson: sidecarGeneratedNamesJson,
       finalGeneratedNamesJson: null
@@ -6883,6 +6948,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       extractWebsiteProductTermsW432,
       kettleProductBuildPlanFixtureW432,
       productBuildPlanW432,
+      visibleProductNarrativeW439,
       applyProductBuildPlanToNamingPackW432,
       validateProductBuildPlanForModeW432,
       generateNamingPack,

@@ -4382,6 +4382,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const distributionBase = /sea salt/i.test(productForNames)
       ? 'Kettle Air Fried Sea Salt & Vinegar'
       : productForNames;
+    const alternateProductCandidates = productTerms.productCandidates.filter(function (candidate) {
+      return candidate && candidate !== productTerms.selectedProductCandidate;
+    });
+    const componentNames = [
+      /sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Primary Material Input`,
+      /sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`,
+      /6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`
+    ];
     const plan = {
       schema: 'idb.w432-product-build-plan.v1',
       source: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
@@ -4391,15 +4399,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       brandName,
       sellableUnit: productTerms.sellableUnit,
       casePackName: productTerms.casePackName,
+      alternateProductCandidates,
+      roleProductSelections: {
+        distributionItem: productName,
+        distributionProof: productName,
+        distributionSupport: productName,
+        assembly: productName,
+        components: componentNames.slice(0, 3)
+      },
       distributionItemName: trimLen(`${distributionBase} ${productTerms.casePackName}`, 80),
       distributionProofName: trimLen(`${distributionBase} Retail Replenishment`, 80),
       distributionSupportName: trimLen(`${distributionBase} Channel Supply`, 80),
       assemblyItemName: trimLen(`${distributionBase} Finished Good`, 80),
-      componentNames: [
-        /sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Primary Material Input`,
-        /sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`,
-        /6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`
-      ],
+      componentNames,
       bomName: trimLen(`BOM - ${distributionBase}`, 80),
       bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
       workOrderName: trimLen(`WO - ${distributionBase}`, 80),

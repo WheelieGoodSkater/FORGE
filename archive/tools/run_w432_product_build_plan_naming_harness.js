@@ -56,6 +56,16 @@ function activeNameText(names) {
   });
 }
 
+function stripHtml(html) {
+  return String(html || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function main() {
   const results = [];
   const drawer = read(drawerPath);
@@ -136,11 +146,11 @@ function main() {
     creationAllowed: false
   });
 
-  assertCase(results, 'w432-marker-updated',
-    /@version\s+1\.0\.43/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.43';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W435';"),
-    'Drawer should identify W435 / 1.0.43 while preserving W432 product build plan naming.');
+  assertCase(results, 'w436-marker-updated',
+    /@version\s+1\.0\.44/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.44';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W436';"),
+    'Drawer should identify W436 / 1.0.44 while preserving W432 product build plan naming.');
 
   assertCase(results, 'w432-runner-test-hooks-present',
     runner.includes('__W432_TEST_HOOKS__') &&
@@ -188,6 +198,8 @@ function main() {
   assertCase(results, 'w432-nllm-advisory-mode-contract',
     advisoryRequest.modeAwareNamingContractW432 &&
       advisoryRequest.modeAwareNamingContractW432.selectedMode === 'wip' &&
+      advisoryRequest.modeAwareNamingContractW432.visibleProductNamingContractW436 &&
+      advisoryRequest.modeAwareNamingContractW432.visibleProductNamingContractW436.randomRunIdsForbiddenInVisibleNames === true &&
       advisoryRequest.modeAwareNamingContractW432.manufacturing.requiredNames.includes('workOrderName') &&
       advisoryRequest.modeAwareNamingContractW432.createNewItemOnly.forbiddenTerms.includes('Finished Good') &&
       advisoryRequest.modeAwareNamingContractW432.wip.requiredNames.includes('operationNames') &&
@@ -251,12 +263,121 @@ function main() {
     name: record.name,
     recordName: record.recordName
   })));
-  assertCase(results, 'w435-drawer-repairs-generic-item-display-from-product-plan',
+  assertCase(results, 'w436-visible-names-strip-run-suffix',
+    drawerHooks.consultantVisibleRecordNameW436('Kettle Jalapeno Retail Replenishment - SNACKS-SA3N09-JQ6 - RUN') === 'Kettle Jalapeno Retail Replenishment' &&
+      drawerHooks.consultantVisibleRecordNameW436('Kettle Jalapeno Channel Supply - SNACKS-SA3N09-JQ6 - RUN') === 'Kettle Jalapeno Channel Supply' &&
+      /Kettle Air Fried Sea Salt & Vinegar Retail Replenishment/.test(repairedVisibleText) &&
+      /Kettle Air Fried Sea Salt & Vinegar Channel Supply/.test(repairedVisibleText) &&
+      !/\bSNACKS-/.test(repairedVisibleText) &&
+      !/\bBEVERAGE-/.test(repairedVisibleText) &&
+      !/\bRUN\b/.test(repairedVisibleText),
+    repairedVisibleText);
+
+  assertCase(results, 'w436-all-visible-item-roles-use-product-plan',
     /Retail Replenishment/.test(repairedVisibleText) &&
       /Channel Supply/.test(repairedVisibleText) &&
       !/Finished Good Replenishment/.test(repairedVisibleText) &&
-      !/Finished Good Packaging/.test(repairedVisibleText),
+      !/Finished Good Packaging/.test(repairedVisibleText) &&
+      !/Product Availability SKU/.test(repairedVisibleText) &&
+      !/Branch Availability\s*\/\s*Replenishment Flow/.test(repairedVisibleText) &&
+      !/Fulfillment Support SKU/.test(repairedVisibleText),
     repairedVisibleText);
+
+  const nonMfgCockpitHtml = drawerHooks.renderW415DemoCockpit({
+    state: { customerName: 'Kettle Brand Snacks' },
+    lane: context.lane,
+    value: {
+      customer: 'Kettle Brand Snacks',
+      roiAudit: { claim: 'Kettle Brand Snacks can protect finished-good readiness.', baselineNeeded: 'Customer-confirmed miss rate.' },
+      objections: ['How do we know finished-good readiness is current enough to trust?'],
+      groundedCompetitiveSummary: 'Prove the same decision through Finished Good.',
+      grounded: {}
+    },
+    script: { say: 'Prove finished-good readiness with ingredient availability and batch schedule.', show: 'Move through ingredient and batch records.' },
+    finalNavigation: {
+      runCanUseImportedFinalNames: true,
+      proofQualityGate: { runReady: true },
+      scriptPivotObjects: repairedImport.displayObjects.concat(repairedImport.componentItems).map((record) => Object.assign({}, record, {
+        linkAuthority: { openable: true, url: record.url }
+      }))
+    },
+    storyContractW373: {
+      proofLabel: 'Finished-good production readiness',
+      proofMove: 'Prove finished-good production readiness.'
+    },
+    websiteEvidence: { confidence: { displayText: 'Needs confirmation', scoreLabel: 'medium' } },
+    competitiveAdvisory: { runCue: 'Finished-good readiness battlecard.' }
+  });
+  const nonMfgCockpitText = stripHtml(nonMfgCockpitHtml);
+  assertCase(results, 'w436-non-mfg-copy-has-no-manufacturing-language',
+    !/\b(finished-good readiness|ingredient|batch|BOM|work order|routing|production readiness)\b/i.test(nonMfgCockpitText) &&
+      /\breplenishment\b/i.test(nonMfgCockpitText) &&
+      /\bcase-pack\b/i.test(nonMfgCockpitText) &&
+      /\b(allocation|fulfillment)\b/i.test(nonMfgCockpitText) &&
+      /\b(channel supply|availability)\b/i.test(nonMfgCockpitText),
+    nonMfgCockpitText);
+
+  const mfgCockpitHtml = drawerHooks.renderW415DemoCockpit({
+    state: { customerName: 'Kettle Brand Snacks' },
+    lane: context.lane,
+    value: { customer: 'Kettle Brand Snacks', roiAudit: { claim: 'Finished Good readiness depends on component and BOM confidence.' }, grounded: {} },
+    script: { say: 'Prove Finished Good readiness with BOM and Work Order records.', show: 'Open components, BOM, and Work Order.' },
+    finalNavigation: {
+      runCanUseImportedFinalNames: true,
+      proofQualityGate: { runReady: true },
+      scriptPivotObjects: [
+        { consultantLabel: 'Assembly', name: plan.assemblyItemName, linkAuthority: { openable: true, url: 'https://example.test/assembly' } },
+        { consultantLabel: 'Component item 1', name: plan.componentNames[0], linkAuthority: { openable: true, url: 'https://example.test/component' } },
+        { consultantLabel: 'BOM', name: plan.bomName, linkAuthority: { openable: true, url: 'https://example.test/bom' } },
+        { consultantLabel: 'Work Order', name: plan.workOrderName, linkAuthority: { openable: true, url: 'https://example.test/wo' } }
+      ]
+    },
+    storyContractW373: { proofLabel: 'Finished-good production readiness' },
+    websiteEvidence: {}
+  });
+  const mfgCockpitText = stripHtml(mfgCockpitHtml);
+  assertCase(results, 'w436-mfg-copy-keeps-manufacturing-language',
+    /\bFinished Good\b/i.test(mfgCockpitText) &&
+      /\bcomponent\b/i.test(mfgCockpitText) &&
+      /\bBOM\b/i.test(mfgCockpitText) &&
+      /\bWork Order\b/i.test(mfgCockpitText) &&
+      /Sea Salt & Vinegar|Kettle Potato Slice Input/i.test(mfgCockpitText),
+    mfgCockpitText);
+
+  const wipCockpitHtml = drawerHooks.renderW415DemoCockpit({
+    state: { customerName: 'Kettle Brand Snacks' },
+    lane: context.lane,
+    value: { customer: 'Kettle Brand Snacks', roiAudit: { claim: 'Routing operation readiness is visible.' }, grounded: {} },
+    script: { say: 'Use routing operations for the chip process.', show: plan.operationNames.join(', ') },
+    finalNavigation: {
+      runCanUseImportedFinalNames: true,
+      proofQualityGate: { runReady: true },
+      scriptPivotObjects: [
+        { consultantLabel: 'Routing', name: plan.routingName, linkAuthority: { openable: true, url: 'https://example.test/routing' } },
+        { consultantLabel: 'Operation names', name: plan.operationNames.join(', '), linkAuthority: { openable: true, url: 'https://example.test/ops' } }
+      ]
+    },
+    storyContractW373: { proofLabel: 'WIP routing readiness' },
+    websiteEvidence: {}
+  });
+  const wipCockpitText = stripHtml(wipCockpitHtml);
+  assertCase(results, 'w436-wip-copy-keeps-routing-language',
+    /\bRouting\b/i.test(wipCockpitText) &&
+      /Kettle Cook/.test(wipCockpitText) &&
+      /Air Finish/.test(wipCockpitText) &&
+      /Season/.test(wipCockpitText),
+    wipCockpitText);
+
+  assertCase(results, 'w436-product-candidates-captured',
+    Array.isArray(plan.alternateProductCandidates) &&
+      plan.alternateProductCandidates.some((candidate) => /Sea Salt & Vinegar/i.test(candidate)) &&
+      plan.alternateProductCandidates.some((candidate) => /Jalapeno/i.test(candidate)) &&
+      plan.alternateProductCandidates.some((candidate) => /Himalayan Salt/i.test(candidate)) &&
+      plan.alternateProductCandidates.some((candidate) => /Texas BBQ/i.test(candidate)) &&
+      !/\bbeverage\b/i.test(JSON.stringify(plan.alternateProductCandidates)) &&
+      plan.roleProductSelections &&
+      /Air Fried Sea Salt & Vinegar/i.test(plan.roleProductSelections.distributionItem),
+    JSON.stringify({ alternateProductCandidates: plan.alternateProductCandidates, roleProductSelections: plan.roleProductSelections }));
 
   assertCase(results, 'w432-routing-consumes-product-plan-operations',
     runner.includes('opNames.op40') &&

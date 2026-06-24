@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.43
+// @version      1.0.44
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.43';
-  const CURRENT_UX_BLOCK_W346 = 'W435';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.44';
+  const CURRENT_UX_BLOCK_W346 = 'W436';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14269,9 +14269,28 @@
     return /\b(Finished Good(?:\s+Replenishment|\s+Packaging\s*\/\s*Case Pack)?|Product Availability SKU|Branch Availability\s*\/\s*Replenishment Flow|Safe Substitute Fulfillment Support SKU|Ingredient Blend|Packaging Component|Production Line|BEVERAGE)\b/i.test(String(name || ''));
   }
 
+  function visibleNameHasInternalRunSuffixW436(name) {
+    const value = String(name || '');
+    return /\s+-\s+(?:SNACKS|BEVERAGE|FOOD(?:MANUFACTURING|[-_][A-Z]+)*|FOOD_BEVERAGE)-[A-Z0-9]+(?:-[A-Z0-9]+)*\s+-\s+RUN\b/i.test(value) ||
+      /\s+-\s+[A-Z0-9]{5,}(?:-[A-Z0-9]{2,})+\s+-\s+RUN\b/i.test(value) ||
+      /\s+-\s+(?:SNACKS|BEVERAGE|FOOD(?:MANUFACTURING|[-_][A-Z]+)*|FOOD_BEVERAGE)-[A-Z0-9]+(?:-[A-Z0-9]+)*$/i.test(value);
+  }
+
+  function consultantVisibleRecordNameW436(name) {
+    const value = String(name || '').trim();
+    if (!value) return '';
+    return value
+      .replace(/\s+-\s+(?:SNACKS|BEVERAGE|FOOD(?:MANUFACTURING|[-_][A-Z]+)*|FOOD_BEVERAGE)-[A-Z0-9]+(?:-[A-Z0-9]+)*\s+-\s+RUN\b/ig, '')
+      .replace(/\s+-\s+[A-Z0-9]{5,}(?:-[A-Z0-9]{2,})+\s+-\s+RUN\b/ig, '')
+      .replace(/\s+-\s+(?:SNACKS|BEVERAGE|FOOD(?:MANUFACTURING|[-_][A-Z]+)*|FOOD_BEVERAGE)-[A-Z0-9]+(?:-[A-Z0-9]+)*$/ig, '')
+      .replace(/\s+-\s+RUN\b/ig, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
   function productPlanDisplayOverrideW435(payload, role, index, currentName) {
     const plan = payload && payload.productBuildPlanW432;
-    if (!plan || !genericReturnedItemNameW435(currentName)) return '';
+    if (!plan || (!genericReturnedItemNameW435(currentName) && !visibleNameHasInternalRunSuffixW436(currentName))) return '';
     const roleKey = String(role || '').toLowerCase();
     const manufacturingMode = !!(payload && (payload.enableManufacturing || payload.assembly || payload.bom || payload.bomRevision || payload.workOrder));
     if (/hero_item|heroitem|product_sku|branch_or_product_sku/.test(roleKey)) return plan.distributionItemName || plan.assemblyItemName || '';
@@ -14292,12 +14311,23 @@
   function normalizeDccFinalObjectWithProductPlanW435(role, label, candidate, payload, index) {
     const normalized = normalizeDccFinalObject(role, label, candidate);
     const override = productPlanDisplayOverrideW435(payload, role, index || 0, normalized.name || normalized.recordName);
-    if (!override) return normalized;
+    if (!override) {
+      const visibleName = consultantVisibleRecordNameW436(normalized.name || normalized.recordName);
+      if (!visibleName || (visibleName === normalized.name && visibleName === normalized.recordName)) return normalized;
+      return Object.assign({}, normalized, {
+        name: visibleName,
+        recordName: visibleName,
+        visibleNameCleanedW436: true,
+        internalName: normalized.internalName || normalized.name || normalized.recordName
+      });
+    }
+    const visibleOverride = consultantVisibleRecordNameW436(override);
     return Object.assign({}, normalized, {
-      name: override,
-      recordName: override,
+      name: visibleOverride,
+      recordName: visibleOverride,
       productBuildPlanDisplayOverrideW435: true,
-      internalName: normalized.internalName || normalized.name
+      visibleNameCleanedW436: visibleOverride !== (normalized.name || normalized.recordName),
+      internalName: normalized.internalName || normalized.name || normalized.recordName
     });
   }
 
@@ -19853,6 +19883,15 @@
     const modeAwareNamingContractW432 = {
       schema: 'idb.w432-mode-aware-product-build-naming-contract.v1',
       selectedMode: selectedToggles.enableWip ? 'wip' : (selectedToggles.enableManufacturing ? 'manufacturing' : 'create_new_item_only'),
+      visibleProductNamingContractW436: {
+        schema: 'idb.w436-visible-product-naming-contract.v1',
+        mustReturn: ['primaryProductCandidate', 'alternateProductCandidates'],
+        visibleNamesMustUseWebsiteProductFlavorPackTerms: true,
+        randomRunIdsForbiddenInVisibleNames: true,
+        laneCodesForbiddenInVisibleNames: ['SNACKS-*', 'BEVERAGE-*', 'FOOD-*'],
+        useAlternateProductsOnlyForDemoClarity: true,
+        roleDifferentiationShouldPreferBusinessTerms: ['12-Count Case Pack', 'Retail Replenishment', 'Channel Supply']
+      },
       createNewItemOnly: {
         requiredNameBasis: ['website product/flavor/pack term', 'distribution/replenishment term'],
         allowedTerms: ['SKU', 'item', 'case pack', 'replenishment', 'availability', 'allocation', 'fulfillment', 'retail case', 'channel supply'],
@@ -19922,6 +19961,8 @@
       mustReturn: [
         'productSeed',
         'productFamily',
+        'primaryProductCandidate',
+        'alternateProductCandidates',
         'demandMoment',
         'recordNames',
         'sourceBasis',
@@ -19937,7 +19978,9 @@
         'changeDccToggles',
         'changePacketOrder',
         'inventVerifiedWebsiteFacts',
-        'hideCreateBlockers'
+        'hideCreateBlockers',
+        'useRandomRunIdsAsVisibleNames',
+        'useLaneCodesAsVisibleNames'
       ],
       noRegression: {
         advisoryOnly: true,
@@ -19949,7 +19992,8 @@
         noPacketOrderChange: true,
         websiteProductNamesRequiredWhenAvailable: true,
         genericProductFallbackMustBeBlocked: true,
-        modeAwareProductBuildPlanRequiredW432: true
+        modeAwareProductBuildPlanRequiredW432: true,
+        visibleRunSuffixesForbiddenW436: true
       }
     };
   }
@@ -19980,6 +20024,7 @@
     ].join(' ');
     const genericNamePattern = /\b(Product Availability SKU|Branch Availability\s*\/\s*Replenishment Flow|Safe Substitute Fulfillment Support SKU|Finished Good Variety Pack|Product\s*\/\s*SKU|Proof Item|Demo Product|Generic SKU|Inventory\s*\/\s*Fulfillment|Ingredient Blend|Packaging Component|Production Line)\b/i;
     const beverageLeakFailures = recordNames.concat([response.productSeed || '', response.productFamily || '']).filter((name) => /\bBEVERAGE\b/i.test(String(name || '')));
+    const visibleRunSuffixFailures = recordNames.filter((name) => visibleNameHasInternalRunSuffixW436(name));
     const standaloneManufacturingFailures = recordNames.filter((name) => {
       const value = String(name || '');
       if (!/\bFinished Good\b/i.test(value)) return false;
@@ -20000,6 +20045,7 @@
     if (uniqueCandidates.length && !groundedCandidate) blockedReasons.push('no_returned_name_uses_website_product_candidate');
     if (genericFailures.length) blockedReasons.push('generic_product_or_finished_good_name_returned');
     if (beverageLeakFailures.length) blockedReasons.push('broad_beverage_lane_leaked_into_customer_name');
+    if (visibleRunSuffixFailures.length) blockedReasons.push('visible_internal_run_suffix_returned');
     if (standaloneManufacturingFailures.length) blockedReasons.push('finished_good_missing_website_product_term');
     if (!sourceBasisWebsiteGrounded) blockedReasons.push('source_basis_not_website_grounded');
     if (response.creationAllowed === true || response.writeAuthority && response.writeAuthority !== 'none') blockedReasons.push('nllm_advisory_boundary_violated');
@@ -20011,6 +20057,7 @@
       websiteProductCandidates: uniqueCandidates,
       groundedCandidate,
       genericFailures,
+      visibleRunSuffixFailures,
       sourceBasis: sourceBasis || '',
       noRegression: {
         advisoryOnly: true,
@@ -21365,11 +21412,11 @@
     const label = consultantRunNavigationLabelW332(item);
     const raw = String(item && (item.recordName || item.name) || '').trim();
     if (!raw) return '';
-    const clean = raw
+    const clean = consultantVisibleRecordNameW436(raw
       .replace(/^SCAI\s*-\s*/i, '')
       .replace(/\bProduct\s+Availability\s+SK\b/i, 'Product Availability SKU')
       .replace(/\s+-\s+[A-Z0-9]{4,}(?:-[A-Z0-9]{2,})*$/i, '')
-      .trim();
+      .trim());
     if (!clean) return '';
     if (/Product SKU/i.test(label) && /\bProduct Availability SKU$/i.test(clean) && !/\b(?:Breaker|Panel|Conduit|Fitting|Disconnect|Safety Stock|Wire|Replacement Part)\b/i.test(clean)) return '';
     if (/Availability\/Replenishment Flow|Branch Availability/i.test(label) && /^Branch Availability\s*\/\s*Replenishment Flow(?:\s+-\s+.+)?$/i.test(clean)) return '';
@@ -24416,17 +24463,22 @@
       .replace(/\breduce demo risk around\b/gi, 'protect')
       .replace(/\bdemo demand\b/gi, 'customer demand')
       .replace(/\bdemo risk\b/gi, 'buyer risk'), limit || 140);
-    const roiCopy = cockpitCopy((value.roiAudit && value.roiAudit.claim) || value.groundedRoiSummary || storyContract.valueDecision || 'Prove the largest buyer value with returned NetSuite records.', 145);
+    let roiCopy = cockpitCopy((value.roiAudit && value.roiAudit.claim) || value.groundedRoiSummary || storyContract.valueDecision || 'Prove the largest buyer value with returned NetSuite records.', 145);
     const baselineCopy = value.roiAudit && value.roiAudit.baselineNeeded
       ? value.roiAudit.baselineNeeded
       : 'Capture a customer-confirmed baseline before claiming measured savings.';
-    const objectionCopy = cockpitCopy(arrayValue(value.objections)[0] || arrayValue(value.objectionPath)[0] || script.close || 'Ask what would still make the current workflow hard to trust.', 130);
-    const watchOutCopy = cockpitCopy(competitiveAdvisory.runCue || (value.competitive && value.competitive.competitorSafeContrast) || value.groundedCompetitiveSummary || 'Treat competitor pressure as advisory until the buyer confirms it.', 135);
+    let objectionCopy = cockpitCopy(arrayValue(value.objections)[0] || arrayValue(value.objectionPath)[0] || script.close || 'Ask what would still make the current workflow hard to trust.', 130);
+    let watchOutCopy = cockpitCopy(competitiveAdvisory.runCue || (value.competitive && value.competitive.competitorSafeContrast) || value.groundedCompetitiveSummary || 'Treat competitor pressure as advisory until the buyer confirms it.', 135);
+    if (useDistributionCockpitCopyW434) {
+      roiCopy = `${prospect} can protect retail replenishment readiness.`;
+      objectionCopy = 'How do we know case-pack availability is current enough to trust?';
+      watchOutCopy = 'If competitive pressure comes up, ask which replenishment or fulfillment workflow they trust today, then prove the same decision through returned records.';
+    }
     const cautionCopy = cockpitCopy(value.grounded && value.grounded.unsupportedClaimBlocker && value.grounded.unsupportedClaimBlocker.blockedClaims && value.grounded.unsupportedClaimBlocker.blockedClaims[0]
       || 'Measured savings require a customer baseline before they can be claimed.', 125);
     const recordRows = objects.slice(0, 5).map((item) => {
       const label = consultantRunNavigationLabelW332(item);
-      const name = consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item);
+      const name = consultantVisibleRecordNameW436(consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW334(item));
       const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
       return `
         <div class="idb-w415-cockpit-record-row">
@@ -29174,6 +29226,7 @@
       drawerDisplayVersionW346,
       runnerProofNamingMarkerW341,
       consultantProofRecordDisplayNameW341,
+      consultantVisibleRecordNameW436,
       verifiedRecordLinkAuthorityV1,
       finalGeneratedNamesNavigationIntegrationV1,
       finalGeneratedNamesOperatorCopyNavigationQaV1,

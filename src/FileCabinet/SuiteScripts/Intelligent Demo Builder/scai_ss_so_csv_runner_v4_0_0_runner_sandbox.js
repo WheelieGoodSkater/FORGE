@@ -1228,6 +1228,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         enableManufacturing: finalEnableManufacturing,
         enableWip: effectiveEnableWip,
         woId,
+        assemblyBomTelemetry,
+        workOrderTelemetry,
         routingId,
         routingResult,
         confirmedBuildRequestJson,
@@ -3465,6 +3467,36 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return `${trimLen(base, Math.max(1, limit - marker.length))}${marker}`;
   }
 
+  function stripInternalRunSuffixW441(name) {
+    return visibleProductAccentPolishW439(String(name || '')
+      .replace(/^SCAI\s*-\s*/i, '')
+      .replace(/\s+-\s+(?:SNACKS|BEVERAGE|FOOD(?:MANUFACTURING|[-_][A-Z]+)*|FOOD_BEVERAGE)-[A-Z0-9]+(?:-[A-Z0-9]+)*\s+-\s+RUN\b/ig, '')
+      .replace(/\s+-\s+[A-Z0-9]{5,}(?:-[A-Z0-9]{2,})+\s+-\s+RUN\b/ig, '')
+      .replace(/\s+-\s+(?:SNACKS|BEVERAGE|FOOD(?:MANUFACTURING|[-_][A-Z]+)*|FOOD_BEVERAGE)-[A-Z0-9]+(?:-[A-Z0-9]+)*$/ig, '')
+      .replace(/\s+-\s+RUN\b/ig, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim());
+  }
+
+  function cleanCustomerFacingCreatedNameW441(name, role, productBuildPlan, mode) {
+    const plan = productBuildPlan || {};
+    const roleKey = String(role || '').toLowerCase();
+    const isManufacturing = mode === 'manufacturing' || mode === 'wip';
+    if (/hero|sellable|product/.test(roleKey)) return stripInternalRunSuffixW441(isManufacturing ? (plan.distributionItemName || name) : (plan.distributionItemName || name));
+    if (/assembly|finished/.test(roleKey)) return stripInternalRunSuffixW441(plan.assemblyItemName || name);
+    if (/component1|component_1/.test(roleKey)) return stripInternalRunSuffixW441(plan.componentNames && plan.componentNames[0] || name);
+    if (/component2|component_2/.test(roleKey)) return stripInternalRunSuffixW441(plan.componentNames && plan.componentNames[1] || name);
+    if (/component3|component_3/.test(roleKey)) return stripInternalRunSuffixW441(plan.componentNames && plan.componentNames[2] || name);
+    if (/component|ingredient|material/.test(roleKey)) return stripInternalRunSuffixW441(name);
+    if (/bomrevision|bom_revision|revision/.test(roleKey)) return stripInternalRunSuffixW441(plan.bomRevisionName || name);
+    if (/\bbom\b|billofmaterials/.test(roleKey)) return stripInternalRunSuffixW441(plan.bomName || name);
+    if (/workorder|work_order/.test(roleKey)) return stripInternalRunSuffixW441(plan.workOrderName || name);
+    if (/routing/.test(roleKey)) return stripInternalRunSuffixW441(plan.routingName || name);
+    if (/proof|replenishment|matrix/.test(roleKey)) return stripInternalRunSuffixW441(plan.distributionProofName || name);
+    if (/support/.test(roleKey)) return stripInternalRunSuffixW441(plan.distributionSupportName || name);
+    return stripInternalRunSuffixW441(name);
+  }
+
   // ----------------------------
   // Manufacturing anchors
   // ----------------------------
@@ -5304,21 +5336,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       });
 
       if (ids.bomId) {
-        const bomNamePair = buildDifferentiatedNames(names.bom_name, extId, runUniqueSuffix);
+        const bomName = cleanCustomerFacingCreatedNameW441(names.bom_name, 'bom', names._productBuildPlanW432, enableManufacturing ? 'manufacturing' : 'distribution');
         safeTry(() => record.submitFields({
           type: 'bom',
           id: Number(ids.bomId),
-          values: { name: bomNamePair.itemIdName },
+          values: { name: bomName },
           options: { enableSourcing: true, ignoreMandatoryFields: true }
         }));
       }
 
       if (ids.bomRevId) {
-        const bomRevNamePair = buildDifferentiatedNames(names.bom_revision_name, extId, runUniqueSuffix);
+        const bomRevName = cleanCustomerFacingCreatedNameW441(names.bom_revision_name, 'bomRevision', names._productBuildPlanW432, enableManufacturing ? 'manufacturing' : 'distribution');
         safeTry(() => record.submitFields({
           type: 'bomrevision',
           id: Number(ids.bomRevId),
-          values: { name: bomRevNamePair.itemIdName },
+          values: { name: bomRevName },
           options: { enableSourcing: true, ignoreMandatoryFields: true }
         }));
       }
@@ -5920,6 +5952,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       enableWip: args.enableWip,
       confirmedBuildRequestJson: args.confirmedBuildRequestJson
     });
+    const productPlanW441 = resultNames._productBuildPlanW432 || null;
+    const modeW441 = args.enableWip ? 'wip' : (args.enableManufacturing ? 'manufacturing' : 'distribution');
     const customer = ensureIdbCustomerForResult({
       prospect,
       website: args.website,
@@ -5929,7 +5963,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const heroItem = normalizeIdbRecord({
       role: 'heroItem',
       type: 'inventoryitem',
-      name: readRecordDisplayName('inventoryitem', args.ids && args.ids.heroItemId, resultNames.hero_item_name || `${prospect} Hero Item`),
+      name: cleanCustomerFacingCreatedNameW441(readRecordDisplayName('inventoryitem', args.ids && args.ids.heroItemId, resultNames.hero_item_name || `${prospect} Hero Item`), 'heroItem', productPlanW441, modeW441),
       internalId: args.ids && args.ids.heroItemId,
       label: laneVocabularyPolicy && laneVocabularyPolicy.finalResultRoleLabels && laneVocabularyPolicy.finalResultRoleLabels.heroItem
     });
@@ -5956,7 +5990,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const assemblyItem = args.enableManufacturing && args.ids && args.ids.assemblyId ? normalizeIdbRecord({
       role: 'assemblyItem',
       type: 'assemblyitem',
-      name: readRecordDisplayName('assemblyitem', args.ids.assemblyId, resultNames.assembly_name),
+      name: cleanCustomerFacingCreatedNameW441(readRecordDisplayName('assemblyitem', args.ids.assemblyId, resultNames.assembly_name), 'assembly', productPlanW441, modeW441),
       internalId: args.ids.assemblyId,
       label: 'Assembly / Finished Good'
     }) : null;
@@ -5967,31 +6001,55 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     ].filter(c => c.id).map((component, index) => normalizeIdbRecord({
       role: `componentItem${index + 1}`,
       type: 'inventoryitem',
-      name: readRecordDisplayName('inventoryitem', component.id, component.name),
+      name: cleanCustomerFacingCreatedNameW441(readRecordDisplayName('inventoryitem', component.id, component.name), `component${index + 1}`, productPlanW441, modeW441),
       internalId: component.id,
-      label: 'Ingredient / Component Item'
+      label: `Component Item ${index + 1}`
     })) : [];
     const bomRecord = args.enableManufacturing && args.ids && args.ids.bomId ? normalizeIdbRecord({
       role: 'bom',
       type: 'bom',
-      name: readRecordDisplayName('bom', args.ids.bomId, resultNames.bom_name),
+      name: cleanCustomerFacingCreatedNameW441(readRecordDisplayName('bom', args.ids.bomId, resultNames.bom_name), 'bom', productPlanW441, modeW441),
       internalId: args.ids.bomId,
       label: 'Bill of Materials'
     }) : null;
     const bomRevisionRecord = args.enableManufacturing && args.ids && args.ids.bomRevId ? normalizeIdbRecord({
       role: 'bomRevision',
       type: 'bomrevision',
-      name: readRecordDisplayName('bomrevision', args.ids.bomRevId, resultNames.bom_revision_name),
+      name: cleanCustomerFacingCreatedNameW441(readRecordDisplayName('bomrevision', args.ids.bomRevId, resultNames.bom_revision_name), 'bomRevision', productPlanW441, modeW441),
       internalId: args.ids.bomRevId,
       label: 'BOM Revision'
     }) : null;
     const workOrderRecord = args.enableManufacturing && args.woId ? normalizeIdbRecord({
       role: 'workOrder',
       type: 'workorder',
-      name: (resultNames._productBuildPlanW432 && resultNames._productBuildPlanW432.workOrderName) || readRecordDisplayName('workorder', args.woId, 'Work Order'),
+      name: cleanCustomerFacingCreatedNameW441((resultNames._productBuildPlanW432 && resultNames._productBuildPlanW432.workOrderName) || readRecordDisplayName('workorder', args.woId, 'Work Order'), 'workOrder', productPlanW441, modeW441),
       internalId: args.woId,
       label: 'Work Order'
     }) : null;
+    const workOrderDiagnosticRecord = args.enableManufacturing && !workOrderRecord && args.workOrderTelemetry && args.workOrderTelemetry.status && args.workOrderTelemetry.status !== 'not-attempted' ? {
+      role: 'workOrderDiagnostic',
+      label: 'Work Order Diagnostic',
+      type: 'workorder_diagnostic',
+      recordType: 'workorder_diagnostic',
+      name: `Work Order Diagnostic - ${cleanCustomerFacingCreatedNameW441(resultNames.work_order_name || (productPlanW441 && productPlanW441.workOrderName) || `WO - ${prospect}`, 'workOrder', productPlanW441, modeW441)}`,
+      internalId: '',
+      id: '',
+      url: '',
+      status: args.workOrderTelemetry.status || 'best_effort_failed',
+      diagnostic: {
+        assemblyId: Number(args.ids && args.ids.assemblyId || 0) || null,
+        assemblyRecordType: 'assemblyitem',
+        itemType: 'assemblyitem',
+        bomId: Number(args.ids && args.ids.bomId || 0) || null,
+        bomRevId: Number(args.ids && args.ids.bomRevId || 0) || null,
+        subsidiaryId: Number(args.subsidiaryId || 0) || null,
+        locationId: Number(args.locationId || 0) || null,
+        exactFieldAttempted: 'assemblyitem,item',
+        errorName: args.workOrderTelemetry.failureType || '',
+        errorMessage: args.workOrderTelemetry.errorMessage || ''
+      },
+      workOrderTelemetry: args.workOrderTelemetry
+    } : null;
     const routingRecord = args.enableWip && args.routingId ? normalizeIdbRecord({
       role: 'routing',
       type: 'manufacturingrouting',
@@ -6018,6 +6076,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (bomRecord) records.bom = bomRecord;
     if (bomRevisionRecord) records.bomRevision = bomRevisionRecord;
     if (workOrderRecord) records.workOrder = workOrderRecord;
+    if (workOrderDiagnosticRecord) records.workOrderDiagnostic = workOrderDiagnosticRecord;
     if (routingRecord) records.routing = routingRecord;
 
     const sidecarGeneratedNamesJson = {
@@ -6049,8 +6108,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       bom: bomRecord,
       bomRevision: bomRevisionRecord,
       workOrder: workOrderRecord,
+      workOrderDiagnostics: workOrderDiagnosticRecord,
       routing: routingRecord,
       componentItems: args.enableManufacturing ? manufacturingComponents : [componentItem].filter(Boolean),
+      assemblyBomTelemetry: args.assemblyBomTelemetry || null,
+      workOrderTelemetry: args.workOrderTelemetry || null,
       routingDiagnostics: args.routingResult || null,
       transactionResolution: {
         status: 'pending_transaction_resolution',
@@ -6276,7 +6338,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       safeTry(() => record.submitFields({
         type: 'inventoryitem',
         id: Number(id),
-        values: { itemid: name, displayname: name },
+        values: { itemid: name, displayname: stripInternalRunSuffixW441(name) },
         options: { enableSourcing: true, ignoreMandatoryFields: true }
       }));
     }
@@ -6346,7 +6408,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         const rec = record.create({ type: record.Type.INVENTORY_ITEM, isDynamic: false });
         rec.setValue({ fieldId: 'externalid', value: attemptExternalId });
         rec.setValue({ fieldId: 'itemid', value: attemptName });
-        safeTry(() => rec.setValue({ fieldId: 'displayname', value: attemptName }));
+        safeTry(() => rec.setValue({ fieldId: 'displayname', value: stripInternalRunSuffixW441(baseName) }));
         try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
         catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
         if (locationId) {
@@ -6869,7 +6931,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const cleanBase = String(baseName || 'Demo').replace(/^SCAI\s*-\s*/i, '').trim() || 'Demo';
     const suffix = customerFacingRunSuffixW432(runUniqueSuffix || shortExtSuffix(extId)).slice(0, 20);
     return {
-      displayName: buildUniqueRecordName(`SCAI - ${cleanBase}`, suffix, 120),
+      displayName: trimLen(cleanBase, 120),
       itemIdName: buildUniqueRecordName(`SCAI - ${cleanBase}`, suffix, 60),
       suffix
     };
@@ -6986,6 +7048,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       validateProductBuildPlanForModeW432,
       generateNamingPack,
       applyToggleAwareNamingGuardrails,
+      cleanCustomerFacingCreatedNameW441,
       customerFacingRunSuffixW432,
       resolveRoutingNames
     }

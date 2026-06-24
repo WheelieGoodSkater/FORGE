@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.48
+// @version      1.0.49
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.48';
-  const CURRENT_UX_BLOCK_W346 = 'W440';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.49';
+  const CURRENT_UX_BLOCK_W346 = 'W441';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -13803,7 +13803,7 @@
   }
 
   function isSupportedNetSuiteRecordPath(url) {
-    return /\/app\/(common\/entity\/custjob|accounting\/transactions\/salesord|accounting\/transactions\/workord|common\/item\/item|common\/custom\/custrecordentry)\.nl\?/i.test(String(url || ''));
+    return /\/app\/(common\/entity\/custjob|accounting\/transactions\/salesord|accounting\/transactions\/workord|accounting\/manufacturing\/bom|accounting\/manufacturing\/bomrevision|accounting\/manufacturing\/routing|common\/item\/item|common\/custom\/custrecordentry)\.nl\?/i.test(String(url || ''));
   }
 
   function currentNetSuiteOrigin() {
@@ -14425,8 +14425,14 @@
       item && item.name,
       item && item.recordName
     ].filter(Boolean).join(' ')).join(' ');
-    if (toggles.enableWip || /\b(routing|wip|operation names|work center)\b/i.test(objectText)) return 'wip';
-    if (toggles.enableManufacturing || /\b(assembly|bom|work\s*order|finished\s+good|component item|ingredient|raw material|material input)\b/i.test(objectText)) return 'manufacturing';
+    const hasReturnedObjects = arrayValue(objects).length > 0;
+    const hasReturnedWipGraph = /\b(routing|wip|operation names|work center)\b/i.test(objectText);
+    const hasReturnedManufacturingGraph = /\b(assembly|bom|bill of materials|bom revision|work\s*order|workorder)\b/i.test(objectText);
+    if (hasReturnedWipGraph) return 'wip';
+    if (hasReturnedManufacturingGraph) return 'manufacturing';
+    if (hasReturnedObjects) return 'distribution';
+    if (toggles.enableWip) return 'wip';
+    if (toggles.enableManufacturing) return 'manufacturing';
     return 'distribution';
   }
 
@@ -14528,7 +14534,8 @@
       if (/support|component|sku/.test(key)) return narrative.distribution.supportName;
       return '';
     }
-    if (/assembly|finished|hero/.test(key)) return narrative.manufacturing.assemblyName;
+    if (/hero|sellable|product_sku|product sku/.test(key)) return narrative.distribution.itemName;
+    if (/assembly|finished/.test(key)) return narrative.manufacturing.assemblyName;
     if (/bom_revision|bom revision/.test(key)) return narrative.manufacturing.bomRevisionName;
     if (/\bbom\b/.test(key)) return narrative.manufacturing.bomName;
     if (/work_order|work order|workorder/.test(key)) return narrative.manufacturing.workOrderName;
@@ -14544,13 +14551,20 @@
     if (!(record && typeof record === 'object')) return record;
     const override = visibleNarrativeRecordNameW439(record, narrative);
     const current = consultantVisibleRecordNameW436(record.name || record.recordName);
+    const roleLabelText = `${record.role || ''} ${record.canonicalRole || ''} ${record.outputRole || ''} ${record.label || ''} ${record.consultantLabel || ''}`.toLowerCase();
     const strongProductIdentity = !!(narrative && narrative.productBaseName &&
       !/\b(?:Customer|Prospect)?\s*Product\.?$/i.test(narrative.productBaseName) &&
       !/\bProduct\.?$/i.test(narrative.productBaseName) &&
       /\b(Maíz|Maiz|Sea Salt|Vinegar|Jalapeno|Jalapeño|Himalayan|Texas BBQ|Air Fried|Tortilla Chips|Lemon Herb|Butter Chips)\b/i.test(narrative.productBaseName));
+    const manufacturingGraphRoleW441 = !!(narrative && (narrative.mode === 'manufacturing' || narrative.mode === 'wip') &&
+      /\b(hero|sellable|assembly|finished|component|ingredient|material|bom|revision|work.?order|routing)\b/i.test(roleLabelText));
+    const truncatedManufacturingNameW441 = /\b(Finis|Tortill|Channe|Replenis|Ingredien|Componen)\b/i.test(current) ||
+      (override && current && current.length < override.length - 3 && override.toLowerCase().indexOf(current.toLowerCase()) === 0);
     const shouldOverride = strongProductIdentity && override && (
       visibleRecordBrandMismatchW438(current, state) ||
-      visibleNameHasInternalRunSuffixW436(record.name || record.recordName)
+      visibleNameHasInternalRunSuffixW436(record.name || record.recordName) ||
+      truncatedManufacturingNameW441 ||
+      (manufacturingGraphRoleW441 && current !== consultantVisibleRecordNameW436(override))
     );
     if (!shouldOverride) {
       if (current && (current !== record.name || current !== record.recordName)) {
@@ -14699,7 +14713,7 @@
       const source = item && typeof item === 'object' ? item : {};
       const rawRole = firstNonBlank(source.role, source.w214Role, source.w215MappedRole, source.legacyRole);
       const role = rawRole === 'supporting_sku' || rawRole === 'ingredient_or_component_item' ? rawRole : 'component_item';
-      const label = firstNonBlank(
+      const label = manufacturingEnabled ? `Component item ${index + 1}` : firstNonBlank(
         source.consultantLabel,
         source.displayLabel,
         source.label,
@@ -14723,9 +14737,11 @@
     const displayObjects = [
       normalizeDccFinalObjectWithProductPlanW435('customer', 'Customer', rootCustomer, displayPayload, 0),
       normalizeDccFinalObjectWithProductPlanW435('sales_order', 'Sales Order / demo transaction', rootSalesOrder, displayPayload, 0),
-      normalizeDccFinalObjectWithProductPlanW435('hero_item', firstNonBlank(finalRoleLabels.heroItem, 'Hero item'), rootHero, displayPayload, 0),
-      normalizeDccFinalObjectWithProductPlanW435('matrix_or_proof_item', firstNonBlank(finalRoleLabels.matrixProofItem, 'Matrix item / proof item'), rootMatrix, displayPayload, 0)
+      normalizeDccFinalObjectWithProductPlanW435('hero_item', manufacturingEnabled ? 'Sellable item' : firstNonBlank(finalRoleLabels.heroItem, 'Hero item'), rootHero, displayPayload, 0)
     ];
+    if (!manufacturingEnabled) {
+      displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('matrix_or_proof_item', firstNonBlank(finalRoleLabels.matrixProofItem, 'Matrix item / proof item'), rootMatrix, displayPayload, 0));
+    }
     const semanticAssembly = findRunnerRecordByW215Aliases(payload, ['assembly_structure']);
     const semanticBom = findRunnerRecordByW215Aliases(payload, ['bom_or_assembly_structure']);
     const semanticWip = findRunnerRecordByW215Aliases(payload, ['work_order_or_wip_object']);
@@ -14733,6 +14749,7 @@
     if (payload.bom || semanticBom.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('bom', 'BOM', firstReturnedRunnerObjectW215(payload.bom, semanticBom, byRole('bom')), displayPayload, 0));
     if (payload.bomRevision) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('bom_revision', 'BOM revision', firstReturnedRunnerObjectW215(payload.bomRevision, byRole('bom_revision')), displayPayload, 0));
     if (payload.workOrder || records.workOrder || records.work_order || semanticWip.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_order', 'Work Order', payload.workOrder || records.workOrder || records.work_order || semanticWip || byRole('work_order'), displayPayload, 0));
+    else if (manufacturingEnabled && (payload.workOrderDiagnostics || records.workOrderDiagnostic || records.work_order_diagnostic)) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_order_diagnostic', 'Work Order Diagnostic', payload.workOrderDiagnostics || records.workOrderDiagnostic || records.work_order_diagnostic, displayPayload, 0));
     const semanticRouting = findRunnerRecordByW215Aliases(payload, ['routing']);
     const semanticWorkCenter = findRunnerRecordByW215Aliases(payload, ['work_center']);
     const semanticWipObject = findRunnerRecordByW215Aliases(payload, ['wip_object']);
@@ -17048,7 +17065,7 @@
       return summary;
     }, {});
     const scriptPivotObjects = finalObjects.length
-      ? activeObjects.filter((item) => item && item.linkAuthority && item.linkAuthority.openable === true)
+      ? activeObjects.filter((item) => item && ((item.linkAuthority && item.linkAuthority.openable === true) || /work.?order.?diagnostic/i.test(`${item.role || ''} ${item.label || ''}`)))
       : activeObjects.slice(0, 4);
     const proofQualityGate = proofQualityGateW424(finalResult, activeObjects);
     return {
@@ -21800,6 +21817,28 @@
     return label;
   }
 
+  function consultantRunNavigationLabelW441(item, narrative) {
+    const baseLabel = consultantRunNavigationLabelW332(item);
+    const mode = narrative && narrative.mode || 'distribution';
+    if (mode !== 'manufacturing' && mode !== 'wip') return baseLabel;
+    const role = String(item && (item.role || item.canonicalRole || item.outputRole || '') || '').toLowerCase();
+    const labelText = `${role} ${baseLabel}`.toLowerCase();
+    if (/customer/.test(labelText)) return 'Customer';
+    if (/sales|transaction|demand/.test(labelText)) return 'Demand Order';
+    if (/hero|product sku|sellable/.test(labelText)) return 'Sellable Item';
+    if (/assembly|finished/.test(labelText)) return 'Finished Good';
+    if (/bom_revision|bom revision/.test(labelText)) return 'BOM Revision';
+    if (/\bbom\b|bill of materials/.test(labelText)) return 'Bill of Materials';
+    if (/work_order_diagnostic|diagnostic/.test(labelText)) return 'Work Order Diagnostic';
+    if (/work_order|work order|workorder/.test(labelText)) return 'Work Order';
+    if (/routing/.test(labelText)) return 'Routing';
+    if (/component|ingredient|material|supporting sku/.test(labelText)) {
+      const index = Math.max(0, Number(item && (item.componentIndex || item.index) || 0) || 0);
+      return `Component Input ${index + 1}`;
+    }
+    return baseLabel;
+  }
+
   function consultantRunNavigationNameW334(item) {
     const label = consultantRunNavigationLabelW332(item);
     const name = consultantProofRecordDisplayNameW341(item);
@@ -21832,6 +21871,12 @@
 
   function consultantRunNavigationDisplayW334(item) {
     const label = consultantRunNavigationLabelW332(item);
+    const displayName = consultantRunNavigationNameW334(item);
+    return displayName ? `${label}: ${displayName}` : label;
+  }
+
+  function consultantRunNavigationDisplayW441(item, narrative) {
+    const label = consultantRunNavigationLabelW441(item, narrative);
     const displayName = consultantRunNavigationNameW334(item);
     return displayName ? `${label}: ${displayName}` : label;
   }
@@ -24880,10 +24925,11 @@
     }
     const cautionCopy = cockpitCopy(value.grounded && value.grounded.unsupportedClaimBlocker && value.grounded.unsupportedClaimBlocker.blockedClaims && value.grounded.unsupportedClaimBlocker.blockedClaims[0]
       || 'Measured savings require a customer baseline before they can be claimed.', 125);
-    const recordRows = objects.slice(0, 5).map((item) => {
-      const label = consultantRunNavigationLabelW332(item);
+    const recordRowLimit = visibleNarrative.mode === 'distribution' ? 5 : 12;
+    const recordRows = objects.slice(0, recordRowLimit).map((item) => {
+      const label = consultantRunNavigationLabelW441(item, visibleNarrative);
       const repairedItem = repairVisibleProductNarrativeW439(item, state, visibleNarrative);
-      const name = consultantVisibleRecordNameW436(consultantRunNavigationNameW334(repairedItem) || consultantRunNavigationDisplayW334(repairedItem));
+      const name = consultantVisibleRecordNameW436(consultantRunNavigationNameW334(repairedItem) || consultantRunNavigationDisplayW441(repairedItem, visibleNarrative));
       const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
       return `
         <div class="idb-w415-cockpit-record-row">

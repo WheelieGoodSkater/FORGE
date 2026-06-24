@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.40
+// @version      1.0.41
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.40';
-  const CURRENT_UX_BLOCK_W346 = 'W432';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.41';
+  const CURRENT_UX_BLOCK_W346 = 'W433';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -20052,6 +20052,12 @@
     return returned.length > 0 && returned.some((item) => !genericOnlyPattern.test(String(firstNonBlank(item.name, item.recordName)).trim()));
   }
 
+  function runnerSidecarReturnedRecordsForImportW433(finalNaming) {
+    return arrayValue(finalNaming && finalNaming.displayObjects)
+      .concat(arrayValue(finalNaming && finalNaming.componentItems), arrayValue(finalNaming && finalNaming.locationPlanningRecords))
+      .filter((item) => item && item.source === 'dcc_final' && (firstNonBlank(item.name, item.recordName) || firstNonBlank(item.id, item.internalId) || firstNonBlank(item.url, item.supportedOpenUrl)));
+  }
+
   function commitRunnerSidecarDisplayResultW431(state, lane, pageContext, recommendation, runnerResult, options) {
     const opts = options || {};
     const sidecarJson = opts.sidecarJson || runnerSidecarDisplayResultJsonW431(runnerResult);
@@ -20064,23 +20070,28 @@
       };
     }
     const finalNaming = dccFinalNamingResultV1(sidecarJson, state, lane, pageContext, recommendation);
-    if (!runnerSidecarBrandNamesAreUsableW431(finalNaming)) {
+    const returnedRecords = runnerSidecarReturnedRecordsForImportW433(finalNaming);
+    if (!returnedRecords.length) {
       return {
         schema: 'idb.w431-sidecar-display-result-import.v1',
-        status: 'sidecar_names_not_usable',
+        status: 'sidecar_no_returned_records',
         imported: false,
-        reason: 'Runner sidecar did not include brand/product-named records.',
+        reason: 'Runner sidecar did not include returned records with names, ids, or URLs.',
         returnedNames: arrayValue(finalNaming.displayObjects).concat(arrayValue(finalNaming.componentItems)).map((item) => item && item.name).filter(Boolean)
       };
     }
+    const brandNamesUsable = runnerSidecarBrandNamesAreUsableW431(finalNaming);
     const patchedFinalNaming = Object.assign({}, finalNaming, {
       status: 'dcc_sidecar_names_imported',
-      displayStatus: 'Returned runner records imported',
+      displayStatus: brandNamesUsable ? 'Returned runner records imported' : 'Returned runner records imported for review',
       finalNamesImported: true,
       partialResultImported: true,
       sidecarResultImported: true,
       importFailureRecovery: null,
-      warnings: arrayValue(finalNaming.warnings).concat(['FORGE imported returned records from the runner sidecar while transaction resolution continues.'])
+      sidecarNameQuality: brandNamesUsable ? 'brand_product_names_usable' : 'returned_records_imported_name_review_needed',
+      warnings: arrayValue(finalNaming.warnings)
+        .concat(['FORGE imported returned records from the runner sidecar while transaction resolution continues.'])
+        .concat(brandNamesUsable ? [] : ['Returned records were imported even though naming needs review; retrieval is not blocked by naming guardrails.'])
     });
     const resultCapture = Object.assign(
       {},
@@ -20112,7 +20123,7 @@
         importedReturnedRunnerRecords: true,
         noDrawerRecordCreation: true,
         noDrawerTransactionWrites: true,
-        genericFallbackNamesBlocked: true
+        genericFallbackNamesFlaggedNotBlocked: true
       }
     };
   }

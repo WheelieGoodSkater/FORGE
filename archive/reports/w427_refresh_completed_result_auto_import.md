@@ -22,7 +22,8 @@ W428 repairs the simplified consultant flow after a runner task completes. Refre
 | w428-refresh-auto-import-trusts-completed-poll-result | PASS |
 | w427-pending-transaction-resolution-copy-is-honest | PASS |
 | w431-refresh-imports-sidecar-brand-records-before-sales-order-resolution | PASS |
-| w431-sidecar-import-blocks-generic-fallback-names | PASS |
+| w433-sidecar-imports-returned-records-even-when-name-review-needed | PASS |
+| w431-sidecar-import-only-blocks-empty-sidecar | PASS |
 | w430-pending-transaction-resolution-stage-is-not-generic-building | PASS |
 
 ## Boundaries
@@ -31,4 +32,4 @@ W428 repairs the simplified consultant flow after a runner task completes. Refre
 - No runner write path, adapter record creation, source pack, completed-result validation, or Open-link authority check was weakened.
 
 ## Recommendation
-Lock W432, reinstall Drawer 1.0.40 / W432 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner returns sidecar records, Refresh build status should import brand-named records into the cockpit even while transaction import resolution continues.
+Lock W433, reinstall Drawer 1.0.41 / W433 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner returns sidecar records, Refresh build status should import returned records into the cockpit even while transaction import resolution or naming review continues.

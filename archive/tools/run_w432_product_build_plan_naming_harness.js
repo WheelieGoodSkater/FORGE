@@ -137,10 +137,10 @@ function main() {
   });
 
   assertCase(results, 'w432-marker-updated',
-    /@version\s+1\.0\.40/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.40';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W432';"),
-    'Drawer should identify W432 / 1.0.40.');
+    /@version\s+1\.0\.41/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.41';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W433';"),
+    'Drawer should identify W433 / 1.0.41 while preserving W432 product build plan naming.');
 
   assertCase(results, 'w432-runner-test-hooks-present',
     runner.includes('__W432_TEST_HOOKS__') &&

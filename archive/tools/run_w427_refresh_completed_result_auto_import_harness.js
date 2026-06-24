@@ -206,9 +206,9 @@ function main() {
   );
 
   assertCase(results, 'w428-drawer-marker-updated',
-    /@version\s+1\.0\.40/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.40';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W432';"),
+    /@version\s+1\.0\.41/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.41';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W433';"),
     'Drawer should identify the current install marker while preserving the refresh auto-import repair patch.');
 
   assertCase(results, 'w427-filecabinet-drawer-synced',
@@ -284,7 +284,39 @@ function main() {
       !/Paste the completed build result/i.test(sidecarImportedHtml),
     JSON.stringify(sidecarImport));
 
-  assertCase(results, 'w431-sidecar-import-blocks-generic-fallback-names',
+  const genericSidecarImport = hooks.commitRunnerSidecarDisplayResultW431(
+    waitingState,
+    waitingContext.lane,
+    waitingContext.page,
+    waitingContext.recommendation,
+    {
+      resultCapture: {
+        status: 'pending_transaction_resolution',
+        partialGeneratedNamesJson: Object.assign({}, kettleSidecarResult, {
+          records: [
+            {
+              role: 'branch_or_product_sku',
+              recordType: 'inventoryitem',
+              type: 'inventoryitem',
+              name: 'Product Availability SKU',
+              internalId: '9991',
+              url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9991'
+            }
+          ]
+        })
+      }
+    },
+    { source: 'harness_w433_generic_import_not_blocked' }
+  );
+  assertCase(results, 'w433-sidecar-imports-returned-records-even-when-name-review-needed',
+    genericSidecarImport.imported === true &&
+      genericSidecarImport.statePatch &&
+      genericSidecarImport.statePatch.dccFinalNamingResult &&
+      genericSidecarImport.statePatch.dccFinalNamingResult.sidecarNameQuality === 'returned_records_imported_name_review_needed' &&
+      /retrieval is not blocked by naming guardrails/i.test(JSON.stringify(genericSidecarImport.statePatch.dccFinalNamingResult.warnings || [])),
+    JSON.stringify(genericSidecarImport));
+
+  assertCase(results, 'w431-sidecar-import-only-blocks-empty-sidecar',
     hooks.commitRunnerSidecarDisplayResultW431(
       waitingState,
       waitingContext.lane,
@@ -293,23 +325,17 @@ function main() {
       {
         resultCapture: {
           status: 'pending_transaction_resolution',
-          partialGeneratedNamesJson: Object.assign({}, kettleSidecarResult, {
-            records: [
-              {
-                role: 'branch_or_product_sku',
-                recordType: 'inventoryitem',
-                type: 'inventoryitem',
-                name: 'Product Availability SKU',
-                internalId: '9991',
-                url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9991'
-              }
-            ]
-          })
+          partialGeneratedNamesJson: {
+            schema: 'forge.completed-runner-result.v2',
+            status: 'partial_result_imported_for_display',
+            generatedRecordOwner: 'governed_runner_internal_build_engine',
+            records: []
+          }
         }
       },
-      { source: 'harness_w431_generic' }
+      { source: 'harness_w431_empty' }
     ).imported === false,
-    'Generic-only sidecar names should not be imported as real brand/product records.');
+    'Empty sidecar payloads should still not be imported as real returned records.');
 
   assertCase(results, 'w430-pending-transaction-resolution-stage-is-not-generic-building',
     waitingStage.stage === 'resolving_records' &&
@@ -340,7 +366,7 @@ ${results.map((result) => `| ${result.id} | ${result.pass ? 'PASS' : 'FAIL'} |`)
 - No runner write path, adapter record creation, source pack, completed-result validation, or Open-link authority check was weakened.
 
 ## Recommendation
-Lock W432, reinstall Drawer 1.0.40 / W432 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner returns sidecar records, Refresh build status should import brand-named records into the cockpit even while transaction import resolution continues.
+Lock W433, reinstall Drawer 1.0.41 / W433 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner returns sidecar records, Refresh build status should import returned records into the cockpit even while transaction import resolution or naming review continues.
 `;
   fs.writeFileSync(reportPath, report);
 

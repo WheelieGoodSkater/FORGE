@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.35
+// @version      1.0.37
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.35';
-  const CURRENT_UX_BLOCK_W346 = 'W427';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.37';
+  const CURRENT_UX_BLOCK_W346 = 'W429';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -11638,6 +11638,34 @@
     };
   }
 
+  function completedRunnerResultReadyForRefreshAutoImportW428(pollControl, pollResult, completedResultJson, state, lane, pageContext, recommendation) {
+    const localGuard = validateDccFinalNamingImportPayload(completedResultJson, state, lane, pageContext, recommendation);
+    const resultGuard = pollResult && pollResult.resultImportGuard || {};
+    const controlGuard = pollControl && pollControl.resultImportGuard || {};
+    const owner = firstNonBlank(completedResultJson && completedResultJson.generatedRecordOwner, completedResultJson && completedResultJson.recordOwner);
+    const pollReady = resultGuard.importReady === true ||
+      resultGuard.completedResultAcceptedByW151 === true ||
+      resultGuard.completedResultStatus === 'completed_runner_result_accepted';
+    const controlReady = controlGuard.importReady === true ||
+      controlGuard.completedResultAcceptedByW151 === true ||
+      controlGuard.completedResultStatus === 'completed_runner_result_accepted';
+    const localReady = localGuard.valid === true &&
+      (!owner || owner === 'governed_runner_internal_build_engine');
+    return {
+      schema: 'forge.w428.refresh-completed-result-auto-import-readiness.v1',
+      ready: !!completedResultJson && localReady === true && (pollReady || controlReady || localReady),
+      completedResultPresent: !!completedResultJson,
+      localW151Accepted: localGuard.valid === true,
+      pollImportReady: pollReady,
+      pollControlImportReady: controlReady,
+      completedResultStatus: localGuard.status || resultGuard.completedResultStatus || controlGuard.completedResultStatus || '',
+      generatedRecordOwner: owner || resultGuard.generatedRecordOwner || controlGuard.generatedRecordOwner || '',
+      noDrawerWrites: true,
+      noDrawerTransactionWrites: true,
+      noActiveOpenLinksWithoutRealUrls: true
+    };
+  }
+
   function invokeW144ApprovedServerAdapterResultPollFromDrawerV1(requestEnvelope) {
     if (!requestEnvelope || !requestEnvelope.endpointUrl || !requestEnvelope.bodyFormEncoded) {
       return Promise.resolve({
@@ -19779,6 +19807,7 @@
     const intake = normalizedIntake(state);
     const websitePackage = websitePackageClassifier(state);
     const naming = websiteProductNamingEvidence(state, lane);
+    const websiteProductCandidates = websiteProductEvidenceCandidatesW424(state && state.websiteEvidenceV1, intake);
     const lanePackResolutionW246 = resolveLanePackFromEvidenceW246(state, {
       websiteText: websitePackage && websitePackage.evidence ? websitePackage.evidence : '',
       signals: lane && lane.signals ? lane.signals : []
@@ -19805,6 +19834,7 @@
       lanePackNllmAdvisoryPayloadW246: lanePackAdvisoryW246,
       websitePackageClassifier: websitePackage,
       websiteEvidenceBridge: websiteEvidenceBridge(state),
+      websiteProductNameCandidates: websiteProductCandidates,
       currentNamingEvidence: naming,
       conversationNotesUse: 'Use notes only to sharpen pain, demand moment wording, and story relevance. Do not let notes override website-owned package identity.',
       records: packet.records.map((record) => ({
@@ -19850,7 +19880,67 @@
         noLaneAuthorityChange: true,
         noProofAnchorChange: true,
         noDccToggleChange: true,
-        noPacketOrderChange: true
+        noPacketOrderChange: true,
+        websiteProductNamesRequiredWhenAvailable: true,
+        genericProductFallbackMustBeBlocked: true
+      }
+    };
+  }
+
+  function nllmRecordNamingGroundingValidationW429(request, advisoryResponse) {
+    const response = advisoryResponse || {};
+    const currentNamingAuthority = String(request && request.currentNamingEvidence && request.currentNamingEvidence.authority || '').toLowerCase();
+    const currentNamingProductSeed = /website|category/.test(currentNamingAuthority)
+      ? request && request.currentNamingEvidence && request.currentNamingEvidence.productSeed
+      : '';
+    const websiteCandidates = []
+      .concat(arrayValue(request && request.websiteProductNameCandidates && request.websiteProductNameCandidates.productCandidates))
+      .concat(arrayValue(request && request.websiteProductNameCandidates && request.websiteProductNameCandidates.productSeed))
+      .concat(arrayValue(currentNamingProductSeed))
+      .map((value) => compactText(String(value || ''), 80))
+      .filter(Boolean);
+    const uniqueCandidates = uniqueValues(websiteCandidates);
+    const sourceBasis = String(response.sourceBasis || response.source || '').toLowerCase();
+    const recordNamesSource = response.recordNames || response.records || [];
+    const recordNames = Array.isArray(recordNamesSource)
+      ? recordNamesSource.map((record) => String(record && (record.proposedName || record.name || record.currentProposedName) || record || ''))
+      : Object.keys(recordNamesSource || {}).map((key) => String(recordNamesSource[key] && (recordNamesSource[key].proposedName || recordNamesSource[key].name) || recordNamesSource[key] || ''));
+    const proposedText = [
+      response.productSeed,
+      response.productFamily,
+      response.demandMoment,
+      recordNames.join(' ')
+    ].join(' ');
+    const genericNamePattern = /\b(Product Availability SKU|Branch Availability\s*\/\s*Replenishment Flow|Safe Substitute Fulfillment Support SKU|Finished Good Variety Pack|Product\s*\/\s*SKU|Proof Item|Demo Product|Generic SKU|Inventory\s*\/\s*Fulfillment)\b/i;
+    const genericFailures = recordNames.concat([response.productSeed || '']).filter((name) => genericNamePattern.test(String(name || '')));
+    const groundedCandidate = uniqueCandidates.find((candidate) => {
+      const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`\\b${escaped}\\b`, 'i').test(proposedText);
+    }) || '';
+    const sourceBasisWebsiteGrounded = /website|product|category|inferred_from_website/.test(sourceBasis || currentNamingAuthority);
+    const blockedReasons = [];
+    if (!uniqueCandidates.length) blockedReasons.push('website_product_candidates_missing');
+    if (uniqueCandidates.length && !groundedCandidate) blockedReasons.push('no_returned_name_uses_website_product_candidate');
+    if (genericFailures.length) blockedReasons.push('generic_product_or_finished_good_name_returned');
+    if (!sourceBasisWebsiteGrounded) blockedReasons.push('source_basis_not_website_grounded');
+    if (response.creationAllowed === true || response.writeAuthority && response.writeAuthority !== 'none') blockedReasons.push('nllm_advisory_boundary_violated');
+    return {
+      schema: 'forge.w429.nllm-record-naming-grounding-validation.v1',
+      status: blockedReasons.length ? 'blocked' : 'accepted',
+      accepted: blockedReasons.length === 0,
+      blockedReasons,
+      websiteProductCandidates: uniqueCandidates,
+      groundedCandidate,
+      genericFailures,
+      sourceBasis: sourceBasis || '',
+      noRegression: {
+        advisoryOnly: true,
+        noRecordCreation: true,
+        noSuiteScriptInvocation: true,
+        noLaneAuthorityChange: true,
+        noProofAnchorChange: true,
+        noToggleChange: true,
+        notesCannotOwnProductIdentity: true
       }
     };
   }
@@ -27826,7 +27916,16 @@
                 idempotencyToken: w190Result.pollRequestEnvelope && w190Result.pollRequestEnvelope.idempotencyToken
               }
             );
-            if (pollControl.resultImportGuard && pollControl.resultImportGuard.importReady === true && completedResultJsonForImport) {
+            const refreshAutoImportReadiness = completedRunnerResultReadyForRefreshAutoImportW428(
+              pollControl,
+              w190Result,
+              completedResultJsonForImport,
+              state,
+              lane,
+              pageContext,
+              recommendation
+            );
+            if (refreshAutoImportReadiness.ready === true) {
               const autoImport = idbPollsCompletedResultAndImportsFinalUrlsV1(
                 state,
                 lane,
@@ -27851,6 +27950,7 @@
                 status: autoImport.status,
                 completedResultStatus: autoImport.importGuard && autoImport.importGuard.completedResultStatus || '',
                 commitAllowed: autoImport.importGuard && autoImport.importGuard.commitAllowed === true,
+                refreshAutoImportReadiness,
                 verifiedOpenLinkCount: autoImport.buildAndRunAfterImport && autoImport.buildAndRunAfterImport.verifiedOpenLinkCount || 0,
                 noDrawerWrites: true,
                 noDrawerTransactionWrites: true,
@@ -28567,6 +28667,9 @@
       idbBuildPacketV1,
       dccRunnerHandoffPacketV1,
       confirmedBuildRequestJsonV1,
+      dryRunObjectPacket,
+      buildRecordNamingAdvisoryRequest,
+      nllmRecordNamingGroundingValidationW429,
       integratedBuildOperatorGateV1,
       integratedBuildRunnerAdapterConfigV1,
       integratedBuildRunnerReturnClientBoundaryV1,
@@ -28660,6 +28763,7 @@
       realSandboxServerAdapterExecutionWiringAndRunnerTaskIdCaptureV1,
       governedRunnerResultCapturePollingToCompletedJsonV1,
       idbPollsCompletedResultAndImportsFinalUrlsV1,
+      completedRunnerResultReadyForRefreshAutoImportW428,
       buildReturnPollRefreshControlSurfaceV1,
       buildReturnServerAdapterNoCallEvidenceReviewV1,
       approvedServerAdapterActivationPacketAndOneCallReadinessV1,
@@ -28730,6 +28834,7 @@
       dccInvocationReadinessV1,
       dccFinalNamingResultV1,
       validateDccFinalNamingImportPayload,
+      nllmRecordNamingGroundingValidationW429,
       dccFinalNavigationModel,
       installedDrawerRuntimeMarkerW332,
       installedDrawerVersionFingerprintW339,

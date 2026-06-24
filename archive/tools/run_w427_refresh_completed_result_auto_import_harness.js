@@ -134,11 +134,11 @@ function main() {
     waitingContext.recommendation
   );
 
-  assertCase(results, 'w427-drawer-marker-updated',
-    /@version\s+1\.0\.35/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.35';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W427';"),
-    'Drawer should identify the refresh auto-import patch.');
+  assertCase(results, 'w428-drawer-marker-updated',
+    /@version\s+1\.0\.37/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.37';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W429';"),
+    'Drawer should identify the current install marker while preserving the refresh auto-import repair patch.');
 
   assertCase(results, 'w427-filecabinet-drawer-synced',
     drawer === fileCabinetDrawer,
@@ -173,20 +173,45 @@ function main() {
       importFlow.noRegression.noActiveOpenLinksWithoutRealUrls === true,
     JSON.stringify(importFlow.noRegression));
 
+  const stalePollControl = {
+    schema: 'idb.approved-server-adapter-result-poll-control-implementation.v1',
+    status: 'poll_control_pending_or_no_submit',
+    resultImportGuard: {
+      importReady: false,
+      completedResultAcceptedByW151: false
+    }
+  };
+  const refreshReadiness = hooks.completedRunnerResultReadyForRefreshAutoImportW428(
+    stalePollControl,
+    completedPoll,
+    completedResult,
+    state,
+    context.lane,
+    context.page,
+    context.recommendation
+  );
+  assertCase(results, 'w428-refresh-auto-import-trusts-completed-poll-result',
+    refreshReadiness.ready === true &&
+      refreshReadiness.localW151Accepted === true &&
+      refreshReadiness.pollImportReady === true &&
+      refreshReadiness.pollControlImportReady === false,
+    JSON.stringify(refreshReadiness));
+
   assertCase(results, 'w427-pending-transaction-resolution-copy-is-honest',
     /waiting for the Sales Order import to resolve/i.test(waitingHtml) &&
       /Resolving import/.test(waitingHtml),
     waitingHtml.slice(0, 1600));
 
-  const report = `# W427 Refresh Completed Result Auto-Import
+  const report = `# W428 Refresh Completed Result Auto-Import Repair
 
 ## Summary
-W427 restores the simplified consultant flow after a runner task completes. Refresh now preserves the original submitted build identity, polls the result capture with that identity, and auto-imports the completed runner result into the cockpit only after the existing W151 import guard accepts it.
+W428 repairs the simplified consultant flow after a runner task completes. Refresh preserves the original submitted build identity, polls the result capture with that identity, and auto-imports the completed runner result into the cockpit when the completed result validates locally or the completed poll response carries W151-ready evidence.
 
 ## Fix
 - Store the submitted confirmed build request on the captured runner result.
 - Reuse that confirmed request during result-capture polling.
 - On Refresh build status, commit a W151-valid completed result immediately instead of requiring a separate Finish build click.
+- Trust the completed poll result when the older poll-control object still reports a conservative pending state.
 - Show a more honest waiting message when the sidecar exists but Sales Order import resolution is still pending.
 
 ## Pass/Fail
@@ -200,11 +225,11 @@ ${results.map((result) => `| ${result.id} | ${result.pass ? 'PASS' : 'FAIL'} |`)
 - No runner write path, adapter record creation, source pack, completed-result validation, or Open-link authority check was weakened.
 
 ## Recommendation
-Lock W427, reinstall Drawer 1.0.35 / W427 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner completes, Refresh build status should either import the records into the cockpit or clearly show transaction import resolution is still pending.
+Lock W429, reinstall Drawer 1.0.37 / W429 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner completes, Refresh build status should either import the records into the cockpit or clearly show transaction import resolution is still pending.
 `;
   fs.writeFileSync(reportPath, report);
 
-  printResults('W427 refresh completed result auto-import harness', results);
+  printResults('W428 refresh completed result auto-import repair harness', results);
 }
 
 main();

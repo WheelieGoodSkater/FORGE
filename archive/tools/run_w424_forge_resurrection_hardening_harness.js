@@ -129,17 +129,44 @@ function main() {
   const page = { title: 'NetSuite Home', url: 'https://td3021666.app.netsuite.com/app/center/card.nl', pageType: 'NetSuite page', confidence: 'low' };
   const recommendation = hooks.recommendMove(lane, page);
   const request = hooks.confirmedBuildRequestJsonV1(capeState, lane, page, recommendation);
+  const advisoryRequest = hooks.buildRecordNamingAdvisoryRequest(capeState, lane, hooks.dryRunObjectPacket(capeState, lane, page, recommendation));
+  const groundedNllmValidation = hooks.nllmRecordNamingGroundingValidationW429(advisoryRequest, {
+    productSeed: 'Lemon Herb Butter Chips',
+    productFamily: 'Packaged snacks',
+    demandMoment: 'retail availability and replenishment confidence',
+    sourceBasis: 'inferred_from_website_product_evidence',
+    confidence: 'medium',
+    recordNames: [
+      { role: 'finished_good_item', proposedName: 'Cape Cod Lemon Herb Butter Chips Finished Good' },
+      { role: 'availability_flow', proposedName: 'Cape Cod Lemon Herb Butter Chips Replenishment Flow' }
+    ],
+    writeAuthority: 'none',
+    creationAllowed: false
+  });
+  const genericNllmValidation = hooks.nllmRecordNamingGroundingValidationW429(advisoryRequest, {
+    productSeed: 'Finished Good',
+    productFamily: 'Packaged food and beverage',
+    demandMoment: 'demo demand',
+    sourceBasis: 'conversation_notes_signal',
+    confidence: 'low',
+    recordNames: [
+      { role: 'finished_good_item', proposedName: 'Cape Cod Finished Good Variety Pack' },
+      { role: 'availability_flow', proposedName: 'Cape Cod Product Availability SKU' }
+    ],
+    writeAuthority: 'none',
+    creationAllowed: false
+  });
   const completedState = genericCompletedState(hooks);
   const completedLane = hooks.getLane(completedState);
   const completedRecommendation = hooks.recommendMove(completedLane, page);
   const stage = hooks.consultantDayInLifeStageW416(completedState, completedLane, page, completedRecommendation);
   const dayInLifeHtml = hooks.renderW416ConsultantDayInLife(completedState, completedLane, page, completedRecommendation, completedLane.moves[0], { id: 'prove', label: 'Prove' }, '');
 
-  assertCase(results, 'w424-version-marker-advanced',
-    drawer.includes('// @version      1.0.35') &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.35';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W427';"),
-    'Drawer should show W427 / 1.0.35 for install/update clarity while preserving W424 behavior.');
+  assertCase(results, 'w429-version-marker-advanced',
+    drawer.includes('// @version      1.0.37') &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.37';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W429';"),
+    'Drawer should show W429 / 1.0.37 for install/update clarity while preserving W424/W428 behavior.');
 
   assertCase(results, 'w424-filecabinet-copies-synced',
     drawer === fileCabinetDrawer && runner === fileCabinetRunner,
@@ -164,6 +191,28 @@ function main() {
       request.demoPath.productSeed === request.identity.productSeed &&
       request.identity.productAuthority === 'website_evidence_first_notes_story_only_nllm_advisory',
     JSON.stringify({ identity: request.identity, demoPath: request.demoPath }));
+
+  assertCase(results, 'w429-nllm-request-carries-website-product-candidates',
+    advisoryRequest.schema === 'idb.nllm-record-naming-advisory-request.v1' &&
+      advisoryRequest.writeAuthority === 'none' &&
+      advisoryRequest.creationAllowed === false &&
+      advisoryRequest.websiteProductNameCandidates &&
+      advisoryRequest.websiteProductNameCandidates.productCandidates.includes('Lemon Herb Butter Chips') &&
+      advisoryRequest.noRegression.websiteProductNamesRequiredWhenAvailable === true,
+    JSON.stringify(advisoryRequest.websiteProductNameCandidates));
+
+  assertCase(results, 'w429-nllm-grounded-product-name-accepted',
+    groundedNllmValidation.accepted === true &&
+      groundedNllmValidation.groundedCandidate === 'Lemon Herb Butter Chips' &&
+      groundedNllmValidation.noRegression.notesCannotOwnProductIdentity === true,
+    JSON.stringify(groundedNllmValidation));
+
+  assertCase(results, 'w429-nllm-generic-finished-good-name-blocked',
+    genericNllmValidation.accepted === false &&
+      genericNllmValidation.blockedReasons.includes('no_returned_name_uses_website_product_candidate') &&
+      genericNllmValidation.blockedReasons.includes('generic_product_or_finished_good_name_returned') &&
+      genericNllmValidation.blockedReasons.includes('source_basis_not_website_grounded'),
+    JSON.stringify(genericNllmValidation));
 
   assertCase(results, 'w424-notes-story-only-boundary-preserved',
     request.storyInputs &&
@@ -207,19 +256,21 @@ function main() {
       pkg.scripts['harness:forge-resurrection-hardening-w424'] === 'node archive/tools/run_w424_forge_resurrection_hardening_harness.js',
     JSON.stringify(pkg.scripts['harness:forge-resurrection-hardening-w424']));
 
-  const report = `# W424 FORGE Resurrection Hardening
+  const report = `# W429 Website-Grounded N/LLM Naming Validation
 
 ## Summary
-W424 restores the executable consultant path after the Cape Cod regression:
+W429 validates the product naming path after the Cape Cod regression:
 - website evidence owns lane and product identity;
 - notes shape story, ROI, and competitive handling only;
 - N/LLM remains advisory-only;
+- N/LLM naming must use website product candidates when present;
+- generic Product SKU / Finished Good fallback names are blocked instead of treated as demo-ready;
 - Food/Beverage naming is toggle-aware;
 - generated sidecar proof items run item setup diagnostics;
 - the cockpit shows proof needs review when returned records are not demo-clean.
 
 ## Cape Cod Regression Finding
-The W423 run selected the correct broad Food/Beverage lane, but generic names and uneven item setup made the proof feel templated. W424 adds a generic product candidate extractor from visible product names, product-card text, image alt text, headings, links, and category evidence. It does not hardcode Cape Cod.
+The W423 run selected the correct broad Food/Beverage lane, but generic names and uneven item setup made the proof feel templated. W424 added a generic product candidate extractor from visible product names, product-card text, image alt text, headings, links, and category evidence. W429 adds an advisory-response validator that accepts product names like Lemon Herb Butter Chips and blocks generic Product SKU / Finished Good fallback output.
 
 ## Pass/Fail
 | Gate | Result |
@@ -234,11 +285,11 @@ ${results.map((result) => `| ${result.id} | ${result.pass ? 'PASS' : 'FAIL'} |`)
 - Completed-result import validation and Open-link authority remain intact.
 
 ## Recommendation
-Lock W424 if the harness passes, then rerun one controlled Cape Cod-style Food/Beverage smoke. If setup diagnostics still mark proof weak, patch the specific runner setup field rather than adding more UI or lanes.
+Lock W429 if the harness passes, reinstall Drawer 1.0.37 / W429, then rerun one controlled Cape Cod-style Food/Beverage smoke. If N/LLM returns generic product names, treat that as blocked and collect better website product evidence rather than continuing the run.
 `;
   fs.writeFileSync(reportPath, report);
 
-  printResults('W424 FORGE resurrection hardening harness', results);
+  printResults('W429 website-grounded N/LLM naming validation harness', results);
 }
 
 main();

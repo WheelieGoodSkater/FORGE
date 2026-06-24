@@ -137,10 +137,10 @@ function main() {
   });
 
   assertCase(results, 'w432-marker-updated',
-    /@version\s+1\.0\.41/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.41';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W433';"),
-    'Drawer should identify W433 / 1.0.41 while preserving W432 product build plan naming.');
+    /@version\s+1\.0\.43/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.43';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W435';"),
+    'Drawer should identify W435 / 1.0.43 while preserving W432 product build plan naming.');
 
   assertCase(results, 'w432-runner-test-hooks-present',
     runner.includes('__W432_TEST_HOOKS__') &&
@@ -202,6 +202,61 @@ function main() {
       runner.includes('records.routing = routingRecord') &&
       runner.includes('componentItems: args.enableManufacturing ? manufacturingComponents'),
     'Sidecar should return mode-specific manufacturing/WIP records when they exist.');
+
+  assertCase(results, 'w434-non-mfg-proof-support-prefers-product-plan-names',
+    runner.includes('const proofName = name || policyProofName') &&
+      runner.includes('const componentName = name || policyProofName') &&
+      /useDistributionCockpitCopyW434/.test(drawer),
+    'Non-MFG proof/support records and cockpit copy should prefer W432 product plan names over old finished-good fallbacks.');
+
+  const repairedImport = drawerHooks.dccFinalNamingResultV1({
+    schema: 'idb.runner-sidecar-result-json.v1',
+    status: 'partial_result_imported_for_display',
+    generatedRecordOwner: 'governed_runner_internal_build_engine',
+    productBuildPlanW432: plan,
+    records: {
+      customer: {
+        role: 'customer',
+        type: 'customer',
+        name: 'Kettle Brand Snacks Customer Account',
+        internalId: '9001',
+        url: 'https://td3021666.app.netsuite.com/app/common/entity/custjob.nl?id=9001'
+      },
+      heroItem: {
+        role: 'heroItem',
+        type: 'inventoryitem',
+        name: plan.distributionItemName,
+        internalId: '9002',
+        url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9002'
+      },
+      matrixProofItem: {
+        role: 'matrixProofItem',
+        type: 'inventoryitem',
+        name: 'Kettle Brand Snacks Finished Good Replenishment - SNACKS-S8MGKV-WR5 - RUN',
+        internalId: '9003',
+        url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9003'
+      },
+      componentItem: {
+        role: 'componentItem',
+        type: 'inventoryitem',
+        name: 'Kettle Brand Snacks Finished Good Packaging / Case Pack - SNACKS-S8MGKV-WR5 - RUN',
+        internalId: '9004',
+        url: 'https://td3021666.app.netsuite.com/app/common/item/item.nl?id=9004'
+      }
+    }
+  }, state, context.lane, context.page, context.recommendation);
+  const repairedVisibleText = JSON.stringify(repairedImport.displayObjects.concat(repairedImport.componentItems).map((record) => ({
+    role: record.role,
+    label: record.label,
+    name: record.name,
+    recordName: record.recordName
+  })));
+  assertCase(results, 'w435-drawer-repairs-generic-item-display-from-product-plan',
+    /Retail Replenishment/.test(repairedVisibleText) &&
+      /Channel Supply/.test(repairedVisibleText) &&
+      !/Finished Good Replenishment/.test(repairedVisibleText) &&
+      !/Finished Good Packaging/.test(repairedVisibleText),
+    repairedVisibleText);
 
   assertCase(results, 'w432-routing-consumes-product-plan-operations',
     runner.includes('opNames.op40') &&

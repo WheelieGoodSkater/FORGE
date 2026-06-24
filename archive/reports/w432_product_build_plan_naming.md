@@ -15,6 +15,8 @@ W432 introduces a mode-aware product build plan so runner-created names come fro
 | w432-no-beverage-leak | PASS |
 | w432-nllm-advisory-mode-contract | PASS |
 | w432-sidecar-mode-records-static-contract | PASS |
+| w434-non-mfg-proof-support-prefers-product-plan-names | PASS |
+| w435-drawer-repairs-generic-item-display-from-product-plan | PASS |
 | w432-routing-consumes-product-plan-operations | PASS |
 
 ## Boundaries

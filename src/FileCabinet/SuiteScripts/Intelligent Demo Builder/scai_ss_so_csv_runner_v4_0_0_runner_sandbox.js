@@ -6098,7 +6098,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const fallbackName = laneVocabularyPolicy && laneVocabularyPolicy.modeKey === 'distribution_replenishment'
       ? `${prospect} Availability Flow`
       : `${prospect} Style / SKU Matrix Proof Item`;
-    const proofName = policyProofName || roleSpecificGeneratedItemName(roleLabel, name || fallbackName);
+    const proofName = name || policyProofName || roleSpecificGeneratedItemName(roleLabel, fallbackName);
     return ensureIdbInventoryItemForResult({
       externalId: buildUniqueExternalId('IDB_MATRIX', extId, runUniqueSuffix),
       name: buildUniqueRecordName(proofName, runUniqueSuffix, 83),
@@ -6120,7 +6120,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const fallbackName = laneVocabularyPolicy && laneVocabularyPolicy.modeKey === 'distribution_replenishment'
       ? `${prospect} Fulfillment Support SKU`
       : `${prospect} Component Item`;
-    const componentName = policyProofName || roleSpecificGeneratedItemName(roleLabel, name || fallbackName);
+    const componentName = name || policyProofName || roleSpecificGeneratedItemName(roleLabel, fallbackName);
     return ensureIdbInventoryItemForResult({
       externalId: buildUniqueExternalId('IDB_COMPONENT', extId, runUniqueSuffix),
       name: buildUniqueRecordName(componentName, runUniqueSuffix, 83),

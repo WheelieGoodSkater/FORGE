@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.41
+// @version      1.0.43
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.41';
-  const CURRENT_UX_BLOCK_W346 = 'W433';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.43';
+  const CURRENT_UX_BLOCK_W346 = 'W435';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14265,6 +14265,42 @@
     return values.find(hasReturnedRunnerObjectW215) || {};
   }
 
+  function genericReturnedItemNameW435(name) {
+    return /\b(Finished Good(?:\s+Replenishment|\s+Packaging\s*\/\s*Case Pack)?|Product Availability SKU|Branch Availability\s*\/\s*Replenishment Flow|Safe Substitute Fulfillment Support SKU|Ingredient Blend|Packaging Component|Production Line|BEVERAGE)\b/i.test(String(name || ''));
+  }
+
+  function productPlanDisplayOverrideW435(payload, role, index, currentName) {
+    const plan = payload && payload.productBuildPlanW432;
+    if (!plan || !genericReturnedItemNameW435(currentName)) return '';
+    const roleKey = String(role || '').toLowerCase();
+    const manufacturingMode = !!(payload && (payload.enableManufacturing || payload.assembly || payload.bom || payload.bomRevision || payload.workOrder));
+    if (/hero_item|heroitem|product_sku|branch_or_product_sku/.test(roleKey)) return plan.distributionItemName || plan.assemblyItemName || '';
+    if (/matrix|proof|availability|replenishment/.test(roleKey)) return plan.distributionProofName || plan.bomName || plan.assemblyItemName || '';
+    if (/support|component|ingredient/.test(roleKey)) {
+      if (!manufacturingMode) return plan.distributionSupportName || '';
+      if (Array.isArray(plan.componentNames) && plan.componentNames[index]) return plan.componentNames[index];
+      return plan.distributionSupportName || '';
+    }
+    if (/assembly/.test(roleKey)) return plan.assemblyItemName || '';
+    if (/bom_revision/.test(roleKey)) return plan.bomRevisionName || '';
+    if (/\bbom\b/.test(roleKey)) return plan.bomName || '';
+    if (/work_order|workorder/.test(roleKey)) return plan.workOrderName || '';
+    if (/routing/.test(roleKey)) return plan.routingName || '';
+    return '';
+  }
+
+  function normalizeDccFinalObjectWithProductPlanW435(role, label, candidate, payload, index) {
+    const normalized = normalizeDccFinalObject(role, label, candidate);
+    const override = productPlanDisplayOverrideW435(payload, role, index || 0, normalized.name || normalized.recordName);
+    if (!override) return normalized;
+    return Object.assign({}, normalized, {
+      name: override,
+      recordName: override,
+      productBuildPlanDisplayOverrideW435: true,
+      internalName: normalized.internalName || normalized.name
+    });
+  }
+
   function dccFinalNamingResultV1(input, state, lane, pageContext, recommendation) {
     if (!input) {
       return {
@@ -14334,7 +14370,7 @@
         finalRoleLabels.componentItem,
         role === 'supporting_sku' ? 'Supporting SKU' : role === 'ingredient_or_component_item' ? 'Ingredient item' : `Component item ${index + 1}`
       );
-      return normalizeDccFinalObject(role, label, item);
+      return normalizeDccFinalObjectWithProductPlanW435(role, label, item, payload, index);
     });
     const semanticLocation = findRunnerRecordByW215Aliases(payload, ['location_or_channel_context', 'location_planning_context', 'lot_or_availability_context']);
     const locationPlanningRecords = arrayValue(payload.locationPlanningRecords || payload.locations || payload.planningRecords || payload.locationPlanning || (semanticLocation.name ? [semanticLocation] : [])).map((item, index) => normalizeDccFinalObject('location_planning', `Location / planning ${index + 1}`, item));
@@ -14349,24 +14385,24 @@
       };
     });
     const displayObjects = [
-      normalizeDccFinalObject('customer', 'Customer', rootCustomer),
-      normalizeDccFinalObject('sales_order', 'Sales Order / demo transaction', rootSalesOrder),
-      normalizeDccFinalObject('hero_item', firstNonBlank(finalRoleLabels.heroItem, 'Hero item'), rootHero),
-      normalizeDccFinalObject('matrix_or_proof_item', firstNonBlank(finalRoleLabels.matrixProofItem, 'Matrix item / proof item'), rootMatrix)
+      normalizeDccFinalObjectWithProductPlanW435('customer', 'Customer', rootCustomer, payload, 0),
+      normalizeDccFinalObjectWithProductPlanW435('sales_order', 'Sales Order / demo transaction', rootSalesOrder, payload, 0),
+      normalizeDccFinalObjectWithProductPlanW435('hero_item', firstNonBlank(finalRoleLabels.heroItem, 'Hero item'), rootHero, payload, 0),
+      normalizeDccFinalObjectWithProductPlanW435('matrix_or_proof_item', firstNonBlank(finalRoleLabels.matrixProofItem, 'Matrix item / proof item'), rootMatrix, payload, 0)
     ];
     const semanticAssembly = findRunnerRecordByW215Aliases(payload, ['assembly_structure']);
     const semanticBom = findRunnerRecordByW215Aliases(payload, ['bom_or_assembly_structure']);
     const semanticWip = findRunnerRecordByW215Aliases(payload, ['work_order_or_wip_object']);
-    if (payload.assembly || semanticAssembly.name) displayObjects.push(normalizeDccFinalObject('assembly', 'Assembly', firstReturnedRunnerObjectW215(payload.assembly, semanticAssembly, byRole('assembly'))));
-    if (payload.bom || semanticBom.name) displayObjects.push(normalizeDccFinalObject('bom', 'BOM', firstReturnedRunnerObjectW215(payload.bom, semanticBom, byRole('bom'))));
-    if (payload.bomRevision) displayObjects.push(normalizeDccFinalObject('bom_revision', 'BOM revision', firstReturnedRunnerObjectW215(payload.bomRevision, byRole('bom_revision'))));
-    if (payload.workOrder || records.workOrder || records.work_order || semanticWip.name) displayObjects.push(normalizeDccFinalObject('work_order', 'Work Order', payload.workOrder || records.workOrder || records.work_order || semanticWip || byRole('work_order')));
+    if (payload.assembly || semanticAssembly.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('assembly', 'Assembly', firstReturnedRunnerObjectW215(payload.assembly, semanticAssembly, byRole('assembly')), payload, 0));
+    if (payload.bom || semanticBom.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('bom', 'BOM', firstReturnedRunnerObjectW215(payload.bom, semanticBom, byRole('bom')), payload, 0));
+    if (payload.bomRevision) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('bom_revision', 'BOM revision', firstReturnedRunnerObjectW215(payload.bomRevision, byRole('bom_revision')), payload, 0));
+    if (payload.workOrder || records.workOrder || records.work_order || semanticWip.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_order', 'Work Order', payload.workOrder || records.workOrder || records.work_order || semanticWip || byRole('work_order'), payload, 0));
     const semanticRouting = findRunnerRecordByW215Aliases(payload, ['routing']);
     const semanticWorkCenter = findRunnerRecordByW215Aliases(payload, ['work_center']);
     const semanticWipObject = findRunnerRecordByW215Aliases(payload, ['wip_object']);
-    if (payload.routing || records.routing || semanticRouting.name) displayObjects.push(normalizeDccFinalObject('routing', 'Routing', payload.routing || records.routing || byRole('routing') || semanticRouting));
-    if (payload.workCenter || records.workCenter || records.work_center || semanticWorkCenter.name) displayObjects.push(normalizeDccFinalObject('work_center', 'Work Center', payload.workCenter || records.workCenter || records.work_center || byRole('work_center') || semanticWorkCenter));
-    if (payload.wipObject || records.wipObject || records.wip_object || semanticWipObject.name) displayObjects.push(normalizeDccFinalObject('wip_object', 'WIP object', payload.wipObject || records.wipObject || records.wip_object || byRole('wip_object') || semanticWipObject));
+    if (payload.routing || records.routing || semanticRouting.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('routing', 'Routing', payload.routing || records.routing || byRole('routing') || semanticRouting, payload, 0));
+    if (payload.workCenter || records.workCenter || records.work_center || semanticWorkCenter.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_center', 'Work Center', payload.workCenter || records.workCenter || records.work_center || byRole('work_center') || semanticWorkCenter, payload, 0));
+    if (payload.wipObject || records.wipObject || records.wip_object || semanticWipObject.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('wip_object', 'WIP object', payload.wipObject || records.wipObject || records.wip_object || byRole('wip_object') || semanticWipObject, payload, 0));
     const returnedCount = displayObjects.concat(componentItems, locationPlanningRecords).filter((item) => item.source === 'dcc_final').length;
     const warnings = arrayValue(payload.warnings || payload.warning).map((item) => String(item));
     const errors = arrayValue(payload.errors || payload.error).map((item) => String(item));
@@ -24350,13 +24386,31 @@
       });
     if (!(finalNavigation && (finalNavigation.runCanUseImportedFinalNames || finalNavigation.proofReviewAvailable)) || !objects.length) return '';
     const prospect = state.customerName || value.customer || 'Prospect';
-    const laneLabel = storyContract.proofLabel || lane.name || 'Selected story';
+    const objectText = objects.map((item) => [
+      item && item.role,
+      item && item.canonicalRole,
+      item && item.consultantLabel,
+      item && item.name,
+      item && item.recordName
+    ].filter(Boolean).join(' ')).join(' ');
+    const hasManufacturingReturnedRecord = /\b(assembly|bom|work\s*order|routing|wip|ingredient|raw\s+material|material\s+input|seasoning\s+blend)\b/i.test(objectText);
+    const hasDistributionReturnedRecord = /\b(case\s*pack|sku|replenishment|availability|channel\s+supply|retail\s+case|fulfillment)\b/i.test(objectText);
+    const useDistributionCockpitCopyW434 = lane && lane.id === 'food_beverage' && hasDistributionReturnedRecord && !hasManufacturingReturnedRecord;
+    const laneLabel = useDistributionCockpitCopyW434
+      ? 'Retail case-pack replenishment readiness'
+      : (storyContract.proofLabel || lane.name || 'Selected story');
     const openableCount = objects.filter((item) => {
       const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
       return authority.openable === true;
     }).length;
-    const storyLine = script.say || value.talkTrackLead || value.valueDecision || storyContract.valueDecision || 'Open the returned records and prove the selected story.';
-    const proofLine = script.show || storyContract.proofMove || `Use ${lane.proofAnchor || 'the returned records'} to prove the buyer decision.`;
+    let storyLine = script.say || value.talkTrackLead || value.valueDecision || storyContract.valueDecision || 'Open the returned records and prove the selected story.';
+    let proofLine = script.show || storyContract.proofMove || `Use ${lane.proofAnchor || 'the returned records'} to prove the buyer decision.`;
+    if (useDistributionCockpitCopyW434) {
+      const primaryProduct = objects.find((item) => /\b(case\s*pack|sku|product)\b/i.test(`${item && item.consultantLabel || ''} ${item && item.name || ''}`)) || objects[0] || {};
+      const productName = consultantRunNavigationNameW334(primaryProduct) || consultantRunNavigationDisplayW334(primaryProduct) || lane.proofAnchor || 'returned SKU';
+      storyLine = `Prove replenishment readiness for ${productName}; then connect customer demand, case-pack availability, allocation, and fulfillment confidence.`;
+      proofLine = `Move through Customer demand, Sales Order, Product SKU, replenishment flow, and channel supply support without claiming manufacturing control.`;
+    }
     const cockpitCopy = (copy, limit) => compactText(consultantVisibleCopyW346(copy || '', limit || 140)
       .replace(/\bcan reduce demo risk around\b/gi, 'can protect')
       .replace(/\breduce demo risk around\b/gi, 'protect')

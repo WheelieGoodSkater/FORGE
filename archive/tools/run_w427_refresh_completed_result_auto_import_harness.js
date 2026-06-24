@@ -133,11 +133,17 @@ function main() {
     waitingContext.page,
     waitingContext.recommendation
   );
+  const waitingStage = hooks.consultantDayInLifeStageW416(
+    waitingState,
+    waitingContext.lane,
+    waitingContext.page,
+    waitingContext.recommendation
+  );
 
   assertCase(results, 'w428-drawer-marker-updated',
-    /@version\s+1\.0\.37/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.37';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W429';"),
+    /@version\s+1\.0\.38/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.38';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W430';"),
     'Drawer should identify the current install marker while preserving the refresh auto-import repair patch.');
 
   assertCase(results, 'w427-filecabinet-drawer-synced',
@@ -199,8 +205,15 @@ function main() {
 
   assertCase(results, 'w427-pending-transaction-resolution-copy-is-honest',
     /waiting for the Sales Order import to resolve/i.test(waitingHtml) &&
-      /Resolving import/.test(waitingHtml),
+      /Resolving import/.test(waitingHtml) &&
+      !/Paste the completed build result/i.test(waitingHtml),
     waitingHtml.slice(0, 1600));
+
+  assertCase(results, 'w430-pending-transaction-resolution-stage-is-not-generic-building',
+    waitingStage.stage === 'resolving_records' &&
+      /resolving returned records/i.test(waitingStage.label.title) &&
+      hooks.runnerResultPendingTransactionResolutionW430(waitingState.integratedBuildRunnerResult) === true,
+    JSON.stringify(waitingStage));
 
   const report = `# W428 Refresh Completed Result Auto-Import Repair
 
@@ -225,7 +238,7 @@ ${results.map((result) => `| ${result.id} | ${result.pass ? 'PASS' : 'FAIL'} |`)
 - No runner write path, adapter record creation, source pack, completed-result validation, or Open-link authority check was weakened.
 
 ## Recommendation
-Lock W429, reinstall Drawer 1.0.37 / W429 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner completes, Refresh build status should either import the records into the cockpit or clearly show transaction import resolution is still pending.
+Lock W430, reinstall Drawer 1.0.38 / W430 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner completes, Refresh build status should either import the records into the cockpit or clearly show transaction import resolution is still pending.
 `;
   fs.writeFileSync(reportPath, report);
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.37
+// @version      1.0.38
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.37';
-  const CURRENT_UX_BLOCK_W346 = 'W429';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.38';
+  const CURRENT_UX_BLOCK_W346 = 'W430';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -17205,6 +17205,8 @@
     const runnerResult = state && state.integratedBuildRunnerResult || null;
     const finalNaming = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, pageContext, recommendation);
     const normalizedRunner = normalizeApprovedServerAdapterTransportResponseV1(runnerResult);
+    const pendingTransactionResolution = runnerResultPendingTransactionResolutionW430(runnerResult) ||
+      runnerResultPendingTransactionResolutionW430(normalizedRunner);
     const runnerCaptureStatus = String(firstNonBlank(
       runnerResult && runnerResult.resultCapture && runnerResult.resultCapture.status,
       runnerResult && runnerResult.resultCaptureStatus,
@@ -17234,6 +17236,7 @@
     const activeOpenLinksBeforeImport = finalNaming.finalNamesImported ? finalNaming.displayObjects.filter((item) => item.linkAuthority && item.linkAuthority.openable).length : 0;
     let status = 'production_build_blocked';
     if (finalNaming.finalNamesImported) status = 'production_build_completed_imported';
+    else if (pendingTransactionResolution) status = 'production_build_resolving_transaction_import';
     else if (completedResultRejected) status = 'production_build_completed_result_rejected';
     else if (completedResultDetected) status = 'production_build_completed_result_ready_for_import';
     else if (runnerTaskId && runnerHasCompletionTextWithoutPayload) status = 'production_build_waiting_for_record_links';
@@ -17281,6 +17284,7 @@
         submitReady: status === 'production_build_ready_to_submit',
         runnerTaskCaptured: !!runnerTaskId,
         pollingReady: !!runnerTaskId && !completedResultReady && !finalNaming.finalNamesImported,
+        pendingTransactionResolution,
         waitingForRecordLinks: status === 'production_build_waiting_for_record_links',
         resultCaptureStatus: runnerCaptureStatus || normalizedRunner.resultCaptureStatus || '',
         completedResultReady,
@@ -17675,6 +17679,7 @@
         requestReady,
         adapterReady,
         runnerTaskCaptured: productionAutomation.automationStates.runnerTaskCaptured === true,
+        pendingTransactionResolution: productionAutomation.automationStates.pendingTransactionResolution === true,
         completedResultReady: productionAutomation.automationStates.completedResultReady === true,
         finalNamesImported: finalNaming.finalNamesImported === true,
         endpointConfigured: !!(adapterConfig && adapterConfig.endpointUrl),
@@ -19943,6 +19948,28 @@
         notesCannotOwnProductIdentity: true
       }
     };
+  }
+
+  function runnerResultPendingTransactionResolutionW430(runnerResult) {
+    const result = runnerResult || {};
+    const capture = result.resultCapture || {};
+    const completed = result.finalGeneratedNamesJson || capture.finalGeneratedNamesJson || {};
+    const transactionResolution = capture.transactionResolution || result.transactionResolution || completed.transactionResolution || {};
+    const statusText = [
+      result.status,
+      result.runStatus,
+      result.rawStatus,
+      result.resultCaptureStatus,
+      capture.status,
+      capture.lookupStatus,
+      capture.resultCaptureStatus,
+      transactionResolution.status,
+      transactionResolution.lookupStatus,
+      completed.status,
+      completed.runStatus,
+      completed.partialResultState
+    ].filter(Boolean).join(' ').toLowerCase();
+    return /pending_transaction_resolution|pending transaction resolution|csv_import_pending|csv import pending|sales order import pending/.test(statusText);
   }
 
   function namingAdvisorySummary(state, lane, packet) {
@@ -24331,9 +24358,11 @@
     let stage = 'enter_request';
     const runnerTaskCaptured = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.runnerTaskCaptured);
     const completedResultReady = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.completedResultReady);
+    const pendingTransactionResolution = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.pendingTransactionResolution);
     const activeBuildWaiting = runnerTaskCaptured && !completedResultReady && finalNaming.finalNamesImported !== true;
     if (finalNaming.finalNamesImported === true && finalNavigation.runCanUseImportedFinalNames === true) stage = 'demo_cockpit';
     else if (finalNaming.finalNamesImported === true && finalNavigation.proofReviewAvailable === true) stage = 'proof_needs_review';
+    else if (pendingTransactionResolution) stage = 'resolving_records';
     else if (activeBuildWaiting) stage = 'waiting_for_records';
     else if (oneClickBuild.status === 'build_failed_ask_admin' || oneClickBuild.status === 'records_returned_blocked') stage = 'fix_build';
     else if (briefPrepared && confirmed) stage = 'build_records';
@@ -24357,6 +24386,11 @@
       waiting_for_records: {
         title: 'FORGE is building records',
         copy: 'FORGE submitted the request. Refresh build status until completed record names and Open links return.',
+        next: 'Refresh build status'
+      },
+      resolving_records: {
+        title: 'FORGE is resolving returned records',
+        copy: 'The runner returned the sidecar result. Refresh build status while NetSuite finishes the Sales Order/import resolution before Open links appear.',
         next: 'Refresh build status'
       },
       fix_build: {
@@ -25745,7 +25779,8 @@
     const savedCompletedResultJson = savedRunnerResult && (savedRunnerResult.finalGeneratedNamesJson ||
       savedRunnerResult.resultCapture && savedRunnerResult.resultCapture.finalGeneratedNamesJson) || null;
     const savedCompletedGuard = validateDccFinalNamingImportPayload(savedCompletedResultJson, state, lane, page, recommendation);
-    const invalidCompletedResultRecoveryHtml = savedCompletedResultJson && savedCompletedGuard.valid !== true ? `
+    const pendingTransactionResolution = runnerResultPendingTransactionResolutionW430(savedRunnerResult);
+    const invalidCompletedResultRecoveryHtml = savedCompletedResultJson && savedCompletedGuard.valid !== true && !pendingTransactionResolution ? `
       <div class="idb-run-action-card idb-guard-accent idb-w220-import-recovery-ui">
         <div class="idb-status-key">Import recovery</div>
         <div class="idb-strong">Paste the completed build result.</div>
@@ -25774,7 +25809,7 @@
       const resultCaptureStatus = savedRunnerResult && savedRunnerResult.resultCapture &&
         (savedRunnerResult.resultCapture.lookupStatus || savedRunnerResult.resultCapture.status || savedRunnerResult.resultCapture.resultCaptureStatus) || '';
       const buildSetupCopy = w262BuildUx.stateFacts.runnerTaskCaptured
-        ? resultCaptureStatus === 'pending_transaction_resolution'
+        ? pendingTransactionResolution
           ? 'The runner returned the sidecar result; FORGE is waiting for the Sales Order import to resolve before Open links are shown.'
           : 'FORGE submitted through the approved build setup and is waiting for valid returned records.'
         : approvedBuildTouched
@@ -25800,12 +25835,12 @@
             </div>
             <div class="idb-status-cell">
               <div class="idb-status-key">Build</div>
-              <div class="idb-status-value">${w262BuildUx.stateFacts.completedResultReady ? 'Complete' : w262BuildUx.stateFacts.runnerTaskCaptured ? 'Running' : w262BuildUx.stateFacts.adapterReady ? 'Ready' : 'Preview only'}</div>
+              <div class="idb-status-value">${w262BuildUx.stateFacts.completedResultReady ? 'Complete' : pendingTransactionResolution ? 'Resolving import' : w262BuildUx.stateFacts.runnerTaskCaptured ? 'Running' : w262BuildUx.stateFacts.adapterReady ? 'Ready' : 'Preview only'}</div>
               <div class="idb-copy">${escapeHtml(buildSetupCopy)}</div>
             </div>
             <div class="idb-status-cell">
               <div class="idb-status-key">Links</div>
-              <div class="idb-status-value">${w262BuildUx.stateFacts.completedResultReady ? 'Ready' : resultCaptureStatus === 'pending_transaction_resolution' ? 'Resolving import' : w262BuildUx.stateFacts.runnerTaskCaptured ? 'Waiting' : 'Hidden'}</div>
+              <div class="idb-status-value">${w262BuildUx.stateFacts.completedResultReady ? 'Ready' : pendingTransactionResolution ? 'Resolving import' : w262BuildUx.stateFacts.runnerTaskCaptured ? 'Waiting' : 'Hidden'}</div>
               <div class="idb-copy">Open links appear only after real NetSuite records are returned.</div>
             </div>
           </div>
@@ -25817,7 +25852,7 @@
             ${actions.showContinueToRun ? '<span class="idb-mini-chip">Smoke can continue</span>' : ''}
             ${oneClickBuild.automation && oneClickBuild.automation.showAskAdminMessage && !w262BuildUx.stateFacts.runnerTaskCaptured ? '<span class="idb-mini-chip">Build failed, ask admin</span>' : ''}
           </div>
-          ${invalidCompletedResultRecoveryHtml || importRecoverySurfaceHtml}
+          ${pendingTransactionResolution ? '' : (invalidCompletedResultRecoveryHtml || importRecoverySurfaceHtml)}
         </div>
       `;
       if (!(state && state.setupEditMode)) return normalCardHtml;
@@ -28670,6 +28705,7 @@
       dryRunObjectPacket,
       buildRecordNamingAdvisoryRequest,
       nllmRecordNamingGroundingValidationW429,
+      runnerResultPendingTransactionResolutionW430,
       integratedBuildOperatorGateV1,
       integratedBuildRunnerAdapterConfigV1,
       integratedBuildRunnerReturnClientBoundaryV1,

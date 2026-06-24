@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.39
+// @version      1.0.40
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.39';
-  const CURRENT_UX_BLOCK_W346 = 'W431';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.40';
+  const CURRENT_UX_BLOCK_W346 = 'W432';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -19813,6 +19813,29 @@
     const websitePackage = websitePackageClassifier(state);
     const naming = websiteProductNamingEvidence(state, lane);
     const websiteProductCandidates = websiteProductEvidenceCandidatesW424(state && state.websiteEvidenceV1, intake);
+    const selectedToggles = selectedBuildTogglesForNamingGuardW211(state, packet || {}, lane);
+    const modeAwareNamingContractW432 = {
+      schema: 'idb.w432-mode-aware-product-build-naming-contract.v1',
+      selectedMode: selectedToggles.enableWip ? 'wip' : (selectedToggles.enableManufacturing ? 'manufacturing' : 'create_new_item_only'),
+      createNewItemOnly: {
+        requiredNameBasis: ['website product/flavor/pack term', 'distribution/replenishment term'],
+        allowedTerms: ['SKU', 'item', 'case pack', 'replenishment', 'availability', 'allocation', 'fulfillment', 'retail case', 'channel supply'],
+        forbiddenTerms: ['Finished Good', 'Ingredient', 'Formula', 'Batch', 'BOM', 'Assembly', 'Work Order', 'Routing', 'WIP', 'Production Line', 'Manufacturing Line', 'BEVERAGE']
+      },
+      manufacturing: {
+        requiredNames: ['assemblyItemName', 'threeComponentNames', 'bomName', 'bomRevisionName', 'workOrderName'],
+        allowedTerms: ['Finished Good', 'BOM', 'component', 'ingredient', 'material', 'blend', 'packaging', 'work order'],
+        forbiddenGenericNames: ['Finished Good', 'Ingredient Blend', 'Packaging Component', 'Production Line']
+      },
+      wip: {
+        requiredNames: ['routingName', 'operationNames'],
+        requiredOperationStyle: 'industry/product-specific operation verbs, e.g. Slice and Rinse, Kettle Cook, Air Finish, Season, Case Pack and QC'
+      },
+      leakRules: {
+        broadLaneMetadataCannotAppearInCustomerFacingNames: ['Food, Beverage & CPG Manufacturing', 'BEVERAGE'],
+        websiteProductCandidateRequiredInPrimaryNames: true
+      }
+    };
     const lanePackResolutionW246 = resolveLanePackFromEvidenceW246(state, {
       websiteText: websitePackage && websitePackage.evidence ? websitePackage.evidence : '',
       signals: lane && lane.signals ? lane.signals : []
@@ -19840,6 +19863,8 @@
       websitePackageClassifier: websitePackage,
       websiteEvidenceBridge: websiteEvidenceBridge(state),
       websiteProductNameCandidates: websiteProductCandidates,
+      modeAwareNamingContractW432,
+      selectedToggles,
       currentNamingEvidence: naming,
       conversationNotesUse: 'Use notes only to sharpen pain, demand moment wording, and story relevance. Do not let notes override website-owned package identity.',
       records: packet.records.map((record) => ({
@@ -19887,7 +19912,8 @@
         noDccToggleChange: true,
         noPacketOrderChange: true,
         websiteProductNamesRequiredWhenAvailable: true,
-        genericProductFallbackMustBeBlocked: true
+        genericProductFallbackMustBeBlocked: true,
+        modeAwareProductBuildPlanRequiredW432: true
       }
     };
   }
@@ -19916,8 +19942,18 @@
       response.demandMoment,
       recordNames.join(' ')
     ].join(' ');
-    const genericNamePattern = /\b(Product Availability SKU|Branch Availability\s*\/\s*Replenishment Flow|Safe Substitute Fulfillment Support SKU|Finished Good Variety Pack|Product\s*\/\s*SKU|Proof Item|Demo Product|Generic SKU|Inventory\s*\/\s*Fulfillment)\b/i;
-    const genericFailures = recordNames.concat([response.productSeed || '']).filter((name) => genericNamePattern.test(String(name || '')));
+    const genericNamePattern = /\b(Product Availability SKU|Branch Availability\s*\/\s*Replenishment Flow|Safe Substitute Fulfillment Support SKU|Finished Good Variety Pack|Product\s*\/\s*SKU|Proof Item|Demo Product|Generic SKU|Inventory\s*\/\s*Fulfillment|Ingredient Blend|Packaging Component|Production Line)\b/i;
+    const beverageLeakFailures = recordNames.concat([response.productSeed || '', response.productFamily || '']).filter((name) => /\bBEVERAGE\b/i.test(String(name || '')));
+    const standaloneManufacturingFailures = recordNames.filter((name) => {
+      const value = String(name || '');
+      if (!/\bFinished Good\b/i.test(value)) return false;
+      return !uniqueCandidates.some((candidate) => {
+        const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return new RegExp(`\\b${escaped}\\b`, 'i').test(value);
+      });
+    });
+    const genericFailures = recordNames.concat([response.productSeed || '']).filter((name) => genericNamePattern.test(String(name || '')))
+      .concat(beverageLeakFailures, standaloneManufacturingFailures);
     const groundedCandidate = uniqueCandidates.find((candidate) => {
       const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       return new RegExp(`\\b${escaped}\\b`, 'i').test(proposedText);
@@ -19927,6 +19963,8 @@
     if (!uniqueCandidates.length) blockedReasons.push('website_product_candidates_missing');
     if (uniqueCandidates.length && !groundedCandidate) blockedReasons.push('no_returned_name_uses_website_product_candidate');
     if (genericFailures.length) blockedReasons.push('generic_product_or_finished_good_name_returned');
+    if (beverageLeakFailures.length) blockedReasons.push('broad_beverage_lane_leaked_into_customer_name');
+    if (standaloneManufacturingFailures.length) blockedReasons.push('finished_good_missing_website_product_term');
     if (!sourceBasisWebsiteGrounded) blockedReasons.push('source_basis_not_website_grounded');
     if (response.creationAllowed === true || response.writeAuthority && response.writeAuthority !== 'none') blockedReasons.push('nllm_advisory_boundary_violated');
     return {

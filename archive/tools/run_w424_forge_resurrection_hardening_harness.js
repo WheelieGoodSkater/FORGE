@@ -163,10 +163,10 @@ function main() {
   const dayInLifeHtml = hooks.renderW416ConsultantDayInLife(completedState, completedLane, page, completedRecommendation, completedLane.moves[0], { id: 'prove', label: 'Prove' }, '');
 
   assertCase(results, 'w429-version-marker-advanced',
-    drawer.includes('// @version      1.0.39') &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.39';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W431';"),
-    'Drawer should show W431 / 1.0.39 for install/update clarity while preserving W424/W428/W429 behavior.');
+    drawer.includes('// @version      1.0.40') &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.40';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W432';"),
+    'Drawer should show W432 / 1.0.40 for install/update clarity while preserving W424/W428/W429 behavior.');
 
   assertCase(results, 'w424-filecabinet-copies-synced',
     drawer === fileCabinetDrawer && runner === fileCabinetRunner,
@@ -285,7 +285,7 @@ ${results.map((result) => `| ${result.id} | ${result.pass ? 'PASS' : 'FAIL'} |`)
 - Completed-result import validation and Open-link authority remain intact.
 
 ## Recommendation
-Lock W431 if the harness passes, reinstall Drawer 1.0.39 / W431, then rerun one controlled Cape Cod-style Food/Beverage smoke. If N/LLM returns generic product names, treat that as blocked and collect better website product evidence rather than continuing the run.
+Lock W432 if the harness passes, reinstall Drawer 1.0.40 / W432, then rerun one controlled Cape Cod-style Food/Beverage smoke. If N/LLM returns generic product names, treat that as blocked and collect better website product evidence rather than continuing the run.
 `;
   fs.writeFileSync(reportPath, report);
 

@@ -31,4 +31,4 @@ W428 repairs the simplified consultant flow after a runner task completes. Refre
 - No runner write path, adapter record creation, source pack, completed-result validation, or Open-link authority check was weakened.
 
 ## Recommendation
-Lock W431, reinstall Drawer 1.0.39 / W431 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner returns sidecar records, Refresh build status should import brand-named records into the cockpit even while transaction import resolution continues.
+Lock W432, reinstall Drawer 1.0.40 / W432 in Tampermonkey, and rerun one controlled Food/Beverage build. After the runner returns sidecar records, Refresh build status should import brand-named records into the cockpit even while transaction import resolution continues.

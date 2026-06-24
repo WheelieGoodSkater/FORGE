@@ -1068,7 +1068,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           subsidiaryId,
           locationId,
           quantity: 10,
-          memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded`,
+          memo: `SCAI Demo Reset: ${extId} | ${prospect} | ${(names._productBuildPlanW432 && names._productBuildPlanW432.workOrderName) || 'WO seeded'}`,
           bomId: ids.bomId,
           bomRevId: ids.bomRevId
         });
@@ -1195,6 +1195,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         runUniqueSuffix,
         enableManufacturing: finalEnableManufacturing,
         enableWip: effectiveEnableWip,
+        woId,
+        routingId,
+        routingResult,
         confirmedBuildRequestJson,
         flowState: authoritativeTruth.flowState || canonicalStorySeed.flowState,
         csvImport: {
@@ -1521,9 +1524,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         routing.commitLine({ sublistId: stepSublist });
       }
 
-      addStep(10, opNames.op10 || 'Blending',    c1.id, t1.id);
-      addStep(20, opNames.op20 || 'Dispensing',  c2.id, t2.id);
-      addStep(30, opNames.op30 || 'Packaging',   c3.id, t3.id);
+      addStep(10, opNames.op10 || 'Prepare Materials', c1.id, t1.id);
+      addStep(20, opNames.op20 || 'Build Product',     c2.id, t2.id);
+      addStep(30, opNames.op30 || 'Inspect',           c3.id, t3.id);
+      if (opNames.op40) addStep(40, opNames.op40, c2.id, t2.id);
+      if (opNames.op50) addStep(50, opNames.op50, c3.id, t3.id);
 
       routingStage = 'save_routing';
       routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
@@ -2295,15 +2300,29 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const bySeq = (names && names.operation_names_by_seq) ? names.operation_names_by_seq : null;
     if (bySeq) {
       return {
-        op10: trimLen(str(bySeq['10'] || bySeq[10] || 'Blending'), 60),
-        op20: trimLen(str(bySeq['20'] || bySeq[20] || 'Dispensing'), 60),
-        op30: trimLen(str(bySeq['30'] || bySeq[30] || 'Packaging'), 60)
+        op10: trimLen(str(bySeq['10'] || bySeq[10] || 'Prepare Materials'), 60),
+        op20: trimLen(str(bySeq['20'] || bySeq[20] || 'Build Product'), 60),
+        op30: trimLen(str(bySeq['30'] || bySeq[30] || 'Inspect'), 60),
+        op40: trimLen(str(bySeq['40'] || bySeq[40] || ''), 60),
+        op50: trimLen(str(bySeq['50'] || bySeq[50] || ''), 60)
+      };
+    }
+    if (names && names._productBuildPlanW432 && names._productBuildPlanW432.operationNames) {
+      const ops = names._productBuildPlanW432.operationNames;
+      return {
+        op10: trimLen(str(ops[0] || 'Prepare Materials'), 60),
+        op20: trimLen(str(ops[1] || 'Build Product'), 60),
+        op30: trimLen(str(ops[2] || 'Inspect'), 60),
+        op40: trimLen(str(ops[3] || ''), 60),
+        op50: trimLen(str(ops[4] || ''), 60)
       };
     }
     return {
-      op10: 'Blending',
-      op20: 'Dispensing',
-      op30: 'Packaging'
+      op10: 'Prepare Materials',
+      op20: 'Build Product',
+      op30: 'Inspect',
+      op40: '',
+      op50: ''
     };
   }
 
@@ -3406,7 +3425,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function buildUniqueRecordName(baseName, runUniqueSuffix, maxLen) {
-    const suffix = safeCode(runUniqueSuffix || '').slice(0, 20);
+    const suffix = customerFacingRunSuffixW432(runUniqueSuffix || '').slice(0, 20);
     const base = String(baseName || 'Demo Item').replace(/^SCAI\s*-\s*/i, '').trim() || 'Demo Item';
     if (!suffix) return trimLen(base, maxLen || 83);
     const marker = ` - ${suffix}`;
@@ -4296,6 +4315,180 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return out;
   }
 
+  function extractWebsiteProductTermsW432(opts) {
+    const source = opts || {};
+    const hay = String([
+      source.prospect,
+      source.website,
+      source.signalText,
+      source.notes,
+      source.agenda,
+      source.productSeed,
+      source.productFamily
+    ].join(' '));
+    const lower = hay.toLowerCase();
+    const productCandidates = [];
+    const websiteTermsUsed = [];
+    const addCandidate = function (candidate, evidence) {
+      if (!candidate) return;
+      if (productCandidates.indexOf(candidate) === -1) productCandidates.push(candidate);
+      if (evidence && websiteTermsUsed.indexOf(evidence) === -1) websiteTermsUsed.push(evidence);
+    };
+    if (/air\s*fried/.test(lower) && /sea\s*salt\s*&?\s*vinegar/.test(lower)) {
+      addCandidate('Air Fried Sea Salt & Vinegar Kettle Chips', 'Air Fried Sea Salt & Vinegar');
+    }
+    if (/sea\s*salt\s*&?\s*vinegar/.test(lower)) addCandidate('Sea Salt & Vinegar Kettle Chips', 'Sea Salt & Vinegar');
+    if (/jalape(?:n|ñ)o/.test(lower)) addCandidate('Jalapeno Kettle Chips', 'Jalapeno');
+    if (/himalayan\s+salt/.test(lower)) addCandidate('Himalayan Salt Kettle Chips', 'Himalayan Salt');
+    if (/texas\s+bbq/.test(lower)) addCandidate('Texas BBQ Kettle Chips', 'Texas BBQ');
+    const sellableUnit = /6\.5\s*oz/i.test(hay) ? '6.5 oz bag' : (/oz/i.test(hay) ? 'retail bag' : 'retail unit');
+    if (/kettle\s+chips?|potato\s+chips?|chips/.test(lower) && websiteTermsUsed.indexOf('kettle chips') === -1) websiteTermsUsed.push('kettle chips');
+    return {
+      schema: 'idb.w432-website-product-terms.v1',
+      productCandidates,
+      selectedProductCandidate: productCandidates[0] || '',
+      sellableUnit,
+      casePackName: '12-Count Case Pack',
+      websiteTermsUsed,
+      rejectedGenericTerms: ['Finished Good', 'Production Line', 'Ingredient Blend', 'Packaging Component', 'BEVERAGE']
+    };
+  }
+
+  function kettleProductBuildPlanFixtureW432(opts) {
+    return productBuildPlanW432(Object.assign({}, opts || {}, {
+      signalText: [
+        opts && opts.signalText,
+        'Kettle Brand Air Fried Sea Salt & Vinegar kettle chips 6.5 oz bag kettle cooked air finished'
+      ].filter(Boolean).join(' ')
+    }));
+  }
+
+  function productBuildPlanW432(opts) {
+    const source = opts || {};
+    const prospect = idbCanonicalProspectNameW422(source.prospect || 'IDB Prospect', source.website);
+    const productTerms = extractWebsiteProductTermsW432(source);
+    const selectedProduct = str(source.productName || source.product_name || productTerms.selectedProductCandidate || source.productSeed || source.productFamily);
+    const genericProduct = /^(finished good|product \/ sku|product|inventory \/ fulfillment|assembly|proof item)$/i.test(selectedProduct);
+    const productName = genericProduct || !selectedProduct ? `${prospect} Product` : selectedProduct;
+    const brandName = /kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : prospect.split(/\s+/).slice(0, 2).join(' ');
+    const shortProduct = productName
+      .replace(/\bKettle\s+Brand\b/ig, 'Kettle')
+      .replace(/\bKettle\s+Chips\b/ig, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const productForNames = /kettle/i.test(brandName) && !/^kettle\b/i.test(shortProduct)
+      ? `${brandName} ${shortProduct}`
+      : shortProduct;
+    const distributionBase = /sea salt/i.test(productForNames)
+      ? 'Kettle Air Fried Sea Salt & Vinegar'
+      : productForNames;
+    const plan = {
+      schema: 'idb.w432-product-build-plan.v1',
+      source: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
+      confidence: productTerms.selectedProductCandidate ? 'high' : 'low',
+      productName,
+      productFamily: /chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family'),
+      brandName,
+      sellableUnit: productTerms.sellableUnit,
+      casePackName: productTerms.casePackName,
+      distributionItemName: trimLen(`${distributionBase} ${productTerms.casePackName}`, 80),
+      distributionProofName: trimLen(`${distributionBase} Retail Replenishment`, 80),
+      distributionSupportName: trimLen(`${distributionBase} Channel Supply`, 80),
+      assemblyItemName: trimLen(`${distributionBase} Finished Good`, 80),
+      componentNames: [
+        /sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Primary Material Input`,
+        /sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`,
+        /6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`
+      ],
+      bomName: trimLen(`BOM - ${distributionBase}`, 80),
+      bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
+      workOrderName: trimLen(`WO - ${distributionBase}`, 80),
+      routingName: trimLen(`Routing - ${distributionBase} Chips`, 80),
+      operationNames: /sea salt/i.test(distributionBase)
+        ? ['Slice and Rinse', 'Kettle Cook', 'Air Finish', 'Season', 'Case Pack and QC']
+        : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'],
+      forbiddenLeakTerms: ['BEVERAGE', 'Finished Good Packaging / Case Pack', 'Production Line', 'Ingredient Blend', 'Packaging Component'],
+      modeContracts: {
+        createNewItemOnly: {
+          forbidden: ['Finished Good', 'Ingredient', 'Formula', 'Batch', 'BOM', 'Assembly', 'Work Order', 'Routing', 'WIP', 'Production Line', 'Manufacturing Line'],
+          names: ['distributionItemName', 'distributionProofName', 'distributionSupportName']
+        },
+        manufacturing: {
+          required: ['assemblyItemName', 'componentNames', 'bomName', 'bomRevisionName', 'workOrderName']
+        },
+        wip: {
+          required: ['routingName', 'operationNames']
+        }
+      },
+      evidence: {
+        website: str(source.website),
+        productCandidates: productTerms.productCandidates,
+        selectedProductCandidate: productTerms.selectedProductCandidate,
+        websiteTermsUsed: productTerms.websiteTermsUsed,
+        rejectedGenericTerms: productTerms.rejectedGenericTerms
+      }
+    };
+    return plan;
+  }
+
+  function applyProductBuildPlanToNamingPackW432(names, opts) {
+    const out = sanitizeNamingPayload(Object.assign({}, names || {}));
+    const plan = productBuildPlanW432(Object.assign({}, opts || {}, out || {}, {
+      productSeed: out.productSeed || out.hero_item_name,
+      productFamily: out.productFamily || out.industry_category
+    }));
+    const enableManufacturing = !!(opts && opts.enableManufacturing === true);
+    const enableWip = !!(opts && opts.enableWip === true);
+    out._productBuildPlanW432 = plan;
+    out.hero_item_name = enableManufacturing ? plan.distributionItemName : plan.distributionItemName;
+    out.assembly_name = enableManufacturing ? plan.assemblyItemName : plan.distributionProofName;
+    out.component_names = enableManufacturing ? plan.componentNames.slice(0, 3) : [
+      plan.distributionSupportName,
+      trimLen(`${plan.distributionItemName} Allocation`, 80),
+      trimLen(`${plan.distributionItemName} Retail Case Supply`, 80)
+    ];
+    out.bom_name = enableManufacturing ? plan.bomName : trimLen(`${plan.distributionItemName} Product Structure`, 80);
+    out.bom_revision_name = enableManufacturing ? plan.bomRevisionName : `Revision 1 - ${plan.distributionItemName}`;
+    out.routing_name = enableWip ? plan.routingName : '';
+    out.operation_names_by_seq = enableWip ? {
+      10: plan.operationNames[0],
+      20: plan.operationNames[1],
+      30: plan.operationNames[2],
+      40: plan.operationNames[3],
+      50: plan.operationNames[4]
+    } : null;
+    out._w432Mode = enableWip ? 'wip' : (enableManufacturing ? 'manufacturing' : 'create_new_item_only');
+    return out;
+  }
+
+  function validateProductBuildPlanForModeW432(plan, opts) {
+    const enableManufacturing = !!(opts && opts.enableManufacturing === true);
+    const enableWip = !!(opts && opts.enableWip === true);
+    const names = [
+      plan && plan.distributionItemName,
+      plan && plan.distributionProofName,
+      plan && plan.distributionSupportName,
+      enableManufacturing && plan && plan.assemblyItemName,
+      enableManufacturing && plan && plan.bomName,
+      enableManufacturing && plan && plan.workOrderName
+    ].concat(enableManufacturing && plan ? plan.componentNames : [], enableWip && plan ? [plan.routingName].concat(plan.operationNames || []) : [])
+      .filter(Boolean);
+    const hay = names.join(' ');
+    const errors = [];
+    if (!plan || plan.schema !== 'idb.w432-product-build-plan.v1') errors.push('missing_product_build_plan');
+    if (!enableManufacturing && /\b(Finished Good|Ingredient|Formula|Batch|BOM|Assembly|Work Order|Routing|WIP|Production Line|Manufacturing Line)\b/i.test(hay)) errors.push('manufacturing_terms_in_create_new_item_only');
+    if (/\bBEVERAGE\b/i.test(hay)) errors.push('beverage_leak_in_customer_facing_name');
+    if (enableManufacturing && (!plan.componentNames || plan.componentNames.length !== 3)) errors.push('manufacturing_requires_three_components');
+    if (enableWip && (!plan.operationNames || plan.operationNames.length < 3)) errors.push('wip_requires_routing_operations');
+    return {
+      schema: 'idb.w432-product-build-plan-validation.v1',
+      valid: errors.length === 0,
+      status: errors.length ? 'blocked' : 'accepted',
+      errors,
+      checkedNames: names
+    };
+  }
+
   const IDB_NON_MFG_FORBIDDEN_NAME_RE = /\b(finished\s+good|ingredient(?:\s+blend)?|production\s+line|bom|assembly|work\s+order|routing|wip|manufacturing\s+line)\b/i;
 
   function idbNameHasNonManufacturingForbiddenTerm(name) {
@@ -4395,16 +4588,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function idbFinalResultRoleLabelsForModeW414(modeKey) {
     if (modeKey === 'food_ingredient_manufacturing') {
       return {
-        heroItem: 'Finished Food/Batch Item',
-        matrixProofItem: 'Formula or Batch Structure',
-        componentItem: 'Ingredient / Packaging Component'
+        heroItem: 'Finished Good Assembly Item',
+        matrixProofItem: 'BOM / Revision Structure',
+        componentItem: 'Ingredient / Packaging Item'
       };
     }
     if (modeKey === 'food_replenishment') {
       return {
-        heroItem: 'Finished Good Item',
-        matrixProofItem: 'Promotion / Replenishment Readiness',
-        componentItem: 'Packaging / Supply Support'
+        heroItem: 'Retail Case Pack SKU',
+        matrixProofItem: 'Retail Replenishment Flow',
+        componentItem: 'Channel Supply Support'
       };
     }
     if (modeKey === 'manufacturing') {
@@ -4680,17 +4873,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function applyToggleAwareNamingGuardrails(names, opts) {
-    const out = sanitizeNamingPayload(Object.assign({}, names || {}));
+    let out = sanitizeNamingPayload(Object.assign({}, names || {}));
     const enableManufacturing = !!(opts && opts.enableManufacturing === true);
     const enableWip = !!(opts && opts.enableWip === true);
     const rewrites = [];
     const vocabularyPolicy = runnerLaneVocabularyPolicyV1(opts || {});
+    out = applyProductBuildPlanToNamingPackW432(out, opts || {});
+    const productBuildPlanValidationW432 = validateProductBuildPlanForModeW432(out._productBuildPlanW432, { enableManufacturing, enableWip });
     if (enableManufacturing || enableWip) {
       out._toggleAwareNamingGuardrail = {
         status: 'manufacturing_vocabulary_allowed',
         enableManufacturing,
         enableWip,
         laneVocabularyPolicy: vocabularyPolicy,
+        productBuildPlanW432: out._productBuildPlanW432,
+        productBuildPlanValidationW432,
         rewrites: []
       };
       return out;
@@ -4740,6 +4937,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         'WIP',
         'Manufacturing Line'
       ],
+      productBuildPlanW432: out._productBuildPlanW432,
+      productBuildPlanValidationW432,
       rewrites
     };
     return out;
@@ -4805,19 +5004,25 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       };
     }
     if (vertical === 'food') {
+      const plan = productBuildPlanW432({ prospect: canonicalProspect, website, signalText: clippedSignal });
       return {
-        _source: 'deterministic-food-safe',
+        _source: 'deterministic-food-product-build-plan-w432',
         _signalLen: clippedSignal.length,
-        industry_category: 'Food, Beverage & CPG Manufacturing',
-        hero_item_name: `${canonicalProspect} Finished Good`,
-        assembly_name: `${canonicalProspect} Production Line`,
-        component_names: [
-          `${canonicalProspect} Ingredient Blend`,
-          `${canonicalProspect} Packaging Component`,
-          `${canonicalProspect} Finished Case Pack`
-        ],
-        bom_name: `Ingredient / Packaging Structure - ${canonicalProspect}`,
-        bom_revision_name: `Revision 1 - ${canonicalProspect}`
+        industry_category: 'Food & CPG Snack Products',
+        hero_item_name: plan.distributionItemName,
+        assembly_name: plan.assemblyItemName,
+        component_names: plan.componentNames.slice(0, 3),
+        bom_name: plan.bomName,
+        bom_revision_name: plan.bomRevisionName,
+        routing_name: plan.routingName,
+        operation_names_by_seq: {
+          10: plan.operationNames[0],
+          20: plan.operationNames[1],
+          30: plan.operationNames[2],
+          40: plan.operationNames[3],
+          50: plan.operationNames[4]
+        },
+        _productBuildPlanW432: plan
       };
     }
     if (vertical === 'services') {
@@ -5600,7 +5805,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       internalId: args.ids && args.ids.heroItemId,
       label: laneVocabularyPolicy && laneVocabularyPolicy.finalResultRoleLabels && laneVocabularyPolicy.finalResultRoleLabels.heroItem
     });
-    const matrixProofItem = ensureIdbProofItemForResult({
+    const matrixProofItem = args.enableManufacturing ? null : ensureIdbProofItemForResult({
       prospect,
       subsidiaryId: args.subsidiaryId,
       locationId: args.locationId,
@@ -5610,7 +5815,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       laneVocabularyPolicy,
       anchorHeroId: args.ids && args.ids.heroItemId
     });
-    const componentItem = ensureIdbComponentItemForResult({
+    const componentItem = args.enableManufacturing ? null : ensureIdbComponentItemForResult({
       prospect,
       subsidiaryId: args.subsidiaryId,
       locationId: args.locationId,
@@ -5620,6 +5825,52 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       laneVocabularyPolicy,
       anchorHeroId: args.ids && args.ids.heroItemId
     });
+    const assemblyItem = args.enableManufacturing && args.ids && args.ids.assemblyId ? normalizeIdbRecord({
+      role: 'assemblyItem',
+      type: 'assemblyitem',
+      name: readRecordDisplayName('assemblyitem', args.ids.assemblyId, resultNames.assembly_name),
+      internalId: args.ids.assemblyId,
+      label: 'Assembly / Finished Good'
+    }) : null;
+    const manufacturingComponents = args.enableManufacturing ? [
+      { id: args.ids && args.ids.comp1Id, name: resultNames.component_names && resultNames.component_names[0] },
+      { id: args.ids && args.ids.comp2Id, name: resultNames.component_names && resultNames.component_names[1] },
+      { id: args.ids && args.ids.comp3Id, name: resultNames.component_names && resultNames.component_names[2] }
+    ].filter(c => c.id).map((component, index) => normalizeIdbRecord({
+      role: `componentItem${index + 1}`,
+      type: 'inventoryitem',
+      name: readRecordDisplayName('inventoryitem', component.id, component.name),
+      internalId: component.id,
+      label: 'Ingredient / Component Item'
+    })) : [];
+    const bomRecord = args.enableManufacturing && args.ids && args.ids.bomId ? normalizeIdbRecord({
+      role: 'bom',
+      type: 'bom',
+      name: readRecordDisplayName('bom', args.ids.bomId, resultNames.bom_name),
+      internalId: args.ids.bomId,
+      label: 'Bill of Materials'
+    }) : null;
+    const bomRevisionRecord = args.enableManufacturing && args.ids && args.ids.bomRevId ? normalizeIdbRecord({
+      role: 'bomRevision',
+      type: 'bomrevision',
+      name: readRecordDisplayName('bomrevision', args.ids.bomRevId, resultNames.bom_revision_name),
+      internalId: args.ids.bomRevId,
+      label: 'BOM Revision'
+    }) : null;
+    const workOrderRecord = args.enableManufacturing && args.woId ? normalizeIdbRecord({
+      role: 'workOrder',
+      type: 'workorder',
+      name: (resultNames._productBuildPlanW432 && resultNames._productBuildPlanW432.workOrderName) || readRecordDisplayName('workorder', args.woId, 'Work Order'),
+      internalId: args.woId,
+      label: 'Work Order'
+    }) : null;
+    const routingRecord = args.enableWip && args.routingId ? normalizeIdbRecord({
+      role: 'routing',
+      type: 'manufacturingrouting',
+      name: (resultNames._productBuildPlanW432 && resultNames._productBuildPlanW432.routingName) || readRecordDisplayName('manufacturingrouting', args.routingId, resultNames.routing_name),
+      internalId: args.routingId,
+      label: 'Manufacturing Routing'
+    }) : null;
     const demoTransaction = buildPendingIdbDemoTransactionForResult({
       prospect,
       website: args.website,
@@ -5627,6 +5878,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       extId,
       csvImport: args.csvImport
     });
+    const records = {
+      customer,
+      demoTransaction,
+      heroItem
+    };
+    if (matrixProofItem) records.matrixProofItem = matrixProofItem;
+    if (componentItem) records.componentItem = componentItem;
+    if (assemblyItem) records.assemblyItem = assemblyItem;
+    manufacturingComponents.forEach((recordValue, index) => { records[`componentItem${index + 1}`] = recordValue; });
+    if (bomRecord) records.bom = bomRecord;
+    if (bomRevisionRecord) records.bomRevision = bomRevisionRecord;
+    if (workOrderRecord) records.workOrder = workOrderRecord;
+    if (routingRecord) records.routing = routingRecord;
 
     const sidecarGeneratedNamesJson = {
       schema: 'idb.runner-sidecar-result-json.v1',
@@ -5646,17 +5910,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         buildAttemptId,
         submittedAt
       },
-      records: {
-        customer,
-        demoTransaction,
-        heroItem,
-        matrixProofItem,
-        componentItem
-      },
+      productBuildPlanW432: resultNames._productBuildPlanW432 || null,
+      productBuildPlanValidationW432: resultNames._toggleAwareNamingGuardrail && resultNames._toggleAwareNamingGuardrail.productBuildPlanValidationW432 || null,
+      records,
       demoTransaction,
       heroItem,
-      matrixItem: matrixProofItem,
-      componentItems: [componentItem],
+      matrixItem: matrixProofItem || assemblyItem,
+      assembly: assemblyItem,
+      bom: bomRecord,
+      bomRevision: bomRevisionRecord,
+      workOrder: workOrderRecord,
+      routing: routingRecord,
+      componentItems: args.enableManufacturing ? manufacturingComponents : [componentItem].filter(Boolean),
+      routingDiagnostics: args.routingResult || null,
       transactionResolution: {
         status: 'pending_transaction_resolution',
         authority: 'legacy_runner_csv_import_path',
@@ -6034,7 +6300,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (!rec) return str(fallbackName);
     const fields = type === 'salesorder'
       ? ['tranid', 'memo']
-      : (type === 'customer' ? ['companyname', 'entityid', 'altname'] : ['displayname', 'itemid', 'salesdescription']);
+      : (type === 'customer' ? ['companyname', 'entityid', 'altname'] : (type === 'bom' || type === 'bomrevision' || type === 'manufacturingrouting' ? ['name', 'displayname'] : ['displayname', 'itemid', 'salesdescription', 'name']));
     for (let i = 0; i < fields.length; i++) {
       const value = safeTryReturn(() => rec.getValue({ fieldId: fields[i] }));
       if (str(value)) return str(value);
@@ -6048,6 +6314,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const host = buildNetSuiteHost();
     if (type === 'customer') return `${host}/app/common/entity/custjob.nl?id=${n}`;
     if (type === 'salesorder') return `${host}/app/accounting/transactions/salesord.nl?id=${n}`;
+    if (type === 'workorder') return `${host}/app/accounting/transactions/workord.nl?id=${n}`;
+    if (type === 'bom') return `${host}/app/accounting/manufacturing/bom.nl?id=${n}`;
+    if (type === 'bomrevision') return `${host}/app/accounting/manufacturing/bomrevision.nl?id=${n}`;
+    if (type === 'manufacturingrouting') return `${host}/app/accounting/manufacturing/routing.nl?id=${n}`;
     return `${host}/app/common/item/item.nl?id=${n}`;
   }
 
@@ -6467,7 +6737,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function buildDifferentiatedNames(baseName, extId, runUniqueSuffix) {
     const cleanBase = String(baseName || 'Demo').replace(/^SCAI\s*-\s*/i, '').trim() || 'Demo';
-    const suffix = safeCode(runUniqueSuffix || shortExtSuffix(extId)).slice(0, 20);
+    const suffix = customerFacingRunSuffixW432(runUniqueSuffix || shortExtSuffix(extId)).slice(0, 20);
     return {
       displayName: buildUniqueRecordName(`SCAI - ${cleanBase}`, suffix, 120),
       itemIdName: buildUniqueRecordName(`SCAI - ${cleanBase}`, suffix, 60),
@@ -6476,6 +6746,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function trimLen(s, n) { const t = String(s || '').trim(); return t.length <= n ? t : t.slice(0, n).trim(); }
+  function customerFacingRunSuffixW432(value) {
+    return safeCode(String(value || '')
+      .replace(/BEVERAGE/ig, 'SNACKS')
+      .replace(/FOODMANUFACTURING/ig, 'SNACKS')
+      .replace(/FOOD_BEVERAGE/ig, 'SNACKS')) || 'RUN';
+  }
   function summarizeOneLine(text) { const t = String(text || '').replace(/\s+/g, ' ').trim(); return t.length <= 160 ? t : t.slice(0, 157) + '...'; }
   function recordFieldSafeText(text, maxLen) {
     const limit = Number(maxLen || 190);
@@ -6568,5 +6844,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return (s === 'T' || s === 'TRUE' || s === 'YES' || s === '1' || s === 'ON');
   }
 
-  return { execute };
+  return {
+    execute,
+    __W432_TEST_HOOKS__: {
+      extractWebsiteProductTermsW432,
+      kettleProductBuildPlanFixtureW432,
+      productBuildPlanW432,
+      applyProductBuildPlanToNamingPackW432,
+      validateProductBuildPlanForModeW432,
+      generateNamingPack,
+      applyToggleAwareNamingGuardrails,
+      customerFacingRunSuffixW432,
+      resolveRoutingNames
+    }
+  };
 });

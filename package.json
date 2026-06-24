@@ -189,7 +189,8 @@
     "harness:forge-resurrection-hardening-w424": "node archive/tools/run_w424_forge_resurrection_hardening_harness.js",
     "harness:invalid-sub-location-guard-w425": "node archive/tools/run_w425_invalid_sub_location_guard_harness.js",
     "harness:build-waiting-stage-priority-w426": "node archive/tools/run_w426_build_waiting_stage_priority_harness.js",
-    "harness:refresh-completed-result-auto-import-w427": "node archive/tools/run_w427_refresh_completed_result_auto_import_harness.js"
+    "harness:refresh-completed-result-auto-import-w427": "node archive/tools/run_w427_refresh_completed_result_auto_import_harness.js",
+    "harness:product-build-plan-naming-w432": "node archive/tools/run_w432_product_build_plan_naming_harness.js"
   },
   "keywords": [
     "netsuite",

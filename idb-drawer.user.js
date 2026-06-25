@@ -14662,7 +14662,12 @@
       .concat(arrayValue(payload && payload.scriptPivotObjects));
     const mode = visibleProductModeW439(state, lane, payload || finalNaming || {}, objects);
     const customerName = firstNonBlank(state && state.customerName, intake.customer, finalNaming && finalNaming.prospect, 'Prospect');
-    const productPlanW445 = (payload && payload.productBuildPlanW432) || (finalNaming && finalNaming.productBuildPlanW432) || null;
+    const productPlanW445 = (payload && payload.productBuildPlanW432) ||
+      (payload && payload.runnerSidecar && payload.runnerSidecar.productBuildPlanW432) ||
+      (payload && payload.resultCapture && payload.resultCapture.productBuildPlanW432) ||
+      (finalNaming && finalNaming.productBuildPlanW432) ||
+      (finalNaming && finalNaming.runnerSidecar && finalNaming.runnerSidecar.productBuildPlanW432) ||
+      null;
     const planProductCandidateW445 = productPlanW445 ? firstNonBlank(
       productPlanW445.primaryProductCandidate,
       productPlanW445.selectedProductCandidate,
@@ -14692,7 +14697,12 @@
     const isGoodlesMac = /\bGoodles\b/i.test(productBaseName) || /\bmac\b/i.test(productBaseName) && /\bcheese\b/i.test(productBaseName);
     const isChompsJerky = /\bChomps\b/i.test(productBaseName) || /\bjerky|meat snack|snack sticks\b/i.test(productBaseName);
     const isKodiakBreakfast = /\bKodiak\b/i.test(productBaseName) || /\bflapjack|pancake|waffle|oat|protein cup\b/i.test(productBaseName);
-    const componentNames = isSiete
+    const packComponentNamesW450 = arrayValue(productPlanW445 && productPlanW445.componentNames)
+      .concat(arrayValue(productPlanW445 && productPlanW445.component_names))
+      .filter(Boolean);
+    const componentNames = packComponentNamesW450.length >= 3
+      ? packComponentNamesW450.slice(0, 3)
+      : isSiete
       ? ['Siete Corn Masa Input', 'Avocado Oil Frying Input', 'Sea Salt Seasoning and Retail Bag Packaging']
       : isGoodlesMac
       ? ['Goodles Pasta Input', 'Cheese Sauce Seasoning Blend', 'Retail Carton and Case Packaging']
@@ -14701,7 +14711,12 @@
       : isKodiakBreakfast
       ? ['Kodiak Oat & Wheat Protein Blend', 'Maple Brown Sugar Flavor Blend', 'Flapjack Cup and Case Packaging']
       : [`${productBaseName} Product-Specific Input`, `${productBaseName} Product-Specific Seasoning`, `${productBaseName} Retail Bag and Case Packaging`];
-    const operationNames = isSiete
+    const packOperationNamesW450 = arrayValue(productPlanW445 && productPlanW445.operationNames)
+      .concat(arrayValue(productPlanW445 && productPlanW445.operation_names))
+      .filter(Boolean);
+    const operationNames = packOperationNamesW450.length >= 3
+      ? packOperationNamesW450.slice(0, 5)
+      : isSiete
       ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
       : isGoodlesMac
       ? ['Stage Pasta and Cheese Blend', 'Blend Seasoning and Dry Goods', 'Fill Retail Cartons', 'Case Pack and QC']
@@ -14800,7 +14815,11 @@
     if (/work_order|work order|workorder/.test(key)) return narrative.manufacturing.workOrderName;
     if (/routing/.test(key)) return narrative.wip.routingName;
     if (/component|ingredient|material|support/.test(key)) {
-      const index = Math.max(0, Number(record.index || record.componentIndex || 0) || 0);
+      const indexedText = `${record.role || ''} ${record.canonicalRole || ''} ${record.outputRole || ''} ${record.label || ''} ${record.consultantLabel || ''}`;
+      const parsedIndex = (indexedText.match(/(?:component|ingredient|material|input)\D*([123])/i) || [])[1];
+      const index = record.componentIndex !== undefined && record.componentIndex !== null
+        ? Math.max(0, Number(record.componentIndex) || 0)
+        : Math.max(0, Number(record.index || parsedIndex || 1) - 1 || 0);
       return narrative.manufacturing.componentNames[index] || narrative.manufacturing.componentNames[0] || '';
     }
     return '';
@@ -22339,8 +22358,11 @@
   }
 
   function industryAwareInputLabelW443(item, narrative, index) {
-    const itemText = `${item && (item.name || item.recordName || item.label || item.consultantLabel || '') || ''} ${narrative && narrative.productBaseName || ''}`.toLowerCase();
     const sequence = Math.max(0, Number(index || 0) || 0) + 1;
+    const narrativeComponentName = narrative && narrative.manufacturing && narrative.manufacturing.componentNames
+      ? narrative.manufacturing.componentNames[Math.max(0, sequence - 1)] || ''
+      : '';
+    const itemText = `${item && (item.name || item.recordName || item.label || item.consultantLabel || '') || ''} ${narrativeComponentName} ${narrative && narrative.productBaseName || ''}`.toLowerCase();
     const isFood = /\b(siete|kettle|chips|tortilla|masa|seasoning|snack|food|cpg|case pack)\b/i.test(itemText);
     const isBeauty = /\b(serum|skincare|beauty|cosmetic|lotion|cream|formula|fill run)\b/i.test(itemText);
     const isIndustrial = /\b(equipment|machine|conveyor|module|configured|subassembly|motor|component)\b/i.test(itemText);
@@ -25940,6 +25962,7 @@
         whyPresented,
         metricDirection: /wip|routing|production|batch|ingredient|work order/i.test(narrativeText) ? 'Decrease customer-promise risk' : 'Increase fulfillment confidence',
         quantifier: /wip|routing|production|batch|ingredient|work order/i.test(narrativeText) ? 'Measure order misses, delay days, shortage holds, or manual schedule touches.' : 'Measure fill rate, late lines, stockout touches, or manual reconciliation.',
+        proofSignalLabel: activeMode === 'distribution' ? 'Replenishment proof' : (activeMode === 'manufacturing' ? 'Production proof' : 'WIP proof'),
         baselineNeeded: firstNonBlank(valueNarrative && valueNarrative.baselineNeeded, valueNarrative && valueNarrative.roiDetail, value && value.roiAudit && value.roiAudit.baselineNeeded, 'Buyer-confirmed baseline needed before any savings claim.'),
         unsupportedClaimCaution: firstNonBlank(valueNarrative && valueNarrative.unsupportedClaimCaution, 'Unsupported savings claims stay blocked until the buyer confirms a baseline.')
       },
@@ -25951,7 +25974,7 @@
         likelyAlternatives: alternatives,
         alternativeSourceTags,
         strongestAlternative: alternatives[0] || 'spreadsheets',
-        whyNetSuiteWins: firstNonBlank(valueNarrative && valueNarrative.competitiveWatchOut, competitiveAdvisory && competitiveAdvisory.runCue, 'Prove demand, supply, WIP routing, work order status, and finished output in one path.'),
+        whyNetSuiteWins: firstNonBlank(valueNarrative && valueNarrative.competitiveWatchOut, competitiveAdvisory && competitiveAdvisory.runCue, activeMode === 'distribution' ? 'Prove demand, allocation, replenishment status, and fulfillment confidence in one path.' : 'Prove demand, supply, WIP routing, work order status, and finished output in one path.'),
         discoveryQuestions: [
           'Which planning signal is trusted today?',
           'Where does production or inventory truth get reconciled outside the system?',
@@ -25959,7 +25982,7 @@
         ],
         disconnectedPlanningRisk: 'Risk: disconnected planning can make routing, inventory, and customer promise decisions look current when they are stale.',
         headline: `Beat ${alternatives[0] || 'QuickBooks plus spreadsheets'} with fresher proof`,
-        compactLine: 'Prove demand, supply, WIP routing, work order status, and finished output in one path.'
+        compactLine: activeMode === 'distribution' ? 'Prove demand, allocation, replenishment status, and fulfillment confidence in one path.' : 'Prove demand, supply, WIP routing, work order status, and finished output in one path.'
       }
     };
   }
@@ -26006,7 +26029,7 @@
         <div class="idb-w447-impact-graphic idb-w447-roi-impact" aria-label="ROI impact summary">
           <div class="idb-w447-impact-statement">${escapeHtml(detail.roi.metricDirection)}</div>
           <div class="idb-w447-impact-flow">
-            <span>Baseline</span><span>→</span><span>WIP proof</span><span>→</span><span>${escapeHtml(detail.roi.confidencePercent)}% confidence</span>
+            <span>Baseline</span><span>→</span><span>${escapeHtml(detail.roi.proofSignalLabel || 'Proof')}</span><span>→</span><span>${escapeHtml(detail.roi.confidencePercent)}% confidence</span>
           </div>
         </div>
         <div class="idb-strong">${escapeHtml(detail.roi.quantifier)}</div>
@@ -29299,10 +29322,34 @@
       sidecar.routingDiagnostics && sidecar.routingDiagnostics.w449,
       sidecar.routingDiagnostics && sidecar.routingDiagnostics.workCenterSetabilityProbesW449
     );
+    const runnerProductPlanW450 = firstNonBlankObject(
+      sidecar.productBuildPlanW432,
+      capture.productBuildPlanW432,
+      runner.productBuildPlanW432,
+      productModel
+    );
     const namingTruthW449 = {
       schema: 'idb.w450-product-naming-truth.v1',
       source: productModel.productCandidateSource,
       confidencePercent: productModel.confidencePercent,
+      namingFileId: firstNonBlank(
+        runnerProductPlanW450 && runnerProductPlanW450.namingFileId,
+        sidecar.namingFileId,
+        capture.namingFileId,
+        runner.namingFileId
+      ),
+      namingDiscoveryMode: firstNonBlank(
+        runnerProductPlanW450 && runnerProductPlanW450.namingDiscoveryMode,
+        sidecar.namingDiscoveryMode,
+        capture.namingDiscoveryMode,
+        runner.namingDiscoveryMode
+      ),
+      namingPayloadFound: !!(runnerProductPlanW450 && runnerProductPlanW450.namingPayloadFound),
+      namingPayloadParsed: !!(runnerProductPlanW450 && runnerProductPlanW450.namingPayloadParsed),
+      namingPayloadApplied: !!(runnerProductPlanW450 && runnerProductPlanW450.namingPayloadApplied),
+      namingPackAuthoritative: !!(runnerProductPlanW450 && runnerProductPlanW450.namingPackAuthoritative),
+      namingQualityDegraded: runnerProductPlanW450 && runnerProductPlanW450.namingQualityDegraded === true,
+      namingDegradedReason: firstNonBlank(runnerProductPlanW450 && runnerProductPlanW450.namingDegradedReason, productModel.rejectedFallbackReason),
       evidenceTerms: productModel.evidenceTerms,
       namingAdvisoryUsed: productModel.namingAdvisoryUsed,
       namingAdvisoryRequestSummary: productModel.namingAdvisoryRequestSummary,

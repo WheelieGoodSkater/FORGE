@@ -138,6 +138,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     qc: [1650, 1395],
     packing: [1437, 1396, 1451]
   };
+  const W450_GENERIC_NAMING_HARD_STOP_TERMS = [
+    'Machine Unit',
+    'Core Material Input',
+    'Primary Material Input',
+    'Product 12-Count Case Pack',
+    'Product Seasoning Blend',
+    'Build Product',
+    'Prepare Materials',
+    'Final Assembly Unit',
+    'Finished Assembly Unit',
+    'Generic Product',
+    'Component Input'
+  ];
   const PACK_ENGINE_VERSION = 'v13.0.0-intelligent-industry-packs';
 
   const ANCHORS = {
@@ -1710,6 +1723,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       pairProbes: [],
       acceptedPairs: [],
       rejectedPairs: [],
+      failedOperations: [],
+      acceptedOperationLinesW450: [],
+      rejectedOperationLinesW450: [],
+      minimumAcceptedOperationLinesW450: 3,
       staleCookieProductionLineDetected: false,
       staleCookieProductionLineRejected: false,
       staleCookieProductionLineSuperseded: false,
@@ -1976,6 +1993,70 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
         const pairs = stepPlan && Array.isArray(stepPlan.candidatePairs) ? stepPlan.candidatePairs : [];
         const rejections = [];
+        function tryStepWithoutCostTemplateW450(baseProbe, center, rejectionError) {
+          const probe = Object.assign({}, baseProbe || {}, {
+            schema: 'idb.w450-routing-pair-probe.v1',
+            pairIndex: `${baseProbe && baseProbe.pairIndex || 0}-no-template`,
+            templateId: null,
+            templateName: 'NetSuite default cost template',
+            templateSubsidiaryId: '',
+            templateSubsidiaryText: '',
+            templateIsDefault: false,
+            templateSource: 'omitted_after_template_rejection',
+            fieldId: '',
+            accepted: false,
+            rejected: false,
+            status: 'pending',
+            priorTemplateId: baseProbe && baseProbe.templateId || null,
+            priorTemplateName: baseProbe && baseProbe.templateName || '',
+            priorTemplateErrorName: rejectionError && rejectionError.name ? String(rejectionError.name) : '',
+            priorTemplateErrorMessage: rejectionError && rejectionError.message ? String(rejectionError.message).slice(0, 240) : ''
+          });
+          try {
+            routingStage = 'probe_routing_step_pair_without_cost_template';
+            routing.selectNewLine({ sublistId: stepSublist });
+            function setProbeField(fieldId, value) {
+              probe.fieldId = fieldId;
+              routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId, value });
+            }
+            setProbeField('operationsequence', String(stepPlan.seq));
+            setProbeField('operationname', String(stepPlan.opName).slice(0, 60));
+            setProbeField('manufacturingworkcenter', Number(center && center.id || 0));
+            setProbeField(stepFieldIds.setupField, 0.5);
+            setProbeField(stepFieldIds.runRateField, 1.0);
+            probe.fieldId = 'commitLine';
+            routingStage = 'commit_routing_step_without_cost_template';
+            routing.commitLine({ sublistId: stepSublist });
+            probe.status = 'accepted';
+            probe.accepted = true;
+            probe.rejected = false;
+            probe.setupField = stepFieldIds.setupField;
+            probe.runRateField = stepFieldIds.runRateField;
+            w449Telemetry.pairProbes.push(probe);
+            w449Telemetry.acceptedPairs.push(probe);
+            log.audit({
+              title: `Routing step accepted without explicit cost template W450 [${VERSION}]`,
+              details: JSON.stringify(probe)
+            });
+            return probe;
+          } catch (e) {
+            safeTry(() => routing.cancelLine({ sublistId: stepSublist }));
+            probe.status = 'rejected';
+            probe.accepted = false;
+            probe.rejected = true;
+            probe.errorName = e && e.name ? String(e.name) : '';
+            probe.errorMessage = e && e.message ? String(e.message) : String(e || '');
+            probe.fieldId = probe.fieldId || 'commitLine';
+            rejections.push(probe);
+            w449Telemetry.pairProbes.push(probe);
+            w449Telemetry.rejectedPairs.push(probe);
+            log.audit({
+              title: `Routing step no-template retry rejected W450 [${VERSION}]`,
+              details: JSON.stringify(probe)
+            });
+            return null;
+          }
+        }
         for (let i = 0; i < pairs.length; i += 1) {
           const pair = pairs[i] || {};
           const center = pair.center || {};
@@ -2055,6 +2136,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
               title: `Routing step pair rejected W449 [${VERSION}]`,
               details: JSON.stringify(probe)
             });
+            if (probe.fieldId === 'manufacturingcosttemplate' || /manufacturingcosttemplate|cost\s*template|template/i.test(probe.errorMessage || '')) {
+              const acceptedWithoutTemplate = tryStepWithoutCostTemplateW450(probe, center, e);
+              if (acceptedWithoutTemplate) return acceptedWithoutTemplate;
+            }
           }
         }
         const err = new Error(`No valid work center + cost template pair for routing operation ${stepPlan && stepPlan.seq}`);
@@ -2065,24 +2150,55 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       }
 
       operationPlanW449.forEach(function (stepPlan) {
-        const accepted = addStepWithPairProbingW449(stepPlan);
-        if (accepted) {
-          if (accepted.centerId) chosen.centers.push({ id: accepted.centerId, name: accepted.centerName, w449Profile: stepPlan.profile });
-          if (accepted.templateId) chosen.templates.push({ id: accepted.templateId, name: accepted.templateName, w449Profile: stepPlan.profile });
-          chosen.operationRows = chosen.operationRows || [];
-          chosen.operationRows.push({
-            seq: accepted.seq,
-            opName: accepted.opName,
-            centerId: accepted.centerId,
-            centerName: accepted.centerName,
-            centerLocationId: accepted.centerLocationId,
-            centerSubsidiaryId: accepted.centerSubsidiaryId,
-            templateId: accepted.templateId,
-            templateName: accepted.templateName,
-            templateSubsidiaryId: accepted.templateSubsidiaryId
+        try {
+          const accepted = addStepWithPairProbingW449(stepPlan);
+          if (accepted) {
+            if (accepted.centerId) chosen.centers.push({ id: accepted.centerId, name: accepted.centerName, w449Profile: stepPlan.profile });
+            if (accepted.templateId) chosen.templates.push({ id: accepted.templateId, name: accepted.templateName, w449Profile: stepPlan.profile });
+            chosen.operationRows = chosen.operationRows || [];
+            const acceptedRow = {
+              seq: accepted.seq,
+              opName: accepted.opName,
+              centerId: accepted.centerId,
+              centerName: accepted.centerName,
+              centerLocationId: accepted.centerLocationId,
+              centerSubsidiaryId: accepted.centerSubsidiaryId,
+              templateId: accepted.templateId,
+              templateName: accepted.templateName,
+              templateSubsidiaryId: accepted.templateSubsidiaryId
+            };
+            chosen.operationRows.push(acceptedRow);
+            w449Telemetry.acceptedOperationLinesW450.push(acceptedRow);
+          }
+        } catch (stepError) {
+          const rejectedLine = {
+            schema: 'idb.w450-routing-operation-rejection.v1',
+            seq: stepPlan && stepPlan.seq || null,
+            opName: stepPlan && stepPlan.opName || '',
+            profile: stepPlan && stepPlan.profile || '',
+            errorName: stepError && stepError.name ? String(stepError.name) : '',
+            errorMessage: stepError && stepError.message ? String(stepError.message) : String(stepError || ''),
+            failureType: stepError && stepError.routingPairFailureType || classifyRoutingProbeFailureW450(stepError && stepError.w449RejectedPairs || []),
+            rejectedPairs: (stepError && stepError.w449RejectedPairs || []).slice(0, 50)
+          };
+          w449Telemetry.failedOperations.push(rejectedLine);
+          w449Telemetry.rejectedOperationLinesW450.push(rejectedLine);
+          log.audit({
+            title: `Routing operation rejected but W450 continues [${VERSION}]`,
+            details: JSON.stringify(rejectedLine)
           });
         }
       });
+
+      if (!chosen.operationRows || chosen.operationRows.length < 3) {
+        const insufficient = new Error(`Only ${chosen.operationRows && chosen.operationRows.length || 0} routing operation lines accepted; at least 3 are required to save a useful WIP routing.`);
+        insufficient.name = 'W450_INSUFFICIENT_ACCEPTED_ROUTING_STEPS';
+        insufficient.routingPairFailureType = classifyRoutingProbeFailureW450(w449Telemetry.rejectedPairs);
+        insufficient.w450AcceptedOperationLines = chosen.operationRows || [];
+        insufficient.w450RejectedOperationLines = w449Telemetry.rejectedOperationLinesW450 || [];
+        insufficient.w449RejectedPairs = w449Telemetry.rejectedPairs || [];
+        throw insufficient;
+      }
 
       routingStage = 'save_routing';
       routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
@@ -5328,6 +5444,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     if (!candidateFileId) {
+      deterministic._namingPackAuthoritative = false;
+      deterministic._namingPayloadFound = false;
+      deterministic._namingPayloadParsed = false;
+      deterministic._namingPayloadApplied = false;
+      deterministic._namingQualityDegraded = true;
+      deterministic._namingDegradedReason = 'No precomputed naming pack file id or scai_naming_<extId>.json file was found before runner execution.';
+      deterministic.fallbackBlockedGenericTerms = W450_GENERIC_NAMING_HARD_STOP_TERMS.slice();
       return {
         found: false,
         parsed: false,
@@ -5352,6 +5475,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       out.bom_revision_name = trimLen(out.bom_revision_name, 80);
       out._source = out._source || 'suitelet-precomputed';
       out._signalLen = out._signalLen || String(signalText || '').length;
+      out._namingPackAuthoritative = true;
+      out._namingPayloadFound = true;
+      out._namingPayloadParsed = true;
+      out._namingPayloadApplied = true;
+      out._namingDiscoveryMode = discoveryMode;
+      out._namingFileId = Number(candidateFileId);
+      out._namingQualityDegraded = false;
+      out.genericNamingHardStopTerms = W450_GENERIC_NAMING_HARD_STOP_TERMS.slice();
+      out.fallbackBlockedGenericTerms = W450_GENERIC_NAMING_HARD_STOP_TERMS.slice();
       return {
         found: true,
         parsed: true,
@@ -5363,6 +5495,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       };
     } catch (e) {
       log.error({ title: `Precomputed naming load FAILED (deterministic fallback used) [${VERSION}]`, details: JSON.stringify({ fileId: candidateFileId, extId: extId || '', message: (e && (e.message || e.details)) ? String(e.message || e.details) : String(e) }) });
+      deterministic._namingPackAuthoritative = false;
+      deterministic._namingPayloadFound = false;
+      deterministic._namingPayloadParsed = false;
+      deterministic._namingPayloadApplied = false;
+      deterministic._namingDiscoveryMode = discoveryMode;
+      deterministic._namingFileId = candidateFileId || null;
+      deterministic._namingQualityDegraded = true;
+      deterministic._namingDegradedReason = `Precomputed naming pack could not be loaded or parsed: ${(e && (e.message || e.details)) ? String(e.message || e.details) : String(e)}`;
+      deterministic.fallbackBlockedGenericTerms = W450_GENERIC_NAMING_HARD_STOP_TERMS.slice();
       return {
         found: false,
         parsed: false,
@@ -5411,6 +5552,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const isKodiak = /kodiak/.test(lower);
     const isGoodles = /goodles/.test(lower);
     const isChomps = /chomps/.test(lower);
+    const isBachans = /bachan|japanese\s+barbe?cue|barbe?cue\s+sauce|bbq\s+sauce|sauce\s+batch/.test(lower);
+    if (isBachans) {
+      addCandidate('Bachan’s Original Japanese Barbecue Sauce', 'Bachan’s Japanese barbecue sauce');
+      addCandidate('Bachan’s Hot and Spicy Japanese Barbecue Sauce', 'Bachan’s sauce flavor family');
+      addCandidate('Bachan’s Yuzu Japanese Barbecue Sauce', 'Bachan’s sauce flavor family');
+    }
     if (isKodiak && /buttermilk|power\s*cakes?|flapjack|pancake|protein|oat\s*&?\s*honey|mix/.test(lower)) {
       addCandidate('Kodiak Power Cakes Buttermilk Flapjack Mix', 'Kodiak Power Cakes Buttermilk Flapjack Mix');
       addCandidate('Kodiak Protein Pancake Mix', 'Kodiak Protein Pancake Mix');
@@ -5541,6 +5688,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         operationNames: ['Prep Protein and Marinade', 'Smoke or Dehydrate', 'Cool and Inspect', 'Pack and Case', 'QC Finished Cases']
       });
     }
+    if (/bachan|japanese\s+barbe?cue|barbe?cue\s+sauce|bbq\s+sauce|sauce\s+batch/.test(hay)) {
+      return mk({
+        primaryProductCandidate: 'Bachan’s Original Japanese Barbecue Sauce',
+        alternateProductCandidates: ['Bachan’s Hot and Spicy Japanese Barbecue Sauce', 'Bachan’s Yuzu Japanese Barbecue Sauce'],
+        evidenceTerms: ['Bachan’s', 'Japanese barbecue sauce', 'sauce batch', 'retail bottle', 'case pack'],
+        productFamily: 'Bottled Sauce CPG',
+        distributionBase: 'Bachan’s Original Japanese Barbecue Sauce',
+        componentNames: ['Soy Sauce and Mirin Base', 'Ginger Garlic Seasoning Blend', 'Retail Bottle and Case Packaging'],
+        operationNames: ['Receive Sauce Base and Seasonings', 'Blend Sauce Batch', 'Fill Retail Bottles', 'Cap, Label, and Case Pack', 'QC Finished Cases']
+      });
+    }
     if (/goodles|mac\s*(?:&|and)?\s*cheese/.test(hay)) {
       return mk({
         primaryProductCandidate: 'Goodles Mac & Cheese',
@@ -5665,7 +5823,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const selectedProduct = str(productTerms.selectedProductCandidate || advisoryW450.primaryProductCandidate || source.productName || source.product_name || source.productSeed || source.productFamily);
     const genericProduct = /^(finished good|product \/ sku|product|inventory \/ fulfillment|assembly|proof item)$/i.test(selectedProduct);
     const productName = genericProduct || !selectedProduct ? `${prospect} Product` : selectedProduct;
-    const brandName = /kodiak/i.test(productName) || /kodiak/i.test(prospect) ? 'Kodiak' : (/goodles/i.test(productName) || /goodles/i.test(prospect) ? 'Goodles' : (/kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : (/siete/i.test(productName) || /siete/i.test(prospect) ? 'Siete' : (/biena/i.test(productName) || /biena/i.test(prospect) ? 'Biena' : (/chomps/i.test(productName) || /chomps/i.test(prospect) ? 'Chomps' : prospect.split(/\s+/).slice(0, 2).join(' '))))));
+    const brandName = /bachan/i.test(productName) || /bachan/i.test(prospect) ? 'Bachan’s' : (/kodiak/i.test(productName) || /kodiak/i.test(prospect) ? 'Kodiak' : (/goodles/i.test(productName) || /goodles/i.test(prospect) ? 'Goodles' : (/kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : (/siete/i.test(productName) || /siete/i.test(prospect) ? 'Siete' : (/biena/i.test(productName) || /biena/i.test(prospect) ? 'Biena' : (/chomps/i.test(productName) || /chomps/i.test(prospect) ? 'Chomps' : prospect.split(/\s+/).slice(0, 2).join(' ')))))));
     const shortProduct = productName
       .replace(/\bKettle\s+Brand\b/ig, 'Kettle')
       .replace(/\bKettle\s+Chips\b/ig, '')
@@ -5722,7 +5880,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (isJerkyPlanW448) {
       internalAssemblyItemNameW445 = trimLen(`${distributionBase} Production Batch`, 60);
     }
-    const hasProductEvidenceW449 = !!(productTerms.selectedProductCandidate || advisoryW450.namingAdvisoryUsed || isKodiakPlanW450 || isChickpeaSnackPlanW449 || isJerkyPlanW448 || /siete|goodles|kettle|kodiak|power\s*cakes?|flapjack|pancake|mac\s*(?:&|and)?\s*cheese|chip|tortilla/i.test(distributionBase));
+    const hasProductEvidenceW449 = !!(productTerms.selectedProductCandidate || advisoryW450.namingAdvisoryUsed || isKodiakPlanW450 || isChickpeaSnackPlanW449 || isJerkyPlanW448 || /siete|goodles|kettle|kodiak|bachan|barbe?cue\s+sauce|sauce\s+batch|bottle|power\s*cakes?|flapjack|pancake|mac\s*(?:&|and)?\s*cheese|chip|tortilla/i.test(distributionBase));
     const productCandidateSourceW449 = productTerms.selectedProductCandidate
       ? 'llm_website_product_evidence'
       : advisoryW450.namingAdvisoryUsed
@@ -5792,7 +5950,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       bomName: trimLen(`BOM - ${distributionBase}`, 80),
       bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
       workOrderName: trimLen(`WO - ${distributionBase}`, 80),
-      routingName: trimLen(/siete/i.test(distributionBase) || /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) || isChickpeaSnackPlanW449 || isJerkyPlanW448 || isKodiakPlanW450 ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
+      routingName: trimLen(advisoryW450.namingAdvisoryUsed || /siete/i.test(distributionBase) || /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) || /bachan|barbe?cue\s+sauce|sauce/i.test(distributionBase) || isChickpeaSnackPlanW449 || isJerkyPlanW448 || isKodiakPlanW450 ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
       operationNames: operationNamesW450,
       forbiddenLeakTerms: ['BEVERAGE', 'Finished Good Packaging / Case Pack', 'Production Line', 'Ingredient Blend', 'Packaging Component'].concat(fallbackBlockedGenericTermsW450),
       modeContracts: {
@@ -6357,13 +6515,111 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return current;
   }
 
+  function w450NameContainsHardStopGeneric(name) {
+    const s = String(name || '');
+    if (!s) return false;
+    return W450_GENERIC_NAMING_HARD_STOP_TERMS.some(function (term) {
+      return new RegExp(`\\b${String(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(s);
+    });
+  }
+
+  function w450AuthoritativeNamingProductPlan(names, opts) {
+    const out = names || {};
+    const seq = out.operation_names_by_seq || {};
+    const operationNames = [
+      seq['10'] || seq[10],
+      seq['20'] || seq[20],
+      seq['30'] || seq[30],
+      seq['40'] || seq[40],
+      seq['50'] || seq[50]
+    ].filter(Boolean);
+    return {
+      schema: 'idb.w450-authoritative-naming-pack-product-plan.v1',
+      productCandidateSource: out._source || 'llm-suitelet-precomputed',
+      primaryProductCandidate: out.primary_product_candidate || out.primaryProductCandidate || out.hero_item_name || '',
+      alternateProductCandidates: out.alternate_product_candidates || out.alternateProductCandidates || [],
+      confidencePercent: Number(out.confidencePercent || out.confidence_percent || 0) || null,
+      evidenceTerms: out.evidence_terms || out.evidenceTerms || [],
+      competitorTerms: out.competitor_terms || out.competitorTerms || [],
+      roiBasisTerms: out.roi_basis_terms || out.roiBasisTerms || [],
+      productName: out.primary_product_candidate || out.primaryProductCandidate || out.hero_item_name || '',
+      distributionItemName: out.hero_item_name || '',
+      assemblyItemName: out.assembly_name || '',
+      componentNames: Array.isArray(out.component_names) ? out.component_names.slice(0, 3) : [],
+      bomName: out.bom_name || '',
+      bomRevisionName: out.bom_revision_name || '',
+      routingName: out.routing_name || '',
+      operationNames,
+      fallbackBlockedGenericTerms: W450_GENERIC_NAMING_HARD_STOP_TERMS.slice(),
+      genericNamingHardStopTerms: W450_GENERIC_NAMING_HARD_STOP_TERMS.slice(),
+      namingPayloadFound: out._namingPayloadFound === true,
+      namingPayloadParsed: out._namingPayloadParsed === true,
+      namingPayloadApplied: out._namingPayloadApplied === true,
+      namingPackAuthoritative: true,
+      namingFileId: out._namingFileId || null,
+      namingDiscoveryMode: out._namingDiscoveryMode || '',
+      rejectedFallbackReason: 'Precomputed naming pack is authoritative; deterministic product-build fallback cannot overwrite it.',
+      selectedProductReason: 'Selected from the precomputed website/LLM naming pack before runner record creation.',
+      evidence: {
+        source: out._source || 'llm-suitelet-precomputed',
+        confidencePercent: Number(out.confidencePercent || out.confidence_percent || 0) || null,
+        evidenceTerms: out.evidence_terms || out.evidenceTerms || [],
+        fallbackBlockedGenericTerms: W450_GENERIC_NAMING_HARD_STOP_TERMS.slice()
+      },
+      source: out._source || 'llm-suitelet-precomputed'
+    };
+  }
+
   function applyToggleAwareNamingGuardrails(names, opts) {
     let out = sanitizeNamingPayload(Object.assign({}, names || {}));
     const enableManufacturing = !!(opts && opts.enableManufacturing === true);
     const enableWip = !!(opts && opts.enableWip === true);
     const rewrites = [];
     const vocabularyPolicy = runnerLaneVocabularyPolicyV1(opts || {});
+    if (out._namingPackAuthoritative === true || (/llm-suitelet-precomputed|suitelet-precomputed|website-product-evidence|notes-product-evidence/i.test(String(out._source || '')) && out._namingPayloadApplied === true)) {
+      const blockedVisible = [];
+      ['hero_item_name', 'assembly_name', 'bom_name', 'bom_revision_name', 'routing_name'].forEach(function (key) {
+        if (w450NameContainsHardStopGeneric(out[key])) blockedVisible.push({ role: key, value: out[key] || '' });
+      });
+      (Array.isArray(out.component_names) ? out.component_names : []).forEach(function (name, index) {
+        if (w450NameContainsHardStopGeneric(name)) blockedVisible.push({ role: `component_names.${index}`, value: name || '' });
+      });
+      const seq = out.operation_names_by_seq || {};
+      Object.keys(seq || {}).forEach(function (key) {
+        if (w450NameContainsHardStopGeneric(seq[key])) blockedVisible.push({ role: `operation_names_by_seq.${key}`, value: seq[key] || '' });
+      });
+      out._namingPackAuthoritative = true;
+      out._productBuildPlanW432 = w450AuthoritativeNamingProductPlan(out, opts || {});
+      out._toggleAwareNamingGuardrail = {
+        schema: 'idb.w450-authoritative-naming-pack-guardrail.v1',
+        status: blockedVisible.length ? 'authoritative_pack_contains_blocked_generic_terms_review_required' : 'authoritative_precomputed_naming_pack_preserved',
+        enableManufacturing,
+        enableWip,
+        laneVocabularyPolicy: vocabularyPolicy,
+        deterministicFallbackBlocked: true,
+        fallbackBlockedGenericTerms: W450_GENERIC_NAMING_HARD_STOP_TERMS.slice(),
+        blockedVisibleGenericTerms: blockedVisible,
+        productBuildPlanW432: out._productBuildPlanW432,
+        productBuildPlanValidationW432: { valid: true, source: 'authoritative-naming-pack' },
+        rewrites: []
+      };
+      out.fallbackBlockedGenericTerms = W450_GENERIC_NAMING_HARD_STOP_TERMS.slice();
+      out.genericNamingHardStopTerms = W450_GENERIC_NAMING_HARD_STOP_TERMS.slice();
+      return out;
+    }
     out = applyProductBuildPlanToNamingPackW432(out, opts || {});
+    if (out._productBuildPlanW432) {
+      out._productBuildPlanW432.namingPayloadFound = out._namingPayloadFound === true;
+      out._productBuildPlanW432.namingPayloadParsed = out._namingPayloadParsed === true;
+      out._productBuildPlanW432.namingPayloadApplied = out._namingPayloadApplied === true;
+      out._productBuildPlanW432.namingPackAuthoritative = out._namingPackAuthoritative === true;
+      out._productBuildPlanW432.namingFileId = out._namingFileId || null;
+      out._productBuildPlanW432.namingDiscoveryMode = out._namingDiscoveryMode || '';
+      out._productBuildPlanW432.namingQualityDegraded = out._namingQualityDegraded === true;
+      out._productBuildPlanW432.namingDegradedReason = out._namingDegradedReason || '';
+      out._productBuildPlanW432.fallbackBlockedGenericTerms = W450_GENERIC_NAMING_HARD_STOP_TERMS.slice();
+      out._productBuildPlanW432.genericNamingHardStopTerms = W450_GENERIC_NAMING_HARD_STOP_TERMS.slice();
+    }
     const productBuildPlanValidationW432 = validateProductBuildPlanForModeW432(out._productBuildPlanW432, { enableManufacturing, enableWip });
     if (enableManufacturing || enableWip) {
       out._toggleAwareNamingGuardrail = {
@@ -6580,6 +6836,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const createNewHeroItem = !!(opts && opts.createNewHeroItem);
     const extId = opts && opts.extId;
     const runUniqueSuffix = opts && opts.runUniqueSuffix;
+    const authoritativeNamingPackW450 = names && names._namingPackAuthoritative === true;
     const planW442 = names && names._productBuildPlanW432 || productBuildPlanW432(Object.assign({}, opts || {}, names || {}));
     const narrativeW442 = visibleProductNarrativeW439(planW442, { enableManufacturing, enableWip: !!(opts && opts.enableWip) });
     const mfgTermsW442 = narrativeW442 && narrativeW442.industryNativeManufacturingW442 || {};
@@ -6591,6 +6848,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const heroPurchDesc = !enableManufacturing
       ? `Purchased supply context supporting ${names.hero_item_name} availability.`
       : `Purchased input context supporting ${mfgTermsW442.industryNativeManufacturedItemName || names.assembly_name || names.hero_item_name}.`;
+    const packSalesDescriptionsW450 = names.sales_descriptions || names.salesDescriptions || {};
+    const packPurchaseDescriptionsW450 = names.purchase_descriptions || names.purchaseDescriptions || {};
+    const packComponentSalesDescriptionsW450 = Array.isArray(packSalesDescriptionsW450.components) ? packSalesDescriptionsW450.components : [];
+    const packComponentPurchaseDescriptionsW450 = Array.isArray(packPurchaseDescriptionsW450.components) ? packPurchaseDescriptionsW450.components : [];
 
     const asmNameBase = names.assembly_name || names.hero_item_name;
     const asmNamePair = buildDifferentiatedNames(asmNameBase, extId, runUniqueSuffix);
@@ -6617,6 +6878,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       salesdescription: heroSalesDesc,
       purchasedescription: heroPurchDesc
     };
+    if (authoritativeNamingPackW450) {
+      if (packSalesDescriptionsW450.hero) heroValues.salesdescription = String(packSalesDescriptionsW450.hero).slice(0, 999);
+      if (packPurchaseDescriptionsW450.hero) heroValues.purchasedescription = String(packPurchaseDescriptionsW450.hero).slice(0, 999);
+    }
 
     log.audit({
       title: `Naming mode resolution [${VERSION}]`,
@@ -6644,19 +6909,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       safeTry(() => record.submitFields({
         type: 'assemblyitem',
         id: Number(ids.assemblyId),
-        values: {
-          itemid: asmNamePair.itemIdName,
-          displayname: asmNamePair.displayName,
-          salesdescription: asmSalesDesc,
-          purchasedescription: asmPurchDesc
-        },
+          values: {
+            itemid: asmNamePair.itemIdName,
+            displayname: asmNamePair.displayName,
+            salesdescription: authoritativeNamingPackW450 && packSalesDescriptionsW450.assembly ? String(packSalesDescriptionsW450.assembly).slice(0, 999) : asmSalesDesc,
+            purchasedescription: authoritativeNamingPackW450 && packPurchaseDescriptionsW450.assembly ? String(packPurchaseDescriptionsW450.assembly).slice(0, 999) : asmPurchDesc
+          },
         options: { enableSourcing: true, ignoreMandatoryFields: true }
       }));
 
       const comps = [
-        { id: ids.comp1Id, name: names.component_names[0] },
-        { id: ids.comp2Id, name: names.component_names[1] },
-        { id: ids.comp3Id, name: names.component_names[2] }
+        { id: ids.comp1Id, name: names.component_names[0], index: 0 },
+        { id: ids.comp2Id, name: names.component_names[1], index: 1 },
+        { id: ids.comp3Id, name: names.component_names[2], index: 2 }
       ].filter(c => c.id);
 
       comps.forEach(c => {
@@ -6667,15 +6932,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           values: {
             itemid: compNamePair.itemIdName,
             displayname: compNamePair.displayName,
-            salesdescription: compSalesDesc(c.name),
-            purchasedescription: compPurchDesc(c.name)
+            salesdescription: authoritativeNamingPackW450 && packComponentSalesDescriptionsW450[c.index || 0] ? String(packComponentSalesDescriptionsW450[c.index || 0]).slice(0, 999) : compSalesDesc(c.name),
+            purchasedescription: authoritativeNamingPackW450 && packComponentPurchaseDescriptionsW450[c.index || 0] ? String(packComponentPurchaseDescriptionsW450[c.index || 0]).slice(0, 999) : compPurchDesc(c.name)
           },
           options: { enableSourcing: true, ignoreMandatoryFields: true }
         }));
       });
 
       if (ids.bomId) {
-        const bomName = cleanCustomerFacingCreatedNameW441(names.bom_name, 'bom', names._productBuildPlanW432, enableManufacturing ? 'manufacturing' : 'distribution');
+        const bomName = authoritativeNamingPackW450 ? trimLen(names.bom_name, 80) : cleanCustomerFacingCreatedNameW441(names.bom_name, 'bom', names._productBuildPlanW432, enableManufacturing ? 'manufacturing' : 'distribution');
         safeTry(() => record.submitFields({
           type: 'bom',
           id: Number(ids.bomId),
@@ -6685,7 +6950,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       }
 
       if (ids.bomRevId) {
-        const bomRevName = cleanCustomerFacingCreatedNameW441(names.bom_revision_name, 'bomRevision', names._productBuildPlanW432, enableManufacturing ? 'manufacturing' : 'distribution');
+        const bomRevName = authoritativeNamingPackW450 ? trimLen(names.bom_revision_name, 80) : cleanCustomerFacingCreatedNameW441(names.bom_revision_name, 'bomRevision', names._productBuildPlanW432, enableManufacturing ? 'manufacturing' : 'distribution');
         safeTry(() => record.submitFields({
           type: 'bomrevision',
           id: Number(ids.bomRevId),
@@ -7336,6 +7601,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       pairProbes: probeSample.map(compactRoutingProbeW450).filter(Boolean),
       acceptedPairs: (telemetry.acceptedPairs || accepted).slice(0, 25).map(compactRoutingProbeW450).filter(Boolean),
       rejectedPairs: (telemetry.rejectedPairs || rejected).slice(0, 80).map(compactRoutingProbeW450).filter(Boolean),
+      acceptedOperationLinesW450: (telemetry.acceptedOperationLinesW450 || []).slice(0, 10),
+      rejectedOperationLinesW450: (telemetry.rejectedOperationLinesW450 || telemetry.failedOperations || []).slice(0, 10).map(function (line) {
+        return Object.assign({}, line || {}, {
+          rejectedPairs: (line && line.rejectedPairs || []).slice(0, 10).map(compactRoutingProbeW450).filter(Boolean)
+        });
+      }),
+      failedOperations: (telemetry.failedOperations || []).slice(0, 10).map(function (line) {
+        return Object.assign({}, line || {}, {
+          rejectedPairs: (line && line.rejectedPairs || []).slice(0, 10).map(compactRoutingProbeW450).filter(Boolean)
+        });
+      }),
+      minimumAcceptedOperationLinesW450: Number(telemetry.minimumAcceptedOperationLinesW450 || 3),
       routingSaveResult: telemetry.routingSaveResult || null,
       routingAssemblyVerification: telemetry.routingAssemblyVerification || null,
       staleCookieProductionLineDetected: !!telemetry.staleCookieProductionLineDetected,
@@ -7376,6 +7653,109 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       w449: compactTelemetry,
       w450: compactTelemetry
     };
+  }
+
+  function resultCaptureContentsForSaveW450(capture) {
+    const MAX_CAPTURE_CHARS_W450 = 7000000;
+    const clone = Object.assign({}, capture || {});
+    clone.resultCaptureCompactionW450 = {
+      schema: 'idb.w450-result-capture-size-guard.v1',
+      minified: true,
+      duplicatePartialSidecarOmitted: true,
+      maxChars: MAX_CAPTURE_CHARS_W450
+    };
+    if (clone.partialGeneratedNamesJson) {
+      clone.partialGeneratedNamesJson = {
+        schema: 'idb.runner-sidecar-result-json-reference.v1',
+        reference: 'sidecarGeneratedNamesJson',
+        reason: 'Omitted duplicate sidecar payload to keep result capture under NetSuite file content limits.'
+      };
+    }
+    let text = JSON.stringify(clone);
+    if (text.length <= MAX_CAPTURE_CHARS_W450) return text;
+
+    const sidecar = clone.sidecarGeneratedNamesJson || {};
+    const emergency = {
+      schema: clone.schema || 'idb.runner-result-capture.v1',
+      status: clone.status || 'pending_transaction_resolution',
+      runnerVersion: clone.runnerVersion || VERSION,
+      releaseTrain: RELEASE_TRAIN,
+      releaseTranche: RELEASE_TRANCHE,
+      idempotencyToken: clone.idempotencyToken || '',
+      sourceRequestId: clone.sourceRequestId || '',
+      buildAttemptId: clone.buildAttemptId || '',
+      submittedAt: clone.submittedAt || '',
+      resolvedOperatingMode: clone.resolvedOperatingMode || '',
+      resultCaptureFolderId: clone.resultCaptureFolderId || null,
+      generatedRecordOwner: clone.generatedRecordOwner || 'governed_runner_internal_build_engine',
+      transactionResolution: clone.transactionResolution || null,
+      sourceRequest: clone.sourceRequest ? Object.assign({}, clone.sourceRequest, {
+        conversationNotes: str(clone.sourceRequest.conversationNotes || '').slice(0, 1000)
+      }) : null,
+      routingResult: compactRoutingResultForCaptureW450(clone.routingResult),
+      routingDiagnostics: compactRoutingResultForCaptureW450(clone.routingDiagnostics),
+      routingOperations: (clone.routingOperations || []).slice(0, 10),
+      visibleProductNarrativeW439: clone.visibleProductNarrativeW439 || null,
+      runnerLaneVocabularyPolicy: clone.runnerLaneVocabularyPolicy || null,
+      sidecarGeneratedNamesJson: {
+        schema: sidecar.schema || 'idb.runner-sidecar-result-json.v1',
+        status: sidecar.status || clone.status || 'pending_transaction_resolution',
+        runStatus: sidecar.runStatus || clone.status || 'pending_transaction_resolution',
+        generatedRecordOwner: sidecar.generatedRecordOwner || clone.generatedRecordOwner || 'governed_runner_internal_build_engine',
+        source: sidecar.source || 'scai_ss_so_csv_runner_v4_0_0_runner_sandbox',
+        idempotencyToken: sidecar.idempotencyToken || clone.idempotencyToken || '',
+        sourceRequestId: sidecar.sourceRequestId || clone.sourceRequestId || '',
+        buildAttemptId: sidecar.buildAttemptId || clone.buildAttemptId || '',
+        productBuildPlanW432: sidecar.productBuildPlanW432 || null,
+        productBuildPlanValidationW432: sidecar.productBuildPlanValidationW432 || null,
+        visibleProductNarrativeW439: sidecar.visibleProductNarrativeW439 || null,
+        records: sidecar.records || {},
+        demoTransaction: sidecar.demoTransaction || null,
+        heroItem: sidecar.heroItem || null,
+        matrixItem: sidecar.matrixItem || sidecar.assembly || null,
+        assembly: sidecar.assembly || null,
+        bom: sidecar.bom || null,
+        bomRevision: sidecar.bomRevision || null,
+        workOrder: sidecar.workOrder || null,
+        workOrderDiagnostics: sidecar.workOrderDiagnostics || null,
+        routing: sidecar.routing || null,
+        routingDiagnostic: sidecar.routingDiagnostic || null,
+        routingOperations: (sidecar.routingOperations || []).slice(0, 10),
+        componentItems: (sidecar.componentItems || []).slice(0, 10),
+        assemblyBomTelemetry: sidecar.assemblyBomTelemetry || null,
+        workOrderTelemetry: sidecar.workOrderTelemetry || null,
+        routingDiagnostics: compactRoutingResultForCaptureW450(sidecar.routingDiagnostics),
+        manufacturingEligibilityPreflightW446: sidecar.manufacturingEligibilityPreflightW446 || null,
+        troubleshootExportTelemetryW446: sidecar.troubleshootExportTelemetryW446 ? Object.assign({}, sidecar.troubleshootExportTelemetryW446, {
+          routingResult: compactRoutingResultForCaptureW450(sidecar.troubleshootExportTelemetryW446.routingResult),
+          routingOperations: (sidecar.troubleshootExportTelemetryW446.routingOperations || []).slice(0, 10)
+        }) : null,
+        transactionResolution: sidecar.transactionResolution || clone.transactionResolution || null,
+        ownership: sidecar.ownership || null,
+        runnerLaneVocabularyPolicy: sidecar.runnerLaneVocabularyPolicy || clone.runnerLaneVocabularyPolicy || null
+      },
+      partialGeneratedNamesJson: {
+        schema: 'idb.runner-sidecar-result-json-reference.v1',
+        reference: 'sidecarGeneratedNamesJson'
+      },
+      finalGeneratedNamesJson: null,
+      resultCaptureCompactionW450: {
+        schema: 'idb.w450-result-capture-size-guard.v1',
+        minified: true,
+        duplicatePartialSidecarOmitted: true,
+        emergencyCompacted: true,
+        originalChars: text.length,
+        maxChars: MAX_CAPTURE_CHARS_W450
+      }
+    };
+    text = JSON.stringify(emergency);
+    if (text.length <= MAX_CAPTURE_CHARS_W450) return text;
+    emergency.sidecarGeneratedNamesJson.productBuildPlanW432 = null;
+    emergency.sidecarGeneratedNamesJson.visibleProductNarrativeW439 = null;
+    emergency.visibleProductNarrativeW439 = null;
+    emergency.resultCaptureCompactionW450.productPlanOmitted = true;
+    emergency.resultCaptureCompactionW450.secondPassChars = text.length;
+    return JSON.stringify(emergency);
   }
 
   function writeIdbSidecarResultCaptureV1(args) {
@@ -7720,7 +8100,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const saved = saveTextArtifact({
       folderId,
       name: filename,
-      contents: JSON.stringify(capture, null, 2)
+      contents: resultCaptureContentsForSaveW450(capture)
     });
     return {
       status: 'pending_transaction_resolution',

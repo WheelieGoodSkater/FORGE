@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.58
+// @version      1.0.59
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.58';
-  const CURRENT_UX_BLOCK_W346 = 'W450';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.59';
+  const CURRENT_UX_BLOCK_W346 = 'W451';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -26465,6 +26465,41 @@
     `;
   }
 
+  function runnerErrorTruthW451(state) {
+    const runner = state && state.integratedBuildRunnerResult || {};
+    const capture = runner.resultCapture || {};
+    const statusText = [
+      runner.status,
+      runner.runnerStatus,
+      runner.adapterStatus,
+      runner.resultCaptureStatus,
+      capture.status,
+      capture.lookupStatus,
+      capture.resultCaptureStatus,
+      capture.taskStatus,
+      capture.runnerTaskStatus
+    ].map((value) => String(value || '').toLowerCase()).join(' ');
+    const message = firstNonBlank(
+      runner.errorMessage,
+      runner.message,
+      capture.errorMessage,
+      capture.message,
+      capture.failureReason,
+      capture.statusMessage
+    );
+    const terminal = runner.error === true ||
+      capture.error === true ||
+      /\berror\b|failed|failure|aborted|sss_file_content_size_exceeded|scheduled_script_failed|runner_failed|adapter_error/.test(statusText);
+    return {
+      schema: 'idb.w451.runner-error-truth.v1',
+      terminal,
+      statusText,
+      message: message || (terminal ? 'The runner reported an error before FORGE received completed records.' : ''),
+      runnerTaskId: firstNonBlank(runner.runnerTaskId, capture.runnerTaskId, capture.taskId),
+      extId: firstNonBlank(runner.idempotencyToken, capture.idempotencyToken, capture.extId)
+    };
+  }
+
   function consultantDayInLifeStageW416(state, lane, page, recommendation) {
     const intake = normalizedIntake(state);
     const readiness = setupReadiness(state);
@@ -26479,9 +26514,11 @@
     const runnerTaskCaptured = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.runnerTaskCaptured);
     const completedResultReady = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.completedResultReady);
     const pendingTransactionResolution = !!(w262BuildUx.stateFacts && w262BuildUx.stateFacts.pendingTransactionResolution);
+    const runnerErrorW451 = runnerErrorTruthW451(state);
     const activeBuildWaiting = runnerTaskCaptured && !completedResultReady && finalNaming.finalNamesImported !== true;
     if (finalNaming.finalNamesImported === true && finalNavigation.runCanUseImportedFinalNames === true) stage = 'demo_cockpit';
     else if (finalNaming.finalNamesImported === true && finalNavigation.proofReviewAvailable === true) stage = 'proof_needs_review';
+    else if (runnerErrorW451.terminal) stage = 'fix_build';
     else if (pendingTransactionResolution) stage = 'resolving_records';
     else if (activeBuildWaiting) stage = 'waiting_for_records';
     else if (oneClickBuild.status === 'build_failed_ask_admin' || oneClickBuild.status === 'records_returned_blocked') stage = 'fix_build';
@@ -26514,8 +26551,8 @@
         next: 'Refresh build status'
       },
       fix_build: {
-        title: 'Fix the build setup',
-        copy: 'The runner stopped safely. Use the recovery action and support details; do not continue into ROI or Run as if proof exists.',
+        title: runnerErrorW451.terminal ? 'FORGE ERROR' : 'Fix the build setup',
+        copy: runnerErrorW451.terminal ? runnerErrorW451.message : 'The runner stopped safely. Use the recovery action and support details; do not continue into ROI or Run as if proof exists.',
         next: 'Review build issue'
       },
       proof_needs_review: {
@@ -26540,6 +26577,7 @@
       runCanUseImportedFinalNames: finalNavigation.runCanUseImportedFinalNames === true,
       buildStatus: oneClickBuild.status,
       buildLabel: oneClickBuild.label,
+      runnerErrorW451,
       w262ReadinessState: w262BuildUx.readinessState,
       selectedBuildToggleReceiptW440: selectedBuildToggleReceiptW440(state, lane, finalNavigation || finalNaming),
       customer: intake.customer,
@@ -27740,6 +27778,7 @@
     const finalNaming = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, page, recommendation);
     const importRecoverySurfaceHtml = renderImportRecoveryUiSurfaceW220(state, lane, page, recommendation);
     const savedRunnerResult = state && state.integratedBuildRunnerResult || null;
+    const runnerErrorW451 = runnerErrorTruthW451(state);
     const savedCompletedResultJson = savedRunnerResult && (savedRunnerResult.finalGeneratedNamesJson ||
       savedRunnerResult.resultCapture && savedRunnerResult.resultCapture.finalGeneratedNamesJson) || null;
     const toggleReceipt = selectedBuildToggleReceiptW440(state, lane, savedRunnerResult && (savedRunnerResult.confirmedBuildRequest || savedRunnerResult.resultCapture && savedRunnerResult.resultCapture.confirmedBuildRequest) || {});
@@ -27761,6 +27800,24 @@
     const oneClickBuild = oneClickProductionBuildAutomationAndHiddenAdminConfigW208V1(state, lane, page, recommendation);
     const w262BuildUx = adapterReadyRecordCreationUxW262(state, lane, page, recommendation);
     if (!finalNaming.finalNamesImported) {
+      if (runnerErrorW451.terminal) {
+        return `
+          <div class="idb-run-action-card idb-guard-accent idb-w451-runner-error">
+            <div class="idb-status-key">Build demo records</div>
+            <div class="idb-strong">FORGE ERROR</div>
+            <div class="idb-copy">${escapeHtml(runnerErrorW451.message || 'The runner reported an error before completed records returned.')}</div>
+            <div class="idb-chip-row">
+              <span class="idb-chip idb-danger">Error</span>
+              ${runnerErrorW451.runnerTaskId ? `<span class="idb-mini-chip">Task ${escapeHtml(runnerErrorW451.runnerTaskId)}</span>` : ''}
+              ${runnerErrorW451.extId ? `<span class="idb-mini-chip">${escapeHtml(runnerErrorW451.extId)}</span>` : ''}
+            </div>
+            <div class="idb-actions">
+              <button class="idb-secondary" type="button" data-idb-w444-troubleshoot-export>Troubleshoot / Export</button>
+              <button class="idb-secondary" type="button" data-idb-start-new-run>Start new run</button>
+            </div>
+          </div>
+        `;
+      }
       const actions = w262BuildUx.actions || {};
       const showBuildButton = actions.showBuildButton === true;
       const showPollButton = actions.showRefreshButton === true;
@@ -29287,6 +29344,7 @@
       .filter((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const runner = state && state.integratedBuildRunnerResult || {};
     const capture = runner.resultCapture || {};
+    const runnerErrorW451 = runnerErrorTruthW451(state);
     const sidecar = runner.sidecarGeneratedNamesJson || runner.finalGeneratedNamesJson || runner.partialGeneratedNamesJson || {};
     const routingDiagnostics = firstNonBlankObject(
       sidecar.routingDiagnostic,
@@ -29370,7 +29428,7 @@
       })).filter((item) => item.name)
     };
     return {
-      schema: 'idb.w450-troubleshoot-export.v1',
+      schema: 'idb.w451-troubleshoot-export.v1',
       drawerVersion: DRAWER_USERSCRIPT_VERSION,
       drawerBlock: CURRENT_UX_BLOCK_W346,
       exportedAt: nowIso(),
@@ -29394,6 +29452,7 @@
         widthPreset: drawerWidthPresetW444(readDrawerWidthW444()),
         widthPx: readDrawerWidthW444()
       },
+      runnerErrorTruthW451: runnerErrorW451,
       selectedToggles: toggleReceipt,
       selectedProduct: productModel.primaryProductCandidate,
       productCandidates: productModel,

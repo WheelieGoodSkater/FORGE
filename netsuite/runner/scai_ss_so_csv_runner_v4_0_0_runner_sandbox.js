@@ -124,7 +124,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    */
   const VERSION = 'v4.0.0-runner-sandbox';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w450-llm-naming-real-wip-routing';
+  const RELEASE_TRANCHE = 'w451-older-routing-capacity-and-error-truth';
   const W449_WORK_CENTER_SEARCH = {
     id: 5005,
     scriptId: 'customsearch_scai_ss_wc_wip',
@@ -1636,14 +1636,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       { seq: 30, opName: opNames.op30 || 'Inspect', required: true },
       { seq: 40, opName: opNames.op40 || '', required: false },
       { seq: 50, opName: opNames.op50 || '', required: false }
-    ].filter(function (spec) { return spec.required || !!spec.opName; });
+    ].filter(function (spec) { return spec.required || !!spec.opName; }).slice(0, 3);
     return specs.map(function (spec) {
       const profile = workCenterRankProfileW449(spec.opName, spec.seq, productPlan);
       const rankedCenters = rankWorkCentersForOperationW449(centers, profile, context);
       const rankedTemplates = rankCostTemplatesForOperationW449(templates, profile);
       const pairs = [];
-      const maxCenters = rankedCenters.length;
-      const maxTemplates = rankedTemplates.length;
+      const maxCenters = Math.min(rankedCenters.length, 8);
+      const maxTemplates = Math.min(rankedTemplates.length, 5);
       for (let c = 0; c < maxCenters; c += 1) {
         for (let t = 0; t < maxTemplates; t += 1) {
           pairs.push({
@@ -1663,6 +1663,55 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         candidatePairs: pairs
       });
     });
+  }
+
+  function selectRoutingLocationForW451(centers, requestedLocationId) {
+    const requested = requestedLocationId ? String(requestedLocationId) : '';
+    const rows = Array.isArray(centers) ? centers : [];
+    const summary = {
+      schema: 'idb.w451-routing-location-selection.v1',
+      requestedLocationId: requested || '',
+      selectedLocationId: requested || '',
+      selectedReason: requested ? 'requested_location_default' : 'no_requested_location',
+      centerLocationCounts: {},
+      centerSamples: rows.slice(0, 12).map(function (center) {
+        return {
+          id: center && center.id || null,
+          name: center && center.name || '',
+          locationId: center && center.locationId || '',
+          locationText: center && center.locationText || '',
+          score: center && center.score || 0
+        };
+      })
+    };
+    rows.forEach(function (center) {
+      const loc = String(center && center.locationId || '');
+      if (!loc) return;
+      if (!summary.centerLocationCounts[loc]) {
+        summary.centerLocationCounts[loc] = { count: 0, score: 0, names: [] };
+      }
+      summary.centerLocationCounts[loc].count += 1;
+      summary.centerLocationCounts[loc].score += Number(center && center.score || 0);
+      if (summary.centerLocationCounts[loc].names.length < 4) summary.centerLocationCounts[loc].names.push(center && center.name || '');
+    });
+    if (requested && rows.some(function (center) { return String(center && center.locationId || '') === requested; })) {
+      summary.selectedLocationId = requested;
+      summary.selectedReason = 'requested_location_has_work_center_candidates';
+      return summary;
+    }
+    const ranked = Object.keys(summary.centerLocationCounts).sort(function (a, b) {
+      const aa = summary.centerLocationCounts[a];
+      const bb = summary.centerLocationCounts[b];
+      if (bb.count !== aa.count) return bb.count - aa.count;
+      return bb.score - aa.score;
+    });
+    if (ranked.length) {
+      summary.selectedLocationId = ranked[0];
+      summary.selectedReason = requested
+        ? 'requested_location_has_no_work_center_candidates_using_candidate_location'
+        : 'selected_from_work_center_candidate_location';
+    }
+    return summary;
   }
 
   function verifyRoutingAttachedOnAssemblyW449({ assemblyId, routingId, expectedRoutingName, productPlan, extId, staleRoutingSupersededTargetId }) {
@@ -1841,9 +1890,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       details: JSON.stringify({ routingNamingApplied: !!opNames, routingOperationNamesUsed: opNames })
     });
 
+    const routingLocationSelectionW451 = selectRoutingLocationForW451(centers, loc);
+    const routingLocationIdW451 = routingLocationSelectionW451 && routingLocationSelectionW451.selectedLocationId
+      ? Number(routingLocationSelectionW451.selectedLocationId)
+      : null;
+    w449Telemetry.routingLocationSelectionW451 = routingLocationSelectionW451;
+    log.audit({
+      title: `Routing location selected W451 [${VERSION}]`,
+      details: JSON.stringify(routingLocationSelectionW451)
+    });
+
     const productPlanW443 = names && names._productBuildPlanW432 || null;
     const operationPlanW449 = buildRoutingOperationPlanW449(opNames, centers, templates, productPlanW443, {
-      locationId: loc,
+      locationId: routingLocationIdW451 || loc,
       subsidiaryId: subs
     });
     w449Telemetry.operationPlans = operationPlanW449.map(function (plan) {
@@ -1940,10 +1999,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         existingRoutingId
       });
 
-      // "location" is multi-select; pass array if we have one
-      if (loc) {
+      // "location" is multi-select; prefer a location represented by accepted WIP work centers.
+      if (routingLocationIdW451 || loc) {
         routingStage = 'set_location';
-        safeTry(() => routing.setValue({ fieldId: 'location', value: [loc] }));
+        safeTry(() => routing.setValue({ fieldId: 'location', value: [routingLocationIdW451 || loc] }));
       }
 
       routingStage = 'resolve_header_fields';
@@ -7512,10 +7571,23 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function saveTextArtifact({ folderId, name, contents }) {
+    const rawContents = String(contents || '');
+    const MAX_TEXT_ARTIFACT_CHARS_W451 = 2500000;
+    const safeContents = rawContents.length <= MAX_TEXT_ARTIFACT_CHARS_W451
+      ? rawContents
+      : JSON.stringify({
+        schema: 'idb.w451-text-artifact-size-guard.v1',
+        status: 'compacted_before_file_save',
+        originalName: String(name || ''),
+        originalChars: rawContents.length,
+        maxChars: MAX_TEXT_ARTIFACT_CHARS_W451,
+        head: rawContents.slice(0, 400000),
+        tail: rawContents.slice(Math.max(0, rawContents.length - 400000))
+      });
     const f = file.create({
       name: String(name),
       fileType: guessFileTypeFromName(name),
-      contents: String(contents || ''),
+      contents: safeContents,
       folder: Number(folderId)
     });
     return {
@@ -7655,15 +7727,53 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  function compactSidecarForResultCaptureW451(sidecar) {
+    if (!sidecar || typeof sidecar !== 'object') return sidecar || null;
+    const compact = Object.assign({}, sidecar);
+    compact.routingDiagnostics = compactRoutingResultForCaptureW450(compact.routingDiagnostics);
+    compact.routingDiagnostic = compactRoutingResultForCaptureW450(compact.routingDiagnostic);
+    compact.routingOperations = (compact.routingOperations || []).slice(0, 3);
+    compact.operationPlanRecords = (compact.operationPlanRecords || []).slice(0, 3);
+    compact.componentItems = (compact.componentItems || []).slice(0, 5);
+    compact.records = compact.records || {};
+    if (compact.troubleshootExportTelemetryW446) {
+      compact.troubleshootExportTelemetryW446 = Object.assign({}, compact.troubleshootExportTelemetryW446, {
+        routingResult: compactRoutingResultForCaptureW450(compact.troubleshootExportTelemetryW446.routingResult),
+        routingDiagnostics: compactRoutingResultForCaptureW450(compact.troubleshootExportTelemetryW446.routingDiagnostics),
+        routingOperations: (compact.troubleshootExportTelemetryW446.routingOperations || []).slice(0, 3)
+      });
+    }
+    return compact;
+  }
+
   function resultCaptureContentsForSaveW450(capture) {
-    const MAX_CAPTURE_CHARS_W450 = 7000000;
+    const MAX_CAPTURE_CHARS_W450 = 2500000;
     const clone = Object.assign({}, capture || {});
     clone.resultCaptureCompactionW450 = {
       schema: 'idb.w450-result-capture-size-guard.v1',
       minified: true,
       duplicatePartialSidecarOmitted: true,
-      maxChars: MAX_CAPTURE_CHARS_W450
+      maxChars: MAX_CAPTURE_CHARS_W450,
+      w451PreCompactedBeforeFirstSave: true
     };
+    clone.routingResult = compactRoutingResultForCaptureW450(clone.routingResult);
+    clone.routingDiagnostics = compactRoutingResultForCaptureW450(clone.routingDiagnostics);
+    clone.routingOperations = (clone.routingOperations || []).slice(0, 3);
+    clone.operationPlanRecords = (clone.operationPlanRecords || []).slice(0, 3);
+    clone.sidecarGeneratedNamesJson = compactSidecarForResultCaptureW451(clone.sidecarGeneratedNamesJson);
+    clone.finalGeneratedNamesJson = compactSidecarForResultCaptureW451(clone.finalGeneratedNamesJson);
+    if (clone.sourceRequest && clone.sourceRequest.conversationNotes) {
+      clone.sourceRequest = Object.assign({}, clone.sourceRequest, {
+        conversationNotes: str(clone.sourceRequest.conversationNotes).slice(0, 1000)
+      });
+    }
+    if (clone.troubleshootExportTelemetryW446) {
+      clone.troubleshootExportTelemetryW446 = Object.assign({}, clone.troubleshootExportTelemetryW446, {
+        routingResult: compactRoutingResultForCaptureW450(clone.troubleshootExportTelemetryW446.routingResult),
+        routingDiagnostics: compactRoutingResultForCaptureW450(clone.troubleshootExportTelemetryW446.routingDiagnostics),
+        routingOperations: (clone.troubleshootExportTelemetryW446.routingOperations || []).slice(0, 3)
+      });
+    }
     if (clone.partialGeneratedNamesJson) {
       clone.partialGeneratedNamesJson = {
         schema: 'idb.runner-sidecar-result-json-reference.v1',
@@ -7914,7 +8024,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       })
       : null;
     const operationPlanRecords = args.enableWip && productPlanW441 && Array.isArray(productPlanW441.operationNames)
-      ? productPlanW441.operationNames.filter(Boolean).map((operationName, index) => ({
+      ? productPlanW441.operationNames.filter(Boolean).slice(0, 3).map((operationName, index) => ({
         role: `operation${index + 1}`,
         label: `Operation ${index + 1}`,
         type: routingRecord ? 'manufacturingrouting_operation' : 'manufacturingrouting_operation_plan',

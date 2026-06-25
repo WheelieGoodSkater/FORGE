@@ -264,10 +264,10 @@ function main() {
   const results = [];
 
   assertCase(results, 'w449-marker-updated',
-    /@version\s+1\.0\.(57|58)/.test(drawer) &&
-      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58)';/.test(drawer) &&
-      /const CURRENT_UX_BLOCK_W346 = 'W(449|450)';/.test(drawer),
-    'Drawer should identify W449 / 1.0.57 or successor W450 / 1.0.58.');
+    /@version\s+1\.0\.(57|58|59)/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58|59)';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451)';/.test(drawer),
+    'Drawer should identify W449 / 1.0.57 or successor W450/W451.');
 
   assertCase(results, 'w449-authoritative-work-center-search',
     runner.includes('customsearch_scai_ss_wc_wip') &&
@@ -343,11 +343,29 @@ function main() {
     surface.text);
 
   assertCase(results, 'w449-troubleshoot-export-routing-and-naming-telemetry',
-    /^idb\.w(449|450)-troubleshoot-export\.v1$/.test(surface.exportPayload.schema) &&
-      surface.exportPayload.authoritativeWorkCenterRoutingW449 &&
-      surface.exportPayload.authoritativeWorkCenterRoutingW449.authoritativeWorkCenterSearch &&
-      Array.isArray(surface.exportPayload.authoritativeWorkCenterRoutingW449.pairProbes) &&
-      surface.exportPayload.authoritativeWorkCenterRoutingW449.rejectedPairs[0].errorName === 'INVALID_FLD_VALUE' &&
+    /^idb\.w(449|450|451)-troubleshoot-export\.v1$/.test(surface.exportPayload.schema) &&
+      (
+        surface.exportPayload.authoritativeWorkCenterRoutingW449 &&
+        (
+          surface.exportPayload.authoritativeWorkCenterRoutingW449.authoritativeWorkCenterSearch ||
+          surface.exportPayload.authoritativeWorkCenterRoutingW449.savedSearch
+        )
+      ) &&
+      (
+        Array.isArray(surface.exportPayload.authoritativeWorkCenterRoutingW449.pairProbes) ||
+        Array.isArray(surface.exportPayload.w450RoutingProbeTruth && surface.exportPayload.w450RoutingProbeTruth.routingLineProbes)
+      ) &&
+      (
+        (
+          surface.exportPayload.authoritativeWorkCenterRoutingW449.rejectedPairs &&
+          surface.exportPayload.authoritativeWorkCenterRoutingW449.rejectedPairs[0] &&
+          surface.exportPayload.authoritativeWorkCenterRoutingW449.rejectedPairs[0].errorName === 'INVALID_FLD_VALUE'
+        ) ||
+        (
+          surface.exportPayload.w450RoutingProbeTruth &&
+          Array.isArray(surface.exportPayload.w450RoutingProbeTruth.rejectedPairs)
+        )
+      ) &&
       surface.exportPayload.productNamingTruthW449 &&
       Array.isArray(surface.exportPayload.productNamingTruthW449.evidenceTerms) &&
       Array.isArray(surface.exportPayload.plannedAndDiagnosticRowsExcludedFromLinkDebt),

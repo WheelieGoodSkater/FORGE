@@ -216,10 +216,10 @@ function main() {
   );
 
   assertCase(results, 'w444-marker-updated',
-    /@version\s+1\.0\.(57|58)/.test(drawer) &&
-      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58)';/.test(drawer) &&
-      /const CURRENT_UX_BLOCK_W346 = 'W(449|450)';/.test(drawer),
-    'Drawer should identify current W449/W450 while preserving W444 behavior.');
+    /@version\s+1\.0\.(57|58|59)/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58|59)';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451)';/.test(drawer),
+    'Drawer should identify current W449/W450/W451 while preserving W444 behavior.');
 
   assertCase(results, 'w444-wip-diagnostic-import-visible',
     (/WIP \/ Routing/.test(text) || /Routing and operation detail/.test(text)) &&
@@ -300,9 +300,9 @@ function main() {
   assertCase(results, 'w444-troubleshoot-export',
     !/Support \/ troubleshoot|Support views/.test(drawer) &&
       /Troubleshoot \/ Export/.test(drawer) &&
-      /^1\.0\.(57|58)$/.test(exportPayload.drawerVersion) &&
-      /^W(449|450)$/.test(exportPayload.drawerBlock) &&
-      /^idb\.w(449|450)-troubleshoot-export\.v1$/.test(exportPayload.schema) &&
+      /^1\.0\.(57|58|59)$/.test(exportPayload.drawerVersion) &&
+      /^W(449|450|451)$/.test(exportPayload.drawerBlock) &&
+      /^idb\.w(449|450|451)-troubleshoot-export\.v1$/.test(exportPayload.schema) &&
       exportPayload.truthSummaryW448 &&
       exportPayload.selectedToggles.enableWip === true &&
       /Siete Maíz/.test(exportPayload.selectedProduct) &&

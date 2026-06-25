@@ -254,11 +254,11 @@ function main() {
   const banned = /Product 12-Count Case Pack|Core Material Input|Primary Material Input|Product Seasoning Blend|Prepare Materials|Build Product|Machine Unit|Final Assembly Unit|Finished Assembly Unit|Generic Product|Component Input/i;
 
   assertCase(results, 'w450-markers-updated',
-    /@version\s+1\.0\.58/.test(drawer) &&
-      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.58';/.test(drawer) &&
-      /const CURRENT_UX_BLOCK_W346 = 'W450';/.test(drawer) &&
-      /w450-llm-naming-real-wip-routing/.test(runner),
-    'Drawer and runner should identify W450 / 1.0.58.');
+    /@version\s+1\.0\.5[89]/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.5[89]';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W45[01]';/.test(drawer) &&
+      /w45[01]-(llm-naming-real-wip-routing|older-routing-capacity-and-error-truth)/.test(runner),
+    'Drawer and runner should identify W450 / 1.0.58 or successor W451 / 1.0.59.');
 
   assertCase(results, 'w450-older-runner-reference-canonical',
     /function loadPrecomputedNamingPack/.test(olderRunner) &&
@@ -298,8 +298,17 @@ function main() {
       runner.includes('acceptedOperationLinesW450') &&
       runner.includes('rejectedOperationLinesW450') &&
       runner.includes('W450_INSUFFICIENT_ACCEPTED_ROUTING_STEPS') &&
-      /chosen\.operationRows\.length < 3/.test(runner),
-    'Routing should keep probing later operations and require at least three accepted lines before save.');
+      /chosen\.operationRows\.length < 3/.test(runner) &&
+      /slice\(0,\s*3\)/.test(runner),
+    'Routing should keep probing later operations, cap the WIP operation model to three rows, and require at least three accepted lines before save.');
+
+  assertCase(results, 'w451-result-capture-size-guard-and-error-truth',
+    runner.includes('MAX_TEXT_ARTIFACT_CHARS_W451') &&
+      runner.includes('compacted_before_file_save') &&
+      runner.includes('idb.w451-routing-location-selection.v1') &&
+      drawer.includes('runnerErrorTruthW451') &&
+      drawer.includes('FORGE ERROR'),
+    'Runner should compact oversized sidecar artifacts and drawer should surface terminal runner errors.');
 
   assertCase(results, 'w450-routing-diagnostic-exact-center-template-field-error',
     surface.exportPayload.w450RoutingProbeTruth &&

@@ -171,10 +171,10 @@ function main() {
   });
 
   assertCase(results, 'w442-marker-updated',
-    /@version\s+1.0.(57|58)/.test(drawer) &&
-      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58)';/.test(drawer) &&
-      /const CURRENT_UX_BLOCK_W346 = 'W(449|450)';/.test(drawer),
-    'Drawer should identify current W449 / 1.0.57 or W450 / 1.0.58 while preserving W442 behavior.');
+    /@version\s+1.0.(57|58|59)/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58|59)';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451)';/.test(drawer),
+    'Drawer should identify current W449 / 1.0.57 or W450/W451 successor while preserving W442 behavior.');
 
   const mfgSurface = renderSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: false }, sieteRecords(sietePlan, false));
   const mfgText = mfgSurface.text;

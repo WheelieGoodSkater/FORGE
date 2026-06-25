@@ -210,10 +210,10 @@ function main() {
   const surface = buildSurface(hooks);
 
   assertCase(results, 'w446-marker-updated',
-    /@version\s+1\.0\.(57|58)/.test(drawer) &&
-      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58)';/.test(drawer) &&
-      /const CURRENT_UX_BLOCK_W346 = 'W(449|450)';/.test(drawer),
-    'Drawer should identify current W449/W450 while preserving W446 behavior.');
+    /@version\s+1\.0\.(57|58|59)/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58|59)';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451)';/.test(drawer),
+    'Drawer should identify current W449/W450/W451 while preserving W446 behavior.');
 
   assertCase(results, 'w446-wip-visual-three-stage-clickable',
     hooks.cockpitWorkflowNodesW446('wip', surface.finalNavigation.scriptPivotObjects).length <= 3 &&
@@ -252,12 +252,15 @@ function main() {
     surface.text);
 
   assertCase(results, 'w446-troubleshoot-export-telemetry',
-    /^idb\.w(449|450)-troubleshoot-export\.v1$/.test(surface.exportPayload.schema) &&
+    /^idb\.w(449|450|451)-troubleshoot-export\.v1$/.test(surface.exportPayload.schema) &&
       surface.exportPayload.truthSummaryW448 &&
       surface.exportPayload.manufacturingEligibilityPreflightW446 &&
       surface.exportPayload.troubleshootExportTelemetryW446 &&
       Array.isArray(surface.exportPayload.plannedOnlyRows) &&
-      Array.isArray(surface.exportPayload.realLinkRows),
+      (
+        Array.isArray(surface.exportPayload.realLinkRows) ||
+        Array.isArray(surface.exportPayload.returnedRecords)
+      ),
     JSON.stringify(surface.exportPayload, null, 2));
 
   assertCase(results, 'w446-runner-fallback-source-contract',

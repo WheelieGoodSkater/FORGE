@@ -200,7 +200,8 @@
     "harness:cockpit-pristine-followup-w445": "node archive/tools/run_w445_pristine_cockpit_followup_harness.js",
     "harness:wip-links-last-run-ux-w446": "node archive/tools/run_w446_wip_links_last_run_ux_harness.js",
     "harness:goodles-wip-routing-ux-w447": "node archive/tools/run_w447_goodles_wip_routing_ux_harness.js",
-    "harness:chomps-wip-routing-roi-w448": "node archive/tools/run_w448_chomps_wip_routing_roi_harness.js"
+    "harness:chomps-wip-routing-roi-w448": "node archive/tools/run_w448_chomps_wip_routing_roi_harness.js",
+    "harness:authoritative-wip-routing-naming-ux-w449": "node archive/tools/run_w449_authoritative_wip_routing_naming_ux_harness.js"
   },
   "keywords": [
     "netsuite",

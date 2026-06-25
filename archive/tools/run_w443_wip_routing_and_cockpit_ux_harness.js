@@ -184,10 +184,10 @@ function main() {
   const plan = sietePlan(runnerHooks);
 
   assertCase(results, 'w443-marker-updated',
-    /@version\s+1.0.56/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.56';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W448';"),
-    'Drawer should identify current W448 / 1.0.56 while preserving W443 behavior.');
+    /@version\s+1.0.57/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.57';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W449';"),
+    'Drawer should identify current W449 / 1.0.57 while preserving W443 behavior.');
 
   const wipSurface = renderSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: true }, recordsFor(plan, 'wip'));
   const wipText = wipSurface.text;

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.56
+// @version      1.0.57
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.56';
-  const CURRENT_UX_BLOCK_W346 = 'W448';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.57';
+  const CURRENT_UX_BLOCK_W346 = 'W449';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14038,6 +14038,7 @@
     const text = `${item && (item.role || item.label || item.recordType || item.type || '') || ''}`.toLowerCase();
     if (item && item.plannedOnly === true) return false;
     if (/planned operation/.test(text)) return false;
+    if (/diagnostic/.test(text)) return false;
     return true;
   }
 
@@ -25769,16 +25770,23 @@
 
   function productCandidateModelW444(state, finalNavigation) {
     const records = arrayValue(finalNavigation && finalNavigation.reviewObjects).concat(arrayValue(finalNavigation && finalNavigation.scriptPivotObjects));
+    const runner = state && state.integratedBuildRunnerResult || {};
+    const sidecar = runner.sidecarGeneratedNamesJson || runner.finalGeneratedNamesJson || runner.partialGeneratedNamesJson || {};
+    const capture = runner.resultCapture || {};
     const plan = records.map((record) => record && record.productBuildPlanW432).filter(Boolean)[0] ||
       state && state.dccFinalNamingResult && state.dccFinalNamingResult.productBuildPlanW432 ||
       finalNavigation && finalNavigation.productBuildPlanW432 ||
+      sidecar && sidecar.productBuildPlanW432 ||
+      sidecar && sidecar.productBuildPlan ||
+      capture && capture.productBuildPlanW432 ||
+      capture && capture.productBuildPlan ||
       {};
     const productName = visibleProductAccentPolishW439(firstNonBlank(
       plan.primaryProductCandidate,
       plan.selectedProductCandidate,
       plan.productName,
       plan.evidence && plan.evidence.selectedProductCandidate,
-      records.map((record) => consultantVisibleRecordNameW436(record && (record.name || record.recordName))).find((name) => /\b(Siete|Kettle)\b/i.test(name))
+      records.map((record) => consultantVisibleRecordNameW436(record && (record.name || record.recordName))).find((name) => /\b(Siete|Kettle|Chomps|Goodles|Biena|Chickpea|Jerky|Tortilla|Mac|Cheese)\b/i.test(name))
     ));
     const alternates = uniqueValues(arrayValue(plan.alternateProductCandidates)
       .concat(arrayValue(plan.evidence && plan.evidence.productCandidates).filter((item) => item !== productName))
@@ -25790,6 +25798,9 @@
       alternateProductCandidates: alternates,
       selectedProductReason: firstNonBlank(plan.selectedProductReason, plan.selectionReason, productName ? 'Selected from website/product evidence for this run.' : 'No product candidate returned.'),
       productCandidateSource: firstNonBlank(plan.productCandidateSource, plan.source, plan.evidence && plan.evidence.website ? 'website_product_evidence' : 'returned_result'),
+      confidencePercent: Number(plan.confidencePercent || plan.evidence && plan.evidence.confidencePercent || 0) || null,
+      evidenceTerms: arrayValue(plan.evidenceTerms || plan.evidence && plan.evidence.websiteTermsUsed || plan.evidence && plan.evidence.productCandidates),
+      rejectedFallbackReason: firstNonBlank(plan.rejectedFallbackReason, plan.evidence && plan.evidence.rejectedFallbackReason),
       nextCandidateHint: firstNonBlank(plan.nextCandidateHint, alternates[0] ? `Use fresh candidate next run: ${alternates[0]}` : 'Use fresh candidate next run from current website evidence.')
     };
   }
@@ -25902,7 +25913,8 @@
     const active = kind === 'competitive' ? 'competitive' : 'roi';
     if (active === 'competitive') {
       return `
-        <div class="idb-w444-lower-detail" data-idb-detail-panel="competitive" data-idb-w445-detail-anchor tabindex="-1">
+        <details class="idb-w444-lower-detail idb-w449-collapsible-why" data-idb-detail-panel="competitive" data-idb-w445-detail-anchor tabindex="-1" open>
+          <summary>Why this competitive angle</summary>
           <div class="idb-w447-impact-graphic idb-w447-competitive-impact" aria-label="Competitive impact summary">
             <div class="idb-w447-impact-statement">Compete against ${escapeHtml(detail.competitive.strongestAlternative)} by proving the fresher signal.</div>
             <div class="idb-w447-impact-flow">
@@ -25916,11 +25928,12 @@
             ${arrayValue(detail.competitive.alternativeSourceTags).slice(0, 3).map((item) => `<span class="idb-mini-chip">${escapeHtml(item.name)} · ${escapeHtml(consultantLabel(item.source))}</span>`).join(' ')}
           </div>
           <div class="idb-copy">Ask: ${escapeHtml(detail.competitive.discoveryQuestions[0])}</div>
-        </div>
+        </details>
       `;
     }
     return `
-      <div class="idb-w444-lower-detail" data-idb-detail-panel="roi" data-idb-w445-detail-anchor tabindex="-1">
+      <details class="idb-w444-lower-detail idb-w449-collapsible-why" data-idb-detail-panel="roi" data-idb-w445-detail-anchor tabindex="-1" open>
+        <summary>Why this ROI</summary>
         <div class="idb-w447-impact-graphic idb-w447-roi-impact" aria-label="ROI impact summary">
           <div class="idb-w447-impact-statement">${escapeHtml(detail.roi.metricDirection)}</div>
           <div class="idb-w447-impact-flow">
@@ -25934,6 +25947,80 @@
           <span class="idb-mini-chip">No savings claim without baseline</span>
         </div>
         <div class="idb-copy">Capture: ${escapeHtml(detail.roi.baselineNeeded)}</div>
+      </details>
+    `;
+  }
+
+  function isPlannedOperationRowW449(item) {
+    const text = `${item && (item.role || '') || ''} ${item && (item.label || '') || ''} ${item && (item.recordType || item.type || '') || ''}`.toLowerCase();
+    return !!(item && (item.plannedOnly === true || /manufacturingrouting_operation_plan|operation\d+|planned operation/.test(text)));
+  }
+
+  function isDiagnosticRowW449(item) {
+    return /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`);
+  }
+
+  function isStandaloneBomRowW449(item) {
+    const text = `${item && (item.role || '') || ''} ${item && (item.label || '') || ''} ${item && (item.recordType || item.type || '') || ''}`.toLowerCase();
+    return /(^|\s)bom($|\s)|bill of materials/.test(text) && !/revision|bomrevision|bom_revision/.test(text);
+  }
+
+  function findCockpitRowW449(rows, patterns, requireOpenable) {
+    return arrayValue(rows).find((item) => {
+      const text = `${item && (item.role || item.canonicalRole || '') || ''} ${item && (item.label || item.recordType || item.type || item.name || item.recordName || '') || ''}`.toLowerCase();
+      const matches = arrayValue(patterns).some((pattern) => pattern.test(text));
+      if (!matches) return false;
+      return requireOpenable ? recordOpenAuthorityW446(item).openable === true : true;
+    }) || null;
+  }
+
+  function renderWipRoutingFlowW449(rows, plannedOperations, diagnostics) {
+    const allRows = arrayValue(rows);
+    const demand = findCockpitRowW449(allRows, [/sales[_\s-]*order|salesorder|demo sales order|demand/], true);
+    const assembly = findCockpitRowW449(allRows, [/assembly|production batch|finished good/], true);
+    const bomRevision = findCockpitRowW449(allRows, [/bom[_\s-]*revision|bomrevision|revision/], true);
+    const routing = findCockpitRowW449(allRows, [/manufacturingrouting|routing/], true);
+    const workOrder = findCockpitRowW449(allRows, [/work\s*order|workorder/], true);
+    const output = findCockpitRowW449(allRows, [/finished|output|hero|sellable|inventoryitem|item/], true);
+    const routingDiagnostic = arrayValue(diagnostics).find((item) => /routing/i.test(`${item && (item.role || item.label || item.recordType || item.type || item.name) || ''}`)) || null;
+    const workOrderDiagnostic = arrayValue(diagnostics).find((item) => /work\s*order|workorder/i.test(`${item && (item.role || item.label || item.recordType || item.type || item.name) || ''}`)) || null;
+    const node = (label, item, fallback, tone) => {
+      const authority = item ? recordOpenAuthorityW446(item) : null;
+      const className = `idb-w449-wip-flow-node idb-w449-wip-flow-${escapeHtml(tone || (authority && authority.openable ? 'ready' : 'watch'))}`;
+      if (authority && authority.openable) {
+        return `<a class="${className}" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`;
+      }
+      return `<span class="${className}">${escapeHtml(fallback || label)}</span>`;
+    };
+    const planned = arrayValue(plannedOperations).map((item, index) => {
+      const name = firstNonBlank(item.name, item.recordName, `Operation ${index + 1}`);
+      return `<li>Planned Operation ${escapeHtml(Number(item.operationIndex || index) + 1)} ${escapeHtml(name)}</li>`;
+    }).join('');
+    const diagnosticCopy = arrayValue([routingDiagnostic, workOrderDiagnostic]).filter(Boolean).map((item) => {
+      const label = firstNonBlank(item.label, item.role, 'Diagnostic');
+      const reason = firstNonBlank(item.reason, item.failureStage, item.errorMessage, item.routingEligibilityConclusion, 'Review troubleshoot export.');
+      const expected = firstNonBlank(item.expectedRoutingName, item.routingName, item.name);
+      const stale = firstNonBlank(item.staleRoutingName, item.actualRoutingName);
+      return `<div class="idb-copy"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(expected)} ${stale ? `- Stale detected: ${escapeHtml(stale)}` : ''}${reason ? ` - ${escapeHtml(reason)}` : ''}</div>`;
+    }).join('');
+    return `
+      <div class="idb-w449-wip-flow" data-idb-w449-wip-flow-component="true" aria-label="WIP route status">
+        <div class="idb-w449-wip-flow-strip">
+          ${node('Demand', demand, 'Demand', 'ready')}
+          <span class="idb-w443-workflow-arrow">→</span>
+          ${node('Assembly / BOM Revision', bomRevision || assembly, 'Assembly / BOM Revision', 'ready')}
+          <span class="idb-w443-workflow-arrow">→</span>
+          ${node('Routing', routing, routingDiagnostic ? 'Routing diagnostic' : 'Routing pending', routing ? 'ready' : 'diagnostic')}
+          <span class="idb-w443-workflow-arrow">→</span>
+          ${node('Work Order', workOrder, workOrderDiagnostic ? 'Work Order diagnostic' : 'Work Order pending', workOrder ? 'ready' : 'diagnostic')}
+          <span class="idb-w443-workflow-arrow">→</span>
+          ${node('Output', output, 'Output / Impact', 'ready')}
+        </div>
+        <details class="idb-w449-wip-flow-detail">
+          <summary>Routing and operation detail</summary>
+          ${planned ? `<ol class="idb-w449-operation-plan">${planned}</ol>` : '<div class="idb-copy">No planned operation detail returned.</div>'}
+          ${diagnosticCopy || '<div class="idb-copy">No WIP diagnostic returned.</div>'}
+        </details>
       </div>
     `;
   }
@@ -26049,6 +26136,16 @@
       || valueNarrativeW443 && valueNarrativeW443.unsupportedClaimCaution
       || 'Measured savings require a customer baseline before they can be claimed.', 125);
     const recordRowLimit = visibleNarrative.mode === 'distribution' ? 5 : (visibleNarrative.mode === 'wip' ? 24 : 14);
+    const cockpitSourceRowsW449 = objects.slice(0, recordRowLimit);
+    const plannedOperationRowsW449 = cockpitSourceRowsW449.filter(isPlannedOperationRowW449);
+    const diagnosticRowsW449 = cockpitSourceRowsW449.filter(isDiagnosticRowW449);
+    const hasBomRevisionW449 = cockpitSourceRowsW449.some((item) => /bom[_\s-]*revision|bomrevision|revision/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
+    const primaryRecordRowsW449 = cockpitSourceRowsW449.filter((item) => {
+      if (visibleNarrative.mode === 'wip' && isPlannedOperationRowW449(item)) return false;
+      if (visibleNarrative.mode === 'wip' && isDiagnosticRowW449(item)) return false;
+      if (visibleNarrative.mode === 'wip' && hasBomRevisionW449 && isStandaloneBomRowW449(item)) return false;
+      return true;
+    });
     const renderRecordRowW442 = (item) => {
       const label = item && item.plannedOnly && /operation/i.test(`${item.role || ''} ${item.label || ''}`)
         ? firstNonBlank(item.label, `Planned Operation ${Number(item.operationIndex || 0) + 1}`)
@@ -26068,11 +26165,13 @@
           </span>
           ${authority.openable
             ? `<a class="idb-inline-link idb-w415-open-link" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer">Open</a>`
-            : `<span class="idb-mini-chip" title="${escapeHtml(authority.reason || 'No verified Open URL returned.')}">${escapeHtml(authority.displayLabel || 'No Open link')}</span>`}
+            : (isPlannedOperationRowW449(item)
+              ? ''
+              : `<span class="idb-mini-chip" title="${escapeHtml(authority.reason || 'No verified Open URL returned.')}">${escapeHtml(authority.displayLabel || 'No Open link')}</span>`)}
         </div>
       `;
     };
-    const groupedRows = cockpitFlowGroupsW442(objects.slice(0, recordRowLimit), visibleNarrative).map((group) => {
+    const groupedRows = cockpitFlowGroupsW442(primaryRecordRowsW449, visibleNarrative).map((group) => {
       const hasDiagnostics = group.records.some((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
       const defaultOpen = visibleNarrative.mode !== 'wip'
         ? true
@@ -26089,6 +26188,9 @@
     const confidenceLabel = websiteEvidence && websiteEvidence.confidence
       ? `${websiteEvidence.confidence.displayText || websiteEvidence.status || 'Evidence'} / ${websiteEvidence.confidence.scoreLabel || 'unscored'}`
       : 'Evidence state visible';
+    const wipFlowComponentW449 = visibleNarrative.mode === 'wip'
+      ? renderWipRoutingFlowW449(cockpitSourceRowsW449, plannedOperationRowsW449, diagnosticRowsW449)
+      : '';
     return `
       <div class="idb-card idb-accent idb-w415-demo-cockpit">
         <div class="idb-w415-cockpit-header">
@@ -26111,6 +26213,7 @@
             <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-fresh-candidate-intent="${escapeHtml(productModelW444.nextCandidateHint)}">Use fresh candidate next run</button>
           </div>
         </details>
+        ${wipFlowComponentW449}
         <div class="idb-w415-cockpit-records" aria-label="Open records">
           ${groupedRows}
         </div>
@@ -29102,8 +29205,30 @@
       capture.troubleshootExportTelemetryW446,
       runner.troubleshootExportTelemetryW446
     );
+    const workCenterTelemetryW449 = firstNonBlankObject(
+      runnerTelemetryW446 && runnerTelemetryW446.authoritativeWorkCenterRoutingW449,
+      runnerTelemetryW446 && runnerTelemetryW446.routingResult && runnerTelemetryW446.routingResult.w449,
+      runnerTelemetryW446 && runnerTelemetryW446.routingResult && runnerTelemetryW446.routingResult.workCenterSetabilityProbesW449,
+      routingDiagnostics && routingDiagnostics.w449,
+      routingDiagnostics && routingDiagnostics.workCenterSetabilityProbesW449,
+      capture.routingResult && capture.routingResult.w449,
+      capture.routingResult && capture.routingResult.workCenterSetabilityProbesW449,
+      sidecar.routingDiagnostics && sidecar.routingDiagnostics.w449,
+      sidecar.routingDiagnostics && sidecar.routingDiagnostics.workCenterSetabilityProbesW449
+    );
+    const namingTruthW449 = {
+      schema: 'idb.w449-product-naming-truth.v1',
+      source: productModel.productCandidateSource,
+      confidencePercent: productModel.confidencePercent,
+      evidenceTerms: productModel.evidenceTerms,
+      rejectedFallbackReason: productModel.rejectedFallbackReason,
+      genericFallbackBlocked: !/fallback_no_product_found|deterministic_product_fallback/i.test(String(productModel.productCandidateSource || '')),
+      bannedGenericTermsVisible: allExportRows
+        .map((item) => `${item && (item.name || item.recordName || '') || ''}`)
+        .filter((name) => /Machine Unit|Core Material Input|Primary Material Input|Build Product|Prepare Materials|Final Assembly Unit/i.test(name))
+    };
     return {
-      schema: 'idb.w448-troubleshoot-export.v1',
+      schema: 'idb.w449-troubleshoot-export.v1',
       drawerVersion: DRAWER_USERSCRIPT_VERSION,
       drawerBlock: CURRENT_UX_BLOCK_W346,
       exportedAt: nowIso(),
@@ -29150,6 +29275,8 @@
       plannedOnlyRows,
       realLinkRows,
       plannedOnlyOperationCount: plannedOnlyRows.length,
+      realMissingUrlRows: realLinkRows.filter((item) => item && item.linkAuthority && item.linkAuthority.openable !== true),
+      plannedAndDiagnosticRowsExcludedFromLinkDebt: plannedOnlyRows.concat(allExportRows.filter(isDiagnosticRowW449)),
       workflowStages: cockpitWorkflowNodesW446(toggleReceipt && toggleReceipt.enableWip ? 'wip' : (toggleReceipt && toggleReceipt.enableManufacturing ? 'manufacturing' : 'distribution'), records.concat(pivotObjects)).map((stage) => ({
         key: stage.key || stage.label,
         label: stage.label,
@@ -29157,6 +29284,15 @@
         url: stage.authority && stage.authority.url || ''
       })),
       roiCompetitiveSourceBasis: detailModel,
+      authoritativeWorkCenterRoutingW449: workCenterTelemetryW449 || {
+        savedSearch: {
+          id: 5005,
+          scriptId: 'customsearch_scai_ss_wc_wip',
+          title: 'Work Center List Reset Engine'
+        },
+        note: 'Runner did not return W449 work-center setability telemetry in this payload.'
+      },
+      productNamingTruthW449: namingTruthW449,
       troubleshootExportTelemetryW446: runnerTelemetryW446,
       manufacturingEligibilityPreflightW446: runnerTelemetryW446 && runnerTelemetryW446.manufacturingEligibilityPreflightW446 || sidecar.manufacturingEligibilityPreflightW446 || capture.manufacturingEligibilityPreflightW446 || null,
       routingWorkOrderDiagnostics: diagnostics,
@@ -29183,7 +29319,7 @@
       fileId: firstNonBlank(runner.fileId, capture.fileId),
       taskFolder: firstNonBlank(runner.folderId, capture.resultCaptureFolderId),
       rawAppendix: {
-        note: 'Raw keys and repeated arrays are appendix-only; use truthSummaryW448 first for triage.',
+        note: 'Raw keys and repeated arrays are appendix-only; use truthSummaryW448 and authoritativeWorkCenterRoutingW449 first for triage.',
         rawResultKeys: {
         runner: Object.keys(runner || {}).sort(),
         capture: Object.keys(capture || {}).sort(),
@@ -29232,7 +29368,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `forge-w448-troubleshoot-${safeFileToken(payload.customer || 'run')}-${Date.now()}.json`;
+    a.download = `forge-w449-troubleshoot-${safeFileToken(payload.customer || 'run')}-${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();

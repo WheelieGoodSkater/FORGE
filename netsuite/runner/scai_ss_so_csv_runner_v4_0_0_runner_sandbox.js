@@ -124,7 +124,20 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    */
   const VERSION = 'v4.0.0-runner-sandbox';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'backend-truth-closure';
+  const RELEASE_TRANCHE = 'w449-authoritative-wip-routing';
+  const W449_WORK_CENTER_SEARCH = {
+    id: 5005,
+    scriptId: 'customsearch_scai_ss_wc_wip',
+    title: 'Work Center List Reset Engine'
+  };
+  const W449_WORK_CENTER_FAMILIES = {
+    receiving: [1630],
+    mixing: [1439, 1450, 1394],
+    production: [1686, 1438, 1398],
+    fill: [1397, 1439],
+    qc: [1650, 1395],
+    packing: [1437, 1396, 1451]
+  };
   const PACK_ENGINE_VERSION = 'v13.0.0-intelligent-industry-packs';
 
   const ANCHORS = {
@@ -1180,6 +1193,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         imageEnrichment
       });
       routingId = routingResult && routingResult.routingId ? Number(routingResult.routingId) : null;
+      if (names && names._productBuildPlanW432 && routingResult && routingResult.w449) {
+        names._productBuildPlanW432.w449RoutingTelemetry = routingResult.w449;
+      }
     } else {
       log.audit({ title: `WIP not enabled (skipping routing) [${VERSION}]`, details: JSON.stringify({ enableWipRaw, enableWip, effectiveEnableWip, enableManufacturing: finalEnableManufacturing, requestedWipTargetMode, wipTargetMode, wipHandshakeAction }) });
     }
@@ -1440,16 +1456,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const productTerms = routingProductTermsW443(productBuildPlan);
     const productTermsMatched = productTerms.filter(function (term) { return actualText.indexOf(term) >= 0; });
     const productTermsMissing = productTerms.filter(function (term) { return actualText.indexOf(term) < 0; });
-    const staleName = /\b(cookie|parfait|fudge|baking|dough)\b/i.test(actualRoutingName);
+    const staleCookieProductionLine = /\bcookie\s+production\s+line\b/i.test(actualRoutingName);
+    const staleName = staleCookieProductionLine || /\b(cookie|parfait|fudge|baking|dough)\b/i.test(actualRoutingName);
     const valid = !!actualRoutingName && !staleName && (!productTerms.length || productTermsMatched.length >= Math.min(2, productTerms.length));
     return {
       schema: 'idb.w443-routing-product-validation.v1',
       valid,
-      reason: valid ? 'routing_matches_product_plan' : (staleName ? 'stale_routing_name_from_prior_product' : 'routing_name_missing_current_product_terms'),
+      reason: valid ? 'routing_matches_product_plan' : (staleCookieProductionLine ? 'stale_cookie_production_line_rejected' : (staleName ? 'stale_routing_name_from_prior_product' : 'routing_name_missing_current_product_terms')),
       expectedRoutingName,
       actualRoutingName,
       actualRoutingId,
       stale: !valid,
+      staleCookieProductionLine,
       productTermsMatched,
       productTermsMissing
     };
@@ -1478,23 +1496,218 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       attemptedOperationNames: productPlan && productPlan.operationNames || [],
       reason: diagnostic.reason || diagnostic.failureStage || 'routing_not_created_or_not_product_specific',
       errorName: diagnostic.errorName || '',
-      errorMessage: diagnostic.errorMessage || ''
+      errorMessage: diagnostic.errorMessage || '',
+      w449: routingResult && routingResult.w449 ? routingResult.w449 : (diagnostic && diagnostic.w449 ? diagnostic.w449 : null)
     };
+  }
+
+  function authoritativeWipWorkCenterSearchIdW449(searchId) {
+    const raw = str(searchId).trim();
+    return {
+      schema: 'idb.w449-authoritative-wip-work-center-search.v1',
+      requested: raw || null,
+      authoritativeScriptId: W449_WORK_CENTER_SEARCH.scriptId,
+      authoritativeNumericId: W449_WORK_CENTER_SEARCH.id,
+      chosenSearchId: W449_WORK_CENTER_SEARCH.scriptId,
+      numericFallbackId: W449_WORK_CENTER_SEARCH.id,
+      overrideApplied: raw && raw !== W449_WORK_CENTER_SEARCH.scriptId && raw !== String(W449_WORK_CENTER_SEARCH.id)
+    };
+  }
+
+  function workCenterRankProfileW449(operationName, seq, productPlan) {
+    const hay = normalizeRoutingTermW443([
+      operationName,
+      seq,
+      productPlan && productPlan.productName,
+      productPlan && productPlan.productFamily,
+      productPlan && productPlan.brandName,
+      productPlan && productPlan.industryNativeManufacturedItemName
+    ].join(' '));
+    if (/receiv|stage|material|input|prep|slice|rinse|masa|protein|pasta/.test(hay)) {
+      return { key: 'receiving', keywords: ['receiv', 'stage', 'staging', 'prep', 'material', 'input', 'warehouse', 'raw'] };
+    }
+    if (/mix|blend|season|tumble|masa|marinade|sauce|dry/.test(hay)) {
+      return { key: 'mixing', keywords: ['mix', 'mixer', 'mixing', 'blend', 'blending', 'season', 'tumble', 'prep'] };
+    }
+    if (/cook|fry|kettle|roast|bake|dehydrat|sheet|cut|production|line|air finish/.test(hay)) {
+      return { key: 'production', keywords: ['production', 'line', 'cook', 'cooking', 'fry', 'frying', 'roast', 'oven', 'kettle', 'process'] };
+    }
+    if (/fill|bag|wrap|carton|dispense/.test(hay)) {
+      return { key: 'fill', keywords: ['fill', 'filling', 'dispense', 'bag', 'bagging', 'wrap', 'wrapper', 'carton'] };
+    }
+    if (/qc|quality|inspect|moisture|weight|check/.test(hay)) {
+      return { key: 'qc', keywords: ['qc', 'quality', 'inspect', 'inspection', 'test', 'check', 'lab'] };
+    }
+    if (/pack|case|pallet/.test(hay)) {
+      return { key: 'packing', keywords: ['pack', 'packing', 'package', 'packaging', 'case', 'casepack', 'pallet'] };
+    }
+    return { key: 'production', keywords: ['production', 'line', 'mix', 'pack', 'fill', 'qc'] };
+  }
+
+  function rankWorkCentersForOperationW449(centers, profile, context) {
+    const keys = (profile && profile.keywords || []).map(function (k) { return String(k || '').toLowerCase(); }).filter(Boolean);
+    const preferredIds = W449_WORK_CENTER_FAMILIES[profile && profile.key || 'production'] || [];
+    const preferredLayer = {
+      receiving: ['receiving', 'raw', 'staging', 'stage', 'prep'],
+      mixing: ['mix', 'mixer', 'blend', 'kettle prep', 'season'],
+      production: ['production', 'line', 'cook', 'fry', 'roast', 'kettle'],
+      fill: ['fill', 'bag', 'wrap', 'carton', 'dispense'],
+      qc: ['qc', 'quality', 'inspect', 'lab', 'check'],
+      packing: ['pack', 'case', 'package', 'pallet']
+    }[profile && profile.key || 'production'] || [];
+    const loc = context && context.locationId ? String(context.locationId) : '';
+    const subs = context && context.subsidiaryId ? String(context.subsidiaryId) : '';
+    return (centers || []).map(function (center, index) {
+      const name = String(center && center.name || '').toLowerCase();
+      const centerId = Number(center && center.id || 0);
+      const preferredIdIndex = preferredIds.indexOf(centerId);
+      let score = Number(center && center.score || 0);
+      if (preferredIdIndex >= 0) score += 250 - (preferredIdIndex * 25);
+      preferredLayer.forEach(function (k) { if (name.indexOf(k) !== -1) score += 80; });
+      keys.forEach(function (k) { if (name.indexOf(k) !== -1) score += 35; });
+      if (loc && String(center.locationId || '') === loc) score += 25;
+      if (subs && String(center.subsidiaryId || '') === subs) score += 12;
+      if (/cookie\s+production\s+line/i.test(center && center.name || '')) score -= 10000;
+      return Object.assign({}, center, {
+        score,
+        w449Rank: index + 1,
+        w449Profile: profile && profile.key || 'production',
+        w449PreferredIdRank: preferredIdIndex >= 0 ? preferredIdIndex + 1 : null,
+        w449AuthoritativeSearch: W449_WORK_CENTER_SEARCH
+      });
+    }).sort(function (a, b) {
+      if (b.score !== a.score) return b.score - a.score;
+      return Number(a.id || 0) - Number(b.id || 0);
+    });
+  }
+
+  function rankCostTemplatesForOperationW449(templates, profile) {
+    const keys = (profile && profile.keywords || []).map(function (k) { return String(k || '').toLowerCase(); }).filter(Boolean);
+    return (templates || []).map(function (template, index) {
+      const name = String(template && template.name || '').toLowerCase();
+      let score = Number(template && template.score || 0);
+      keys.forEach(function (k) { if (name.indexOf(k) !== -1) score += 30; });
+      if (profile && profile.key && name.indexOf(profile.key) !== -1) score += 60;
+      return Object.assign({}, template, {
+        score,
+        w449Rank: index + 1,
+        w449Profile: profile && profile.key || 'production'
+      });
+    }).sort(function (a, b) {
+      if (b.score !== a.score) return b.score - a.score;
+      return Number(a.id || 0) - Number(b.id || 0);
+    });
+  }
+
+  function buildRoutingOperationPlanW449(opNames, centers, templates, productPlan, context) {
+    const specs = [
+      { seq: 10, opName: opNames.op10 || 'Prepare Materials', required: true },
+      { seq: 20, opName: opNames.op20 || 'Build Product', required: true },
+      { seq: 30, opName: opNames.op30 || 'Inspect', required: true },
+      { seq: 40, opName: opNames.op40 || '', required: false },
+      { seq: 50, opName: opNames.op50 || '', required: false }
+    ].filter(function (spec) { return spec.required || !!spec.opName; });
+    return specs.map(function (spec) {
+      const profile = workCenterRankProfileW449(spec.opName, spec.seq, productPlan);
+      const rankedCenters = rankWorkCentersForOperationW449(centers, profile, context);
+      const rankedTemplates = rankCostTemplatesForOperationW449(templates, profile);
+      const pairs = [];
+      const maxCenters = Math.min(6, rankedCenters.length);
+      const maxTemplates = Math.min(6, rankedTemplates.length);
+      for (let c = 0; c < maxCenters; c += 1) {
+        for (let t = 0; t < maxTemplates; t += 1) {
+          pairs.push({
+            center: rankedCenters[c],
+            template: rankedTemplates[t],
+            score: Number(rankedCenters[c].score || 0) + Number(rankedTemplates[t].score || 0) - (c * 3) - t
+          });
+        }
+      }
+      pairs.sort(function (a, b) { return b.score - a.score; });
+      return Object.assign({}, spec, {
+        profile: profile.key,
+        keywords: profile.keywords,
+        rankedCenters: rankedCenters.slice(0, 8),
+        rankedTemplates: rankedTemplates.slice(0, 8),
+        candidatePairs: pairs.slice(0, 24)
+      });
+    });
+  }
+
+  function verifyRoutingAttachedOnAssemblyW449({ assemblyId, routingId, expectedRoutingName, productPlan, extId }) {
+    const verification = {
+      schema: 'idb.w449-routing-assembly-verification.v1',
+      assemblyId: Number(assemblyId || 0) || null,
+      routingId: Number(routingId || 0) || null,
+      found: false,
+      defaulted: false,
+      valid: false,
+      staleCookieProductionLineDetected: false,
+      snapshot: null,
+      errorName: '',
+      errorMessage: ''
+    };
+    try {
+      const snapshot = inspectAssemblyRoutingSublistsW448({ assemblyId, extId });
+      verification.snapshot = snapshot;
+      verification.found = !!(snapshot && (
+        Number(snapshot.chosenRoutingId || 0) === Number(routingId) ||
+        Number(snapshot.managedRoutingId || 0) === Number(routingId) ||
+        Number(snapshot.defaultRoutingId || 0) === Number(routingId) ||
+        Number(snapshot.firstRoutingId || 0) === Number(routingId)
+      ));
+      verification.defaulted = !!(snapshot && Number(snapshot.defaultRoutingId || 0) === Number(routingId));
+      const actualRoutingName = routingId ? readRecordDisplayName('manufacturingrouting', routingId, expectedRoutingName || '') : '';
+      const validation = validateRoutingForProductPlanW443({ id: routingId, name: actualRoutingName }, productPlan, { expectedRoutingName });
+      verification.routingValidation = validation;
+      verification.staleCookieProductionLineDetected = !!(validation && validation.staleCookieProductionLine) || !!(snapshot && (snapshot.staleRouteSignals || []).some(function (signal) {
+        return /cookie\s+production\s+line/i.test(String(signal && signal.matchedText || ''));
+      }));
+      verification.valid = verification.found && !verification.staleCookieProductionLineDetected && (!validation || validation.valid !== false);
+      return verification;
+    } catch (e) {
+      verification.errorName = e && e.name ? String(e.name) : '';
+      verification.errorMessage = e && e.message ? String(e.message) : String(e || '');
+      return verification;
+    }
   }
 
   function createAndAttachRoutingIfPossible({ subsidiaryId, locationId, bomId, assemblyId, extId, prospect, signalText, workCenterSearchId, names }) {
     const subs = Number(subsidiaryId);
     const loc = locationId ? Number(locationId) : null;
+    const authoritativeSearchW449 = authoritativeWipWorkCenterSearchIdW449(workCenterSearchId);
+    const w449Telemetry = {
+      schema: 'idb.w449-routing-work-center-pair-probing.v1',
+      authoritativeWorkCenterSearch: authoritativeSearchW449,
+      candidatePoolAuthority: 'saved_search_only',
+      candidatePoolSearchId: authoritativeSearchW449.chosenSearchId,
+      numericFallbackSearchId: authoritativeSearchW449.numericFallbackId,
+      centerRanking: [],
+      operationPlans: [],
+      pairProbes: [],
+      acceptedPairs: [],
+      rejectedPairs: [],
+      staleCookieProductionLineDetected: false,
+      staleCookieProductionLineRejected: false,
+      routingAssemblyVerification: null
+    };
 
     // Step 1: Find candidates
-    const centers = findWorkCentersFromSavedSearch({ searchId: workCenterSearchId, locationId: loc, subsidiaryId: subs });
+    const centers = findWorkCentersFromSavedSearch({
+      searchId: authoritativeSearchW449.chosenSearchId,
+      fallbackSearchId: authoritativeSearchW449.numericFallbackId,
+      locationId: loc,
+      subsidiaryId: subs,
+      authoritativeOnly: true
+    });
     const templates = findCostTemplatesForSubsidiary(subs);       // returns [{id,score,name}, ...]
 
     log.audit({
-      title: `WIP routing candidates [${VERSION}]`,
+      title: `WIP routing candidates W449 [${VERSION}]`,
       details: JSON.stringify({
         subsidiaryId: subs,
         locationId: loc,
+        authoritativeSearchW449,
         centers: centers.length,
         templates: templates.length
       })
@@ -1503,16 +1716,60 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (centers.length < 1) {
       log.error({
         title: `WIP routing skipped (no work centers found) [${VERSION}]`,
-        details: JSON.stringify({ subsidiaryId: subs })
+        details: JSON.stringify({ subsidiaryId: subs, authoritativeSearchW449 })
       });
-      return null;
+      return {
+        status: 'failed_best_effort',
+        decision: 'failed_best_effort',
+        routingId: null,
+        existingRoutingId: null,
+        attachResult: 'not-attached-routing-failed',
+        chosen: null,
+        w449: w449Telemetry,
+        routingFailure: {
+          schema: 'idb.w449-routing-failure.v1',
+          failureStage: 'resolve_work_centers',
+          reason: 'authoritative_wip_work_center_search_returned_no_candidates',
+          authoritativeSearchW449,
+          w449: w449Telemetry
+        },
+        diagnostics: {
+          schema: 'idb.w449-routing-failure.v1',
+          failureStage: 'resolve_work_centers',
+          reason: 'authoritative_wip_work_center_search_returned_no_candidates',
+          authoritativeSearchW449,
+          w449: w449Telemetry
+        }
+      };
     }
     if (templates.length < 1) {
       log.error({
         title: `WIP routing skipped (no cost templates found) [${VERSION}]`,
-        details: JSON.stringify({ subsidiaryId: subs })
+        details: JSON.stringify({ subsidiaryId: subs, authoritativeSearchW449 })
       });
-      return null;
+      return {
+        status: 'failed_best_effort',
+        decision: 'failed_best_effort',
+        routingId: null,
+        existingRoutingId: null,
+        attachResult: 'not-attached-routing-failed',
+        chosen: null,
+        w449: w449Telemetry,
+        routingFailure: {
+          schema: 'idb.w449-routing-failure.v1',
+          failureStage: 'resolve_cost_templates',
+          reason: 'wip_cost_templates_missing',
+          authoritativeSearchW449,
+          w449: w449Telemetry
+        },
+        diagnostics: {
+          schema: 'idb.w449-routing-failure.v1',
+          failureStage: 'resolve_cost_templates',
+          reason: 'wip_cost_templates_missing',
+          authoritativeSearchW449,
+          w449: w449Telemetry
+        }
+      };
     }
 
     // Step 2: Use scenario-aware routing names from the upstream naming pack; fallback to deterministic names
@@ -1522,18 +1779,23 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       details: JSON.stringify({ routingNamingApplied: !!opNames, routingOperationNamesUsed: opNames })
     });
 
-    // Step 3: Pick 3 centers/templates (keyword-ranked)
-    const pick = pickByKeywords;
-
-    const c1 = pick(centers, ['blend','mix','blending']) || centers[0];
-    const c2 = pick(centers, ['dispense','fill','dispensing']) || centers[Math.min(1, centers.length - 1)];
-    const c3 = pick(centers, ['pack','package','packaging','case']) || centers[Math.min(2, centers.length - 1)];
-
-    const t1 = pick(templates, ['blend','mix','blending']) || templates[0];
-    const t2 = pick(templates, ['dispense','fill','dispensing']) || templates[Math.min(1, templates.length - 1)];
-    const t3 = pick(templates, ['pack','package','packaging','case']) || templates[Math.min(2, templates.length - 1)];
-
     const productPlanW443 = names && names._productBuildPlanW432 || null;
+    const operationPlanW449 = buildRoutingOperationPlanW449(opNames, centers, templates, productPlanW443, {
+      locationId: loc,
+      subsidiaryId: subs
+    });
+    w449Telemetry.operationPlans = operationPlanW449.map(function (plan) {
+      return {
+        seq: plan.seq,
+        opName: plan.opName,
+        profile: plan.profile,
+        keywords: plan.keywords,
+        rankedCenters: plan.rankedCenters.slice(0, 6),
+        rankedTemplates: plan.rankedTemplates.slice(0, 6),
+        candidatePairCount: plan.candidatePairs.length
+      };
+    });
+    w449Telemetry.centerRanking = centers.slice(0, 12);
     const routingName = trimLen((names && names.routing_name) ? names.routing_name : ((productPlanW443 && productPlanW443.routingName) ? productPlanW443.routingName : `SCAI Routing - ${prospect} - BOM ${bomId}`), 80).slice(0, 60);
     const routingMemo = `SCAI Demo Reset: ${extId} | ${prospect} | WIP routing`;
     const assemblyRoutingDiscoveryW448 = inspectAssemblyRoutingSublistsW448({ assemblyId, extId });
@@ -1544,6 +1806,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const existingRoutingValidation = candidateExistingRoutingId
       ? validateRoutingForProductPlanW443({ id: candidateExistingRoutingId, name: existingRoutingName }, productPlanW443, { expectedRoutingName: routingName })
       : null;
+    w449Telemetry.staleCookieProductionLineDetected = !!(existingRoutingValidation && existingRoutingValidation.staleCookieProductionLine) || !!(assemblyRoutingDiscoveryW448 && (assemblyRoutingDiscoveryW448.staleRouteSignals || []).some(function (signal) {
+      return /cookie\s+production\s+line/i.test(String(signal && signal.matchedText || ''));
+    }));
+    w449Telemetry.staleCookieProductionLineRejected = !!(existingRoutingValidation && existingRoutingValidation.staleCookieProductionLine);
     const staleRoutingDiscovery = existingRoutingValidation && existingRoutingValidation.valid === false
       ? {
         routingId: candidateExistingRoutingId,
@@ -1572,8 +1838,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
 
     const chosen = {
-      centers: [c1, c2, c3],
-      templates: [t1, t2, t3],
+      centers: [],
+      templates: [],
       ops: opNames
     };
 
@@ -1656,47 +1922,85 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingStage = 'resolve_routing_step_fields';
       const stepFieldIds = resolveRoutingStepFieldIds(routing, stepSublist);
 
-      function addStep(seq, opName, centerId, templateId) {
-        routingStage = 'add_routing_step';
-        routing.selectNewLine({ sublistId: stepSublist });
-
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(seq) });
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(opName).slice(0, 60) });
-
-        // LIST fields must be set AFTER subsidiary is chosen (we already did)
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: Number(centerId) });
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: Number(templateId) });
-
+      function addStepWithPairProbingW449(stepPlan) {
         if (!stepFieldIds.setupField) throw new Error('Could not resolve routing step setup-time field ID');
         if (!stepFieldIds.runRateField) throw new Error('Could not resolve routing step run-rate field ID');
 
-        // Mandatory float fields: keep demo-safe decimal values low and deterministic
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.setupField, value: 0.5 });
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.runRateField, value: 1.0 });
-
-        log.audit({
-          title: `Routing step values before commit [${VERSION}]`,
-          details: JSON.stringify({
-            seq,
-            opName,
-            centerId: Number(centerId),
-            templateId: Number(templateId),
-            setupField: stepFieldIds.setupField,
-            setupValue: 0.5,
-            runRateField: stepFieldIds.runRateField,
-            runRateValue: 1.0
-          })
-        });
-
-        routingStage = 'commit_routing_step';
-        routing.commitLine({ sublistId: stepSublist });
+        const pairs = stepPlan && Array.isArray(stepPlan.candidatePairs) ? stepPlan.candidatePairs : [];
+        const rejections = [];
+        for (let i = 0; i < pairs.length; i += 1) {
+          const pair = pairs[i] || {};
+          const center = pair.center || {};
+          const template = pair.template || {};
+          const probe = {
+            seq: stepPlan.seq,
+            opName: String(stepPlan.opName || '').slice(0, 60),
+            profile: stepPlan.profile,
+            pairIndex: i,
+            centerId: Number(center.id || 0) || null,
+            centerName: center.name || '',
+            templateId: Number(template.id || 0) || null,
+            templateName: template.name || '',
+            pairScore: Number(pair.score || 0),
+            status: 'pending'
+          };
+          if (!probe.centerId || !probe.templateId) {
+            probe.status = 'rejected';
+            probe.errorName = 'MISSING_PAIR_ID';
+            probe.errorMessage = 'Work center or cost template id missing before routing step probe.';
+            rejections.push(probe);
+            w449Telemetry.pairProbes.push(probe);
+            w449Telemetry.rejectedPairs.push(probe);
+            continue;
+          }
+          try {
+            routingStage = 'probe_routing_step_pair';
+            routing.selectNewLine({ sublistId: stepSublist });
+            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(stepPlan.seq) });
+            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(stepPlan.opName).slice(0, 60) });
+            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: probe.centerId });
+            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: probe.templateId });
+            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.setupField, value: 0.5 });
+            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.runRateField, value: 1.0 });
+            routingStage = 'commit_routing_step';
+            routing.commitLine({ sublistId: stepSublist });
+            probe.status = 'accepted';
+            probe.setupField = stepFieldIds.setupField;
+            probe.runRateField = stepFieldIds.runRateField;
+            w449Telemetry.pairProbes.push(probe);
+            w449Telemetry.acceptedPairs.push(probe);
+            log.audit({
+              title: `Routing step pair accepted W449 [${VERSION}]`,
+              details: JSON.stringify(probe)
+            });
+            return probe;
+          } catch (e) {
+            safeTry(() => routing.cancelLine({ sublistId: stepSublist }));
+            probe.status = 'rejected';
+            probe.errorName = e && e.name ? String(e.name) : '';
+            probe.errorMessage = e && e.message ? String(e.message) : String(e || '');
+            rejections.push(probe);
+            w449Telemetry.pairProbes.push(probe);
+            w449Telemetry.rejectedPairs.push(probe);
+            log.audit({
+              title: `Routing step pair rejected W449 [${VERSION}]`,
+              details: JSON.stringify(probe)
+            });
+          }
+        }
+        const err = new Error(`No valid work center + cost template pair for routing operation ${stepPlan && stepPlan.seq}`);
+        err.name = 'W449_NO_VALID_ROUTING_STEP_PAIR';
+        err.w449RejectedPairs = rejections;
+        throw err;
       }
 
-      addStep(10, opNames.op10 || 'Prepare Materials', c1.id, t1.id);
-      addStep(20, opNames.op20 || 'Build Product',     c2.id, t2.id);
-      addStep(30, opNames.op30 || 'Inspect',           c3.id, t3.id);
-      if (opNames.op40) addStep(40, opNames.op40, c2.id, t2.id);
-      if (opNames.op50) addStep(50, opNames.op50, c3.id, t3.id);
+      operationPlanW449.forEach(function (stepPlan) {
+        const accepted = addStepWithPairProbingW449(stepPlan);
+        if (accepted) {
+          if (accepted.centerId) chosen.centers.push({ id: accepted.centerId, name: accepted.centerName, w449Profile: stepPlan.profile });
+          if (accepted.templateId) chosen.templates.push({ id: accepted.templateId, name: accepted.templateName, w449Profile: stepPlan.profile });
+        }
+      });
 
       routingStage = 'save_routing';
       routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
@@ -1708,6 +2012,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           existingRoutingId,
           staleRoutingRepairTargetId,
           chosen,
+          w449: w449Telemetry,
 	        staleRoutingRepaired: staleRoutingRepairTargetId ? true : null,
 	        staleRoutingDiscovery
 	      })
@@ -1728,7 +2033,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       coreRecordsCreatedSafely: !!(assemblyId && bomId),
       routingValidation: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null,
       staleRoutingDiscovery,
-      assemblyRoutingDiscoveryW448
+      assemblyRoutingDiscoveryW448,
+      w449: w449Telemetry
       });
     }
 
@@ -1743,6 +2049,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         details: JSON.stringify({ assemblyId: Number(assemblyId), routingId })
       });
     }
+    w449Telemetry.routingAssemblyVerification = verifyRoutingAttachedOnAssemblyW449({
+      assemblyId,
+      routingId,
+      expectedRoutingName: routingName,
+      productPlan: productPlanW443,
+      extId
+    });
 
     return {
       routingId,
@@ -1755,8 +2068,79 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingValidation: validateRoutingForProductPlanW443({ id: routingId, name: routingName }, productPlanW443, { expectedRoutingName: routingName }),
       staleRoutingRepaired: staleRoutingRepairTargetId ? existingRoutingValidation : null,
       staleRoutingDiscovery,
-      assemblyRoutingDiscoveryW448
+      assemblyRoutingDiscoveryW448,
+      assemblyRoutingVerificationW449: w449Telemetry.routingAssemblyVerification,
+      w449: w449Telemetry
     };
+  }
+
+  function w449OperationFamily(seq, opName) {
+    const text = `${seq || ''} ${opName || ''}`.toLowerCase();
+    if (/receive|dock|raw|staging/.test(text)) return 'receiving';
+    if (/mix|blend|masa|marinade|seasoning|sauce/.test(text)) return 'mixing';
+    if (/fill|dispense|sheet|cut/.test(text)) return 'fill';
+    if (/inspect|qc|quality|check/.test(text)) return 'qc';
+    if (/pack|case|bag|carton|wrap/.test(text)) return 'packing';
+    if (/roast|cook|fry|smoke|dehydrate|bake|assembly|produce|build/.test(text)) return 'production';
+    return Number(seq) >= 40 ? 'packing' : Number(seq) >= 30 ? 'qc' : 'production';
+  }
+
+  function w449RankWorkCentersForFamily(centers, family) {
+    const prefs = W449_WORK_CENTER_FAMILIES[family] || [];
+    const keywordMap = {
+      receiving: ['receiving', 'dock', 'pre-kit'],
+      mixing: ['blend', 'mix', 'blending', 'large fill blender', 'layering'],
+      production: ['assembly', 'bulkline', 'line', 'pie'],
+      fill: ['dispense', 'dispensing', 'fill', 'blender'],
+      qc: ['quality', 'control', 'inspection', 'inspect'],
+      packing: ['pack', 'packing', 'packaging', 'case']
+    };
+    return (centers || []).map(function (center) {
+      const id = Number(center && center.id || 0);
+      const name = String(center && center.name || '');
+      const lower = name.toLowerCase();
+      const prefIndex = prefs.indexOf(id);
+      let score = Number(center && center.score || 0);
+      if (prefIndex >= 0) score += 100 - (prefIndex * 8);
+      (keywordMap[family] || []).forEach(function (keyword) {
+        if (lower.indexOf(keyword) !== -1) score += 10;
+      });
+      return Object.assign({}, center, {
+        id,
+        name,
+        w449Family: family,
+        w449PreferredRank: prefIndex >= 0 ? prefIndex + 1 : null,
+        w449AuthoritativeSearch: W449_WORK_CENTER_SEARCH,
+        score
+      });
+    }).filter(function (center) {
+      return Number.isFinite(Number(center.id)) && Number(center.id) > 0;
+    }).sort(function (a, b) {
+      return Number(b.score || 0) - Number(a.score || 0);
+    });
+  }
+
+  function w449RankCostTemplatesForFamily(templates, family) {
+    const keywordMap = {
+      receiving: ['receiving', 'material'],
+      mixing: ['blend', 'mix', 'fill'],
+      production: ['assembly', 'line', 'standard'],
+      fill: ['fill', 'dispense', 'blend'],
+      qc: ['quality', 'inspection', 'qc'],
+      packing: ['pack', 'packaging', 'case']
+    };
+    return (templates || []).map(function (template) {
+      const lower = String(template && template.name || '').toLowerCase();
+      let score = Number(template && template.score || 0);
+      (keywordMap[family] || []).forEach(function (keyword) {
+        if (lower.indexOf(keyword) !== -1) score += 10;
+      });
+      return Object.assign({}, template, { w449Family: family, score });
+    }).filter(function (template) {
+      return Number.isFinite(Number(template.id)) && Number(template.id) > 0;
+    }).sort(function (a, b) {
+      return Number(b.score || 0) - Number(a.score || 0);
+    });
   }
 
   function setRoutingBomBestEffortW448(routing, context) {
@@ -1793,7 +2177,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
   }
 
-  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation, staleRoutingDiscovery, assemblyRoutingDiscoveryW448 }) {
+  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation, staleRoutingDiscovery, assemblyRoutingDiscoveryW448, w449 }) {
     const diagnostic = {
       status: 'failed_best_effort',
       failureStage: failureStage || 'unknown',
@@ -1813,6 +2197,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       staleRoutingId: staleRoutingDiscovery && staleRoutingDiscovery.routingId || routingValidation && routingValidation.actualRoutingId || null,
       staleRoutingDiscovery: staleRoutingDiscovery || null,
       assemblyRoutingDiscoveryW448: assemblyRoutingDiscoveryW448 || null,
+      w449: w449 || null,
       visibleStaleRoutingSuspected: !!(assemblyRoutingDiscoveryW448 && assemblyRoutingDiscoveryW448.staleRouteSignals && assemblyRoutingDiscoveryW448.staleRouteSignals.length),
       reason: routingValidation && routingValidation.reason || '',
       routingEligibilityConclusion: failureStage === 'set_billofmaterials'
@@ -1835,6 +2220,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       existingRoutingId: diagnostic.existingRoutingId,
       attachResult: 'not-attached-routing-failed',
       chosen: chosen || null,
+      w449: w449 || null,
       routingFailure: diagnostic,
       diagnostics: diagnostic
     };
@@ -2377,7 +2763,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // Work Centers / Cost Templates (v1.7.6)
   // ----------------------------
-  function findWorkCentersFromSavedSearch({ searchId, locationId, subsidiaryId }) {
+  function findWorkCentersFromSavedSearch({ searchId, fallbackSearchId, locationId, subsidiaryId, authoritativeOnly }) {
     const loc = locationId ? String(locationId) : '';
     const subs = subsidiaryId ? String(subsidiaryId) : '';
     const searchRef = (typeof searchId === 'string' && /^\d+$/.test(searchId)) ? Number(searchId) : searchId;
@@ -2391,7 +2777,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     try {
-      const ss = search.load({ id: searchRef });
+      let loadedSearchId = searchRef;
+      let ss = null;
+      try {
+        ss = search.load({ id: searchRef });
+      } catch (primaryError) {
+        const fallbackRef = fallbackSearchId ? ((typeof fallbackSearchId === 'string' && /^\d+$/.test(fallbackSearchId)) ? Number(fallbackSearchId) : fallbackSearchId) : null;
+        if (!fallbackRef) throw primaryError;
+        loadedSearchId = fallbackRef;
+        ss = search.load({ id: fallbackRef });
+      }
       const paged = ss.runPaged({ pageSize: 100 });
       const rows = [];
 
@@ -2504,6 +2899,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         title: `WIP work centers resolved from saved search [${VERSION}]`,
         details: JSON.stringify({
           searchId,
+          loadedSearchId,
+          fallbackSearchId: fallbackSearchId || null,
+          authoritativeOnly: !!authoritativeOnly,
           locationId: loc,
           subsidiaryId: subs,
           count: scored.length,
@@ -2517,8 +2915,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
       if (accepted.length) return accepted;
 
-      const fallback = findDirectManufacturingWorkCenters({ locationId: loc, subsidiaryId: subs });
-      if (fallback.length) return fallback;
+      if (!authoritativeOnly) {
+        const fallback = findDirectManufacturingWorkCenters({ locationId: loc, subsidiaryId: subs });
+        if (fallback.length) return fallback;
+      }
 
       return [];
     } catch (e) {
@@ -2526,8 +2926,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         title: `WIP work center saved search failed [${VERSION}]`,
         details: JSON.stringify({
           searchId,
+          fallbackSearchId: fallbackSearchId || null,
           locationId,
           subsidiaryId,
+          authoritativeOnly: !!authoritativeOnly,
           error: String((e && e.message) || e)
         })
       });
@@ -4124,10 +4526,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         probes.routingBomFieldPresent = fields.indexOf('billofmaterials') >= 0 || fields.indexOf('bom') >= 0;
         if (!probes.routingBomFieldPresent) warnings.push('routing_bom_field_not_visible');
       });
-      const centers = safeTryReturn(() => findWorkCentersFromSavedSearch({ searchId: workCenterSearchId, locationId: probes.locationId, subsidiaryId: probes.subsidiaryId })) || [];
+      const authoritativeSearchW449 = authoritativeWipWorkCenterSearchIdW449(workCenterSearchId);
+      const centers = safeTryReturn(() => findWorkCentersFromSavedSearch({
+        searchId: authoritativeSearchW449.chosenSearchId,
+        fallbackSearchId: authoritativeSearchW449.numericFallbackId,
+        locationId: probes.locationId,
+        subsidiaryId: probes.subsidiaryId,
+        authoritativeOnly: true
+      })) || [];
       const templates = safeTryReturn(() => findCostTemplatesForSubsidiary(probes.subsidiaryId)) || [];
       probes.wipWorkCentersFound = centers.length;
       probes.wipCostTemplatesFound = templates.length;
+      probes.w449AuthoritativeWorkCenterSearch = authoritativeSearchW449;
       if (!centers.length) blockers.push('wip_work_centers_missing');
       if (!templates.length) blockers.push('wip_cost_templates_missing');
     }
@@ -4791,6 +5201,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
     if (isSiete && /taco\s+shells?/.test(lower)) addCandidate('Siete Taco Shells', 'Siete Taco Shells');
     if (isSiete && /seasoning\s+mix/.test(lower)) addCandidate('Siete Seasoning Mixes', 'Siete Seasoning Mixes');
+    if (/biena/.test(lower) && /chickpea|chick\s*pea/.test(lower) && /snack|puff|roast|sea\s+salt|honey\s+roast|ranch|barbe?que/.test(lower)) {
+      addCandidate('Biena Roasted Chickpea Snacks', 'Biena chickpea snacks');
+    }
+    if (/chickpea|chick\s*pea/.test(lower) && /snack|puff|roast/.test(lower)) {
+      addCandidate(/biena/.test(lower) ? 'Biena Roasted Chickpea Snacks' : 'Roasted Chickpea Snacks', 'chickpea snacks');
+    }
     if (isSiete) {
       if (/tortilla\s+chips?|chip\b|chips\b/.test(lower)) addCandidate('Siete Grain Free Tortilla Chips', 'Grain Free Tortilla Chips');
       addCandidate('Siete Taco Shells', 'Taco Shells');
@@ -4839,7 +5255,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       source.signalText,
       source.website
     ].join(' ').toLowerCase();
-    const foodSnack = /\b(siete|kettle|chip|chips|snack|food|masa|tortilla|seasoning|case pack|cpg)\b/.test(evidenceText);
+    const foodSnack = /\b(siete|kettle|biena|chickpea|chick pea|chip|chips|snack|food|masa|tortilla|seasoning|case pack|cpg)\b/.test(evidenceText);
     const beauty = /\b(beauty|cosmetic|skin|skincare|lotion|cream|serum|shampoo|conditioner|personal care|formula|fill run)\b/.test(evidenceText);
     const industrial = /\b(industrial|equipment|machine|machinery|configured|assembly unit|subassembly|component build|motor|pump|valve|tooling)\b/.test(evidenceText);
     const apparel = /\b(apparel|garment|textile|fabric|cut and sew|size|colorway)\b/.test(evidenceText);
@@ -4911,7 +5327,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const selectedProduct = str(productTerms.selectedProductCandidate || source.productName || source.product_name || source.productSeed || source.productFamily);
     const genericProduct = /^(finished good|product \/ sku|product|inventory \/ fulfillment|assembly|proof item)$/i.test(selectedProduct);
     const productName = genericProduct || !selectedProduct ? `${prospect} Product` : selectedProduct;
-    const brandName = /kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : (/siete/i.test(productName) || /siete/i.test(prospect) ? 'Siete' : (/chomps/i.test(productName) || /chomps/i.test(prospect) ? 'Chomps' : prospect.split(/\s+/).slice(0, 2).join(' ')));
+    const brandName = /kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : (/siete/i.test(productName) || /siete/i.test(prospect) ? 'Siete' : (/biena/i.test(productName) || /biena/i.test(prospect) ? 'Biena' : (/chomps/i.test(productName) || /chomps/i.test(prospect) ? 'Chomps' : prospect.split(/\s+/).slice(0, 2).join(' '))));
     const shortProduct = productName
       .replace(/\bKettle\s+Brand\b/ig, 'Kettle')
       .replace(/\bKettle\s+Chips\b/ig, '')
@@ -4924,10 +5340,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         ? `${brandName} ${shortProduct}`
       : shortProduct;
     const isJerkyPlanW448 = /chomps|jerky|meat snack|protein snack/i.test([productForNames, productName, source.signalText || source.notes || '', source.website || ''].join(' '));
+    const isChickpeaSnackPlanW449 = /biena|chickpea|chick\s*pea|roasted\s+chickpea/i.test([productForNames, productName, source.signalText || source.notes || '', source.website || ''].join(' '));
     const distributionBase = /siete/i.test(productForNames) && /ma[ií]z/i.test(productForNames) && /sea\s+salt/i.test(productForNames)
         ? 'Siete Maíz Sea Salt Tortilla Chips'
       : /goodles|mac\s*(?:&|and)?\s*cheese|cheese\s*production/i.test(productForNames)
         ? 'Goodles Line-Ready Mac & Cheese'
+      : isChickpeaSnackPlanW449
+        ? 'Biena Roasted Chickpea Snacks'
       : isJerkyPlanW448
         ? 'Chomps Jerky Snack Sticks'
       : /sea salt/i.test(productForNames)
@@ -4937,15 +5356,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return candidate && candidate !== productTerms.selectedProductCandidate;
     });
     const componentNames = [
-      /siete/i.test(distributionBase) ? 'Siete Corn Masa Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Goodles Pasta Input' : (isJerkyPlanW448 ? `${brandName} Beef and Turkey Protein Input` : (/sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Core Material Input`))),
-      /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Cheese Sauce Seasoning Blend' : (isJerkyPlanW448 ? `${brandName} Smokehouse Seasoning Marinade` : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`))),
-      /siete/i.test(distributionBase) ? 'Sea Salt Seasoning and Retail Bag Packaging' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Retail Carton and Case Packaging' : (isJerkyPlanW448 ? `${brandName} Stick Wrapper and Retail Case Packaging` : (/6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`)))
+      /siete/i.test(distributionBase) ? 'Siete Corn Masa Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Goodles Pasta Input' : (isChickpeaSnackPlanW449 ? 'Biena Chickpea Input' : (isJerkyPlanW448 ? `${brandName} Beef and Turkey Protein Input` : (/sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Core Material Input`)))),
+      /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Cheese Sauce Seasoning Blend' : (isChickpeaSnackPlanW449 ? 'Sea Salt and Oil Roasting Seasoning' : (isJerkyPlanW448 ? `${brandName} Smokehouse Seasoning Marinade` : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`)))),
+      /siete/i.test(distributionBase) ? 'Sea Salt Seasoning and Retail Bag Packaging' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Retail Carton and Case Packaging' : (isChickpeaSnackPlanW449 ? 'Retail Pouch and Case Packaging' : (isJerkyPlanW448 ? `${brandName} Stick Wrapper and Retail Case Packaging` : (/6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`))))
     ];
     const industryNativeW442 = industryNativeManufacturingNamingW442({
       distributionBase,
       brandName,
       productName,
-      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (isJerkyPlanW448 ? 'Meat Snacks' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family'))),
+      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (isChickpeaSnackPlanW449 ? 'Chickpea Snacks' : (isJerkyPlanW448 ? 'Meat Snacks' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family')))),
       websiteTermsUsed: productTerms.websiteTermsUsed,
       signalText: source.signalText || source.notes || '',
       website: source.website || ''
@@ -4960,16 +5379,28 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (isJerkyPlanW448) {
       internalAssemblyItemNameW445 = trimLen(`${distributionBase} Production Batch`, 60);
     }
+    const hasProductEvidenceW449 = !!(productTerms.selectedProductCandidate || isChickpeaSnackPlanW449 || isJerkyPlanW448 || /siete|goodles|kettle|mac\s*(?:&|and)?\s*cheese|chip|tortilla/i.test(distributionBase));
+    const productCandidateSourceW449 = productTerms.selectedProductCandidate
+      ? 'website_product_evidence'
+      : hasProductEvidenceW449
+        ? (/https?:\/\//i.test(str(source.website)) ? 'website_category_inference' : 'notes_product_evidence')
+        : 'fallback_no_product_found';
+    const confidencePercentW449 = productTerms.selectedProductCandidate ? 88 : (hasProductEvidenceW449 ? 76 : 42);
     const plan = {
       schema: 'idb.w432-product-build-plan.v1',
-      source: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
-      confidence: productTerms.selectedProductCandidate ? 'high' : 'low',
+      source: productCandidateSourceW449,
+      confidence: confidencePercentW449 >= 80 ? 'high' : (confidencePercentW449 >= 65 ? 'medium' : 'low'),
+      confidencePercent: confidencePercentW449,
       primaryProductCandidate: productTerms.selectedProductCandidate || productName,
-      selectedProductReason: productTerms.selectedProductCandidate ? 'Selected from website/product evidence terms for this run.' : 'Selected by deterministic fallback because website product evidence was thin.',
-      productCandidateSource: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
+      selectedProductReason: productTerms.selectedProductCandidate ? 'Selected from website/product evidence terms for this run.' : (hasProductEvidenceW449 ? 'Selected from website/category and conversation terms; generic manufacturing fallback was blocked.' : 'No product/category evidence was found; fallback naming used.'),
+      productCandidateSource: productCandidateSourceW449,
+      evidenceTerms: productTerms.websiteTermsUsed.concat([distributionBase, productName].filter(Boolean)).filter(function (term, index, list) {
+        return term && list.indexOf(term) === index;
+      }).slice(0, 12),
+      rejectedFallbackReason: hasProductEvidenceW449 ? 'Food/CPG product or category evidence exists, so generic Machine Unit/Core Material naming is blocked.' : '',
       nextCandidateHint: alternateProductCandidates[0] || '',
       productName,
-      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family')),
+      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (isChickpeaSnackPlanW449 ? 'Chickpea Snacks' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family'))),
       brandName,
       sellableUnit: productTerms.sellableUnit,
       casePackName: productTerms.casePackName,
@@ -4997,16 +5428,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       bomName: trimLen(`BOM - ${distributionBase}`, 80),
       bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
       workOrderName: trimLen(`WO - ${distributionBase}`, 80),
-      routingName: trimLen(/siete/i.test(distributionBase) || /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) || isJerkyPlanW448 ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
+      routingName: trimLen(/siete/i.test(distributionBase) || /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) || isChickpeaSnackPlanW449 || isJerkyPlanW448 ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
       operationNames: /siete/i.test(distributionBase)
         ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
         : /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase)
-        ? ['Stage Pasta and Cheese Blend', 'Blend Seasoning and Dry Goods', 'Fill Retail Cartons', 'Case Pack and QC']
+        ? ['Receive Pasta and Cheese Blend', 'Blend Cheese Sauce Mix', 'Fill Pasta Packs', 'Case Pack', 'QC Finished Cases']
+        : isChickpeaSnackPlanW449
+        ? ['Receive Chickpeas and Seasoning', 'Roast Chickpeas', 'Season and Cool', 'Bag and Case Pack', 'QC Finished Cases']
         : isJerkyPlanW448
-        ? ['Stage Protein and Marinade', 'Season and Tumble Jerky', 'Cook and Dehydrate', 'Quality Check Moisture and Weight', 'Wrap, Case Pack, and QC']
+        ? ['Prep Protein and Marinade', 'Smoke or Dehydrate', 'Cool and Inspect', 'Pack and Case', 'QC Finished Cases']
         : /sea salt/i.test(distributionBase)
         ? ['Slice and Rinse', 'Kettle Cook', 'Air Finish', 'Season', 'Case Pack and QC']
-        : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'],
+        : (hasProductEvidenceW449 ? ['Receive Inputs', 'Make Product', 'Inspect Product', 'Pack and QC'] : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC']),
       forbiddenLeakTerms: ['BEVERAGE', 'Finished Good Packaging / Case Pack', 'Production Line', 'Ingredient Blend', 'Packaging Component'],
       modeContracts: {
         createNewItemOnly: {
@@ -5025,7 +5458,20 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         productCandidates: productTerms.productCandidates,
         selectedProductCandidate: productTerms.selectedProductCandidate,
         websiteTermsUsed: productTerms.websiteTermsUsed,
-        rejectedGenericTerms: productTerms.rejectedGenericTerms
+        rejectedGenericTerms: productTerms.rejectedGenericTerms,
+        confidencePercent: confidencePercentW449,
+        rejectedFallbackReason: hasProductEvidenceW449 ? 'Generic product fallback blocked by W449 product/category evidence.' : ''
+      },
+      w449: {
+        schema: 'idb.w449-product-routing-naming-telemetry.v1',
+        foodCpgEvidence: !!(/siete|kettle|biena|chickpea|snack|food|cpg|chip|tortilla/i.test([
+          productName,
+          distributionBase,
+          source.signalText || source.notes || '',
+          source.website || ''
+        ].join(' '))),
+        chickpeaSnackEvidence: !!isChickpeaSnackPlanW449,
+        genericNamingHardStopTerms: ['Prepare Materials', 'Build Product', 'Inspect', 'Production Line', 'Finished Good', 'Ingredient Blend', 'Packaging Component']
       }
     };
     return plan;
@@ -5156,6 +5602,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (/\bBEVERAGE\b/i.test(hay)) errors.push('beverage_leak_in_customer_facing_name');
     if (enableManufacturing && (!plan.componentNames || plan.componentNames.length !== 3)) errors.push('manufacturing_requires_three_components');
     if (enableWip && (!plan.operationNames || plan.operationNames.length < 3)) errors.push('wip_requires_routing_operations');
+    const foodCpgEvidence = !!(plan && plan.w449 && plan.w449.foodCpgEvidence) || /\b(food|cpg|snack|chip|chips|tortilla|chickpea|biena|kettle|siete)\b/i.test(hay);
+    const genericWipNameLeak = enableWip && foodCpgEvidence && /\b(Prepare Materials|Build Product|Inspect|Production Line|Finished Good|Ingredient Blend|Packaging Component)\b/i.test(hay);
+    if (genericWipNameLeak) errors.push('w449_food_cpg_generic_operation_name_hard_stop');
     return {
       schema: 'idb.w432-product-build-plan-validation.v1',
       valid: errors.length === 0,

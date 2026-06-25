@@ -216,13 +216,13 @@ function main() {
   );
 
   assertCase(results, 'w444-marker-updated',
-    /@version\s+1.0.56/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.56';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W448';"),
-    'Drawer should identify current W448 / 1.0.56 while preserving W444 behavior.');
+    /@version\s+1.0.57/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.57';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W449';"),
+    'Drawer should identify current W449 / 1.0.57 while preserving W444 behavior.');
 
   assertCase(results, 'w444-wip-diagnostic-import-visible',
-    /WIP \/ Routing/.test(text) &&
+    (/WIP \/ Routing/.test(text) || /Routing and operation detail/.test(text)) &&
       /Routing Diagnostic/.test(text) &&
       /Routing - Siete Maíz Sea Salt Tortilla Chips/.test(text) &&
       /Stale detected: Cookie Production Line/.test(text) &&
@@ -300,9 +300,9 @@ function main() {
   assertCase(results, 'w444-troubleshoot-export',
     !/Support \/ troubleshoot|Support views/.test(drawer) &&
       /Troubleshoot \/ Export/.test(drawer) &&
-      exportPayload.drawerVersion === '1.0.56' &&
-      exportPayload.drawerBlock === 'W448' &&
-      exportPayload.schema === 'idb.w448-troubleshoot-export.v1' &&
+      exportPayload.drawerVersion === '1.0.57' &&
+      exportPayload.drawerBlock === 'W449' &&
+      exportPayload.schema === 'idb.w449-troubleshoot-export.v1' &&
       exportPayload.truthSummaryW448 &&
       exportPayload.selectedToggles.enableWip === true &&
       /Siete Maíz/.test(exportPayload.selectedProduct) &&

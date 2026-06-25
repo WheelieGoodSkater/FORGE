@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.54
+// @version      1.0.55
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.54';
-  const CURRENT_UX_BLOCK_W346 = 'W446';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.55';
+  const CURRENT_UX_BLOCK_W346 = 'W447';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14669,7 +14669,7 @@
       productPlanW445.evidence && productPlanW445.evidence.selectedProductCandidate
     ) : '';
     const objectProductCandidate = arrayValue(objects).map((item) => consultantVisibleRecordNameW436(firstNonBlank(item && item.name, item && item.recordName)))
-      .find((name) => /\b(Siete|Kettle)\b/i.test(name) && /\b(chips|vinegar|jalapeno|tortilla|salt)\b/i.test(name) && !visibleRecordBrandMismatchW438(name, state));
+      .find((name) => /\b(Siete|Kettle|Goodles)\b/i.test(name) && /\b(chips|vinegar|jalapeno|tortilla|salt|mac|cheese|pasta|case pack)\b/i.test(name) && !visibleRecordBrandMismatchW438(name, state));
     let productBaseName = visibleProductAccentPolishW439(firstNonBlank(planProductCandidateW445, objectProductCandidate, currentWebsiteProductBaseW438(state))
       .replace(/\s+12[-\s]*Count\s+Case Pack\b/i, '')
       .replace(/\s+Retail Replenishment\b/i, '')
@@ -14688,11 +14688,16 @@
       ? productBaseName
       : `${productBaseName} 12-Count Case Pack`;
     const isSiete = /\bSiete\b/i.test(productBaseName);
+    const isGoodlesMac = /\bGoodles\b/i.test(productBaseName) || /\bmac\b/i.test(productBaseName) && /\bcheese\b/i.test(productBaseName);
     const componentNames = isSiete
       ? ['Siete Corn Masa Input', 'Avocado Oil Frying Input', 'Sea Salt Seasoning and Retail Bag Packaging']
+      : isGoodlesMac
+      ? ['Goodles Pasta Input', 'Cheese Sauce Seasoning Blend', 'Retail Carton and Case Packaging']
       : [`${productBaseName} Primary Material Input`, `${productBaseName} Seasoning Blend`, `${productBaseName} Retail Bag and Case Packaging`];
     const operationNames = isSiete
       ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
+      : isGoodlesMac
+      ? ['Stage Pasta and Cheese Blend', 'Blend Seasoning and Dry Goods', 'Fill Retail Cartons', 'Case Pack and QC']
       : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'];
     const manufacturingTermsW442 = industryNativeManufacturingTermsW442(productBaseName, {
       productBuildPlan: productPlanW445,
@@ -22404,9 +22409,13 @@
       return authority.openable === true && patterns.some((pattern) => pattern.test(text));
     });
     if (stage === 'demand') {
-      const direct = matches([/sales/, /demand/, /order/]);
+      const direct = matches([/sales[_\s-]*order|salesorder|demo sales order/]) || matches([/sales/, /demand/, /order/]);
       if (direct) return recordOpenAuthorityW446(direct);
-      return standardNetSuiteScreenLinkAuthorityW446('/app/accounting/transactions/orderitems.nl');
+      const fallback = standardNetSuiteScreenLinkAuthorityW446('/app/accounting/transactions/orderitems.nl');
+      return Object.assign({}, fallback, {
+        fallback: 'order_items_when_sales_order_url_missing',
+        displayLabel: 'Order Items fallback'
+      });
     }
     if (stage === 'wip') {
       const direct = matches([/work\s*order|workorder/, /routing/, /assembly|production batch|bom/]);
@@ -23789,6 +23798,39 @@
         border-left: 4px solid #7a5f15;
         background: #fffdf6;
       }
+      .idb-w447-impact-graphic {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 8px;
+        border: 1px solid #cbd7df;
+        border-radius: 7px;
+        padding: 8px;
+        background: #f8fbfc;
+      }
+      .idb-w447-roi-impact {
+        border-left: 4px solid #4f7f52;
+        background: #fbfdf9;
+      }
+      .idb-w447-competitive-impact {
+        border-left: 4px solid #7a5f15;
+        background: #fffdf6;
+      }
+      .idb-w447-impact-statement {
+        color: #17202d;
+        font-size: 13px;
+        font-weight: 900;
+        line-height: 1.25;
+      }
+      .idb-w447-impact-flow {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 5px;
+        align-items: center;
+        color: #536579;
+        font-size: 9px;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
       .idb-w415-cockpit-records {
         display: grid;
         gap: 5px;
@@ -23895,6 +23937,21 @@
       }
       .idb-w445-active-detail-card {
         box-shadow: inset 0 0 0 2px rgba(0, 102, 133, 0.18);
+      }
+      .idb-w447-value-truth-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 8px;
+      }
+      .idb-w447-value-truth-strip span {
+        border: 1px solid #cbd7df;
+        border-radius: 999px;
+        background: #f7f8f6;
+        color: #536579;
+        padding: 3px 7px;
+        font-size: 9px;
+        font-weight: 850;
       }
       .idb-w444-resize-handle {
         position: absolute;
@@ -25779,7 +25836,7 @@
       : /production|batch|bom|ingredient|work order/i.test(narrativeText)
         ? 'Presented because the returned records and selected toggles center on production batch readiness, input availability, BOM structure, and work order execution.'
         : 'Presented because the returned records and selected toggles center on case-pack availability, replenishment confidence, customer demand, and fulfillment trust.';
-    const advisoryAlternatives = arrayValue(competitiveAdvisory && competitiveAdvisory.likelyAlternatives);
+    const advisoryAlternatives = arrayValue(competitiveAdvisory && (competitiveAdvisory.likelyAlternatives || competitiveAdvisory.alternatives));
     const industryFallbackAlternatives = ['SAP Business One', 'Microsoft Dynamics', 'QuickBooks inventory add-ons', 'Fishbowl', 'Katana'];
     const baseAlternatives = uniqueValues(advisoryAlternatives.concat(['spreadsheets', 'disconnected MRP']));
     const alternatives = uniqueValues(baseAlternatives.concat(source === 'conversation_notes' ? [] : industryFallbackAlternatives));
@@ -25821,6 +25878,12 @@
     if (active === 'competitive') {
       return `
         <div class="idb-w444-lower-detail" data-idb-detail-panel="competitive" data-idb-w445-detail-anchor tabindex="-1">
+          <div class="idb-w447-impact-graphic idb-w447-competitive-impact" aria-label="Competitive impact summary">
+            <div class="idb-w447-impact-statement">Ask which signal they trust, then prove that exact decision in NetSuite.</div>
+            <div class="idb-w447-impact-flow">
+              <span>Incumbent signal</span><span>→</span><span>NetSuite proof path</span><span>→</span><span>Decision confidence</span>
+            </div>
+          </div>
           <div class="idb-status-key">Why this competitive angle was chosen</div>
           <div class="idb-copy">Presented because the run context points to production planning trust, WIP/routing readiness, and disconnected-planning objections; use these as discovery prompts, not as asserted incumbent systems.</div>
           <div class="idb-copy">Source basis: ${escapeHtml(detail.competitive.sourceBasis || 'Validate with conversation notes before asserting incumbent systems.')}</div>
@@ -25834,6 +25897,12 @@
     }
     return `
       <div class="idb-w444-lower-detail" data-idb-detail-panel="roi" data-idb-w445-detail-anchor tabindex="-1">
+        <div class="idb-w447-impact-graphic idb-w447-roi-impact" aria-label="ROI impact summary">
+          <div class="idb-w447-impact-statement">Protect the customer promise first; quantify savings only after the buyer confirms the baseline.</div>
+          <div class="idb-w447-impact-flow">
+            <span>Demand risk</span><span>→</span><span>WIP proof</span><span>→</span><span>Baseline to capture</span>
+          </div>
+        </div>
         <div class="idb-status-key">Why this ROI was chosen</div>
         <div class="idb-copy">${escapeHtml(detail.roi.whyPresented)}</div>
         <div class="idb-copy">Source basis: ${escapeHtml(detail.roi.sourceBasis || 'Run context and returned records selected this angle.')}</div>
@@ -25880,6 +25949,13 @@
         const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
         return authority.openable === true;
       });
+    const workflowObjectsW447 = [];
+    arrayValue(finalNavigation.reviewObjects).concat(objects).forEach((item) => {
+      if (!item) return;
+      const key = [item.role || item.canonicalRole || '', item.recordType || item.type || '', item.id || item.internalId || '', item.url || item.linkUrl || '', item.name || item.recordName || ''].join('|');
+      if (workflowObjectsW447.some((existing) => [existing.role || existing.canonicalRole || '', existing.recordType || existing.type || '', existing.id || existing.internalId || '', existing.url || existing.linkUrl || '', existing.name || existing.recordName || ''].join('|') === key)) return;
+      workflowObjectsW447.push(item);
+    });
     if (!(finalNavigation && (finalNavigation.runCanUseImportedFinalNames || finalNavigation.proofReviewAvailable)) || !objects.length) return '';
     const prospect = state.customerName || value.customer || 'Prospect';
     const visibleNarrative = visibleProductNarrativeW439(state, lane, { scriptPivotObjects: objects }, finalNavigation);
@@ -25989,7 +26065,7 @@
             ${cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrativeW443, diagnostics)}
           </div>
         </div>
-        ${cockpitWorkflowVisualW443(visibleNarrative, objects, toggleReceipt)}
+        ${cockpitWorkflowVisualW443(visibleNarrative, workflowObjectsW447, toggleReceipt)}
         <details class="idb-w444-product-candidate" ${state.w444ProductCandidateOpen ? 'open' : ''}>
           <summary><span class="idb-mini-chip">Product: ${escapeHtml(productModelW444.primaryProductCandidate || visibleNarrative.productBaseName || 'Returned product')}</span></summary>
           <div class="idb-copy">Alternates: ${escapeHtml(productModelW444.alternateProductCandidates.length ? productModelW444.alternateProductCandidates.join(', ') : 'No alternates returned.')}</div>
@@ -26295,11 +26371,6 @@
             <div class="idb-section-title">Build and proof readiness</div>
             ${renderIntegratedBuildRunnerReturnStatus(state, lane, page, recommendation)}
           </div>
-          <details class="idb-technical-details">
-            <summary>Request, value, and evidence support</summary>
-            ${renderPlanView(state, lane, page, recommendation)}
-            ${stageModel.confirmed ? renderValueReviewView(state, lane, page, recommendation) : ''}
-          </details>
         </div>
       `;
     }
@@ -27231,150 +27302,16 @@
           <div class="idb-section-title">Consultant value coach</div>
           <div class="idb-status-key">Talk track, discovery, and proof moves</div>
           ${consultantFlow}
-          ${renderW375StoryContractLens(storyContractW373)}
+          <div class="idb-w447-value-truth-strip">
+            <span>Source: ${escapeHtml(consultantLabel(grounded.confidenceState))}</span>
+            <span>Competitors: ${escapeHtml(consultantLabel(competitive.verifiedState))}</span>
+            <span>No measured savings without baseline</span>
+          </div>
           <details class="idb-technical-details idb-w367-competitive-detail">
-            <summary>Competitive lens and prep</summary>
+            <summary>Competitive lens</summary>
             ${renderW362CompetitiveAdvisoryCard(competitiveAdvisory, { title: 'Competitive lens', note: competitiveAdvisory.valueCue, compact: true })}
           </details>
-          <details class="idb-technical-details idb-competitive-prep-card">
-            <summary>Competitive prep detail</summary>
-            <div class="idb-run-action-card">
-              <div class="idb-status-key">Competitive prep</div>
-              <div class="idb-strong">${escapeHtml(competitivePrep.label)}</div>
-              <div class="idb-copy">Likely pressure to be ready for: ${escapeHtml(competitivePrep.alternatives.slice(0, 5).join(', '))}.</div>
-              <div class="idb-copy">${escapeHtml(competitivePrep.netSuiteWin)}</div>
-              <div class="idb-chip-row">
-                <span class="idb-mini-chip">${escapeHtml(competitivePrep.basis)}</span>
-                <span class="idb-mini-chip">${escapeHtml(competitivePrep.assumptionLabel)}</span>
-              </div>
-            </div>
-          </details>
         </div>
-        <details class="idb-technical-details idb-w120-why-matters">
-          <summary>Why this matters</summary>
-          <div class="idb-card idb-value-accent">
-            <div class="idb-section-title">Why this matters</div>
-            <ol class="idb-value-list">
-              ${whyThisMatters.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-            </ol>
-          </div>
-        </details>
-        <details class="idb-technical-details idb-w56-value-summary">
-          <summary>Expanded value answer</summary>
-          <div class="idb-card idb-accent">
-            <div class="idb-section-title">Live value answer</div>
-            <div class="idb-run-action-card">
-              <div class="idb-status-key">Next move</div>
-              <div class="idb-copy">${escapeHtml(topMove)}</div>
-            </div>
-            <div class="idb-summary-card-grid">
-              <div class="idb-value-section">
-                <div class="idb-status-key">One ROI answer</div>
-                <div class="idb-copy">${escapeHtml(roiHypothesis)}</div>
-              </div>
-              <div class="idb-value-section idb-competitive-section">
-                <div class="idb-status-key">One NetSuite answer</div>
-                <div class="idb-copy">${escapeHtml(netsuiteContrast)}</div>
-              </div>
-            </div>
-            <div class="idb-run-action-card">
-              <div class="idb-status-key">One blocker / caution</div>
-              <div class="idb-strong">${escapeHtml(consultantLabel(grounded.unsupportedClaimBlocker.status))}</div>
-              <div class="idb-copy">${escapeHtml(cautionCopy)}</div>
-            </div>
-          </div>
-        </details>
-        <details class="idb-technical-details idb-value-audit-shell">
-          <summary>Details: value evidence, proof stack, and claim guard</summary>
-          <div class="idb-card idb-value-accent">
-            <div class="idb-section-title">ROI / Competitive Review</div>
-            <div class="idb-strong">${escapeHtml(value.customer)} value path</div>
-            <div class="idb-copy">Use this when the buyer asks why this matters, why NetSuite, why now, or how this beats the current way of working.</div>
-            <div class="idb-summary-card-grid">
-              <div class="idb-value-section">
-                <div class="idb-status-key">ROI most important</div>
-                <div class="idb-copy">${escapeHtml(value.groundedRoiSummary)}</div>
-                <div class="idb-chip-row">
-                  <span class="idb-mini-chip">Confidence - ${escapeHtml(consultantLabel(audit.confidence))}</span>
-                  <span class="idb-mini-chip">Source - ${escapeHtml(consultantLabel(grounded.confidenceState))}</span><!-- Source - ${escapeHtml(grounded.confidenceState)} -->
-                  <span class="idb-mini-chip">${escapeHtml(audit.metricProxy)}</span>
-                  <span class="idb-mini-chip">Advisory only</span>
-                </div>
-              </div>
-              <div class="idb-value-section idb-competitive-section">
-                <div class="idb-status-key">Competitive most important</div>
-                <div class="idb-copy">${escapeHtml(value.groundedCompetitiveSummary)}</div>
-                <div class="idb-chip-row">
-                  <span class="idb-mini-chip">${escapeHtml(consultantLabel(competitive.verifiedState))}</span>
-                  <span class="idb-mini-chip">${escapeHtml(consultantLabel(grounded.unsupportedClaimBlocker.status))}</span>
-                  <span class="idb-mini-chip">workflow proof</span>
-                </div>
-              </div>
-            </div>
-            <div class="idb-run-action-card idb-value-workspace-v4">
-              <div class="idb-status-key">Value decision</div>
-              <div class="idb-strong">${escapeHtml(value.valueDecision)}</div>
-              <div class="idb-copy">${escapeHtml(value.talkTrackLead)}</div>
-            </div>
-          <details class="idb-technical-details">
-            <summary>Evidence behind the value hypothesis</summary>
-            <div class="idb-build-detail">
-              ${grounded.whyThisRoiEvidence.map((item) => `<span class="idb-detail-line"><strong>Evidence:</strong> ${escapeHtml(item)}</span>`).join('')}
-              <span class="idb-detail-line"><strong>Claim:</strong> ${escapeHtml(audit.claim)}</span>
-              <span class="idb-detail-line"><strong>Driver:</strong> ${escapeHtml(audit.driver)}</span>
-              <span class="idb-detail-line"><strong>Affected process:</strong> ${escapeHtml(audit.affectedProcess)}</span>
-              <span class="idb-detail-line"><strong>Metric proxy:</strong> ${escapeHtml(audit.metricProxy)}</span>
-              <span class="idb-detail-line"><strong>Baseline needed:</strong> ${escapeHtml(audit.baselineNeeded)}</span>
-              <span class="idb-detail-line"><strong>Assumption:</strong> ${escapeHtml(audit.assumption)}</span>
-              <span class="idb-detail-line"><strong>Proof step:</strong> ${escapeHtml(audit.proofStep)}</span>
-              <span class="idb-detail-line"><strong>Confidence:</strong> ${escapeHtml(audit.confidence)} / ${escapeHtml(audit.sourceBasis.join(', '))}</span>
-              <span class="idb-detail-line"><strong>Audit trail:</strong> ${escapeHtml(audit.auditTrail.join(' | '))}</span>
-              <span class="idb-detail-line"><strong>Guardrail:</strong> ${escapeHtml(audit.caution)}</span>
-            </div>
-          </details>
-          <details class="idb-technical-details">
-            <summary>Competitive detail and NetSuite proof stack</summary>
-            <ol class="idb-value-list">
-              ${competitivePrep.fud.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-              ${grounded.whyNetSuiteEvidence.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-              ${value.competitiveCards.concat(value.valueProofStack).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-            </ol>
-            <div class="idb-footer-note">${escapeHtml(competitive.competitorSafeContrast)}</div>
-          </details>
-          <details class="idb-technical-details">
-            <summary>Unsupported-claim blocker</summary>
-            <div class="idb-copy"><strong>Status:</strong> ${escapeHtml(grounded.unsupportedClaimBlocker.status)}</div>
-            <ol class="idb-value-list">
-              ${(grounded.unsupportedClaimBlocker.blockedClaims.length ? grounded.unsupportedClaimBlocker.blockedClaims : ['No unsupported value claims detected for the current evidence state.']).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-            </ol>
-          </details>
-          <details class="idb-technical-details">
-            <summary>Talk track, objections, and discovery</summary>
-            <div class="idb-value-grid">
-              <div class="idb-value-section">
-                <div class="idb-status-key">Value agenda</div>
-                <ol class="idb-value-list">
-                  ${value.valueAgenda.slice(0, 4).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-                </ol>
-                <div class="idb-status-key">Top three moves</div>
-                <ol class="idb-value-list">
-                  ${story.topMoves.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-                </ol>
-              </div>
-              <div class="idb-value-section idb-competitive-section">
-                <div class="idb-status-key">Objections</div>
-                <ol class="idb-value-list">
-                  ${value.objections.concat(value.objectionPath).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-                </ol>
-                <div class="idb-status-key">Ask next</div>
-                <ol class="idb-value-list">
-                  ${value.discoveryQuestions.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
-                </ol>
-              </div>
-            </div>
-          </details>
-          </div>
-        </details>
       </div>
     `;
   }
@@ -29098,7 +29035,9 @@
     const pivotObjects = arrayValue(finalNavigation.scriptPivotObjects);
     const visibleNarrative = visibleProductNarrativeW439(state, lane, { scriptPivotObjects: pivotObjects }, finalNavigation);
     const valueNarrative = cockpitValueNarrativeW443(state, lane, visibleNarrative, {}, finalNavigation);
-    const detailModel = roiCompetitiveDetailModelW444(valueNarrative, {}, {}, visibleNarrative);
+    const valuePacket = valueReviewPacket(state, lane, pageContext, recommendation);
+    const competitiveAdvisory = competitiveAdvisoryModelW362(state, lane, valuePacket);
+    const detailModel = roiCompetitiveDetailModelW444(valueNarrative, competitiveAdvisory, valuePacket, visibleNarrative);
     const diagnostics = records.concat(pivotObjects)
       .filter((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const runner = state && state.integratedBuildRunnerResult || {};
@@ -29128,10 +29067,21 @@
       runner.troubleshootExportTelemetryW446
     );
     return {
-      schema: 'idb.w446-troubleshoot-export.v1',
+      schema: 'idb.w447-troubleshoot-export.v1',
       drawerVersion: DRAWER_USERSCRIPT_VERSION,
       drawerBlock: CURRENT_UX_BLOCK_W346,
       exportedAt: nowIso(),
+      truthSummaryW447: {
+        schema: 'idb.w447-troubleshoot-truth-summary.v1',
+        openableLinks: finalNavigation.linkAuthoritySummaryExcludingPlannedW446 || finalNavigation.linkAuthoritySummary,
+        plannedOnlyOperationCount: plannedOnlyRows.length,
+        wipRequested: !!(toggleReceipt && toggleReceipt.enableWip),
+        coreRecordsReturned: records.filter((item) => !/diagnostic|operation/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`)).length,
+        routingStatus: firstNonBlank(routingDiagnostics && routingDiagnostics.status, routingDiagnostics && routingDiagnostics.decision, routingDiagnostics && routingDiagnostics.failureStage),
+        routingFailureStage: firstNonBlank(routingDiagnostics && routingDiagnostics.failureStage, routingDiagnostics && routingDiagnostics.reason),
+        workOrderStatus: firstNonBlank(workOrderTelemetry && workOrderTelemetry.status, workOrderTelemetry && workOrderTelemetry.failureType),
+        nextOperatorStep: firstNonBlank(runnerTelemetryW446 && runnerTelemetryW446.operatorNextStep, routingDiagnostics && routingDiagnostics.recommendedOperatorNextStep)
+      },
       customer: intake.customer,
       website: intake.website,
       notesDigest: compactText(intake.notes || '', 240),
@@ -29164,7 +29114,7 @@
       plannedOnlyRows,
       realLinkRows,
       plannedOnlyOperationCount: plannedOnlyRows.length,
-      workflowStages: cockpitWorkflowNodesW446(toggleReceipt && toggleReceipt.enableWip ? 'wip' : (toggleReceipt && toggleReceipt.enableManufacturing ? 'manufacturing' : 'distribution'), pivotObjects).map((stage) => ({
+      workflowStages: cockpitWorkflowNodesW446(toggleReceipt && toggleReceipt.enableWip ? 'wip' : (toggleReceipt && toggleReceipt.enableManufacturing ? 'manufacturing' : 'distribution'), records.concat(pivotObjects)).map((stage) => ({
         key: stage.key || stage.label,
         label: stage.label,
         openable: !!(stage.authority && stage.authority.openable),
@@ -29196,10 +29146,13 @@
       taskId: firstNonBlank(runner.runnerTaskId, capture.runnerTaskId),
       fileId: firstNonBlank(runner.fileId, capture.fileId),
       taskFolder: firstNonBlank(runner.folderId, capture.resultCaptureFolderId),
-      rawResultKeys: {
+      rawAppendix: {
+        note: 'Raw keys and repeated arrays are appendix-only; use truthSummaryW447 first for triage.',
+        rawResultKeys: {
         runner: Object.keys(runner || {}).sort(),
         capture: Object.keys(capture || {}).sort(),
         sidecar: Object.keys(sidecar || {}).sort()
+        }
       },
       currentNetSuiteUrl: window.location && window.location.href || '',
       recentVisibleStatusSummary: {
@@ -29243,7 +29196,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `forge-w446-troubleshoot-${safeFileToken(payload.customer || 'run')}-${Date.now()}.json`;
+    a.download = `forge-w447-troubleshoot-${safeFileToken(payload.customer || 'run')}-${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -29261,6 +29214,7 @@
 
   function clearRunStateW444(state, keepRequest) {
     const intake = normalizedIntake(state || {});
+    const fresh = defaultState();
     const preserved = keepRequest ? {
       intake,
       customerName: state.customerName,
@@ -29287,8 +29241,19 @@
       'w444ProductCandidateOpen',
       'w444UseFreshCandidateNextRun',
       'w446RestoredLastRunSnapshot',
-      'w446LastRunRestoreMessage'
+      'w446LastRunRestoreMessage',
+      'customerName',
+      'websiteEvidenceV1',
+      'websiteResolverRuntime',
+      'recordNamingAdvisoryResponse',
+      'lanePackProposalW251',
+      'dccOperatorApproval',
+      'integratedBuildOperatorApproval',
+      'operatorSummaryCopyStatus'
     ].forEach((key) => { delete state[key]; });
+    if (!keepRequest) {
+      Object.assign(state, fresh, { open: preserved.open, activeView: 'plan', setupEditMode: true });
+    }
     Object.assign(state, preserved);
     return state;
   }
@@ -30231,7 +30196,7 @@
     });
     root.querySelectorAll('[data-idb-w444-clear-run], [data-idb-w445-start-new-run]').forEach((button) => {
       button.addEventListener('click', () => {
-        const keepRequest = button.hasAttribute('data-idb-w445-start-new-run') || button.getAttribute('data-idb-w444-clear-run') === 'keep';
+        const keepRequest = button.getAttribute('data-idb-w444-clear-run') === 'keep';
         clearRunStateW444(state, keepRequest);
         saveState(state);
         trace('w445_run_state_cleared_for_new_run', { keepRequest, noDrawerWrites: true });

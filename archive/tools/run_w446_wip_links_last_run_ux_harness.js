@@ -210,10 +210,10 @@ function main() {
   const surface = buildSurface(hooks);
 
   assertCase(results, 'w446-marker-updated',
-    /@version\s+1\.0\.54/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.54';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W446';"),
-    'Drawer should identify W446 / 1.0.54.');
+    /@version\s+1\.0\.55/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.55';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W447';"),
+    'Drawer should identify current W447 / 1.0.55 while preserving W446 behavior.');
 
   assertCase(results, 'w446-wip-visual-three-stage-clickable',
     hooks.cockpitWorkflowNodesW446('wip', surface.finalNavigation.scriptPivotObjects).length <= 3 &&
@@ -252,7 +252,8 @@ function main() {
     surface.text);
 
   assertCase(results, 'w446-troubleshoot-export-telemetry',
-    surface.exportPayload.schema === 'idb.w446-troubleshoot-export.v1' &&
+    surface.exportPayload.schema === 'idb.w447-troubleshoot-export.v1' &&
+      surface.exportPayload.truthSummaryW447 &&
       surface.exportPayload.manufacturingEligibilityPreflightW446 &&
       surface.exportPayload.troubleshootExportTelemetryW446 &&
       Array.isArray(surface.exportPayload.plannedOnlyRows) &&

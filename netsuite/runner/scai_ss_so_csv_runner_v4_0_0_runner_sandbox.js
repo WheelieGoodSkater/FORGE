@@ -1536,7 +1536,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const productPlanW443 = names && names._productBuildPlanW432 || null;
     const routingName = trimLen((names && names.routing_name) ? names.routing_name : ((productPlanW443 && productPlanW443.routingName) ? productPlanW443.routingName : `SCAI Routing - ${prospect} - BOM ${bomId}`), 80).slice(0, 60);
     const routingMemo = `SCAI Demo Reset: ${extId} | ${prospect} | WIP routing`;
-    const discoveredAssemblyRoutingId = findManagedAssemblyRoutingId({ assemblyId, extId });
+    const assemblyRoutingDiscoveryW447 = inspectAssemblyRoutingSublistsW447({ assemblyId, extId });
+    const discoveredAssemblyRoutingId = assemblyRoutingDiscoveryW447 && assemblyRoutingDiscoveryW447.chosenRoutingId ? Number(assemblyRoutingDiscoveryW447.chosenRoutingId) : null;
     const searchedRoutingId = discoveredAssemblyRoutingId ? null : findManagedRoutingIdByBom({ bomId, subsidiaryId: subs, extId, preferredName: routingName });
     const candidateExistingRoutingId = discoveredAssemblyRoutingId || searchedRoutingId || null;
     const existingRoutingName = candidateExistingRoutingId ? readRecordDisplayName('manufacturingrouting', candidateExistingRoutingId, '') : '';
@@ -1564,6 +1565,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         searchedRoutingId,
         existingRoutingValidation,
         staleRoutingDiscovery,
+        assemblyRoutingDiscoveryW447,
         createNew: !existingRoutingId,
         repairStaleInPlace: false
       })
@@ -1719,7 +1721,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       wipRequested: true,
       coreRecordsCreatedSafely: !!(assemblyId && bomId),
       routingValidation: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null,
-      staleRoutingDiscovery
+      staleRoutingDiscovery,
+      assemblyRoutingDiscoveryW447
       });
     }
 
@@ -1745,11 +1748,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       chosen,
       routingValidation: validateRoutingForProductPlanW443({ id: routingId, name: routingName }, productPlanW443, { expectedRoutingName: routingName }),
       staleRoutingRepaired: staleRoutingRepairTargetId ? existingRoutingValidation : null,
-      staleRoutingDiscovery
+      staleRoutingDiscovery,
+      assemblyRoutingDiscoveryW447
     };
   }
 
-  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation, staleRoutingDiscovery }) {
+  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation, staleRoutingDiscovery, assemblyRoutingDiscoveryW447 }) {
     const diagnostic = {
       status: 'failed_best_effort',
       failureStage: failureStage || 'unknown',
@@ -1768,6 +1772,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       staleRoutingName: staleRoutingDiscovery && staleRoutingDiscovery.routingName || routingValidation && routingValidation.actualRoutingName || '',
       staleRoutingId: staleRoutingDiscovery && staleRoutingDiscovery.routingId || routingValidation && routingValidation.actualRoutingId || null,
       staleRoutingDiscovery: staleRoutingDiscovery || null,
+      assemblyRoutingDiscoveryW447: assemblyRoutingDiscoveryW447 || null,
+      visibleStaleRoutingSuspected: !!(assemblyRoutingDiscoveryW447 && assemblyRoutingDiscoveryW447.staleRouteSignals && assemblyRoutingDiscoveryW447.staleRouteSignals.length),
       reason: routingValidation && routingValidation.reason || '',
       routingEligibilityConclusion: failureStage === 'set_billofmaterials'
         ? 'BOM not selectable for routing context; verify assembly/BOM/revision/subsidiary/location compatibility.'
@@ -1861,12 +1867,23 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
   }
 
-  function findManagedAssemblyRoutingId({ assemblyId, extId }) {
+  function inspectAssemblyRoutingSublistsW447({ assemblyId, extId }) {
     const asm = record.load({ type: 'assemblyitem', id: Number(assemblyId), isDynamic: false });
     const sublistCandidates = ['manufacturingrouting', 'manufacturingroutings', 'routing', 'routings'];
-    const routingFieldCandidates = ['manufacturingrouting', 'routing', 'routingid'];
+    const routingFieldCandidates = ['manufacturingrouting', 'routing', 'routingid', 'name', 'id'];
     const defaultFieldCandidates = ['default', 'isdefault', 'masterdefault'];
     const memoFieldCandidates = ['memo', 'description'];
+    const snapshot = {
+      schema: 'idb.w447-assembly-routing-discovery.v1',
+      assemblyId: Number(assemblyId),
+      chosenRoutingId: null,
+      managedRoutingId: null,
+      defaultRoutingId: null,
+      firstRoutingId: null,
+      sublists: [],
+      staleRouteSignals: [],
+      conclusion: 'no_routing_sublist_visible_to_suite_script'
+    };
 
     for (let s = 0; s < sublistCandidates.length; s++) {
       const sublistId = sublistCandidates[s];
@@ -1881,26 +1898,63 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       const routingField = firstExisting(fields, routingFieldCandidates) || routingFieldCandidates[0];
       const defaultField = firstExisting(fields, defaultFieldCandidates);
       const memoField = firstExisting(fields, memoFieldCandidates);
+      const lineSamples = [];
 
       let defaultRoutingId = null;
       let firstRoutingId = null;
       let managedRoutingId = null;
 
       for (let i = 0; i < count; i++) {
+        const line = { line: i, values: {} };
+        fields.slice(0, 30).forEach(function(fieldId) {
+          line.values[fieldId] = safeTryReturn(function() {
+            return asm.getSublistValue({ sublistId: sublistId, fieldId: fieldId, line: i });
+          });
+        });
+        lineSamples.push(line);
+
         const rid = Number(safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: routingField, line: i })));
-        if (!Number.isFinite(rid) || rid < 1) continue;
-        if (!firstRoutingId) firstRoutingId = rid;
+        if (Number.isFinite(rid) && rid > 0) {
+          if (!firstRoutingId) firstRoutingId = rid;
 
-        const isDefault = defaultField ? normalizeBool(safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: defaultField, line: i }))) : false;
-        if (isDefault && !defaultRoutingId) defaultRoutingId = rid;
+          const isDefault = defaultField ? normalizeBool(safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: defaultField, line: i }))) : false;
+          if (isDefault && !defaultRoutingId) defaultRoutingId = rid;
 
-        const memoVal = memoField ? str(safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: memoField, line: i }))) : '';
-        if (!managedRoutingId && ((extId && memoVal.indexOf(extId) !== -1) || memoVal.indexOf('SCAI Demo Reset') !== -1)) {
-          managedRoutingId = rid;
+          const memoVal = memoField ? str(safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: memoField, line: i }))) : '';
+          if (!managedRoutingId && ((extId && memoVal.indexOf(extId) !== -1) || memoVal.indexOf('SCAI Demo Reset') !== -1)) {
+            managedRoutingId = rid;
+          }
+        }
+
+        const joinedValues = JSON.stringify(line.values || {});
+        if (/cookie|keebler|parfait|fudge|baking|old customer|SCAI Demo Reset/i.test(joinedValues)) {
+          snapshot.staleRouteSignals.push({ sublistId: sublistId, line: i, matchedText: joinedValues.slice(0, 700) });
         }
       }
 
       const chosenRoutingId = managedRoutingId || defaultRoutingId || firstRoutingId || null;
+      snapshot.sublists.push({
+        sublistId: sublistId,
+        count: count,
+        fields: fields,
+        routingField: routingField,
+        defaultField: defaultField,
+        memoField: memoField,
+        chosenRoutingId: chosenRoutingId,
+        managedRoutingId: managedRoutingId,
+        defaultRoutingId: defaultRoutingId,
+        firstRoutingId: firstRoutingId,
+        lineSamples: lineSamples
+      });
+      if (chosenRoutingId && !snapshot.chosenRoutingId) {
+        snapshot.chosenRoutingId = Number(chosenRoutingId);
+        snapshot.managedRoutingId = managedRoutingId ? Number(managedRoutingId) : null;
+        snapshot.defaultRoutingId = defaultRoutingId ? Number(defaultRoutingId) : null;
+        snapshot.firstRoutingId = firstRoutingId ? Number(firstRoutingId) : null;
+        snapshot.conclusion = snapshot.staleRouteSignals.length
+          ? 'routing_found_with_stale_route_signal'
+          : 'routing_found_from_assembly_sublist';
+      }
 
       log.audit({
         title: `Assembly routing discovery [${VERSION}]`,
@@ -1917,15 +1971,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           firstRoutingId
         })
       });
-
-      if (chosenRoutingId) return Number(chosenRoutingId);
     }
 
     log.audit({
-      title: `Assembly routing discovery (none found) [${VERSION}]`,
-      details: JSON.stringify({ assemblyId: Number(assemblyId) })
+      title: `Assembly routing discovery snapshot [${VERSION}]`,
+      details: JSON.stringify(snapshot)
     });
-    return null;
+    return snapshot;
+  }
+
+  function findManagedAssemblyRoutingId({ assemblyId, extId }) {
+    const snapshot = inspectAssemblyRoutingSublistsW447({ assemblyId, extId });
+    return snapshot && snapshot.chosenRoutingId ? Number(snapshot.chosenRoutingId) : null;
   }
 
   function clearRoutingSteps(routingRec, sublistId) {
@@ -4810,6 +4867,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       : shortProduct;
     const distributionBase = /siete/i.test(productForNames) && /ma[ií]z/i.test(productForNames) && /sea\s+salt/i.test(productForNames)
         ? 'Siete Maíz Sea Salt Tortilla Chips'
+      : /goodles|mac\s*(?:&|and)?\s*cheese|cheese\s*production/i.test(productForNames)
+        ? 'Goodles Line-Ready Mac & Cheese'
       : /sea salt/i.test(productForNames)
         ? 'Kettle Air Fried Sea Salt & Vinegar'
       : productForNames;
@@ -4817,9 +4876,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return candidate && candidate !== productTerms.selectedProductCandidate;
     });
     const componentNames = [
-      /siete/i.test(distributionBase) ? 'Siete Corn Masa Input' : (/sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Primary Material Input`),
-      /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`),
-      /siete/i.test(distributionBase) ? 'Sea Salt Seasoning and Retail Bag Packaging' : (/6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`)
+      /siete/i.test(distributionBase) ? 'Siete Corn Masa Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Goodles Pasta Input' : (/sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Primary Material Input`)),
+      /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Cheese Sauce Seasoning Blend' : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`)),
+      /siete/i.test(distributionBase) ? 'Sea Salt Seasoning and Retail Bag Packaging' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Retail Carton and Case Packaging' : (/6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`))
     ];
     const industryNativeW442 = industryNativeManufacturingNamingW442({
       distributionBase,
@@ -4874,9 +4933,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       bomName: trimLen(`BOM - ${distributionBase}`, 80),
       bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
       workOrderName: trimLen(`WO - ${distributionBase}`, 80),
-      routingName: trimLen(/siete/i.test(distributionBase) ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
+      routingName: trimLen(/siete/i.test(distributionBase) || /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
       operationNames: /siete/i.test(distributionBase)
         ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
+        : /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase)
+        ? ['Stage Pasta and Cheese Blend', 'Blend Seasoning and Dry Goods', 'Fill Retail Cartons', 'Case Pack and QC']
         : /sea salt/i.test(distributionBase)
         ? ['Slice and Rinse', 'Kettle Cook', 'Air Finish', 'Season', 'Case Pack and QC']
         : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'],

@@ -206,9 +206,9 @@ function main() {
   );
 
   assertCase(results, 'w428-drawer-marker-updated',
-    /@version\s+1\.0\.54/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.54';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W446';"),
+    /@version\s+1\.0\.55/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.55';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W447';"),
     'Drawer should identify the current install marker while preserving the refresh auto-import repair patch.');
 
   assertCase(results, 'w427-filecabinet-drawer-synced',

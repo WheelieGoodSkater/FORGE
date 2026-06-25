@@ -159,10 +159,10 @@ function main() {
   });
 
   assertCase(results, 'w440-marker-updated',
-    /@version\s+1\.0\.51/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.51';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W443';"),
-    'Drawer should identify W443 / 1.0.51 while preserving W432 product build plan naming.');
+    /@version\s+1\.0\.52/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.52';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W444';"),
+    'Drawer should identify W444 / 1.0.52 while preserving W432 product build plan naming.');
 
   const mfgToggleSyncState = motionState(drawerHooks, {
     selectedLaneId: 'food_beverage',

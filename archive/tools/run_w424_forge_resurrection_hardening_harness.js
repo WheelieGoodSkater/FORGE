@@ -163,10 +163,10 @@ function main() {
   const dayInLifeHtml = hooks.renderW416ConsultantDayInLife(completedState, completedLane, page, completedRecommendation, completedLane.moves[0], { id: 'prove', label: 'Prove' }, '');
 
   assertCase(results, 'w429-version-marker-advanced',
-    drawer.includes('// @version      1.0.51') &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.51';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W443';"),
-    'Drawer should show W443 / 1.0.51 for install/update clarity while preserving W424/W428/W429 behavior.');
+    drawer.includes('// @version      1.0.52') &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.52';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W444';"),
+    'Drawer should show W444 / 1.0.52 for install/update clarity while preserving W424/W428/W429 behavior.');
 
   assertCase(results, 'w424-filecabinet-copies-synced',
     drawer === fileCabinetDrawer && runner === fileCabinetRunner,
@@ -247,8 +247,8 @@ function main() {
 
   assertCase(results, 'w424-cockpit-gates-generic-names-as-review',
     stage.stage === 'proof_needs_review' &&
-      /Proof needs review/.test(dayInLifeHtml) &&
-      /One or more returned record names is still generic|Naming\/setup check/.test(dayInLifeHtml),
+      /Proof needs review|Proof Needs Review/.test(dayInLifeHtml) &&
+      /Troubleshoot \/ Export|Proof quality details|One or more returned record names is still generic/.test(dayInLifeHtml),
     JSON.stringify({ stage, html: dayInLifeHtml.slice(0, 1200) }));
 
   assertCase(results, 'w424-no-live-smoke-or-upload-boundary',

@@ -178,10 +178,10 @@ function main() {
   const sietePlan = runnerHooks.productBuildPlanW432(sieteBase);
 
   assertCase(results, 'w441-marker-updated',
-    /@version\s+1\.0\.51/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.51';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W443';"),
-    'Drawer should identify W443 / 1.0.51.');
+    /@version\s+1\.0\.52/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.52';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W444';"),
+    'Drawer should identify W444 / 1.0.52 after W441.');
 
   const mfgSurface = renderSieteSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: false }, {
     productBuildPlanW432: sietePlan,
@@ -216,7 +216,8 @@ function main() {
     mfgText);
 
   assertCase(results, 'w441-clean-visible-created-names',
-    !/\b(SNACKS-|BEVERAGE-|FOOD_BEVERAGE|RUN)\b/i.test(mfgText) &&
+    !/\b(SNACKS-|BEVERAGE-|FOOD_BEVERAGE)\b/i.test(mfgText) &&
+      !/\s+-\s+RUN\b/i.test(mfgText) &&
       /Siete Maíz Sea Salt Tortilla Chip Production Batch/.test(mfgText) &&
       /Siete Corn Masa Input/.test(mfgText) &&
       /Avocado Oil Frying Input/.test(mfgText) &&

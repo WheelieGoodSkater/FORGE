@@ -184,10 +184,10 @@ function main() {
   const plan = sietePlan(runnerHooks);
 
   assertCase(results, 'w443-marker-updated',
-    /@version\s+1\.0\.51/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.51';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W443';"),
-    'Drawer should identify W443 / 1.0.51.');
+    /@version\s+1\.0\.52/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.52';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W444';"),
+    'Drawer should identify W444 / 1.0.52 after W443.');
 
   const wipSurface = renderSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: true }, recordsFor(plan, 'wip'));
   const wipText = wipSurface.text;
@@ -197,8 +197,8 @@ function main() {
       /idb-w415-cockpit-status-panel/.test(wipSurface.html) &&
       /Siete Foods/.test(wipText) &&
       /WIP line-flow readiness|production batch readiness/i.test(wipText) &&
-      /Records ready/.test(wipText) &&
-      /Open links verified/.test(wipText) &&
+      /Records\s+\d+/.test(wipText) &&
+      /Links\s+\d+/.test(wipText) &&
       /New item on/.test(wipText) &&
       /Manufacturing on/.test(wipText) &&
       /WIP on/.test(wipText),
@@ -219,7 +219,8 @@ function main() {
       staleRouting.stale === true &&
       staleRouting.valid === false &&
       validRouting.valid === true &&
-      !/Cookie Production Line|Mixing & Dough Preparation|Baking & Cooling|Fudge Coating & Packaging/.test(wipText),
+      /Stale detected: Cookie Production Line/.test(wipText) &&
+      !/Manufacturing Routing\s+Cookie Production Line|Mixing & Dough Preparation|Baking & Cooling|Fudge Coating & Packaging/.test(wipText),
     JSON.stringify({ staleRouting, validRouting, wipText }, null, 2));
 
   assertCase(results, 'w443-wip-operation-flow-visible',

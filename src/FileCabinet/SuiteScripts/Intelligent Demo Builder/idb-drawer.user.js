@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.51
+// @version      1.0.52
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.51';
-  const CURRENT_UX_BLOCK_W346 = 'W443';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.52';
+  const CURRENT_UX_BLOCK_W346 = 'W444';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -132,6 +132,7 @@
   const DRAWER_ID = 'idb-drawer';
   const RAIL_ID = 'idb-rail-button';
   const STYLE_ID = 'idb-drawer-style';
+  const DRAWER_WIDTH_STORAGE_KEY_W444 = 'idbDrawerWidthW444';
   const FORGE_BRAND_ALT_TEXT = 'FORGE SC Demo Creation Tool';
   const FORGE_ICON_ALT_TEXT = 'FORGE launcher icon';
   const FORGE_ICON_IMAGE_SRC = 'data:image/png;base64,' + [
@@ -14239,6 +14240,9 @@
       'bomRevision',
       'workOrder',
       'routing',
+      'routingDiagnostic',
+      'routingOperations',
+      'operationPlanRecords',
       'workCenter',
       'wipObject'
     ].forEach((key) => {
@@ -14750,6 +14754,188 @@
     });
   }
 
+  function isRoutingDiagnosticObjectW444(value) {
+    if (!value || typeof value !== 'object') return false;
+    const marker = [
+      value.role,
+      value.outputRole,
+      value.type,
+      value.recordType,
+      value.label,
+      value.name
+    ].join(' ').toLowerCase();
+    return /routingdiagnostic|routing diagnostic|manufacturingrouting_diagnostic|routing[_\s-]?diagnostic/.test(marker);
+  }
+
+  function normalizeRoutingDiagnosticObjectW444(value, payload, resultCapture) {
+    const source = value && typeof value === 'object' ? value : {};
+    const capture = resultCapture || {};
+    const routingResult = payload && (payload.routingDiagnostics || payload.routingResult) || capture.routingDiagnostics || capture.routingResult || {};
+    const productPlan = payload && payload.productBuildPlanW432 || {};
+    const expectedRoutingName = firstNonBlank(
+      source.expectedRoutingName,
+      source.routingName,
+      routingResult.expectedRoutingName,
+      routingResult.routingName,
+      routingResult.routingFailure && routingResult.routingFailure.expectedRoutingName,
+      routingResult.routingValidation && routingResult.routingValidation.expectedRoutingName,
+      productPlan.routingName,
+      'Routing Diagnostic Missing'
+    );
+    const staleRoutingName = firstNonBlank(
+      source.staleRoutingName,
+      source.actualRoutingName,
+      routingResult.staleRoutingName,
+      routingResult.actualRoutingName,
+      routingResult.staleRoutingIgnored && routingResult.staleRoutingIgnored.actualRoutingName,
+      routingResult.routingValidation && routingResult.routingValidation.actualRoutingName
+    );
+    const reason = firstNonBlank(
+      source.reason,
+      source.status,
+      source.errorMessage,
+      routingResult.reason,
+      routingResult.decision,
+      routingResult.status,
+      routingResult.routingFailure && routingResult.routingFailure.reason,
+      routingResult.routingFailure && routingResult.routingFailure.errorMessage,
+      routingResult.routingValidation && routingResult.routingValidation.reason,
+      'routing_not_returned_for_wip_request'
+    );
+    const normalized = normalizeDccFinalObjectWithProductPlanW435('routingDiagnostic', 'Routing Diagnostic', Object.assign({
+      role: 'routingDiagnostic',
+      label: 'Routing Diagnostic',
+      type: 'manufacturingrouting_diagnostic',
+      recordType: 'manufacturingrouting_diagnostic',
+      name: `Routing Diagnostic - ${expectedRoutingName}`,
+      requestedWip: true,
+      effectiveWip: true,
+      expectedRoutingName,
+      staleRoutingName,
+      reason
+    }, source), payload, 0);
+    return Object.assign({}, normalized, {
+      role: 'routingDiagnostic',
+      label: 'Routing Diagnostic',
+      recordType: 'manufacturingrouting_diagnostic',
+      type: 'manufacturingrouting_diagnostic',
+      normalConsultantVisible: true,
+      diagnostic: true,
+      requestedWip: source.requestedWip !== false,
+      effectiveWip: source.effectiveWip !== false,
+      expectedRoutingName,
+      staleRoutingName,
+      routingStatus: firstNonBlank(source.routingStatus, routingResult.status, routingResult.decision, 'diagnostic'),
+      reason,
+      runnerTaskId: firstNonBlank(source.runnerTaskId, payload && payload.runnerTaskId, capture.runnerTaskId),
+      extId: firstNonBlank(source.extId, source.idempotencyToken, payload && payload.idempotencyToken, capture.idempotencyToken),
+      source: 'dcc_final'
+    });
+  }
+
+  function routingDiagnosticMissingObjectW444(payload, resultCapture) {
+    const capture = resultCapture || {};
+    const routingResult = payload && (payload.routingDiagnostics || payload.routingResult) || capture.routingDiagnostics || capture.routingResult || {};
+    return normalizeRoutingDiagnosticObjectW444({
+      role: 'routingDiagnostic',
+      label: 'Routing Diagnostic',
+      type: 'manufacturingrouting_diagnostic',
+      recordType: 'manufacturingrouting_diagnostic',
+      name: 'Routing Diagnostic Missing',
+      requestedWip: true,
+      effectiveWip: true,
+      expectedRoutingName: firstNonBlank(
+        routingResult.expectedRoutingName,
+        routingResult.routingName,
+        payload && payload.productBuildPlanW432 && payload.productBuildPlanW432.routingName,
+        'Expected WIP routing'
+      ),
+      staleRoutingName: firstNonBlank(
+        routingResult.staleRoutingName,
+        routingResult.actualRoutingName,
+        routingResult.staleRoutingIgnored && routingResult.staleRoutingIgnored.actualRoutingName
+      ),
+      routingStatus: firstNonBlank(routingResult.status, routingResult.decision, 'missing'),
+      reason: firstNonBlank(routingResult.reason, routingResult.routingFailure && routingResult.routingFailure.errorMessage, 'WIP was requested but no routing or routing diagnostic row was returned.'),
+      runnerTaskId: firstNonBlank(payload && payload.runnerTaskId, capture.runnerTaskId),
+      extId: firstNonBlank(payload && payload.idempotencyToken, capture.idempotencyToken)
+    }, payload, capture);
+  }
+
+  function normalizeRoutingOperationRecordW444(item, index, hasRouting, payload) {
+    const source = item && typeof item === 'object' ? item : { name: item };
+    const operationIndex = Number(source.operationIndex || source.index || index) || index;
+    const label = hasRouting ? `Operation ${operationIndex + 1}` : `Planned Operation ${operationIndex + 1}`;
+    const normalized = normalizeDccFinalObjectWithProductPlanW435(
+      `operation${operationIndex + 1}`,
+      label,
+      Object.assign({}, source, {
+        role: source.role || `operation${operationIndex + 1}`,
+        label,
+        name: firstNonBlank(source.name, source.recordName, source.operationName, `Operation ${operationIndex + 1}`)
+      }),
+      payload,
+      operationIndex
+    );
+    return Object.assign({}, normalized, {
+      role: `operation${operationIndex + 1}`,
+      label,
+      recordType: hasRouting ? 'manufacturingrouting_operation' : 'manufacturingrouting_operation_plan',
+      type: hasRouting ? 'manufacturingrouting_operation' : 'manufacturingrouting_operation_plan',
+      normalConsultantVisible: true,
+      plannedOnly: !hasRouting,
+      source: 'dcc_final'
+    });
+  }
+
+  function enrichDisplayObjectsWithWipTruthW444(displayObjects, payload, records, resultCapture, state, lane) {
+    const objects = arrayValue(displayObjects).slice();
+    const sourceRecords = records || {};
+    const manufacturingEvidenceW444 = !!(payload && (
+      payload.enableManufacturing ||
+      payload.assembly ||
+      payload.bom ||
+      payload.bomRevision ||
+      payload.workOrder ||
+      payload.records && (payload.records.assemblyItem || payload.records.assembly || payload.records.bom || payload.records.bomRevision || payload.records.workOrder)
+    ));
+    const explicitWipRequestW444 = !!(payload && (payload.enableWip || payload.wipEnabled)) ||
+      !!(payload && payload.toggles && (payload.toggles.enableWip || payload.toggles.wip));
+    const requestedWip = explicitWipRequestW444 || (manufacturingEvidenceW444 && selectedBuildToggleReceiptW440(state, lane, payload).enableWip === true);
+    const hasRouting = objects.some((item) => /routing/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`) && !/diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
+    const diagnosticCandidates = []
+      .concat(arrayValue(payload && payload.routingDiagnostic))
+      .concat(arrayValue(payload && payload.routingDiagnostics && payload.routingDiagnostics.role ? payload.routingDiagnostics : null))
+      .concat(arrayValue(sourceRecords.routingDiagnostic))
+      .concat(arrayValue(sourceRecords.routing_diagnostic))
+      .concat(rawRunnerRecordsW215(payload).filter(isRoutingDiagnosticObjectW444));
+    if (requestedWip) diagnosticCandidates.filter(isRoutingDiagnosticObjectW444).forEach((diagnostic) => {
+      objects.push(normalizeRoutingDiagnosticObjectW444(diagnostic, payload, resultCapture));
+    });
+    const hasDiagnostic = objects.some(isRoutingDiagnosticObjectW444);
+    if (requestedWip && !hasRouting && !hasDiagnostic) {
+      objects.push(routingDiagnosticMissingObjectW444(payload, resultCapture));
+    }
+    const returnedOperationSources = arrayValue(payload && (payload.routingOperations || payload.operationPlanRecords || payload.operations))
+      .concat(arrayValue(sourceRecords.operationPlanRecords))
+      .concat(Object.keys(sourceRecords || {})
+        .filter((key) => /^operation\d+$/i.test(key))
+        .map((key) => sourceRecords[key]));
+    const operationSources = returnedOperationSources
+      .concat(requestedWip && !returnedOperationSources.length && payload && payload.productBuildPlanW432 && Array.isArray(payload.productBuildPlanW432.operationNames)
+        ? payload.productBuildPlanW432.operationNames.map((name) => ({ name, plannedOnly: !hasRouting }))
+        : []);
+    const seenOperations = {};
+    operationSources.filter(Boolean).forEach((operation, index) => {
+      const opName = firstNonBlank(operation && operation.name, operation && operation.recordName, operation && operation.operationName, operation);
+      const key = `${index}|${opName}`;
+      if (!opName || seenOperations[key]) return;
+      seenOperations[key] = true;
+      objects.push(normalizeRoutingOperationRecordW444(operation, index, hasRouting, payload));
+    });
+    return objects;
+  }
+
   function dccFinalNamingResultV1(input, state, lane, pageContext, recommendation) {
     if (!input) {
       return {
@@ -14786,6 +14972,7 @@
       return repairDccFinalNamingVisibleBrandMismatchW438(redactDccFinalNamingSecrets(input), state);
     }
     const payload = redactDccFinalNamingSecrets(input.dccFinalNamingResultV1 || input.dccFinalNamingResult || input.result || input);
+    const resultCapture = payload.resultCapture || input.resultCapture || {};
     const laneVocabularyPolicy = payload.runnerLaneVocabularyPolicy || payload.resultCapture && payload.resultCapture.runnerLaneVocabularyPolicy || {};
     const finalRoleLabels = laneVocabularyPolicy.finalResultRoleLabels || {};
     const generated = payload.generated || payload.dccGenerated || {};
@@ -14839,7 +15026,7 @@
         source: 'dcc_final'
       };
     });
-    const displayObjects = [
+    let displayObjects = [
       normalizeDccFinalObjectWithProductPlanW435('customer', 'Customer', rootCustomer, displayPayload, 0),
       normalizeDccFinalObjectWithProductPlanW435('sales_order', 'Sales Order / demo transaction', rootSalesOrder, displayPayload, 0),
       normalizeDccFinalObjectWithProductPlanW435('hero_item', manufacturingEnabled ? 'Sellable item' : firstNonBlank(finalRoleLabels.heroItem, 'Hero item'), rootHero, displayPayload, 0)
@@ -14855,12 +15042,14 @@
     if (payload.bomRevision) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('bom_revision', 'BOM revision', firstReturnedRunnerObjectW215(payload.bomRevision, byRole('bom_revision')), displayPayload, 0));
     if (payload.workOrder || records.workOrder || records.work_order || semanticWip.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_order', 'Work Order', payload.workOrder || records.workOrder || records.work_order || semanticWip || byRole('work_order'), displayPayload, 0));
     else if (manufacturingEnabled && (payload.workOrderDiagnostics || records.workOrderDiagnostic || records.work_order_diagnostic)) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_order_diagnostic', 'Work Order Diagnostic', payload.workOrderDiagnostics || records.workOrderDiagnostic || records.work_order_diagnostic, displayPayload, 0));
-    const semanticRouting = findRunnerRecordByW215Aliases(payload, ['routing']);
+    const semanticRoutingCandidate = findRunnerRecordByW215Aliases(payload, ['routing']);
+    const semanticRouting = isRoutingDiagnosticObjectW444(semanticRoutingCandidate) ? {} : semanticRoutingCandidate;
     const semanticWorkCenter = findRunnerRecordByW215Aliases(payload, ['work_center']);
     const semanticWipObject = findRunnerRecordByW215Aliases(payload, ['wip_object']);
     if (payload.routing || records.routing || semanticRouting.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('routing', 'Routing', payload.routing || records.routing || byRole('routing') || semanticRouting, displayPayload, 0));
     if (payload.workCenter || records.workCenter || records.work_center || semanticWorkCenter.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_center', 'Work Center', payload.workCenter || records.workCenter || records.work_center || byRole('work_center') || semanticWorkCenter, displayPayload, 0));
     if (payload.wipObject || records.wipObject || records.wip_object || semanticWipObject.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('wip_object', 'WIP object', payload.wipObject || records.wipObject || records.wip_object || byRole('wip_object') || semanticWipObject, displayPayload, 0));
+    displayObjects = enrichDisplayObjectsWithWipTruthW444(displayObjects, displayPayload, records, resultCapture, state, lane);
     const returnedCount = displayObjects.concat(componentItems, locationPlanningRecords).filter((item) => item.source === 'dcc_final').length;
     const warnings = arrayValue(payload.warnings || payload.warning).map((item) => String(item));
     const errors = arrayValue(payload.errors || payload.error).map((item) => String(item));
@@ -17147,11 +17336,15 @@
   function dccFinalNavigationModel(state, lane, pageContext, recommendation) {
     const finalResult = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, pageContext, recommendation);
     const packet = dryRunObjectPacket(state, lane, pageContext, recommendation);
-    const finalObjects = finalResult.finalNamesImported
+    let finalObjects = finalResult.finalNamesImported
       ? arrayValue(finalResult.displayReadyRecords).length
         ? arrayValue(finalResult.displayReadyRecords)
         : finalResult.displayObjects.concat(finalResult.componentItems, finalResult.locationPlanningRecords).filter((item) => item.source === 'dcc_final')
       : [];
+    const navigationToggleReceiptW444 = selectedBuildToggleReceiptW440(state, lane, finalResult);
+    if (navigationToggleReceiptW444.enableWip !== true) {
+      finalObjects = finalObjects.filter((item) => !/routing|operation|manufacturingrouting/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
+    }
     const provisionalObjects = packet.records.map((record) => {
       const preview = record.preview || buildEnrichedObjectPreview(state, lane, record);
       return {
@@ -17170,7 +17363,7 @@
       return summary;
     }, {});
     const scriptPivotObjects = finalObjects.length
-      ? activeObjects.filter((item) => item && ((item.linkAuthority && item.linkAuthority.openable === true) || /work.?order.?diagnostic/i.test(`${item.role || ''} ${item.label || ''}`)))
+      ? activeObjects.filter((item) => item && ((item.linkAuthority && item.linkAuthority.openable === true) || /diagnostic|routing|operation/i.test(`${item.role || ''} ${item.label || ''} ${item.recordType || ''} ${item.type || ''}`)))
       : activeObjects.slice(0, 4);
     const proofQualityGate = proofQualityGateW424(finalResult, activeObjects);
     return {
@@ -22672,6 +22865,62 @@
     writeJson(STORAGE_KEY, state);
   }
 
+  function drawerWidthContractW444() {
+    return {
+      schema: 'idb.w444-resizable-drawer-contract.v1',
+      minWidth: 360,
+      maxWidth: Math.max(520, Math.min(900, window.innerWidth - 24)),
+      presets: {
+        compact: 380,
+        standard: 460,
+        wide: 640
+      },
+      persistence: DRAWER_WIDTH_STORAGE_KEY_W444
+    };
+  }
+
+  function clampDrawerWidthW444(width) {
+    const contract = drawerWidthContractW444();
+    const numeric = Number(width) || contract.presets.standard;
+    return Math.max(contract.minWidth, Math.min(contract.maxWidth, numeric));
+  }
+
+  function drawerWidthPresetW444(width) {
+    const numeric = Number(width) || drawerWidthContractW444().presets.standard;
+    if (numeric < 420) return 'compact';
+    if (numeric >= 580) return 'wide';
+    return 'standard';
+  }
+
+  function readDrawerWidthW444() {
+    try {
+      const raw = window.localStorage.getItem(DRAWER_WIDTH_STORAGE_KEY_W444);
+      const parsed = raw ? JSON.parse(raw) : {};
+      return clampDrawerWidthW444(parsed.width || drawerWidthContractW444().presets.standard);
+    } catch (err) {
+      return clampDrawerWidthW444(drawerWidthContractW444().presets.standard);
+    }
+  }
+
+  function writeDrawerWidthW444(width, preset) {
+    const next = clampDrawerWidthW444(width);
+    window.localStorage.setItem(DRAWER_WIDTH_STORAGE_KEY_W444, JSON.stringify({
+      width: next,
+      preset: preset || drawerWidthPresetW444(next),
+      updatedAt: nowIso()
+    }));
+    return next;
+  }
+
+  function applyDrawerWidthW444(drawer, width) {
+    if (!drawer) return 0;
+    const next = clampDrawerWidthW444(width || readDrawerWidthW444());
+    drawer.style.setProperty('--idb-drawer-width', `${next}px`);
+    drawer.setAttribute('data-idb-width-preset', drawerWidthPresetW444(next));
+    document.documentElement.style.setProperty('--idb-drawer-width', `${next}px`);
+    return next;
+  }
+
   function tracePlanSummary(eventName, state, lane, pageContext, recommendation, extra) {
     const packetIdentity = packetIdentityFor(state, lane);
     trace(eventName, Object.assign({
@@ -22845,6 +23094,15 @@
         box-shadow: var(--rw-shadow-overlay);
         color: var(--rw-color-text-primary);
         font-family: var(--rw-font-family-body);
+      }
+      #idb-drawer[data-idb-width-preset="compact"] {
+        --idb-cockpit-columns: 1fr;
+      }
+      #idb-drawer[data-idb-width-preset="standard"] {
+        --idb-cockpit-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+      #idb-drawer[data-idb-width-preset="wide"] {
+        --idb-cockpit-columns: repeat(2, minmax(180px, 1fr));
       }
       #idb-drawer.idb-open { transform: translateX(0); }
       #idb-drawer.idb-overlay-mode {
@@ -23331,7 +23589,7 @@
       }
       .idb-w415-cockpit-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: var(--idb-cockpit-columns, repeat(auto-fit, minmax(150px, 1fr)));
         gap: 7px;
       }
       .idb-w415-cockpit-panel {
@@ -23380,6 +23638,97 @@
         font-weight: 850;
         line-height: 1.25;
         overflow-wrap: anywhere;
+      }
+      .idb-w444-diagnostic-detail {
+        display: block;
+        color: #5f4b12;
+        font-size: 10px;
+        line-height: 1.35;
+        margin-top: 2px;
+      }
+      .idb-w444-health-panel {
+        border: 1px solid #d5e2e8;
+        border-radius: 7px;
+        background: #fff;
+        padding: 6px;
+      }
+      .idb-w444-health-panel summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px;
+        cursor: pointer;
+        list-style: none;
+      }
+      .idb-w444-health-panel summary::-webkit-details-marker {
+        display: none;
+      }
+      .idb-w444-health-panel summary span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+        color: #263647;
+        font-size: 10px;
+        font-weight: 850;
+      }
+      .idb-w444-health-dot {
+        width: 8px;
+        height: 8px;
+        flex: 0 0 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(0,0,0,.16);
+      }
+      .idb-w444-health-green { background: #3b7a2a; }
+      .idb-w444-health-yellow { background: #c08a00; }
+      .idb-w444-health-red { background: #b3261e; }
+      .idb-w444-health-detail,
+      .idb-w444-product-candidate,
+      .idb-w444-last-run,
+      .idb-w444-lower-detail {
+        border: 1px solid #d8e1e6;
+        border-radius: 7px;
+        background: #fff;
+        padding: 8px;
+      }
+      .idb-w444-product-candidate summary,
+      .idb-w444-last-run summary {
+        cursor: pointer;
+      }
+      .idb-compact-button {
+        min-height: 24px;
+        padding: 3px 7px;
+        font-size: 10px;
+      }
+      .idb-w444-run-actions,
+      .idb-w444-footer-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .idb-w444-resize-handle {
+        position: absolute;
+        inset-block: 0;
+        inset-inline-start: -6px;
+        width: 10px;
+        cursor: ew-resize;
+        touch-action: none;
+      }
+      .idb-w444-resize-handle::after {
+        content: "";
+        position: absolute;
+        inset-block-start: 50%;
+        inset-inline-start: 3px;
+        width: 3px;
+        height: 46px;
+        transform: translateY(-50%);
+        border-radius: 999px;
+        background: #8aa0ad;
+      }
+      .idb-w444-resize-presets {
+        display: flex;
+        gap: 4px;
+        justify-content: flex-end;
+        padding: 6px 10px 0;
       }
       .idb-w415-record-label {
         color: #536579;
@@ -25171,6 +25520,133 @@
     `;
   }
 
+  function productCandidateModelW444(state, finalNavigation) {
+    const records = arrayValue(finalNavigation && finalNavigation.reviewObjects).concat(arrayValue(finalNavigation && finalNavigation.scriptPivotObjects));
+    const plan = records.map((record) => record && record.productBuildPlanW432).filter(Boolean)[0] ||
+      state && state.dccFinalNamingResult && state.dccFinalNamingResult.productBuildPlanW432 ||
+      finalNavigation && finalNavigation.productBuildPlanW432 ||
+      {};
+    const productName = visibleProductAccentPolishW439(firstNonBlank(
+      plan.primaryProductCandidate,
+      plan.selectedProductCandidate,
+      plan.productName,
+      plan.evidence && plan.evidence.selectedProductCandidate,
+      records.map((record) => consultantVisibleRecordNameW436(record && (record.name || record.recordName))).find((name) => /\b(Siete|Kettle)\b/i.test(name))
+    ));
+    const alternates = uniqueValues(arrayValue(plan.alternateProductCandidates)
+      .concat(arrayValue(plan.evidence && plan.evidence.productCandidates).filter((item) => item !== productName))
+      .map(visibleProductAccentPolishW439)
+      .filter(Boolean));
+    return {
+      schema: 'idb.w444-product-candidate-visibility.v1',
+      primaryProductCandidate: productName,
+      alternateProductCandidates: alternates,
+      selectedProductReason: firstNonBlank(plan.selectedProductReason, plan.selectionReason, productName ? 'Selected from website/product evidence for this run.' : 'No product candidate returned.'),
+      productCandidateSource: firstNonBlank(plan.productCandidateSource, plan.source, plan.evidence && plan.evidence.website ? 'website_product_evidence' : 'returned_result'),
+      nextCandidateHint: firstNonBlank(plan.nextCandidateHint, alternates[0] ? `Use fresh candidate next run: ${alternates[0]}` : 'Use fresh candidate next run from current website evidence.')
+    };
+  }
+
+  function cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrative, diagnostics) {
+    const recordCount = arrayValue(objects).filter((item) => item && item.source === 'dcc_final').length;
+    const openableCount = arrayValue(objects).filter((item) => item && item.linkAuthority && item.linkAuthority.openable === true).length;
+    const diagnosticCount = arrayValue(diagnostics).length;
+    const confidence = String(valueNarrative && valueNarrative.confidence || 'medium').toLowerCase();
+    const dotFor = (tone) => `<span class="idb-w444-health-dot idb-w444-health-${escapeHtml(tone)}" aria-hidden="true"></span>`;
+    const confidenceTone = confidence === 'high' ? 'green' : confidence === 'low' ? 'red' : 'yellow';
+    const recordsTone = recordCount > 0 ? 'green' : 'red';
+    const linksTone = openableCount > 0 ? (openableCount >= Math.min(recordCount, 5) ? 'green' : 'yellow') : 'red';
+    const diagnosticsTone = diagnosticCount ? 'yellow' : 'green';
+    return `
+      <details class="idb-w444-health-panel" aria-label="Run health panel" ${recordCount ? '' : 'open'}>
+        <summary>
+          <span>${dotFor(recordsTone)} Records ${escapeHtml(recordCount)}</span>
+          <span>${dotFor(linksTone)} Links ${escapeHtml(openableCount)}</span>
+          <span>${dotFor(confidenceTone)} Confidence</span>
+          <span>${dotFor(diagnosticsTone)} Diagnostics ${escapeHtml(diagnosticCount)}</span>
+        </summary>
+        <div class="idb-w444-health-detail">
+          <div class="idb-chip-row">${renderBuildToggleReceiptChipsW440(toggleReceipt)}</div>
+          <div class="idb-copy">Diagnostics: ${escapeHtml(diagnosticCount ? arrayValue(diagnostics).map((item) => firstNonBlank(item.label, item.name, item.reason)).join(' / ') : 'none returned')}</div>
+          <div class="idb-copy">Proof status: ${escapeHtml(finalNavigation && finalNavigation.displayStatus || 'unknown')}</div>
+        </div>
+      </details>
+    `;
+  }
+
+  function roiCompetitiveDetailModelW444(valueNarrative, competitiveAdvisory, value) {
+    const source = firstNonBlank(valueNarrative && valueNarrative.source, 'website_industry_fallback');
+    const confidence = firstNonBlank(valueNarrative && valueNarrative.confidence, 'medium');
+    const evidenceTerms = arrayValue(valueNarrative && valueNarrative.evidenceTermsUsed);
+    const alternatives = uniqueValues(arrayValue(competitiveAdvisory && competitiveAdvisory.likelyAlternatives)
+      .concat(['spreadsheets', 'disconnected MRP', 'SAP Business One', 'Microsoft Dynamics', 'QuickBooks inventory add-ons', 'Fishbowl', 'Katana']));
+    return {
+      roi: {
+        source,
+        confidence,
+        evidenceTerms,
+        baselineNeeded: firstNonBlank(valueNarrative && valueNarrative.baselineNeeded, valueNarrative && valueNarrative.roiDetail, value && value.roiAudit && value.roiAudit.baselineNeeded, 'Buyer-confirmed baseline needed before any savings claim.'),
+        unsupportedClaimCaution: firstNonBlank(valueNarrative && valueNarrative.unsupportedClaimCaution, 'Unsupported savings claims stay blocked until the buyer confirms a baseline.')
+      },
+      competitive: {
+        source,
+        confidence,
+        likelyAlternatives: alternatives,
+        whyNetSuiteWins: firstNonBlank(valueNarrative && valueNarrative.competitiveWatchOut, competitiveAdvisory && competitiveAdvisory.runCue, 'NetSuite wins when demand, inventory, production readiness, routing progress, and financial impact stay in one operating path.'),
+        discoveryQuestions: [
+          'Which planning signal is trusted today?',
+          'Where does production or inventory truth get reconciled outside the system?',
+          'What baseline would prove the current process is costing time, margin, or service reliability?'
+        ],
+        disconnectedPlanningRisk: 'Risk: disconnected planning can make routing, inventory, and customer promise decisions look current when they are stale.'
+      }
+    };
+  }
+
+  function renderW444DetailPanel(kind, detail) {
+    const active = kind === 'competitive' ? 'competitive' : 'roi';
+    if (active === 'competitive') {
+      return `
+        <div class="idb-w444-lower-detail" data-idb-detail-panel="competitive">
+          <div class="idb-status-key">Competitive angle</div>
+          <div class="idb-copy">Likely alternatives: ${escapeHtml(detail.competitive.likelyAlternatives.join(', '))}</div>
+          <div class="idb-strong">${escapeHtml(detail.competitive.whyNetSuiteWins)}</div>
+          <div class="idb-copy">FUD-safe questions: ${escapeHtml(detail.competitive.discoveryQuestions.join(' / '))}</div>
+          <div class="idb-copy">${escapeHtml(detail.competitive.disconnectedPlanningRisk)}</div>
+          <div class="idb-chip-row"><span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(detail.competitive.source))}</span><span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(detail.competitive.confidence))}</span></div>
+        </div>
+      `;
+    }
+    return `
+      <div class="idb-w444-lower-detail" data-idb-detail-panel="roi">
+        <div class="idb-status-key">Why this ROI?</div>
+        <div class="idb-copy">Source: ${escapeHtml(consultantLabel(detail.roi.source))} / Confidence: ${escapeHtml(consultantLabel(detail.roi.confidence))}</div>
+        <div class="idb-copy">Evidence terms used: ${escapeHtml(detail.roi.evidenceTerms.length ? detail.roi.evidenceTerms.join(', ') : 'industry and returned-record context')}</div>
+        <div class="idb-strong">${escapeHtml(detail.roi.baselineNeeded)}</div>
+        <div class="idb-copy">${escapeHtml(detail.roi.unsupportedClaimCaution)}</div>
+      </div>
+    `;
+  }
+
+  function lastRunReceiptW444(state, finalNavigation, productModel, toggleReceipt, diagnostics) {
+    const runner = state && state.integratedBuildRunnerResult || {};
+    const capture = runner.resultCapture || {};
+    const naming = state && state.dccFinalNamingResult || {};
+    return {
+      schema: 'idb.w444-last-run-receipt.v1',
+      customer: firstNonBlank(state && state.customerName, normalizedIntake(state || {}).customer, naming.prospect),
+      website: normalizedIntake(state || {}).website,
+      toggles: toggleReceipt && toggleReceipt.chips || [],
+      selectedProduct: productModel && productModel.primaryProductCandidate || '',
+      runStatus: firstNonBlank(naming.runStatus, runner.status, capture.status, finalNavigation && finalNavigation.status),
+      returnedCount: arrayValue(finalNavigation && finalNavigation.reviewObjects).length,
+      diagnosticsCount: arrayValue(diagnostics).length,
+      timestamp: firstNonBlank(naming.importedAt, capture.submittedAt, runner.submittedAt),
+      extId: firstNonBlank(naming.generated && naming.generated.extId, runner.idempotencyToken, capture.idempotencyToken),
+      taskId: firstNonBlank(runner.runnerTaskId, capture.runnerTaskId)
+    };
+  }
+
   function renderW415DemoCockpit(model) {
     const state = model && model.state || {};
     const lane = model && model.lane || {};
@@ -25227,6 +25703,11 @@
     }
     const toggleReceipt = selectedBuildToggleReceiptW440(state, lane, finalNavigation);
     const valueNarrativeW443 = cockpitValueNarrativeW443(state, lane, visibleNarrative, websiteEvidence, finalNavigation);
+    const diagnostics = objects.filter((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
+    const productModelW444 = productCandidateModelW444(state, finalNavigation);
+    const detailModelW444 = roiCompetitiveDetailModelW444(valueNarrativeW443, competitiveAdvisory, value);
+    const activeDetailW444 = state.w444CockpitDetail === 'competitive' ? 'competitive' : 'roi';
+    const lastRunReceipt = lastRunReceiptW444(state, finalNavigation, productModelW444, toggleReceipt, diagnostics);
     if (valueNarrativeW443) {
       roiCopy = valueNarrativeW443.roiHeadline || roiCopy;
       objectionCopy = valueNarrativeW443.competitiveQuestion || objectionCopy;
@@ -25237,15 +25718,21 @@
       || 'Measured savings require a customer baseline before they can be claimed.', 125);
     const recordRowLimit = visibleNarrative.mode === 'distribution' ? 5 : (visibleNarrative.mode === 'wip' ? 20 : 14);
     const renderRecordRowW442 = (item) => {
-      const label = consultantRunNavigationLabelW441(item, visibleNarrative);
+      const label = item && item.plannedOnly && /operation/i.test(`${item.role || ''} ${item.label || ''}`)
+        ? firstNonBlank(item.label, `Planned Operation ${Number(item.operationIndex || 0) + 1}`)
+        : consultantRunNavigationLabelW441(item, visibleNarrative);
       const repairedItem = repairVisibleProductNarrativeW439(item, state, visibleNarrative);
       const name = consultantVisibleRecordNameW436(consultantRunNavigationNameW334(repairedItem) || consultantRunNavigationDisplayW441(repairedItem, visibleNarrative));
       const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
+      const diagnosticDetail = /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`)
+        ? [item.expectedRoutingName ? `Expected: ${item.expectedRoutingName}` : '', item.staleRoutingName ? `Stale detected: ${item.staleRoutingName}` : '', item.reason ? `Reason: ${item.reason}` : ''].filter(Boolean).join(' / ')
+        : '';
       return `
         <div class="idb-w415-cockpit-record-row">
           <span>
             <span class="idb-w415-record-label">${escapeHtml(label)}</span>
             <span class="idb-w415-record-name">${escapeHtml(name)}</span>
+            ${diagnosticDetail ? `<span class="idb-w444-diagnostic-detail">${escapeHtml(diagnosticDetail)}</span>` : ''}
           </span>
           ${authority.openable
             ? `<a class="idb-inline-link idb-w415-open-link" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer">Open</a>`
@@ -25271,16 +25758,19 @@
             <div class="idb-w415-cockpit-subtitle">${escapeHtml(laneLabel)}</div>
           </div>
           <div class="idb-w415-cockpit-status-panel" aria-label="Post-run proof status">
-            <div class="idb-w415-cockpit-status">
-              <span class="idb-mini-chip">${escapeHtml(proofGate.runReady ? 'Records ready' : 'Proof needs review')}</span>
-              <span class="idb-mini-chip">${escapeHtml(openableCount)} Open links verified</span>
-              ${renderBuildToggleReceiptChipsW440(toggleReceipt)}
-              ${proofGate.runReady ? '' : `<span class="idb-mini-chip">Naming/setup check</span>`}
-              <span class="idb-mini-chip">${escapeHtml(confidenceLabel)}</span>
-            </div>
+            ${cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrativeW443, diagnostics)}
           </div>
         </div>
         ${cockpitWorkflowVisualW443(visibleNarrative, objects, toggleReceipt)}
+        <details class="idb-w444-product-candidate" ${state.w444ProductCandidateOpen ? 'open' : ''}>
+          <summary><span class="idb-mini-chip">Product: ${escapeHtml(productModelW444.primaryProductCandidate || visibleNarrative.productBaseName || 'Returned product')}</span></summary>
+          <div class="idb-copy">Alternates: ${escapeHtml(productModelW444.alternateProductCandidates.length ? productModelW444.alternateProductCandidates.join(', ') : 'No alternates returned.')}</div>
+          <div class="idb-copy">${escapeHtml(productModelW444.selectedProductReason)}</div>
+          <div class="idb-chip-row">
+            <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(productModelW444.productCandidateSource))}</span>
+            <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-fresh-candidate-intent="${escapeHtml(productModelW444.nextCandidateHint)}">Use fresh candidate next run</button>
+          </div>
+        </details>
         <div class="idb-w415-cockpit-records" aria-label="Open records">
           ${groupedRows}
         </div>
@@ -25297,6 +25787,7 @@
             <div class="idb-chip-row">
               <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
               <span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.confidence || 'medium'))}</span>
+              <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'roi' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="roi">Why this ROI?</button>
             </div>
           </div>
           <div class="idb-w415-cockpit-panel idb-w415-competitive-panel">
@@ -25306,8 +25797,22 @@
             <div class="idb-chip-row">
               <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
               <span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.confidence || 'medium'))}</span>
+              <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'competitive' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="competitive">Competitive angle</button>
             </div>
           </div>
+        </div>
+        ${renderW444DetailPanel(activeDetailW444, detailModelW444)}
+        <details class="idb-w444-last-run">
+          <summary>Last run</summary>
+          <div class="idb-copy">${escapeHtml(lastRunReceipt.customer || 'Customer')} / ${escapeHtml(websiteDomain(lastRunReceipt.website) || 'website')} / ${escapeHtml(lastRunReceipt.runStatus || 'status unknown')}</div>
+          <div class="idb-copy">Product: ${escapeHtml(lastRunReceipt.selectedProduct || 'not returned')} / Records: ${escapeHtml(lastRunReceipt.returnedCount)} / Diagnostics: ${escapeHtml(lastRunReceipt.diagnosticsCount)}</div>
+          <div class="idb-copy">${escapeHtml(lastRunReceipt.toggles.join(' / '))}</div>
+          <div class="idb-copy">Run: ${escapeHtml([lastRunReceipt.timestamp, lastRunReceipt.extId, lastRunReceipt.taskId].filter(Boolean).join(' / ') || 'no task receipt')}</div>
+        </details>
+        <div class="idb-actions idb-w444-run-actions">
+          <button class="idb-secondary" type="button" data-idb-w444-clear-run="keep">Clear run</button>
+          <button class="idb-secondary" type="button" data-idb-w444-clear-run="all">Start new run</button>
+          <button class="idb-primary" type="button" data-idb-w444-troubleshoot-export>Troubleshoot / Export</button>
         </div>
         <div class="idb-w415-claim-caution">
           <div class="idb-status-key">Claim caution</div>
@@ -25527,29 +26032,10 @@
   }
 
   function renderW416SupportNavigation(state, stageModel) {
-    const active = normalizedView(state);
-    const finalReady = stageModel && stageModel.finalNamesImported && stageModel.runCanUseImportedFinalNames;
-    const buildReady = stageModel && stageModel.briefPrepared && stageModel.confirmed;
-    const valueReady = stageModel && stageModel.briefPrepared && stageModel.confirmed;
-    const views = [
-      ['plan', 'Request', true],
-      ['review', 'Build support', buildReady],
-      ['value', 'ROI support', valueReady],
-      ['run', 'Run support', finalReady],
-      ['trace', 'Trace/support', true]
-    ];
     return `
-      <details class="idb-technical-details idb-w416-support-nav">
-        <summary>Support views</summary>
-        <div class="idb-copy">These are support surfaces. Normal prep should use the primary card above.</div>
-        <div class="idb-state-tabs" aria-label="Support views">
-          ${views.map(([view, label, enabled]) => `
-            <button class="idb-tab ${active === view ? 'idb-selected' : ''} ${enabled ? '' : 'idb-locked'}" data-idb-view="${escapeHtml(enabled ? view : 'plan')}" ${enabled ? '' : 'aria-disabled="true" title="Complete the current step first"'}>
-              ${escapeHtml(label)}
-            </button>
-          `).join('')}
-        </div>
-      </details>
+      <div class="idb-w444-footer-actions">
+        <button class="idb-secondary" type="button" data-idb-w444-troubleshoot-export>Troubleshoot / Export</button>
+      </div>
     `;
   }
 
@@ -27890,7 +28376,7 @@
       return `
         ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
         <details class="idb-technical-details idb-w417-support-troubleshoot">
-          <summary>Support / troubleshoot</summary>
+          <summary>Proof quality details</summary>
           <div class="idb-card idb-accent">
             <div class="idb-section-title">Proof quality review</div>
             <div class="idb-copy">Returned records and Open links exist, but FORGE detected naming or setup quality issues. Review the blocker before presenting this proof as clean.</div>
@@ -27932,7 +28418,7 @@
     return `
       ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
       <details class="idb-technical-details idb-w417-support-troubleshoot">
-        <summary>Support / troubleshoot</summary>
+        <summary>Proof path details</summary>
         <div class="idb-card idb-accent idb-w97-run-selector">
           <div class="idb-section-title">Supporting NetSuite path</div>
           <div class="idb-copy">Use this only when you need the full ordered path, live controls, or evidence detail behind the cockpit.</div>
@@ -28190,6 +28676,7 @@
     const feedbackPlaceholder = feedbackPlaceholderContractW259();
     const activePanel = renderW416ConsultantDayInLife(state, lane, page, recommendation, selectedMove, action, summary);
     return `
+      <div class="idb-w444-resize-handle" data-idb-w444-resize-handle title="Resize drawer"></div>
       <div class="idb-header">
         <div class="idb-title-row">
           <div class="idb-forge-brand">
@@ -28207,6 +28694,11 @@
             >${escapeHtml(feedbackPlaceholder.buttonLabel)}</button>
           </div>
           <button class="idb-icon-button" data-idb-close title="Close drawer">×</button>
+        </div>
+        <div class="idb-w444-resize-presets" aria-label="Drawer width presets">
+          <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-width-preset="compact">Compact</button>
+          <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-width-preset="standard">Standard</button>
+          <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-width-preset="wide">Wide</button>
         </div>
       </div>
       <div class="idb-body">
@@ -28381,6 +28873,116 @@
       copied: true,
       message: model.ui.successCopy
     });
+  }
+
+  function w444TroubleshootExportPayload(state) {
+    const lane = getLane(state);
+    const pageContext = currentPageContext();
+    const recommendation = recommendMove(lane, pageContext);
+    const finalNavigation = dccFinalNavigationModel(state, lane, pageContext, recommendation);
+    const toggleReceipt = selectedBuildToggleReceiptW440(state, lane, finalNavigation);
+    const productModel = productCandidateModelW444(state, finalNavigation);
+    const diagnostics = arrayValue(finalNavigation.reviewObjects).concat(arrayValue(finalNavigation.scriptPivotObjects))
+      .filter((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
+    const runner = state && state.integratedBuildRunnerResult || {};
+    const capture = runner.resultCapture || {};
+    const intake = normalizedIntake(state || {});
+    return {
+      schema: 'idb.w444-troubleshoot-export.v1',
+      drawerVersion: DRAWER_USERSCRIPT_VERSION,
+      drawerBlock: CURRENT_UX_BLOCK_W346,
+      customer: intake.customer,
+      website: intake.website,
+      notesDigest: compactText(intake.notes || '', 240),
+      selectedToggles: toggleReceipt,
+      selectedProduct: productModel.primaryProductCandidate,
+      productCandidates: productModel,
+      returnedRecords: arrayValue(finalNavigation.reviewObjects),
+      openLinkStatus: finalNavigation.linkAuthoritySummary,
+      routingWorkOrderDiagnostics: diagnostics,
+      extId: firstNonBlank(runner.idempotencyToken, capture.idempotencyToken, state && state.dccFinalNamingResult && state.dccFinalNamingResult.generated && state.dccFinalNamingResult.generated.extId),
+      taskId: firstNonBlank(runner.runnerTaskId, capture.runnerTaskId),
+      fileId: firstNonBlank(runner.fileId, capture.fileId),
+      taskFolder: firstNonBlank(runner.folderId, capture.resultCaptureFolderId),
+      currentNetSuiteUrl: window.location && window.location.href || '',
+      recentVisibleStatusSummary: {
+        finalNavigationStatus: finalNavigation.status,
+        runCanUseImportedFinalNames: finalNavigation.runCanUseImportedFinalNames,
+        proofReviewAvailable: finalNavigation.proofReviewAvailable,
+        returnedCount: arrayValue(finalNavigation.reviewObjects).length,
+        diagnosticsCount: diagnostics.length
+      },
+      noRegression: {
+        noDrawerWrites: true,
+        noSuiteScriptInvocationFromDrawer: true,
+        nllmAdvisoryOnly: true
+      }
+    };
+  }
+
+  async function exportTroubleshootW444(state) {
+    const payload = w444TroubleshootExportPayload(state);
+    const text = JSON.stringify(payload, null, 2);
+    let copied = false;
+    try {
+      if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      }
+    } catch (err) {
+      copied = false;
+    }
+    if (!copied) {
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `forge-w444-troubleshoot-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+    trace('w444_troubleshoot_exported', {
+      copied,
+      diagnosticsCount: payload.routingWorkOrderDiagnostics.length,
+      returnedCount: payload.returnedRecords.length,
+      noDrawerWrites: true,
+      noSuiteScriptInvocationFromDrawer: true
+    });
+    return payload;
+  }
+
+  function clearRunStateW444(state, keepRequest) {
+    const intake = normalizedIntake(state || {});
+    const preserved = keepRequest ? {
+      intake,
+      customerName: state.customerName,
+      selectedLaneId: state.selectedLaneId,
+      toggles: state.toggles,
+      currentToggles: state.currentToggles,
+      briefPrepared: state.briefPrepared,
+      acceptedPacket: state.acceptedPacket,
+      activeView: 'review'
+    } : {
+      activeView: 'plan',
+      open: state.open
+    };
+    [
+      'dccFinalNamingResult',
+      'integratedBuildRunnerResult',
+      'completedRunnerResultImportCommitFromPollCtaV1',
+      'runnerSidecarDisplayResultJsonW431',
+      'selectedResultRecords',
+      'selectedBuildToggleReceiptW440',
+      'lastSubmittedBuildToggleReceiptW440',
+      'buildWaitingState',
+      'w444CockpitDetail',
+      'w444ProductCandidateOpen',
+      'w444UseFreshCandidateNextRun'
+    ].forEach((key) => { delete state[key]; });
+    Object.assign(state, preserved);
+    return state;
   }
 
   function wire(root, state) {
@@ -29291,6 +29893,88 @@
     });
     const close = root.querySelector('[data-idb-close]');
     if (close) close.addEventListener('click', () => toggle(false, state));
+    root.querySelectorAll('[data-idb-w444-detail]').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.w444CockpitDetail = button.getAttribute('data-idb-w444-detail') || 'roi';
+        saveState(state);
+        trace('w444_cockpit_detail_selected', { detail: state.w444CockpitDetail });
+        draw(root, state);
+      });
+    });
+    root.querySelectorAll('[data-idb-w444-fresh-candidate-intent]').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.w444UseFreshCandidateNextRun = {
+          schema: 'idb.w444-fresh-candidate-intent.v1',
+          intent: 'use_fresh_candidate_next_run',
+          hint: button.getAttribute('data-idb-w444-fresh-candidate-intent') || '',
+          writeAuthority: 'none',
+          creationAllowed: false,
+          noDrawerWrites: true
+        };
+        saveState(state);
+        trace('w444_fresh_candidate_intent_saved', state.w444UseFreshCandidateNextRun);
+        draw(root, state);
+      });
+    });
+    root.querySelectorAll('[data-idb-w444-clear-run]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const keepRequest = button.getAttribute('data-idb-w444-clear-run') === 'keep';
+        clearRunStateW444(state, keepRequest);
+        saveState(state);
+        trace('w444_run_state_cleared', { keepRequest, noDrawerWrites: true });
+        draw(root, state);
+      });
+    });
+    root.querySelectorAll('[data-idb-w444-troubleshoot-export]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        button.textContent = 'Exporting...';
+        await exportTroubleshootW444(state);
+        draw(root, state);
+      });
+    });
+    root.querySelectorAll('[data-idb-w444-width-preset]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const preset = button.getAttribute('data-idb-w444-width-preset') || 'standard';
+        const contract = drawerWidthContractW444();
+        const nextWidth = writeDrawerWidthW444(contract.presets[preset] || contract.presets.standard, preset);
+        applyDrawerWidthW444(root, nextWidth);
+        applyWorkspaceFit(state.open);
+        trace('w444_drawer_width_preset_selected', { preset, width: nextWidth });
+      });
+    });
+    const resizeHandle = root.querySelector('[data-idb-w444-resize-handle]');
+    if (resizeHandle) {
+      let resizeState = null;
+      resizeHandle.addEventListener('pointerdown', (event) => {
+        resizeState = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startWidth: root.getBoundingClientRect().width || readDrawerWidthW444()
+        };
+        if (resizeHandle.setPointerCapture) resizeHandle.setPointerCapture(event.pointerId);
+        event.preventDefault();
+      });
+      resizeHandle.addEventListener('pointermove', (event) => {
+        if (!resizeState || resizeState.pointerId !== event.pointerId) return;
+        const nextWidth = clampDrawerWidthW444(resizeState.startWidth + (resizeState.startX - event.clientX));
+        applyDrawerWidthW444(root, nextWidth);
+        event.preventDefault();
+      });
+      const finishResize = (event) => {
+        if (!resizeState || resizeState.pointerId !== event.pointerId) return;
+        const finalWidth = writeDrawerWidthW444(root.getBoundingClientRect().width || readDrawerWidthW444());
+        applyDrawerWidthW444(root, finalWidth);
+        applyWorkspaceFit(state.open);
+        trace('w444_drawer_resized', { width: finalWidth, preset: drawerWidthPresetW444(finalWidth) });
+        resizeState = null;
+        if (resizeHandle.releasePointerCapture) {
+          try { resizeHandle.releasePointerCapture(event.pointerId); } catch (err) {}
+        }
+      };
+      resizeHandle.addEventListener('pointerup', finishResize);
+      resizeHandle.addEventListener('pointercancel', () => { resizeState = null; });
+    }
     const feedbackPlaceholderButton = root.querySelector('[data-idb-feedback-placeholder]');
     if (feedbackPlaceholderButton) feedbackPlaceholderButton.addEventListener('click', (event) => {
       event.preventDefault();
@@ -29541,6 +30225,7 @@
       trace('w237_saved_completed_result_import_repaired', completedResultRepair);
     }
     root.innerHTML = renderDrawer(state);
+    applyDrawerWidthW444(root);
     wire(root, state);
     requestWebsiteResolverServiceEvidence(state, root);
   }
@@ -29578,6 +30263,7 @@
     state.pageContext = currentPageContext();
     saveState(state);
     if (drawer) drawer.classList.toggle('idb-open', open);
+    if (drawer) applyDrawerWidthW444(drawer);
     if (rail) rail.setAttribute('aria-expanded', open ? 'true' : 'false');
     const workspaceFit = applyWorkspaceFit(open);
     if (open) {
@@ -29792,6 +30478,7 @@
     drawer.setAttribute('aria-label', 'Intelligent Demo Builder drawer');
     drawer.setAttribute(SHELL_ATTR, 'drawer');
     drawer.setAttribute(INSTANCE_ATTR, RUNTIME_INSTANCE_ID);
+    applyDrawerWidthW444(drawer);
     draw(drawer, state);
 
     document.body.appendChild(rail);
@@ -29801,6 +30488,11 @@
     const handleStorage = (event) => {
       if (event.key === LAUNCHER_POSITION_STORAGE_KEY) {
         applyLauncherPosition(rail, readLauncherPosition());
+        return;
+      }
+      if (event.key === DRAWER_WIDTH_STORAGE_KEY_W444) {
+        applyDrawerWidthW444(drawer, readDrawerWidthW444());
+        applyWorkspaceFit(state.open);
         return;
       }
       if (event.key !== STORAGE_KEY || !event.newValue) return;
@@ -30071,6 +30763,13 @@
       cockpitFlowGroupsW442,
       cockpitWorkflowVisualW443,
       cockpitValueNarrativeW443,
+      productCandidateModelW444,
+      cockpitHealthPanelW444,
+      roiCompetitiveDetailModelW444,
+      lastRunReceiptW444,
+      w444TroubleshootExportPayload,
+      drawerWidthContractW444,
+      clearRunStateW444,
       industryAwareInputLabelW443,
       selectedBuildToggleReceiptW440,
       syncBuildTogglesFromVisibleFieldsW440,

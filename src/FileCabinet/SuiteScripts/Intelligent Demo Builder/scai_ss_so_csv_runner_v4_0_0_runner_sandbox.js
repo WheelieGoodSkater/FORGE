@@ -4513,6 +4513,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
     if (isSiete && /taco\s+shells?/.test(lower)) addCandidate('Siete Taco Shells', 'Siete Taco Shells');
     if (isSiete && /seasoning\s+mix/.test(lower)) addCandidate('Siete Seasoning Mixes', 'Siete Seasoning Mixes');
+    if (isSiete) {
+      if (/tortilla\s+chips?|chip\b|chips\b/.test(lower)) addCandidate('Siete Grain Free Tortilla Chips', 'Grain Free Tortilla Chips');
+      addCandidate('Siete Taco Shells', 'Taco Shells');
+      addCandidate('Siete Seasoning Mixes', 'Seasoning Mixes');
+      addCandidate('Siete Cookies', 'Cookies');
+      addCandidate('Siete Beans', 'Beans');
+      addCandidate('Siete Sauces', 'Sauces');
+    }
     const sellableUnit = /6\.5\s*oz/i.test(hay) ? '6.5 oz bag' : (/oz/i.test(hay) ? 'retail bag' : 'retail unit');
     if (isSiete && /tortilla\s+chips?/.test(lower) && websiteTermsUsed.indexOf('tortilla chips') === -1) websiteTermsUsed.push('tortilla chips');
     if ((isKettle || !isSiete) && /kettle\s+chips?|potato\s+chips?|chips/.test(lower) && websiteTermsUsed.indexOf('kettle chips') === -1 && !isSiete) websiteTermsUsed.push('kettle chips');
@@ -4663,6 +4671,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       schema: 'idb.w432-product-build-plan.v1',
       source: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
       confidence: productTerms.selectedProductCandidate ? 'high' : 'low',
+      primaryProductCandidate: productTerms.selectedProductCandidate || productName,
+      selectedProductReason: productTerms.selectedProductCandidate ? 'Selected from website/product evidence terms for this run.' : 'Selected by deterministic fallback because website product evidence was thin.',
+      productCandidateSource: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
+      nextCandidateHint: alternateProductCandidates[0] || '',
       productName,
       productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family')),
       brandName,
@@ -6443,6 +6455,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         demoPath: args.flowState && args.flowState.label || ''
       },
       visibleProductNarrativeW439: resultNames._visibleProductNarrativeW439 || null,
+      routingResult: args.routingResult || null,
+      routingDiagnostics: args.routingResult || null,
+      routingOperations: operationPlanRecords,
       sidecarGeneratedNamesJson,
       partialGeneratedNamesJson: sidecarGeneratedNamesJson,
       finalGeneratedNamesJson: null

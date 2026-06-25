@@ -195,7 +195,8 @@
     "harness:build-toggle-receipt-w440": "node archive/tools/run_w432_product_build_plan_naming_harness.js",
     "harness:mfg-record-graph-naming-w441": "node archive/tools/run_w441_mfg_record_graph_naming_harness.js",
     "harness:industry-native-mfg-flow-w442": "node archive/tools/run_w442_industry_native_mfg_flow_harness.js",
-    "harness:wip-routing-cockpit-ux-w443": "node archive/tools/run_w443_wip_routing_and_cockpit_ux_harness.js"
+    "harness:wip-routing-cockpit-ux-w443": "node archive/tools/run_w443_wip_routing_and_cockpit_ux_harness.js",
+    "harness:cockpit-truth-resize-w444": "node archive/tools/run_w444_cockpit_truth_and_resize_harness.js"
   },
   "keywords": [
     "netsuite",

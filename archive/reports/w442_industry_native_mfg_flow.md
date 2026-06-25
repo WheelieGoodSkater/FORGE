@@ -1,6 +1,6 @@
-# W442 Industry-Native Manufacturing Flow
+# W443 Industry-Native Manufacturing Flow
 
-W442 validates industry-native manufacturing naming, flow-grouped cockpit rows, WIP routing readiness, and cross-industry taxonomy coverage.
+W443 validates industry-native manufacturing naming, flow-grouped cockpit rows, WIP routing readiness, and cross-industry taxonomy coverage.
 
 - PASS w442-marker-updated
 - PASS w442-siete-mfg-uses-industry-native-output

@@ -159,10 +159,10 @@ function main() {
   });
 
   assertCase(results, 'w440-marker-updated',
-    /@version\s+1\.0\.50/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.50';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W442';"),
-    'Drawer should identify W442 / 1.0.50 while preserving W432 product build plan naming.');
+    /@version\s+1\.0\.51/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.51';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W443';"),
+    'Drawer should identify W443 / 1.0.51 while preserving W432 product build plan naming.');
 
   const mfgToggleSyncState = motionState(drawerHooks, {
     selectedLaneId: 'food_beverage',
@@ -527,7 +527,7 @@ function main() {
   const mfgCockpitText = stripHtml(mfgCockpitHtml);
   assertCase(results, 'w436-mfg-copy-keeps-manufacturing-language',
     /\bProduction Batch\b/i.test(mfgCockpitText) &&
-      /\bcomponent\b/i.test(mfgCockpitText) &&
+      /\b(?:input|ingredient)\b/i.test(mfgCockpitText) &&
       /\bBOM\b/i.test(mfgCockpitText) &&
       /\bWork Order\b/i.test(mfgCockpitText) &&
       /Sea Salt & Vinegar|Kettle Potato Slice Input/i.test(mfgCockpitText),
@@ -718,7 +718,12 @@ function main() {
         openRecord('customer', 'Customer', 'Siete Foods Customer Account', 'customer'),
         openRecord('sales_order', 'Sales Order', 'SO27223', 'sales-order'),
         openRecord('assembly', 'Assembly', 'Siete Maíz Sea Salt Tortilla Chips Finished Good', 'assembly'),
-        openRecord('routing', 'Routing', 'Routing - Siete Maíz Sea Salt Tortilla Chips', 'routing')
+        openRecord('routing', 'Routing', 'Routing - Siete Maíz Sea Salt Tortilla Chips', 'routing'),
+        openRecord('operation_1', 'Operation 1', 'Mix Masa', 'operation-1'),
+        openRecord('operation_2', 'Operation 2', 'Sheet and Cut Tortilla Chips', 'operation-2'),
+        openRecord('operation_3', 'Operation 3', 'Fry in Avocado Oil', 'operation-3'),
+        openRecord('operation_4', 'Operation 4', 'Season with Sea Salt', 'operation-4'),
+        openRecord('operation_5', 'Operation 5', 'Bag, Case Pack, and QC', 'operation-5')
       ],
       componentItems: [
         openRecord('component_item', 'Component item 1', 'Siete Corn Masa Input', 'component-1', { componentIndex: 0 })

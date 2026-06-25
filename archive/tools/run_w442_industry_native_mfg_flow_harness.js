@@ -171,10 +171,10 @@ function main() {
   });
 
   assertCase(results, 'w442-marker-updated',
-    /@version\s+1\.0\.50/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.50';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W442';"),
-    'Drawer should identify W442 / 1.0.50.');
+    /@version\s+1\.0\.51/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.51';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W443';"),
+    'Drawer should identify W443 / 1.0.51.');
 
   const mfgSurface = renderSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: false }, sieteRecords(sietePlan, false));
   const mfgText = mfgSurface.text;
@@ -263,16 +263,16 @@ function main() {
       drawer.includes('industryNativeManufacturedItemName') &&
       drawer.includes('writeAuthority') &&
       drawer.includes('creationAllowed'),
-    'N/LLM advisory request should ask for W442 names without write authority.');
+    'N/LLM advisory request should ask for W443 names without write authority.');
 
-  const report = `# W442 Industry-Native Manufacturing Flow
+  const report = `# W443 Industry-Native Manufacturing Flow
 
-W442 validates industry-native manufacturing naming, flow-grouped cockpit rows, WIP routing readiness, and cross-industry taxonomy coverage.
+W443 validates industry-native manufacturing naming, flow-grouped cockpit rows, WIP routing readiness, and cross-industry taxonomy coverage.
 
 ${results.map((result) => `- ${result.pass ? 'PASS' : 'FAIL'} ${result.id}`).join('\n')}
 `;
   fs.writeFileSync(reportPath, report);
-  printResults('W442 industry-native manufacturing flow harness', results);
+  printResults('W443 industry-native manufacturing flow harness', results);
 }
 
 main();

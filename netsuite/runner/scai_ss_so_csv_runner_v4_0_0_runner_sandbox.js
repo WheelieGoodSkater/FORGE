@@ -1385,6 +1385,86 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // WIP Routing (create + attach)
   // ----------------------------
+  function normalizeRoutingTermW443(value) {
+    return str(value)
+      .replace(/í/g, 'i')
+      .replace(/Í/g, 'I')
+      .replace(/á/g, 'a')
+      .replace(/é/g, 'e')
+      .replace(/ó/g, 'o')
+      .replace(/ú/g, 'u')
+      .toLowerCase();
+  }
+
+  function routingProductTermsW443(productBuildPlan) {
+    const source = [
+      productBuildPlan && productBuildPlan.productName,
+      productBuildPlan && productBuildPlan.productFamily,
+      productBuildPlan && productBuildPlan.routingName,
+      productBuildPlan && productBuildPlan.industryNativeManufacturedItemName
+    ].join(' ');
+    const words = normalizeRoutingTermW443(source).split(/[^a-z0-9]+/).filter(function (word) {
+      return word && word.length > 3 && ['routing', 'siete', 'kettle', 'brand', 'foods', 'chips', 'case', 'pack', 'production', 'batch'].indexOf(word) < 0;
+    });
+    const seen = {};
+    return words.filter(function (word) {
+      if (seen[word]) return false;
+      seen[word] = true;
+      return true;
+    }).slice(0, 8);
+  }
+
+  function validateRoutingForProductPlanW443(routingCandidate, productBuildPlan, context) {
+    const candidate = routingCandidate || {};
+    const expectedRoutingName = str(productBuildPlan && productBuildPlan.routingName) || str(context && context.expectedRoutingName) || '';
+    const actualRoutingName = str(candidate.name || candidate.routingName || candidate.actualRoutingName || '');
+    const actualRoutingId = Number(candidate.id || candidate.routingId || candidate.actualRoutingId || 0) || null;
+    const actualText = normalizeRoutingTermW443([actualRoutingName, candidate.memo || ''].join(' '));
+    const productTerms = routingProductTermsW443(productBuildPlan);
+    const productTermsMatched = productTerms.filter(function (term) { return actualText.indexOf(term) >= 0; });
+    const productTermsMissing = productTerms.filter(function (term) { return actualText.indexOf(term) < 0; });
+    const staleName = /\b(cookie|parfait|fudge|baking|dough)\b/i.test(actualRoutingName);
+    const valid = !!actualRoutingName && !staleName && (!productTerms.length || productTermsMatched.length >= Math.min(2, productTerms.length));
+    return {
+      schema: 'idb.w443-routing-product-validation.v1',
+      valid,
+      reason: valid ? 'routing_matches_product_plan' : (staleName ? 'stale_routing_name_from_prior_product' : 'routing_name_missing_current_product_terms'),
+      expectedRoutingName,
+      actualRoutingName,
+      actualRoutingId,
+      stale: !valid,
+      productTermsMatched,
+      productTermsMissing
+    };
+  }
+
+  function buildRoutingDiagnosticRecordW443({ resultNames, productPlan, routingResult, ids }) {
+    const diagnostic = routingResult && (routingResult.routingFailure || routingResult.diagnostics || routingResult.routingValidation) || {};
+    const expectedRoutingName = str(diagnostic.expectedRoutingName) || str(productPlan && productPlan.routingName) || str(resultNames && resultNames.routing_name) || 'Routing';
+    return {
+      role: 'routingDiagnostic',
+      label: 'Routing Diagnostic',
+      type: 'manufacturingrouting_diagnostic',
+      recordType: 'manufacturingrouting_diagnostic',
+      name: `Routing Diagnostic - ${expectedRoutingName}`,
+      internalId: '',
+      id: '',
+      url: '',
+      requestedWip: true,
+      effectiveWip: true,
+      expectedRoutingName,
+      staleRoutingName: diagnostic.actualRoutingName || diagnostic.staleRoutingName || '',
+      staleRoutingId: diagnostic.actualRoutingId || diagnostic.staleRoutingId || null,
+      assemblyId: Number(ids && ids.assemblyId || diagnostic.assemblyId || 0) || null,
+      bomId: Number(ids && ids.bomId || diagnostic.bomId || 0) || null,
+      bomRevisionId: Number(ids && ids.bomRevId || diagnostic.bomRevisionId || 0) || null,
+      attemptedOperationNames: productPlan && productPlan.operationNames || [],
+      reason: diagnostic.reason || diagnostic.failureStage || 'routing_not_created_or_not_product_specific',
+      errorName: diagnostic.errorName || '',
+      errorMessage: diagnostic.errorMessage || ''
+    };
+  }
+
   function createAndAttachRoutingIfPossible({ subsidiaryId, locationId, bomId, assemblyId, extId, prospect, signalText, workCenterSearchId, names }) {
     const subs = Number(subsidiaryId);
     const loc = locationId ? Number(locationId) : null;
@@ -1436,11 +1516,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const t2 = pick(templates, ['dispense','fill','dispensing']) || templates[Math.min(1, templates.length - 1)];
     const t3 = pick(templates, ['pack','package','packaging','case']) || templates[Math.min(2, templates.length - 1)];
 
-    const routingName = trimLen((names && names.routing_name) ? names.routing_name : `SCAI Routing - ${prospect} - BOM ${bomId}`, 80).slice(0, 60);
+    const productPlanW443 = names && names._productBuildPlanW432 || null;
+    const routingName = trimLen((names && names.routing_name) ? names.routing_name : ((productPlanW443 && productPlanW443.routingName) ? productPlanW443.routingName : `SCAI Routing - ${prospect} - BOM ${bomId}`), 80).slice(0, 60);
     const routingMemo = `SCAI Demo Reset: ${extId} | ${prospect} | WIP routing`;
     const discoveredAssemblyRoutingId = findManagedAssemblyRoutingId({ assemblyId, extId });
     const searchedRoutingId = discoveredAssemblyRoutingId ? null : findManagedRoutingIdByBom({ bomId, subsidiaryId: subs, extId, preferredName: routingName });
-    const existingRoutingId = discoveredAssemblyRoutingId || searchedRoutingId || null;
+    const candidateExistingRoutingId = discoveredAssemblyRoutingId || searchedRoutingId || null;
+    const existingRoutingName = candidateExistingRoutingId ? readRecordDisplayName('manufacturingrouting', candidateExistingRoutingId, '') : '';
+    const existingRoutingValidation = candidateExistingRoutingId
+      ? validateRoutingForProductPlanW443({ id: candidateExistingRoutingId, name: existingRoutingName }, productPlanW443, { expectedRoutingName: routingName })
+      : null;
+    const existingRoutingId = existingRoutingValidation && existingRoutingValidation.valid === false ? null : candidateExistingRoutingId;
 
     log.audit({
       title: `WIP managed routing decision [${VERSION}]`,
@@ -1449,6 +1535,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         existingRoutingId,
         discoveredAssemblyRoutingId,
         searchedRoutingId,
+        existingRoutingValidation,
         createNew: !existingRoutingId
       })
     });
@@ -1572,7 +1659,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         details: JSON.stringify({
           routingId,
           existingRoutingId,
-          chosen
+          chosen,
+          staleRoutingIgnored: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null
         })
       });
     } catch (e) {
@@ -1585,10 +1673,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         assemblyId,
         existingRoutingId,
         routingId,
-        routingName,
-        chosen,
-        wipRequested: true,
-        coreRecordsCreatedSafely: !!(assemblyId && bomId)
+      routingName,
+      chosen,
+      wipRequested: true,
+      coreRecordsCreatedSafely: !!(assemblyId && bomId),
+      routingValidation: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null
       });
     }
 
@@ -1610,11 +1699,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       decision: existingRoutingId ? 'reused-existing-routing' : 'created-new-routing',
       status: 'attached',
       attachResult,
-      chosen
+      chosen,
+      routingValidation: validateRoutingForProductPlanW443({ id: routingId, name: routingName }, productPlanW443, { expectedRoutingName: routingName }),
+      staleRoutingIgnored: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null
     };
   }
 
-  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely }) {
+  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation }) {
     const diagnostic = {
       status: 'failed_best_effort',
       failureStage: failureStage || 'unknown',
@@ -1627,6 +1718,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingId: Number(routingId || 0) || null,
       existingRoutingId: Number(existingRoutingId || 0) || null,
       routingName: routingName || '',
+      expectedRoutingName: routingValidation && routingValidation.expectedRoutingName || routingName || '',
+      actualRoutingName: routingValidation && routingValidation.actualRoutingName || '',
+      actualRoutingId: routingValidation && routingValidation.actualRoutingId || null,
+      reason: routingValidation && routingValidation.reason || '',
       wipRequested: !!wipRequested,
       coreRecordsCreatedSafely: !!coreRecordsCreatedSafely,
       recommendedOperatorNextStep: 'Review BOM validity for the assembly, subsidiary, location, and manufacturing routing before re-running WIP routing.'
@@ -6183,6 +6278,30 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       internalId: args.routingId,
       label: 'Manufacturing Routing'
     }) : null;
+    const routingDiagnosticRecord = args.enableWip && !routingRecord
+      ? buildRoutingDiagnosticRecordW443({
+        resultNames,
+        productPlan: productPlanW441,
+        routingResult: args.routingResult,
+        ids: args.ids
+      })
+      : null;
+    const operationPlanRecords = args.enableWip && productPlanW441 && Array.isArray(productPlanW441.operationNames)
+      ? productPlanW441.operationNames.filter(Boolean).map((operationName, index) => ({
+        role: `operation${index + 1}`,
+        label: `Operation ${index + 1}`,
+        type: routingRecord ? 'manufacturingrouting_operation' : 'manufacturingrouting_operation_plan',
+        recordType: routingRecord ? 'manufacturingrouting_operation' : 'manufacturingrouting_operation_plan',
+        name: str(operationName),
+        recordName: str(operationName),
+        internalId: routingRecord ? String(routingRecord.internalId || '') : '',
+        id: routingRecord ? String(routingRecord.id || '') : '',
+        url: routingRecord ? String(routingRecord.url || '') : '',
+        operationIndex: index,
+        plannedOnly: !routingRecord,
+        diagnostic: routingRecord ? null : routingDiagnosticRecord
+      }))
+      : [];
     const demoTransaction = buildPendingIdbDemoTransactionForResult({
       prospect,
       website: args.website,
@@ -6204,6 +6323,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (workOrderRecord) records.workOrder = workOrderRecord;
     if (workOrderDiagnosticRecord) records.workOrderDiagnostic = workOrderDiagnosticRecord;
     if (routingRecord) records.routing = routingRecord;
+    if (routingDiagnosticRecord) records.routingDiagnostic = routingDiagnosticRecord;
+    operationPlanRecords.forEach((recordValue, index) => { records[`operation${index + 1}`] = recordValue; });
 
     const sidecarGeneratedNamesJson = {
       schema: 'idb.runner-sidecar-result-json.v1',
@@ -6236,6 +6357,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       workOrder: workOrderRecord,
       workOrderDiagnostics: workOrderDiagnosticRecord,
       routing: routingRecord,
+      routingDiagnostic: routingDiagnosticRecord,
+      routingOperations: operationPlanRecords,
       componentItems: args.enableManufacturing ? manufacturingComponents : [componentItem].filter(Boolean),
       assemblyBomTelemetry: args.assemblyBomTelemetry || null,
       workOrderTelemetry: args.workOrderTelemetry || null,
@@ -7177,7 +7300,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       applyToggleAwareNamingGuardrails,
       cleanCustomerFacingCreatedNameW441,
       customerFacingRunSuffixW432,
-      resolveRoutingNames
+      resolveRoutingNames,
+      validateRoutingForProductPlanW443
     }
   };
 });

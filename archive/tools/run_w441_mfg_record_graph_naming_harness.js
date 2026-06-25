@@ -178,10 +178,10 @@ function main() {
   const sietePlan = runnerHooks.productBuildPlanW432(sieteBase);
 
   assertCase(results, 'w441-marker-updated',
-    /@version\s+1\.0\.50/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.50';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W442';"),
-    'Drawer should identify W442 / 1.0.50.');
+    /@version\s+1\.0\.51/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.51';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W443';"),
+    'Drawer should identify W443 / 1.0.51.');
 
   const mfgSurface = renderSieteSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: false }, {
     productBuildPlanW432: sietePlan,
@@ -207,9 +207,9 @@ function main() {
       /Demand Order\s+SO27224/.test(mfgText) &&
       /Sellable Item\s+Siete Maíz Sea Salt Tortilla Chips 12-Count Case Pack/.test(mfgText) &&
       /Production Batch\s+Siete Maíz Sea Salt Tortilla Chip Production Batch/.test(mfgText) &&
-      /Component Input 1\s+Siete Corn Masa Input/.test(mfgText) &&
-      /Component Input 2\s+Avocado Oil Frying Input/.test(mfgText) &&
-      /Component Input 3\s+Sea Salt Seasoning and Retail Bag Packaging/.test(mfgText) &&
+      /Ingredient Input 1\s+Siete Corn Masa Input/.test(mfgText) &&
+      /Ingredient Input 2\s+Avocado Oil Frying Input/.test(mfgText) &&
+      /Ingredient \/ Packaging Input 3\s+Sea Salt Seasoning and Retail Bag Packaging/.test(mfgText) &&
       /Bill of Materials\s+BOM - Siete Maíz Sea Salt Tortilla Chips/.test(mfgText) &&
       /BOM Revision\s+Revision 1 - Siete Maíz Sea Salt Tortilla Chips/.test(mfgText) &&
       /Work Order\s+WO - Siete Maíz Sea Salt Tortilla Chips/.test(mfgText),

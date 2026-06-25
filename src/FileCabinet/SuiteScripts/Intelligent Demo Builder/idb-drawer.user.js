@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.50
+// @version      1.0.51
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.50';
-  const CURRENT_UX_BLOCK_W346 = 'W442';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.51';
+  const CURRENT_UX_BLOCK_W346 = 'W443';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14606,12 +14606,13 @@
       wip: {
         routingName: `Routing - ${productBaseName}`,
         operationNames,
-        cockpitSubtitle: 'WIP routing and production readiness',
-        storyHeadline: `Prove routed production readiness for ${productBaseName}; then connect component inputs, operation sequence, work order execution, and finished case-pack output.`,
-        proofMove: `Move through ${operationNames.join(', ')} with component inputs, Work Order execution, and finished case-pack output.`,
-        roiClaim: `${customerName} can protect routed production readiness.`,
-        competitiveQuestion: 'How do we know routed production readiness is current enough to trust?',
-        competitiveWatchOut: 'If competitive pressure comes up, ask which routing and operation workflow they trust today, then prove the same decision through returned records.',
+        cockpitSubtitle: 'WIP line-flow readiness',
+        storyHeadline: `Prove routed tortilla-chip production readiness from demand through line flow.`,
+        proofMove: `Connect customer demand, ingredient availability, production batch, routing operations, finished case output, and NetSuite financial impact.`,
+        roiClaim: `${customerName} can protect production batch reliability before committing customer orders.`,
+        roiDetail: 'Baseline needed: current miss rate, ingredient shortage delay, packaging readiness delay, or manual schedule reconciliation.',
+        competitiveQuestion: 'How do we prove NetSuite has the fresher production signal than a planning spreadsheet or disconnected MRP tool?',
+        competitiveWatchOut: 'If competitive pressure comes up, ask which signal they trust today: ingredient availability, line capacity, Work Order status, routing progress, or finished case output.',
         supportPathLabel: 'WIP routing proof'
       },
       rejectedVisibleTerms: mode === 'distribution'
@@ -20430,6 +20431,17 @@
         genericFinishedGoodShouldBeReplacedByIndustryNativeOutput: true,
         advisoryOnly: { writeAuthority: 'none', creationAllowed: false }
       },
+      wipRoutingAndValueContractW443: {
+        schema: 'idb.w443-wip-routing-value-advisory-contract.v1',
+        mustReturn: ['cockpitValueNarrative', 'roiHeadline', 'roiDetail', 'competitiveQuestion', 'competitiveWatchOut', 'source', 'confidence', 'industrySpecificRoutingOperationNames'],
+        selectedWipRequiresProductSpecificRoutingOrDiagnostic: true,
+        staleRoutingNamesForbiddenInVisibleProof: ['Cookie Production Line', 'Mixing & Dough Preparation', 'Baking & Cooling', 'Fudge Coating & Packaging'],
+        routingOperationsMustUseWebsiteProductAndIndustryTerms: true,
+        neverCreateRecords: true,
+        neverInvokeSuiteScript: true,
+        neverAlterToggles: true,
+        advisoryOnly: { writeAuthority: 'none', creationAllowed: false }
+      },
       createNewItemOnly: {
         requiredNameBasis: ['website product/flavor/pack term', 'distribution/replenishment term'],
         allowedTerms: ['SKU', 'item', 'case pack', 'replenishment', 'availability', 'allocation', 'fulfillment', 'retail case', 'channel supply'],
@@ -21948,14 +21960,33 @@
     if (/assembly|finished/.test(labelText)) return narrative && narrative.manufacturing && narrative.manufacturing.manufacturingRecordLabel || 'Production Batch';
     if (/bom_revision|bom revision/.test(labelText)) return 'BOM Revision';
     if (/\bbom\b|bill of materials/.test(labelText)) return 'Bill of Materials';
-    if (/work_order_diagnostic|diagnostic/.test(labelText)) return 'Work Order Diagnostic';
-    if (/work_order|work order|workorder/.test(labelText)) return 'Work Order';
+    if (/routing.*diagnostic|routingdiagnostic/.test(labelText)) return 'Routing Diagnostic';
     if (/routing/.test(labelText)) return 'Routing';
+    if (/work_order_diagnostic|work order diagnostic/.test(labelText)) return 'Work Order Diagnostic';
+    if (/work_order|work order|workorder/.test(labelText)) return 'Work Order';
+    if (/operation/.test(labelText)) {
+      const roleMatch = role.match(/operation[_-]?(\d+)/);
+      const index = roleMatch ? Math.max(0, Number(roleMatch[1]) - 1) : Math.max(0, Number(item && (item.operationIndex || item.index) || 0) || 0);
+      return `Operation ${index + 1}`;
+    }
     if (/component|ingredient|material|supporting sku/.test(labelText)) {
       const index = Math.max(0, Number(item && (item.componentIndex || item.index) || 0) || 0);
-      return `Component Input ${index + 1}`;
+      return industryAwareInputLabelW443(item, narrative, index);
     }
     return baseLabel;
+  }
+
+  function industryAwareInputLabelW443(item, narrative, index) {
+    const itemText = `${item && (item.name || item.recordName || item.label || item.consultantLabel || '') || ''} ${narrative && narrative.productBaseName || ''}`.toLowerCase();
+    const sequence = Math.max(0, Number(index || 0) || 0) + 1;
+    const isFood = /\b(siete|kettle|chips|tortilla|masa|seasoning|snack|food|cpg|case pack)\b/i.test(itemText);
+    const isBeauty = /\b(serum|skincare|beauty|cosmetic|lotion|cream|formula|fill run)\b/i.test(itemText);
+    const isIndustrial = /\b(equipment|machine|conveyor|module|configured|subassembly|motor|component)\b/i.test(itemText);
+    const isPackaging = /\b(packaging|package|bag|case|carton|label|bottle|tube|jar)\b/i.test(itemText);
+    if (isFood) return isPackaging ? `Ingredient / Packaging Input ${sequence}` : `Ingredient Input ${sequence}`;
+    if (isBeauty) return isPackaging ? `Packaging Component ${sequence}` : (/formula|blend/.test(itemText) ? `Formula Input ${sequence}` : `Raw Material Input ${sequence}`);
+    if (isIndustrial) return /subassembly/.test(itemText) ? `Subassembly ${sequence}` : (/purchased/.test(itemText) ? `Purchased Component ${sequence}` : `Component Input ${sequence}`);
+    return isPackaging ? `Packaging Input ${sequence}` : `Component Input ${sequence}`;
   }
 
   function consultantRunNavigationNameW334(item) {
@@ -22033,6 +22064,69 @@
     });
     return order.map((name) => byName[name]).filter(Boolean)
       .concat(groups.filter((group) => order.indexOf(group.name) < 0));
+  }
+
+  function cockpitWorkflowVisualW443(narrative, records, toggleReceipt) {
+    const mode = toggleReceipt && toggleReceipt.enableWip ? 'wip' : (toggleReceipt && toggleReceipt.enableManufacturing ? 'manufacturing' : (narrative && narrative.mode || 'distribution'));
+    const hasDiagnostic = arrayValue(records).some((record) => /diagnostic/i.test(`${record && (record.role || record.label || record.type) || ''}`));
+    const nodes = mode === 'distribution'
+      ? ['CRM', 'Demand', 'Product SKU', 'Replenishment', 'Fulfillment']
+      : mode === 'wip'
+        ? ['CRM', 'Demand', 'Ingredients / Inputs', 'Production Batch', 'Work Order', 'Routing / Line Flow', 'Operations', 'Finished Case Output', 'Financial Impact']
+        : ['CRM', 'Demand', 'Product SKU', 'Ingredients / Inputs', 'Production Batch', 'BOM / Revision', 'Work Order', 'Finished Case Output'];
+    return `
+      <div class="idb-w443-workflow-visual" aria-label="Selected build operating flow">
+        ${nodes.map((node) => {
+          const diagnostic = hasDiagnostic && /Work Order|Routing/.test(node);
+          return `<span class="idb-w443-workflow-node${diagnostic ? ' idb-w443-workflow-node-diagnostic' : ''}">${escapeHtml(node)}</span>`;
+        }).join('<span class="idb-w443-workflow-arrow">→</span>')}
+      </div>
+    `;
+  }
+
+  function cockpitValueNarrativeW443(state, lane, narrative, websiteEvidence, finalNavigation) {
+    const intake = normalizedIntake(state || {});
+    const notes = String(intake.notes || state && state.notes || '');
+    const websiteText = String(websiteEvidence && (websiteEvidence.text || websiteEvidence.summary || websiteEvidence.status) || '');
+    const nllm = state && state.recordNamingAdvisoryResponse && state.recordNamingAdvisoryResponse.cockpitValueNarrative || null;
+    const notesHaveSignal = /\b(pain|delay|miss|shortage|inventory|production|fulfillment|manual|spreadsheet|mrp|erp|competitor|competition|trust|capacity|schedule|order)\b/i.test(notes);
+    const source = nllm && nllm.roiHeadline ? 'nllm_advisory' : (notesHaveSignal ? 'conversation_notes' : 'website_industry_fallback');
+    const confidence = nllm && nllm.confidence ? nllm.confidence : (notesHaveSignal ? 'medium' : 'medium');
+    const mode = narrative && narrative.mode || 'distribution';
+    const copy = narrative && narrative[mode] || narrative && narrative.distribution || {};
+    if (nllm && nllm.roiHeadline) {
+      return Object.assign({
+        schema: 'idb.w443-cockpit-value-narrative.v1',
+        source,
+        confidence,
+        evidenceTermsUsed: uniqueValues([notes, websiteText].join(' ').match(/\b(?:ingredient|production|routing|fulfillment|inventory|demand|order|case pack|availability)\b/gi) || []),
+        unsupportedClaimCaution: 'Measured savings need a buyer-confirmed baseline.'
+      }, nllm);
+    }
+    if (mode === 'wip') {
+      return {
+        schema: 'idb.w443-cockpit-value-narrative.v1',
+        roiHeadline: copy.roiClaim || `${narrative.customerName} can protect production batch reliability before committing customer orders.`,
+        roiDetail: copy.roiDetail || 'Baseline needed: current miss rate, ingredient shortage delay, packaging readiness delay, or manual schedule reconciliation.',
+        competitiveQuestion: copy.competitiveQuestion || 'How do we prove NetSuite has the fresher production signal than a planning spreadsheet or disconnected MRP tool?',
+        competitiveWatchOut: copy.competitiveWatchOut || 'If competitive pressure comes up, ask which signal they trust today: ingredient availability, line capacity, Work Order status, routing progress, or finished case output.',
+        source,
+        confidence,
+        evidenceTermsUsed: uniqueValues([notes, websiteText].join(' ').match(/\b(?:ingredient|production|routing|fulfillment|inventory|demand|order|case pack|availability)\b/gi) || []),
+        unsupportedClaimCaution: 'Measured savings need a buyer-confirmed baseline.'
+      };
+    }
+    return {
+      schema: 'idb.w443-cockpit-value-narrative.v1',
+      roiHeadline: copy.roiClaim || `${narrative.customerName} can protect the selected operating path.`,
+      roiDetail: 'Baseline needed: current miss rate, delay cost, inventory exposure, or manual-effort baseline.',
+      competitiveQuestion: copy.competitiveQuestion || 'How do we know the operating signal is current enough to trust?',
+      competitiveWatchOut: copy.competitiveWatchOut || 'Ask which workflow they trust today, then prove the same decision through returned records.',
+      source,
+      confidence,
+      evidenceTermsUsed: uniqueValues([notes, websiteText].join(' ').match(/\b(?:replenishment|production|routing|fulfillment|inventory|demand|order|availability)\b/gi) || []),
+      unsupportedClaimCaution: 'Measured savings need a buyer-confirmed baseline.'
+    };
   }
 
   function consultantFinalPivotsSummaryW336(finalNavigation) {
@@ -23170,10 +23264,13 @@
         gap: 9px;
       }
       .idb-w415-cockpit-header {
-        display: flex;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(150px, 1.15fr);
         align-items: flex-start;
-        justify-content: space-between;
-        gap: 8px;
+        gap: 10px;
+      }
+      .idb-w415-cockpit-heading {
+        min-width: 0;
       }
       .idb-w415-cockpit-title {
         color: #17202d;
@@ -23191,6 +23288,39 @@
         display: flex;
         flex-wrap: wrap;
         gap: 5px;
+        justify-content: flex-start;
+      }
+      .idb-w415-cockpit-status-panel {
+        min-width: 0;
+      }
+      .idb-w443-workflow-visual {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+        padding: 6px;
+        border: 1px solid #d5e2e8;
+        border-radius: 7px;
+        background: #f8fbfc;
+      }
+      .idb-w443-workflow-node {
+        border: 1px solid #c9d8df;
+        border-radius: 999px;
+        background: #fff;
+        color: #263647;
+        font-size: 9px;
+        font-weight: 850;
+        line-height: 1.2;
+        padding: 3px 7px;
+      }
+      .idb-w443-workflow-node-diagnostic {
+        border-color: #d7c387;
+        background: #fff8dc;
+      }
+      .idb-w443-workflow-arrow {
+        color: #728397;
+        font-size: 10px;
+        font-weight: 900;
       }
       .idb-w415-cockpit-story {
         border: 1px solid #b8c8d2;
@@ -25078,6 +25208,12 @@
       .replace(/\breduce demo risk around\b/gi, 'protect')
       .replace(/\bdemo demand\b/gi, 'customer demand')
       .replace(/\bdemo risk\b/gi, 'buyer risk'), limit || 140);
+    const proofFlowCopy = (copy) => consultantVisibleCopyW346(copy || '', 1000)
+      .replace(/\bcan reduce demo risk around\b/gi, 'can protect')
+      .replace(/\breduce demo risk around\b/gi, 'protect')
+      .replace(/\bdemo demand\b/gi, 'customer demand')
+      .replace(/\bdemo risk\b/gi, 'buyer risk')
+      .trim();
     let roiCopy = cockpitCopy((value.roiAudit && value.roiAudit.claim) || value.groundedRoiSummary || storyContract.valueDecision || 'Prove the largest buyer value with returned NetSuite records.', 145);
     const baselineCopy = value.roiAudit && value.roiAudit.baselineNeeded
       ? value.roiAudit.baselineNeeded
@@ -25089,9 +25225,17 @@
       objectionCopy = narrativeCopy.competitiveQuestion || objectionCopy;
       watchOutCopy = narrativeCopy.competitiveWatchOut || watchOutCopy;
     }
+    const toggleReceipt = selectedBuildToggleReceiptW440(state, lane, finalNavigation);
+    const valueNarrativeW443 = cockpitValueNarrativeW443(state, lane, visibleNarrative, websiteEvidence, finalNavigation);
+    if (valueNarrativeW443) {
+      roiCopy = valueNarrativeW443.roiHeadline || roiCopy;
+      objectionCopy = valueNarrativeW443.competitiveQuestion || objectionCopy;
+      watchOutCopy = valueNarrativeW443.competitiveWatchOut || watchOutCopy;
+    }
     const cautionCopy = cockpitCopy(value.grounded && value.grounded.unsupportedClaimBlocker && value.grounded.unsupportedClaimBlocker.blockedClaims && value.grounded.unsupportedClaimBlocker.blockedClaims[0]
+      || valueNarrativeW443 && valueNarrativeW443.unsupportedClaimCaution
       || 'Measured savings require a customer baseline before they can be claimed.', 125);
-    const recordRowLimit = visibleNarrative.mode === 'distribution' ? 5 : 14;
+    const recordRowLimit = visibleNarrative.mode === 'distribution' ? 5 : (visibleNarrative.mode === 'wip' ? 20 : 14);
     const renderRecordRowW442 = (item) => {
       const label = consultantRunNavigationLabelW441(item, visibleNarrative);
       const repairedItem = repairVisibleProductNarrativeW439(item, state, visibleNarrative);
@@ -25118,41 +25262,51 @@
     const confidenceLabel = websiteEvidence && websiteEvidence.confidence
       ? `${websiteEvidence.confidence.displayText || websiteEvidence.status || 'Evidence'} / ${websiteEvidence.confidence.scoreLabel || 'unscored'}`
       : 'Evidence state visible';
-    const toggleReceipt = selectedBuildToggleReceiptW440(state, lane, finalNavigation);
     return `
       <div class="idb-card idb-accent idb-w415-demo-cockpit">
         <div class="idb-w415-cockpit-header">
-          <div>
+          <div class="idb-w415-cockpit-heading">
             <div class="idb-section-title">Demo Cockpit</div>
             <div class="idb-w415-cockpit-title">${escapeHtml(prospect)}</div>
             <div class="idb-w415-cockpit-subtitle">${escapeHtml(laneLabel)}</div>
           </div>
-          <div class="idb-w415-cockpit-status" aria-label="Post-run proof status">
-            <span class="idb-mini-chip">${escapeHtml(proofGate.runReady ? 'Records ready' : 'Proof needs review')}</span>
-            <span class="idb-mini-chip">${escapeHtml(openableCount)} Open links verified</span>
-            ${renderBuildToggleReceiptChipsW440(toggleReceipt)}
-            ${proofGate.runReady ? '' : `<span class="idb-mini-chip">Naming/setup check</span>`}
-            <span class="idb-mini-chip">${escapeHtml(confidenceLabel)}</span>
+          <div class="idb-w415-cockpit-status-panel" aria-label="Post-run proof status">
+            <div class="idb-w415-cockpit-status">
+              <span class="idb-mini-chip">${escapeHtml(proofGate.runReady ? 'Records ready' : 'Proof needs review')}</span>
+              <span class="idb-mini-chip">${escapeHtml(openableCount)} Open links verified</span>
+              ${renderBuildToggleReceiptChipsW440(toggleReceipt)}
+              ${proofGate.runReady ? '' : `<span class="idb-mini-chip">Naming/setup check</span>`}
+              <span class="idb-mini-chip">${escapeHtml(confidenceLabel)}</span>
+            </div>
           </div>
         </div>
+        ${cockpitWorkflowVisualW443(visibleNarrative, objects, toggleReceipt)}
         <div class="idb-w415-cockpit-records" aria-label="Open records">
           ${groupedRows}
         </div>
         <div class="idb-w415-cockpit-story">
-          <div class="idb-status-key">Story with embedded records</div>
-          <div class="idb-strong">${escapeHtml(cockpitCopy(storyLine, 145))}</div>
-          <div class="idb-copy">${escapeHtml(cockpitCopy(proofLine, 150))}</div>
+          <div class="idb-status-key">Proof Flow</div>
+          <div class="idb-strong">${escapeHtml(proofFlowCopy(storyLine))}</div>
+          <div class="idb-copy">${escapeHtml(proofFlowCopy(proofLine))}</div>
         </div>
         <div class="idb-w415-cockpit-grid">
           <div class="idb-w415-cockpit-panel idb-w415-roi-panel">
             <div class="idb-status-key">Top ROI point</div>
             <div class="idb-strong">${escapeHtml(roiCopy)}</div>
-            <div class="idb-copy">Baseline: ${escapeHtml(compactText(baselineCopy, 120))}</div>
+            <div class="idb-copy">${escapeHtml(valueNarrativeW443 && valueNarrativeW443.roiDetail || `Baseline: ${compactText(baselineCopy, 120)}`)}</div>
+            <div class="idb-chip-row">
+              <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
+              <span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.confidence || 'medium'))}</span>
+            </div>
           </div>
           <div class="idb-w415-cockpit-panel idb-w415-competitive-panel">
             <div class="idb-status-key">Competitive battlecard</div>
             <div class="idb-strong">${escapeHtml(objectionCopy)}</div>
             <div class="idb-copy">Watch-out: ${escapeHtml(watchOutCopy)}</div>
+            <div class="idb-chip-row">
+              <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
+              <span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.confidence || 'medium'))}</span>
+            </div>
           </div>
         </div>
         <div class="idb-w415-claim-caution">
@@ -29915,6 +30069,9 @@
       visibleProductNarrativeW439,
       industryNativeManufacturingTermsW442,
       cockpitFlowGroupsW442,
+      cockpitWorkflowVisualW443,
+      cockpitValueNarrativeW443,
+      industryAwareInputLabelW443,
       selectedBuildToggleReceiptW440,
       syncBuildTogglesFromVisibleFieldsW440,
       productBuildPlanMatchesPayloadContextW437,

@@ -4447,6 +4447,82 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }));
   }
 
+  function industryNativeManufacturingNamingW442(input) {
+    const source = input || {};
+    const distributionBase = visibleProductAccentPolishW439(str(source.distributionBase || source.productName || 'Product').replace(/\s+12-Count Case Pack$/i, ''));
+    const evidenceText = [
+      distributionBase,
+      source.brandName,
+      source.productFamily,
+      Array.isArray(source.websiteTermsUsed) ? source.websiteTermsUsed.join(' ') : '',
+      source.signalText,
+      source.website
+    ].join(' ').toLowerCase();
+    const foodSnack = /\b(siete|kettle|chip|chips|snack|food|masa|tortilla|seasoning|case pack|cpg)\b/.test(evidenceText);
+    const beauty = /\b(beauty|cosmetic|skin|skincare|lotion|cream|serum|shampoo|conditioner|personal care|formula|fill run)\b/.test(evidenceText);
+    const industrial = /\b(industrial|equipment|machine|machinery|configured|assembly unit|subassembly|component build|motor|pump|valve|tooling)\b/.test(evidenceText);
+    const apparel = /\b(apparel|garment|textile|fabric|cut and sew|size|colorway)\b/.test(evidenceText);
+    const base = {
+      industry: 'general_manufacturing',
+      industryNativeManufacturedItemName: `${distributionBase} Production Batch`,
+      manufacturingOutputName: `${distributionBase} Finished Case Output`,
+      manufacturingReadinessPhrase: 'production batch readiness',
+      manufacturingRecordLabel: 'Production Batch',
+      componentGroupLabel: 'Inputs',
+      operationFlowLabel: 'Line Flow',
+      industryManufacturingTerms: ['Production Batch', 'Finished Case Output', 'Component Input', 'BOM', 'Work Order'],
+      industryForbiddenVisibleTerms: ['Finished Good readiness', 'Ingredient Blend', 'Packaging Component', 'Production Line']
+    };
+    if (beauty) {
+      return Object.assign({}, base, {
+        industry: 'health_beauty_personal_care',
+        industryNativeManufacturedItemName: `${distributionBase} Batch Blend`,
+        manufacturingOutputName: `${distributionBase} Filled Unit Batch`,
+        manufacturingReadinessPhrase: 'batch blend readiness',
+        manufacturingRecordLabel: 'Batch Blend',
+        operationFlowLabel: 'Fill and Pack Flow',
+        industryManufacturingTerms: ['Batch Blend', 'Formula Batch', 'Fill Run', 'Packaging Run', 'Raw Material Input']
+      });
+    }
+    if (industrial) {
+      return Object.assign({}, base, {
+        industry: 'industrial_equipment',
+        industryNativeManufacturedItemName: `${distributionBase} Final Assembly Unit`,
+        manufacturingOutputName: `${distributionBase} Configured Equipment Build`,
+        manufacturingReadinessPhrase: 'final assembly readiness',
+        manufacturingRecordLabel: 'Final Assembly',
+        componentGroupLabel: 'Purchased Components',
+        operationFlowLabel: 'Assembly Flow',
+        industryManufacturingTerms: ['Final Assembly Unit', 'Configured Equipment Build', 'Subassembly', 'Purchased Component', 'Work Order']
+      });
+    }
+    if (apparel) {
+      return Object.assign({}, base, {
+        industry: 'apparel_textile',
+        industryNativeManufacturedItemName: `${distributionBase} Cut and Sew Batch`,
+        manufacturingOutputName: `${distributionBase} Finished Pack Output`,
+        manufacturingReadinessPhrase: 'cut-and-sew batch readiness',
+        manufacturingRecordLabel: 'Cut and Sew Batch',
+        componentGroupLabel: 'Materials',
+        operationFlowLabel: 'Production Flow',
+        industryManufacturingTerms: ['Cut and Sew Batch', 'Material Input', 'Finished Pack Output', 'Work Order']
+      });
+    }
+    if (foodSnack) {
+      return Object.assign({}, base, {
+        industry: 'food_snack_cpg',
+        industryNativeManufacturedItemName: `${distributionBase.replace(/\bChips\b/i, 'Chip')} Production Batch`,
+        manufacturingOutputName: `${distributionBase} Finished Case Output`,
+        manufacturingReadinessPhrase: 'production batch readiness',
+        manufacturingRecordLabel: 'Production Batch',
+        componentGroupLabel: 'Inputs',
+        operationFlowLabel: 'Line Flow',
+        industryManufacturingTerms: ['Production Batch', 'Finished Case Output', 'Ingredient Input', 'Packaging Input', 'Line Flow']
+      });
+    }
+    return base;
+  }
+
   function productBuildPlanW432(opts) {
     const source = opts || {};
     const prospect = idbCanonicalProspectNameW422(source.prospect || 'IDB Prospect', source.website);
@@ -4479,6 +4555,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`),
       /siete/i.test(distributionBase) ? 'Sea Salt Seasoning and Retail Bag Packaging' : (/6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`)
     ];
+    const industryNativeW442 = industryNativeManufacturingNamingW442({
+      distributionBase,
+      brandName,
+      productName,
+      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family')),
+      websiteTermsUsed: productTerms.websiteTermsUsed,
+      signalText: source.signalText || source.notes || '',
+      website: source.website || ''
+    });
     const plan = {
       schema: 'idb.w432-product-build-plan.v1',
       source: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
@@ -4499,7 +4584,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       distributionItemName: trimLen(`${distributionBase} ${productTerms.casePackName}`, 80),
       distributionProofName: trimLen(`${distributionBase} Retail Replenishment`, 80),
       distributionSupportName: trimLen(`${distributionBase} Channel Supply`, 80),
-      assemblyItemName: trimLen(`${distributionBase} Finished Good`, 80),
+      industryNativeManufacturedItemName: trimLen(industryNativeW442.industryNativeManufacturedItemName, 80),
+      manufacturingOutputName: trimLen(industryNativeW442.manufacturingOutputName, 80),
+      manufacturingReadinessPhrase: industryNativeW442.manufacturingReadinessPhrase,
+      manufacturingRecordLabel: industryNativeW442.manufacturingRecordLabel,
+      componentGroupLabel: industryNativeW442.componentGroupLabel,
+      operationFlowLabel: industryNativeW442.operationFlowLabel,
+      industryManufacturingTerms: industryNativeW442.industryManufacturingTerms,
+      industryForbiddenVisibleTerms: industryNativeW442.industryForbiddenVisibleTerms,
+      assemblyItemName: trimLen(industryNativeW442.industryNativeManufacturedItemName, 80),
       componentNames,
       bomName: trimLen(`BOM - ${distributionBase}`, 80),
       bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
@@ -4544,34 +4637,53 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const distributionItem = visibleProductAccentPolishW439(productPlan.distributionItemName || `${productBase} 12-Count Case Pack`);
     const componentNames = (Array.isArray(productPlan.componentNames) ? productPlan.componentNames : []).slice(0, 3).map(visibleProductAccentPolishW439);
     const operationNames = (Array.isArray(productPlan.operationNames) ? productPlan.operationNames : []).map(visibleProductAccentPolishW439);
+    const mfgTerms = industryNativeManufacturingNamingW442({
+      distributionBase: productBase,
+      brandName: productPlan.brandName,
+      productFamily: productPlan.productFamily,
+      websiteTermsUsed: productPlan.evidence && productPlan.evidence.websiteTermsUsed || []
+    });
+    const manufacturedItemName = visibleProductAccentPolishW439(productPlan.industryNativeManufacturedItemName || productPlan.assemblyItemName || mfgTerms.industryNativeManufacturedItemName);
+    const manufacturingOutputName = visibleProductAccentPolishW439(productPlan.manufacturingOutputName || mfgTerms.manufacturingOutputName);
+    const manufacturingReadinessPhrase = productPlan.manufacturingReadinessPhrase || mfgTerms.manufacturingReadinessPhrase;
     return {
-      schema: 'idb.w439-visible-product-narrative.v1',
+      schema: 'idb.w442-visible-product-narrative.v1',
       mode,
       productBaseName: productBase,
       productDisplayName: distributionItem,
+      industryNativeManufacturingW442: Object.assign({}, mfgTerms, {
+        industryNativeManufacturedItemName: manufacturedItemName,
+        manufacturingOutputName,
+        manufacturingReadinessPhrase
+      }),
       distribution: {
         itemName: distributionItem,
         proofName: visibleProductAccentPolishW439(productPlan.distributionProofName || `${productBase} Retail Replenishment`),
         supportName: visibleProductAccentPolishW439(productPlan.distributionSupportName || `${productBase} Channel Supply`),
         cockpitSubtitle: 'Retail case-pack replenishment readiness',
-        storyHeadline: `Prove replenishment readiness for ${distributionItem}; then connect customer demand, case-pack availability, allocation, and fulfillment confidence.`,
+        storyHeadline: `Prove replenishment readiness for ${distributionItem}; then connect customer demand, allocation, case-pack availability, and fulfillment confidence.`,
         proofMove: 'Move through Customer demand, Sales Order, Product SKU, replenishment flow, and channel supply support while staying in distribution and fulfillment scope.',
         roiClaim: 'Protect retail replenishment readiness.',
         competitiveQuestion: 'How do we know case-pack availability is current enough to trust?',
         supportPathLabel: 'Retail case-pack replenishment proof'
       },
       manufacturing: {
-        assemblyName: visibleProductAccentPolishW439(productPlan.assemblyItemName || `${productBase} Finished Good`),
+        assemblyName: manufacturedItemName,
+        manufacturingOutputName,
+        manufacturingReadinessPhrase,
+        manufacturingRecordLabel: productPlan.manufacturingRecordLabel || mfgTerms.manufacturingRecordLabel,
         componentNames,
         bomName: visibleProductAccentPolishW439(productPlan.bomName || `BOM - ${productBase}`),
         bomRevisionName: visibleProductAccentPolishW439(productPlan.bomRevisionName || `Revision 1 - ${productBase}`),
         workOrderName: visibleProductAccentPolishW439(productPlan.workOrderName || `WO - ${productBase}`),
-        cockpitSubtitle: 'Finished-good production readiness',
-        storyHeadline: `Prove production readiness for ${productBase} Finished Good; then connect customer demand, component availability, BOM structure, packaging readiness, and work order execution.`,
-        proofMove: 'Move through Customer demand, Finished Good, component availability, BOM structure, packaging readiness, and Work Order execution.',
-        roiClaim: 'Protect finished-good production readiness.',
-        competitiveQuestion: 'How do we know finished-good production readiness is current enough to trust?',
-        supportPathLabel: 'Finished-good production proof'
+        cockpitSubtitle: manufacturingReadinessPhrase,
+        storyHeadline: `Prove ${manufacturingReadinessPhrase} for ${productBase}; then connect customer demand, input availability, BOM structure, packaging readiness, and work order execution.`,
+        proofMove: /siete/i.test(productBase)
+          ? `Move through customer demand, production batch output, ${manufacturingOutputName}, corn masa and avocado oil inputs, seasoning and packaging readiness, BOM structure, and Work Order execution.`
+          : `Move through customer demand, ${manufacturingOutputName}, input availability, BOM structure, packaging readiness, and Work Order execution.`,
+        roiClaim: `Protect ${manufacturingReadinessPhrase}.`,
+        competitiveQuestion: 'How do we know the production batch is ready soon enough to trust?',
+        supportPathLabel: 'Production batch proof'
       },
       wip: {
         routingName: visibleProductAccentPolishW439(productPlan.routingName || `Routing - ${productBase}`),
@@ -5255,21 +5367,35 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const createNewHeroItem = !!(opts && opts.createNewHeroItem);
     const extId = opts && opts.extId;
     const runUniqueSuffix = opts && opts.runUniqueSuffix;
+    const planW442 = names && names._productBuildPlanW432 || productBuildPlanW432(Object.assign({}, opts || {}, names || {}));
+    const narrativeW442 = visibleProductNarrativeW439(planW442, { enableManufacturing, enableWip: !!(opts && opts.enableWip) });
+    const mfgTermsW442 = narrativeW442 && narrativeW442.industryNativeManufacturingW442 || {};
     const heroNamePair = buildDifferentiatedNames(names.hero_item_name, extId, runUniqueSuffix);
     const namingVertical = detectNamingVertical({ prospect: names.hero_item_name, website: '', signalText: [names.industry_category || '', names.assembly_name || '', (names.component_names || []).join(' ')].join(' ') });
-    const heroSalesDesc = !enableManufacturing ? `${names.hero_item_name} supports availability, replenishment, and fulfillment confidence.` : (namingVertical === 'food' ? `${names.hero_item_name} finished good ready for service-level fulfillment.` : `${names.hero_item_name} finished good ready for sale.`);
-    const heroPurchDesc = !enableManufacturing ? `Purchased supply context supporting ${names.hero_item_name} availability.` : (namingVertical === 'food' ? `Purchased ingredient and packaging inputs supporting ${names.hero_item_name} production.` : `Purchased inputs supporting ${names.hero_item_name} production.`);
+    const heroSalesDesc = !enableManufacturing
+      ? `${names.hero_item_name} supports availability, replenishment, and fulfillment confidence.`
+      : `${names.hero_item_name} supports customer demand for ${mfgTermsW442.manufacturingOutputName || 'manufactured output'}.`;
+    const heroPurchDesc = !enableManufacturing
+      ? `Purchased supply context supporting ${names.hero_item_name} availability.`
+      : `Purchased input context supporting ${mfgTermsW442.industryNativeManufacturedItemName || names.assembly_name || names.hero_item_name}.`;
 
     const asmNameBase = names.assembly_name || names.hero_item_name;
     const asmNamePair = buildDifferentiatedNames(asmNameBase, extId, runUniqueSuffix);
-    const asmSalesDesc  = !enableManufacturing ? `${asmNameBase} supports branch availability and replenishment readiness.` : (namingVertical === 'food' ? `${asmNameBase} supports line readiness and finished-goods fulfillment.` : `${asmNameBase} buildable finished good for customer orders.`);
-    const asmPurchDesc  = !enableManufacturing ? `Supply planning inputs used to support ${asmNameBase}.` : (namingVertical === 'food' ? `Ingredient, packaging, and line inputs used to support ${asmNameBase}.` : `Assembly supply inputs used to build ${asmNameBase}.`);
+    const asmSalesDesc  = !enableManufacturing ? `${asmNameBase} supports branch availability and replenishment readiness.` : `${mfgTermsW442.manufacturingOutputName || asmNameBase} supports ${mfgTermsW442.manufacturingReadinessPhrase || 'production readiness'} and Work Order execution.`;
+    const asmPurchDesc  = !enableManufacturing ? `Supply planning inputs used to support ${asmNameBase}.` : `Input and packaging readiness used to support ${mfgTermsW442.industryNativeManufacturedItemName || asmNameBase}.`;
 
     function compSalesDesc(compName) {
-      return !enableManufacturing ? `${compName} supports fulfillment and availability readiness in ${asmNameBase}.` : (namingVertical === 'food' ? `${compName} supports ingredient, packaging, or finished-good readiness in ${asmNameBase}.` : `${compName} component used in ${asmNameBase}.`);
+      if (!enableManufacturing) return `${compName} supports fulfillment and availability readiness in ${asmNameBase}.`;
+      const lower = str(compName).toLowerCase();
+      const productBase = planW442 && planW442.productName || names.hero_item_name || asmNameBase;
+      if (/corn masa/.test(lower)) return `Corn masa input used in the ${productBase} production batch.`;
+      if (/avocado oil/.test(lower)) return `Avocado oil frying input used during ${productBase} production.`;
+      if (/sea salt.*packaging|retail bag/.test(lower)) return `Sea salt seasoning and retail bag packaging used for ${productBase} finished case output.`;
+      if (/pack/.test(lower)) return `${compName} packaging input used for ${mfgTermsW442.manufacturingOutputName || `${productBase} output`}.`;
+      return `${compName} input used in ${mfgTermsW442.industryNativeManufacturedItemName || asmNameBase}.`;
     }
     function compPurchDesc(compName) {
-      return !enableManufacturing ? `Procured ${compName} supply input for ${asmNameBase}.` : (namingVertical === 'food' ? `Procured ${compName} input for ${asmNameBase}.` : `Procured ${compName} material for ${asmNameBase}.`);
+      return !enableManufacturing ? `Procured ${compName} supply input for ${asmNameBase}.` : `Procured ${compName} for ${mfgTermsW442.industryNativeManufacturedItemName || asmNameBase}.`;
     }
 
     const heroValues = {
@@ -7042,6 +7168,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       extractWebsiteProductTermsW432,
       kettleProductBuildPlanFixtureW432,
       productBuildPlanW432,
+      industryNativeManufacturingNamingW442,
       visibleProductNarrativeW439,
       confirmedBuildToggleValueW440,
       applyProductBuildPlanToNamingPackW432,

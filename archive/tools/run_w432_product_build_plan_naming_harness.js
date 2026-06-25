@@ -159,10 +159,10 @@ function main() {
   });
 
   assertCase(results, 'w440-marker-updated',
-    /@version\s+1\.0\.49/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.49';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W441';"),
-    'Drawer should identify W441 / 1.0.49 while preserving W432 product build plan naming.');
+    /@version\s+1\.0\.50/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.50';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W442';"),
+    'Drawer should identify W442 / 1.0.50 while preserving W432 product build plan naming.');
 
   const mfgToggleSyncState = motionState(drawerHooks, {
     selectedLaneId: 'food_beverage',
@@ -256,7 +256,7 @@ function main() {
     newItemActiveText + newItemRoleLabelsText);
 
   assertCase(results, 'w432-mfg-uses-finished-good-and-components',
-    /Air Fried Sea Salt & Vinegar Finished Good/.test(mfgNames.assembly_name) &&
+    /Air Fried Sea Salt & Vinegar.*Production Batch/.test(mfgNames.assembly_name) &&
       Array.isArray(mfgNames.component_names) &&
       mfgNames.component_names.length === 3 &&
       /Kettle Potato Slice Input/.test(mfgActiveText) &&
@@ -526,7 +526,7 @@ function main() {
   });
   const mfgCockpitText = stripHtml(mfgCockpitHtml);
   assertCase(results, 'w436-mfg-copy-keeps-manufacturing-language',
-    /\bFinished Good\b/i.test(mfgCockpitText) &&
+    /\bProduction Batch\b/i.test(mfgCockpitText) &&
       /\bcomponent\b/i.test(mfgCockpitText) &&
       /\bBOM\b/i.test(mfgCockpitText) &&
       /\bWork Order\b/i.test(mfgCockpitText) &&
@@ -701,7 +701,7 @@ function main() {
   );
   const sieteMfgText = sieteMfgSurface.text;
   assertCase(results, 'w439-siete-mfg-visible-everywhere',
-    /Siete Maíz Sea Salt Tortilla Chips Finished Good/.test(sieteMfgText) &&
+    /Siete Maíz Sea Salt Tortilla Chip Production Batch/.test(sieteMfgText) &&
       /Siete Corn Masa Input/.test(sieteMfgText) &&
       /Avocado Oil Frying Input/.test(sieteMfgText) &&
       /Sea Salt Seasoning and Retail Bag Packaging/.test(sieteMfgText) &&
@@ -749,8 +749,9 @@ function main() {
     Object.assign({}, sieteBase, { enableManufacturing: true, enableWip: true })
   )._visibleProductNarrativeW439;
   assertCase(results, 'w439-runner-sidecar-story-is-mode-aware',
-    !/Finished Good readiness/i.test(JSON.stringify(nonMfgRunnerNarrative)) &&
-      /Siete Maíz Sea Salt Tortilla Chips Finished Good/.test(JSON.stringify(mfgRunnerNarrative)) &&
+    !/Finished Good readiness/i.test(JSON.stringify(nonMfgRunnerNarrative.distribution || {})) &&
+      /Siete Maíz Sea Salt Tortilla Chip Production Batch/.test(JSON.stringify(mfgRunnerNarrative)) &&
+      /Finished Case Output/.test(JSON.stringify(mfgRunnerNarrative)) &&
       /Routing - Siete Maíz Sea Salt Tortilla Chips/.test(JSON.stringify(wipRunnerNarrative)) &&
       /Mix Masa/.test(JSON.stringify(wipRunnerNarrative)),
     JSON.stringify({ nonMfgRunnerNarrative, mfgRunnerNarrative, wipRunnerNarrative }));

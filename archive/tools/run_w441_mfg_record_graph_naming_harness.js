@@ -178,10 +178,10 @@ function main() {
   const sietePlan = runnerHooks.productBuildPlanW432(sieteBase);
 
   assertCase(results, 'w441-marker-updated',
-    /@version\s+1\.0\.49/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.49';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W441';"),
-    'Drawer should identify W441 / 1.0.49.');
+    /@version\s+1\.0\.50/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.50';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W442';"),
+    'Drawer should identify W442 / 1.0.50.');
 
   const mfgSurface = renderSieteSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: false }, {
     productBuildPlanW432: sietePlan,
@@ -206,7 +206,7 @@ function main() {
     /Customer\s+Siete Foods Customer Account/.test(mfgText) &&
       /Demand Order\s+SO27224/.test(mfgText) &&
       /Sellable Item\s+Siete Maíz Sea Salt Tortilla Chips 12-Count Case Pack/.test(mfgText) &&
-      /Finished Good\s+Siete Maíz Sea Salt Tortilla Chips Finished Good/.test(mfgText) &&
+      /Production Batch\s+Siete Maíz Sea Salt Tortilla Chip Production Batch/.test(mfgText) &&
       /Component Input 1\s+Siete Corn Masa Input/.test(mfgText) &&
       /Component Input 2\s+Avocado Oil Frying Input/.test(mfgText) &&
       /Component Input 3\s+Sea Salt Seasoning and Retail Bag Packaging/.test(mfgText) &&
@@ -217,7 +217,7 @@ function main() {
 
   assertCase(results, 'w441-clean-visible-created-names',
     !/\b(SNACKS-|BEVERAGE-|FOOD_BEVERAGE|RUN)\b/i.test(mfgText) &&
-      /Siete Maíz Sea Salt Tortilla Chips Finished Good/.test(mfgText) &&
+      /Siete Maíz Sea Salt Tortilla Chip Production Batch/.test(mfgText) &&
       /Siete Corn Masa Input/.test(mfgText) &&
       /Avocado Oil Frying Input/.test(mfgText) &&
       /Sea Salt Seasoning and Retail Bag Packaging/.test(mfgText) &&
@@ -227,7 +227,7 @@ function main() {
 
   const cleanName = runnerHooks.cleanCustomerFacingCreatedNameW441('Siete Maíz Sea Salt Tortilla Chips Finished Good - SNACKS-SK9R9S-OSD - RUN', 'assembly', sietePlan, 'manufacturing');
   assertCase(results, 'w441-internal-ids-preserved',
-    cleanName === 'Siete Maíz Sea Salt Tortilla Chips Finished Good' &&
+    cleanName === 'Siete Maíz Sea Salt Tortilla Chip Production Batch' &&
       runner.includes('internalName') &&
       runner.includes('itemIdName: buildUniqueRecordName') &&
       runner.includes('displayName: trimLen(cleanBase'),
@@ -252,7 +252,7 @@ function main() {
   const diagnosticText = diagnosticSurface.text;
   assertCase(results, 'w441-work-order-diagnostic-not-silent',
     /Work Order Diagnostic/.test(diagnosticText) &&
-      /WO - Siete Maíz Sea Salt Tortilla Chips/.test(diagnosticText) &&
+      /WO - Siete Maíz Sea Salt Tortilla Chip Production Batch/.test(diagnosticText) &&
       /assemblyId/.test(JSON.stringify(diagnosticSurface.finalNaming)) &&
       /could not set assembly item/.test(JSON.stringify(diagnosticSurface.finalNaming)) &&
       !/Retail Replenishment/.test(diagnosticText),

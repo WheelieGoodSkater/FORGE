@@ -257,8 +257,8 @@ function main() {
     /@version\s+1\.0\.5[89]/.test(drawer) &&
       /const DRAWER_USERSCRIPT_VERSION = '1\.0\.5[89]';/.test(drawer) &&
       /const CURRENT_UX_BLOCK_W346 = 'W45[01]';/.test(drawer) &&
-      /w45[01]-(llm-naming-real-wip-routing|older-routing-capacity-and-error-truth)/.test(runner),
-    'Drawer and runner should identify W450 / 1.0.58 or successor W451 / 1.0.59.');
+      /w45[0-2]-(llm-naming-real-wip-routing|older-routing-capacity-and-error-truth|legacy-direct-routing-first)/.test(runner),
+    'Drawer and runner should identify W450 / 1.0.58 or a W451/W452 successor.');
 
   assertCase(results, 'w450-older-runner-reference-canonical',
     /function loadPrecomputedNamingPack/.test(olderRunner) &&
@@ -309,6 +309,15 @@ function main() {
       drawer.includes('runnerErrorTruthW451') &&
       drawer.includes('FORGE ERROR'),
     'Runner should compact oversized sidecar artifacts and drawer should surface terminal runner errors.');
+
+  assertCase(results, 'w452-legacy-direct-routing-first',
+    runner.includes('function createAndAttachRoutingLegacyDirectW452') &&
+      runner.includes('function findWorkCentersFromSavedSearchLegacyDirectW452') &&
+      runner.includes('older-runner-direct-routing-first') &&
+      runner.includes('idb.w452-legacy-direct-routing.v1') &&
+      runner.includes('W452 legacy direct routing failed; falling back to probe engine') &&
+      runner.includes("finalStatus: effectiveEnableWip && !routingId ? 'completed_with_wip_diagnostic' : 'completed'"),
+    'Runner should try the older-runner direct three-step routing path first, then report WIP diagnostics instead of plain completed when WIP fails.');
 
   assertCase(results, 'w450-routing-diagnostic-exact-center-template-field-error',
     surface.exportPayload.w450RoutingProbeTruth &&

@@ -124,7 +124,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    */
   const VERSION = 'v4.0.0-runner-sandbox';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w451-older-routing-capacity-and-error-truth';
+  const RELEASE_TRANCHE = 'w452-legacy-direct-routing-first';
   const W449_WORK_CENTER_SEARCH = {
     id: 5005,
     scriptId: 'customsearch_scai_ss_wc_wip',
@@ -1405,7 +1405,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         finalLockedFamilySource: authoritativeTruth.finalLockedFamilySource,
         normalizedScenarioLabel: authoritativeTruth.normalizedScenarioLabel,
         candidatePromotionUsed: authoritativeTruth.candidatePromotionUsed,
-        finalStatus: 'completed'
+        finalStatus: effectiveEnableWip && !routingId ? 'completed_with_wip_diagnostic' : 'completed'
       })
     });
 
@@ -1757,7 +1757,256 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
   }
 
+  function findWorkCentersFromSavedSearchLegacyDirectW452({ searchId, fallbackSearchId, locationId, subsidiaryId }) {
+    const loc = locationId ? String(locationId) : '';
+    const subs = subsidiaryId ? String(subsidiaryId) : '';
+    const refs = [];
+    [searchId, fallbackSearchId, W449_WORK_CENTER_SEARCH.scriptId, W449_WORK_CENTER_SEARCH.id].forEach(function (candidate) {
+      if (!candidate) return;
+      const ref = (typeof candidate === 'string' && /^\d+$/.test(candidate)) ? Number(candidate) : candidate;
+      if (refs.indexOf(ref) === -1) refs.push(ref);
+    });
+
+    for (let r = 0; r < refs.length; r += 1) {
+      const searchRef = refs[r];
+      try {
+        const ss = search.load({ id: searchRef });
+        const paged = ss.runPaged({ pageSize: 100 });
+        const rows = [];
+
+        paged.pageRanges.forEach(function (pr) {
+          const page = paged.fetch({ index: pr.index });
+          page.data.forEach(function (row) {
+            const id = Number(row.getValue({ name: 'internalid' })) || Number(row.id);
+            const name = getResultNameFallback(row);
+            const rowLocId = String(row.getValue({ name: 'location' }) || '');
+            const rowLocText = String(row.getText({ name: 'location' }) || getResultValueByCandidates(row, ['location']) || '');
+            const rowSubsId = String(row.getValue({ name: 'subsidiary' }) || '');
+            const rowSubsText = String(row.getText({ name: 'subsidiary' }) || getResultValueByCandidates(row, ['subsidiary']) || '');
+            if (!Number.isFinite(id) || id < 1) return;
+            rows.push({ id, name, locationId: rowLocId, locationText: rowLocText, subsidiaryId: rowSubsId, subsidiaryText: rowSubsText, source: 'w452-legacy-direct-saved-search' });
+          });
+        });
+
+        const scored = rows.map(function (x) {
+          const lower = String(x.name || '').toLowerCase();
+          let score = 0;
+          ['blend', 'blending', 'mix', 'fill', 'filling', 'dispense', 'dispensing', 'pack', 'packing', 'package', 'assembly', 'case', 'qc', 'quality'].forEach(function (k) {
+            if (lower.indexOf(k) !== -1) score += 5;
+          });
+          if (loc && x.locationId === loc) score += 50;
+          if (loc && x.locationText && String(x.locationText).toLowerCase().indexOf('boston') !== -1 && String(loc) === '2') score += 10;
+          if (subs && x.subsidiaryId === subs) score += 10;
+          if (x.name) score += Math.max(0, 10 - Math.min(10, x.name.length / 6));
+          if (lower.indexOf('den-') === 0 || lower.indexOf('mm-') === 0 || lower.indexOf('sfo-') === 0) score += 8;
+          return Object.assign({}, x, { score });
+        }).sort(function (a, b) { return b.score - a.score; });
+
+        log.audit({
+          title: `W452 legacy direct work centers resolved [${VERSION}]`,
+          details: JSON.stringify({ searchRef, locationId: loc, subsidiaryId: subs, count: scored.length, picked: scored.slice(0, 10) })
+        });
+        if (scored.length) return scored;
+      } catch (e) {
+        log.audit({
+          title: `W452 legacy direct work-center search failed [${VERSION}]`,
+          details: JSON.stringify({ searchRef, errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') })
+        });
+      }
+    }
+    return [];
+  }
+
+  function createAndAttachRoutingLegacyDirectW452({ subsidiaryId, locationId, bomId, assemblyId, extId, prospect, signalText, workCenterSearchId, names }) {
+    const subs = Number(subsidiaryId);
+    const loc = locationId ? Number(locationId) : null;
+    const authoritativeSearchW449 = authoritativeWipWorkCenterSearchIdW449(workCenterSearchId);
+    const centers = findWorkCentersFromSavedSearchLegacyDirectW452({
+      searchId: authoritativeSearchW449.chosenSearchId || workCenterSearchId,
+      fallbackSearchId: authoritativeSearchW449.numericFallbackId,
+      locationId: loc,
+      subsidiaryId: subs
+    });
+    const templates = findCostTemplatesForSubsidiary(subs);
+    const telemetry = {
+      schema: 'idb.w452-legacy-direct-routing.v1',
+      authority: 'older-runner-direct-routing-first',
+      authoritativeWorkCenterSearch: authoritativeSearchW449,
+      centerCandidates: centers.slice(0, 12),
+      costTemplateCandidates: templates.slice(0, 12),
+      selectedCenters: [],
+      selectedTemplates: [],
+      selectedOperations: [],
+      minimumOperationLines: 3
+    };
+
+    if (centers.length < 1) {
+      const noCenters = new Error('W452 legacy direct routing found no work centers.');
+      noCenters.name = 'W452_LEGACY_NO_WORK_CENTERS';
+      noCenters.w452Telemetry = telemetry;
+      throw noCenters;
+    }
+    if (templates.length < 1) {
+      const noTemplates = new Error('W452 legacy direct routing found no cost templates.');
+      noTemplates.name = 'W452_LEGACY_NO_COST_TEMPLATES';
+      noTemplates.w452Telemetry = telemetry;
+      throw noTemplates;
+    }
+
+    const opNames = resolveRoutingNames({ prospect, signalText, names });
+    const c1 = pickByKeywords(centers, ['blend', 'mix', 'blending']) || centers[0];
+    const c2 = pickByKeywords(centers, ['dispense', 'fill', 'dispensing', 'line', 'assembly']) || centers[Math.min(1, centers.length - 1)];
+    const c3 = pickByKeywords(centers, ['pack', 'package', 'packaging', 'case', 'qc', 'quality']) || centers[Math.min(2, centers.length - 1)];
+    const t1 = pickByKeywords(templates, ['blend', 'mix', 'blending']) || templates[0];
+    const t2 = pickByKeywords(templates, ['dispense', 'fill', 'dispensing', 'assembly', 'production']) || templates[Math.min(1, templates.length - 1)];
+    const t3 = pickByKeywords(templates, ['pack', 'package', 'packaging', 'case', 'qc', 'quality']) || templates[Math.min(2, templates.length - 1)];
+    telemetry.selectedCenters = [c1, c2, c3].map(function (x) { return { id: Number(x && x.id || 0), name: x && x.name || '' }; });
+    telemetry.selectedTemplates = [t1, t2, t3].map(function (x) { return { id: Number(x && x.id || 0), name: x && x.name || '' }; });
+
+    const productPlanW443 = names && names._productBuildPlanW432 || null;
+    const routingName = trimLen((names && names.routing_name) ? names.routing_name : ((productPlanW443 && productPlanW443.routingName) ? productPlanW443.routingName : `SCAI Routing - ${prospect} - BOM ${bomId}`), 80).slice(0, 60);
+    const routingMemo = `SCAI Demo Reset: ${extId} | ${prospect} | WIP routing | W452 legacy direct`;
+    let existingRoutingId = findManagedRoutingIdByBom({ bomId, subsidiaryId: subs, extId, preferredName: routingName }) || null;
+    if (existingRoutingId) {
+      const existingRoutingName = readRecordDisplayName('manufacturingrouting', existingRoutingId, '');
+      const existingValidation = validateRoutingForProductPlanW443({ id: existingRoutingId, name: existingRoutingName }, productPlanW443, { expectedRoutingName: routingName });
+      if (/cookie\s+production\s+line/i.test(existingRoutingName) || existingValidation && existingValidation.valid === false) {
+        telemetry.rejectedExistingRouting = {
+          routingId: Number(existingRoutingId),
+          routingName: existingRoutingName,
+          reason: 'stale_or_product_mismatch_existing_routing_rejected'
+        };
+        existingRoutingId = null;
+      }
+    }
+    const routing = existingRoutingId
+      ? record.load({ type: 'manufacturingrouting', id: Number(existingRoutingId), isDynamic: true })
+      : record.create({ type: 'manufacturingrouting', isDynamic: true });
+
+    routing.setValue({ fieldId: 'subsidiary', value: subs });
+    routing.setValue({ fieldId: 'billofmaterials', value: Number(bomId) });
+    if (loc) safeTry(() => routing.setValue({ fieldId: 'location', value: [loc] }));
+
+    const routingHeaderFields = safeTryReturn(() => routing.getFields()) || [];
+    const routingDefaultField = firstExisting(routingHeaderFields, ['default', 'isdefault', 'masterdefault']);
+    routing.setValue({ fieldId: 'name', value: routingName });
+    if (routingDefaultField) routing.setValue({ fieldId: routingDefaultField, value: true });
+    safeTry(() => routing.setValue({ fieldId: 'memo', value: routingMemo }));
+
+    const stepSublist = 'routingstep';
+    clearRoutingSteps(routing, stepSublist);
+    const stepFields = safeTryReturn(() => routing.getSublistFields({ sublistId: stepSublist })) || [];
+    const setupField = firstExisting(stepFields, ['setuptimemin', 'setuptime', 'setuptimeminutes']);
+    const runRateField = firstExisting(stepFields, ['runrate', 'runratemin', 'runrateperunit']);
+    if (!setupField || !runRateField) {
+      const missingFields = new Error('W452 legacy direct routing could not resolve setup/run-rate fields.');
+      missingFields.name = 'W452_LEGACY_STEP_FIELD_RESOLUTION_FAILED';
+      missingFields.w452Telemetry = Object.assign({}, telemetry, { stepFields, setupField: setupField || '', runRateField: runRateField || '' });
+      throw missingFields;
+    }
+
+    function addLegacyStep(seq, opName, center, template) {
+      routing.selectNewLine({ sublistId: stepSublist });
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(seq) });
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(opName).slice(0, 60) });
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: Number(center && center.id || 0) });
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: Number(template && template.id || 0) });
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: setupField, value: 0.5 });
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: runRateField, value: 1.0 });
+      routing.commitLine({ sublistId: stepSublist });
+      return {
+        seq,
+        opName: String(opName || '').slice(0, 60),
+        centerId: Number(center && center.id || 0),
+        centerName: center && center.name || '',
+        templateId: Number(template && template.id || 0),
+        templateName: template && template.name || ''
+      };
+    }
+
+    const operationRows = [
+      addLegacyStep(10, opNames.op10 || 'Blending', c1, t1),
+      addLegacyStep(20, opNames.op20 || 'Dispensing', c2, t2),
+      addLegacyStep(30, opNames.op30 || 'Packaging', c3, t3)
+    ];
+    telemetry.selectedOperations = operationRows;
+    telemetry.stepFields = { setupField, runRateField };
+
+    const routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
+    const attachResult = existingRoutingId
+      ? 'skipped-reused-existing-routing'
+      : attachRoutingToAssemblySafe({ assemblyId, routingId, forceDefault: true });
+    const verification = verifyRoutingAttachedOnAssemblyW449({
+      assemblyId,
+      routingId,
+      expectedRoutingName: routingName,
+      productPlan: productPlanW443,
+      extId,
+      staleRoutingSupersededTargetId: null
+    });
+    const w449 = {
+      schema: 'idb.w452-legacy-direct-routing-telemetry.v1',
+      authoritativeWorkCenterSearch: authoritativeSearchW449,
+      pairProbes: [],
+      acceptedPairs: operationRows.map(function (row) {
+        return Object.assign({ status: 'accepted', accepted: true, rejected: false, source: 'w452-legacy-direct' }, row);
+      }),
+      rejectedPairs: [],
+      acceptedOperationLinesW450: operationRows,
+      rejectedOperationLinesW450: [],
+      routingSaveResult: {
+        schema: 'idb.w452-routing-save-result.v1',
+        status: 'saved',
+        routingId,
+        routingUrl: buildNetSuiteRecordUrl('manufacturingrouting', routingId),
+        routingName,
+        acceptedOperationCount: operationRows.length
+      },
+      routingAssemblyVerification: verification,
+      w452LegacyDirect: telemetry
+    };
+
+    log.audit({
+      title: existingRoutingId ? `Routing reused+updated W452 legacy direct [${VERSION}]` : `Routing created W452 legacy direct [${VERSION}]`,
+      details: JSON.stringify({ routingId, existingRoutingId, attachResult, operationRows, telemetry })
+    });
+
+    return {
+      routingId,
+      routingUrl: buildNetSuiteRecordUrl('manufacturingrouting', routingId),
+      routingName,
+      existingRoutingId: existingRoutingId ? Number(existingRoutingId) : null,
+      decision: existingRoutingId ? 'reused-existing-routing-w452-legacy-direct' : 'created-new-routing-w452-legacy-direct',
+      status: 'attached',
+      attachResult,
+      chosen: {
+        centers: [c1, c2, c3],
+        templates: [t1, t2, t3],
+        ops: opNames,
+        operationRows
+      },
+      operationRows,
+      assemblyRoutingVerificationW449: verification,
+      w449,
+      w450: w449,
+      w452LegacyDirect: telemetry
+    };
+  }
+
   function createAndAttachRoutingIfPossible({ subsidiaryId, locationId, bomId, assemblyId, extId, prospect, signalText, workCenterSearchId, names }) {
+    try {
+      const legacyDirect = createAndAttachRoutingLegacyDirectW452({ subsidiaryId, locationId, bomId, assemblyId, extId, prospect, signalText, workCenterSearchId, names });
+      if (legacyDirect && legacyDirect.routingId) return legacyDirect;
+    } catch (legacyErrorW452) {
+      log.error({
+        title: `W452 legacy direct routing failed; falling back to probe engine [${VERSION}]`,
+        details: JSON.stringify({
+          errorName: legacyErrorW452 && legacyErrorW452.name || '',
+          errorMessage: legacyErrorW452 && legacyErrorW452.message || String(legacyErrorW452 || ''),
+          w452Telemetry: legacyErrorW452 && legacyErrorW452.w452Telemetry || null
+        })
+      });
+    }
     const subs = Number(subsidiaryId);
     const loc = locationId ? Number(locationId) : null;
     const authoritativeSearchW449 = authoritativeWipWorkCenterSearchIdW449(workCenterSearchId);

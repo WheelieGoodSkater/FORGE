@@ -1106,6 +1106,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         });
         woId = Number((workOrderResult && workOrderResult.woId) || 0) || null;
         workOrderTelemetry = Object.assign({}, workOrderTelemetry, (workOrderResult && workOrderResult.saveTelemetry) || {});
+        if (woId) {
+          workOrderTelemetry.woId = Number(woId);
+          workOrderTelemetry.workOrderId = Number(woId);
+        }
         log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId }) });
       } catch (e) {
         log.audit({
@@ -1526,17 +1530,20 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const existingRoutingValidation = candidateExistingRoutingId
       ? validateRoutingForProductPlanW443({ id: candidateExistingRoutingId, name: existingRoutingName }, productPlanW443, { expectedRoutingName: routingName })
       : null;
-    const existingRoutingId = existingRoutingValidation && existingRoutingValidation.valid === false ? null : candidateExistingRoutingId;
+    const staleRoutingRepairTargetId = existingRoutingValidation && existingRoutingValidation.valid === false ? candidateExistingRoutingId : null;
+    const existingRoutingId = candidateExistingRoutingId;
 
     log.audit({
       title: `WIP managed routing decision [${VERSION}]`,
       details: JSON.stringify({
         assemblyId: Number(assemblyId),
         existingRoutingId,
+        staleRoutingRepairTargetId,
         discoveredAssemblyRoutingId,
         searchedRoutingId,
         existingRoutingValidation,
-        createNew: !existingRoutingId
+        createNew: !existingRoutingId,
+        repairStaleInPlace: !!staleRoutingRepairTargetId
       })
     });
 
@@ -1546,7 +1553,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       ops: opNames
     };
 
-    // Step 4: Reuse existing managed routing when possible; only create+attach if none exists.
+    // Step 4: Reuse an existing routing only as a valid record or as an explicit stale repair target.
     // W393 keeps routing best-effort: a rejected BOM/routing field must not hard-fail safe core records.
     let routingStage = existingRoutingId ? 'load_existing_routing' : 'create_routing';
     let routing = null;
@@ -1655,12 +1662,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
 
       log.audit({
-        title: existingRoutingId ? `Routing reused+updated [${VERSION}]` : `Routing created [${VERSION}]`,
+        title: staleRoutingRepairTargetId ? `Routing stale record repaired in place [${VERSION}]` : (existingRoutingId ? `Routing reused+updated [${VERSION}]` : `Routing created [${VERSION}]`),
         details: JSON.stringify({
           routingId,
           existingRoutingId,
+          staleRoutingRepairTargetId,
           chosen,
-          staleRoutingIgnored: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null
+          staleRoutingRepaired: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null
         })
       });
     } catch (e) {
@@ -1696,12 +1704,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return {
       routingId,
       existingRoutingId: existingRoutingId ? Number(existingRoutingId) : null,
-      decision: existingRoutingId ? 'reused-existing-routing' : 'created-new-routing',
+      staleRoutingRepairTargetId: staleRoutingRepairTargetId ? Number(staleRoutingRepairTargetId) : null,
+      decision: staleRoutingRepairTargetId ? 'repaired-stale-routing-in-place' : (existingRoutingId ? 'reused-existing-routing' : 'created-new-routing'),
       status: 'attached',
       attachResult,
       chosen,
       routingValidation: validateRoutingForProductPlanW443({ id: routingId, name: routingName }, productPlanW443, { expectedRoutingName: routingName }),
-      staleRoutingIgnored: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null
+      staleRoutingRepaired: staleRoutingRepairTargetId ? existingRoutingValidation : null
     };
   }
 
@@ -4667,6 +4676,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       signalText: source.signalText || source.notes || '',
       website: source.website || ''
     });
+    const internalAssemblyItemNameW445 = /siete/i.test(distributionBase)
+      ? trimLen(distributionBase
+        .replace(/\bSea\s+Salt\s+/i, '')
+        .replace(/\bChips\b/i, 'Chip')
+        .replace(/\s+/g, ' ')
+        .trim() + ' Batch', 60)
+      : trimLen(industryNativeW442.industryNativeManufacturedItemName, 60);
     const plan = {
       schema: 'idb.w432-product-build-plan.v1',
       source: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
@@ -4699,7 +4715,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       operationFlowLabel: industryNativeW442.operationFlowLabel,
       industryManufacturingTerms: industryNativeW442.industryManufacturingTerms,
       industryForbiddenVisibleTerms: industryNativeW442.industryForbiddenVisibleTerms,
-      assemblyItemName: trimLen(industryNativeW442.industryNativeManufacturedItemName, 80),
+      assemblyItemName: internalAssemblyItemNameW445,
       componentNames,
       bomName: trimLen(`BOM - ${distributionBase}`, 80),
       bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
@@ -6252,11 +6268,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       internalId: args.ids.bomRevId,
       label: 'BOM Revision'
     }) : null;
-    const workOrderRecord = args.enableManufacturing && args.woId ? normalizeIdbRecord({
+    const resolvedWorkOrderIdW445 = Number(firstNonEmpty(
+      args.woId,
+      args.workOrderTelemetry && args.workOrderTelemetry.woId,
+      args.workOrderTelemetry && args.workOrderTelemetry.workOrderId,
+      args.resultCapture && args.resultCapture.woId
+    ) || 0) || null;
+    const workOrderRecord = args.enableManufacturing && resolvedWorkOrderIdW445 ? normalizeIdbRecord({
       role: 'workOrder',
       type: 'workorder',
-      name: cleanCustomerFacingCreatedNameW441((resultNames._productBuildPlanW432 && resultNames._productBuildPlanW432.workOrderName) || readRecordDisplayName('workorder', args.woId, 'Work Order'), 'workOrder', productPlanW441, modeW441),
-      internalId: args.woId,
+      name: cleanCustomerFacingCreatedNameW441(readRecordDisplayName('workorder', resolvedWorkOrderIdW445, (resultNames._productBuildPlanW432 && resultNames._productBuildPlanW432.workOrderName) || 'Work Order'), 'workOrder', productPlanW441, modeW441),
+      internalId: resolvedWorkOrderIdW445,
       label: 'Work Order'
     }) : null;
     const workOrderDiagnosticRecord = args.enableManufacturing && !workOrderRecord && args.workOrderTelemetry && args.workOrderTelemetry.status && args.workOrderTelemetry.status !== 'not-attempted' ? {

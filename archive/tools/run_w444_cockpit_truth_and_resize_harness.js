@@ -216,10 +216,10 @@ function main() {
   );
 
   assertCase(results, 'w444-marker-updated',
-    /@version\s+1\.0\.52/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.52';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W444';"),
-    'Drawer should identify W444 / 1.0.52.');
+    /@version\s+1\.0\.53/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.53';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W445';"),
+    'Drawer should identify W445 / 1.0.53.');
 
   assertCase(results, 'w444-wip-diagnostic-import-visible',
     /WIP \/ Routing/.test(text) &&
@@ -259,7 +259,8 @@ function main() {
     surface.html);
 
   assertCase(results, 'w444-roi-competitive-drilldowns',
-    /Why this ROI\?/.test(text) &&
+    /Why this ROI was chosen/.test(text) &&
+      /Why this competitive angle was chosen|data-idb-w444-detail="competitive"/.test(text + drawer) &&
       /Source:/.test(text) &&
       /Confidence:/.test(text) &&
       /Evidence terms used:/.test(text) &&
@@ -275,8 +276,8 @@ function main() {
     text);
 
   assertCase(results, 'w444-clear-run-last-run-audit',
-    drawer.includes('data-idb-w444-clear-run="keep"') &&
-      drawer.includes('data-idb-w444-clear-run="all"') &&
+    drawer.includes('data-idb-w445-start-new-run') &&
+      !drawer.includes('data-idb-w444-clear-run="all"') &&
       receipt.customer === 'Siete Foods' &&
       /sietefoods/.test(receipt.website) &&
       receipt.toggles.join(' ').includes('WIP on') &&
@@ -291,21 +292,25 @@ function main() {
       drawer.includes('DRAWER_WIDTH_STORAGE_KEY_W444') &&
       drawer.includes('minWidth: 360') &&
       drawer.includes('maxWidth') &&
-      drawer.includes('data-idb-w444-width-preset="compact"') &&
-      drawer.includes('data-idb-w444-width-preset="standard"') &&
-      drawer.includes('data-idb-w444-width-preset="wide"') &&
+      !drawer.includes('data-idb-w444-width-preset="compact"') &&
+      !drawer.includes('data-idb-w444-width-preset="standard"') &&
+      !drawer.includes('data-idb-w444-width-preset="wide"') &&
       drawerHooks.drawerWidthContractW444().presets.wide > drawerHooks.drawerWidthContractW444().presets.standard,
     drawerHooks.drawerWidthContractW444());
 
   assertCase(results, 'w444-troubleshoot-export',
     !/Support \/ troubleshoot|Support views/.test(drawer) &&
       /Troubleshoot \/ Export/.test(drawer) &&
-      exportPayload.drawerVersion === '1.0.52' &&
-      exportPayload.drawerBlock === 'W444' &&
+      exportPayload.drawerVersion === '1.0.53' &&
+      exportPayload.drawerBlock === 'W445' &&
+      exportPayload.schema === 'idb.w445-troubleshoot-export.v1' &&
       exportPayload.selectedToggles.enableWip === true &&
       /Siete Maíz/.test(exportPayload.selectedProduct) &&
       exportPayload.productCandidates.alternateProductCandidates.length >= 5 &&
       exportPayload.routingWorkOrderDiagnostics.length > 0 &&
+      exportPayload.routingTruth &&
+      exportPayload.workOrderTruth &&
+      exportPayload.recommendedReview &&
       exportPayload.returnedRecords.length > 0 &&
       exportPayload.extId === 'W444-SIETE-EXT' &&
       exportPayload.taskId === 'task-w444',

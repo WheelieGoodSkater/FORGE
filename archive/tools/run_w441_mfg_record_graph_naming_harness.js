@@ -178,10 +178,10 @@ function main() {
   const sietePlan = runnerHooks.productBuildPlanW432(sieteBase);
 
   assertCase(results, 'w441-marker-updated',
-    /@version\s+1\.0\.52/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.52';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W444';"),
-    'Drawer should identify W444 / 1.0.52 after W441.');
+    /@version\s+1\.0\.53/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.53';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W445';"),
+    'Drawer should identify W445 / 1.0.53 after W441.');
 
   const mfgSurface = renderSieteSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: false }, {
     productBuildPlanW432: sietePlan,
@@ -228,7 +228,7 @@ function main() {
 
   const cleanName = runnerHooks.cleanCustomerFacingCreatedNameW441('Siete Maíz Sea Salt Tortilla Chips Finished Good - SNACKS-SK9R9S-OSD - RUN', 'assembly', sietePlan, 'manufacturing');
   assertCase(results, 'w441-internal-ids-preserved',
-    cleanName === 'Siete Maíz Sea Salt Tortilla Chip Production Batch' &&
+    cleanName === 'Siete Maíz Tortilla Chip Batch' &&
       runner.includes('internalName') &&
       runner.includes('itemIdName: buildUniqueRecordName') &&
       runner.includes('displayName: trimLen(cleanBase'),
@@ -253,7 +253,7 @@ function main() {
   const diagnosticText = diagnosticSurface.text;
   assertCase(results, 'w441-work-order-diagnostic-not-silent',
     /Work Order Diagnostic/.test(diagnosticText) &&
-      /WO - Siete Maíz Sea Salt Tortilla Chip Production Batch/.test(diagnosticText) &&
+      /WO - Siete Maíz Sea Salt Tortilla Chips/.test(diagnosticText) &&
       /assemblyId/.test(JSON.stringify(diagnosticSurface.finalNaming)) &&
       /could not set assembly item/.test(JSON.stringify(diagnosticSurface.finalNaming)) &&
       !/Retail Replenishment/.test(diagnosticText),

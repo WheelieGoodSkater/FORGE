@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.52
+// @version      1.0.53
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,8 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.52';
-  const CURRENT_UX_BLOCK_W346 = 'W444';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.53';
+  const CURRENT_UX_BLOCK_W346 = 'W445';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -13761,6 +13761,22 @@
     return '';
   }
 
+  function firstNonBlankObject() {
+    for (let i = 0; i < arguments.length; i += 1) {
+      const value = arguments[i];
+      if (value && typeof value === 'object' && Object.keys(value).length) return value;
+    }
+    return null;
+  }
+
+  function safeFileToken(value) {
+    return String(value || 'run')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 48) || 'run';
+  }
+
   function arrayValue(value) {
     if (!value) return [];
     return Array.isArray(value) ? value : [value];
@@ -14538,18 +14554,29 @@
       .concat(arrayValue(payload && payload.scriptPivotObjects));
     const mode = visibleProductModeW439(state, lane, payload || finalNaming || {}, objects);
     const customerName = firstNonBlank(state && state.customerName, intake.customer, finalNaming && finalNaming.prospect, 'Prospect');
+    const productPlanW445 = (payload && payload.productBuildPlanW432) || (finalNaming && finalNaming.productBuildPlanW432) || null;
+    const planProductCandidateW445 = productPlanW445 ? firstNonBlank(
+      productPlanW445.primaryProductCandidate,
+      productPlanW445.selectedProductCandidate,
+      productPlanW445.productName,
+      productPlanW445.evidence && productPlanW445.evidence.selectedProductCandidate
+    ) : '';
     const objectProductCandidate = arrayValue(objects).map((item) => consultantVisibleRecordNameW436(firstNonBlank(item && item.name, item && item.recordName)))
       .find((name) => /\b(Siete|Kettle)\b/i.test(name) && /\b(chips|vinegar|jalapeno|tortilla|salt)\b/i.test(name) && !visibleRecordBrandMismatchW438(name, state));
-    const productBaseName = visibleProductAccentPolishW439(firstNonBlank(objectProductCandidate, currentWebsiteProductBaseW438(state))
+    let productBaseName = visibleProductAccentPolishW439(firstNonBlank(planProductCandidateW445, objectProductCandidate, currentWebsiteProductBaseW438(state))
       .replace(/\s+12[-\s]*Count\s+Case Pack\b/i, '')
       .replace(/\s+Retail Replenishment\b/i, '')
       .replace(/\s+Channel Supply\b/i, '')
       .replace(/\s+Finished Good\b/i, '')
+      .replace(/\s+Production Batch\b/i, '')
       .replace(/^BOM\s+-\s+/i, '')
       .replace(/^Revision\s+1\s+-\s+/i, '')
       .replace(/^WO\s+-\s+/i, '')
       .replace(/^Routing\s+-\s+/i, '')
       .trim());
+    if (/\bSiete\b/i.test(productBaseName) && /\bTortilla Chip$/i.test(productBaseName)) {
+      productBaseName = `${productBaseName}s`;
+    }
     const productDisplayName = /\b12[-\s]*Count\s+Case Pack\b/i.test(productBaseName)
       ? productBaseName
       : `${productBaseName} 12-Count Case Pack`;
@@ -14561,7 +14588,7 @@
       ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
       : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'];
     const manufacturingTermsW442 = industryNativeManufacturingTermsW442(productBaseName, {
-      productBuildPlan: (payload && payload.productBuildPlanW432) || (finalNaming && finalNaming.productBuildPlanW432) || null,
+      productBuildPlan: productPlanW445,
       websiteText: [
         state && state.websiteEvidenceV1 && state.websiteEvidenceV1.text,
         state && state.intake && state.intake.notes,
@@ -22867,7 +22894,7 @@
 
   function drawerWidthContractW444() {
     return {
-      schema: 'idb.w444-resizable-drawer-contract.v1',
+      schema: 'idb.w445-resizable-drawer-contract.v1',
       minWidth: 360,
       maxWidth: Math.max(520, Math.min(900, window.innerWidth - 24)),
       presets: {
@@ -23705,6 +23732,9 @@
         flex-wrap: wrap;
         gap: 6px;
       }
+      .idb-w445-active-detail-card {
+        box-shadow: inset 0 0 0 2px rgba(0, 102, 133, 0.18);
+      }
       .idb-w444-resize-handle {
         position: absolute;
         inset-block: 0;
@@ -23723,12 +23753,6 @@
         transform: translateY(-50%);
         border-radius: 999px;
         background: #8aa0ad;
-      }
-      .idb-w444-resize-presets {
-        display: flex;
-        gap: 4px;
-        justify-content: flex-end;
-        padding: 6px 10px 0;
       }
       .idb-w415-record-label {
         color: #536579;
@@ -25574,10 +25598,25 @@
     `;
   }
 
-  function roiCompetitiveDetailModelW444(valueNarrative, competitiveAdvisory, value) {
+  function roiCompetitiveDetailModelW444(valueNarrative, competitiveAdvisory, value, visibleNarrative) {
     const source = firstNonBlank(valueNarrative && valueNarrative.source, 'website_industry_fallback');
     const confidence = firstNonBlank(valueNarrative && valueNarrative.confidence, 'medium');
     const evidenceTerms = arrayValue(valueNarrative && valueNarrative.evidenceTermsUsed);
+    const narrativeText = [
+      valueNarrative && valueNarrative.roiHeadline,
+      valueNarrative && valueNarrative.roiDetail,
+      valueNarrative && valueNarrative.competitiveQuestion,
+      valueNarrative && valueNarrative.competitiveWatchOut,
+      evidenceTerms.join(' ')
+    ].join(' ');
+    const activeMode = visibleNarrative && visibleNarrative.mode || '';
+    const whyPresented = activeMode === 'distribution'
+      ? 'Presented because the returned records and selected toggles center on case-pack availability, replenishment confidence, customer demand, and fulfillment trust.'
+      : /routing|wip|line capacity|work order status|operation/i.test(narrativeText)
+      ? 'Presented because the returned records and selected toggles center on routed production readiness, work order execution, operation progress, and stale-routing truth.'
+      : /production|batch|bom|ingredient|work order/i.test(narrativeText)
+        ? 'Presented because the returned records and selected toggles center on production batch readiness, input availability, BOM structure, and work order execution.'
+        : 'Presented because the returned records and selected toggles center on case-pack availability, replenishment confidence, customer demand, and fulfillment trust.';
     const alternatives = uniqueValues(arrayValue(competitiveAdvisory && competitiveAdvisory.likelyAlternatives)
       .concat(['spreadsheets', 'disconnected MRP', 'SAP Business One', 'Microsoft Dynamics', 'QuickBooks inventory add-ons', 'Fishbowl', 'Katana']));
     return {
@@ -25585,6 +25624,7 @@
         source,
         confidence,
         evidenceTerms,
+        whyPresented,
         baselineNeeded: firstNonBlank(valueNarrative && valueNarrative.baselineNeeded, valueNarrative && valueNarrative.roiDetail, value && value.roiAudit && value.roiAudit.baselineNeeded, 'Buyer-confirmed baseline needed before any savings claim.'),
         unsupportedClaimCaution: firstNonBlank(valueNarrative && valueNarrative.unsupportedClaimCaution, 'Unsupported savings claims stay blocked until the buyer confirms a baseline.')
       },
@@ -25607,8 +25647,9 @@
     const active = kind === 'competitive' ? 'competitive' : 'roi';
     if (active === 'competitive') {
       return `
-        <div class="idb-w444-lower-detail" data-idb-detail-panel="competitive">
-          <div class="idb-status-key">Competitive angle</div>
+        <div class="idb-w444-lower-detail" data-idb-detail-panel="competitive" data-idb-w445-detail-anchor tabindex="-1">
+          <div class="idb-status-key">Why this competitive angle was chosen</div>
+          <div class="idb-copy">Presented because the run context points to production planning trust, WIP/routing readiness, and disconnected-planning objections; use these as discovery prompts, not as asserted incumbent systems.</div>
           <div class="idb-copy">Likely alternatives: ${escapeHtml(detail.competitive.likelyAlternatives.join(', '))}</div>
           <div class="idb-strong">${escapeHtml(detail.competitive.whyNetSuiteWins)}</div>
           <div class="idb-copy">FUD-safe questions: ${escapeHtml(detail.competitive.discoveryQuestions.join(' / '))}</div>
@@ -25618,8 +25659,9 @@
       `;
     }
     return `
-      <div class="idb-w444-lower-detail" data-idb-detail-panel="roi">
-        <div class="idb-status-key">Why this ROI?</div>
+      <div class="idb-w444-lower-detail" data-idb-detail-panel="roi" data-idb-w445-detail-anchor tabindex="-1">
+        <div class="idb-status-key">Why this ROI was chosen</div>
+        <div class="idb-copy">${escapeHtml(detail.roi.whyPresented)}</div>
         <div class="idb-copy">Source: ${escapeHtml(consultantLabel(detail.roi.source))} / Confidence: ${escapeHtml(consultantLabel(detail.roi.confidence))}</div>
         <div class="idb-copy">Evidence terms used: ${escapeHtml(detail.roi.evidenceTerms.length ? detail.roi.evidenceTerms.join(', ') : 'industry and returned-record context')}</div>
         <div class="idb-strong">${escapeHtml(detail.roi.baselineNeeded)}</div>
@@ -25705,7 +25747,7 @@
     const valueNarrativeW443 = cockpitValueNarrativeW443(state, lane, visibleNarrative, websiteEvidence, finalNavigation);
     const diagnostics = objects.filter((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const productModelW444 = productCandidateModelW444(state, finalNavigation);
-    const detailModelW444 = roiCompetitiveDetailModelW444(valueNarrativeW443, competitiveAdvisory, value);
+    const detailModelW444 = roiCompetitiveDetailModelW444(valueNarrativeW443, competitiveAdvisory, value, visibleNarrative);
     const activeDetailW444 = state.w444CockpitDetail === 'competitive' ? 'competitive' : 'roi';
     const lastRunReceipt = lastRunReceiptW444(state, finalNavigation, productModelW444, toggleReceipt, diagnostics);
     if (valueNarrativeW443) {
@@ -25780,24 +25822,24 @@
           <div class="idb-copy">${escapeHtml(proofFlowCopy(proofLine))}</div>
         </div>
         <div class="idb-w415-cockpit-grid">
-          <div class="idb-w415-cockpit-panel idb-w415-roi-panel">
+          <div class="idb-w415-cockpit-panel idb-w415-roi-panel ${activeDetailW444 === 'roi' ? 'idb-w445-active-detail-card' : ''}">
             <div class="idb-status-key">Top ROI point</div>
             <div class="idb-strong">${escapeHtml(roiCopy)}</div>
             <div class="idb-copy">${escapeHtml(valueNarrativeW443 && valueNarrativeW443.roiDetail || `Baseline: ${compactText(baselineCopy, 120)}`)}</div>
             <div class="idb-chip-row">
               <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
               <span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.confidence || 'medium'))}</span>
-              <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'roi' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="roi">Why this ROI?</button>
+              <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'roi' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="roi" aria-pressed="${activeDetailW444 === 'roi' ? 'true' : 'false'}">Why this ROI?</button>
             </div>
           </div>
-          <div class="idb-w415-cockpit-panel idb-w415-competitive-panel">
+          <div class="idb-w415-cockpit-panel idb-w415-competitive-panel ${activeDetailW444 === 'competitive' ? 'idb-w445-active-detail-card' : ''}">
             <div class="idb-status-key">Competitive battlecard</div>
             <div class="idb-strong">${escapeHtml(objectionCopy)}</div>
             <div class="idb-copy">Watch-out: ${escapeHtml(watchOutCopy)}</div>
             <div class="idb-chip-row">
               <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
               <span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.confidence || 'medium'))}</span>
-              <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'competitive' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="competitive">Competitive angle</button>
+              <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'competitive' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="competitive" aria-pressed="${activeDetailW444 === 'competitive' ? 'true' : 'false'}">Competitive angle</button>
             </div>
           </div>
         </div>
@@ -25810,8 +25852,7 @@
           <div class="idb-copy">Run: ${escapeHtml([lastRunReceipt.timestamp, lastRunReceipt.extId, lastRunReceipt.taskId].filter(Boolean).join(' / ') || 'no task receipt')}</div>
         </details>
         <div class="idb-actions idb-w444-run-actions">
-          <button class="idb-secondary" type="button" data-idb-w444-clear-run="keep">Clear run</button>
-          <button class="idb-secondary" type="button" data-idb-w444-clear-run="all">Start new run</button>
+          <button class="idb-secondary" type="button" data-idb-w445-start-new-run>Start new run</button>
           <button class="idb-primary" type="button" data-idb-w444-troubleshoot-export>Troubleshoot / Export</button>
         </div>
         <div class="idb-w415-claim-caution">
@@ -28373,20 +28414,7 @@
       ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory, compactAudit: true, activeLaneStoryPolishW373: storyContractW373 })
       : '';
     if (!finalNavigation.runCanUseImportedFinalNames && finalNavigation.proofReviewAvailable) {
-      return `
-        ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
-        <details class="idb-technical-details idb-w417-support-troubleshoot">
-          <summary>Proof quality details</summary>
-          <div class="idb-card idb-accent">
-            <div class="idb-section-title">Proof quality review</div>
-            <div class="idb-copy">Returned records and Open links exist, but FORGE detected naming or setup quality issues. Review the blocker before presenting this proof as clean.</div>
-            <ul class="idb-value-list">
-              ${arrayValue(finalNavigation.proofQualityGate && finalNavigation.proofQualityGate.blockers).map((blocker) => `<li>${escapeHtml(blocker)}</li>`).join('')}
-            </ul>
-          </div>
-          ${renderW361NetSuitePathFlow(finalNavigation)}
-        </details>
-      `;
+      return renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory });
     }
     if (!finalNavigation.runCanUseImportedFinalNames) {
       const waitingForLinks = buildStatus && buildStatus.automation && buildStatus.automation.runnerTaskCaptured;
@@ -28415,10 +28443,11 @@
         </details>
       `;
     }
+    return renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory });
     return `
       ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
       <details class="idb-technical-details idb-w417-support-troubleshoot">
-        <summary>Proof path details</summary>
+        <summary>Retired run details</summary>
         <div class="idb-card idb-accent idb-w97-run-selector">
           <div class="idb-section-title">Supporting NetSuite path</div>
           <div class="idb-copy">Use this only when you need the full ordered path, live controls, or evidence detail behind the cockpit.</div>
@@ -28695,11 +28724,6 @@
           </div>
           <button class="idb-icon-button" data-idb-close title="Close drawer">×</button>
         </div>
-        <div class="idb-w444-resize-presets" aria-label="Drawer width presets">
-          <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-width-preset="compact">Compact</button>
-          <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-width-preset="standard">Standard</button>
-          <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-width-preset="wide">Wide</button>
-        </div>
       </div>
       <div class="idb-body">
         ${activePanel}
@@ -28882,35 +28906,86 @@
     const finalNavigation = dccFinalNavigationModel(state, lane, pageContext, recommendation);
     const toggleReceipt = selectedBuildToggleReceiptW440(state, lane, finalNavigation);
     const productModel = productCandidateModelW444(state, finalNavigation);
-    const diagnostics = arrayValue(finalNavigation.reviewObjects).concat(arrayValue(finalNavigation.scriptPivotObjects))
+    const records = arrayValue(finalNavigation.reviewObjects);
+    const pivotObjects = arrayValue(finalNavigation.scriptPivotObjects);
+    const diagnostics = records.concat(pivotObjects)
       .filter((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const runner = state && state.integratedBuildRunnerResult || {};
     const capture = runner.resultCapture || {};
+    const sidecar = runner.sidecarGeneratedNamesJson || runner.finalGeneratedNamesJson || runner.partialGeneratedNamesJson || {};
+    const routingDiagnostics = firstNonBlankObject(
+      sidecar.routingDiagnostic,
+      sidecar.routingDiagnostics,
+      capture.routingResult,
+      runner.routingResult
+    );
+    const workOrderTelemetry = firstNonBlankObject(
+      sidecar.workOrderTelemetry,
+      capture.workOrderTelemetry,
+      runner.workOrderTelemetry
+    );
+    const workOrderRecords = records.concat(pivotObjects).filter((item) => /work\s*order|workorder/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
+    const routingRecords = records.concat(pivotObjects).filter((item) => /routing/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const intake = normalizedIntake(state || {});
     return {
-      schema: 'idb.w444-troubleshoot-export.v1',
+      schema: 'idb.w445-troubleshoot-export.v1',
       drawerVersion: DRAWER_USERSCRIPT_VERSION,
       drawerBlock: CURRENT_UX_BLOCK_W346,
+      exportedAt: nowIso(),
       customer: intake.customer,
       website: intake.website,
       notesDigest: compactText(intake.notes || '', 240),
+      currentPage: pageContext,
+      drawerSurface: {
+        activeView: state && state.activeView || '',
+        widthPreset: drawerWidthPresetW444(readDrawerWidthW444()),
+        widthPx: readDrawerWidthW444()
+      },
       selectedToggles: toggleReceipt,
       selectedProduct: productModel.primaryProductCandidate,
       productCandidates: productModel,
-      returnedRecords: arrayValue(finalNavigation.reviewObjects),
+      returnedRecords: records,
+      scriptPivotObjects: pivotObjects,
       openLinkStatus: finalNavigation.linkAuthoritySummary,
       routingWorkOrderDiagnostics: diagnostics,
+      routingTruth: {
+        requestedWip: !!(toggleReceipt && toggleReceipt.enableWip),
+        routingRecords,
+        routingDiagnostics,
+        routingOperations: arrayValue(sidecar.routingOperations).concat(arrayValue(capture.routingOperations)),
+        expectedRoutingName: firstNonBlank(routingDiagnostics && routingDiagnostics.expectedRoutingName, routingDiagnostics && routingDiagnostics.routingName),
+        staleRoutingName: firstNonBlank(routingDiagnostics && routingDiagnostics.staleRoutingName, routingDiagnostics && routingDiagnostics.actualRoutingName),
+        staleRoutingId: firstNonBlank(routingDiagnostics && routingDiagnostics.staleRoutingId, routingDiagnostics && routingDiagnostics.actualRoutingId),
+        decision: firstNonBlank(routingDiagnostics && routingDiagnostics.decision, capture.routingResult && capture.routingResult.decision)
+      },
+      workOrderTruth: {
+        records: workOrderRecords,
+        telemetry: workOrderTelemetry,
+        telemetryWorkOrderId: firstNonBlank(workOrderTelemetry && workOrderTelemetry.woId, workOrderTelemetry && workOrderTelemetry.workOrderId, capture.woId, runner.woId),
+        linkReturned: workOrderRecords.some((item) => item && item.linkAuthority && item.linkAuthority.openable === true)
+      },
       extId: firstNonBlank(runner.idempotencyToken, capture.idempotencyToken, state && state.dccFinalNamingResult && state.dccFinalNamingResult.generated && state.dccFinalNamingResult.generated.extId),
       taskId: firstNonBlank(runner.runnerTaskId, capture.runnerTaskId),
       fileId: firstNonBlank(runner.fileId, capture.fileId),
       taskFolder: firstNonBlank(runner.folderId, capture.resultCaptureFolderId),
+      rawResultKeys: {
+        runner: Object.keys(runner || {}).sort(),
+        capture: Object.keys(capture || {}).sort(),
+        sidecar: Object.keys(sidecar || {}).sort()
+      },
       currentNetSuiteUrl: window.location && window.location.href || '',
       recentVisibleStatusSummary: {
         finalNavigationStatus: finalNavigation.status,
         runCanUseImportedFinalNames: finalNavigation.runCanUseImportedFinalNames,
         proofReviewAvailable: finalNavigation.proofReviewAvailable,
-        returnedCount: arrayValue(finalNavigation.reviewObjects).length,
+        returnedCount: records.length,
         diagnosticsCount: diagnostics.length
+      },
+      recommendedReview: {
+        routingStaleDetected: /cookie|parfait|fudge|baking|dough/i.test(firstNonBlank(routingDiagnostics && routingDiagnostics.staleRoutingName, routingDiagnostics && routingDiagnostics.actualRoutingName)),
+        routingRecordMissingWhenWipRequested: !!(toggleReceipt && toggleReceipt.enableWip) && !routingRecords.some((item) => item && item.recordType === 'manufacturingrouting'),
+        workOrderLinkMissingButTelemetryHasId: !!firstNonBlank(workOrderTelemetry && workOrderTelemetry.woId, workOrderTelemetry && workOrderTelemetry.workOrderId, capture.woId, runner.woId) && !workOrderRecords.some((item) => item && item.linkAuthority && item.linkAuthority.openable === true),
+        namingMayBeTruncated: records.some((item) => /Produc\s*-|Production Batch\s*-\s*/i.test(`${item && (item.name || item.recordName) || ''}`))
       },
       noRegression: {
         noDrawerWrites: true,
@@ -28933,18 +29008,20 @@
       copied = false;
     }
     if (!copied) {
-      const blob = new Blob([text], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `forge-w444-troubleshoot-${Date.now()}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      trace('w445_troubleshoot_clipboard_copy_skipped', { reason: 'clipboard_unavailable_or_blocked' });
     }
+    const blob = new Blob([text], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `forge-w445-troubleshoot-${safeFileToken(payload.customer || 'run')}-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
     trace('w444_troubleshoot_exported', {
       copied,
+      downloaded: true,
       diagnosticsCount: payload.routingWorkOrderDiagnostics.length,
       returnedCount: payload.returnedRecords.length,
       noDrawerWrites: true,
@@ -29899,6 +29976,11 @@
         saveState(state);
         trace('w444_cockpit_detail_selected', { detail: state.w444CockpitDetail });
         draw(root, state);
+        const panel = root.querySelector('[data-idb-w445-detail-anchor]');
+        if (panel) {
+          panel.scrollIntoView({ block: 'nearest' });
+          if (typeof panel.focus === 'function') panel.focus({ preventScroll: true });
+        }
       });
     });
     root.querySelectorAll('[data-idb-w444-fresh-candidate-intent]').forEach((button) => {
@@ -29916,12 +29998,12 @@
         draw(root, state);
       });
     });
-    root.querySelectorAll('[data-idb-w444-clear-run]').forEach((button) => {
+    root.querySelectorAll('[data-idb-w444-clear-run], [data-idb-w445-start-new-run]').forEach((button) => {
       button.addEventListener('click', () => {
-        const keepRequest = button.getAttribute('data-idb-w444-clear-run') === 'keep';
+        const keepRequest = button.hasAttribute('data-idb-w445-start-new-run') || button.getAttribute('data-idb-w444-clear-run') === 'keep';
         clearRunStateW444(state, keepRequest);
         saveState(state);
-        trace('w444_run_state_cleared', { keepRequest, noDrawerWrites: true });
+        trace('w445_run_state_cleared_for_new_run', { keepRequest, noDrawerWrites: true });
         draw(root, state);
       });
     });
@@ -29931,16 +30013,6 @@
         button.textContent = 'Exporting...';
         await exportTroubleshootW444(state);
         draw(root, state);
-      });
-    });
-    root.querySelectorAll('[data-idb-w444-width-preset]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const preset = button.getAttribute('data-idb-w444-width-preset') || 'standard';
-        const contract = drawerWidthContractW444();
-        const nextWidth = writeDrawerWidthW444(contract.presets[preset] || contract.presets.standard, preset);
-        applyDrawerWidthW444(root, nextWidth);
-        applyWorkspaceFit(state.open);
-        trace('w444_drawer_width_preset_selected', { preset, width: nextWidth });
       });
     });
     const resizeHandle = root.querySelector('[data-idb-w444-resize-handle]');

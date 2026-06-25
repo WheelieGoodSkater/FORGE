@@ -171,10 +171,10 @@ function main() {
   });
 
   assertCase(results, 'w442-marker-updated',
-    /@version\s+1\.0\.52/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.52';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W444';"),
-    'Drawer should identify W444 / 1.0.52 after W442.');
+    /@version\s+1\.0\.53/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.53';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W445';"),
+    'Drawer should identify W445 / 1.0.53 after W442.');
 
   const mfgSurface = renderSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: false }, sieteRecords(sietePlan, false));
   const mfgText = mfgSurface.text;

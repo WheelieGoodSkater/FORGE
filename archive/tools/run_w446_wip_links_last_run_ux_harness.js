@@ -210,10 +210,10 @@ function main() {
   const surface = buildSurface(hooks);
 
   assertCase(results, 'w446-marker-updated',
-    /@version\s+1\.0\.57/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.57';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W449';"),
-    'Drawer should identify current W449 / 1.0.57 while preserving W446 behavior.');
+    /@version\s+1\.0\.(57|58)/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58)';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W(449|450)';/.test(drawer),
+    'Drawer should identify current W449/W450 while preserving W446 behavior.');
 
   assertCase(results, 'w446-wip-visual-three-stage-clickable',
     hooks.cockpitWorkflowNodesW446('wip', surface.finalNavigation.scriptPivotObjects).length <= 3 &&
@@ -252,7 +252,7 @@ function main() {
     surface.text);
 
   assertCase(results, 'w446-troubleshoot-export-telemetry',
-    surface.exportPayload.schema === 'idb.w449-troubleshoot-export.v1' &&
+    /^idb\.w(449|450)-troubleshoot-export\.v1$/.test(surface.exportPayload.schema) &&
       surface.exportPayload.truthSummaryW448 &&
       surface.exportPayload.manufacturingEligibilityPreflightW446 &&
       surface.exportPayload.troubleshootExportTelemetryW446 &&
@@ -265,7 +265,7 @@ function main() {
       runner.includes('body-field-fallback-dynamic-default-values') &&
       runner.includes('BOM not selectable for routing context') &&
       runner.includes('troubleshootExportTelemetryW446') &&
-      runner.includes('repair_stale_route_in_place_for_wip_default'),
+      (runner.includes('repair_stale_route_in_place_for_wip_default') || runner.includes('supersede_stale_route_with_new_product_specific_wip_default')),
     'Runner should expose preflight, body-field fallback, routing context diagnostics, and stale-route repair.');
 
   assertCase(results, 'w446-package-script',

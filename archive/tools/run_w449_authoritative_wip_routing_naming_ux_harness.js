@@ -264,10 +264,10 @@ function main() {
   const results = [];
 
   assertCase(results, 'w449-marker-updated',
-    /@version\s+1\.0\.57/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.57';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W449';"),
-    'Drawer should identify W449 / 1.0.57.');
+    /@version\s+1\.0\.(57|58)/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58)';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W(449|450)';/.test(drawer),
+    'Drawer should identify W449 / 1.0.57 or successor W450 / 1.0.58.');
 
   assertCase(results, 'w449-authoritative-work-center-search',
     runner.includes('customsearch_scai_ss_wc_wip') &&
@@ -343,7 +343,7 @@ function main() {
     surface.text);
 
   assertCase(results, 'w449-troubleshoot-export-routing-and-naming-telemetry',
-    surface.exportPayload.schema === 'idb.w449-troubleshoot-export.v1' &&
+    /^idb\.w(449|450)-troubleshoot-export\.v1$/.test(surface.exportPayload.schema) &&
       surface.exportPayload.authoritativeWorkCenterRoutingW449 &&
       surface.exportPayload.authoritativeWorkCenterRoutingW449.authoritativeWorkCenterSearch &&
       Array.isArray(surface.exportPayload.authoritativeWorkCenterRoutingW449.pairProbes) &&

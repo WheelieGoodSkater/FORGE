@@ -124,7 +124,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    */
   const VERSION = 'v4.0.0-runner-sandbox';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w449-authoritative-wip-routing';
+  const RELEASE_TRANCHE = 'w450-llm-naming-real-wip-routing';
   const W449_WORK_CENTER_SEARCH = {
     id: 5005,
     scriptId: 'customsearch_scai_ss_wc_wip',
@@ -1490,6 +1490,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       expectedRoutingName,
       staleRoutingName: diagnostic.actualRoutingName || diagnostic.staleRoutingName || '',
       staleRoutingId: diagnostic.actualRoutingId || diagnostic.staleRoutingId || null,
+      failureType: diagnostic.failureType || '',
+      nextFixHint: diagnostic.nextFixHint || diagnostic.recommendedOperatorNextStep || '',
       assemblyId: Number(ids && ids.assemblyId || diagnostic.assemblyId || 0) || null,
       bomId: Number(ids && ids.bomId || diagnostic.bomId || 0) || null,
       bomRevisionId: Number(ids && ids.bomRevId || diagnostic.bomRevisionId || 0) || null,
@@ -1497,6 +1499,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       reason: diagnostic.reason || diagnostic.failureStage || 'routing_not_created_or_not_product_specific',
       errorName: diagnostic.errorName || '',
       errorMessage: diagnostic.errorMessage || '',
+      operationRows: routingResult && routingResult.operationRows || diagnostic.operationRows || [],
       w449: routingResult && routingResult.w449 ? routingResult.w449 : (diagnostic && diagnostic.w449 ? diagnostic.w449 : null)
     };
   }
@@ -1523,23 +1526,30 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       productPlan && productPlan.brandName,
       productPlan && productPlan.industryNativeManufacturedItemName
     ].join(' '));
-    if (/receiv|stage|material|input|prep|slice|rinse|masa|protein|pasta/.test(hay)) {
-      return { key: 'receiving', keywords: ['receiv', 'stage', 'staging', 'prep', 'material', 'input', 'warehouse', 'raw'] };
+    if (Number(seq) === 10 && /receiv|dock|stage|staging|material|input|prep/.test(hay)) {
+      return {
+        key: 'production',
+        retryProductionForReceive: true,
+        keywords: ['production', 'line', 'assembly', 'mix', 'mixer', 'blend', 'blending', 'fill', 'filling', 'pack', 'packing', 'qc', 'quality', 'receiv', 'dock']
+      };
     }
     if (/mix|blend|season|tumble|masa|marinade|sauce|dry/.test(hay)) {
-      return { key: 'mixing', keywords: ['mix', 'mixer', 'mixing', 'blend', 'blending', 'season', 'tumble', 'prep'] };
-    }
-    if (/cook|fry|kettle|roast|bake|dehydrat|sheet|cut|production|line|air finish/.test(hay)) {
-      return { key: 'production', keywords: ['production', 'line', 'cook', 'cooking', 'fry', 'frying', 'roast', 'oven', 'kettle', 'process'] };
+      return { key: 'mixing', keywords: ['mix', 'mixer', 'mixing', 'blend', 'blending', 'season', 'tumble', 'prep', 'assembly', 'production'] };
     }
     if (/fill|bag|wrap|carton|dispense/.test(hay)) {
-      return { key: 'fill', keywords: ['fill', 'filling', 'dispense', 'bag', 'bagging', 'wrap', 'wrapper', 'carton'] };
+      return { key: 'fill', keywords: ['fill', 'filling', 'dispense', 'bag', 'bagging', 'wrap', 'wrapper', 'carton', 'assembly', 'production'] };
+    }
+    if (/cook|fry|kettle|roast|bake|dehydrat|sheet|cut|production|line|air finish/.test(hay)) {
+      return { key: 'production', keywords: ['production', 'line', 'assembly', 'cook', 'cooking', 'fry', 'frying', 'roast', 'oven', 'kettle', 'process'] };
     }
     if (/qc|quality|inspect|moisture|weight|check/.test(hay)) {
-      return { key: 'qc', keywords: ['qc', 'quality', 'inspect', 'inspection', 'test', 'check', 'lab'] };
+      return { key: 'qc', keywords: ['qc', 'quality', 'inspect', 'inspection', 'test', 'check', 'lab', 'production'] };
     }
     if (/pack|case|pallet/.test(hay)) {
-      return { key: 'packing', keywords: ['pack', 'packing', 'package', 'packaging', 'case', 'casepack', 'pallet'] };
+      return { key: 'packing', keywords: ['pack', 'packing', 'package', 'packaging', 'case', 'casepack', 'pallet', 'assembly', 'production'] };
+    }
+    if (/receiv|stage|material|input|prep|slice|rinse|masa|protein|pasta|dock/.test(hay)) {
+      return { key: 'production', retryProductionForReceive: true, keywords: ['production', 'line', 'assembly', 'mix', 'blend', 'fill', 'pack', 'qc', 'receiv', 'dock'] };
     }
     return { key: 'production', keywords: ['production', 'line', 'mix', 'pack', 'fill', 'qc'] };
   }
@@ -1565,6 +1575,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (preferredIdIndex >= 0) score += 250 - (preferredIdIndex * 25);
       preferredLayer.forEach(function (k) { if (name.indexOf(k) !== -1) score += 80; });
       keys.forEach(function (k) { if (name.indexOf(k) !== -1) score += 35; });
+      ['production', 'line', 'assembly', 'mix', 'mixer', 'blend', 'blending', 'fill', 'filling', 'pack', 'packing', 'qc', 'quality'].forEach(function (k) {
+        if (name.indexOf(k) !== -1) score += 18;
+      });
+      if (/receiv|dock|warehouse|staging|stage/.test(name)) score -= 140;
       if (loc && String(center.locationId || '') === loc) score += 25;
       if (subs && String(center.subsidiaryId || '') === subs) score += 12;
       if (/cookie\s+production\s+line/i.test(center && center.name || '')) score -= 10000;
@@ -1588,6 +1602,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       let score = Number(template && template.score || 0);
       keys.forEach(function (k) { if (name.indexOf(k) !== -1) score += 30; });
       if (profile && profile.key && name.indexOf(profile.key) !== -1) score += 60;
+      if (template && template.isDefault) score += 85;
+      if (template && template.subsidiaryMatch) score += 70;
+      if (/standard|default|wip|routing|manufacturing/.test(name)) score += 20;
       return Object.assign({}, template, {
         score,
         w449Rank: index + 1,
@@ -1601,8 +1618,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function buildRoutingOperationPlanW449(opNames, centers, templates, productPlan, context) {
     const specs = [
-      { seq: 10, opName: opNames.op10 || 'Prepare Materials', required: true },
-      { seq: 20, opName: opNames.op20 || 'Build Product', required: true },
+      { seq: 10, opName: opNames.op10 || 'Review Product Inputs', required: true },
+      { seq: 20, opName: opNames.op20 || 'Run Product Assembly', required: true },
       { seq: 30, opName: opNames.op30 || 'Inspect', required: true },
       { seq: 40, opName: opNames.op40 || '', required: false },
       { seq: 50, opName: opNames.op50 || '', required: false }
@@ -1612,8 +1629,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       const rankedCenters = rankWorkCentersForOperationW449(centers, profile, context);
       const rankedTemplates = rankCostTemplatesForOperationW449(templates, profile);
       const pairs = [];
-      const maxCenters = Math.min(6, rankedCenters.length);
-      const maxTemplates = Math.min(6, rankedTemplates.length);
+      const maxCenters = rankedCenters.length;
+      const maxTemplates = rankedTemplates.length;
       for (let c = 0; c < maxCenters; c += 1) {
         for (let t = 0; t < maxTemplates; t += 1) {
           pairs.push({
@@ -1627,20 +1644,24 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return Object.assign({}, spec, {
         profile: profile.key,
         keywords: profile.keywords,
-        rankedCenters: rankedCenters.slice(0, 8),
-        rankedTemplates: rankedTemplates.slice(0, 8),
-        candidatePairs: pairs.slice(0, 24)
+        retryProductionForReceive: !!profile.retryProductionForReceive,
+        rankedCenters: rankedCenters,
+        rankedTemplates: rankedTemplates,
+        candidatePairs: pairs
       });
     });
   }
 
-  function verifyRoutingAttachedOnAssemblyW449({ assemblyId, routingId, expectedRoutingName, productPlan, extId }) {
+  function verifyRoutingAttachedOnAssemblyW449({ assemblyId, routingId, expectedRoutingName, productPlan, extId, staleRoutingSupersededTargetId }) {
     const verification = {
       schema: 'idb.w449-routing-assembly-verification.v1',
       assemblyId: Number(assemblyId || 0) || null,
       routingId: Number(routingId || 0) || null,
+      staleRoutingSupersededTargetId: Number(staleRoutingSupersededTargetId || 0) || null,
       found: false,
       defaulted: false,
+      staleStillDefaulted: false,
+      staleSuperseded: false,
       valid: false,
       staleCookieProductionLineDetected: false,
       snapshot: null,
@@ -1663,7 +1684,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       verification.staleCookieProductionLineDetected = !!(validation && validation.staleCookieProductionLine) || !!(snapshot && (snapshot.staleRouteSignals || []).some(function (signal) {
         return /cookie\s+production\s+line/i.test(String(signal && signal.matchedText || ''));
       }));
-      verification.valid = verification.found && !verification.staleCookieProductionLineDetected && (!validation || validation.valid !== false);
+      verification.staleStillDefaulted = !!(verification.staleRoutingSupersededTargetId && snapshot && Number(snapshot.defaultRoutingId || 0) === Number(verification.staleRoutingSupersededTargetId));
+      verification.staleSuperseded = !!(verification.staleRoutingSupersededTargetId && verification.found && !verification.staleStillDefaulted);
+      verification.valid = verification.found && !verification.staleStillDefaulted && (!validation || validation.valid !== false);
       return verification;
     } catch (e) {
       verification.errorName = e && e.name ? String(e.name) : '';
@@ -1677,7 +1700,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const loc = locationId ? Number(locationId) : null;
     const authoritativeSearchW449 = authoritativeWipWorkCenterSearchIdW449(workCenterSearchId);
     const w449Telemetry = {
-      schema: 'idb.w449-routing-work-center-pair-probing.v1',
+      schema: 'idb.w450-routing-work-center-cost-template-pair-probing.v1',
       authoritativeWorkCenterSearch: authoritativeSearchW449,
       candidatePoolAuthority: 'saved_search_only',
       candidatePoolSearchId: authoritativeSearchW449.chosenSearchId,
@@ -1689,6 +1712,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       rejectedPairs: [],
       staleCookieProductionLineDetected: false,
       staleCookieProductionLineRejected: false,
+      staleCookieProductionLineSuperseded: false,
       routingAssemblyVerification: null
     };
 
@@ -1701,6 +1725,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       authoritativeOnly: true
     });
     const templates = findCostTemplatesForSubsidiary(subs);       // returns [{id,score,name}, ...]
+    w449Telemetry.savedSearch5005Rows = centers.slice(0, 100);
+    w449Telemetry.workCenterRows = centers.slice(0, 100);
+    w449Telemetry.costTemplateRows = templates.slice(0, 100);
 
     log.audit({
       title: `WIP routing candidates W449 [${VERSION}]`,
@@ -1726,19 +1753,28 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         attachResult: 'not-attached-routing-failed',
         chosen: null,
         w449: w449Telemetry,
+        w450: w449Telemetry,
         routingFailure: {
           schema: 'idb.w449-routing-failure.v1',
           failureStage: 'resolve_work_centers',
           reason: 'authoritative_wip_work_center_search_returned_no_candidates',
+          failureType: 'work_center',
+          nextFixHint: 'Update customsearch_scai_ss_wc_wip so it returns active manufacturing work centers for this subsidiary/location, with production, mixing, blending, assembly, filling, packing, or QC centers ahead of receiving/dock rows.',
+          recommendedOperatorNextStep: 'Fix the authoritative WIP work center saved search candidates, then re-run. Core customer/item/BOM records remain valid.',
           authoritativeSearchW449,
-          w449: w449Telemetry
+          w449: w449Telemetry,
+          w450: w449Telemetry
         },
         diagnostics: {
           schema: 'idb.w449-routing-failure.v1',
           failureStage: 'resolve_work_centers',
           reason: 'authoritative_wip_work_center_search_returned_no_candidates',
+          failureType: 'work_center',
+          nextFixHint: 'Update customsearch_scai_ss_wc_wip so it returns active manufacturing work centers for this subsidiary/location, with production, mixing, blending, assembly, filling, packing, or QC centers ahead of receiving/dock rows.',
+          recommendedOperatorNextStep: 'Fix the authoritative WIP work center saved search candidates, then re-run. Core customer/item/BOM records remain valid.',
           authoritativeSearchW449,
-          w449: w449Telemetry
+          w449: w449Telemetry,
+          w450: w449Telemetry
         }
       };
     }
@@ -1755,19 +1791,28 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         attachResult: 'not-attached-routing-failed',
         chosen: null,
         w449: w449Telemetry,
+        w450: w449Telemetry,
         routingFailure: {
           schema: 'idb.w449-routing-failure.v1',
           failureStage: 'resolve_cost_templates',
           reason: 'wip_cost_templates_missing',
+          failureType: 'cost_template',
+          nextFixHint: 'Create or expose at least one active manufacturing cost template for this subsidiary, preferably a default or name-matched WIP/manufacturing template.',
+          recommendedOperatorNextStep: 'Fix manufacturing cost template availability for the subsidiary, then re-run. Core customer/item/BOM records remain valid.',
           authoritativeSearchW449,
-          w449: w449Telemetry
+          w449: w449Telemetry,
+          w450: w449Telemetry
         },
         diagnostics: {
           schema: 'idb.w449-routing-failure.v1',
           failureStage: 'resolve_cost_templates',
           reason: 'wip_cost_templates_missing',
+          failureType: 'cost_template',
+          nextFixHint: 'Create or expose at least one active manufacturing cost template for this subsidiary, preferably a default or name-matched WIP/manufacturing template.',
+          recommendedOperatorNextStep: 'Fix manufacturing cost template availability for the subsidiary, then re-run. Core customer/item/BOM records remain valid.',
           authoritativeSearchW449,
-          w449: w449Telemetry
+          w449: w449Telemetry,
+          w450: w449Telemetry
         }
       };
     }
@@ -1792,10 +1837,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         keywords: plan.keywords,
         rankedCenters: plan.rankedCenters.slice(0, 6),
         rankedTemplates: plan.rankedTemplates.slice(0, 6),
-        candidatePairCount: plan.candidatePairs.length
+        candidatePairCount: plan.candidatePairs.length,
+        retryProductionForReceive: !!plan.retryProductionForReceive
       };
     });
     w449Telemetry.centerRanking = centers.slice(0, 12);
+    w449Telemetry.costTemplateRanking = templates.slice(0, 12);
     const routingName = trimLen((names && names.routing_name) ? names.routing_name : ((productPlanW443 && productPlanW443.routingName) ? productPlanW443.routingName : `SCAI Routing - ${prospect} - BOM ${bomId}`), 80).slice(0, 60);
     const routingMemo = `SCAI Demo Reset: ${extId} | ${prospect} | WIP routing`;
     const assemblyRoutingDiscoveryW448 = inspectAssemblyRoutingSublistsW448({ assemblyId, extId });
@@ -1810,30 +1857,31 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return /cookie\s+production\s+line/i.test(String(signal && signal.matchedText || ''));
     }));
     w449Telemetry.staleCookieProductionLineRejected = !!(existingRoutingValidation && existingRoutingValidation.staleCookieProductionLine);
+    w449Telemetry.staleCookieProductionLineSuperseded = !!(existingRoutingValidation && existingRoutingValidation.staleCookieProductionLine);
     const staleRoutingDiscovery = existingRoutingValidation && existingRoutingValidation.valid === false
       ? {
         routingId: candidateExistingRoutingId,
         routingName: existingRoutingName,
         validation: existingRoutingValidation,
-        decision: 'repair_stale_route_in_place_for_wip_default'
+        decision: 'supersede_stale_route_with_new_product_specific_wip_default'
       }
       : null;
-    const staleRoutingRepairTargetId = staleRoutingDiscovery ? candidateExistingRoutingId : null;
-    const existingRoutingId = staleRoutingRepairTargetId || candidateExistingRoutingId || null;
+    const staleRoutingSupersededTargetId = staleRoutingDiscovery ? candidateExistingRoutingId : null;
+    const existingRoutingId = staleRoutingDiscovery ? null : candidateExistingRoutingId || null;
 
     log.audit({
       title: `WIP managed routing decision [${VERSION}]`,
       details: JSON.stringify({
         assemblyId: Number(assemblyId),
         existingRoutingId,
-        staleRoutingRepairTargetId,
+        staleRoutingSupersededTargetId,
         discoveredAssemblyRoutingId,
         searchedRoutingId,
         existingRoutingValidation,
         staleRoutingDiscovery,
         assemblyRoutingDiscoveryW448,
         createNew: !existingRoutingId,
-        repairStaleInPlace: !!staleRoutingRepairTargetId
+        supersedeStaleRouting: !!staleRoutingSupersededTargetId
       })
     });
 
@@ -1843,7 +1891,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       ops: opNames
     };
 
-    // Step 4: Reuse an existing routing only as a valid record or as an explicit stale repair target.
+    // Step 4: Reuse only a validated routing; stale Cookie Production Line routes are superseded.
     // W393 keeps routing best-effort: a rejected BOM/routing field must not hard-fail safe core records.
     let routingStage = existingRoutingId ? 'load_existing_routing' : 'create_routing';
     let routing = null;
@@ -1871,7 +1919,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         bomId,
         assemblyId,
         routingName,
-        staleRoutingRepairTargetId,
+        staleRoutingSupersededTargetId,
         existingRoutingId
       });
 
@@ -1933,19 +1981,31 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           const center = pair.center || {};
           const template = pair.template || {};
           const probe = {
+            schema: 'idb.w450-routing-pair-probe.v1',
             seq: stepPlan.seq,
             opName: String(stepPlan.opName || '').slice(0, 60),
             profile: stepPlan.profile,
             pairIndex: i,
             centerId: Number(center.id || 0) || null,
             centerName: center.name || '',
+            centerLocationId: center.locationId || '',
+            centerLocationText: center.locationText || '',
+            centerSubsidiaryId: center.subsidiaryId || '',
+            centerSubsidiaryText: center.subsidiaryText || '',
             templateId: Number(template.id || 0) || null,
             templateName: template.name || '',
+            templateSubsidiaryId: template.subsidiaryId || '',
+            templateSubsidiaryText: template.subsidiaryText || '',
+            templateIsDefault: !!template.isDefault,
             pairScore: Number(pair.score || 0),
+            fieldId: '',
+            accepted: false,
+            rejected: false,
             status: 'pending'
           };
           if (!probe.centerId || !probe.templateId) {
             probe.status = 'rejected';
+            probe.rejected = true;
             probe.errorName = 'MISSING_PAIR_ID';
             probe.errorMessage = 'Work center or cost template id missing before routing step probe.';
             rejections.push(probe);
@@ -1956,15 +2016,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           try {
             routingStage = 'probe_routing_step_pair';
             routing.selectNewLine({ sublistId: stepSublist });
-            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(stepPlan.seq) });
-            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(stepPlan.opName).slice(0, 60) });
-            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: probe.centerId });
-            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: probe.templateId });
-            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.setupField, value: 0.5 });
-            routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.runRateField, value: 1.0 });
+            function setProbeField(fieldId, value) {
+              probe.fieldId = fieldId;
+              routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId, value });
+            }
+            setProbeField('operationsequence', String(stepPlan.seq));
+            setProbeField('operationname', String(stepPlan.opName).slice(0, 60));
+            setProbeField('manufacturingworkcenter', probe.centerId);
+            setProbeField('manufacturingcosttemplate', probe.templateId);
+            setProbeField(stepFieldIds.setupField, 0.5);
+            setProbeField(stepFieldIds.runRateField, 1.0);
+            probe.fieldId = 'commitLine';
             routingStage = 'commit_routing_step';
             routing.commitLine({ sublistId: stepSublist });
             probe.status = 'accepted';
+            probe.accepted = true;
+            probe.rejected = false;
             probe.setupField = stepFieldIds.setupField;
             probe.runRateField = stepFieldIds.runRateField;
             w449Telemetry.pairProbes.push(probe);
@@ -1977,6 +2044,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           } catch (e) {
             safeTry(() => routing.cancelLine({ sublistId: stepSublist }));
             probe.status = 'rejected';
+            probe.accepted = false;
+            probe.rejected = true;
             probe.errorName = e && e.name ? String(e.name) : '';
             probe.errorMessage = e && e.message ? String(e.message) : String(e || '');
             rejections.push(probe);
@@ -1991,6 +2060,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         const err = new Error(`No valid work center + cost template pair for routing operation ${stepPlan && stepPlan.seq}`);
         err.name = 'W449_NO_VALID_ROUTING_STEP_PAIR';
         err.w449RejectedPairs = rejections;
+        err.routingPairFailureType = classifyRoutingProbeFailureW450(rejections);
         throw err;
       }
 
@@ -1999,21 +2069,41 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         if (accepted) {
           if (accepted.centerId) chosen.centers.push({ id: accepted.centerId, name: accepted.centerName, w449Profile: stepPlan.profile });
           if (accepted.templateId) chosen.templates.push({ id: accepted.templateId, name: accepted.templateName, w449Profile: stepPlan.profile });
+          chosen.operationRows = chosen.operationRows || [];
+          chosen.operationRows.push({
+            seq: accepted.seq,
+            opName: accepted.opName,
+            centerId: accepted.centerId,
+            centerName: accepted.centerName,
+            centerLocationId: accepted.centerLocationId,
+            centerSubsidiaryId: accepted.centerSubsidiaryId,
+            templateId: accepted.templateId,
+            templateName: accepted.templateName,
+            templateSubsidiaryId: accepted.templateSubsidiaryId
+          });
         }
       });
 
       routingStage = 'save_routing';
       routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
+      w449Telemetry.routingSaveResult = {
+        schema: 'idb.w450-routing-save-result.v1',
+        status: 'saved',
+        routingId: Number(routingId || 0) || null,
+        routingUrl: buildNetSuiteRecordUrl('manufacturingrouting', routingId),
+        routingName,
+        acceptedOperationCount: (chosen.operationRows || []).length
+      };
 
       log.audit({
-        title: staleRoutingRepairTargetId ? `Routing stale record repaired in place [${VERSION}]` : (existingRoutingId ? `Routing reused+updated [${VERSION}]` : `Routing created [${VERSION}]`),
+        title: staleRoutingSupersededTargetId ? `Routing stale record superseded [${VERSION}]` : (existingRoutingId ? `Routing reused+updated [${VERSION}]` : `Routing created [${VERSION}]`),
         details: JSON.stringify({
           routingId,
           existingRoutingId,
-          staleRoutingRepairTargetId,
+          staleRoutingSupersededTargetId,
           chosen,
           w449: w449Telemetry,
-	        staleRoutingRepaired: staleRoutingRepairTargetId ? true : null,
+	        staleRoutingSuperseded: staleRoutingSupersededTargetId ? true : null,
 	        staleRoutingDiscovery
 	      })
       });
@@ -2027,20 +2117,20 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         assemblyId,
         existingRoutingId,
         routingId,
-      routingName,
-      chosen,
-      wipRequested: true,
-      coreRecordsCreatedSafely: !!(assemblyId && bomId),
-      routingValidation: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null,
-      staleRoutingDiscovery,
-      assemblyRoutingDiscoveryW448,
-      w449: w449Telemetry
+        routingName,
+        chosen,
+        wipRequested: true,
+        coreRecordsCreatedSafely: !!(assemblyId && bomId),
+        routingValidation: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null,
+        staleRoutingDiscovery,
+        assemblyRoutingDiscoveryW448,
+        w449: w449Telemetry
       });
     }
 
     // Step 5: Only attach when the assembly has no existing managed routing
     let attachResult = 'not-attempted';
-    if (!existingRoutingId || staleRoutingRepairTargetId) {
+    if (!existingRoutingId || staleRoutingSupersededTargetId) {
       attachResult = attachRoutingToAssemblySafe({ assemblyId, routingId, forceDefault: true });
     } else {
       attachResult = 'skipped-reused-existing-routing';
@@ -2054,23 +2144,47 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingId,
       expectedRoutingName: routingName,
       productPlan: productPlanW443,
-      extId
+      extId,
+      staleRoutingSupersededTargetId
     });
+
+    const staleRoutingSupersedeFailure = staleRoutingSupersededTargetId && (!w449Telemetry.routingAssemblyVerification || !w449Telemetry.routingAssemblyVerification.staleSuperseded)
+      ? {
+        schema: 'idb.w450-stale-routing-supersede-failure.v1',
+        staleRoutingId: Number(staleRoutingSupersededTargetId),
+        staleRoutingName: existingRoutingName,
+        newRoutingId: Number(routingId || 0) || null,
+        attachResult,
+        reason: 'new_routing_not_verified_as_assembly_default_after_reload',
+        nextFixHint: 'Open the assembly routing sublist and set the newly created product-specific routing as default, replacing Cookie Production Line.'
+      }
+      : null;
+    w449Telemetry.staleCookieRouteSupersedeResult = staleRoutingSupersedeFailure || {
+      schema: 'idb.w450-stale-cookie-route-supersede-result.v1',
+      staleRoutingId: staleRoutingSupersededTargetId ? Number(staleRoutingSupersededTargetId) : null,
+      superseded: staleRoutingSupersededTargetId ? !staleRoutingSupersedeFailure : false,
+      attachResult
+    };
 
     return {
       routingId,
+      routingUrl: buildNetSuiteRecordUrl('manufacturingrouting', routingId),
+      routingName,
       existingRoutingId: existingRoutingId ? Number(existingRoutingId) : null,
-      staleRoutingRepairTargetId: staleRoutingRepairTargetId ? Number(staleRoutingRepairTargetId) : null,
-      decision: staleRoutingRepairTargetId ? 'repaired-stale-routing-in-place' : (existingRoutingId ? 'reused-existing-routing' : 'created-new-routing'),
+      staleRoutingSupersededTargetId: staleRoutingSupersededTargetId ? Number(staleRoutingSupersededTargetId) : null,
+      decision: staleRoutingSupersededTargetId ? 'superseded-stale-routing-with-new-routing' : (existingRoutingId ? 'reused-existing-routing' : 'created-new-routing'),
       status: 'attached',
       attachResult,
       chosen,
+      operationRows: chosen.operationRows || [],
       routingValidation: validateRoutingForProductPlanW443({ id: routingId, name: routingName }, productPlanW443, { expectedRoutingName: routingName }),
-      staleRoutingRepaired: staleRoutingRepairTargetId ? existingRoutingValidation : null,
+      staleRoutingSuperseded: staleRoutingSupersededTargetId ? existingRoutingValidation : null,
+      staleRoutingSupersedeFailure,
       staleRoutingDiscovery,
       assemblyRoutingDiscoveryW448,
       assemblyRoutingVerificationW449: w449Telemetry.routingAssemblyVerification,
-      w449: w449Telemetry
+      w449: w449Telemetry,
+      w450: w449Telemetry
     };
   }
 
@@ -2143,6 +2257,60 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
   }
 
+  function classifyRoutingProbeFailureW450(rejections) {
+    const probes = Array.isArray(rejections) ? rejections : [];
+    const fieldCounts = {};
+    probes.forEach(function (probe) {
+      const fieldId = String(probe && probe.fieldId || 'unknown');
+      fieldCounts[fieldId] = (fieldCounts[fieldId] || 0) + 1;
+    });
+    if (fieldCounts.manufacturingcosttemplate) return 'cost_template';
+    if (fieldCounts.manufacturingworkcenter) return 'work_center';
+    if (fieldCounts.commitLine && probes.some(function (probe) {
+      return /cost\s*template|manufacturingcosttemplate|template/i.test(String(probe && probe.errorMessage || ''));
+    })) return 'cost_template';
+    if (fieldCounts.commitLine && probes.some(function (probe) {
+      return /work\s*center|manufacturingworkcenter|center/i.test(String(probe && probe.errorMessage || ''));
+    })) return 'work_center';
+    return fieldCounts.commitLine ? 'pair_compatibility' : 'routing_step_field';
+  }
+
+  function routingFailureHintW450(failureStage, error, w449) {
+    const errorType = error && error.routingPairFailureType ? String(error.routingPairFailureType) : '';
+    const lastRejected = w449 && Array.isArray(w449.rejectedPairs) && w449.rejectedPairs.length
+      ? w449.rejectedPairs[w449.rejectedPairs.length - 1]
+      : null;
+    const fieldId = String(lastRejected && lastRejected.fieldId || '');
+    const failureType = errorType ||
+      (failureStage === 'resolve_cost_templates' || fieldId === 'manufacturingcosttemplate' ? 'cost_template' :
+        (failureStage === 'resolve_work_centers' || fieldId === 'manufacturingworkcenter' ? 'work_center' : 'routing'));
+    const pairSummary = lastRejected
+      ? ` Last rejected op ${lastRejected.seq || ''} "${lastRejected.opName || ''}" used center ${lastRejected.centerId || ''} ${lastRejected.centerName || ''} with template ${lastRejected.templateId || ''} ${lastRejected.templateName || ''} at field ${fieldId || 'unknown'}.`
+      : '';
+    if (failureType === 'cost_template') {
+      return {
+        failureType,
+        nextFixHint: `Fix manufacturing cost template availability/compatibility for the subsidiary. Prefer an active default or name-matched WIP/manufacturing template, then re-run.${pairSummary}`
+      };
+    }
+    if (failureType === 'work_center') {
+      return {
+        failureType,
+        nextFixHint: `Fix manufacturing work center availability/compatibility for the subsidiary/location. Prefer production, mixing, blending, assembly, filling, packing, or QC centers ahead of receiving/dock rows, then re-run.${pairSummary}`
+      };
+    }
+    if (failureType === 'pair_compatibility') {
+      return {
+        failureType,
+        nextFixHint: `Work centers and cost templates were found, but NetSuite rejected every pair for at least one operation. Align the template subsidiary/default setup with the candidate production work centers, then re-run.${pairSummary}`
+      };
+    }
+    return {
+      failureType,
+      nextFixHint: `Fix the routing step field rejected by NetSuite, then re-run.${pairSummary}`
+    };
+  }
+
   function setRoutingBomBestEffortW448(routing, context) {
     const fields = safeTryReturn(() => routing.getFields()) || [];
     const bomField = firstExisting(fields, ['billofmaterials', 'bom', 'billofmaterial']);
@@ -2153,7 +2321,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       bomField: bomField || '',
       set: false,
       skipped: false,
-      repairedStaleInPlace: !!(context && context.staleRoutingRepairTargetId),
+      supersededStaleRoutingId: Number(context && context.staleRoutingSupersededTargetId || 0) || null,
       errorName: '',
       errorMessage: ''
     };
@@ -2178,11 +2346,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation, staleRoutingDiscovery, assemblyRoutingDiscoveryW448, w449 }) {
+    const hint = routingFailureHintW450(failureStage, error, w449);
     const diagnostic = {
       status: 'failed_best_effort',
       failureStage: failureStage || 'unknown',
       errorName: error && error.name ? String(error.name) : '',
       errorMessage: error && error.message ? String(error.message) : String(error || ''),
+      failureType: hint.failureType,
+      nextFixHint: hint.nextFixHint,
       assemblyId: Number(assemblyId || 0) || null,
       bomId: Number(bomId || 0) || null,
       subsidiaryId: Number(subsidiaryId || 0) || null,
@@ -2201,11 +2372,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       visibleStaleRoutingSuspected: !!(assemblyRoutingDiscoveryW448 && assemblyRoutingDiscoveryW448.staleRouteSignals && assemblyRoutingDiscoveryW448.staleRouteSignals.length),
       reason: routingValidation && routingValidation.reason || '',
       routingEligibilityConclusion: failureStage === 'set_billofmaterials'
-        ? 'BOM not selectable for routing context; W448 attempts stale routing repair/default attach before treating WIP as failed.'
+        ? 'BOM not selectable for routing context; W450 keeps routing best-effort and supersedes stale Cookie Production Line routes instead of blocking core records.'
         : '',
+      operationRows: chosen && chosen.operationRows || [],
       wipRequested: !!wipRequested,
       coreRecordsCreatedSafely: !!coreRecordsCreatedSafely,
-      recommendedOperatorNextStep: 'Review BOM validity for the assembly, subsidiary, location, and manufacturing routing before re-running WIP routing.'
+      recommendedOperatorNextStep: hint.nextFixHint || 'Review BOM validity for the assembly, subsidiary, location, and manufacturing routing before re-running WIP routing.'
     };
 
     log.error({
@@ -2221,6 +2393,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       attachResult: 'not-attached-routing-failed',
       chosen: chosen || null,
       w449: w449 || null,
+      w450: w449 || null,
       routingFailure: diagnostic,
       diagnostics: diagnostic
     };
@@ -2739,9 +2912,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         const rowSubsText = str(r.getText({ name: 'subsidiary' }));
         let score = 0;
         const lower = name.toLowerCase();
-        ['blend','blending','mix','fill','filling','dispense','dispensing','pack','packing','package','assembly','case'].forEach(function (k) {
+        ['production','line','assembly','blend','blending','mix','fill','filling','dispense','dispensing','pack','packing','package','case','qc','quality'].forEach(function (k) {
           if (lower.indexOf(k) !== -1) score += 5;
         });
+        if (/receiv|dock|warehouse|staging|stage/.test(lower)) score -= 25;
         if (loc && rowLocId === loc) score += 50;
         if (subs && rowSubsId === subs) score += 10;
         return { id, name, score, locationId: rowLocId, locationText: rowLocText, subsidiaryId: rowSubsId, subsidiaryText: rowSubsText, source: 'direct' };
@@ -2858,10 +3032,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       });
 
       const keywords = [
+        'production', 'line', 'assembly',
         'blend', 'blending', 'mix',
         'fill', 'filling', 'dispense', 'dispensing',
         'pack', 'packing', 'package',
-        'assembly', 'case'
+        'case', 'qc', 'quality'
       ];
 
       const scored = rows.map(function (x) {
@@ -2877,6 +3052,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         if (subs && x.subsidiaryId === subs) score += 10;
         if (x.name) score += Math.max(0, 10 - Math.min(10, x.name.length / 6));
         if (lower.indexOf('den-') === 0 || lower.indexOf('mm-') === 0 || lower.indexOf('sfo-') === 0) score += 8;
+        if (/receiv|dock|warehouse|staging|stage/.test(lower)) score -= 25;
 
         return {
           id: x.id,
@@ -2957,6 +3133,26 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       }
     }
 
+    function fieldText(value) {
+      if (Array.isArray(value)) return value.map(function (v) { return fieldText(v); }).filter(Boolean).join(', ');
+      if (value && typeof value === 'object') return str(value.text || value.name || value.value);
+      return str(value);
+    }
+
+    function fieldHasId(value, id) {
+      const wanted = String(id || '');
+      if (!wanted) return false;
+      if (Array.isArray(value)) return value.some(function (v) { return fieldHasId(v, id); });
+      if (value && typeof value === 'object') return String(value.value || value.id || '') === wanted;
+      return String(value || '') === wanted;
+    }
+
+    function fieldBool(value) {
+      if (Array.isArray(value)) return value.some(fieldBool);
+      if (value && typeof value === 'object') return normalizeBool(value.value || value.text || value.name);
+      return normalizeBool(value);
+    }
+
     for (let t = 0; t < typeCandidates.length; t++) {
       const type = typeCandidates[t];
 
@@ -2966,21 +3162,50 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (!ids.length) ids = runQuery(type, []);
 
       if (ids.length) {
-        const want = ['blend', 'blending', 'mix', 'dispense', 'dispensing', 'fill', 'pack', 'packaging'];
+        const want = ['default', 'standard', 'wip', 'manufacturing', 'routing', 'blend', 'blending', 'mix', 'assembly', 'production', 'dispense', 'dispensing', 'fill', 'filling', 'pack', 'packing', 'packaging', 'quality', 'qc'];
         const scored = ids.map(id => {
           let nm = '';
+          let subsidiaryIdValue = '';
+          let subsidiaryText = '';
+          let isDefault = false;
           safeTry(() => {
             const f = search.lookupFields({ type, id, columns: ['name'] });
             nm = (f && f.name) ? String(f.name) : '';
           });
+          safeTry(() => {
+            const f = search.lookupFields({ type, id, columns: ['subsidiary'] });
+            subsidiaryIdValue = fieldHasId(f && f.subsidiary, subs) ? String(subs) : '';
+            subsidiaryText = fieldText(f && f.subsidiary);
+          });
+          safeTry(() => {
+            const f = search.lookupFields({ type, id, columns: ['isdefault'] });
+            isDefault = fieldBool(f && f.isdefault);
+          });
+          if (!isDefault) {
+            safeTry(() => {
+              const f = search.lookupFields({ type, id, columns: ['default'] });
+              isDefault = fieldBool(f && f.default);
+            });
+          }
           const lower = nm.toLowerCase();
           let score = 0;
-          want.forEach(k => { if (lower.indexOf(k) !== -1) score += 5; });
+          if (subsidiaryIdValue) score += 120;
+          if (isDefault) score += 90;
+          want.forEach(k => { if (lower.indexOf(k) !== -1) score += 10; });
           score += Math.max(0, 10 - Math.min(10, lower.length / 6));
-          return { id, score, name: nm };
+          return {
+            id,
+            score,
+            name: nm,
+            subsidiaryId: subsidiaryIdValue,
+            subsidiaryText,
+            subsidiaryMatch: !!subsidiaryIdValue,
+            isDefault,
+            sourceType: type
+          };
         }).sort((a, b) => b.score - a.score);
 
-        const picked = scored.slice(0, 6);
+        const picked = scored;
         log.audit({
           title: `WIP cost templates resolved [${VERSION}]`,
           details: JSON.stringify({ type, subsidiaryId: subs, count: picked.length, picked })
@@ -2996,9 +3221,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const bySeq = (names && names.operation_names_by_seq) ? names.operation_names_by_seq : null;
     if (bySeq) {
       return {
-        op10: trimLen(str(bySeq['10'] || bySeq[10] || 'Prepare Materials'), 60),
-        op20: trimLen(str(bySeq['20'] || bySeq[20] || 'Build Product'), 60),
-        op30: trimLen(str(bySeq['30'] || bySeq[30] || 'Inspect'), 60),
+        op10: trimLen(str(bySeq['10'] || bySeq[10] || 'Review Product Inputs'), 60),
+        op20: trimLen(str(bySeq['20'] || bySeq[20] || 'Run Product Assembly'), 60),
+        op30: trimLen(str(bySeq['30'] || bySeq[30] || 'Inspect Output'), 60),
         op40: trimLen(str(bySeq['40'] || bySeq[40] || ''), 60),
         op50: trimLen(str(bySeq['50'] || bySeq[50] || ''), 60)
       };
@@ -3006,17 +3231,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (names && names._productBuildPlanW432 && names._productBuildPlanW432.operationNames) {
       const ops = names._productBuildPlanW432.operationNames;
       return {
-        op10: trimLen(str(ops[0] || 'Prepare Materials'), 60),
-        op20: trimLen(str(ops[1] || 'Build Product'), 60),
-        op30: trimLen(str(ops[2] || 'Inspect'), 60),
+        op10: trimLen(str(ops[0] || 'Review Product Inputs'), 60),
+        op20: trimLen(str(ops[1] || 'Run Product Assembly'), 60),
+        op30: trimLen(str(ops[2] || 'Inspect Output'), 60),
         op40: trimLen(str(ops[3] || ''), 60),
         op50: trimLen(str(ops[4] || ''), 60)
       };
     }
     return {
-      op10: 'Prepare Materials',
-      op20: 'Build Product',
-      op30: 'Inspect',
+      op10: 'Review Product Inputs',
+      op20: 'Run Product Assembly',
+      op30: 'Inspect Output',
       op40: '',
       op50: ''
     };
@@ -5183,6 +5408,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
     const isSiete = /siete/.test(lower);
     const isKettle = /kettle/.test(lower);
+    const isKodiak = /kodiak/.test(lower);
+    const isGoodles = /goodles/.test(lower);
+    const isChomps = /chomps/.test(lower);
+    if (isKodiak && /buttermilk|power\s*cakes?|flapjack|pancake|protein|oat\s*&?\s*honey|mix/.test(lower)) {
+      addCandidate('Kodiak Power Cakes Buttermilk Flapjack Mix', 'Kodiak Power Cakes Buttermilk Flapjack Mix');
+      addCandidate('Kodiak Protein Pancake Mix', 'Kodiak Protein Pancake Mix');
+      addCandidate('Kodiak Oat & Honey Flapjack Mix', 'Kodiak Oat & Honey Flapjack Mix');
+    } else if (isKodiak) {
+      addCandidate('Kodiak Power Cakes Buttermilk Flapjack Mix', 'Kodiak Cakes flapjack mix category');
+      addCandidate('Kodiak Protein Pancake Mix', 'Kodiak protein pancake mix');
+      addCandidate('Kodiak Oat & Honey Flapjack Mix', 'Kodiak oat honey flapjack mix');
+    }
     if (!isSiete && /air\s*fried/.test(lower) && /sea\s*salt\s*&?\s*vinegar/.test(lower)) {
       addCandidate('Air Fried Sea Salt & Vinegar Kettle Chips', 'Air Fried Sea Salt & Vinegar');
     }
@@ -5207,6 +5444,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (/chickpea|chick\s*pea/.test(lower) && /snack|puff|roast/.test(lower)) {
       addCandidate(/biena/.test(lower) ? 'Biena Roasted Chickpea Snacks' : 'Roasted Chickpea Snacks', 'chickpea snacks');
     }
+    if (/kodiak/.test(lower) && /flapjack|pancake|waffle|oat|protein|breakfast|cup/.test(lower)) {
+      addCandidate('Kodiak Maple Brown Sugar Flapjack Cups', 'Kodiak flapjack protein breakfast cups');
+    }
+    if (/flapjack|pancake|waffle/.test(lower) && /protein|oat|breakfast|cup/.test(lower)) {
+      addCandidate(/kodiak/.test(lower) ? 'Kodiak Maple Brown Sugar Flapjack Cups' : 'Protein Flapjack Breakfast Cups', 'flapjack breakfast cups');
+    }
     if (isSiete) {
       if (/tortilla\s+chips?|chip\b|chips\b/.test(lower)) addCandidate('Siete Grain Free Tortilla Chips', 'Grain Free Tortilla Chips');
       addCandidate('Siete Taco Shells', 'Taco Shells');
@@ -5214,6 +5457,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       addCandidate('Siete Cookies', 'Cookies');
       addCandidate('Siete Beans', 'Beans');
       addCandidate('Siete Sauces', 'Sauces');
+    }
+    if (isGoodles || /mac\s*(?:&|and)?\s*cheese/.test(lower)) {
+      addCandidate('Goodles Mac & Cheese', 'Goodles mac and cheese');
+      addCandidate('Goodles Cheddy Mac', 'Goodles Cheddy Mac');
+    }
+    if (isChomps || /beef\s+stick|meat\s+stick|jerky|protein\s+snack/.test(lower)) {
+      addCandidate('Chomps Original Beef Stick', 'Chomps Original Beef Stick');
+      addCandidate('Chomps Beef Snack Sticks', 'Chomps beef snack sticks');
     }
     const sellableUnit = /6\.5\s*oz/i.test(hay) ? '6.5 oz bag' : (/oz/i.test(hay) ? 'retail bag' : 'retail unit');
     if (isSiete && /tortilla\s+chips?/.test(lower) && websiteTermsUsed.indexOf('tortilla chips') === -1) websiteTermsUsed.push('tortilla chips');
@@ -5225,8 +5476,94 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       sellableUnit,
       casePackName: '12-Count Case Pack',
       websiteTermsUsed,
-      rejectedGenericTerms: ['Finished Good', 'Production Line', 'Ingredient Blend', 'Packaging Component', 'BEVERAGE']
+      rejectedGenericTerms: ['Product 12-Count Case Pack', 'Core Material Input', 'Product Seasoning Blend', 'Prepare Materials', 'Build Product', 'Finished Good', 'Production Line', 'Ingredient Blend', 'Packaging Component', 'BEVERAGE']
     };
+  }
+
+  function namingAdvisoryForProductEvidenceW450(source, productTerms) {
+    const hay = String([
+      source && source.prospect,
+      source && source.website,
+      source && source.signalText,
+      source && source.notes,
+      source && source.agenda,
+      source && source.productSeed,
+      source && source.productFamily,
+      productTerms && productTerms.productCandidates && productTerms.productCandidates.join(' '),
+      productTerms && productTerms.websiteTermsUsed && productTerms.websiteTermsUsed.join(' ')
+    ].join(' ')).toLowerCase();
+    const hasWebsite = !!(source && str(source.website));
+    const hasNotes = !!(source && str(source.notes || source.signalText || source.agenda));
+    const mk = function (spec) {
+      return Object.assign({
+        schema: 'idb.w450-llm-product-naming-advisory.v1',
+        writeAuthority: 'none',
+        creationAllowed: false,
+        advisoryOnly: true,
+        namingAdvisoryUsed: true,
+        source: hasWebsite ? 'llm_website_product_evidence' : (hasNotes ? 'llm_notes_product_evidence' : 'fallback_no_product_found'),
+        confidencePercent: hasWebsite ? 86 : (hasNotes ? 78 : 42),
+        evidenceTerms: [],
+        alternateProductCandidates: [],
+        summary: 'LLM/category advisory used only to shape product-realistic names; no drawer writes or SuiteScript invocation authority.'
+      }, spec || {});
+    };
+    if (/kodiak/.test(hay)) {
+      return mk({
+        primaryProductCandidate: 'Kodiak Power Cakes Buttermilk Flapjack Mix',
+        alternateProductCandidates: ['Kodiak Protein Pancake Mix', 'Kodiak Oat & Honey Flapjack Mix'],
+        evidenceTerms: ['Kodiak', 'Power Cakes', 'flapjack mix', 'protein pancake mix', 'case pack'],
+        productFamily: 'Protein Pancake and Flapjack Mix',
+        distributionBase: 'Kodiak Power Cakes Buttermilk Mix',
+        componentNames: ['Whole Grain Wheat and Oat Flour Blend', 'Whey Protein Blend', 'Leavening and Sea Salt Blend', 'Retail Carton and Case Packaging'],
+        operationNames: ['Receive Flour and Protein Blend', 'Blend Dry Mix', 'Fill Retail Cartons', 'Case Pack', 'QC Finished Cases']
+      });
+    }
+    if (/biena|chickpea|chick\s*pea/.test(hay)) {
+      return mk({
+        primaryProductCandidate: 'Biena Roasted Chickpeas',
+        alternateProductCandidates: ['Biena Sea Salt Chickpea Snacks', 'Biena Honey Roasted Chickpeas', 'Biena Chickpea Puffs'],
+        evidenceTerms: ['Biena', 'roasted chickpeas', 'seasoning', 'retail bag', 'case pack'],
+        productFamily: 'Roasted Chickpea Snacks',
+        distributionBase: 'Biena Roasted Chickpeas',
+        componentNames: ['Chickpea Input', 'Sea Salt Seasoning Blend', 'Retail Bag and Case Packaging'],
+        operationNames: ['Receive Chickpeas and Seasoning', 'Roast Chickpeas', 'Season and Cool', 'Bag and Case Pack', 'QC Finished Cases']
+      });
+    }
+    if (/chomps|beef\s+stick|meat\s+stick|jerky/.test(hay)) {
+      return mk({
+        primaryProductCandidate: 'Chomps Original Beef Stick',
+        alternateProductCandidates: ['Chomps Beef Snack Sticks', 'Chomps Original Turkey Stick'],
+        evidenceTerms: ['Chomps', 'beef stick', 'protein snack', 'wrapper', 'case pack'],
+        productFamily: 'Meat Snack Sticks',
+        distributionBase: 'Chomps Original Beef Stick',
+        componentNames: ['Beef Protein Input', 'Seasoning and Marinade Blend', 'Stick Wrapper and Retail Case Packaging'],
+        operationNames: ['Prep Protein and Marinade', 'Smoke or Dehydrate', 'Cool and Inspect', 'Pack and Case', 'QC Finished Cases']
+      });
+    }
+    if (/goodles|mac\s*(?:&|and)?\s*cheese/.test(hay)) {
+      return mk({
+        primaryProductCandidate: 'Goodles Mac & Cheese',
+        alternateProductCandidates: ['Goodles Cheddy Mac', 'Goodles Protein Mac & Cheese'],
+        evidenceTerms: ['Goodles', 'mac and cheese', 'pasta', 'cheese sauce', 'retail box'],
+        productFamily: 'Mac and Cheese',
+        distributionBase: 'Goodles Mac & Cheese',
+        componentNames: ['Pasta Input', 'Cheese Sauce Blend', 'Retail Box and Case Packaging'],
+        operationNames: ['Receive Pasta and Cheese Blend', 'Blend Cheese Sauce Mix', 'Fill Pasta Packs', 'Case Pack', 'QC Finished Cases']
+      });
+    }
+    if (/siete/.test(hay)) {
+      return mk({
+        primaryProductCandidate: /ma[ií]z|sea\s+salt/.test(hay) ? 'Siete Maíz Sea Salt Tortilla Chips' : 'Siete Grain Free Tortilla Chips',
+        alternateProductCandidates: ['Siete Maíz Sea Salt Tortilla Chips', 'Siete Grain Free Tortilla Chips', 'Siete Taco Shells'],
+        evidenceTerms: ['Siete', 'tortilla chips', 'masa', 'avocado oil', 'sea salt'],
+        productFamily: 'Tortilla Chips',
+        distributionBase: /ma[ií]z|sea\s+salt/.test(hay) ? 'Siete Maíz Sea Salt Tortilla Chips' : 'Siete Grain Free Tortilla Chips',
+        componentNames: ['Corn Masa Input', 'Avocado Oil Frying Input', 'Sea Salt Seasoning', 'Retail Bag and Case Packaging'],
+        operationNames: ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
+      });
+    }
+    return mk({ namingAdvisoryUsed: false, source: 'fallback_no_product_found', confidencePercent: 42 });
   }
 
   function visibleProductAccentPolishW439(name) {
@@ -5324,10 +5661,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const source = opts || {};
     const prospect = idbCanonicalProspectNameW422(source.prospect || 'IDB Prospect', source.website);
     const productTerms = extractWebsiteProductTermsW432(source);
-    const selectedProduct = str(productTerms.selectedProductCandidate || source.productName || source.product_name || source.productSeed || source.productFamily);
+    const advisoryW450 = namingAdvisoryForProductEvidenceW450(source, productTerms);
+    const selectedProduct = str(productTerms.selectedProductCandidate || advisoryW450.primaryProductCandidate || source.productName || source.product_name || source.productSeed || source.productFamily);
     const genericProduct = /^(finished good|product \/ sku|product|inventory \/ fulfillment|assembly|proof item)$/i.test(selectedProduct);
     const productName = genericProduct || !selectedProduct ? `${prospect} Product` : selectedProduct;
-    const brandName = /kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : (/siete/i.test(productName) || /siete/i.test(prospect) ? 'Siete' : (/biena/i.test(productName) || /biena/i.test(prospect) ? 'Biena' : (/chomps/i.test(productName) || /chomps/i.test(prospect) ? 'Chomps' : prospect.split(/\s+/).slice(0, 2).join(' '))));
+    const brandName = /kodiak/i.test(productName) || /kodiak/i.test(prospect) ? 'Kodiak' : (/goodles/i.test(productName) || /goodles/i.test(prospect) ? 'Goodles' : (/kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : (/siete/i.test(productName) || /siete/i.test(prospect) ? 'Siete' : (/biena/i.test(productName) || /biena/i.test(prospect) ? 'Biena' : (/chomps/i.test(productName) || /chomps/i.test(prospect) ? 'Chomps' : prospect.split(/\s+/).slice(0, 2).join(' '))))));
     const shortProduct = productName
       .replace(/\bKettle\s+Brand\b/ig, 'Kettle')
       .replace(/\bKettle\s+Chips\b/ig, '')
@@ -5339,9 +5677,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       : /siete/i.test(brandName) && !/^siete\b/i.test(shortProduct)
         ? `${brandName} ${shortProduct}`
       : shortProduct;
-    const isJerkyPlanW448 = /chomps|jerky|meat snack|protein snack/i.test([productForNames, productName, source.signalText || source.notes || '', source.website || ''].join(' '));
+    const isKodiakPlanW450 = /kodiak|power\s*cakes?|flapjack|pancake\s+mix|protein\s+pancake/i.test([productForNames, productName, source.signalText || source.notes || '', source.website || ''].join(' '));
+    const isJerkyPlanW448 = /chomps|jerky|meat snack|protein snack|beef stick/i.test([productForNames, productName, source.signalText || source.notes || '', source.website || ''].join(' '));
     const isChickpeaSnackPlanW449 = /biena|chickpea|chick\s*pea|roasted\s+chickpea/i.test([productForNames, productName, source.signalText || source.notes || '', source.website || ''].join(' '));
-    const distributionBase = /siete/i.test(productForNames) && /ma[ií]z/i.test(productForNames) && /sea\s+salt/i.test(productForNames)
+    const distributionBase = advisoryW450 && advisoryW450.distributionBase
+      ? advisoryW450.distributionBase
+      : /siete/i.test(productForNames) && /ma[ií]z/i.test(productForNames) && /sea\s+salt/i.test(productForNames)
         ? 'Siete Maíz Sea Salt Tortilla Chips'
       : /goodles|mac\s*(?:&|and)?\s*cheese|cheese\s*production/i.test(productForNames)
         ? 'Goodles Line-Ready Mac & Cheese'
@@ -5352,19 +5693,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       : /sea salt/i.test(productForNames)
         ? 'Kettle Air Fried Sea Salt & Vinegar'
       : productForNames;
-    const alternateProductCandidates = productTerms.productCandidates.filter(function (candidate) {
+    const alternateProductCandidates = (productTerms.productCandidates || []).concat(advisoryW450.alternateProductCandidates || []).filter(function (candidate, index, list) {
+      return candidate && list.indexOf(candidate) === index;
+    }).filter(function (candidate) {
       return candidate && candidate !== productTerms.selectedProductCandidate;
     });
-    const componentNames = [
-      /siete/i.test(distributionBase) ? 'Siete Corn Masa Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Goodles Pasta Input' : (isChickpeaSnackPlanW449 ? 'Biena Chickpea Input' : (isJerkyPlanW448 ? `${brandName} Beef and Turkey Protein Input` : (/sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Core Material Input`)))),
-      /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Cheese Sauce Seasoning Blend' : (isChickpeaSnackPlanW449 ? 'Sea Salt and Oil Roasting Seasoning' : (isJerkyPlanW448 ? `${brandName} Smokehouse Seasoning Marinade` : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`)))),
+    const componentNames = advisoryW450 && advisoryW450.componentNames && advisoryW450.componentNames.length ? advisoryW450.componentNames.slice(0, 3) : [
+      /siete/i.test(distributionBase) ? 'Siete Corn Masa Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Goodles Pasta Input' : (isChickpeaSnackPlanW449 ? 'Biena Chickpea Input' : (isJerkyPlanW448 ? `${brandName} Beef and Turkey Protein Input` : (/sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Product-Specific Input`)))),
+      /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Cheese Sauce Seasoning Blend' : (isChickpeaSnackPlanW449 ? 'Sea Salt and Oil Roasting Seasoning' : (isJerkyPlanW448 ? `${brandName} Smokehouse Seasoning Marinade` : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product-Specific Seasoning`)))),
       /siete/i.test(distributionBase) ? 'Sea Salt Seasoning and Retail Bag Packaging' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Retail Carton and Case Packaging' : (isChickpeaSnackPlanW449 ? 'Retail Pouch and Case Packaging' : (isJerkyPlanW448 ? `${brandName} Stick Wrapper and Retail Case Packaging` : (/6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`))))
     ];
     const industryNativeW442 = industryNativeManufacturingNamingW442({
       distributionBase,
       brandName,
       productName,
-      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (isChickpeaSnackPlanW449 ? 'Chickpea Snacks' : (isJerkyPlanW448 ? 'Meat Snacks' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family')))),
+      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (isKodiakPlanW450 ? 'Protein Pancake and Flapjack Mix' : (isChickpeaSnackPlanW449 ? 'Chickpea Snacks' : (isJerkyPlanW448 ? 'Meat Snacks' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family'))))),
       websiteTermsUsed: productTerms.websiteTermsUsed,
       signalText: source.signalText || source.notes || '',
       website: source.website || ''
@@ -5379,28 +5722,49 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (isJerkyPlanW448) {
       internalAssemblyItemNameW445 = trimLen(`${distributionBase} Production Batch`, 60);
     }
-    const hasProductEvidenceW449 = !!(productTerms.selectedProductCandidate || isChickpeaSnackPlanW449 || isJerkyPlanW448 || /siete|goodles|kettle|mac\s*(?:&|and)?\s*cheese|chip|tortilla/i.test(distributionBase));
+    const hasProductEvidenceW449 = !!(productTerms.selectedProductCandidate || advisoryW450.namingAdvisoryUsed || isKodiakPlanW450 || isChickpeaSnackPlanW449 || isJerkyPlanW448 || /siete|goodles|kettle|kodiak|power\s*cakes?|flapjack|pancake|mac\s*(?:&|and)?\s*cheese|chip|tortilla/i.test(distributionBase));
     const productCandidateSourceW449 = productTerms.selectedProductCandidate
-      ? 'website_product_evidence'
+      ? 'llm_website_product_evidence'
+      : advisoryW450.namingAdvisoryUsed
+        ? advisoryW450.source
       : hasProductEvidenceW449
-        ? (/https?:\/\//i.test(str(source.website)) ? 'website_category_inference' : 'notes_product_evidence')
+        ? (/https?:\/\//i.test(str(source.website)) ? 'llm_website_product_evidence' : 'llm_notes_product_evidence')
         : 'fallback_no_product_found';
-    const confidencePercentW449 = productTerms.selectedProductCandidate ? 88 : (hasProductEvidenceW449 ? 76 : 42);
+    const confidencePercentW449 = productTerms.selectedProductCandidate ? 88 : (advisoryW450.namingAdvisoryUsed ? Number(advisoryW450.confidencePercent || 82) : (hasProductEvidenceW449 ? 76 : 42));
+    const fallbackBlockedGenericTermsW450 = ['Machine Unit', 'Core Material Input', 'Primary Material Input', 'Product 12-Count Case Pack', 'Product Seasoning Blend', 'Build Product', 'Prepare Materials', 'Final Assembly Unit', 'Finished Assembly Unit', 'Generic Product', 'Component Input'];
+    const operationNamesW450 = advisoryW450 && advisoryW450.operationNames && advisoryW450.operationNames.length ? advisoryW450.operationNames.slice(0, 5) : (/siete/i.test(distributionBase)
+        ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
+        : /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase)
+        ? ['Receive Pasta and Cheese Blend', 'Blend Cheese Sauce Mix', 'Fill Pasta Packs', 'Case Pack', 'QC Finished Cases']
+        : isChickpeaSnackPlanW449
+        ? ['Receive Chickpeas and Seasoning', 'Roast Chickpeas', 'Season and Cool', 'Bag and Case Pack', 'QC Finished Cases']
+        : isJerkyPlanW448
+        ? ['Prep Protein and Marinade', 'Smoke or Dehydrate', 'Cool and Inspect', 'Pack and Case', 'QC Finished Cases']
+        : /sea salt/i.test(distributionBase)
+        ? ['Slice and Rinse', 'Kettle Cook', 'Air Finish', 'Season', 'Case Pack and QC']
+        : (hasProductEvidenceW449 ? ['Receive Product-Specific Inputs', 'Run Product-Specific Process', 'Inspect Product Output', 'Pack and QC'] : ['Review Product Inputs', 'Run Product Assembly', 'Inspect Output', 'Pack and QC']));
     const plan = {
       schema: 'idb.w432-product-build-plan.v1',
       source: productCandidateSourceW449,
+      writeAuthority: 'none',
+      creationAllowed: false,
       confidence: confidencePercentW449 >= 80 ? 'high' : (confidencePercentW449 >= 65 ? 'medium' : 'low'),
       confidencePercent: confidencePercentW449,
-      primaryProductCandidate: productTerms.selectedProductCandidate || productName,
+      primaryProductCandidate: productTerms.selectedProductCandidate || advisoryW450.primaryProductCandidate || productName,
       selectedProductReason: productTerms.selectedProductCandidate ? 'Selected from website/product evidence terms for this run.' : (hasProductEvidenceW449 ? 'Selected from website/category and conversation terms; generic manufacturing fallback was blocked.' : 'No product/category evidence was found; fallback naming used.'),
       productCandidateSource: productCandidateSourceW449,
-      evidenceTerms: productTerms.websiteTermsUsed.concat([distributionBase, productName].filter(Boolean)).filter(function (term, index, list) {
+      namingAdvisoryUsed: !!advisoryW450.namingAdvisoryUsed,
+      namingAdvisorySummary: advisoryW450.summary || '',
+      namingAdvisoryRequestSummary: `domain=${str(source.website) || 'none'}; brand=${brandName}; notes=${str(source.notes || source.signalText || '').slice(0, 140)}`,
+      namingAdvisory: advisoryW450,
+      evidenceTerms: productTerms.websiteTermsUsed.concat(advisoryW450.evidenceTerms || []).concat([distributionBase, productName].filter(Boolean)).filter(function (term, index, list) {
         return term && list.indexOf(term) === index;
       }).slice(0, 12),
       rejectedFallbackReason: hasProductEvidenceW449 ? 'Food/CPG product or category evidence exists, so generic Machine Unit/Core Material naming is blocked.' : '',
+      fallbackBlockedGenericTerms: hasProductEvidenceW449 ? fallbackBlockedGenericTermsW450 : [],
       nextCandidateHint: alternateProductCandidates[0] || '',
       productName,
-      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (isChickpeaSnackPlanW449 ? 'Chickpea Snacks' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family'))),
+      productFamily: advisoryW450.productFamily || (/siete/i.test(productName) ? 'Siete Tortilla Chips' : (isKodiakPlanW450 ? 'Protein Pancake and Flapjack Mix' : (isChickpeaSnackPlanW449 ? 'Chickpea Snacks' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family'))))),
       brandName,
       sellableUnit: productTerms.sellableUnit,
       casePackName: productTerms.casePackName,
@@ -5428,19 +5792,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       bomName: trimLen(`BOM - ${distributionBase}`, 80),
       bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
       workOrderName: trimLen(`WO - ${distributionBase}`, 80),
-      routingName: trimLen(/siete/i.test(distributionBase) || /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) || isChickpeaSnackPlanW449 || isJerkyPlanW448 ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
-      operationNames: /siete/i.test(distributionBase)
-        ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
-        : /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase)
-        ? ['Receive Pasta and Cheese Blend', 'Blend Cheese Sauce Mix', 'Fill Pasta Packs', 'Case Pack', 'QC Finished Cases']
-        : isChickpeaSnackPlanW449
-        ? ['Receive Chickpeas and Seasoning', 'Roast Chickpeas', 'Season and Cool', 'Bag and Case Pack', 'QC Finished Cases']
-        : isJerkyPlanW448
-        ? ['Prep Protein and Marinade', 'Smoke or Dehydrate', 'Cool and Inspect', 'Pack and Case', 'QC Finished Cases']
-        : /sea salt/i.test(distributionBase)
-        ? ['Slice and Rinse', 'Kettle Cook', 'Air Finish', 'Season', 'Case Pack and QC']
-        : (hasProductEvidenceW449 ? ['Receive Inputs', 'Make Product', 'Inspect Product', 'Pack and QC'] : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC']),
-      forbiddenLeakTerms: ['BEVERAGE', 'Finished Good Packaging / Case Pack', 'Production Line', 'Ingredient Blend', 'Packaging Component'],
+      routingName: trimLen(/siete/i.test(distributionBase) || /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) || isChickpeaSnackPlanW449 || isJerkyPlanW448 || isKodiakPlanW450 ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
+      operationNames: operationNamesW450,
+      forbiddenLeakTerms: ['BEVERAGE', 'Finished Good Packaging / Case Pack', 'Production Line', 'Ingredient Blend', 'Packaging Component'].concat(fallbackBlockedGenericTermsW450),
       modeContracts: {
         createNewItemOnly: {
           forbidden: ['Finished Good', 'Ingredient', 'Formula', 'Batch', 'BOM', 'Assembly', 'Work Order', 'Routing', 'WIP', 'Production Line', 'Manufacturing Line'],
@@ -5459,19 +5813,25 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         selectedProductCandidate: productTerms.selectedProductCandidate,
         websiteTermsUsed: productTerms.websiteTermsUsed,
         rejectedGenericTerms: productTerms.rejectedGenericTerms,
+        fallbackBlockedGenericTerms: hasProductEvidenceW449 ? fallbackBlockedGenericTermsW450 : [],
+        namingAdvisoryUsed: !!advisoryW450.namingAdvisoryUsed,
+        namingAdvisorySummary: advisoryW450.summary || '',
+        namingAdvisoryRequestSummary: `domain=${str(source.website) || 'none'}; brand=${brandName}`,
         confidencePercent: confidencePercentW449,
         rejectedFallbackReason: hasProductEvidenceW449 ? 'Generic product fallback blocked by W449 product/category evidence.' : ''
       },
       w449: {
-        schema: 'idb.w449-product-routing-naming-telemetry.v1',
-        foodCpgEvidence: !!(/siete|kettle|biena|chickpea|snack|food|cpg|chip|tortilla/i.test([
+        schema: 'idb.w450-product-routing-naming-telemetry.v1',
+        foodCpgEvidence: !!(/siete|kettle|biena|chickpea|snack|food|cpg|chip|tortilla|kodiak|power\s*cakes?|flapjack|pancake|goodles|chomps/i.test([
           productName,
           distributionBase,
           source.signalText || source.notes || '',
           source.website || ''
         ].join(' '))),
         chickpeaSnackEvidence: !!isChickpeaSnackPlanW449,
-        genericNamingHardStopTerms: ['Prepare Materials', 'Build Product', 'Inspect', 'Production Line', 'Finished Good', 'Ingredient Blend', 'Packaging Component']
+        genericNamingHardStopTerms: fallbackBlockedGenericTermsW450,
+        namingAdvisoryUsed: !!advisoryW450.namingAdvisoryUsed,
+        namingAdvisorySource: advisoryW450.source
       }
     };
     return plan;

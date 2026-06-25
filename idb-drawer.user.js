@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.57
+// @version      1.0.58
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.57';
-  const CURRENT_UX_BLOCK_W346 = 'W449';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.58';
+  const CURRENT_UX_BLOCK_W346 = 'W450';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14670,7 +14670,7 @@
       productPlanW445.evidence && productPlanW445.evidence.selectedProductCandidate
     ) : '';
     const objectProductCandidate = arrayValue(objects).map((item) => consultantVisibleRecordNameW436(firstNonBlank(item && item.name, item && item.recordName)))
-      .find((name) => /\b(Siete|Kettle|Goodles|Chomps)\b/i.test(name) && /\b(chips|vinegar|jalapeno|tortilla|salt|mac|cheese|pasta|jerky|meat snack|snack sticks|case pack)\b/i.test(name) && !visibleRecordBrandMismatchW438(name, state));
+      .find((name) => /\b(Siete|Kettle|Goodles|Chomps|Kodiak)\b/i.test(name) && /\b(chips|vinegar|jalapeno|tortilla|salt|mac|cheese|pasta|jerky|meat snack|snack sticks|flapjack|pancake|waffle|protein|oat|case pack)\b/i.test(name) && !visibleRecordBrandMismatchW438(name, state));
     let productBaseName = visibleProductAccentPolishW439(firstNonBlank(planProductCandidateW445, objectProductCandidate, currentWebsiteProductBaseW438(state))
       .replace(/\s+12[-\s]*Count\s+Case Pack\b/i, '')
       .replace(/\s+Retail Replenishment\b/i, '')
@@ -14691,20 +14691,25 @@
     const isSiete = /\bSiete\b/i.test(productBaseName);
     const isGoodlesMac = /\bGoodles\b/i.test(productBaseName) || /\bmac\b/i.test(productBaseName) && /\bcheese\b/i.test(productBaseName);
     const isChompsJerky = /\bChomps\b/i.test(productBaseName) || /\bjerky|meat snack|snack sticks\b/i.test(productBaseName);
+    const isKodiakBreakfast = /\bKodiak\b/i.test(productBaseName) || /\bflapjack|pancake|waffle|oat|protein cup\b/i.test(productBaseName);
     const componentNames = isSiete
       ? ['Siete Corn Masa Input', 'Avocado Oil Frying Input', 'Sea Salt Seasoning and Retail Bag Packaging']
       : isGoodlesMac
       ? ['Goodles Pasta Input', 'Cheese Sauce Seasoning Blend', 'Retail Carton and Case Packaging']
       : isChompsJerky
       ? ['Chomps Beef and Turkey Protein Input', 'Smokehouse Seasoning Marinade', 'Stick Wrapper and Retail Case Packaging']
-      : [`${productBaseName} Core Material Input`, `${productBaseName} Seasoning Blend`, `${productBaseName} Retail Bag and Case Packaging`];
+      : isKodiakBreakfast
+      ? ['Kodiak Oat & Wheat Protein Blend', 'Maple Brown Sugar Flavor Blend', 'Flapjack Cup and Case Packaging']
+      : [`${productBaseName} Product-Specific Input`, `${productBaseName} Product-Specific Seasoning`, `${productBaseName} Retail Bag and Case Packaging`];
     const operationNames = isSiete
       ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
       : isGoodlesMac
       ? ['Stage Pasta and Cheese Blend', 'Blend Seasoning and Dry Goods', 'Fill Retail Cartons', 'Case Pack and QC']
       : isChompsJerky
       ? ['Stage Protein and Marinade', 'Season and Tumble Jerky', 'Cook and Dehydrate', 'Quality Check Moisture and Weight', 'Wrap, Case Pack, and QC']
-      : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'];
+      : isKodiakBreakfast
+      ? ['Stage Oat Protein Blend', 'Blend Maple Brown Sugar Batter', 'Fill Flapjack Cups', 'Bake and Cool Cups', 'Case Pack and QC']
+      : ['Review Product Inputs', 'Run Product Assembly', 'Inspect Output', 'Pack and QC'];
     const manufacturingTermsW442 = industryNativeManufacturingTermsW442(productBaseName, {
       productBuildPlan: productPlanW445,
       websiteText: [
@@ -14809,7 +14814,7 @@
     const strongProductIdentity = !!(narrative && narrative.productBaseName &&
       !/\b(?:Customer|Prospect)?\s*Product\.?$/i.test(narrative.productBaseName) &&
       !/\bProduct\.?$/i.test(narrative.productBaseName) &&
-      /\b(Maíz|Maiz|Sea Salt|Vinegar|Jalapeno|Jalapeño|Himalayan|Texas BBQ|Air Fried|Tortilla Chips|Lemon Herb|Butter Chips)\b/i.test(narrative.productBaseName));
+      /\b(Maíz|Maiz|Sea Salt|Vinegar|Jalapeno|Jalapeño|Himalayan|Texas BBQ|Air Fried|Tortilla Chips|Lemon Herb|Butter Chips|Kodiak|Flapjack|Pancake|Waffle|Protein Cup|Oat)\b/i.test(narrative.productBaseName));
     const manufacturingGraphRoleW441 = !!(narrative && (narrative.mode === 'manufacturing' || narrative.mode === 'wip') &&
       /\b(hero|sellable|assembly|finished|component|ingredient|material|bom|revision|work.?order|routing)\b/i.test(roleLabelText));
     const truncatedManufacturingNameW441 = /\b(Finis|Tortill|Channe|Replenis|Ingredien|Componen)\b/i.test(current) ||
@@ -20844,7 +20849,15 @@
           proposedName: 'string',
           displayLabel: 'string',
           fieldNameSuggestions: ['itemid', 'displayname', 'otherrefnum', 'memo', 'name'],
-          sourceBasis: 'website_primary | website_category | conversation_notes_signal | industry_fallback | inferred_from_website',
+          sourceBasis: 'website_primary | website_category | conversation_notes_signal | industry_fallback | inferred_from_website | llm_website_product_evidence | llm_notes_product_evidence',
+          productCandidateSource: 'llm_website_product_evidence | llm_notes_product_evidence',
+          confidencePercent: 'number 0-100',
+          evidenceTerms: ['website or note term used'],
+          namingAdvisoryUsed: 'boolean',
+          rejectedFallbackReason: 'string',
+          fallbackBlockedGenericTerms: ['Product 12-Count Case Pack', 'Core Material Input', 'Product Seasoning Blend', 'Prepare Materials', 'Build Product'],
+          writeAuthority: 'none',
+          creationAllowed: false,
           confidence: 'high | medium | low',
           fallbackReason: 'string'
         }
@@ -20857,7 +20870,15 @@
         'demandMoment',
         'recordNames',
         'sourceBasis',
+        'productCandidateSource',
         'confidence',
+        'confidencePercent',
+        'evidenceTerms',
+        'namingAdvisoryUsed',
+        'rejectedFallbackReason',
+        'fallbackBlockedGenericTerms',
+        'writeAuthority',
+        'creationAllowed',
         'fallbackReason',
         'noRegressionDeclaration'
       ],
@@ -20913,7 +20934,7 @@
       response.demandMoment,
       recordNames.join(' ')
     ].join(' ');
-    const genericNamePattern = /\b(Product Availability SKU|Branch Availability\s*\/\s*Replenishment Flow|Safe Substitute Fulfillment Support SKU|Finished Good Variety Pack|Product\s*\/\s*SKU|Proof Item|Demo Product|Generic SKU|Inventory\s*\/\s*Fulfillment|Ingredient Blend|Packaging Component|Production Line)\b/i;
+    const genericNamePattern = /\b(Product 12-Count Case Pack|Core Material Input|Primary Material Input|Product Seasoning Blend|Prepare Materials|Build Product|Product Availability SKU|Branch Availability\s*\/\s*Replenishment Flow|Safe Substitute Fulfillment Support SKU|Finished Good Variety Pack|Product\s*\/\s*SKU|Proof Item|Demo Product|Generic SKU|Inventory\s*\/\s*Fulfillment|Ingredient Blend|Packaging Component|Production Line)\b/i;
     const beverageLeakFailures = recordNames.concat([response.productSeed || '', response.productFamily || '']).filter((name) => /\bBEVERAGE\b/i.test(String(name || '')));
     const visibleRunSuffixFailures = recordNames.filter((name) => visibleNameHasInternalRunSuffixW436(name));
     const standaloneManufacturingFailures = recordNames.filter((name) => {
@@ -22470,7 +22491,8 @@
     const websiteText = String(websiteEvidence && (websiteEvidence.text || websiteEvidence.summary || websiteEvidence.status) || '');
     const nllm = state && state.recordNamingAdvisoryResponse && state.recordNamingAdvisoryResponse.cockpitValueNarrative || null;
     const notesHaveSignal = /\b(pain|delay|miss|shortage|inventory|production|fulfillment|manual|spreadsheet|mrp|erp|competitor|competition|trust|capacity|schedule|order)\b/i.test(notes);
-    const source = nllm && nllm.roiHeadline ? 'nllm_advisory' : (notesHaveSignal ? 'conversation_notes' : 'website_industry_fallback');
+    const source = notesHaveSignal ? 'conversation_notes' : (nllm && nllm.roiHeadline ? 'llm_advisory' : 'website_industry_fallback');
+    const secondarySource = nllm && nllm.roiHeadline && notesHaveSignal ? 'llm_advisory' : (source === 'conversation_notes' ? 'llm_or_industry_secondary' : '');
     const confidence = nllm && nllm.confidence ? nllm.confidence : (notesHaveSignal ? 'medium' : 'medium');
     const mode = narrative && narrative.mode || 'distribution';
     const copy = narrative && narrative[mode] || narrative && narrative.distribution || {};
@@ -22478,6 +22500,7 @@
       return Object.assign({
         schema: 'idb.w443-cockpit-value-narrative.v1',
         source,
+        secondarySource,
         confidence,
         evidenceTermsUsed: uniqueValues([notes, websiteText].join(' ').match(/\b(?:ingredient|production|routing|fulfillment|inventory|demand|order|case pack|availability)\b/gi) || []),
         unsupportedClaimCaution: 'Measured savings need a buyer-confirmed baseline.'
@@ -22491,6 +22514,7 @@
         competitiveQuestion: copy.competitiveQuestion || 'How do we prove NetSuite has the fresher production signal than a planning spreadsheet or disconnected MRP tool?',
         competitiveWatchOut: copy.competitiveWatchOut || 'If competitive pressure comes up, ask which signal they trust today: ingredient availability, line capacity, Work Order status, routing progress, or finished case output.',
         source,
+        secondarySource,
         confidence,
         evidenceTermsUsed: uniqueValues([notes, websiteText].join(' ').match(/\b(?:ingredient|production|routing|fulfillment|inventory|demand|order|case pack|availability)\b/gi) || []),
         unsupportedClaimCaution: 'Measured savings need a buyer-confirmed baseline.'
@@ -22503,6 +22527,7 @@
       competitiveQuestion: copy.competitiveQuestion || 'How do we know the operating signal is current enough to trust?',
       competitiveWatchOut: copy.competitiveWatchOut || 'Ask which workflow they trust today, then prove the same decision through returned records.',
       source,
+      secondarySource,
       confidence,
       evidenceTermsUsed: uniqueValues([notes, websiteText].join(' ').match(/\b(?:replenishment|production|routing|fulfillment|inventory|demand|order|availability)\b/gi) || []),
       unsupportedClaimCaution: 'Measured savings need a buyer-confirmed baseline.'
@@ -25773,6 +25798,9 @@
     const runner = state && state.integratedBuildRunnerResult || {};
     const sidecar = runner.sidecarGeneratedNamesJson || runner.finalGeneratedNamesJson || runner.partialGeneratedNamesJson || {};
     const capture = runner.resultCapture || {};
+    const lane = state ? getLane(state) : null;
+    const advisory = state && state.recordNamingAdvisoryResponse || {};
+    const advisoryProduct = advisory.productNamingAdvisory || advisory.namingAdvisory || advisory;
     const plan = records.map((record) => record && record.productBuildPlanW432).filter(Boolean)[0] ||
       state && state.dccFinalNamingResult && state.dccFinalNamingResult.productBuildPlanW432 ||
       finalNavigation && finalNavigation.productBuildPlanW432 ||
@@ -25782,25 +25810,64 @@
       capture && capture.productBuildPlan ||
       {};
     const productName = visibleProductAccentPolishW439(firstNonBlank(
+      advisoryProduct.primaryProductCandidate,
+      advisoryProduct.selectedProductCandidate,
+      advisoryProduct.productSeed,
       plan.primaryProductCandidate,
       plan.selectedProductCandidate,
       plan.productName,
       plan.evidence && plan.evidence.selectedProductCandidate,
-      records.map((record) => consultantVisibleRecordNameW436(record && (record.name || record.recordName))).find((name) => /\b(Siete|Kettle|Chomps|Goodles|Biena|Chickpea|Jerky|Tortilla|Mac|Cheese)\b/i.test(name))
+      records.map((record) => consultantVisibleRecordNameW436(record && (record.name || record.recordName))).find((name) => /\b(Siete|Kettle|Chomps|Goodles|Biena|Kodiak|Chickpea|Jerky|Tortilla|Mac|Cheese|Flapjack|Pancake|Protein)\b/i.test(name))
     ));
+    const notes = normalizedIntake(state || {}).notes || '';
+    const websiteEvidence = lane ? websiteProductNamingEvidence(state || {}, lane) : {};
+    const sourceRaw = firstNonBlank(
+      advisoryProduct.productCandidateSource,
+      advisoryProduct.sourceBasis,
+      plan.productCandidateSource,
+      plan.source,
+      plan.evidence && plan.evidence.website ? 'website_product_evidence' : 'returned_result'
+    );
+    const productCandidateSource = /nllm|llm|advisory/i.test(sourceRaw) && /notes|conversation/i.test(sourceRaw)
+      ? 'llm_notes_product_evidence'
+      : /nllm|llm|advisory/i.test(sourceRaw) || /website|product|category/i.test(sourceRaw)
+        ? 'llm_website_product_evidence'
+        : /notes|conversation/i.test(sourceRaw)
+          ? 'llm_notes_product_evidence'
+          : sourceRaw;
     const alternates = uniqueValues(arrayValue(plan.alternateProductCandidates)
+      .concat(arrayValue(advisoryProduct.alternateProductCandidates))
       .concat(arrayValue(plan.evidence && plan.evidence.productCandidates).filter((item) => item !== productName))
       .map(visibleProductAccentPolishW439)
       .filter(Boolean));
+    const evidenceTerms = uniqueValues(arrayValue(advisoryProduct.evidenceTerms)
+      .concat(arrayValue(plan.evidenceTerms || plan.evidence && plan.evidence.websiteTermsUsed || plan.evidence && plan.evidence.productCandidates))
+      .concat(arrayValue(websiteEvidence.productSeed))
+      .concat(notes.match(/\b(?:ingredient|flapjack|pancake|protein|oat|case pack|production|routing|bom|inventory|demand|order|shortage|fulfillment)\b/gi) || []))
+      .filter(Boolean);
+    const hasNamingEvidence = !!(productName || evidenceTerms.length || websiteEvidence.productSeed || notes);
+    const blockedTerms = uniqueValues(arrayValue(plan.fallbackBlockedGenericTerms)
+      .concat(arrayValue(plan.blockedGenericFallbackTerms))
+      .concat(arrayValue(plan.evidence && (plan.evidence.fallbackBlockedGenericTerms || plan.evidence.rejectedGenericTerms)))
+      .concat(hasNamingEvidence ? ['Product 12-Count Case Pack', 'Core Material Input', 'Product Seasoning Blend', 'Prepare Materials', 'Build Product'] : [])
+      .filter(Boolean));
     return {
-      schema: 'idb.w444-product-candidate-visibility.v1',
+      schema: 'idb.w450-product-candidate-visibility.v1',
       primaryProductCandidate: productName,
       alternateProductCandidates: alternates,
-      selectedProductReason: firstNonBlank(plan.selectedProductReason, plan.selectionReason, productName ? 'Selected from website/product evidence for this run.' : 'No product candidate returned.'),
-      productCandidateSource: firstNonBlank(plan.productCandidateSource, plan.source, plan.evidence && plan.evidence.website ? 'website_product_evidence' : 'returned_result'),
-      confidencePercent: Number(plan.confidencePercent || plan.evidence && plan.evidence.confidencePercent || 0) || null,
-      evidenceTerms: arrayValue(plan.evidenceTerms || plan.evidence && plan.evidence.websiteTermsUsed || plan.evidence && plan.evidence.productCandidates),
-      rejectedFallbackReason: firstNonBlank(plan.rejectedFallbackReason, plan.evidence && plan.evidence.rejectedFallbackReason),
+      selectedProductReason: firstNonBlank(advisoryProduct.selectedProductReason, plan.selectedProductReason, plan.selectionReason, productName ? 'Selected from LLM/web/product evidence for this run.' : 'No product candidate returned.'),
+      productCandidateSource,
+      confidencePercent: Number(advisoryProduct.confidencePercent || plan.confidencePercent || plan.evidence && plan.evidence.confidencePercent || 0) || null,
+      evidenceTerms,
+      namingAdvisoryUsed: !!(advisoryProduct.productSeed || advisoryProduct.primaryProductCandidate || plan.namingAdvisoryUsed || plan.namingAdvisory || plan.namingAdvisorySummary || (plan.evidence && plan.evidence.namingAdvisoryUsed)),
+      namingAdvisorySummary: firstNonBlank(advisoryProduct.summary, plan.namingAdvisorySummary, plan.namingAdvisory && plan.namingAdvisory.summary, plan.evidence && plan.evidence.namingAdvisorySummary),
+      namingAdvisoryRequestSummary: firstNonBlank(plan.namingAdvisoryRequestSummary, plan.namingAdvisory && plan.namingAdvisory.requestSummary, plan.evidence && plan.evidence.namingAdvisoryRequestSummary),
+      advisoryOnly: {
+        writeAuthority: 'none',
+        creationAllowed: false
+      },
+      rejectedFallbackReason: firstNonBlank(advisoryProduct.rejectedFallbackReason, plan.rejectedFallbackReason, plan.evidence && plan.evidence.rejectedFallbackReason, blockedTerms.length ? 'Generic fallback terms blocked because website, notes, or category evidence exists.' : ''),
+      fallbackBlockedGenericTerms: blockedTerms,
       nextCandidateHint: firstNonBlank(plan.nextCandidateHint, alternates[0] ? `Use fresh candidate next run: ${alternates[0]}` : 'Use fresh candidate next run from current website evidence.')
     };
   }
@@ -25884,13 +25951,15 @@
         likelyAlternatives: alternatives,
         alternativeSourceTags,
         strongestAlternative: alternatives[0] || 'spreadsheets',
-        whyNetSuiteWins: firstNonBlank(valueNarrative && valueNarrative.competitiveWatchOut, competitiveAdvisory && competitiveAdvisory.runCue, 'NetSuite wins when demand, inventory, production readiness, routing progress, and financial impact stay in one operating path.'),
+        whyNetSuiteWins: firstNonBlank(valueNarrative && valueNarrative.competitiveWatchOut, competitiveAdvisory && competitiveAdvisory.runCue, 'Prove demand, supply, WIP routing, work order status, and finished output in one path.'),
         discoveryQuestions: [
           'Which planning signal is trusted today?',
           'Where does production or inventory truth get reconciled outside the system?',
           'What baseline would prove the current process is costing time, margin, or service reliability?'
         ],
-        disconnectedPlanningRisk: 'Risk: disconnected planning can make routing, inventory, and customer promise decisions look current when they are stale.'
+        disconnectedPlanningRisk: 'Risk: disconnected planning can make routing, inventory, and customer promise decisions look current when they are stale.',
+        headline: `Beat ${alternatives[0] || 'QuickBooks plus spreadsheets'} with fresher proof`,
+        compactLine: 'Prove demand, supply, WIP routing, work order status, and finished output in one path.'
       }
     };
   }
@@ -25913,7 +25982,7 @@
     const active = kind === 'competitive' ? 'competitive' : 'roi';
     if (active === 'competitive') {
       return `
-        <details class="idb-w444-lower-detail idb-w449-collapsible-why" data-idb-detail-panel="competitive" data-idb-w445-detail-anchor tabindex="-1" open>
+        <details class="idb-w444-lower-detail idb-w449-collapsible-why" data-idb-detail-panel="competitive" data-idb-w445-detail-anchor tabindex="-1">
           <summary>Why this competitive angle</summary>
           <div class="idb-w447-impact-graphic idb-w447-competitive-impact" aria-label="Competitive impact summary">
             <div class="idb-w447-impact-statement">Compete against ${escapeHtml(detail.competitive.strongestAlternative)} by proving the fresher signal.</div>
@@ -25932,7 +26001,7 @@
       `;
     }
     return `
-      <details class="idb-w444-lower-detail idb-w449-collapsible-why" data-idb-detail-panel="roi" data-idb-w445-detail-anchor tabindex="-1" open>
+      <details class="idb-w444-lower-detail idb-w449-collapsible-why" data-idb-detail-panel="roi" data-idb-w445-detail-anchor tabindex="-1">
         <summary>Why this ROI</summary>
         <div class="idb-w447-impact-graphic idb-w447-roi-impact" aria-label="ROI impact summary">
           <div class="idb-w447-impact-statement">${escapeHtml(detail.roi.metricDirection)}</div>
@@ -25998,10 +26067,20 @@
     }).join('');
     const diagnosticCopy = arrayValue([routingDiagnostic, workOrderDiagnostic]).filter(Boolean).map((item) => {
       const label = firstNonBlank(item.label, item.role, 'Diagnostic');
+      const w449 = item.w450 || item.w449 || item.authoritativeWorkCenterRoutingW449 || {};
+      const rejected = arrayValue(w449.rejectedPairs || w449.pairProbes).filter((probe) => probe && probe.status !== 'accepted');
+      const accepted = arrayValue(w449.acceptedPairs).filter(Boolean);
+      const firstRejected = rejected[0] || {};
+      const failureState = item.routingId && !item.defaulted ? 'Routing created but not defaulted' : 'Routing failed before save';
       const reason = firstNonBlank(item.reason, item.failureStage, item.errorMessage, item.routingEligibilityConclusion, 'Review troubleshoot export.');
       const expected = firstNonBlank(item.expectedRoutingName, item.routingName, item.name);
       const stale = firstNonBlank(item.staleRoutingName, item.actualRoutingName);
-      return `<div class="idb-copy"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(expected)} ${stale ? `- Stale detected: ${escapeHtml(stale)}` : ''}${reason ? ` - ${escapeHtml(reason)}` : ''}</div>`;
+      const failingOperation = firstNonBlank(item.failingOperation, firstRejected.opName, firstRejected.seq ? `Operation ${firstRejected.seq}` : '');
+      const rejectedCopy = firstRejected.centerName || firstRejected.templateName || firstRejected.errorName
+        ? ` Rejected: ${[firstRejected.centerName, firstRejected.templateName, firstRejected.fieldId, firstRejected.errorName, firstRejected.errorMessage].filter(Boolean).join(' / ')}`
+        : '';
+      const nextFix = firstNonBlank(item.nextFixHint, item.recommendedOperatorNextStep, w449.nextFixHint, 'Review the work-center and manufacturing cost template compatibility in NetSuite.');
+      return `<div class="idb-copy"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(failureState)} - ${escapeHtml(expected)} ${stale ? `- Stale detected: ${escapeHtml(stale)}` : ''}${failingOperation ? ` - Failing: ${escapeHtml(failingOperation)}` : ''}${reason ? ` - ${escapeHtml(reason)}` : ''}${rejectedCopy ? escapeHtml(rejectedCopy) : ''} - Next: ${escapeHtml(nextFix)}${accepted.length ? ` - Accepted probes: ${escapeHtml(accepted.length)}` : ''}</div>`;
     }).join('');
     return `
       <div class="idb-w449-wip-flow" data-idb-w449-wip-flow-component="true" aria-label="WIP route status">
@@ -26127,10 +26206,10 @@
       ? detailModelW444.roi.quantifier
       : (valueNarrativeW443 && valueNarrativeW443.roiDetail || `Baseline: ${compactText(baselineCopy, 120)}`);
     const competitiveCardHeadlineW448 = detailModelW444 && detailModelW444.competitive
-      ? `Beat ${detailModelW444.competitive.strongestAlternative} with fresher proof`
+      ? firstNonBlank(detailModelW444.competitive.headline, `Beat ${detailModelW444.competitive.strongestAlternative} with fresher proof`)
       : objectionCopy;
     const competitiveCardDetailW448 = detailModelW444 && detailModelW444.competitive
-      ? compactText(detailModelW444.competitive.whyNetSuiteWins, 120)
+      ? compactText(firstNonBlank(detailModelW444.competitive.compactLine, detailModelW444.competitive.whyNetSuiteWins), 120)
       : watchOutCopy;
     const cautionCopy = cockpitCopy(value.grounded && value.grounded.unsupportedClaimBlocker && value.grounded.unsupportedClaimBlocker.blockedClaims && value.grounded.unsupportedClaimBlocker.blockedClaims[0]
       || valueNarrativeW443 && valueNarrativeW443.unsupportedClaimCaution
@@ -26208,8 +26287,12 @@
           <summary><span class="idb-mini-chip">Product: ${escapeHtml(productModelW444.primaryProductCandidate || visibleNarrative.productBaseName || 'Returned product')}</span></summary>
           <div class="idb-copy">Alternates: ${escapeHtml(productModelW444.alternateProductCandidates.length ? productModelW444.alternateProductCandidates.join(', ') : 'No alternates returned.')}</div>
           <div class="idb-copy">${escapeHtml(productModelW444.selectedProductReason)}</div>
+          <div class="idb-copy">Evidence: ${escapeHtml(arrayValue(productModelW444.evidenceTerms).slice(0, 6).join(', ') || 'No product evidence terms returned.')}</div>
+          ${productModelW444.rejectedFallbackReason ? `<div class="idb-copy">Blocked fallback: ${escapeHtml(productModelW444.rejectedFallbackReason)}</div>` : ''}
           <div class="idb-chip-row">
             <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(productModelW444.productCandidateSource))}</span>
+            ${productModelW444.confidencePercent ? `<span class="idb-mini-chip">Confidence: ${escapeHtml(productModelW444.confidencePercent)}%</span>` : ''}
+            ${productModelW444.namingAdvisoryUsed ? '<span class="idb-mini-chip">Naming advisory</span>' : ''}
             <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-fresh-candidate-intent="${escapeHtml(productModelW444.nextCandidateHint)}">Use fresh candidate next run</button>
           </div>
         </details>
@@ -29217,18 +29300,30 @@
       sidecar.routingDiagnostics && sidecar.routingDiagnostics.workCenterSetabilityProbesW449
     );
     const namingTruthW449 = {
-      schema: 'idb.w449-product-naming-truth.v1',
+      schema: 'idb.w450-product-naming-truth.v1',
       source: productModel.productCandidateSource,
       confidencePercent: productModel.confidencePercent,
       evidenceTerms: productModel.evidenceTerms,
+      namingAdvisoryUsed: productModel.namingAdvisoryUsed,
+      namingAdvisoryRequestSummary: productModel.namingAdvisoryRequestSummary,
+      namingAdvisoryResponseSummary: productModel.namingAdvisorySummary,
+      advisoryOnly: productModel.advisoryOnly || { writeAuthority: 'none', creationAllowed: false },
       rejectedFallbackReason: productModel.rejectedFallbackReason,
-      genericFallbackBlocked: !/fallback_no_product_found|deterministic_product_fallback/i.test(String(productModel.productCandidateSource || '')),
+      fallbackBlockedGenericTerms: productModel.fallbackBlockedGenericTerms,
+      genericFallbackBlocked: arrayValue(productModel.fallbackBlockedGenericTerms).length > 0 || !/fallback_no_product_found|deterministic_product_fallback/i.test(String(productModel.productCandidateSource || '')),
       bannedGenericTermsVisible: allExportRows
         .map((item) => `${item && (item.name || item.recordName || '') || ''}`)
-        .filter((name) => /Machine Unit|Core Material Input|Primary Material Input|Build Product|Prepare Materials|Final Assembly Unit/i.test(name))
+        .filter((name) => /Machine Unit|Core Material Input|Primary Material Input|Product 12-Count Case Pack|Product Seasoning Blend|Build Product|Prepare Materials|Final Assembly Unit|Finished Assembly Unit|Generic Product|Component Input/i.test(name)),
+      finalNamesChosen: allExportRows.map((item) => ({
+        role: item && (item.role || item.canonicalRole || item.label) || '',
+        type: item && (item.recordType || item.type) || '',
+        name: item && (item.name || item.recordName) || '',
+        plannedOnly: !!(item && item.plannedOnly),
+        diagnosticOnly: isDiagnosticRowW449(item)
+      })).filter((item) => item.name)
     };
     return {
-      schema: 'idb.w449-troubleshoot-export.v1',
+      schema: 'idb.w450-troubleshoot-export.v1',
       drawerVersion: DRAWER_USERSCRIPT_VERSION,
       drawerBlock: CURRENT_UX_BLOCK_W346,
       exportedAt: nowIso(),
@@ -29292,7 +29387,19 @@
         },
         note: 'Runner did not return W449 work-center setability telemetry in this payload.'
       },
+      w450RoutingProbeTruth: {
+        savedSearch5005Rows: arrayValue(workCenterTelemetryW449 && (workCenterTelemetryW449.savedSearch5005Rows || workCenterTelemetryW449.workCenterRows || workCenterTelemetryW449.centerRanking)),
+        workCenterRanking: arrayValue(workCenterTelemetryW449 && workCenterTelemetryW449.centerRanking),
+        costTemplateRanking: arrayValue(workCenterTelemetryW449 && (workCenterTelemetryW449.costTemplateRanking || workCenterTelemetryW449.templateRanking)),
+        routingLineProbes: arrayValue(workCenterTelemetryW449 && workCenterTelemetryW449.pairProbes),
+        acceptedPairs: arrayValue(workCenterTelemetryW449 && workCenterTelemetryW449.acceptedPairs),
+        rejectedPairs: arrayValue(workCenterTelemetryW449 && workCenterTelemetryW449.rejectedPairs),
+        routingSaveResult: firstNonBlankObject(workCenterTelemetryW449 && workCenterTelemetryW449.routingSaveResult, routingDiagnostics && routingDiagnostics.routingSaveResult),
+        routingAttachDefaultVerification: firstNonBlankObject(workCenterTelemetryW449 && workCenterTelemetryW449.routingAssemblyVerification, routingDiagnostics && routingDiagnostics.assemblyRoutingVerificationW449),
+        staleCookieRouteSupersedeResult: firstNonBlankObject(workCenterTelemetryW449 && workCenterTelemetryW449.staleCookieRouteSupersedeResult, routingDiagnostics && routingDiagnostics.staleRoutingDiscovery)
+      },
       productNamingTruthW449: namingTruthW449,
+      productNamingTruthW450: namingTruthW449,
       troubleshootExportTelemetryW446: runnerTelemetryW446,
       manufacturingEligibilityPreflightW446: runnerTelemetryW446 && runnerTelemetryW446.manufacturingEligibilityPreflightW446 || sidecar.manufacturingEligibilityPreflightW446 || capture.manufacturingEligibilityPreflightW446 || null,
       routingWorkOrderDiagnostics: diagnostics,

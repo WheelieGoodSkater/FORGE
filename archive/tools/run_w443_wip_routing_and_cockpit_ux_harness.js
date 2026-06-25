@@ -184,10 +184,10 @@ function main() {
   const plan = sietePlan(runnerHooks);
 
   assertCase(results, 'w443-marker-updated',
-    /@version\s+1\.0\.55/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.55';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W447';"),
-    'Drawer should identify current W447 / 1.0.55 while preserving W443 behavior.');
+    /@version\s+1.0.56/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.56';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W448';"),
+    'Drawer should identify current W448 / 1.0.56 while preserving W443 behavior.');
 
   const wipSurface = renderSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: true }, recordsFor(plan, 'wip'));
   const wipText = wipSurface.text;
@@ -264,10 +264,10 @@ function main() {
 
   assertCase(results, 'w443-roi-competitive-source-confidence',
     /Source:\s*(conversation notes|website industry fallback|nllm advisory)/i.test(wipText) &&
-      /Confidence:\s*(high|medium|low)/i.test(wipText) &&
-      /production batch reliability/i.test(wipText) &&
-      /fresher production signal/i.test(wipText) &&
-      /ingredient availability|routing progress|finished case output/i.test(wipText),
+      /Confidence:\s*\d+%/.test(wipText) &&
+      /Decrease customer-promise risk/i.test(wipText) &&
+      /fresher proof/i.test(wipText) &&
+      /demand, supply, WIP routing, Work Order status, and finished output/i.test(wipText),
     wipText);
 
   assertCase(results, 'w443-nllm-advisory-boundary-preserved',

@@ -1536,8 +1536,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const productPlanW443 = names && names._productBuildPlanW432 || null;
     const routingName = trimLen((names && names.routing_name) ? names.routing_name : ((productPlanW443 && productPlanW443.routingName) ? productPlanW443.routingName : `SCAI Routing - ${prospect} - BOM ${bomId}`), 80).slice(0, 60);
     const routingMemo = `SCAI Demo Reset: ${extId} | ${prospect} | WIP routing`;
-    const assemblyRoutingDiscoveryW447 = inspectAssemblyRoutingSublistsW447({ assemblyId, extId });
-    const discoveredAssemblyRoutingId = assemblyRoutingDiscoveryW447 && assemblyRoutingDiscoveryW447.chosenRoutingId ? Number(assemblyRoutingDiscoveryW447.chosenRoutingId) : null;
+    const assemblyRoutingDiscoveryW448 = inspectAssemblyRoutingSublistsW448({ assemblyId, extId });
+    const discoveredAssemblyRoutingId = assemblyRoutingDiscoveryW448 && assemblyRoutingDiscoveryW448.chosenRoutingId ? Number(assemblyRoutingDiscoveryW448.chosenRoutingId) : null;
     const searchedRoutingId = discoveredAssemblyRoutingId ? null : findManagedRoutingIdByBom({ bomId, subsidiaryId: subs, extId, preferredName: routingName });
     const candidateExistingRoutingId = discoveredAssemblyRoutingId || searchedRoutingId || null;
     const existingRoutingName = candidateExistingRoutingId ? readRecordDisplayName('manufacturingrouting', candidateExistingRoutingId, '') : '';
@@ -1549,11 +1549,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         routingId: candidateExistingRoutingId,
         routingName: existingRoutingName,
         validation: existingRoutingValidation,
-        decision: 'do_not_reuse_stale_route_create_product_specific_route'
+        decision: 'repair_stale_route_in_place_for_wip_default'
       }
       : null;
-    const staleRoutingRepairTargetId = null;
-    const existingRoutingId = staleRoutingDiscovery ? null : candidateExistingRoutingId;
+    const staleRoutingRepairTargetId = staleRoutingDiscovery ? candidateExistingRoutingId : null;
+    const existingRoutingId = staleRoutingRepairTargetId || candidateExistingRoutingId || null;
 
     log.audit({
       title: `WIP managed routing decision [${VERSION}]`,
@@ -1565,9 +1565,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         searchedRoutingId,
         existingRoutingValidation,
         staleRoutingDiscovery,
-        assemblyRoutingDiscoveryW447,
+        assemblyRoutingDiscoveryW448,
         createNew: !existingRoutingId,
-        repairStaleInPlace: false
+        repairStaleInPlace: !!staleRoutingRepairTargetId
       })
     });
 
@@ -1601,7 +1601,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       }
 
       routingStage = 'set_billofmaterials';
-      routing.setValue({ fieldId: 'billofmaterials', value: Number(bomId) });
+      const routingBomSetResult = setRoutingBomBestEffortW448(routing, {
+        bomId,
+        assemblyId,
+        routingName,
+        staleRoutingRepairTargetId,
+        existingRoutingId
+      });
 
       // "location" is multi-select; pass array if we have one
       if (loc) {
@@ -1623,7 +1629,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
       log.audit({
         title: `Routing header default field resolution [${VERSION}]`,
-        details: JSON.stringify({ routingDefaultField, routingHeaderFields })
+        details: JSON.stringify({ routingDefaultField, routingHeaderFields, routingBomSetResult })
       });
 
       const stepSublist = 'routingstep';
@@ -1702,9 +1708,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           existingRoutingId,
           staleRoutingRepairTargetId,
           chosen,
-        staleRoutingRepaired: null,
-        staleRoutingDiscovery
-      })
+	        staleRoutingRepaired: staleRoutingRepairTargetId ? true : null,
+	        staleRoutingDiscovery
+	      })
       });
     } catch (e) {
       return buildWipRoutingBestEffortFailure({
@@ -1722,14 +1728,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       coreRecordsCreatedSafely: !!(assemblyId && bomId),
       routingValidation: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null,
       staleRoutingDiscovery,
-      assemblyRoutingDiscoveryW447
+      assemblyRoutingDiscoveryW448
       });
     }
 
     // Step 5: Only attach when the assembly has no existing managed routing
     let attachResult = 'not-attempted';
-    if (!existingRoutingId) {
-      attachResult = attachRoutingToAssemblySafe({ assemblyId, routingId });
+    if (!existingRoutingId || staleRoutingRepairTargetId) {
+      attachResult = attachRoutingToAssemblySafe({ assemblyId, routingId, forceDefault: true });
     } else {
       attachResult = 'skipped-reused-existing-routing';
       log.audit({
@@ -1749,11 +1755,45 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingValidation: validateRoutingForProductPlanW443({ id: routingId, name: routingName }, productPlanW443, { expectedRoutingName: routingName }),
       staleRoutingRepaired: staleRoutingRepairTargetId ? existingRoutingValidation : null,
       staleRoutingDiscovery,
-      assemblyRoutingDiscoveryW447
+      assemblyRoutingDiscoveryW448
     };
   }
 
-  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation, staleRoutingDiscovery, assemblyRoutingDiscoveryW447 }) {
+  function setRoutingBomBestEffortW448(routing, context) {
+    const fields = safeTryReturn(() => routing.getFields()) || [];
+    const bomField = firstExisting(fields, ['billofmaterials', 'bom', 'billofmaterial']);
+    const result = {
+      schema: 'idb.w448-routing-bom-link-attempt.v1',
+      bomId: Number(context && context.bomId || 0) || null,
+      assemblyId: Number(context && context.assemblyId || 0) || null,
+      bomField: bomField || '',
+      set: false,
+      skipped: false,
+      repairedStaleInPlace: !!(context && context.staleRoutingRepairTargetId),
+      errorName: '',
+      errorMessage: ''
+    };
+    if (!bomField) {
+      result.skipped = true;
+      result.errorMessage = 'No BOM field exposed on manufacturing routing body.';
+      return result;
+    }
+    try {
+      routing.setValue({ fieldId: bomField, value: Number(context.bomId) });
+      result.set = true;
+      return result;
+    } catch (e) {
+      result.errorName = e && e.name ? String(e.name) : '';
+      result.errorMessage = e && e.message ? String(e.message) : String(e || '');
+      log.audit({
+        title: `Routing BOM set failed but WIP repair continues [${VERSION}]`,
+        details: JSON.stringify(result)
+      });
+      return result;
+    }
+  }
+
+  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation, staleRoutingDiscovery, assemblyRoutingDiscoveryW448 }) {
     const diagnostic = {
       status: 'failed_best_effort',
       failureStage: failureStage || 'unknown',
@@ -1772,11 +1812,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       staleRoutingName: staleRoutingDiscovery && staleRoutingDiscovery.routingName || routingValidation && routingValidation.actualRoutingName || '',
       staleRoutingId: staleRoutingDiscovery && staleRoutingDiscovery.routingId || routingValidation && routingValidation.actualRoutingId || null,
       staleRoutingDiscovery: staleRoutingDiscovery || null,
-      assemblyRoutingDiscoveryW447: assemblyRoutingDiscoveryW447 || null,
-      visibleStaleRoutingSuspected: !!(assemblyRoutingDiscoveryW447 && assemblyRoutingDiscoveryW447.staleRouteSignals && assemblyRoutingDiscoveryW447.staleRouteSignals.length),
+      assemblyRoutingDiscoveryW448: assemblyRoutingDiscoveryW448 || null,
+      visibleStaleRoutingSuspected: !!(assemblyRoutingDiscoveryW448 && assemblyRoutingDiscoveryW448.staleRouteSignals && assemblyRoutingDiscoveryW448.staleRouteSignals.length),
       reason: routingValidation && routingValidation.reason || '',
       routingEligibilityConclusion: failureStage === 'set_billofmaterials'
-        ? 'BOM not selectable for routing context; verify assembly/BOM/revision/subsidiary/location compatibility.'
+        ? 'BOM not selectable for routing context; W448 attempts stale routing repair/default attach before treating WIP as failed.'
         : '',
       wipRequested: !!wipRequested,
       coreRecordsCreatedSafely: !!coreRecordsCreatedSafely,
@@ -1800,12 +1840,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function attachRoutingToAssemblySafe({ assemblyId, routingId }) {
+  function attachRoutingToAssemblySafe({ assemblyId, routingId, forceDefault }) {
     try {
-      const result = attachRoutingToAssembly({ assemblyId, routingId });
+      const result = attachRoutingToAssembly({ assemblyId, routingId, forceDefault });
       log.audit({
         title: `Assembly routing attach result [${VERSION}]`,
-        details: JSON.stringify({ assemblyId: Number(assemblyId), routingId: Number(routingId), result: result || 'noop' })
+        details: JSON.stringify({ assemblyId: Number(assemblyId), routingId: Number(routingId), forceDefault: !!forceDefault, result: result || 'noop' })
       });
       return result || 'noop';
     } catch (e) {
@@ -1867,14 +1907,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
   }
 
-  function inspectAssemblyRoutingSublistsW447({ assemblyId, extId }) {
+  function inspectAssemblyRoutingSublistsW448({ assemblyId, extId }) {
     const asm = record.load({ type: 'assemblyitem', id: Number(assemblyId), isDynamic: false });
     const sublistCandidates = ['manufacturingrouting', 'manufacturingroutings', 'routing', 'routings'];
     const routingFieldCandidates = ['manufacturingrouting', 'routing', 'routingid', 'name', 'id'];
     const defaultFieldCandidates = ['default', 'isdefault', 'masterdefault'];
     const memoFieldCandidates = ['memo', 'description'];
     const snapshot = {
-      schema: 'idb.w447-assembly-routing-discovery.v1',
+      schema: 'idb.w448-assembly-routing-discovery.v1',
       assemblyId: Number(assemblyId),
       chosenRoutingId: null,
       managedRoutingId: null,
@@ -1981,7 +2021,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function findManagedAssemblyRoutingId({ assemblyId, extId }) {
-    const snapshot = inspectAssemblyRoutingSublistsW447({ assemblyId, extId });
+    const snapshot = inspectAssemblyRoutingSublistsW448({ assemblyId, extId });
     return snapshot && snapshot.chosenRoutingId ? Number(snapshot.chosenRoutingId) : null;
   }
 
@@ -2007,7 +2047,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
   }
 
-  function attachRoutingToAssembly({ assemblyId, routingId }) {
+  function attachRoutingToAssembly({ assemblyId, routingId, forceDefault }) {
     const asm = record.load({ type: 'assemblyitem', id: Number(assemblyId), isDynamic: true });
 
     const sublistCandidates = ['manufacturingrouting', 'manufacturingroutings', 'routing', 'routings'];
@@ -2023,12 +2063,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (!sublistId) return 'no-sublist';
 
     const routingFieldCandidates = ['manufacturingrouting', 'routing', 'routingid'];
+    const defaultFieldCandidates = ['default', 'isdefault', 'masterdefault'];
     const fields = safeTryReturn(() => asm.getSublistFields({ sublistId })) || [];
     const routingField = firstExisting(fields, routingFieldCandidates) || routingFieldCandidates[0];
+    const defaultField = firstExisting(fields, defaultFieldCandidates);
 
     log.audit({
       title: `Assembly routing attach field resolution [${VERSION}]`,
-      details: JSON.stringify({ sublistId, routingField, fields })
+      details: JSON.stringify({ sublistId, routingField, defaultField, forceDefault: !!forceDefault, fields })
     });
 
     let line = -1;
@@ -2043,11 +2085,26 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     if (line !== -1) {
+      let defaultSet = false;
+      if (forceDefault && defaultField) {
+        try {
+          asm.selectLine({ sublistId, line });
+          asm.setCurrentSublistValue({ sublistId, fieldId: defaultField, value: true });
+          asm.commitLine({ sublistId });
+          asm.save({ enableSourcing: true, ignoreMandatoryFields: true });
+          defaultSet = true;
+        } catch (e) {
+          log.audit({
+            title: `Assembly routing existing-line default repair failed [${VERSION}]`,
+            details: JSON.stringify({ assemblyId: Number(assemblyId), routingId: Number(routingId), sublistId, line, defaultField, error: String(e && e.message ? e.message : e) })
+          });
+        }
+      }
       log.audit({
         title: `Assembly routing already linked [${VERSION}]`,
-        details: JSON.stringify({ assemblyId: Number(assemblyId), routingId: Number(routingId), sublistId, line, routingField })
+        details: JSON.stringify({ assemblyId: Number(assemblyId), routingId: Number(routingId), sublistId, line, routingField, defaultField, defaultSet })
       });
-      return 'already-linked';
+      return defaultSet ? 'already-linked-defaulted' : 'already-linked';
     }
 
     // Non-critical path: if NetSuite does not expose editable sublist fields here, do not force a line insert.
@@ -2062,13 +2119,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     try {
       asm.selectNewLine({ sublistId });
       asm.setCurrentSublistValue({ sublistId, fieldId: routingField, value: Number(routingId) });
+      if (forceDefault && defaultField) asm.setCurrentSublistValue({ sublistId, fieldId: defaultField, value: true });
       asm.commitLine({ sublistId });
       asm.save({ enableSourcing: true, ignoreMandatoryFields: true });
       log.audit({
         title: `Assembly routing attached [${VERSION}]`,
-        details: JSON.stringify({ assemblyId: Number(assemblyId), routingId: Number(routingId), sublistId, routingField, createdNewLine: true })
+        details: JSON.stringify({ assemblyId: Number(assemblyId), routingId: Number(routingId), sublistId, routingField, defaultField, defaultSet: !!(forceDefault && defaultField), createdNewLine: true })
       });
-      return 'attached';
+      return forceDefault && defaultField ? 'attached-defaulted' : 'attached';
     } catch (e) {
       log.audit({
         title: `Assembly routing attach skipped after routing save [${VERSION}]`,
@@ -4853,7 +4911,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const selectedProduct = str(productTerms.selectedProductCandidate || source.productName || source.product_name || source.productSeed || source.productFamily);
     const genericProduct = /^(finished good|product \/ sku|product|inventory \/ fulfillment|assembly|proof item)$/i.test(selectedProduct);
     const productName = genericProduct || !selectedProduct ? `${prospect} Product` : selectedProduct;
-    const brandName = /kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : (/siete/i.test(productName) || /siete/i.test(prospect) ? 'Siete' : prospect.split(/\s+/).slice(0, 2).join(' '));
+    const brandName = /kettle/i.test(productName) || /kettle/i.test(prospect) ? 'Kettle' : (/siete/i.test(productName) || /siete/i.test(prospect) ? 'Siete' : (/chomps/i.test(productName) || /chomps/i.test(prospect) ? 'Chomps' : prospect.split(/\s+/).slice(0, 2).join(' ')));
     const shortProduct = productName
       .replace(/\bKettle\s+Brand\b/ig, 'Kettle')
       .replace(/\bKettle\s+Chips\b/ig, '')
@@ -4865,10 +4923,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       : /siete/i.test(brandName) && !/^siete\b/i.test(shortProduct)
         ? `${brandName} ${shortProduct}`
       : shortProduct;
+    const isJerkyPlanW448 = /chomps|jerky|meat snack|protein snack/i.test([productForNames, productName, source.signalText || source.notes || '', source.website || ''].join(' '));
     const distributionBase = /siete/i.test(productForNames) && /ma[ií]z/i.test(productForNames) && /sea\s+salt/i.test(productForNames)
         ? 'Siete Maíz Sea Salt Tortilla Chips'
       : /goodles|mac\s*(?:&|and)?\s*cheese|cheese\s*production/i.test(productForNames)
         ? 'Goodles Line-Ready Mac & Cheese'
+      : isJerkyPlanW448
+        ? 'Chomps Jerky Snack Sticks'
       : /sea salt/i.test(productForNames)
         ? 'Kettle Air Fried Sea Salt & Vinegar'
       : productForNames;
@@ -4876,26 +4937,29 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return candidate && candidate !== productTerms.selectedProductCandidate;
     });
     const componentNames = [
-      /siete/i.test(distributionBase) ? 'Siete Corn Masa Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Goodles Pasta Input' : (/sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Primary Material Input`)),
-      /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Cheese Sauce Seasoning Blend' : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`)),
-      /siete/i.test(distributionBase) ? 'Sea Salt Seasoning and Retail Bag Packaging' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Retail Carton and Case Packaging' : (/6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`))
+      /siete/i.test(distributionBase) ? 'Siete Corn Masa Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Goodles Pasta Input' : (isJerkyPlanW448 ? `${brandName} Beef and Turkey Protein Input` : (/sea salt/i.test(distributionBase) ? 'Kettle Potato Slice Input' : `${brandName} Core Material Input`))),
+      /siete/i.test(distributionBase) ? 'Avocado Oil Frying Input' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Cheese Sauce Seasoning Blend' : (isJerkyPlanW448 ? `${brandName} Smokehouse Seasoning Marinade` : (/sea salt/i.test(distributionBase) ? 'Sea Salt & Vinegar Seasoning Blend' : `${brandName} Product Seasoning Blend`))),
+      /siete/i.test(distributionBase) ? 'Sea Salt Seasoning and Retail Bag Packaging' : (/goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? 'Retail Carton and Case Packaging' : (isJerkyPlanW448 ? `${brandName} Stick Wrapper and Retail Case Packaging` : (/6\.5\s*oz/i.test(productTerms.sellableUnit) || /sea salt/i.test(distributionBase) ? '6.5 oz Bag and Case Packaging' : `${brandName} Retail Bag and Case Packaging`)))
     ];
     const industryNativeW442 = industryNativeManufacturingNamingW442({
       distributionBase,
       brandName,
       productName,
-      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family')),
+      productFamily: /siete/i.test(productName) ? 'Siete Tortilla Chips' : (isJerkyPlanW448 ? 'Meat Snacks' : (/chips/i.test(productName) ? 'Kettle Chips' : (source.productFamily || 'Product Family'))),
       websiteTermsUsed: productTerms.websiteTermsUsed,
       signalText: source.signalText || source.notes || '',
       website: source.website || ''
     });
-    const internalAssemblyItemNameW445 = /siete/i.test(distributionBase)
+    let internalAssemblyItemNameW445 = /siete/i.test(distributionBase)
       ? trimLen(distributionBase
         .replace(/\bSea\s+Salt\s+/i, '')
         .replace(/\bChips\b/i, 'Chip')
         .replace(/\s+/g, ' ')
         .trim() + ' Batch', 60)
       : trimLen(industryNativeW442.industryNativeManufacturedItemName, 60);
+    if (isJerkyPlanW448) {
+      internalAssemblyItemNameW445 = trimLen(`${distributionBase} Production Batch`, 60);
+    }
     const plan = {
       schema: 'idb.w432-product-build-plan.v1',
       source: productTerms.selectedProductCandidate ? 'website_product_evidence' : 'deterministic_product_fallback',
@@ -4933,11 +4997,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       bomName: trimLen(`BOM - ${distributionBase}`, 80),
       bomRevisionName: trimLen(`Revision 1 - ${distributionBase}`, 80),
       workOrderName: trimLen(`WO - ${distributionBase}`, 80),
-      routingName: trimLen(/siete/i.test(distributionBase) || /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
+      routingName: trimLen(/siete/i.test(distributionBase) || /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase) || isJerkyPlanW448 ? `Routing - ${distributionBase}` : `Routing - ${distributionBase} Chips`, 80),
       operationNames: /siete/i.test(distributionBase)
         ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
         : /goodles|mac\s*(?:&|and)?\s*cheese/i.test(distributionBase)
         ? ['Stage Pasta and Cheese Blend', 'Blend Seasoning and Dry Goods', 'Fill Retail Cartons', 'Case Pack and QC']
+        : isJerkyPlanW448
+        ? ['Stage Protein and Marinade', 'Season and Tumble Jerky', 'Cook and Dehydrate', 'Quality Check Moisture and Weight', 'Wrap, Case Pack, and QC']
         : /sea salt/i.test(distributionBase)
         ? ['Slice and Rinse', 'Kettle Cook', 'Air Finish', 'Season', 'Case Pack and QC']
         : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'],

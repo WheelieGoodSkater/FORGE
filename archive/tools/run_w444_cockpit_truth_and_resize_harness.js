@@ -216,10 +216,10 @@ function main() {
   );
 
   assertCase(results, 'w444-marker-updated',
-    /@version\s+1\.0\.55/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.55';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W447';"),
-    'Drawer should identify current W447 / 1.0.55 while preserving W444 behavior.');
+    /@version\s+1.0.56/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.56';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W448';"),
+    'Drawer should identify current W448 / 1.0.56 while preserving W444 behavior.');
 
   assertCase(results, 'w444-wip-diagnostic-import-visible',
     /WIP \/ Routing/.test(text) &&
@@ -259,13 +259,12 @@ function main() {
     surface.html);
 
   assertCase(results, 'w444-roi-competitive-drilldowns',
-    /Why this ROI was chosen/.test(text) &&
-      /Why this competitive angle was chosen|data-idb-w444-detail="competitive"/.test(text + drawer) &&
+    /Decrease customer-promise risk/.test(text) &&
+      /Beat spreadsheets with fresher proof|data-idb-w444-detail="competitive"/.test(text + drawer) &&
       /Source:/.test(text) &&
-      /Confidence:/.test(text) &&
-      /Evidence terms used:/.test(text) &&
-      /baseline needed/i.test(text) &&
-      /Unsupported savings claims|Measured savings need/i.test(text) &&
+      /Confidence:\s*\d+%/.test(text) &&
+      /Measure order misses|Baseline/.test(text) &&
+      /No savings claim without baseline|Measured savings need/i.test(text) &&
       drawer.includes('data-idb-w444-detail="competitive"') &&
       drawer.includes('SAP Business One') &&
       drawer.includes('Microsoft Dynamics') &&
@@ -301,10 +300,10 @@ function main() {
   assertCase(results, 'w444-troubleshoot-export',
     !/Support \/ troubleshoot|Support views/.test(drawer) &&
       /Troubleshoot \/ Export/.test(drawer) &&
-      exportPayload.drawerVersion === '1.0.55' &&
-      exportPayload.drawerBlock === 'W447' &&
-      exportPayload.schema === 'idb.w447-troubleshoot-export.v1' &&
-      exportPayload.truthSummaryW447 &&
+      exportPayload.drawerVersion === '1.0.56' &&
+      exportPayload.drawerBlock === 'W448' &&
+      exportPayload.schema === 'idb.w448-troubleshoot-export.v1' &&
+      exportPayload.truthSummaryW448 &&
       exportPayload.selectedToggles.enableWip === true &&
       /Siete Maíz/.test(exportPayload.selectedProduct) &&
       exportPayload.productCandidates.alternateProductCandidates.length >= 5 &&

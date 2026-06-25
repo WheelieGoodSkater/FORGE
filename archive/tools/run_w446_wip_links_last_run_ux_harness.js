@@ -210,10 +210,10 @@ function main() {
   const surface = buildSurface(hooks);
 
   assertCase(results, 'w446-marker-updated',
-    /@version\s+1\.0\.55/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.55';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W447';"),
-    'Drawer should identify current W447 / 1.0.55 while preserving W446 behavior.');
+    /@version\s+1\.0\.56/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.56';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W448';"),
+    'Drawer should identify current W448 / 1.0.56 while preserving W446 behavior.');
 
   assertCase(results, 'w446-wip-visual-three-stage-clickable',
     hooks.cockpitWorkflowNodesW446('wip', surface.finalNavigation.scriptPivotObjects).length <= 3 &&
@@ -246,14 +246,14 @@ function main() {
     'Last Run should persist and restore a local display snapshot.');
 
   assertCase(results, 'w446-roi-competitive-source-tagging',
-    /Source basis/.test(surface.text) &&
-      /Conversation Notes|Industry Fallback/.test(surface.text) &&
+    /Confidence:\s*\d+%/.test(surface.text) &&
+      /No savings claim without baseline|Source: Conversation Notes|Source: Industry Fallback/.test(surface.text) &&
       !/measured savings can|save \d+%/i.test(surface.text),
     surface.text);
 
   assertCase(results, 'w446-troubleshoot-export-telemetry',
-    surface.exportPayload.schema === 'idb.w447-troubleshoot-export.v1' &&
-      surface.exportPayload.truthSummaryW447 &&
+    surface.exportPayload.schema === 'idb.w448-troubleshoot-export.v1' &&
+      surface.exportPayload.truthSummaryW448 &&
       surface.exportPayload.manufacturingEligibilityPreflightW446 &&
       surface.exportPayload.troubleshootExportTelemetryW446 &&
       Array.isArray(surface.exportPayload.plannedOnlyRows) &&
@@ -265,8 +265,8 @@ function main() {
       runner.includes('body-field-fallback-dynamic-default-values') &&
       runner.includes('BOM not selectable for routing context') &&
       runner.includes('troubleshootExportTelemetryW446') &&
-      runner.includes('do_not_reuse_stale_route_create_product_specific_route'),
-    'Runner should expose preflight, body-field fallback, routing context diagnostics, and stale-route non-reuse.');
+      runner.includes('repair_stale_route_in_place_for_wip_default'),
+    'Runner should expose preflight, body-field fallback, routing context diagnostics, and stale-route repair.');
 
   assertCase(results, 'w446-package-script',
     pkg.scripts && pkg.scripts['harness:wip-links-last-run-ux-w446'] === 'node archive/tools/run_w446_wip_links_last_run_ux_harness.js',

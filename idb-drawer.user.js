@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.55
+// @version      1.0.56
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.55';
-  const CURRENT_UX_BLOCK_W346 = 'W447';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.56';
+  const CURRENT_UX_BLOCK_W346 = 'W448';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14669,7 +14669,7 @@
       productPlanW445.evidence && productPlanW445.evidence.selectedProductCandidate
     ) : '';
     const objectProductCandidate = arrayValue(objects).map((item) => consultantVisibleRecordNameW436(firstNonBlank(item && item.name, item && item.recordName)))
-      .find((name) => /\b(Siete|Kettle|Goodles)\b/i.test(name) && /\b(chips|vinegar|jalapeno|tortilla|salt|mac|cheese|pasta|case pack)\b/i.test(name) && !visibleRecordBrandMismatchW438(name, state));
+      .find((name) => /\b(Siete|Kettle|Goodles|Chomps)\b/i.test(name) && /\b(chips|vinegar|jalapeno|tortilla|salt|mac|cheese|pasta|jerky|meat snack|snack sticks|case pack)\b/i.test(name) && !visibleRecordBrandMismatchW438(name, state));
     let productBaseName = visibleProductAccentPolishW439(firstNonBlank(planProductCandidateW445, objectProductCandidate, currentWebsiteProductBaseW438(state))
       .replace(/\s+12[-\s]*Count\s+Case Pack\b/i, '')
       .replace(/\s+Retail Replenishment\b/i, '')
@@ -14689,15 +14689,20 @@
       : `${productBaseName} 12-Count Case Pack`;
     const isSiete = /\bSiete\b/i.test(productBaseName);
     const isGoodlesMac = /\bGoodles\b/i.test(productBaseName) || /\bmac\b/i.test(productBaseName) && /\bcheese\b/i.test(productBaseName);
+    const isChompsJerky = /\bChomps\b/i.test(productBaseName) || /\bjerky|meat snack|snack sticks\b/i.test(productBaseName);
     const componentNames = isSiete
       ? ['Siete Corn Masa Input', 'Avocado Oil Frying Input', 'Sea Salt Seasoning and Retail Bag Packaging']
       : isGoodlesMac
       ? ['Goodles Pasta Input', 'Cheese Sauce Seasoning Blend', 'Retail Carton and Case Packaging']
-      : [`${productBaseName} Primary Material Input`, `${productBaseName} Seasoning Blend`, `${productBaseName} Retail Bag and Case Packaging`];
+      : isChompsJerky
+      ? ['Chomps Beef and Turkey Protein Input', 'Smokehouse Seasoning Marinade', 'Stick Wrapper and Retail Case Packaging']
+      : [`${productBaseName} Core Material Input`, `${productBaseName} Seasoning Blend`, `${productBaseName} Retail Bag and Case Packaging`];
     const operationNames = isSiete
       ? ['Mix Masa', 'Sheet and Cut Tortilla Chips', 'Fry in Avocado Oil', 'Season with Sea Salt', 'Bag, Case Pack, and QC']
       : isGoodlesMac
       ? ['Stage Pasta and Cheese Blend', 'Blend Seasoning and Dry Goods', 'Fill Retail Cartons', 'Case Pack and QC']
+      : isChompsJerky
+      ? ['Stage Protein and Marinade', 'Season and Tumble Jerky', 'Cook and Dehydrate', 'Quality Check Moisture and Weight', 'Wrap, Case Pack, and QC']
       : ['Prepare Materials', 'Build Product', 'Inspect', 'Pack and QC'];
     const manufacturingTermsW442 = industryNativeManufacturingTermsW442(productBaseName, {
       productBuildPlan: productPlanW445,
@@ -14750,12 +14755,12 @@
         routingName: `Routing - ${productBaseName}`,
         operationNames,
         cockpitSubtitle: 'WIP line-flow readiness',
-        storyHeadline: `Prove routed tortilla-chip production readiness from demand through line flow.`,
-        proofMove: `Connect customer demand, ingredient availability, production batch, routing operations, finished case output, and NetSuite financial impact.`,
-        roiClaim: `${customerName} can protect production batch reliability before committing customer orders.`,
-        roiDetail: 'Baseline needed: current miss rate, ingredient shortage delay, packaging readiness delay, or manual schedule reconciliation.',
-        competitiveQuestion: 'How do we prove NetSuite has the fresher production signal than a planning spreadsheet or disconnected MRP tool?',
-        competitiveWatchOut: 'If competitive pressure comes up, ask which signal they trust today: ingredient availability, line capacity, Work Order status, routing progress, or finished case output.',
+        storyHeadline: isChompsJerky ? `Prove jerky line readiness from demand through WIP routing.` : `Prove routed production readiness from demand through line flow.`,
+        proofMove: isChompsJerky ? `Connect customer demand, protein supply, seasoning availability, production batch, routing operations, finished case output, and NetSuite financial impact.` : `Connect customer demand, ingredient availability, production batch, routing operations, finished case output, and NetSuite financial impact.`,
+        roiClaim: isChompsJerky ? `${customerName} can decrease customer-promise risk before releasing jerky orders.` : `${customerName} can decrease customer-promise risk before committing customer orders.`,
+        roiDetail: isChompsJerky ? 'Quantify: order misses, protein shortage delay, seasoning readiness delay, or manual schedule reconciliation.' : 'Quantify: order misses, ingredient shortage delay, packaging readiness delay, or manual schedule reconciliation.',
+        competitiveQuestion: 'Which planning signal is trusted enough to release the order?',
+        competitiveWatchOut: 'Use NetSuite to prove demand, supply, WIP routing, Work Order status, and finished output in one path.',
         supportPathLabel: 'WIP routing proof'
       },
       rejectedVisibleTerms: mode === 'distribution'
@@ -25821,6 +25826,7 @@
     const source = firstNonBlank(valueNarrative && valueNarrative.source, 'website_industry_fallback');
     const confidence = firstNonBlank(valueNarrative && valueNarrative.confidence, 'medium');
     const evidenceTerms = arrayValue(valueNarrative && valueNarrative.evidenceTermsUsed);
+    const confidencePercent = confidencePercentW448(confidence, source, evidenceTerms, competitiveAdvisory);
     const narrativeText = [
       valueNarrative && valueNarrative.roiHeadline,
       valueNarrative && valueNarrative.roiDetail,
@@ -25839,7 +25845,7 @@
     const advisoryAlternatives = arrayValue(competitiveAdvisory && (competitiveAdvisory.likelyAlternatives || competitiveAdvisory.alternatives));
     const industryFallbackAlternatives = ['SAP Business One', 'Microsoft Dynamics', 'QuickBooks inventory add-ons', 'Fishbowl', 'Katana'];
     const baseAlternatives = uniqueValues(advisoryAlternatives.concat(['spreadsheets', 'disconnected MRP']));
-    const alternatives = uniqueValues(baseAlternatives.concat(source === 'conversation_notes' ? [] : industryFallbackAlternatives));
+    const alternatives = uniqueValues(baseAlternatives.concat(source === 'conversation_notes' ? [] : industryFallbackAlternatives)).slice(0, 4);
     const alternativeSourceTags = alternatives.map((name) => ({
       name,
       source: advisoryAlternatives.indexOf(name) >= 0 || /spreadsheet|disconnected mrp/i.test(name)
@@ -25849,19 +25855,24 @@
     return {
       roi: {
         source,
+        confidencePercent,
         sourceBasis: source === 'conversation_notes' ? 'Conversation notes matched the selected WIP/manufacturing proof path.' : 'Website/industry fallback selected because specific buyer evidence was limited.',
         confidence,
         evidenceTerms,
         whyPresented,
+        metricDirection: /wip|routing|production|batch|ingredient|work order/i.test(narrativeText) ? 'Decrease customer-promise risk' : 'Increase fulfillment confidence',
+        quantifier: /wip|routing|production|batch|ingredient|work order/i.test(narrativeText) ? 'Measure order misses, delay days, shortage holds, or manual schedule touches.' : 'Measure fill rate, late lines, stockout touches, or manual reconciliation.',
         baselineNeeded: firstNonBlank(valueNarrative && valueNarrative.baselineNeeded, valueNarrative && valueNarrative.roiDetail, value && value.roiAudit && value.roiAudit.baselineNeeded, 'Buyer-confirmed baseline needed before any savings claim.'),
         unsupportedClaimCaution: firstNonBlank(valueNarrative && valueNarrative.unsupportedClaimCaution, 'Unsupported savings claims stay blocked until the buyer confirms a baseline.')
       },
       competitive: {
         source,
+        confidencePercent,
         sourceBasis: source === 'conversation_notes' ? 'Conversation notes supplied the planning-trust objection.' : 'Industry fallback examples; validate incumbent systems before naming them as facts.',
         confidence,
         likelyAlternatives: alternatives,
         alternativeSourceTags,
+        strongestAlternative: alternatives[0] || 'spreadsheets',
         whyNetSuiteWins: firstNonBlank(valueNarrative && valueNarrative.competitiveWatchOut, competitiveAdvisory && competitiveAdvisory.runCue, 'NetSuite wins when demand, inventory, production readiness, routing progress, and financial impact stay in one operating path.'),
         discoveryQuestions: [
           'Which planning signal is trusted today?',
@@ -25873,43 +25884,56 @@
     };
   }
 
+  function confidencePercentW448(confidence, source, evidenceTerms, competitiveAdvisory) {
+    let pct = 58;
+    const conf = String(confidence || '').toLowerCase();
+    if (/high/.test(conf)) pct = 86;
+    else if (/medium/.test(conf)) pct = 72;
+    else if (/low/.test(conf)) pct = 48;
+    const src = String(source || '').toLowerCase();
+    if (/conversation/.test(src)) pct += 6;
+    if (/website/.test(src)) pct += 3;
+    if (arrayValue(evidenceTerms).length >= 5) pct += 4;
+    if (competitiveAdvisory && competitiveAdvisory.publicEvidenceStrong) pct += 5;
+    return Math.max(35, Math.min(94, pct));
+  }
+
   function renderW444DetailPanel(kind, detail) {
     const active = kind === 'competitive' ? 'competitive' : 'roi';
     if (active === 'competitive') {
       return `
         <div class="idb-w444-lower-detail" data-idb-detail-panel="competitive" data-idb-w445-detail-anchor tabindex="-1">
           <div class="idb-w447-impact-graphic idb-w447-competitive-impact" aria-label="Competitive impact summary">
-            <div class="idb-w447-impact-statement">Ask which signal they trust, then prove that exact decision in NetSuite.</div>
+            <div class="idb-w447-impact-statement">Compete against ${escapeHtml(detail.competitive.strongestAlternative)} by proving the fresher signal.</div>
             <div class="idb-w447-impact-flow">
-              <span>Incumbent signal</span><span>→</span><span>NetSuite proof path</span><span>→</span><span>Decision confidence</span>
+              <span>${escapeHtml(detail.competitive.strongestAlternative)}</span><span>→</span><span>NetSuite proof</span><span>→</span><span>${escapeHtml(detail.competitive.confidencePercent)}% confidence</span>
             </div>
           </div>
-          <div class="idb-status-key">Why this competitive angle was chosen</div>
-          <div class="idb-copy">Presented because the run context points to production planning trust, WIP/routing readiness, and disconnected-planning objections; use these as discovery prompts, not as asserted incumbent systems.</div>
-          <div class="idb-copy">Source basis: ${escapeHtml(detail.competitive.sourceBasis || 'Validate with conversation notes before asserting incumbent systems.')}</div>
-          <div class="idb-copy">Likely alternatives: ${arrayValue(detail.competitive.alternativeSourceTags).map((item) => `<span class="idb-mini-chip">${escapeHtml(item.name)} · ${escapeHtml(consultantLabel(item.source))}</span>`).join(' ')}</div>
           <div class="idb-strong">${escapeHtml(detail.competitive.whyNetSuiteWins)}</div>
-          <div class="idb-copy">FUD-safe questions: ${escapeHtml(detail.competitive.discoveryQuestions.join(' / '))}</div>
-          <div class="idb-copy">${escapeHtml(detail.competitive.disconnectedPlanningRisk)}</div>
-          <div class="idb-chip-row"><span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(detail.competitive.source))}</span><span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(detail.competitive.confidence))}</span></div>
+          <div class="idb-chip-row">
+            <span class="idb-mini-chip">Confidence: ${escapeHtml(detail.competitive.confidencePercent)}%</span>
+            <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(detail.competitive.source))}</span>
+            ${arrayValue(detail.competitive.alternativeSourceTags).slice(0, 3).map((item) => `<span class="idb-mini-chip">${escapeHtml(item.name)} · ${escapeHtml(consultantLabel(item.source))}</span>`).join(' ')}
+          </div>
+          <div class="idb-copy">Ask: ${escapeHtml(detail.competitive.discoveryQuestions[0])}</div>
         </div>
       `;
     }
     return `
       <div class="idb-w444-lower-detail" data-idb-detail-panel="roi" data-idb-w445-detail-anchor tabindex="-1">
         <div class="idb-w447-impact-graphic idb-w447-roi-impact" aria-label="ROI impact summary">
-          <div class="idb-w447-impact-statement">Protect the customer promise first; quantify savings only after the buyer confirms the baseline.</div>
+          <div class="idb-w447-impact-statement">${escapeHtml(detail.roi.metricDirection)}</div>
           <div class="idb-w447-impact-flow">
-            <span>Demand risk</span><span>→</span><span>WIP proof</span><span>→</span><span>Baseline to capture</span>
+            <span>Baseline</span><span>→</span><span>WIP proof</span><span>→</span><span>${escapeHtml(detail.roi.confidencePercent)}% confidence</span>
           </div>
         </div>
-        <div class="idb-status-key">Why this ROI was chosen</div>
-        <div class="idb-copy">${escapeHtml(detail.roi.whyPresented)}</div>
-        <div class="idb-copy">Source basis: ${escapeHtml(detail.roi.sourceBasis || 'Run context and returned records selected this angle.')}</div>
-        <div class="idb-copy">Source: ${escapeHtml(consultantLabel(detail.roi.source))} / Confidence: ${escapeHtml(consultantLabel(detail.roi.confidence))}</div>
-        <div class="idb-copy">Evidence terms used: ${escapeHtml(detail.roi.evidenceTerms.length ? detail.roi.evidenceTerms.join(', ') : 'industry and returned-record context')}</div>
-        <div class="idb-strong">${escapeHtml(detail.roi.baselineNeeded)}</div>
-        <div class="idb-copy">${escapeHtml(detail.roi.unsupportedClaimCaution)}</div>
+        <div class="idb-strong">${escapeHtml(detail.roi.quantifier)}</div>
+        <div class="idb-chip-row">
+          <span class="idb-mini-chip">Confidence: ${escapeHtml(detail.roi.confidencePercent)}%</span>
+          <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(detail.roi.source))}</span>
+          <span class="idb-mini-chip">No savings claim without baseline</span>
+        </div>
+        <div class="idb-copy">Capture: ${escapeHtml(detail.roi.baselineNeeded)}</div>
       </div>
     `;
   }
@@ -26009,6 +26033,18 @@
       objectionCopy = valueNarrativeW443.competitiveQuestion || objectionCopy;
       watchOutCopy = valueNarrativeW443.competitiveWatchOut || watchOutCopy;
     }
+    const roiCardHeadlineW448 = detailModelW444 && detailModelW444.roi && detailModelW444.roi.metricDirection
+      ? detailModelW444.roi.metricDirection
+      : roiCopy;
+    const roiCardDetailW448 = detailModelW444 && detailModelW444.roi && detailModelW444.roi.quantifier
+      ? detailModelW444.roi.quantifier
+      : (valueNarrativeW443 && valueNarrativeW443.roiDetail || `Baseline: ${compactText(baselineCopy, 120)}`);
+    const competitiveCardHeadlineW448 = detailModelW444 && detailModelW444.competitive
+      ? `Beat ${detailModelW444.competitive.strongestAlternative} with fresher proof`
+      : objectionCopy;
+    const competitiveCardDetailW448 = detailModelW444 && detailModelW444.competitive
+      ? compactText(detailModelW444.competitive.whyNetSuiteWins, 120)
+      : watchOutCopy;
     const cautionCopy = cockpitCopy(value.grounded && value.grounded.unsupportedClaimBlocker && value.grounded.unsupportedClaimBlocker.blockedClaims && value.grounded.unsupportedClaimBlocker.blockedClaims[0]
       || valueNarrativeW443 && valueNarrativeW443.unsupportedClaimCaution
       || 'Measured savings require a customer baseline before they can be claimed.', 125);
@@ -26086,21 +26122,21 @@
         <div class="idb-w415-cockpit-grid">
           <div class="idb-w415-cockpit-panel idb-w415-roi-panel ${activeDetailW444 === 'roi' ? 'idb-w445-active-detail-card' : ''}">
             <div class="idb-status-key">Top ROI point</div>
-            <div class="idb-strong">${escapeHtml(roiCopy)}</div>
-            <div class="idb-copy">${escapeHtml(valueNarrativeW443 && valueNarrativeW443.roiDetail || `Baseline: ${compactText(baselineCopy, 120)}`)}</div>
+            <div class="idb-strong">${escapeHtml(roiCardHeadlineW448)}</div>
+            <div class="idb-copy">${escapeHtml(roiCardDetailW448)}</div>
             <div class="idb-chip-row">
               <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
-              <span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.confidence || 'medium'))}</span>
+              <span class="idb-mini-chip">Confidence: ${escapeHtml(detailModelW444.roi.confidencePercent)}%</span>
               <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'roi' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="roi" aria-pressed="${activeDetailW444 === 'roi' ? 'true' : 'false'}">Why this ROI?</button>
             </div>
           </div>
           <div class="idb-w415-cockpit-panel idb-w415-competitive-panel ${activeDetailW444 === 'competitive' ? 'idb-w445-active-detail-card' : ''}">
             <div class="idb-status-key">Competitive battlecard</div>
-            <div class="idb-strong">${escapeHtml(objectionCopy)}</div>
-            <div class="idb-copy">Watch-out: ${escapeHtml(watchOutCopy)}</div>
+            <div class="idb-strong">${escapeHtml(competitiveCardHeadlineW448)}</div>
+            <div class="idb-copy">${escapeHtml(competitiveCardDetailW448)}</div>
             <div class="idb-chip-row">
               <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
-              <span class="idb-mini-chip">Confidence: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.confidence || 'medium'))}</span>
+              <span class="idb-mini-chip">Confidence: ${escapeHtml(detailModelW444.competitive.confidencePercent)}%</span>
               <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'competitive' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="competitive" aria-pressed="${activeDetailW444 === 'competitive' ? 'true' : 'false'}">Competitive angle</button>
             </div>
           </div>
@@ -29067,12 +29103,12 @@
       runner.troubleshootExportTelemetryW446
     );
     return {
-      schema: 'idb.w447-troubleshoot-export.v1',
+      schema: 'idb.w448-troubleshoot-export.v1',
       drawerVersion: DRAWER_USERSCRIPT_VERSION,
       drawerBlock: CURRENT_UX_BLOCK_W346,
       exportedAt: nowIso(),
-      truthSummaryW447: {
-        schema: 'idb.w447-troubleshoot-truth-summary.v1',
+      truthSummaryW448: {
+        schema: 'idb.w448-troubleshoot-truth-summary.v1',
         openableLinks: finalNavigation.linkAuthoritySummaryExcludingPlannedW446 || finalNavigation.linkAuthoritySummary,
         plannedOnlyOperationCount: plannedOnlyRows.length,
         wipRequested: !!(toggleReceipt && toggleReceipt.enableWip),
@@ -29147,7 +29183,7 @@
       fileId: firstNonBlank(runner.fileId, capture.fileId),
       taskFolder: firstNonBlank(runner.folderId, capture.resultCaptureFolderId),
       rawAppendix: {
-        note: 'Raw keys and repeated arrays are appendix-only; use truthSummaryW447 first for triage.',
+        note: 'Raw keys and repeated arrays are appendix-only; use truthSummaryW448 first for triage.',
         rawResultKeys: {
         runner: Object.keys(runner || {}).sort(),
         capture: Object.keys(capture || {}).sort(),
@@ -29196,7 +29232,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `forge-w447-troubleshoot-${safeFileToken(payload.customer || 'run')}-${Date.now()}.json`;
+    a.download = `forge-w448-troubleshoot-${safeFileToken(payload.customer || 'run')}-${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();

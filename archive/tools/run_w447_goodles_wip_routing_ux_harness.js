@@ -116,10 +116,10 @@ function main() {
   const surface = buildGoodlesSurface(hooks);
 
   assertCase(results, 'w447-marker-updated',
-    /@version\s+1\.0\.55/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.55';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W447';"),
-    'Drawer should identify W447 / 1.0.55.');
+    /@version\s+1\.0\.56/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.56';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W448';"),
+    'Drawer should identify W448 / 1.0.56.');
 
   assertCase(results, 'w447-demand-prefers-sales-order',
     /salesord\.nl\?id=991/.test(surface.html) &&
@@ -129,8 +129,8 @@ function main() {
 
   assertCase(results, 'w447-impact-visuals-render',
     surface.html.includes('idb-w447-impact-graphic') &&
-      /Protect the customer promise first/.test(surface.text) &&
-      drawer.includes('Ask which signal they trust, then prove that exact decision in NetSuite.'),
+      /Decrease customer-promise risk/.test(surface.text) &&
+      /Confidence:\s*\d+%/.test(surface.text),
     surface.text);
 
   assertCase(results, 'w447-start-new-run-clears-request',
@@ -154,25 +154,25 @@ function main() {
     'Runner should use Goodles/mac-cheese-specific component and routing language.');
 
   assertCase(results, 'w447-routing-discovery-telemetry',
-    runner.includes('inspectAssemblyRoutingSublistsW447') &&
-      runner.includes('idb.w447-assembly-routing-discovery.v1') &&
+    runner.includes('inspectAssemblyRoutingSublistsW448') &&
+      runner.includes('idb.w448-assembly-routing-discovery.v1') &&
       runner.includes('staleRouteSignals') &&
       runner.includes('visibleStaleRoutingSuspected') &&
-      runner.includes('assemblyRoutingDiscoveryW447'),
+      runner.includes('assemblyRoutingDiscoveryW448'),
     'Routing failure export should include assembly routing sublist snapshots and stale-route signals.');
 
-  assertCase(results, 'w447-troubleshoot-summary-schema',
-    drawer.includes("schema: 'idb.w447-troubleshoot-export.v1'") &&
-      drawer.includes('truthSummaryW447') &&
+  assertCase(results, 'w448-troubleshoot-summary-schema',
+    drawer.includes("schema: 'idb.w448-troubleshoot-export.v1'") &&
+      drawer.includes('truthSummaryW448') &&
       drawer.includes('rawAppendix') &&
-      drawer.includes('forge-w447-troubleshoot'),
+      drawer.includes('forge-w448-troubleshoot'),
     'Troubleshoot export should promote a compact truth summary and keep raw detail in an appendix.');
 
   assertCase(results, 'w447-package-script',
     pkg.scripts && pkg.scripts['harness:goodles-wip-routing-ux-w447'] === 'node archive/tools/run_w447_goodles_wip_routing_ux_harness.js',
-    'package.json should expose the W447 harness.');
+    'package.json should expose the W448 harness.');
 
-  printResults('W447 Goodles WIP routing and UX harness', results);
+  printResults('W448 Goodles WIP routing and UX harness', results);
 }
 
 main();

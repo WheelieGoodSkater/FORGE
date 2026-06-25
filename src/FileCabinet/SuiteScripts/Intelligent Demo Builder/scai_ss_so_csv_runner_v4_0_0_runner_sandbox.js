@@ -1085,6 +1085,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     // 6) Manufacturing-only setup
     let woId = null;
     let assemblyBomTelemetry = null;
+    let manufacturingEligibilityPreflightW446 = null;
     let workOrderTelemetry = { status: 'not-attempted', finalLabel: '', attemptsTried: [], errorMessage: '' };
     if (finalEnableManufacturing && ids.assemblyId && ids.bomId) {
       assemblyBomTelemetry = attachBomToAssembly({
@@ -1092,6 +1093,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         bomId: ids.bomId,
         bomRevId: ids.bomRevId,
         locationId
+      });
+      manufacturingEligibilityPreflightW446 = buildManufacturingEligibilityPreflightW446({
+        assemblyId: ids.assemblyId,
+        bomId: ids.bomId,
+        bomRevId: ids.bomRevId,
+        subsidiaryId,
+        locationId,
+        enableWip: effectiveEnableWip,
+        assemblyBomTelemetry,
+        workCenterSearchId
       });
 
       try {
@@ -1181,6 +1192,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       ids,
       woId,
       assemblyBomTelemetry,
+      manufacturingEligibilityPreflightW446,
       workOrderTelemetry,
       routingResult,
       imageEnrichment,
@@ -1234,6 +1246,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         woId,
         assemblyBomTelemetry,
         workOrderTelemetry,
+        manufacturingEligibilityPreflightW446,
         routingId,
         routingResult,
         confirmedBuildRequestJson,
@@ -1530,8 +1543,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const existingRoutingValidation = candidateExistingRoutingId
       ? validateRoutingForProductPlanW443({ id: candidateExistingRoutingId, name: existingRoutingName }, productPlanW443, { expectedRoutingName: routingName })
       : null;
-    const staleRoutingRepairTargetId = existingRoutingValidation && existingRoutingValidation.valid === false ? candidateExistingRoutingId : null;
-    const existingRoutingId = candidateExistingRoutingId;
+    const staleRoutingDiscovery = existingRoutingValidation && existingRoutingValidation.valid === false
+      ? {
+        routingId: candidateExistingRoutingId,
+        routingName: existingRoutingName,
+        validation: existingRoutingValidation,
+        decision: 'do_not_reuse_stale_route_create_product_specific_route'
+      }
+      : null;
+    const staleRoutingRepairTargetId = null;
+    const existingRoutingId = staleRoutingDiscovery ? null : candidateExistingRoutingId;
 
     log.audit({
       title: `WIP managed routing decision [${VERSION}]`,
@@ -1542,8 +1563,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         discoveredAssemblyRoutingId,
         searchedRoutingId,
         existingRoutingValidation,
+        staleRoutingDiscovery,
         createNew: !existingRoutingId,
-        repairStaleInPlace: !!staleRoutingRepairTargetId
+        repairStaleInPlace: false
       })
     });
 
@@ -1565,6 +1587,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
       routingStage = 'set_subsidiary';
       routing.setValue({ fieldId: 'subsidiary', value: subs });
+
+      routingStage = 'resolve_header_fields_before_bom';
+      const routingHeaderFieldsBeforeBom = safeTryReturn(() => routing.getFields()) || [];
+      const routingAssemblyField = trySetAnyBodyField(routing, routingHeaderFieldsBeforeBom, ['assemblyitem', 'item', 'manufacturingitem'], Number(assemblyId));
+      if (routingAssemblyField) {
+        log.audit({
+          title: `Routing assembly field resolved before BOM [${VERSION}]`,
+          details: JSON.stringify({ routingAssemblyField, assemblyId: Number(assemblyId || 0), bomId: Number(bomId || 0) })
+        });
+      }
 
       routingStage = 'set_billofmaterials';
       routing.setValue({ fieldId: 'billofmaterials', value: Number(bomId) });
@@ -1668,8 +1700,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           existingRoutingId,
           staleRoutingRepairTargetId,
           chosen,
-          staleRoutingRepaired: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null
-        })
+        staleRoutingRepaired: null,
+        staleRoutingDiscovery
+      })
       });
     } catch (e) {
       return buildWipRoutingBestEffortFailure({
@@ -1685,7 +1718,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       chosen,
       wipRequested: true,
       coreRecordsCreatedSafely: !!(assemblyId && bomId),
-      routingValidation: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null
+      routingValidation: existingRoutingValidation && existingRoutingValidation.valid === false ? existingRoutingValidation : null,
+      staleRoutingDiscovery
       });
     }
 
@@ -1710,11 +1744,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       attachResult,
       chosen,
       routingValidation: validateRoutingForProductPlanW443({ id: routingId, name: routingName }, productPlanW443, { expectedRoutingName: routingName }),
-      staleRoutingRepaired: staleRoutingRepairTargetId ? existingRoutingValidation : null
+      staleRoutingRepaired: staleRoutingRepairTargetId ? existingRoutingValidation : null,
+      staleRoutingDiscovery
     };
   }
 
-  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation }) {
+  function buildWipRoutingBestEffortFailure({ failureStage, error, subsidiaryId, locationId, bomId, assemblyId, existingRoutingId, routingId, routingName, chosen, wipRequested, coreRecordsCreatedSafely, routingValidation, staleRoutingDiscovery }) {
     const diagnostic = {
       status: 'failed_best_effort',
       failureStage: failureStage || 'unknown',
@@ -1730,7 +1765,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       expectedRoutingName: routingValidation && routingValidation.expectedRoutingName || routingName || '',
       actualRoutingName: routingValidation && routingValidation.actualRoutingName || '',
       actualRoutingId: routingValidation && routingValidation.actualRoutingId || null,
+      staleRoutingName: staleRoutingDiscovery && staleRoutingDiscovery.routingName || routingValidation && routingValidation.actualRoutingName || '',
+      staleRoutingId: staleRoutingDiscovery && staleRoutingDiscovery.routingId || routingValidation && routingValidation.actualRoutingId || null,
+      staleRoutingDiscovery: staleRoutingDiscovery || null,
       reason: routingValidation && routingValidation.reason || '',
+      routingEligibilityConclusion: failureStage === 'set_billofmaterials'
+        ? 'BOM not selectable for routing context; verify assembly/BOM/revision/subsidiary/location compatibility.'
+        : '',
       wipRequested: !!wipRequested,
       coreRecordsCreatedSafely: !!coreRecordsCreatedSafely,
       recommendedOperatorNextStep: 'Review BOM validity for the assembly, subsidiary, location, and manufacturing routing before re-running WIP routing.'
@@ -2758,7 +2799,27 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     function saveWorkOrderAttempt(label, isDynamic, ignoreMandatoryFields, options) {
       const opts = options || {};
-      const built = buildWorkOrderRecord(isDynamic, opts);
+      let built = null;
+      try {
+        built = buildWorkOrderRecord(isDynamic, opts);
+      } catch (buildErr) {
+        const buildMsg = String((buildErr && buildErr.message) || buildErr || '');
+        const attempt = buildAttemptSummary(label, {
+          isDynamic: isDynamic !== false,
+          usedDefaultValues: !!opts.useDefaultValues,
+          ignoreMandatoryFields: !!ignoreMandatoryFields,
+          status: 'failed_before_save',
+          errorMessage: buildMsg,
+          failureType: classifyWorkOrderFailure(buildMsg),
+          workOrderDefaultValues: opts.useDefaultValues ? buildWorkOrderDefaultValues() : {}
+        });
+        attemptHistory.push(attempt);
+        log.audit({
+          title: `Work Order build attempt failed before save [${VERSION}]`,
+          details: JSON.stringify(attempt)
+        });
+        throw buildErr;
+      }
       const wo = built.wo;
       const attempt = buildAttemptSummary(label, Object.assign({}, built.diagnostics, { ignoreMandatoryFields: !!ignoreMandatoryFields }));
       attemptHistory.push(attempt);
@@ -2794,7 +2855,31 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         return { woId: Number(initialId || 0), saveTelemetry: { status: 'saved', finalLabel: 'initial-dynamic', attemptsTried: attemptHistory.slice(0), errorMessage: '' } };
       } catch (e) {
         const msg = String((e && e.message) || e || '');
-        if (!isLineItemFailureMessage(msg)) throw e;
+        if (!isLineItemFailureMessage(msg)) {
+          if (classifyWorkOrderFailure(msg) === 'body-field-resolution-failure') {
+            log.audit({
+              title: `Work Order retrying after body-field resolution failure with default values [${VERSION}]`,
+              details: JSON.stringify({
+                assemblyId: Number(assemblyId || 0),
+                bomId: Number(bomId || 0),
+                bomRevId: Number(bomRevId || 0),
+                errorMessage: msg,
+                failureType: classifyWorkOrderFailure(msg),
+                defaultValues: buildWorkOrderDefaultValues()
+              })
+            });
+            try {
+              const bodyFallbackId = saveWorkOrderAttempt('body-field-fallback-dynamic-default-values', true, false, { useDefaultValues: true });
+              logAttemptChain('Work Order save chain complete', { finalLabel: 'body-field-fallback-dynamic-default-values', finalStatus: 'success', woId: Number(bodyFallbackId || 0) });
+              return { woId: Number(bodyFallbackId || 0), saveTelemetry: { status: 'saved', finalLabel: 'body-field-fallback-dynamic-default-values', attemptsTried: attemptHistory.slice(0), errorMessage: '' } };
+            } catch (bodyFallbackErr) {
+              const bodyFallbackMsg = String((bodyFallbackErr && bodyFallbackErr.message) || bodyFallbackErr || '');
+              if (!isLineItemFailureMessage(bodyFallbackMsg)) throw bodyFallbackErr;
+            }
+          } else {
+            throw e;
+          }
+        }
 
         log.audit({
           title: `Work Order save retrying after BOM default repair [${VERSION}]`,
@@ -3875,7 +3960,75 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function buildManufacturingSignoffSummary({ extId, prospect, enableManufacturing, enableWip, ids, woId, assemblyBomTelemetry, workOrderTelemetry, routingResult, imageEnrichment, flowState }) {
+  function buildManufacturingEligibilityPreflightW446({ assemblyId, bomId, bomRevId, subsidiaryId, locationId, enableWip, assemblyBomTelemetry, workCenterSearchId }) {
+    const blockers = [];
+    const warnings = [];
+    const probes = {
+      assemblyId: Number(assemblyId || 0) || null,
+      bomId: Number(bomId || 0) || null,
+      bomRevId: Number(bomRevId || 0) || null,
+      subsidiaryId: Number(subsidiaryId || 0) || null,
+      locationId: Number(locationId || 0) || null,
+      assemblyBomVerification: assemblyBomTelemetry && assemblyBomTelemetry.verification || null,
+      workOrderBodyFields: [],
+      workOrderAssemblyFieldCandidates: [],
+      workOrderDefaultValues: {},
+      routingBodyFields: [],
+      routingBomFieldPresent: false,
+      wipWorkCentersFound: null,
+      wipCostTemplatesFound: null
+    };
+
+    if (!probes.assemblyId) blockers.push('assembly_missing');
+    if (!probes.bomId) blockers.push('bom_missing');
+    if (assemblyBomTelemetry && assemblyBomTelemetry.verification && Number(assemblyBomTelemetry.verification.matchingLine) < 0) {
+      blockers.push('bom_not_verified_on_assembly_sublist');
+    }
+
+    safeTry(() => {
+      const wo = record.create({ type: 'workorder', isDynamic: true });
+      const fields = safeTryReturn(() => wo.getFields()) || [];
+      probes.workOrderBodyFields = fields.slice(0, 80);
+      probes.workOrderAssemblyFieldCandidates = ['assemblyitem', 'item'].filter(function (fieldId) { return fields.indexOf(fieldId) >= 0; });
+      probes.workOrderDefaultValues = {
+        subsidiary: probes.subsidiaryId,
+        location: probes.locationId,
+        assemblyitem: probes.assemblyId,
+        item: probes.assemblyId,
+        billofmaterials: probes.bomId,
+        billofmaterialsrevision: probes.bomRevId
+      };
+      if (!probes.workOrderAssemblyFieldCandidates.length) warnings.push('work_order_assembly_field_not_visible_before_defaults');
+    });
+
+    if (enableWip) {
+      safeTry(() => {
+        const routing = record.create({ type: 'manufacturingrouting', isDynamic: true });
+        const fields = safeTryReturn(() => routing.getFields()) || [];
+        probes.routingBodyFields = fields.slice(0, 80);
+        probes.routingBomFieldPresent = fields.indexOf('billofmaterials') >= 0 || fields.indexOf('bom') >= 0;
+        if (!probes.routingBomFieldPresent) warnings.push('routing_bom_field_not_visible');
+      });
+      const centers = safeTryReturn(() => findWorkCentersFromSavedSearch({ searchId: workCenterSearchId, locationId: probes.locationId, subsidiaryId: probes.subsidiaryId })) || [];
+      const templates = safeTryReturn(() => findCostTemplatesForSubsidiary(probes.subsidiaryId)) || [];
+      probes.wipWorkCentersFound = centers.length;
+      probes.wipCostTemplatesFound = templates.length;
+      if (!centers.length) blockers.push('wip_work_centers_missing');
+      if (!templates.length) blockers.push('wip_cost_templates_missing');
+    }
+
+    const result = {
+      schema: 'idb.w446-manufacturing-eligibility-preflight.v1',
+      status: blockers.length ? 'blocked_or_incomplete' : (warnings.length ? 'warning' : 'ready'),
+      blockers,
+      warnings,
+      probes
+    };
+    log.audit({ title: `Manufacturing eligibility preflight W446 [${VERSION}]`, details: JSON.stringify(result) });
+    return result;
+  }
+
+  function buildManufacturingSignoffSummary({ extId, prospect, enableManufacturing, enableWip, ids, woId, assemblyBomTelemetry, manufacturingEligibilityPreflightW446, workOrderTelemetry, routingResult, imageEnrichment, flowState }) {
     const workOrder = workOrderTelemetry || {};
     const attempts = Array.isArray(workOrder.attemptsTried) ? workOrder.attemptsTried : [];
     const lastAttempt = attempts.length ? attempts[attempts.length - 1] : null;
@@ -3915,6 +4068,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       assemblyBomStatus: assemblyBomTelemetry ? (assemblyBomTelemetry.status || 'applied') : (enableManufacturing ? 'unknown' : 'not-required'),
       assemblyBomVerification: assemblyVerification,
       assemblyBomVerified: !!(assemblyVerification && Number(assemblyVerification.matchingLine) >= 0),
+      manufacturingEligibilityPreflightW446: manufacturingEligibilityPreflightW446 || null,
       routingDecision: routingResult ? routingResult.decision : (enableWip ? 'requested-no-result' : 'not-attempted'),
       routingStatus,
       routingId: routingResult && routingResult.routingId ? Number(routingResult.routingId) : null,
@@ -6360,6 +6514,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (routingDiagnosticRecord) records.routingDiagnostic = routingDiagnosticRecord;
     operationPlanRecords.forEach((recordValue, index) => { records[`operation${index + 1}`] = recordValue; });
 
+    const troubleshootExportTelemetryW446 = {
+      schema: 'idb.w446-runner-troubleshoot-telemetry.v1',
+      manufacturingEligibilityPreflightW446: args.manufacturingEligibilityPreflightW446 || null,
+      assemblyBomTelemetry: args.assemblyBomTelemetry || null,
+      workOrderTelemetry: args.workOrderTelemetry || null,
+      routingResult: args.routingResult || null,
+      routingOperations: operationPlanRecords,
+      ids: args.ids || {},
+      extId,
+      operatorNextStep: args.routingResult && args.routingResult.routingFailure
+        ? 'Review routing BOM eligibility and stale routing discovery before the next WIP run.'
+        : (args.workOrderTelemetry && args.workOrderTelemetry.failureType
+            ? 'Review Work Order body field/default value eligibility before the next WIP run.'
+            : 'Open returned records and verify WIP links.')
+    };
+
     const sidecarGeneratedNamesJson = {
       schema: 'idb.runner-sidecar-result-json.v1',
       status: 'pending_transaction_resolution',
@@ -6397,6 +6567,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       assemblyBomTelemetry: args.assemblyBomTelemetry || null,
       workOrderTelemetry: args.workOrderTelemetry || null,
       routingDiagnostics: args.routingResult || null,
+      manufacturingEligibilityPreflightW446: args.manufacturingEligibilityPreflightW446 || null,
+      troubleshootExportTelemetryW446,
       transactionResolution: {
         status: 'pending_transaction_resolution',
         authority: 'legacy_runner_csv_import_path',

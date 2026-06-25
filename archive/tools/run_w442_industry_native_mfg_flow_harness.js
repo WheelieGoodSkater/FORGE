@@ -171,10 +171,10 @@ function main() {
   });
 
   assertCase(results, 'w442-marker-updated',
-    /@version\s+1\.0\.53/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.53';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W445';"),
-    'Drawer should identify W445 / 1.0.53 after W442.');
+    /@version\s+1\.0\.54/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.54';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W446';"),
+    'Drawer should identify current W446 / 1.0.54 while preserving W442 behavior.');
 
   const mfgSurface = renderSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: false }, sieteRecords(sietePlan, false));
   const mfgText = mfgSurface.text;
@@ -192,8 +192,9 @@ function main() {
       /Product \/ Inventory/.test(mfgText) &&
       /Inputs \/ Purchasing/.test(mfgText) &&
       /Manufacturing/.test(mfgText) &&
-      mfgSurface.html.indexOf('>CRM<') < mfgSurface.html.indexOf('>Demand<') &&
-      mfgSurface.html.indexOf('>Inputs / Purchasing<') < mfgSurface.html.indexOf('>Manufacturing<'),
+      /CRM\s+1\s+Customer/.test(mfgText) &&
+      /Demand\s+1\s+Demand Order/.test(mfgText) &&
+      /Inputs \/ Purchasing\s+3[\s\S]*Manufacturing\s+4/.test(mfgText),
     mfgText);
 
   assertCase(results, 'w442-component-descriptions-are-specific',

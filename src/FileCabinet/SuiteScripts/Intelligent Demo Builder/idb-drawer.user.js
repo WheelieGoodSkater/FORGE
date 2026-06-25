@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.53
+// @version      1.0.54
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -19,8 +19,9 @@
 
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.53';
-  const CURRENT_UX_BLOCK_W346 = 'W445';
+  const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.54';
+  const CURRENT_UX_BLOCK_W346 = 'W446';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1938,6 +1939,85 @@
       updatedAt: nowIso(),
       expiresAt: Date.now() + ACTIVE_SESSION_TTL_MS
     }));
+  }
+
+  function lastRunSnapshotW446(state, finalNavigation, productModel, toggleReceipt, diagnostics, detailModel, valueNarrative) {
+    const runner = state && state.integratedBuildRunnerResult || {};
+    const capture = runner.resultCapture || {};
+    const naming = state && state.dccFinalNamingResult || {};
+    const intake = normalizedIntake(state || {});
+    return {
+      schema: 'idb.w446-last-run-snapshot.v1',
+      savedAt: nowIso(),
+      drawerVersion: DRAWER_USERSCRIPT_VERSION,
+      drawerBlock: CURRENT_UX_BLOCK_W346,
+      customer: firstNonBlank(state && state.customerName, intake.customer, naming.prospect),
+      website: intake.website,
+      notesDigest: compactText(intake.notes || '', 240),
+      toggles: toggleReceipt || {},
+      selectedProduct: productModel && productModel.primaryProductCandidate || '',
+      productCandidates: productModel || {},
+      returnedRecords: arrayValue(finalNavigation && finalNavigation.reviewObjects),
+      scriptPivotObjects: arrayValue(finalNavigation && finalNavigation.scriptPivotObjects),
+      openLinkStatus: finalNavigation && finalNavigation.linkAuthoritySummary || {},
+      linkSummaryExcludingPlanned: finalNavigation && finalNavigation.linkAuthoritySummaryExcludingPlannedW446 || {},
+      diagnostics: arrayValue(diagnostics),
+      roiCompetitive: detailModel || {},
+      valueNarrative: valueNarrative || {},
+      runStatus: firstNonBlank(naming.runStatus, runner.status, capture.status, finalNavigation && finalNavigation.status),
+      timestamp: firstNonBlank(naming.importedAt, capture.submittedAt, runner.submittedAt, nowIso()),
+      extId: firstNonBlank(naming.generated && naming.generated.extId, runner.idempotencyToken, capture.idempotencyToken),
+      taskId: firstNonBlank(runner.runnerTaskId, capture.runnerTaskId),
+      currentNetSuiteUrl: window.location && window.location.href || '',
+      writeAuthority: 'none',
+      creationAllowed: false
+    };
+  }
+
+  function writeLastRunSnapshotW446(snapshot) {
+    if (!snapshot || !arrayValue(snapshot.returnedRecords).length && !arrayValue(snapshot.scriptPivotObjects).length) return null;
+    writeJson(LAST_RUN_STORAGE_KEY_W446, snapshot);
+    return snapshot;
+  }
+
+  function readLastRunSnapshotW446() {
+    return readJson(LAST_RUN_STORAGE_KEY_W446, null);
+  }
+
+  function restoreLastRunSnapshotW446(state) {
+    const snapshot = readLastRunSnapshotW446();
+    if (!snapshot) {
+      state.w446LastRunRestoreMessage = 'No last run snapshot found on this browser.';
+      return null;
+    }
+    state.w446RestoredLastRunSnapshot = snapshot;
+    state.dccFinalNamingResult = {
+      schema: 'idb.w446-restored-final-navigation.v1',
+      status: snapshot.runStatus || 'restored_last_run',
+      runStatus: snapshot.runStatus || 'restored_last_run',
+      importedAt: snapshot.savedAt || nowIso(),
+      displayReadyRecords: arrayValue(snapshot.returnedRecords),
+      scriptPivotObjects: arrayValue(snapshot.scriptPivotObjects),
+      finalNamesImported: true,
+      generated: { extId: snapshot.extId || '' }
+    };
+    state.integratedBuildRunnerResult = Object.assign({}, state.integratedBuildRunnerResult || {}, {
+      schema: 'idb.w446-restored-last-run-result.v1',
+      status: snapshot.runStatus || 'restored_last_run',
+      idempotencyToken: snapshot.extId || '',
+      runnerTaskId: snapshot.taskId || '',
+      resultCapture: {
+        status: snapshot.runStatus || 'restored_last_run',
+        submittedAt: snapshot.timestamp || snapshot.savedAt || '',
+        idempotencyToken: snapshot.extId || '',
+        runnerTaskId: snapshot.taskId || ''
+      }
+    });
+    state.customerName = snapshot.customer || state.customerName;
+    state.w444CockpitDetail = state.w444CockpitDetail || 'roi';
+    state.activeView = 'review';
+    state.w446LastRunRestoreMessage = `Restored last run for ${snapshot.customer || 'customer'}.`;
+    return snapshot;
   }
 
   function normalizeAdapterAccountHostW281(host) {
@@ -13844,6 +13924,22 @@
     return value;
   }
 
+  function standardNetSuiteScreenLinkAuthorityW446(path) {
+    const cleanPath = String(path || '').trim();
+    const allowed = cleanPath === '/app/accounting/transactions/orderitems.nl';
+    const origin = currentNetSuiteOrigin();
+    return {
+      schema: 'idb.w446-standard-netsuite-screen-link-authority.v1',
+      status: allowed && origin ? 'standard_screen_openable' : 'standard_screen_unavailable',
+      openable: !!(allowed && origin),
+      displayLabel: allowed && origin ? 'Open' : 'Unavailable',
+      reason: allowed && origin
+        ? 'Standard NetSuite screen link derived from the current account host.'
+        : 'Standard NetSuite screen link needs a current NetSuite account host.',
+      url: allowed && origin ? `${origin}${cleanPath}` : ''
+    };
+  }
+
   function netSuiteRecordUrlInternalId(url) {
     try {
       const parsed = new URL(String(url || ''), 'https://placeholder.local');
@@ -13936,6 +14032,17 @@
       linkAuthority: authority,
       openableUrl: authority.openable ? authority.url : ''
     });
+  }
+
+  function linkSummaryEligibleW446(item) {
+    const text = `${item && (item.role || item.label || item.recordType || item.type || '') || ''}`.toLowerCase();
+    if (item && item.plannedOnly === true) return false;
+    if (/planned operation/.test(text)) return false;
+    return true;
+  }
+
+  function recordOpenAuthorityW446(item) {
+    return item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item || {});
   }
 
   function inferNetSuiteRecordTypeW245(record) {
@@ -17322,7 +17429,7 @@
   }
 
   function proofQualityGateW424(finalResult, activeObjects) {
-    const objects = arrayValue(activeObjects);
+    const objects = arrayValue(activeObjects).filter(linkSummaryEligibleW446);
     const openableObjects = objects.filter((item) => {
       const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
       return authority.openable === true;
@@ -17384,7 +17491,8 @@
       };
     });
     const activeObjects = (finalObjects.length ? finalObjects : provisionalObjects).map(applyRecordLinkAuthority);
-    const linkAuthoritySummary = activeObjects.reduce((summary, item) => {
+    const linkSummaryObjectsW446 = activeObjects.filter(linkSummaryEligibleW446);
+    const linkAuthoritySummary = linkSummaryObjectsW446.reduce((summary, item) => {
       const status = item.linkAuthority && item.linkAuthority.status ? item.linkAuthority.status : 'unknown';
       summary[status] = (summary[status] || 0) + 1;
       return summary;
@@ -17404,6 +17512,8 @@
       reviewObjects: activeObjects.slice(0, 6),
       scriptPivotObjects,
       linkAuthoritySummary,
+      linkAuthoritySummaryExcludingPlannedW446: linkAuthoritySummary,
+      plannedOnlyOperationCountW446: activeObjects.filter((item) => !linkSummaryEligibleW446(item)).length,
       warnings: finalResult.warnings,
       w240NoDropGuard: {
         schema: 'forge.w240-run-pivot-no-drop-guard.v1',
@@ -22286,19 +22396,54 @@
       .concat(groups.filter((group) => order.indexOf(group.name) < 0));
   }
 
+  function cockpitWorkflowTargetW446(records, stage) {
+    const objects = arrayValue(records);
+    const matches = (patterns) => objects.find((item) => {
+      const text = `${item && (item.role || item.canonicalRole || item.outputRole || '') || ''} ${item && (item.label || item.recordType || item.type || item.name || '') || ''}`.toLowerCase();
+      const authority = recordOpenAuthorityW446(item);
+      return authority.openable === true && patterns.some((pattern) => pattern.test(text));
+    });
+    if (stage === 'demand') {
+      const direct = matches([/sales/, /demand/, /order/]);
+      if (direct) return recordOpenAuthorityW446(direct);
+      return standardNetSuiteScreenLinkAuthorityW446('/app/accounting/transactions/orderitems.nl');
+    }
+    if (stage === 'wip') {
+      const direct = matches([/work\s*order|workorder/, /routing/, /assembly|production batch|bom/]);
+      return direct ? recordOpenAuthorityW446(direct) : { openable: false, url: '', displayLabel: 'Diagnostic' };
+    }
+    const direct = matches([/finished|output|financial|impact|sellable|hero|item/]);
+    return direct ? recordOpenAuthorityW446(direct) : { openable: false, url: '', displayLabel: 'Review' };
+  }
+
+  function cockpitWorkflowNodesW446(mode, records) {
+    if (mode === 'wip') {
+      return [
+        { key: 'demand', label: 'Demand & Procurement', authority: cockpitWorkflowTargetW446(records, 'demand') },
+        { key: 'wip', label: 'Production / WIP', authority: cockpitWorkflowTargetW446(records, 'wip') },
+        { key: 'impact', label: 'Output & Impact', authority: cockpitWorkflowTargetW446(records, 'impact') }
+      ];
+    }
+    if (mode === 'distribution') {
+      return ['CRM', 'Demand', 'Product SKU', 'Replenishment', 'Fulfillment'].map((label) => ({ label, authority: { openable: false } }));
+    }
+    return ['CRM', 'Demand', 'Product SKU', 'Ingredients / Inputs', 'Production Batch', 'BOM / Revision', 'Work Order', 'Finished Case Output'].map((label) => ({ label, authority: { openable: false } }));
+  }
+
   function cockpitWorkflowVisualW443(narrative, records, toggleReceipt) {
     const mode = toggleReceipt && toggleReceipt.enableWip ? 'wip' : (toggleReceipt && toggleReceipt.enableManufacturing ? 'manufacturing' : (narrative && narrative.mode || 'distribution'));
     const hasDiagnostic = arrayValue(records).some((record) => /diagnostic/i.test(`${record && (record.role || record.label || record.type) || ''}`));
-    const nodes = mode === 'distribution'
-      ? ['CRM', 'Demand', 'Product SKU', 'Replenishment', 'Fulfillment']
-      : mode === 'wip'
-        ? ['CRM', 'Demand', 'Ingredients / Inputs', 'Production Batch', 'Work Order', 'Routing / Line Flow', 'Operations', 'Finished Case Output', 'Financial Impact']
-        : ['CRM', 'Demand', 'Product SKU', 'Ingredients / Inputs', 'Production Batch', 'BOM / Revision', 'Work Order', 'Finished Case Output'];
+    const nodes = cockpitWorkflowNodesW446(mode, records);
     return `
-      <div class="idb-w443-workflow-visual" aria-label="Selected build operating flow">
+      <div class="idb-w443-workflow-visual" data-idb-w446-compact-wip-workflow="${mode === 'wip' ? 'true' : 'false'}" aria-label="Selected build operating flow">
         ${nodes.map((node) => {
-          const diagnostic = hasDiagnostic && /Work Order|Routing/.test(node);
-          return `<span class="idb-w443-workflow-node${diagnostic ? ' idb-w443-workflow-node-diagnostic' : ''}">${escapeHtml(node)}</span>`;
+          const label = String(node.label || '');
+          const diagnostic = hasDiagnostic && /WIP|Routing|Work Order/.test(label);
+          const authority = node.authority || {};
+          const className = `idb-w443-workflow-node${diagnostic ? ' idb-w443-workflow-node-diagnostic' : ''}${authority.openable ? ' idb-w446-workflow-link' : ''}`;
+          return authority.openable
+            ? `<a class="${className}" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer" data-idb-w446-workflow-stage="${escapeHtml(node.key || label)}">${escapeHtml(label)}</a>`
+            : `<span class="${className}" data-idb-w446-workflow-stage="${escapeHtml(node.key || label)}">${escapeHtml(label)}</span>`;
         }).join('<span class="idb-w443-workflow-arrow">→</span>')}
       </div>
     `;
@@ -23597,6 +23742,17 @@
         font-weight: 850;
         line-height: 1.2;
         padding: 3px 7px;
+        text-decoration: none;
+      }
+      .idb-w446-workflow-link {
+        border-color: #7aaabc;
+        color: #005a72;
+      }
+      .idb-w446-workflow-link:hover,
+      .idb-w446-workflow-link:focus-visible {
+        background: #e8f4f7;
+        outline: 2px solid #006685;
+        outline-offset: 1px;
       }
       .idb-w443-workflow-node-diagnostic {
         border-color: #d7c387;
@@ -23642,12 +23798,17 @@
         gap: 5px;
       }
       .idb-w442-cockpit-flow-title {
+        cursor: pointer;
         color: #536579;
         font-size: 9px;
         font-weight: 900;
         letter-spacing: 0;
         text-transform: uppercase;
         padding: 2px 1px 0;
+      }
+      .idb-w446-flow-group-body {
+        display: grid;
+        gap: 5px;
       }
       .idb-w415-cockpit-record-row {
         display: grid;
@@ -25572,8 +25733,9 @@
   }
 
   function cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrative, diagnostics) {
-    const recordCount = arrayValue(objects).filter((item) => item && item.source === 'dcc_final').length;
-    const openableCount = arrayValue(objects).filter((item) => item && item.linkAuthority && item.linkAuthority.openable === true).length;
+    const eligibleObjects = arrayValue(objects).filter(linkSummaryEligibleW446);
+    const recordCount = eligibleObjects.filter((item) => item && item.source === 'dcc_final').length;
+    const openableCount = eligibleObjects.filter((item) => item && item.linkAuthority && item.linkAuthority.openable === true).length;
     const diagnosticCount = arrayValue(diagnostics).length;
     const confidence = String(valueNarrative && valueNarrative.confidence || 'medium').toLowerCase();
     const dotFor = (tone) => `<span class="idb-w444-health-dot idb-w444-health-${escapeHtml(tone)}" aria-hidden="true"></span>`;
@@ -25617,11 +25779,20 @@
       : /production|batch|bom|ingredient|work order/i.test(narrativeText)
         ? 'Presented because the returned records and selected toggles center on production batch readiness, input availability, BOM structure, and work order execution.'
         : 'Presented because the returned records and selected toggles center on case-pack availability, replenishment confidence, customer demand, and fulfillment trust.';
-    const alternatives = uniqueValues(arrayValue(competitiveAdvisory && competitiveAdvisory.likelyAlternatives)
-      .concat(['spreadsheets', 'disconnected MRP', 'SAP Business One', 'Microsoft Dynamics', 'QuickBooks inventory add-ons', 'Fishbowl', 'Katana']));
+    const advisoryAlternatives = arrayValue(competitiveAdvisory && competitiveAdvisory.likelyAlternatives);
+    const industryFallbackAlternatives = ['SAP Business One', 'Microsoft Dynamics', 'QuickBooks inventory add-ons', 'Fishbowl', 'Katana'];
+    const baseAlternatives = uniqueValues(advisoryAlternatives.concat(['spreadsheets', 'disconnected MRP']));
+    const alternatives = uniqueValues(baseAlternatives.concat(source === 'conversation_notes' ? [] : industryFallbackAlternatives));
+    const alternativeSourceTags = alternatives.map((name) => ({
+      name,
+      source: advisoryAlternatives.indexOf(name) >= 0 || /spreadsheet|disconnected mrp/i.test(name)
+        ? 'conversation_notes'
+        : 'industry_fallback'
+    }));
     return {
       roi: {
         source,
+        sourceBasis: source === 'conversation_notes' ? 'Conversation notes matched the selected WIP/manufacturing proof path.' : 'Website/industry fallback selected because specific buyer evidence was limited.',
         confidence,
         evidenceTerms,
         whyPresented,
@@ -25630,8 +25801,10 @@
       },
       competitive: {
         source,
+        sourceBasis: source === 'conversation_notes' ? 'Conversation notes supplied the planning-trust objection.' : 'Industry fallback examples; validate incumbent systems before naming them as facts.',
         confidence,
         likelyAlternatives: alternatives,
+        alternativeSourceTags,
         whyNetSuiteWins: firstNonBlank(valueNarrative && valueNarrative.competitiveWatchOut, competitiveAdvisory && competitiveAdvisory.runCue, 'NetSuite wins when demand, inventory, production readiness, routing progress, and financial impact stay in one operating path.'),
         discoveryQuestions: [
           'Which planning signal is trusted today?',
@@ -25650,7 +25823,8 @@
         <div class="idb-w444-lower-detail" data-idb-detail-panel="competitive" data-idb-w445-detail-anchor tabindex="-1">
           <div class="idb-status-key">Why this competitive angle was chosen</div>
           <div class="idb-copy">Presented because the run context points to production planning trust, WIP/routing readiness, and disconnected-planning objections; use these as discovery prompts, not as asserted incumbent systems.</div>
-          <div class="idb-copy">Likely alternatives: ${escapeHtml(detail.competitive.likelyAlternatives.join(', '))}</div>
+          <div class="idb-copy">Source basis: ${escapeHtml(detail.competitive.sourceBasis || 'Validate with conversation notes before asserting incumbent systems.')}</div>
+          <div class="idb-copy">Likely alternatives: ${arrayValue(detail.competitive.alternativeSourceTags).map((item) => `<span class="idb-mini-chip">${escapeHtml(item.name)} · ${escapeHtml(consultantLabel(item.source))}</span>`).join(' ')}</div>
           <div class="idb-strong">${escapeHtml(detail.competitive.whyNetSuiteWins)}</div>
           <div class="idb-copy">FUD-safe questions: ${escapeHtml(detail.competitive.discoveryQuestions.join(' / '))}</div>
           <div class="idb-copy">${escapeHtml(detail.competitive.disconnectedPlanningRisk)}</div>
@@ -25662,6 +25836,7 @@
       <div class="idb-w444-lower-detail" data-idb-detail-panel="roi" data-idb-w445-detail-anchor tabindex="-1">
         <div class="idb-status-key">Why this ROI was chosen</div>
         <div class="idb-copy">${escapeHtml(detail.roi.whyPresented)}</div>
+        <div class="idb-copy">Source basis: ${escapeHtml(detail.roi.sourceBasis || 'Run context and returned records selected this angle.')}</div>
         <div class="idb-copy">Source: ${escapeHtml(consultantLabel(detail.roi.source))} / Confidence: ${escapeHtml(consultantLabel(detail.roi.confidence))}</div>
         <div class="idb-copy">Evidence terms used: ${escapeHtml(detail.roi.evidenceTerms.length ? detail.roi.evidenceTerms.join(', ') : 'industry and returned-record context')}</div>
         <div class="idb-strong">${escapeHtml(detail.roi.baselineNeeded)}</div>
@@ -25750,6 +25925,9 @@
     const detailModelW444 = roiCompetitiveDetailModelW444(valueNarrativeW443, competitiveAdvisory, value, visibleNarrative);
     const activeDetailW444 = state.w444CockpitDetail === 'competitive' ? 'competitive' : 'roi';
     const lastRunReceipt = lastRunReceiptW444(state, finalNavigation, productModelW444, toggleReceipt, diagnostics);
+    const currentLastRunSnapshotW446 = lastRunSnapshotW446(state, finalNavigation, productModelW444, toggleReceipt, diagnostics, detailModelW444, valueNarrativeW443);
+    writeLastRunSnapshotW446(currentLastRunSnapshotW446);
+    const storedLastRunSnapshotW446 = readLastRunSnapshotW446() || currentLastRunSnapshotW446;
     if (valueNarrativeW443) {
       roiCopy = valueNarrativeW443.roiHeadline || roiCopy;
       objectionCopy = valueNarrativeW443.competitiveQuestion || objectionCopy;
@@ -25758,7 +25936,7 @@
     const cautionCopy = cockpitCopy(value.grounded && value.grounded.unsupportedClaimBlocker && value.grounded.unsupportedClaimBlocker.blockedClaims && value.grounded.unsupportedClaimBlocker.blockedClaims[0]
       || valueNarrativeW443 && valueNarrativeW443.unsupportedClaimCaution
       || 'Measured savings require a customer baseline before they can be claimed.', 125);
-    const recordRowLimit = visibleNarrative.mode === 'distribution' ? 5 : (visibleNarrative.mode === 'wip' ? 20 : 14);
+    const recordRowLimit = visibleNarrative.mode === 'distribution' ? 5 : (visibleNarrative.mode === 'wip' ? 24 : 14);
     const renderRecordRowW442 = (item) => {
       const label = item && item.plannedOnly && /operation/i.test(`${item.role || ''} ${item.label || ''}`)
         ? firstNonBlank(item.label, `Planned Operation ${Number(item.operationIndex || 0) + 1}`)
@@ -25782,12 +25960,20 @@
         </div>
       `;
     };
-    const groupedRows = cockpitFlowGroupsW442(objects.slice(0, recordRowLimit), visibleNarrative).map((group) => `
-      <div class="idb-w442-cockpit-flow-group">
-        <div class="idb-w442-cockpit-flow-title">${escapeHtml(group.name)}</div>
-        ${group.records.map(renderRecordRowW442).join('')}
-      </div>
-    `).join('');
+    const groupedRows = cockpitFlowGroupsW442(objects.slice(0, recordRowLimit), visibleNarrative).map((group) => {
+      const hasDiagnostics = group.records.some((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
+      const defaultOpen = visibleNarrative.mode !== 'wip'
+        ? true
+        : /CRM|Demand|Manufacturing/.test(group.name) || hasDiagnostics;
+      return `
+      <details class="idb-w442-cockpit-flow-group" data-idb-w446-collapsible-flow-group="${escapeHtml(group.name)}" ${defaultOpen ? 'open' : ''}>
+        <summary class="idb-w442-cockpit-flow-title">${escapeHtml(group.name)} <span class="idb-mini-chip">${escapeHtml(group.records.length)}</span></summary>
+        <div class="idb-w446-flow-group-body">
+          ${group.records.map(renderRecordRowW442).join('')}
+        </div>
+      </details>
+    `;
+    }).join('');
     const confidenceLabel = websiteEvidence && websiteEvidence.confidence
       ? `${websiteEvidence.confidence.displayText || websiteEvidence.status || 'Evidence'} / ${websiteEvidence.confidence.scoreLabel || 'unscored'}`
       : 'Evidence state visible';
@@ -25846,10 +26032,12 @@
         ${renderW444DetailPanel(activeDetailW444, detailModelW444)}
         <details class="idb-w444-last-run">
           <summary>Last run</summary>
-          <div class="idb-copy">${escapeHtml(lastRunReceipt.customer || 'Customer')} / ${escapeHtml(websiteDomain(lastRunReceipt.website) || 'website')} / ${escapeHtml(lastRunReceipt.runStatus || 'status unknown')}</div>
-          <div class="idb-copy">Product: ${escapeHtml(lastRunReceipt.selectedProduct || 'not returned')} / Records: ${escapeHtml(lastRunReceipt.returnedCount)} / Diagnostics: ${escapeHtml(lastRunReceipt.diagnosticsCount)}</div>
+          <div class="idb-copy">${escapeHtml((storedLastRunSnapshotW446 && storedLastRunSnapshotW446.customer) || lastRunReceipt.customer || 'Customer')} / ${escapeHtml(websiteDomain((storedLastRunSnapshotW446 && storedLastRunSnapshotW446.website) || lastRunReceipt.website) || 'website')} / ${escapeHtml((storedLastRunSnapshotW446 && storedLastRunSnapshotW446.runStatus) || lastRunReceipt.runStatus || 'status unknown')}</div>
+          <div class="idb-copy">Product: ${escapeHtml((storedLastRunSnapshotW446 && storedLastRunSnapshotW446.selectedProduct) || lastRunReceipt.selectedProduct || 'not returned')} / Records: ${escapeHtml(arrayValue(storedLastRunSnapshotW446 && storedLastRunSnapshotW446.returnedRecords).length || lastRunReceipt.returnedCount)} / Diagnostics: ${escapeHtml(arrayValue(storedLastRunSnapshotW446 && storedLastRunSnapshotW446.diagnostics).length || lastRunReceipt.diagnosticsCount)}</div>
           <div class="idb-copy">${escapeHtml(lastRunReceipt.toggles.join(' / '))}</div>
-          <div class="idb-copy">Run: ${escapeHtml([lastRunReceipt.timestamp, lastRunReceipt.extId, lastRunReceipt.taskId].filter(Boolean).join(' / ') || 'no task receipt')}</div>
+          <div class="idb-copy">Run: ${escapeHtml([storedLastRunSnapshotW446 && storedLastRunSnapshotW446.timestamp, storedLastRunSnapshotW446 && storedLastRunSnapshotW446.extId, storedLastRunSnapshotW446 && storedLastRunSnapshotW446.taskId].filter(Boolean).join(' / ') || [lastRunReceipt.timestamp, lastRunReceipt.extId, lastRunReceipt.taskId].filter(Boolean).join(' / ') || 'no task receipt')}</div>
+          ${state.w446LastRunRestoreMessage ? `<div class="idb-copy">${escapeHtml(state.w446LastRunRestoreMessage)}</div>` : ''}
+          <button class="idb-secondary idb-compact-button" type="button" data-idb-w446-restore-last-run>Last run</button>
         </details>
         <div class="idb-actions idb-w444-run-actions">
           <button class="idb-secondary" type="button" data-idb-w445-start-new-run>Start new run</button>
@@ -28908,6 +29096,9 @@
     const productModel = productCandidateModelW444(state, finalNavigation);
     const records = arrayValue(finalNavigation.reviewObjects);
     const pivotObjects = arrayValue(finalNavigation.scriptPivotObjects);
+    const visibleNarrative = visibleProductNarrativeW439(state, lane, { scriptPivotObjects: pivotObjects }, finalNavigation);
+    const valueNarrative = cockpitValueNarrativeW443(state, lane, visibleNarrative, {}, finalNavigation);
+    const detailModel = roiCompetitiveDetailModelW444(valueNarrative, {}, {}, visibleNarrative);
     const diagnostics = records.concat(pivotObjects)
       .filter((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const runner = state && state.integratedBuildRunnerResult || {};
@@ -28927,8 +29118,17 @@
     const workOrderRecords = records.concat(pivotObjects).filter((item) => /work\s*order|workorder/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const routingRecords = records.concat(pivotObjects).filter((item) => /routing/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const intake = normalizedIntake(state || {});
+    const allExportRows = records.concat(pivotObjects);
+    const plannedOnlyRows = allExportRows.filter((item) => !linkSummaryEligibleW446(item));
+    const realLinkRows = allExportRows.filter(linkSummaryEligibleW446);
+    const lastRunSnapshot = readLastRunSnapshotW446();
+    const runnerTelemetryW446 = firstNonBlankObject(
+      sidecar.troubleshootExportTelemetryW446,
+      capture.troubleshootExportTelemetryW446,
+      runner.troubleshootExportTelemetryW446
+    );
     return {
-      schema: 'idb.w445-troubleshoot-export.v1',
+      schema: 'idb.w446-troubleshoot-export.v1',
       drawerVersion: DRAWER_USERSCRIPT_VERSION,
       drawerBlock: CURRENT_UX_BLOCK_W346,
       exportedAt: nowIso(),
@@ -28944,15 +29144,42 @@
       selectedToggles: toggleReceipt,
       selectedProduct: productModel.primaryProductCandidate,
       productCandidates: productModel,
+      lastRunSnapshotSummary: lastRunSnapshot ? {
+        schema: lastRunSnapshot.schema,
+        savedAt: lastRunSnapshot.savedAt,
+        customer: lastRunSnapshot.customer,
+        website: lastRunSnapshot.website,
+        selectedProduct: lastRunSnapshot.selectedProduct,
+        runStatus: lastRunSnapshot.runStatus,
+        returnedCount: arrayValue(lastRunSnapshot.returnedRecords).length,
+        diagnosticsCount: arrayValue(lastRunSnapshot.diagnostics).length,
+        extId: lastRunSnapshot.extId,
+        taskId: lastRunSnapshot.taskId
+      } : null,
+      restoreAvailable: !!lastRunSnapshot,
       returnedRecords: records,
       scriptPivotObjects: pivotObjects,
       openLinkStatus: finalNavigation.linkAuthoritySummary,
+      linkSummaryExcludingPlanned: finalNavigation.linkAuthoritySummaryExcludingPlannedW446 || finalNavigation.linkAuthoritySummary,
+      plannedOnlyRows,
+      realLinkRows,
+      plannedOnlyOperationCount: plannedOnlyRows.length,
+      workflowStages: cockpitWorkflowNodesW446(toggleReceipt && toggleReceipt.enableWip ? 'wip' : (toggleReceipt && toggleReceipt.enableManufacturing ? 'manufacturing' : 'distribution'), pivotObjects).map((stage) => ({
+        key: stage.key || stage.label,
+        label: stage.label,
+        openable: !!(stage.authority && stage.authority.openable),
+        url: stage.authority && stage.authority.url || ''
+      })),
+      roiCompetitiveSourceBasis: detailModel,
+      troubleshootExportTelemetryW446: runnerTelemetryW446,
+      manufacturingEligibilityPreflightW446: runnerTelemetryW446 && runnerTelemetryW446.manufacturingEligibilityPreflightW446 || sidecar.manufacturingEligibilityPreflightW446 || capture.manufacturingEligibilityPreflightW446 || null,
       routingWorkOrderDiagnostics: diagnostics,
       routingTruth: {
         requestedWip: !!(toggleReceipt && toggleReceipt.enableWip),
         routingRecords,
         routingDiagnostics,
         routingOperations: arrayValue(sidecar.routingOperations).concat(arrayValue(capture.routingOperations)),
+        routingAttempts: runnerTelemetryW446 && runnerTelemetryW446.routingResult || sidecar.routingDiagnostics || capture.routingResult || null,
         expectedRoutingName: firstNonBlank(routingDiagnostics && routingDiagnostics.expectedRoutingName, routingDiagnostics && routingDiagnostics.routingName),
         staleRoutingName: firstNonBlank(routingDiagnostics && routingDiagnostics.staleRoutingName, routingDiagnostics && routingDiagnostics.actualRoutingName),
         staleRoutingId: firstNonBlank(routingDiagnostics && routingDiagnostics.staleRoutingId, routingDiagnostics && routingDiagnostics.actualRoutingId),
@@ -28961,6 +29188,7 @@
       workOrderTruth: {
         records: workOrderRecords,
         telemetry: workOrderTelemetry,
+        attempts: arrayValue(workOrderTelemetry && workOrderTelemetry.attemptsTried),
         telemetryWorkOrderId: firstNonBlank(workOrderTelemetry && workOrderTelemetry.woId, workOrderTelemetry && workOrderTelemetry.workOrderId, capture.woId, runner.woId),
         linkReturned: workOrderRecords.some((item) => item && item.linkAuthority && item.linkAuthority.openable === true)
       },
@@ -28985,6 +29213,7 @@
         routingStaleDetected: /cookie|parfait|fudge|baking|dough/i.test(firstNonBlank(routingDiagnostics && routingDiagnostics.staleRoutingName, routingDiagnostics && routingDiagnostics.actualRoutingName)),
         routingRecordMissingWhenWipRequested: !!(toggleReceipt && toggleReceipt.enableWip) && !routingRecords.some((item) => item && item.recordType === 'manufacturingrouting'),
         workOrderLinkMissingButTelemetryHasId: !!firstNonBlank(workOrderTelemetry && workOrderTelemetry.woId, workOrderTelemetry && workOrderTelemetry.workOrderId, capture.woId, runner.woId) && !workOrderRecords.some((item) => item && item.linkAuthority && item.linkAuthority.openable === true),
+        plannedRowsExcludedFromLinkDebt: plannedOnlyRows.length,
         namingMayBeTruncated: records.some((item) => /Produc\s*-|Production Batch\s*-\s*/i.test(`${item && (item.name || item.recordName) || ''}`))
       },
       noRegression: {
@@ -29014,7 +29243,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `forge-w445-troubleshoot-${safeFileToken(payload.customer || 'run')}-${Date.now()}.json`;
+    a.download = `forge-w446-troubleshoot-${safeFileToken(payload.customer || 'run')}-${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -29056,7 +29285,9 @@
       'buildWaitingState',
       'w444CockpitDetail',
       'w444ProductCandidateOpen',
-      'w444UseFreshCandidateNextRun'
+      'w444UseFreshCandidateNextRun',
+      'w446RestoredLastRunSnapshot',
+      'w446LastRunRestoreMessage'
     ].forEach((key) => { delete state[key]; });
     Object.assign(state, preserved);
     return state;
@@ -30007,6 +30238,20 @@
         draw(root, state);
       });
     });
+    root.querySelectorAll('[data-idb-w446-restore-last-run]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const restored = restoreLastRunSnapshotW446(state);
+        saveState(state);
+        trace('w446_last_run_restored', {
+          restored: !!restored,
+          customer: restored && restored.customer || '',
+          extId: restored && restored.extId || '',
+          noDrawerWrites: true,
+          noSuiteScriptInvocationFromDrawer: true
+        });
+        draw(root, state);
+      });
+    });
     root.querySelectorAll('[data-idb-w444-troubleshoot-export]').forEach((button) => {
       button.addEventListener('click', async () => {
         button.disabled = true;
@@ -30834,11 +31079,17 @@
       industryNativeManufacturingTermsW442,
       cockpitFlowGroupsW442,
       cockpitWorkflowVisualW443,
+      cockpitWorkflowNodesW446,
+      standardNetSuiteScreenLinkAuthorityW446,
+      linkSummaryEligibleW446,
       cockpitValueNarrativeW443,
       productCandidateModelW444,
       cockpitHealthPanelW444,
       roiCompetitiveDetailModelW444,
       lastRunReceiptW444,
+      lastRunSnapshotW446,
+      readLastRunSnapshotW446,
+      restoreLastRunSnapshotW446,
       w444TroubleshootExportPayload,
       drawerWidthContractW444,
       clearRunStateW444,

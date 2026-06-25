@@ -197,7 +197,8 @@
     "harness:industry-native-mfg-flow-w442": "node archive/tools/run_w442_industry_native_mfg_flow_harness.js",
     "harness:wip-routing-cockpit-ux-w443": "node archive/tools/run_w443_wip_routing_and_cockpit_ux_harness.js",
     "harness:cockpit-truth-resize-w444": "node archive/tools/run_w444_cockpit_truth_and_resize_harness.js",
-    "harness:cockpit-pristine-followup-w445": "node archive/tools/run_w445_pristine_cockpit_followup_harness.js"
+    "harness:cockpit-pristine-followup-w445": "node archive/tools/run_w445_pristine_cockpit_followup_harness.js",
+    "harness:wip-links-last-run-ux-w446": "node archive/tools/run_w446_wip_links_last_run_ux_harness.js"
   },
   "keywords": [
     "netsuite",

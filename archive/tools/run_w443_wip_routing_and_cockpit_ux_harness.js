@@ -184,10 +184,10 @@ function main() {
   const plan = sietePlan(runnerHooks);
 
   assertCase(results, 'w443-marker-updated',
-    /@version\s+1\.0\.53/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.53';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W445';"),
-    'Drawer should identify W445 / 1.0.53 after W443.');
+    /@version\s+1\.0\.54/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.54';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W446';"),
+    'Drawer should identify current W446 / 1.0.54 while preserving W443 behavior.');
 
   const wipSurface = renderSurface(drawerHooks, { createNewHeroItem: true, enableManufacturing: true, enableWip: true }, recordsFor(plan, 'wip'));
   const wipText = wipSurface.text;
@@ -256,9 +256,10 @@ function main() {
       /BOM \/ Revision/.test(mfgText) &&
       /Work Order/.test(mfgText) &&
       /Finished Case Output/.test(mfgText) &&
-      /Routing \/ Line Flow/.test(wipText) &&
-      /Operations/.test(wipText) &&
-      /Financial Impact/.test(wipText),
+      /Demand & Procurement/.test(wipText) &&
+      /Production \/ WIP/.test(wipText) &&
+      /Output & Impact/.test(wipText) &&
+      /Operation 1|Planned Operation 1/.test(wipText),
     JSON.stringify({ distributionText, mfgText, wipText }));
 
   assertCase(results, 'w443-roi-competitive-source-confidence',

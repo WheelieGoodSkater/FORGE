@@ -1194,7 +1194,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       });
       routingId = routingResult && routingResult.routingId ? Number(routingResult.routingId) : null;
       if (names && names._productBuildPlanW432 && routingResult && routingResult.w449) {
-        names._productBuildPlanW432.w449RoutingTelemetry = routingResult.w449;
+        names._productBuildPlanW432.w449RoutingTelemetry = compactRoutingTelemetryForCaptureW450(routingResult.w449);
       }
     } else {
       log.audit({ title: `WIP not enabled (skipping routing) [${VERSION}]`, details: JSON.stringify({ enableWipRaw, enableWip, effectiveEnableWip, enableManufacturing: finalEnableManufacturing, requestedWipTargetMode, wipTargetMode, wipHandshakeAction }) });
@@ -7259,6 +7259,125 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  function compactRoutingProbeW450(probe) {
+    if (!probe) return null;
+    return {
+      seq: probe.seq || probe.operationSeq || '',
+      opName: str(probe.opName || probe.operation || '').slice(0, 80),
+      profile: str(probe.profile || '').slice(0, 40),
+      pairIndex: Number(probe.pairIndex || 0),
+      centerId: probe.centerId || null,
+      centerName: str(probe.centerName || '').slice(0, 80),
+      centerLocationId: probe.centerLocationId || '',
+      centerSubsidiaryId: probe.centerSubsidiaryId || '',
+      templateId: probe.templateId || null,
+      templateName: str(probe.templateName || '').slice(0, 80),
+      templateSubsidiaryId: probe.templateSubsidiaryId || '',
+      fieldId: str(probe.fieldId || '').slice(0, 60),
+      status: str(probe.status || (probe.accepted ? 'accepted' : probe.rejected ? 'rejected' : '')).slice(0, 30),
+      errorName: str(probe.errorName || '').slice(0, 80),
+      errorMessage: str(probe.errorMessage || '').slice(0, 240),
+      pairScore: Number(probe.pairScore || 0) || 0
+    };
+  }
+
+  function compactRoutingTelemetryForCaptureW450(telemetry) {
+    if (!telemetry || typeof telemetry !== 'object') return telemetry || null;
+    const probes = Array.isArray(telemetry.pairProbes) ? telemetry.pairProbes : [];
+    const accepted = probes.filter(function (probe) { return probe && probe.status === 'accepted'; });
+    const rejected = probes.filter(function (probe) { return probe && probe.status !== 'accepted'; });
+    const probeSample = [];
+    accepted.slice(0, 25).forEach(function (probe) { probeSample.push(probe); });
+    rejected.slice(0, 60).forEach(function (probe) { probeSample.push(probe); });
+    rejected.slice(Math.max(60, rejected.length - 20)).forEach(function (probe) {
+      if (probeSample.indexOf(probe) === -1) probeSample.push(probe);
+    });
+    const operationSummary = {};
+    probes.forEach(function (probe) {
+      const key = String(probe && (probe.seq || probe.operationSeq || probe.opName) || 'unknown');
+      const row = operationSummary[key] || { seq: probe && probe.seq || '', opName: probe && probe.opName || '', accepted: 0, rejected: 0, fields: {}, errors: {} };
+      if (probe && probe.status === 'accepted') row.accepted += 1;
+      else row.rejected += 1;
+      const fieldId = str(probe && probe.fieldId || 'unknown');
+      const errorName = str(probe && probe.errorName || '');
+      row.fields[fieldId] = (row.fields[fieldId] || 0) + 1;
+      if (errorName) row.errors[errorName] = (row.errors[errorName] || 0) + 1;
+      operationSummary[key] = row;
+    });
+    return {
+      schema: telemetry.schema || 'idb.w450-routing-work-center-cost-template-pair-probing.v1',
+      compactedForResultCapture: true,
+      originalPairProbeCount: probes.length,
+      originalRejectedPairCount: Array.isArray(telemetry.rejectedPairs) ? telemetry.rejectedPairs.length : rejected.length,
+      originalAcceptedPairCount: Array.isArray(telemetry.acceptedPairs) ? telemetry.acceptedPairs.length : accepted.length,
+      omittedPairProbeCount: Math.max(0, probes.length - probeSample.length),
+      authoritativeWorkCenterSearch: telemetry.authoritativeWorkCenterSearch || null,
+      candidatePoolAuthority: telemetry.candidatePoolAuthority || '',
+      candidatePoolSearchId: telemetry.candidatePoolSearchId || '',
+      numericFallbackSearchId: telemetry.numericFallbackSearchId || '',
+      savedSearch5005Rows: (telemetry.savedSearch5005Rows || telemetry.workCenterRows || []).slice(0, 20),
+      centerRanking: (telemetry.centerRanking || []).slice(0, 20),
+      costTemplateRanking: (telemetry.costTemplateRanking || telemetry.templateRanking || []).slice(0, 20),
+      operationPlans: (telemetry.operationPlans || []).map(function (plan) {
+        return {
+          seq: plan.seq,
+          opName: plan.opName,
+          profile: plan.profile,
+          retryProductionForReceive: !!plan.retryProductionForReceive,
+          candidatePairCount: plan.candidatePairCount,
+          rankedCenters: (plan.rankedCenters || []).slice(0, 8),
+          rankedTemplates: (plan.rankedTemplates || []).slice(0, 8)
+        };
+      }),
+      pairProbeSummary: {
+        byOperation: Object.keys(operationSummary).map(function (key) { return operationSummary[key]; }),
+        note: 'Full probe telemetry was compacted to keep the NetSuite result file below the 10 MB getContents limit.'
+      },
+      pairProbes: probeSample.map(compactRoutingProbeW450).filter(Boolean),
+      acceptedPairs: (telemetry.acceptedPairs || accepted).slice(0, 25).map(compactRoutingProbeW450).filter(Boolean),
+      rejectedPairs: (telemetry.rejectedPairs || rejected).slice(0, 80).map(compactRoutingProbeW450).filter(Boolean),
+      routingSaveResult: telemetry.routingSaveResult || null,
+      routingAssemblyVerification: telemetry.routingAssemblyVerification || null,
+      staleCookieProductionLineDetected: !!telemetry.staleCookieProductionLineDetected,
+      staleCookieProductionLineRejected: !!telemetry.staleCookieProductionLineRejected,
+      staleCookieProductionLineSuperseded: !!telemetry.staleCookieProductionLineSuperseded,
+      staleCookieRouteSupersedeResult: telemetry.staleCookieRouteSupersedeResult || null
+    };
+  }
+
+  function compactRoutingResultForCaptureW450(result) {
+    if (!result || typeof result !== 'object') return result || null;
+    const compactTelemetry = compactRoutingTelemetryForCaptureW450(result.w450 || result.w449);
+    const routingFailure = result.routingFailure ? Object.assign({}, result.routingFailure, {
+      w449: compactRoutingTelemetryForCaptureW450(result.routingFailure.w449),
+      w450: compactRoutingTelemetryForCaptureW450(result.routingFailure.w450 || result.routingFailure.w449)
+    }) : null;
+    const diagnostics = result.diagnostics ? Object.assign({}, result.diagnostics, {
+      w449: compactRoutingTelemetryForCaptureW450(result.diagnostics.w449),
+      w450: compactRoutingTelemetryForCaptureW450(result.diagnostics.w450 || result.diagnostics.w449)
+    }) : null;
+    return {
+      status: result.status || '',
+      decision: result.decision || '',
+      routingId: result.routingId || null,
+      routingUrl: result.routingUrl || '',
+      routingName: result.routingName || '',
+      existingRoutingId: result.existingRoutingId || null,
+      attachResult: result.attachResult || '',
+      chosen: result.chosen || null,
+      operationRows: result.operationRows || [],
+      routingValidation: result.routingValidation || null,
+      staleRoutingDiscovery: result.staleRoutingDiscovery || null,
+      staleRoutingSupersededTargetId: result.staleRoutingSupersededTargetId || null,
+      staleRoutingSupersedeFailure: result.staleRoutingSupersedeFailure || null,
+      assemblyRoutingVerificationW449: result.assemblyRoutingVerificationW449 || null,
+      routingFailure,
+      diagnostics,
+      w449: compactTelemetry,
+      w450: compactTelemetry
+    };
+  }
+
   function writeIdbSidecarResultCaptureV1(args) {
     const folderId = Number(args.folderId || 0);
     if (!folderId) throw new Error('IDB result capture folder is required.');
@@ -7292,6 +7411,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       confirmedBuildRequestJson: args.confirmedBuildRequestJson
     });
     const productPlanW441 = resultNames._productBuildPlanW432 || null;
+    if (resultNames._productBuildPlanW432 && resultNames._productBuildPlanW432.w449RoutingTelemetry) {
+      resultNames._productBuildPlanW432.w449RoutingTelemetry = compactRoutingTelemetryForCaptureW450(resultNames._productBuildPlanW432.w449RoutingTelemetry);
+    }
+    const compactRoutingResultW450 = compactRoutingResultForCaptureW450(args.routingResult);
     const modeW441 = args.enableWip ? 'wip' : (args.enableManufacturing ? 'manufacturing' : 'distribution');
     const customer = ensureIdbCustomerForResult({
       prospect,
@@ -7455,7 +7578,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       manufacturingEligibilityPreflightW446: args.manufacturingEligibilityPreflightW446 || null,
       assemblyBomTelemetry: args.assemblyBomTelemetry || null,
       workOrderTelemetry: args.workOrderTelemetry || null,
-      routingResult: args.routingResult || null,
+      routingResult: compactRoutingResultW450,
       routingOperations: operationPlanRecords,
       ids: args.ids || {},
       extId,
@@ -7502,7 +7625,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       componentItems: args.enableManufacturing ? manufacturingComponents : [componentItem].filter(Boolean),
       assemblyBomTelemetry: args.assemblyBomTelemetry || null,
       workOrderTelemetry: args.workOrderTelemetry || null,
-      routingDiagnostics: args.routingResult || null,
+      routingDiagnostics: compactRoutingResultW450,
       manufacturingEligibilityPreflightW446: args.manufacturingEligibilityPreflightW446 || null,
       troubleshootExportTelemetryW446,
       transactionResolution: {
@@ -7585,8 +7708,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         demoPath: args.flowState && args.flowState.label || ''
       },
       visibleProductNarrativeW439: resultNames._visibleProductNarrativeW439 || null,
-      routingResult: args.routingResult || null,
-      routingDiagnostics: args.routingResult || null,
+      routingResult: compactRoutingResultW450,
+      routingDiagnostics: compactRoutingResultW450,
       routingOperations: operationPlanRecords,
       sidecarGeneratedNamesJson,
       partialGeneratedNamesJson: sidecarGeneratedNamesJson,

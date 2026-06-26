@@ -1566,6 +1566,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
       catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
       if (includeLocation && locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: Number(locationId) }));
+      if (!includeLocation) clearBodyLocationW453(rec);
       return rec;
     }
 
@@ -2100,6 +2101,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
       catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
       if (includeLocation && locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: Number(locationId) }));
+      if (!includeLocation) clearBodyLocationW453(rec);
       return rec;
     }
     try {
@@ -3510,6 +3512,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return name === 'INVALID_SUB' ||
       /subsidiary restrictions/i.test(message) && /location/i.test(message) ||
       /incompatible with those defined for location/i.test(message);
+  }
+
+  function clearBodyLocationW453(rec) {
+    safeTry(() => rec.setValue({ fieldId: 'location', value: null }));
+    safeTry(() => rec.setValue({ fieldId: 'location', value: '' }));
+    safeTry(() => rec.setValue({ fieldId: 'location', value: [] }));
   }
 
   return {

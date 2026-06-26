@@ -121,10 +121,11 @@ function main() {
 
   assertCase(results, 'w453-invalid-sub-location-retry',
     runner.includes('function isInvalidSubLocationErrorW453') &&
+      runner.includes('function clearBodyLocationW453') &&
       runner.includes('Fresh HERO location dropped after INVALID_SUB') &&
       runner.includes('createInventoryOrAssemblyWithLocationRetryW453') &&
       runner.includes('Location dropped after INVALID_SUB for'),
-    'Fresh hero, component, and assembly creation should retry without incompatible body location when NetSuite raises INVALID_SUB.');
+    'Fresh hero, component, and assembly creation should retry without incompatible or inherited body location when NetSuite raises INVALID_SUB.');
 
   assertCase(results, 'w453-result-size-guard',
     runner.includes('const maxChars = 9000000') &&

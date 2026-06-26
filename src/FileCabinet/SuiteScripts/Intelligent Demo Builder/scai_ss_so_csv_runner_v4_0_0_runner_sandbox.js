@@ -4371,7 +4371,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       assemblyitem: '/app/common/item/item.nl',
       bom: '/app/accounting/manufacturing/bom.nl',
       bomrevision: '/app/accounting/manufacturing/bomrevision.nl',
-      manufacturingrouting: '/app/accounting/manufacturing/routing.nl',
+      manufacturingrouting: '/app/accounting/manufacturing/mfgrouting.nl',
       workorder: '/app/accounting/transactions/workord.nl'
     };
     const path = pathByType[String(type || '').toLowerCase()] || '/app/common/search/searchresults.nl';

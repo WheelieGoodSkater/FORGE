@@ -19,9 +19,9 @@ const runner = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/scai_
 const adapter = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/idb_governed_runner_adapter_w144_suitelet.js');
 const pkg = JSON.parse(read('package.json'));
 
-assert(contains(drawer, '// @version      1.0.61'), 'drawer @version must be 1.0.61');
-assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.61';"), 'drawer userscript constant must be 1.0.61');
-assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W455';"), 'drawer block marker must be W455');
+assert(contains(drawer, '// @version      1.0.62'), 'drawer @version must be 1.0.62');
+assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.62';"), 'drawer userscript constant must be 1.0.62');
+assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W456';"), 'drawer block marker must be W456');
 
 assert(contains(adapter, 'createNamingPackFile(request, config, idempotencyToken)'), 'approved adapter must create a naming pack before runner submit');
 assert(contains(adapter, 'custscript_scai_runner_naming_file_id'), 'approved adapter must pass custscript_scai_runner_naming_file_id');
@@ -96,6 +96,8 @@ assert(contains(runner, 'routeSaveSkippedReason'), 'runner must diagnose when op
 assert(contains(runner, 'attachDefaultVerification'), 'runner must return attach/default verification');
 assert(contains(runner, 'attachAttempted'), 'runner must expose whether exact-BOM route attach/default was attempted');
 assert(contains(runner, 'routingBomVerified'), 'runner must expose post-save routing BOM verification');
+assert(contains(runner, "manufacturingrouting: '/app/accounting/manufacturing/mfgrouting.nl'"), 'manufacturingrouting URLs must use mfgrouting.nl');
+assert(!contains(runner, "manufacturingrouting: '/app/accounting/manufacturing/routing.nl'"), 'manufacturingrouting URLs must never use routing.nl');
 assert(contains(runner, 'enableWip: effectiveEnableWip'), 'runner must pass the effective WIP toggle into Work Order creation');
 assert(contains(runner, "const WORK_ORDER_WIP_FIELD_CANDIDATES_W455 = ['iswip'"), 'runner must guard candidate Work Order WIP field IDs');
 assert(contains(runner, 'applyWorkOrderWipModeW455'), 'runner must apply/probe Work Order WIP mode during create attempts');
@@ -146,6 +148,8 @@ assert(contains(adapter, 'concrete website product name'), 'concrete website pro
 assert(contains(adapter, 'No website, resolver, product-list, page-text, or LLM naming advisory catalog candidate was available'), 'generic fallback must only be explicit no-candidate fallback');
 
 assert(contains(drawer, 'parseMaybeJsonObjectW455'), 'drawer must normalize object-or-string completed JSON');
+assert(contains(drawer, 'normalizeManufacturingRoutingUrlW456'), 'drawer must normalize stale manufacturing routing URLs');
+assert(contains(drawer, '/app/accounting/manufacturing/mfgrouting.nl'), 'drawer normalization must target mfgrouting.nl');
 assert(contains(drawer, 'completedResultJson'), 'drawer must inspect completedResultJson');
 assert(contains(drawer, 'generatedNamesJson'), 'drawer must inspect generatedNamesJson');
 assert(contains(drawer, 'sidecarGeneratedNamesJson'), 'drawer must inspect sidecarGeneratedNamesJson');
@@ -157,11 +161,15 @@ assert(contains(drawer, 'isOperationLinkRecordW455'), 'drawer must filter operat
 assert(contains(drawer, 'plannedOperationRows.length'), 'drawer troubleshoot export must count operation rows as planned/detail-only');
 assert(contains(drawer, "const runReceiptLabelW446 = hasPreviousDistinctRunW446 ? 'Previous run' : 'Current run receipt';"), 'drawer must not label the current run as Last run');
 assert(contains(drawer, '/work[_\\s-]*order|workorder/i'), 'drawer troubleshoot export must recognize role work_order as a Work Order');
-assert(contains(drawer, 'Routing diagnostic') && contains(drawer, 'Work Order diagnostic'), 'drawer WIP flow must show diagnostic nodes');
+assert(contains(drawer, 'routingDiagnostic') && contains(drawer, 'workOrderDiagnostic'), 'drawer WIP flow must keep routing and Work Order diagnostic detail available');
 assert(contains(drawer, 'erpBuildStoryModelW456'), 'drawer must build a compact ERP Story model');
 assert(contains(drawer, 'renderErpBuildStoryW456'), 'drawer must render the compact ERP/Build Story');
 assert(contains(drawer, 'idb-w456-erp-build-story'), 'drawer must include scoped ERP Story styling');
 assert(contains(drawer, 'recordOpenAuthorityW446(item)'), 'drawer ERP Story links must use verified record authority');
+assert(contains(drawer, "'Order', 'Demand', 'Buy Inputs', 'Build Batch', 'WIP Steps', 'Finished Cases'"), 'drawer story rail must include the WIP proof path');
+assert(contains(drawer, "visibleNarrative && visibleNarrative.mode === 'wip'"), 'drawer story rail must render WIP Steps only when WIP is enabled');
+assert(contains(drawer, 'WIP production steps'), 'drawer must show compact WIP production steps');
+assert(!contains(drawer, 'Planned Operation ${escapeHtml(Number(item.operationIndex || index) + 1)} ${escapeHtml(name)}'), 'drawer must not duplicate planned operation prefixes');
 assert(contains(drawer, 'Core records imported; review WIP diagnostic'), 'drawer ERP Story must truthfully describe WIP diagnostics');
 assert(contains(drawer, 'idb-w415-cockpit-panel idb-w415-roi-panel'), 'drawer must keep ROI panel visible');
 assert(contains(drawer, 'idb-w415-cockpit-panel idb-w415-competitive-panel'), 'drawer must keep competitive panel visible');

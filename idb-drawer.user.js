@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.61
+// @version      1.0.62
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.61';
-  const CURRENT_UX_BLOCK_W346 = 'W455';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.62';
+  const CURRENT_UX_BLOCK_W346 = 'W456';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -13937,8 +13937,13 @@
       /REPLACE_REAL_|<real[_-]?|REAL_[A-Z_]*_ID|TODO_REAL_|sample[-_]?id/i.test(String(value || ''));
   }
 
+  function normalizeManufacturingRoutingUrlW456(url) {
+    const value = String(url || '').trim();
+    return value.replace(/\/app\/accounting\/manufacturing\/routing\.nl(?=\?)/i, '/app/accounting/manufacturing/mfgrouting.nl');
+  }
+
   function isSupportedNetSuiteRecordPath(url) {
-    return /\/app\/(common\/entity\/custjob|accounting\/transactions\/salesord|accounting\/transactions\/workord|accounting\/manufacturing\/bom|accounting\/manufacturing\/bomrevision|accounting\/manufacturing\/routing|common\/item\/item|common\/custom\/custrecordentry)\.nl\?/i.test(String(url || ''));
+    return /\/app\/(common\/entity\/custjob|accounting\/transactions\/salesord|accounting\/transactions\/workord|accounting\/manufacturing\/bom|accounting\/manufacturing\/bomrevision|accounting\/manufacturing\/mfgrouting|common\/item\/item|common\/custom\/custrecordentry)\.nl\?/i.test(String(url || ''));
   }
 
   function currentNetSuiteOrigin() {
@@ -13953,7 +13958,7 @@
   }
 
   function absoluteNetSuiteRecordUrl(url) {
-    const value = String(url || '').trim();
+    const value = normalizeManufacturingRoutingUrlW456(url);
     if (/^https:\/\//i.test(value)) return value;
     if (value.charAt(0) === '/' && isSupportedNetSuiteRecordPath(value)) {
       const origin = currentNetSuiteOrigin();
@@ -23887,6 +23892,38 @@
         background: #fbfdff;
         padding: var(--rw-space-150);
       }
+      .idb-w449-wip-flow-detail {
+        border: 1px solid #cbd7df;
+        border-radius: 7px;
+        background: #fff;
+        padding: var(--rw-space-100) var(--rw-space-150);
+      }
+      .idb-w449-wip-flow-detail summary {
+        color: var(--rw-color-text-primary);
+        font-size: var(--rw-font-size-body-sm);
+        font-weight: 850;
+        cursor: pointer;
+      }
+      .idb-w449-operation-plan {
+        display: grid;
+        gap: var(--rw-space-050);
+        margin: var(--rw-space-100) 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      .idb-w449-operation-plan li {
+        color: var(--rw-color-text-primary);
+        font-size: var(--rw-font-size-body-sm);
+        font-weight: 650;
+        line-height: 1.35;
+      }
+      .idb-w449-operation-index {
+        color: var(--rw-color-text-secondary);
+        font-weight: 850;
+      }
+      .idb-w449-wip-diagnostics {
+        margin-top: var(--rw-space-100);
+      }
       .idb-w456-erp-build-story {
         display: grid;
         gap: var(--rw-space-100);
@@ -26175,26 +26212,14 @@
   }
 
   function renderWipRoutingFlowW449(rows, plannedOperations, diagnostics) {
-    const allRows = arrayValue(rows);
-    const demand = findCockpitRowW449(allRows, [/sales[_\s-]*order|salesorder|demo sales order|demand/], true);
-    const assembly = findCockpitRowW449(allRows, [/assembly|production batch|finished good/], true);
-    const bomRevision = findCockpitRowW449(allRows, [/bom[_\s-]*revision|bomrevision|revision/], true);
-    const routing = findCockpitRowW449(allRows, [/manufacturingrouting|routing/], true);
-    const workOrder = findCockpitRowW449(allRows, [/work\s*order|workorder/], true);
-    const output = findCockpitRowW449(allRows, [/finished|output|hero|sellable|inventoryitem|item/], true);
     const routingDiagnostic = arrayValue(diagnostics).find((item) => /routing/i.test(`${item && (item.role || item.label || item.recordType || item.type || item.name) || ''}`)) || null;
     const workOrderDiagnostic = arrayValue(diagnostics).find((item) => /work\s*order|workorder/i.test(`${item && (item.role || item.label || item.recordType || item.type || item.name) || ''}`)) || null;
-    const node = (label, item, fallback, tone) => {
-      const authority = item ? recordOpenAuthorityW446(item) : null;
-      const className = `idb-w449-wip-flow-node idb-w449-wip-flow-${escapeHtml(tone || (authority && authority.openable ? 'ready' : 'watch'))}`;
-      if (authority && authority.openable) {
-        return `<a class="${className}" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`;
-      }
-      return `<span class="${className}">${escapeHtml(fallback || label)}</span>`;
-    };
+    const cleanOperationNameW456 = (item, index) => firstNonBlank(item && item.name, item && item.recordName, `Operation ${index + 1}`)
+      .replace(/^\s*(planned\s+operation|operation)\s+\d+\s*/i, '')
+      .trim();
     const planned = arrayValue(plannedOperations).map((item, index) => {
-      const name = firstNonBlank(item.name, item.recordName, `Operation ${index + 1}`);
-      return `<li>Planned Operation ${escapeHtml(Number(item.operationIndex || index) + 1)} ${escapeHtml(name)}</li>`;
+      const name = cleanOperationNameW456(item, index);
+      return `<li><span class="idb-w449-operation-index">${escapeHtml(Number(item.operationIndex || index) + 1)}.</span> ${escapeHtml(name)}</li>`;
     }).join('');
     const diagnosticCopy = arrayValue([routingDiagnostic, workOrderDiagnostic]).filter(Boolean).map((item) => {
       const label = firstNonBlank(item.label, item.role, 'Diagnostic');
@@ -26213,23 +26238,13 @@
       const nextFix = firstNonBlank(item.nextFixHint, item.recommendedOperatorNextStep, w449.nextFixHint, 'Review the work-center and manufacturing cost template compatibility in NetSuite.');
       return `<div class="idb-copy"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(failureState)} - ${escapeHtml(expected)} ${stale ? `- Stale detected: ${escapeHtml(stale)}` : ''}${failingOperation ? ` - Failing: ${escapeHtml(failingOperation)}` : ''}${reason ? ` - ${escapeHtml(reason)}` : ''}${rejectedCopy ? escapeHtml(rejectedCopy) : ''} - Next: ${escapeHtml(nextFix)}${accepted.length ? ` - Accepted probes: ${escapeHtml(accepted.length)}` : ''}</div>`;
     }).join('');
+    if (!planned && !diagnosticCopy) return '';
     return `
       <div class="idb-w449-wip-flow" data-idb-w449-wip-flow-component="true" aria-label="WIP route status">
-        <div class="idb-w449-wip-flow-strip">
-          ${node('Demand', demand, 'Demand', 'ready')}
-          <span class="idb-w443-workflow-arrow">→</span>
-          ${node('Assembly / BOM Revision', bomRevision || assembly, 'Assembly / BOM Revision', 'ready')}
-          <span class="idb-w443-workflow-arrow">→</span>
-          ${node('Routing', routing, routingDiagnostic ? 'Routing diagnostic' : 'Routing pending', routing ? 'ready' : 'diagnostic')}
-          <span class="idb-w443-workflow-arrow">→</span>
-          ${node('Work Order', workOrder, workOrderDiagnostic ? 'Work Order diagnostic' : 'Work Order pending', workOrder ? 'ready' : 'diagnostic')}
-          <span class="idb-w443-workflow-arrow">→</span>
-          ${node('Output', output, 'Output / Impact', 'ready')}
-        </div>
-        <details class="idb-w449-wip-flow-detail">
-          <summary>Routing and operation detail</summary>
-          ${planned ? `<ol class="idb-w449-operation-plan">${planned}</ol>` : '<div class="idb-copy">No planned operation detail returned.</div>'}
-          ${diagnosticCopy || '<div class="idb-copy">No WIP diagnostic returned.</div>'}
+        <details class="idb-w449-wip-flow-detail" open>
+          <summary>WIP production steps</summary>
+          ${planned ? `<ol class="idb-w449-operation-plan">${planned}</ol>` : ''}
+          ${diagnosticCopy ? `<div class="idb-w449-wip-diagnostics">${diagnosticCopy}</div>` : ''}
         </details>
       </div>
     `;
@@ -26253,12 +26268,18 @@
     return {
       demandPath: [customer, salesOrder, finishedGood].filter(Boolean),
       buildPath: [assembly, bomRevision, routing, workOrder, finishedGood].filter(Boolean),
+      proofRail: visibleNarrative && visibleNarrative.mode === 'wip'
+        ? ['Order', 'Demand', 'Buy Inputs', 'Build Batch', 'WIP Steps', 'Finished Cases']
+        : ['Order', 'Demand', 'Buy Inputs', 'Build Batch', 'Finished Cases'],
       components,
       hasWipDiagnostic,
+      wipEnabled: visibleNarrative && visibleNarrative.mode === 'wip',
       recordCount: rows.length,
       diagnosticCount: arrayValue(diagnostics).length,
-      headline: firstNonBlank(storyLine, detailModelW444 && detailModelW444.roi && detailModelW444.roi.metricDirection, 'Open verified records to prove the ERP story.'),
-      proof: firstNonBlank(proofLine, 'Open verified records to prove demand, supply, WIP status, and impact.'),
+      headline: 'Customer order to finished-case output',
+      proof: visibleNarrative && visibleNarrative.mode === 'wip'
+        ? 'Order creates demand, demand drives inputs, production builds the batch through routed WIP steps, and finished cases are ready to sell.'
+        : 'Order creates demand, demand drives inputs, production builds the batch, and finished cases are ready to sell.',
       readiness: components.length
         ? `Inputs: ${components.map((item) => consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW441(item, visibleNarrative)).filter(Boolean).slice(0, 3).join(' / ')}`
         : 'Readiness evidence appears as returned component, vendor, purchase, or diagnostic records.'
@@ -26278,17 +26299,18 @@
     const path = (items, fallback) => arrayValue(items).length
       ? arrayValue(items).map((item) => node(item)).join('<span class="idb-w443-workflow-arrow">→</span>')
       : `<span class="idb-w456-story-path-node">${escapeHtml(fallback)}</span>`;
+    const rail = arrayValue(storyModel.proofRail).map((label) => `<span class="idb-w456-story-path-node">${escapeHtml(label)}</span>`).join('<span class="idb-w443-workflow-arrow">→</span>');
     return `
       <div class="idb-w456-erp-build-story" aria-label="ERP build story">
         <div class="idb-w456-story-grid">
           <div class="idb-w456-story-cell">
-            <div class="idb-status-key">ERP Story</div>
+            <div class="idb-status-key">Proof path</div>
             <div class="idb-strong">${escapeHtml(storyModel.headline)}</div>
             <div class="idb-copy">${escapeHtml(storyModel.proof)}</div>
-            <div class="idb-w456-story-path" aria-label="Demand path">${path(storyModel.demandPath, 'Demand records pending')}</div>
+            <div class="idb-w456-story-path" aria-label="Proof rail">${rail}</div>
           </div>
           <div class="idb-w456-story-cell idb-w456-story-cell-build ${storyModel.hasWipDiagnostic ? 'idb-w456-story-diagnostic' : ''}">
-            <div class="idb-status-key">Build Story</div>
+            <div class="idb-status-key">Verified records</div>
             <div class="idb-strong">${escapeHtml(storyModel.hasWipDiagnostic ? 'Core records imported; review WIP diagnostic before claiming clean routed production.' : 'Core NetSuite records are imported and ready to inspect.')}</div>
             <div class="idb-copy">${escapeHtml(storyModel.readiness)}</div>
             <div class="idb-w456-story-path" aria-label="Build path">${path(storyModel.buildPath, 'Build records pending')}</div>

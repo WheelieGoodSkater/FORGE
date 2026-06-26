@@ -410,6 +410,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/goodles\.com/.test(domain)) {
       return ['Cheddy Mac', 'Shella Good', 'Lucky Penne', 'Vegan Be Heroes'];
     }
+    if (/raos\.com|rao'?s/.test(domain)) {
+      return ['Marinara Sauce', 'Tomato Basil Sauce', 'Arrabbiata Sauce', 'Vodka Sauce', 'Roasted Garlic Sauce', 'Homemade Penne Rigate', 'Spaghetti'];
+    }
     if (/chomps\.com/.test(domain)) {
       return ['Original Beef Stick', 'Jalapeno Beef Stick', 'Original Turkey Stick', 'Italian Style Beef Stick'];
     }
@@ -474,19 +477,19 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       const lower = name.toLowerCase();
       let score = Number(candidate.confidence || 0);
       const reasons = (candidate.reasons || []).slice(0);
-      if (/^(coffee|cold brew|variety pack|product|case|batch|beverage)$/i.test(name)) {
+      if (/^(coffee|cold brew|variety pack|product|catalog product|case|batch|beverage|sauce|pasta)$/i.test(name)) {
         score -= 45;
         reasons.push('penalized generic product term');
       }
-      if (/\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef)\b/i.test(name)) {
+      if (/\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef|marinara sauce|tomato basil sauce|arrabbiata sauce|vodka sauce|roasted garlic sauce|penne rigate|spaghetti)\b/i.test(name)) {
         score += 42;
         reasons.push('concrete website product name');
       }
-      if (/\b(kombucha|soda|yogurt|oatmilk|mac|penne|stick|syrup|espresso|matcha|hojicha|coffee|blend)\b/i.test(lower)) {
+      if (/\b(kombucha|soda|yogurt|oatmilk|mac|penne|rigate|spaghetti|pasta|stick|syrup|espresso|matcha|hojicha|coffee|blend|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|sauce)\b/i.test(lower)) {
         score += 22;
         reasons.push('plausible inputs and WIP operations');
       }
-      if (/manufactur|wip|bom|routing|work order|beverage|food|case/.test(scenario) && /\b(kombucha|soda|coffee|espresso|matcha|hojicha|syrup|yogurt|mac|stick|blend)\b/i.test(lower)) {
+      if (/manufactur|wip|bom|routing|work order|beverage|food|case|sauce|pasta/.test(scenario) && /\b(kombucha|soda|coffee|espresso|matcha|hojicha|syrup|yogurt|mac|penne|rigate|spaghetti|pasta|stick|blend|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|sauce)\b/i.test(lower)) {
         score += 16;
         reasons.push('fits WIP manufacturing scenario');
       }
@@ -496,6 +499,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       }
       if (/bluebottle|blue bottle/.test(website) && /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend)\b/i.test(lower)) score += 12;
       if (/health-ade|healthade/.test(website) && /\b(kombucha|sunsip|ginger lemon|pink lady apple|pomegranate)\b/i.test(lower)) score += 12;
+      if (/raos|rao'?s/.test(website) && /\b(marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti)\b/i.test(lower)) score += 18;
       return Object.assign({}, candidate, {
         confidence: Math.max(1, Math.min(99, Math.round(score))),
         wipSuitabilityScore: Math.max(1, Math.min(99, Math.round(score))),
@@ -512,6 +516,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/hojicha|hōjicha/.test(lower)) return 'hojicha beverage';
     if (/espresso|nola|coffee|blend|single origin/.test(lower)) return 'coffee beverage';
     if (/syrup/.test(lower)) return 'syrup';
+    if (/marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|sauce/.test(lower)) return 'jarred sauce';
     if (/yogurt|oatmilk/.test(lower)) return 'cultured dairy';
     if (/mac|penne|pasta/.test(lower)) return 'packaged pasta';
     if (/stick|beef|turkey/.test(lower)) return 'meat snack';
@@ -550,6 +555,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       return {
         components: ['Flavor Extract Base', 'Cane Sugar Syrup Base', 'Bottle and Case Packaging'],
         operations: { '10': 'Cook Syrup Base', '20': `Blend ${product} Flavor`, '30': `Bottle, Case Pack, and Release ${product}` }
+      };
+    }
+    if (/marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|sauce/.test(lower)) {
+      const base = product.replace(/\s*Sauce$/i, '').trim() || product;
+      return {
+        components: ['Tomato and Olive Oil Sauce Base', `${base} Herb and Seasoning Blend`, 'Jar and Case Packaging'],
+        operations: { '10': 'Cook Tomato Sauce Base', '20': `Blend and Fill ${product}`, '30': `Case Pack and Release ${product}` }
       };
     }
     if (/soda|sunsip/.test(lower)) {

@@ -4159,7 +4159,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         csvImportFileId: String(args.soFileId || ''),
         csvImportTaskId: String(args.soTaskId || ''),
         expectedExternalId: extId,
-        demandRecordRolePolicy: 'sales_order_only_never_work_order'
+        demandRecordRolePolicy: 'sales_order_only_never_work_order',
+        demandDiagnostic: {
+          status: 'sales_order_pending_transaction_resolution',
+          reason: 'Sales Order CSV import was submitted but no current-run Sales Order internal id was resolved in this runner result.',
+          expectedRole: 'sales_order',
+          blockedLinkRole: 'work_order',
+          noFakeOpenLink: true
+        }
       },
       currentRunIdentityChecksW457: {
         expectedProspect: args.prospect,
@@ -4198,13 +4205,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
       deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,
       fallbackUsed: names.fallbackUsed === true,
+      fallbackReason: names.fallbackReason || '',
+      fallbackTruthW458: {
+        fallbackUsed: names.fallbackUsed === true,
+        fallbackReason: names.fallbackReason || '',
+        genericCatalogProductBlocked: /^catalog product$/i.test(String(names.selectedProductName || names.primary_product_candidate || '')) && names.fallbackUsed !== true
+      },
       productSignalsUsed: names.productSignalsUsed || [],
       flavorSignalsUsed: names.flavorSignalsUsed || [],
       packSignalsUsed: names.packSignalsUsed || [],
       llmNamingAdvisoryUsed: names.llmNamingAdvisoryUsed === true,
       websiteSignalsUsed: names.websiteSignalsUsed || [],
       prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
-      fallbackReason: names.fallbackReason || '',
       selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
       selectedVariantName: names.selectedVariantName || '',
       selectedPackName: names.selectedPackName || '',

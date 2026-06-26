@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.63
+// @version      1.0.64
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.63';
-  const CURRENT_UX_BLOCK_W346 = 'W457';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.64';
+  const CURRENT_UX_BLOCK_W346 = 'W458';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -22547,19 +22547,37 @@
 
   function cockpitWorkflowTargetW446(records, stage) {
     const objects = arrayValue(records);
+    const salesOrderTextW458 = (item) => `${item && (item.role || item.canonicalRole || item.outputRole || '') || ''} ${item && (item.label || item.recordType || item.type || item.name || item.recordName || '') || ''}`.toLowerCase();
+    const isSalesOrderRecordW458 = (item) => {
+      const text = salesOrderTextW458(item);
+      const url = String(item && (item.url || item.openableUrl || item.supportedOpenUrl || '') || '');
+      if (/\/app\/accounting\/transactions\/workord\.nl\?/i.test(url)) return false;
+      if (/work[_\s-]*order|workorder/.test(text)) return false;
+      return /sales[_\s-]*order|salesorder|demo sales order|demo transaction/.test(text) ||
+        /\/app\/accounting\/transactions\/salesord\.nl\?/i.test(url);
+    };
     const matches = (patterns) => objects.find((item) => {
       const text = `${item && (item.role || item.canonicalRole || item.outputRole || '') || ''} ${item && (item.label || item.recordType || item.type || item.name || '') || ''}`.toLowerCase();
       const authority = recordOpenAuthorityW446(item);
       return authority.openable === true && patterns.some((pattern) => pattern.test(text));
     });
     if (stage === 'demand') {
-      const direct = matches([/sales[_\s-]*order|salesorder|demo sales order/]) || matches([/sales/, /demand/, /order/]);
+      const direct = objects.find((item) => isSalesOrderRecordW458(item) && recordOpenAuthorityW446(item).openable === true);
       if (direct) return recordOpenAuthorityW446(direct);
-      const fallback = standardNetSuiteScreenLinkAuthorityW446('/app/accounting/transactions/orderitems.nl');
-      return Object.assign({}, fallback, {
-        fallback: 'order_items_when_sales_order_url_missing',
-        displayLabel: 'Order Items fallback'
-      });
+      const pending = objects.find((item) => isSalesOrderRecordW458(item)) || null;
+      return {
+        openable: false,
+        url: '',
+        status: pending ? firstNonBlank(pending.status, pending.linkAuthorityStatus, 'sales_order_not_openable') : 'sales_order_not_returned',
+        displayLabel: 'Demand proof pending',
+        reason: pending && pending.demandDiagnostic || 'Sales Order not returned; Work Order is not valid demand proof.',
+        demandDiagnosticW458: {
+          status: pending ? firstNonBlank(pending.status, 'pending_transaction_resolution') : 'sales_order_missing',
+          expectedRole: 'sales_order',
+          blockedLinkRole: 'work_order',
+          noFakeOpenLink: true
+        }
+      };
     }
     if (stage === 'wip') {
       const direct = matches([/work\s*order|workorder/, /routing/, /assembly|production batch|bom/]);
@@ -22593,10 +22611,11 @@
           const label = String(node.label || '');
           const diagnostic = hasDiagnostic && /WIP|Routing|Work Order/.test(label);
           const authority = node.authority || {};
-          const className = `idb-w443-workflow-node${diagnostic ? ' idb-w443-workflow-node-diagnostic' : ''}${authority.openable ? ' idb-w446-workflow-link' : ''}`;
+          const demandDiagnostic = node.key === 'demand' && authority.openable !== true && authority.demandDiagnosticW458;
+          const className = `idb-w443-workflow-node${diagnostic || demandDiagnostic ? ' idb-w443-workflow-node-diagnostic' : ''}${authority.openable ? ' idb-w446-workflow-link' : ''}`;
           return authority.openable
             ? `<a class="${className}" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer" data-idb-w446-workflow-stage="${escapeHtml(node.key || label)}">${escapeHtml(label)}</a>`
-            : `<span class="${className}" data-idb-w446-workflow-stage="${escapeHtml(node.key || label)}">${escapeHtml(label)}</span>`;
+            : `<span class="${className}" data-idb-w446-workflow-stage="${escapeHtml(node.key || label)}" title="${escapeHtml(authority.reason || '')}">${escapeHtml(demandDiagnostic ? 'Demand proof pending' : label)}</span>`;
         }).join('<span class="idb-w443-workflow-arrow">→</span>')}
       </div>
     `;
@@ -26300,9 +26319,18 @@
     }).slice(0, 3);
     const statusText = `${model && model.finalNavigation && model.finalNavigation.status || ''} ${model && model.state && model.state.integratedBuildRunnerResult && model.state.integratedBuildRunnerResult.status || ''}`.toLowerCase();
     const hasWipDiagnostic = /completed_with_wip_diagnostic/.test(statusText) || arrayValue(diagnostics).some((item) => /routing|work\s*order|workorder|wip/i.test(`${item && (item.role || item.label || item.recordType || item.type || item.name) || ''}`));
+    const demandDiagnostic = !salesOrder ? (rows.find((item) => {
+      const text = `${item && (item.role || item.canonicalRole || '') || ''} ${item && (item.label || item.recordType || item.type || item.name || item.recordName || '') || ''}`.toLowerCase();
+      return /sales[_\s-]*order|salesorder|demo transaction/.test(text) && recordOpenAuthorityW446(item).openable !== true;
+    }) || {
+      label: 'Demand proof pending',
+      name: 'Sales Order not returned',
+      demandDiagnostic: 'Sales Order not returned; Work Order is not valid demand proof.'
+    }) : null;
     return {
       demandPath: [customer, salesOrder, finishedGood].filter(Boolean),
       buildPath: [assembly, bomRevision, routing, workOrder, finishedGood].filter(Boolean),
+      demandDiagnostic,
       proofRail: visibleNarrative && visibleNarrative.mode === 'wip'
         ? ['Order', 'Demand', 'Buy Inputs', 'Build Batch', 'WIP Steps', 'Finished Cases']
         : ['Order', 'Demand', 'Buy Inputs', 'Build Batch', 'Finished Cases'],
@@ -26343,6 +26371,7 @@
             <div class="idb-strong">${escapeHtml(storyModel.headline)}</div>
             <div class="idb-copy">${escapeHtml(storyModel.proof)}</div>
             <div class="idb-w456-story-path" aria-label="Proof rail">${rail}</div>
+            ${storyModel.demandDiagnostic ? `<div class="idb-copy"><strong>Demand proof pending:</strong> ${escapeHtml(storyModel.demandDiagnostic.demandDiagnostic || storyModel.demandDiagnostic.reason || 'Sales Order not returned; Work Order is not valid demand proof.')}</div>` : ''}
           </div>
           <div class="idb-w456-story-cell idb-w456-story-cell-build ${storyModel.hasWipDiagnostic ? 'idb-w456-story-diagnostic' : ''}">
             <div class="idb-status-key">Verified records</div>

@@ -19,9 +19,9 @@ const runner = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/scai_
 const adapter = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/idb_governed_runner_adapter_w144_suitelet.js');
 const pkg = JSON.parse(read('package.json'));
 
-assert(contains(drawer, '// @version      1.0.63'), 'drawer @version must be 1.0.63');
-assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.63';"), 'drawer userscript constant must be 1.0.63');
-assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W457';"), 'drawer block marker must be W457');
+assert(contains(drawer, '// @version      1.0.64'), 'drawer @version must be 1.0.64');
+assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.64';"), 'drawer userscript constant must be 1.0.64');
+assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W458';"), 'drawer block marker must be W458');
 
 assert(contains(adapter, 'createNamingPackFile(request, config, idempotencyToken)'), 'approved adapter must create a naming pack before runner submit');
 assert(contains(adapter, 'custscript_scai_runner_naming_file_id'), 'approved adapter must pass custscript_scai_runner_naming_file_id');
@@ -32,6 +32,9 @@ assert(contains(adapter, 'request.finalNamingAdvisory'), 'adapter must wire LLM/
 assert(contains(adapter, 'sourceKindForEvidencePathW457'), 'adapter must classify candidate evidence sources');
 assert(contains(adapter, "source === 'llm_naming_advisory'"), 'adapter must recognize LLM naming advisory candidates');
 assert(contains(adapter, 'domainCatalogCandidatesW457'), 'adapter must seed resolver catalog candidates when request evidence is sparse');
+assert(contains(adapter, 'Marinara Sauce') && contains(adapter, 'Tomato Basil Sauce') && contains(adapter, 'Arrabbiata Sauce'), 'Rao\'s resolver candidates must include concrete sauce products');
+assert(contains(adapter, 'Jar and Case Packaging'), 'Rao\'s sauce naming must use sauce-specific packaging, not generic Catalog Product packaging');
+assert(contains(adapter, 'Cook Tomato Sauce Base'), 'Rao\'s sauce naming must use sauce-specific WIP operations');
 assert(contains(adapter, 'catalogCandidates: rankedCatalogCandidates'), 'adapter must emit catalogCandidates');
 assert(contains(adapter, 'selectedCatalogCandidate'), 'adapter must emit selectedCatalogCandidate');
 assert(contains(adapter, 'selectedCatalogCandidateSource'), 'adapter must emit selectedCatalogCandidateSource');
@@ -116,6 +119,8 @@ assert(contains(runner, 'routingOperations'), 'runner result capture must keep r
 assert(contains(runner, 'ensureCustomerCurrentRunIdentityW457'), 'runner must overwrite/reload customer current-run identity before capture');
 assert(contains(runner, 'current_run_identity_verified'), 'runner must verify current customer prospect, website, memo, and stale Health-Ade cleanup');
 assert(contains(runner, 'demandRecordRolePolicy') && contains(runner, 'sales_order_only_never_work_order'), 'runner must not represent Work Order as demand/Sales Order');
+assert(contains(runner, 'demandDiagnostic') && contains(runner, "blockedLinkRole: 'work_order'"), 'runner must return a Sales Order demand diagnostic instead of a fake Work Order demand link');
+assert(contains(runner, 'fallbackTruthW458'), 'runner must emit explicit fallback truth telemetry for generic product outcomes');
 assert(contains(runner, 'reusedRecordOverwriteTelemetryW457'), 'runner must emit reused-record overwrite telemetry');
 assert(contains(runner, 'cleanWorkOrderLineDescriptionsW457'), 'runner must clean reused Work Order line descriptions');
 assert(contains(runner, 'staleTermsDetectedAfterReload'), 'runner must reload-check stale Work Order line descriptions');
@@ -174,6 +179,10 @@ assert(contains(drawer, 'idb-w456-erp-build-story'), 'drawer must include scoped
 assert(contains(drawer, 'recordOpenAuthorityW446(item)'), 'drawer ERP Story links must use verified record authority');
 assert(contains(drawer, 'currentRunIdentityLinkBlockW457'), 'drawer must block dangerous Customer/SO links without current-run identity');
 assert(contains(drawer, 'demand_role_mapped_to_work_order_blocked'), 'drawer must block Work Order links from satisfying demand/Sales Order proof');
+assert(contains(drawer, 'isSalesOrderRecordW458'), 'drawer workflow demand target must be Sales Order only');
+assert(contains(drawer, 'Demand proof pending'), 'drawer must show a compact demand diagnostic when Sales Order is missing');
+assert(contains(drawer, 'Sales Order not returned; Work Order is not valid demand proof.'), 'drawer must state the Work Order cannot satisfy demand proof');
+assert(!/stage === 'demand'[\s\S]{0,900}matches\(\[\/sales\/,\s*\/demand\/,\s*\/order\/\]\)/.test(drawer), 'drawer demand target must not use generic /order/ matching that can catch Work Order');
 assert(contains(drawer, "'Order', 'Demand', 'Buy Inputs', 'Build Batch', 'WIP Steps', 'Finished Cases'"), 'drawer story rail must include the WIP proof path');
 assert(contains(drawer, "visibleNarrative && visibleNarrative.mode === 'wip'"), 'drawer story rail must render WIP Steps only when WIP is enabled');
 assert(contains(drawer, 'WIP production steps'), 'drawer must show compact WIP production steps');

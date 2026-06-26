@@ -19,9 +19,9 @@ const runner = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/scai_
 const adapter = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/idb_governed_runner_adapter_w144_suitelet.js');
 const pkg = JSON.parse(read('package.json'));
 
-assert(contains(drawer, '// @version      1.0.62'), 'drawer @version must be 1.0.62');
-assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.62';"), 'drawer userscript constant must be 1.0.62');
-assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W456';"), 'drawer block marker must be W456');
+assert(contains(drawer, '// @version      1.0.63'), 'drawer @version must be 1.0.63');
+assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.63';"), 'drawer userscript constant must be 1.0.63');
+assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W457';"), 'drawer block marker must be W457');
 
 assert(contains(adapter, 'createNamingPackFile(request, config, idempotencyToken)'), 'approved adapter must create a naming pack before runner submit');
 assert(contains(adapter, 'custscript_scai_runner_naming_file_id'), 'approved adapter must pass custscript_scai_runner_naming_file_id');
@@ -113,6 +113,12 @@ assert(contains(runner, 'displayReadyRecords'), 'runner result capture must emit
 assert(contains(runner, 'recordsArray'), 'runner result capture must emit recordsArray for older import paths');
 assert(contains(runner, 'records.routingDiagnostic'), 'runner result capture must preserve keyed routingDiagnostic');
 assert(contains(runner, 'routingOperations'), 'runner result capture must keep routing operation detail');
+assert(contains(runner, 'ensureCustomerCurrentRunIdentityW457'), 'runner must overwrite/reload customer current-run identity before capture');
+assert(contains(runner, 'current_run_identity_verified'), 'runner must verify current customer prospect, website, memo, and stale Health-Ade cleanup');
+assert(contains(runner, 'demandRecordRolePolicy') && contains(runner, 'sales_order_only_never_work_order'), 'runner must not represent Work Order as demand/Sales Order');
+assert(contains(runner, 'reusedRecordOverwriteTelemetryW457'), 'runner must emit reused-record overwrite telemetry');
+assert(contains(runner, 'cleanWorkOrderLineDescriptionsW457'), 'runner must clean reused Work Order line descriptions');
+assert(contains(runner, 'staleTermsDetectedAfterReload'), 'runner must reload-check stale Work Order line descriptions');
 assert(!contains(runner, 'records[`operation${index + 1}`]'), 'runner result capture must not emit operations as keyed display records');
 assert(contains(runner, 'routingTemplateSearchDisabled'), 'runner must block global template routing reuse');
 assert(contains(runner, 'ROUTING_TEMPLATE_REUSE_BLOCKED'), 'runner must return a diagnostic when only template routings are available');
@@ -166,9 +172,13 @@ assert(contains(drawer, 'erpBuildStoryModelW456'), 'drawer must build a compact 
 assert(contains(drawer, 'renderErpBuildStoryW456'), 'drawer must render the compact ERP/Build Story');
 assert(contains(drawer, 'idb-w456-erp-build-story'), 'drawer must include scoped ERP Story styling');
 assert(contains(drawer, 'recordOpenAuthorityW446(item)'), 'drawer ERP Story links must use verified record authority');
+assert(contains(drawer, 'currentRunIdentityLinkBlockW457'), 'drawer must block dangerous Customer/SO links without current-run identity');
+assert(contains(drawer, 'demand_role_mapped_to_work_order_blocked'), 'drawer must block Work Order links from satisfying demand/Sales Order proof');
 assert(contains(drawer, "'Order', 'Demand', 'Buy Inputs', 'Build Batch', 'WIP Steps', 'Finished Cases'"), 'drawer story rail must include the WIP proof path');
 assert(contains(drawer, "visibleNarrative && visibleNarrative.mode === 'wip'"), 'drawer story rail must render WIP Steps only when WIP is enabled');
 assert(contains(drawer, 'WIP production steps'), 'drawer must show compact WIP production steps');
+assert(contains(drawer, 'Product Expansion Audit'), 'drawer must keep Product Expansion Audit visible above the operational story');
+assert(contains(drawer, 'Order -> Demand -> Buy Inputs -> Build Batch -> WIP Steps -> Finished Cases'), 'drawer must render compact WIP proof path copy instead of raw browser story text');
 assert(!contains(drawer, 'Planned Operation ${escapeHtml(Number(item.operationIndex || index) + 1)} ${escapeHtml(name)}'), 'drawer must not duplicate planned operation prefixes');
 assert(contains(drawer, 'Core records imported; review WIP diagnostic'), 'drawer ERP Story must truthfully describe WIP diagnostics');
 assert(contains(drawer, 'idb-w415-cockpit-panel idb-w415-roi-panel'), 'drawer must keep ROI panel visible');

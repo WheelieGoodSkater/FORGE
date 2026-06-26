@@ -1043,7 +1043,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       type: String(raw.type || raw.recordType || fallbackType || '').trim(),
       name: String(raw.name || '').trim(),
       internalId,
-      url
+      url,
+      currentRunIdentityW457: raw.currentRunIdentityW457 || raw.currentRunIdentity || null,
+      identityValidationStatus: raw.identityValidationStatus || raw.currentRunIdentityW457 && raw.currentRunIdentityW457.status || '',
+      expectedProspect: raw.expectedProspect || '',
+      website: raw.website || ''
     };
   }
 

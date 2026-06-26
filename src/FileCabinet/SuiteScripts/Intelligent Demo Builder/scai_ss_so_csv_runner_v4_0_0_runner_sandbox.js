@@ -520,8 +520,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       selectedPackName: names.selectedPackName || ''
     }) });
 
-    // 4) Apply naming + one-line sales/purchase descriptions
-    applyNamingToAnchors(ids, names, { enableManufacturing: finalEnableManufacturing, createNewHeroItem: effectiveCreateNewHeroItem, extId });
+    // 4) Apply current-run identity + one-line sales/purchase descriptions
+    const customerIdentityTelemetryW457 = ensureCustomerCurrentRunIdentityW457({
+      prospect,
+      website,
+      extId,
+      names
+    });
+    const reusedRecordOverwriteTelemetryW457 = applyNamingToAnchors(ids, names, { enableManufacturing: finalEnableManufacturing, createNewHeroItem: effectiveCreateNewHeroItem, extId });
 
     // 5) Base prices
     setBaseSalesPrice('inventoryitem', ids.heroItemId, 5.00);
@@ -593,7 +599,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           workOrderId: woId,
           effectiveEnableWip
         }, workOrderResult.telemetry || {});
-        log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId, effectiveEnableWip, workOrderTelemetry }) });
+        const workOrderLineCleanupW457 = cleanWorkOrderLineDescriptionsW457({
+          workOrderId: woId,
+          componentIds: [ids.comp1Id, ids.comp2Id, ids.comp3Id],
+          componentNames: names.component_names || [],
+          assemblyName: names.assembly_name || names.hero_item_name || prospect
+        });
+        workOrderTelemetry.workOrderLineCleanupW457 = workOrderLineCleanupW457;
+        log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId, effectiveEnableWip, workOrderTelemetry, workOrderLineCleanupW457 }) });
       } catch (woError) {
         workOrderTelemetry = {
           status: 'best_effort_failed',
@@ -646,7 +659,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         routingResult,
         soFileId,
         soTaskId,
-        confirmedBuildRequestJson
+        confirmedBuildRequestJson,
+        customerIdentityTelemetryW457,
+        reusedRecordOverwriteTelemetryW457
       });
       log.audit({
         title: `IDB sidecar result capture W453 legacy core [${VERSION}]`,
@@ -675,7 +690,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         namingFileId: namingFileId || null,
         namingSourceUsed: namingPayload.source || names._source || 'deterministic',
         namingPayloadFound: !!namingPayload.found,
-        idbRunnerResultCapture
+        idbRunnerResultCapture,
+        customerIdentityTelemetryW457,
+        reusedRecordOverwriteTelemetryW457
       })
     });
 
@@ -3566,6 +3583,41 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const heroNamePair = buildDifferentiatedNames(names.hero_item_name, extId);
     const heroSalesDesc = `${names.hero_item_name} finished good ready for sale.`;
     const heroPurchDesc = `Purchased inputs supporting ${names.hero_item_name} production.`;
+    const overwriteTelemetryW457 = {
+      schema: 'forge.w457.reused-record-overwrite.v1',
+      attemptedFields: [],
+      acceptedFields: [],
+      rejectedFields: [],
+      records: [],
+      staleTermsBlocked: ['Kombucha', 'Health-Ade', 'Fermentation Base', 'Ginger Lemon', 'Bottle and Case Packaging']
+    };
+
+    function submitFieldsTrackedW457(type, id, values, label) {
+      const attempted = Object.keys(values || {});
+      const accepted = [];
+      const rejected = [];
+      attempted.forEach(function(fieldId) {
+        const one = {};
+        one[fieldId] = values[fieldId];
+        overwriteTelemetryW457.attemptedFields.push(`${label || type}.${fieldId}`);
+        try {
+          record.submitFields({
+            type,
+            id: Number(id),
+            values: one,
+            options: { enableSourcing: true, ignoreMandatoryFields: true }
+          });
+          accepted.push(fieldId);
+          overwriteTelemetryW457.acceptedFields.push(`${label || type}.${fieldId}`);
+        } catch (e) {
+          const rejection = { label: label || type, type, id: Number(id || 0), fieldId, errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') };
+          rejected.push(rejection);
+          overwriteTelemetryW457.rejectedFields.push(rejection);
+        }
+      });
+      overwriteTelemetryW457.records.push({ label: label || type, type, id: Number(id || 0), attemptedFields: attempted, acceptedFields: accepted, rejectedFields: rejected.map(function(item) { return item.fieldId; }) });
+      return accepted.length > 0;
+    }
 
     const asmNameBase = names.assembly_name || names.hero_item_name;
     const asmNamePair = buildDifferentiatedNames(asmNameBase, extId);
@@ -3601,12 +3653,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       })
     });
 
-    safeTry(() => record.submitFields({
-      type: 'inventoryitem',
-      id: Number(ids.heroItemId),
-      values: heroValues,
-      options: { enableSourcing: true, ignoreMandatoryFields: true }
-    }));
+    submitFieldsTrackedW457('inventoryitem', Number(ids.heroItemId), heroValues, 'heroItem');
 
     if (enableManufacturing && ids.assemblyId) {
       const wipStackRenameTelemetryW456 = {
@@ -3621,17 +3668,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         bomRenameAttempted: false,
         bomRevisionRenameAttempted: false
       };
-      safeTry(() => record.submitFields({
-        type: 'assemblyitem',
-        id: Number(ids.assemblyId),
-        values: {
-          itemid: asmNamePair.itemIdName,
-          displayname: asmNamePair.displayName,
-          salesdescription: asmSalesDesc,
-          purchasedescription: asmPurchDesc
-        },
-        options: { enableSourcing: true, ignoreMandatoryFields: true }
-      }));
+      submitFieldsTrackedW457('assemblyitem', Number(ids.assemblyId), {
+        itemid: asmNamePair.itemIdName,
+        displayname: asmNamePair.displayName,
+        salesdescription: asmSalesDesc,
+        purchasedescription: asmPurchDesc
+      }, 'assembly');
 
       const comps = [
         { id: ids.comp1Id, name: names.component_names[0] },
@@ -3641,47 +3683,83 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
       comps.forEach(c => {
         const compNamePair = buildDifferentiatedNames(c.name, extId);
-        return safeTry(() => record.submitFields({
-          type: 'inventoryitem',
-          id: Number(c.id),
-          values: {
-            itemid: compNamePair.itemIdName,
-            displayname: compNamePair.displayName,
-            salesdescription: compSalesDesc(c.name),
-            purchasedescription: compPurchDesc(c.name)
-          },
-          options: { enableSourcing: true, ignoreMandatoryFields: true }
-        }));
+        return submitFieldsTrackedW457('inventoryitem', Number(c.id), {
+          itemid: compNamePair.itemIdName,
+          displayname: compNamePair.displayName,
+          salesdescription: compSalesDesc(c.name),
+          purchasedescription: compPurchDesc(c.name)
+        }, `componentItem${comps.indexOf(c) + 1}`);
       });
 
       if (ids.bomId) {
         const bomNamePair = buildDifferentiatedNames(names.bom_name, extId);
         wipStackRenameTelemetryW456.bomName = bomNamePair.itemIdName;
         wipStackRenameTelemetryW456.bomRenameAttempted = true;
-        safeTry(() => record.submitFields({
-          type: 'bom',
-          id: Number(ids.bomId),
-          values: { name: bomNamePair.itemIdName },
-          options: { enableSourcing: true, ignoreMandatoryFields: true }
-        }));
+        submitFieldsTrackedW457('bom', Number(ids.bomId), { name: bomNamePair.itemIdName }, 'bom');
       }
 
       if (ids.bomRevId) {
         const bomRevNamePair = buildDifferentiatedNames(names.bom_revision_name, extId);
         wipStackRenameTelemetryW456.bomRevisionName = bomRevNamePair.itemIdName;
         wipStackRenameTelemetryW456.bomRevisionRenameAttempted = true;
-        safeTry(() => record.submitFields({
-          type: 'bomrevision',
-          id: Number(ids.bomRevId),
-          values: { name: bomRevNamePair.itemIdName },
-          options: { enableSourcing: true, ignoreMandatoryFields: true }
-        }));
+        submitFieldsTrackedW457('bomrevision', Number(ids.bomRevId), { name: bomRevNamePair.itemIdName }, 'bomRevision');
       }
       log.audit({
         title: `Existing WIP stack naming applied W456 [${VERSION}]`,
         details: JSON.stringify(wipStackRenameTelemetryW456)
       });
     }
+    return overwriteTelemetryW457;
+  }
+
+  function cleanWorkOrderLineDescriptionsW457({ workOrderId, componentIds, componentNames, assemblyName }) {
+    const telemetry = {
+      schema: 'forge.w457.work-order-line-description-cleanup.v1',
+      workOrderId: Number(workOrderId || 0),
+      attempted: false,
+      acceptedLines: [],
+      rejectedLines: [],
+      staleTermsDetectedAfterReload: [],
+      status: 'not_attempted'
+    };
+    if (!workOrderId) return telemetry;
+    const staleRe = /\b(Kombucha|Health-Ade|Fermentation Base|Ginger Lemon|Bottle and Case Packaging)\b/i;
+    try {
+      const wo = record.load({ type: 'workorder', id: Number(workOrderId), isDynamic: true });
+      const sublistId = 'item';
+      const lineCount = Number(safeTryReturn(() => wo.getLineCount({ sublistId })) || 0);
+      const componentIdStrings = (componentIds || []).map(function(id) { return String(id || ''); });
+      telemetry.attempted = true;
+      for (let i = 0; i < lineCount; i += 1) {
+        const itemId = String(safeTryReturn(() => wo.getSublistValue({ sublistId, fieldId: 'item', line: i })) || '');
+        const idx = componentIdStrings.indexOf(itemId);
+        if (idx < 0) continue;
+        const compName = (componentNames || [])[idx] || `Component ${idx + 1}`;
+        const description = `${compName} component used in ${assemblyName}.`;
+        try {
+          wo.selectLine({ sublistId, line: i });
+          wo.setCurrentSublistValue({ sublistId, fieldId: 'description', value: description });
+          wo.commitLine({ sublistId });
+          telemetry.acceptedLines.push({ line: i, itemId, description });
+        } catch (e) {
+          telemetry.rejectedLines.push({ line: i, itemId, description, errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') });
+        }
+      }
+      if (telemetry.acceptedLines.length) wo.save({ enableSourcing: true, ignoreMandatoryFields: true });
+      const reload = record.load({ type: 'workorder', id: Number(workOrderId), isDynamic: false });
+      const reloadCount = Number(safeTryReturn(() => reload.getLineCount({ sublistId })) || 0);
+      for (let i = 0; i < reloadCount; i += 1) {
+        const description = str(safeTryReturn(() => reload.getSublistValue({ sublistId, fieldId: 'description', line: i })));
+        if (staleRe.test(description)) telemetry.staleTermsDetectedAfterReload.push({ line: i, description });
+      }
+      telemetry.status = telemetry.staleTermsDetectedAfterReload.length ? 'stale_terms_detected_after_reload' : 'current_run_descriptions_verified';
+    } catch (e) {
+      telemetry.status = 'work_order_line_cleanup_failed';
+      telemetry.errorName = e && e.name || '';
+      telemetry.errorMessage = e && e.message || String(e || '');
+    }
+    log.audit({ title: `Work Order line descriptions cleaned W457 [${VERSION}]`, details: JSON.stringify(telemetry) });
+    return telemetry;
   }
 
 
@@ -3767,6 +3845,87 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // SO CSV + import
   // ----------------------------
+  function ensureCustomerCurrentRunIdentityW457({ prospect, website, extId, names }) {
+    const customerId = findByExternalId('customer', ANCHORS.customer);
+    const expectedWebsite = String(website || '').trim();
+    const expectedName = `${prospect} Customer Account`;
+    const memo = `SCAI Demo Reset: ${extId} | ${prospect} | ${expectedWebsite || 'website not supplied'}`;
+    const telemetry = {
+      schema: 'forge.w457.current-run-customer-identity.v1',
+      role: 'customer',
+      recordType: 'customer',
+      id: customerId ? String(customerId) : '',
+      expectedProspect: String(prospect || ''),
+      expectedWebsite,
+      expectedProduct: names && (names.hero_item_name || names.primary_product_candidate || names.selectedProductName) || '',
+      expectedExternalId: ANCHORS.customer,
+      expectedMemoSubstring: extId,
+      expectedRecordRole: 'customer',
+      attemptedFields: [],
+      acceptedFields: [],
+      rejectedFields: [],
+      validation: {},
+      status: 'not_attempted'
+    };
+    if (!customerId) {
+      telemetry.status = 'missing_anchor_customer';
+      return telemetry;
+    }
+    const values = {
+      companyname: expectedName,
+      entityid: expectedName,
+      url: expectedWebsite,
+      comments: memo,
+      custentity_scai_demo_prospect: String(prospect || '').slice(0, 300),
+      custentity_scai_demo_website: expectedWebsite.slice(0, 300),
+      custentity_scai_demo_extid: String(extId || '').slice(0, 120)
+    };
+    Object.keys(values).forEach(function(fieldId) {
+      telemetry.attemptedFields.push(fieldId);
+      const one = {};
+      one[fieldId] = values[fieldId];
+      try {
+        record.submitFields({
+          type: 'customer',
+          id: Number(customerId),
+          values: one,
+          options: { enableSourcing: true, ignoreMandatoryFields: true }
+        });
+        telemetry.acceptedFields.push(fieldId);
+      } catch (e) {
+        telemetry.rejectedFields.push({ fieldId, errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') });
+      }
+    });
+    try {
+      const fields = search.lookupFields({
+        type: 'customer',
+        id: Number(customerId),
+        columns: ['entityid', 'companyname', 'url', 'comments', 'externalid']
+      });
+      const actualName = str(fields.companyname || fields.entityid || '');
+      const actualWebsite = str(fields.url || '');
+      const actualComments = str(fields.comments || '');
+      telemetry.validation = {
+        actualName,
+        actualWebsite,
+        actualComments,
+        actualExternalId: str(fields.externalid || ''),
+        prospectMatches: actualName.indexOf(String(prospect || '')) !== -1,
+        websiteMatches: !expectedWebsite || actualWebsite === expectedWebsite,
+        memoMatches: !extId || actualComments.indexOf(extId) !== -1,
+        staleHealthAdeBlocked: !/health-ade\.com|healthade/i.test(`${actualWebsite} ${actualName} ${actualComments}`)
+      };
+      telemetry.status = telemetry.validation.prospectMatches && telemetry.validation.websiteMatches && telemetry.validation.memoMatches && telemetry.validation.staleHealthAdeBlocked
+        ? 'current_run_identity_verified'
+        : 'current_run_identity_needs_review';
+    } catch (e) {
+      telemetry.status = 'current_run_identity_reload_failed';
+      telemetry.validation = { errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') };
+    }
+    log.audit({ title: `Customer current-run identity applied W457 [${VERSION}]`, details: JSON.stringify(telemetry) });
+    return telemetry;
+  }
+
   function buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey }) {
     const memoBase = `SCAI Demo Reset: ${prospect}${website ? ` (${extractDomain(website)})` : ''}`;
     const memo = agenda ? memoBase + ' - ' + summarizeOneLine(agenda) : memoBase;
@@ -3853,6 +4012,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       name: `${args.prospect} Customer Account`,
       id: customerId
     });
+    records.customer.currentRunIdentityW457 = args.customerIdentityTelemetryW457 || null;
+    records.customer.identityValidationStatus = args.customerIdentityTelemetryW457 && args.customerIdentityTelemetryW457.status || 'current_run_identity_not_checked';
+    records.customer.website = args.website || '';
+    records.customer.expectedProspect = args.prospect || '';
     records.demoTransaction = buildPendingDemoTransactionW453({
       extId,
       prospect: args.prospect,
@@ -3995,8 +4158,28 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         status: 'pending_transaction_resolution',
         csvImportFileId: String(args.soFileId || ''),
         csvImportTaskId: String(args.soTaskId || ''),
-        expectedExternalId: extId
+        expectedExternalId: extId,
+        demandRecordRolePolicy: 'sales_order_only_never_work_order'
       },
+      currentRunIdentityChecksW457: {
+        expectedProspect: args.prospect,
+        expectedWebsite: args.website,
+        expectedProduct: names.hero_item_name || names.primary_product_candidate || names.selectedProductName || '',
+        expectedExternalId: extId,
+        expectedMemoSubstring: extId,
+        expectedRecordRoles: {
+          customer: 'customer',
+          demand: 'salesorder'
+        },
+        customer: args.customerIdentityTelemetryW457 || null,
+        salesOrder: {
+          status: 'pending_transaction_resolution',
+          expectedExternalId: extId,
+          role: 'sales_order',
+          notWorkOrder: true
+        }
+      },
+      reusedRecordOverwriteTelemetryW457: args.reusedRecordOverwriteTelemetryW457 || null,
       productBuildPlanW432: buildProductBuildPlanFromNamesW453(args),
       runnerLaneVocabularyPolicy: runnerLaneVocabularyPolicyW453(args),
       namingFileId: namingPayload.fileId || null,
@@ -4177,6 +4360,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       expectedExternalId: extId,
       csvImportFileId: String(soFileId || ''),
       csvImportTaskId: String(soTaskId || ''),
+      demandDiagnostic: 'Sales Order CSV import is pending; no Work Order is mapped as demand.',
+      currentRunIdentityW457: {
+        role: 'sales_order',
+        expectedExternalId: extId,
+        status: 'pending_transaction_resolution',
+        notWorkOrder: true
+      },
       linkAuthority: {
         status: 'pending_transaction_resolution',
         openable: false,

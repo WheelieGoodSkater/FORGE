@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.62
+// @version      1.0.63
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.62';
-  const CURRENT_UX_BLOCK_W346 = 'W456';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.63';
+  const CURRENT_UX_BLOCK_W346 = 'W457';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -14005,6 +14005,30 @@
     return /^\d+$/.test(directId) && urlId === directId;
   }
 
+  function currentRunIdentityLinkBlockW457(record, url) {
+    const text = `${record && (record.role || record.canonicalRole || '') || ''} ${record && (record.label || '') || ''} ${record && (record.recordType || record.type || '') || ''}`.toLowerCase();
+    const identity = record && (record.currentRunIdentityW457 || record.currentRunIdentity || record.identityValidation || {});
+    const status = String(record && record.identityValidationStatus || identity.status || '').toLowerCase();
+    const isCustomer = /customer|prospect|account/.test(text) || /\/app\/common\/entity\/custjob\.nl\?/i.test(url);
+    const isDemand = /sales[_\s-]*order|salesorder|demo transaction|demand/.test(text);
+    const isWorkOrderUrl = /\/app\/accounting\/transactions\/workord\.nl\?/i.test(url);
+    if (isCustomer && status && !/current_run_identity_verified|verified/.test(status)) {
+      return {
+        blocked: true,
+        status: 'current_run_identity_not_verified',
+        reason: 'Customer Open links require current-run prospect, website, memo, and role identity validation before they can be shown as proof.'
+      };
+    }
+    if (isDemand && (isWorkOrderUrl || /work[_\s-]*order|workorder/.test(text))) {
+      return {
+        blocked: true,
+        status: 'demand_role_mapped_to_work_order_blocked',
+        reason: 'Demand/Sales Order proof cannot be satisfied by a Work Order link.'
+      };
+    }
+    return { blocked: false };
+  }
+
   function verifiedRecordLinkAuthorityV1(record) {
     const url = absoluteNetSuiteRecordUrl(record && record.url ? String(record.url) : '');
     const id = record && record.id ? String(record.id) : '';
@@ -14055,6 +14079,17 @@
         openable: false,
         displayLabel: 'Needs real URL',
         reason: 'The URL is not a supported NetSuite record path for drawer navigation.',
+        url
+      };
+    }
+    const identityBlockW457 = currentRunIdentityLinkBlockW457(record, url);
+    if (identityBlockW457.blocked) {
+      return {
+        schema: 'idb.verified-record-link-authority.v1',
+        status: identityBlockW457.status,
+        openable: false,
+        displayLabel: 'Needs identity check',
+        reason: identityBlockW457.reason,
         url
       };
     }
@@ -26513,7 +26548,7 @@
         </div>
         ${cockpitWorkflowVisualW443(visibleNarrative, workflowObjectsW447, toggleReceipt)}
         <details class="idb-w444-product-candidate" ${state.w444ProductCandidateOpen ? 'open' : ''}>
-          <summary><span class="idb-mini-chip">Product: ${escapeHtml(productModelW444.primaryProductCandidate || visibleNarrative.productBaseName || 'Returned product')}</span></summary>
+          <summary><span class="idb-mini-chip">Product Expansion Audit: ${escapeHtml(productModelW444.primaryProductCandidate || visibleNarrative.productBaseName || 'Returned product')}</span></summary>
           <div class="idb-copy">Alternates: ${escapeHtml(productModelW444.alternateProductCandidates.length ? productModelW444.alternateProductCandidates.join(', ') : 'No alternates returned.')}</div>
           <div class="idb-copy">${escapeHtml(productModelW444.selectedProductReason)}</div>
           <div class="idb-copy">Evidence: ${escapeHtml(arrayValue(productModelW444.evidenceTerms).slice(0, 6).join(', ') || 'No product evidence terms returned.')}</div>
@@ -26531,9 +26566,9 @@
           ${groupedRows}
         </div>
         <div class="idb-w415-cockpit-story">
-          <div class="idb-status-key">Proof Flow</div>
-          <div class="idb-strong">${escapeHtml(proofFlowCopy(storyLine))}</div>
-          <div class="idb-copy">${escapeHtml(proofFlowCopy(proofLine))}</div>
+          <div class="idb-status-key">Proof path</div>
+          <div class="idb-strong">${escapeHtml(visibleNarrative.mode === 'wip' ? 'Order to finished cases through routed WIP' : 'Order to finished-case output')}</div>
+          <div class="idb-copy">${escapeHtml(visibleNarrative.mode === 'wip' ? 'Order -> Demand -> Buy Inputs -> Build Batch -> WIP Steps -> Finished Cases' : 'Order -> Demand -> Buy Inputs -> Build Batch -> Finished Cases')}</div>
         </div>
         <div class="idb-w415-cockpit-grid">
           <div class="idb-w415-cockpit-panel idb-w415-roi-panel ${activeDetailW444 === 'roi' ? 'idb-w445-active-detail-card' : ''}">

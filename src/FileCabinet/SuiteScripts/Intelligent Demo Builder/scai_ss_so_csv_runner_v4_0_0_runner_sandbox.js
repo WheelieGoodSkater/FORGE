@@ -1552,7 +1552,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     let clonedFromAnchor = false;
 
-    function buildFreshHeroRecord(includeLocation) {
+    function buildFreshHeroRecord() {
       let rec = null;
       try {
         rec = record.copy({ type: 'inventoryitem', id: Number(anchorHeroId), isDynamic: false });
@@ -1565,36 +1565,34 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       safeTry(() => rec.setValue({ fieldId: 'displayname', value: differentiated.displayName }));
       try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
       catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
-      if (includeLocation && locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: Number(locationId) }));
-      if (!includeLocation) clearBodyLocationW453(rec);
+      clearBodyLocationW453(rec);
       return rec;
     }
 
-    let locationDroppedForInvalidSub = false;
     let id = null;
     try {
-      id = Number(buildFreshHeroRecord(true).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+      id = Number(buildFreshHeroRecord().save({ enableSourcing: true, ignoreMandatoryFields: true }));
     } catch (e) {
       if (!locationId || !isInvalidSubLocationErrorW453(e)) throw e;
-      locationDroppedForInvalidSub = true;
       log.audit({
-        title: `Fresh HERO location dropped after INVALID_SUB [${VERSION}]`,
+        title: `Fresh HERO inherited body location cleared after INVALID_SUB [${VERSION}]`,
         details: JSON.stringify({
           extId,
           subsidiaryId: Number(subsidiaryId || 0),
-          rejectedLocationId: Number(locationId || 0),
+          transactionLocationId: Number(locationId || 0),
           errorName: e && e.name || '',
-          errorMessage: e && e.message || String(e || '')
+          errorMessage: e && e.message || String(e || ''),
+          itemBodyLocationPolicy: 'clear-copied-body-location-use-transaction-location-elsewhere'
         })
       });
-      id = Number(buildFreshHeroRecord(false).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+      id = Number(buildFreshHeroRecord().save({ enableSourcing: true, ignoreMandatoryFields: true }));
     }
 
     const persistence = applyFreshHeroPersistence({
       itemId: id,
       anchorHeroId: Number(anchorHeroId),
       subsidiaryId,
-      locationId: locationDroppedForInvalidSub ? null : locationId
+      locationId
     });
 
     log.audit({
@@ -1614,7 +1612,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         bodyPlanningFieldsOff: persistence.bodyPlanningFieldsOff || [],
         vendorSublistUsed: persistence.vendorSublistUsed || '',
         vendorId: Number(persistence.vendorId || 0),
-        locationDroppedForInvalidSub
+        itemBodyLocationPolicy: 'omitted-and-cleared'
       })
     });
 
@@ -2094,32 +2092,32 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function createInventoryOrAssemblyWithLocationRetryW453({ type, externalId, defaultName, subsidiaryId, locationId }) {
-    function buildRecord(includeLocation) {
+    function buildRecord() {
       const rec = record.create({ type, isDynamic: false });
       rec.setValue({ fieldId: 'externalid', value: externalId });
       rec.setValue({ fieldId: 'itemid', value: defaultName });
       try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
       catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
-      if (includeLocation && locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: Number(locationId) }));
-      if (!includeLocation) clearBodyLocationW453(rec);
+      clearBodyLocationW453(rec);
       return rec;
     }
     try {
-      return Number(buildRecord(true).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+      return Number(buildRecord().save({ enableSourcing: true, ignoreMandatoryFields: true }));
     } catch (e) {
       if (!locationId || !isInvalidSubLocationErrorW453(e)) throw e;
       log.audit({
-        title: `Location dropped after INVALID_SUB for ${type} [${VERSION}]`,
+        title: `Inherited body location cleared after INVALID_SUB for ${type} [${VERSION}]`,
         details: JSON.stringify({
           type,
           externalId,
           subsidiaryId: Number(subsidiaryId || 0),
-          rejectedLocationId: Number(locationId || 0),
+          transactionLocationId: Number(locationId || 0),
           errorName: e && e.name || '',
-          errorMessage: e && e.message || String(e || '')
+          errorMessage: e && e.message || String(e || ''),
+          itemBodyLocationPolicy: 'clear-body-location-use-transaction-location-elsewhere'
         })
       });
-      return Number(buildRecord(false).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+      return Number(buildRecord().save({ enableSourcing: true, ignoreMandatoryFields: true }));
     }
   }
 
@@ -2252,7 +2250,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function buildSubsLocValues(subsidiaryId, locationId) {
     const values = { subsidiary: subsidiaryId };
-    if (locationId) values.location = locationId;
+    void locationId;
     return values;
   }
 

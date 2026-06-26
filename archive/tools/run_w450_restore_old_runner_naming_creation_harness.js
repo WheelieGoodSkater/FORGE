@@ -119,13 +119,21 @@ function main() {
       !runner.includes('Fresh hero mode requires custscript_scai_runner_hero_item'),
     'Fresh v3 runs should create the hero item in the runner when no hero id was passed.');
 
-  assertCase(results, 'w453-invalid-sub-location-retry',
+  const freshHeroFn = runner.slice(runner.indexOf('function createFreshHeroItem'), runner.indexOf('function applyFreshHeroPersistence'));
+  const itemAssemblyCreateFn = runner.slice(runner.indexOf('function createInventoryOrAssemblyWithLocationRetryW453'), runner.indexOf('function ensureBomByExternalId'));
+  const subsLocFn = runner.slice(runner.indexOf('function buildSubsLocValues'), runner.indexOf('// ----------------------------', runner.indexOf('function buildSubsLocValues')));
+
+  assertCase(results, 'w453-item-body-location-omitted-for-copied-records',
     runner.includes('function isInvalidSubLocationErrorW453') &&
       runner.includes('function clearBodyLocationW453') &&
-      runner.includes('Fresh HERO location dropped after INVALID_SUB') &&
+      runner.includes('itemBodyLocationPolicy') &&
       runner.includes('createInventoryOrAssemblyWithLocationRetryW453') &&
-      runner.includes('Location dropped after INVALID_SUB for'),
-    'Fresh hero, component, and assembly creation should retry without incompatible or inherited body location when NetSuite raises INVALID_SUB.');
+      freshHeroFn.includes('clearBodyLocationW453(rec)') &&
+      itemAssemblyCreateFn.includes('clearBodyLocationW453(rec)') &&
+      !freshHeroFn.includes("fieldId: 'location', value: Number(locationId)") &&
+      !itemAssemblyCreateFn.includes("fieldId: 'location', value: Number(locationId)") &&
+      !subsLocFn.includes('values.location'),
+    'Fresh hero, component, assembly, and existing item updates should not push run location onto item body location.');
 
   assertCase(results, 'w453-result-size-guard',
     runner.includes('const maxChars = 9000000') &&

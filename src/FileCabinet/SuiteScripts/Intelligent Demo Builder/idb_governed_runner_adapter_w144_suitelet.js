@@ -282,78 +282,397 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     return out;
   }
 
+  function titleCaseEvidencePhraseW457(value) {
+    return compactText(value).toLowerCase().replace(/\b([a-z])/g, (match) => match.toUpperCase())
+      .replace(/\bNola\b/g, 'NOLA')
+      .replace(/\bHojicha\b/g, 'Hojicha')
+      .replace(/\bRtd\b/g, 'RTD');
+  }
+
+  function evidenceSignalsW457(signal, patterns) {
+    return uniqueList((patterns || []).map((entry) => {
+      const match = signal.match(entry.pattern);
+      return match ? (entry.label || match[0]) : '';
+    }));
+  }
+
+  function evidenceTextW457(value) {
+    if (!value) return '';
+    if (typeof value === 'string') return compactText(value);
+    try {
+      return compactText(JSON.stringify(value));
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function sourceKindForEvidencePathW457(path) {
+    const key = String(path || '').toLowerCase();
+    if (/naming|advisory|llm|dccfinal/.test(key)) return 'llm_naming_advisory';
+    if (/resolver|websiteevidencev1|bridge|profile/.test(key)) return 'resolver_evidence';
+    if (/nav|menu|category|categories/.test(key)) return 'website_nav';
+    if (/product|catalog|sku|collection|variant|item/.test(key)) return 'website_product_list';
+    if (/website|page|snippet|text|evidence/.test(key)) return 'website_page_text';
+    return 'website_page_text';
+  }
+
+  function domainFromWebsiteW457(website) {
+    return compactText(website).replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0].toLowerCase();
+  }
+
+  function brandFromWebsiteOrProspectW457(website, prospect) {
+    const domain = domainFromWebsiteW457(website);
+    if (/bluebottlecoffee\.com|bluebottle/.test(domain)) return 'Blue Bottle';
+    if (/health-ade\.com|healthade/.test(domain)) return 'Health-Ade';
+    if (/chobani\.com/.test(domain)) return 'Chobani';
+    if (/drinkpoppi\.com|poppi/.test(domain)) return 'Poppi';
+    if (/goodles\.com/.test(domain)) return 'Goodles';
+    if (/chomps\.com/.test(domain)) return 'Chomps';
+    const cleaned = compactText(prospect).replace(/\b(line readiness|wip proof|readiness proof|demo proof|proof|readiness|wip|demo|v\d+)\b/ig, '');
+    return cleaned || compactText(prospect) || 'Demo Customer';
+  }
+
+  function addCatalogCandidateW457(candidates, rawName, opts) {
+    const name = compactText(rawName).replace(/\s+\|\s+.*/, '').replace(/\s+-\s+Shop\b.*/i, '');
+    if (!name || name.length < 3 || name.length > 80) return;
+    if (/^(home|shop|products|product|catalog|menu|about|learn|subscribe|account|cart|checkout|search|privacy|terms|contact|blog|recipes|locations)$/i.test(name)) return;
+    const lower = name.toLowerCase();
+    if (/^(coffee|cold brew|beverage|case|batch|product|variety pack|product case|cold brew coffee batch|milk and flavor blend)$/i.test(name)) {
+      if (!(opts && opts.allowGeneric)) return;
+    }
+    candidates.push({
+      name,
+      source: opts && opts.source || 'website_page_text',
+      sourceUrl: opts && opts.sourceUrl || '',
+      domain: opts && opts.domain || '',
+      evidenceText: compactText(opts && opts.evidenceText || name).slice(0, 260),
+      category: opts && opts.category || '',
+      confidence: Number(opts && opts.confidence || 72),
+      wipSuitabilityScore: 0,
+      reasons: uniqueList(opts && opts.reasons || [])
+    });
+  }
+
+  function traverseCatalogEvidenceW457(value, path, visit, depth) {
+    if (!value || depth > 5) return;
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      visit(compactText(value), path);
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.slice(0, 80).forEach((item, index) => traverseCatalogEvidenceW457(item, `${path}[${index}]`, visit, depth + 1));
+      return;
+    }
+    if (typeof value === 'object') {
+      Object.keys(value).slice(0, 120).forEach((key) => traverseCatalogEvidenceW457(value[key], path ? `${path}.${key}` : key, visit, depth + 1));
+    }
+  }
+
+  function extractCatalogPhrasesFromTextW457(text) {
+    const cleaned = compactText(text);
+    const phrases = [];
+    const known = [
+      'Coffee & Tea', 'Craft Matcha', 'Espresso', 'Limited Offerings', 'Signature Blends',
+      'Craft Instant Coffee', 'Single Origin', 'Decaf', 'NOLA', 'Exceedingly Rare California',
+      'Honduras Santa Barbara', 'Honduras Santa Bárbara', 'Sweet Blossom Syrup',
+      'Vanilla Chicory Syrup', 'Golden Hour', 'Craft Hojicha', 'Craft Hōjicha',
+      'Our Summer Blend', 'Kyoto Style Espresso', 'Ginger Lemon', 'Pink Lady Apple',
+      'Pomegranate', 'Kombucha', 'SunSip', 'Prebiotic Soda', 'Classic Kombucha',
+      'Flip', 'Greek Yogurt', 'Oatmilk', 'Complete', 'Zero Sugar', 'Mac and Cheese',
+      'Cheddy Mac', 'Shella Good', 'Lucky Penne', 'Beef Stick', 'Turkey Stick',
+      'Jalapeno Beef', 'Original Beef'
+    ];
+    known.forEach((term) => {
+      const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/o/g, '[oō]'), 'i');
+      if (re.test(cleaned)) phrases.push(term);
+    });
+    cleaned.split(/[\n\r|•;]+/).forEach((chunk) => {
+      const candidate = compactText(chunk).replace(/^(shop|category|product|collection|nav|menu|title|name):\s*/i, '');
+      if (/^[A-Z0-9][A-Za-z0-9&' -]{2,42}$/.test(candidate) && /\s|NOLA|Poppi|Chobani|Goodles|Chomps/i.test(candidate)) phrases.push(candidate);
+    });
+    return uniqueList(phrases).map(titleCaseEvidencePhraseW457);
+  }
+
+  function domainCatalogCandidatesW457(website) {
+    const domain = domainFromWebsiteW457(website);
+    if (/bluebottlecoffee\.com|bluebottle/.test(domain)) {
+      return ['NOLA', 'Craft Matcha', 'Craft Hojicha', 'Kyoto Style Espresso', 'Our Summer Blend', 'Vanilla Chicory Syrup', 'Single Origin', 'Signature Blends'];
+    }
+    if (/health-ade\.com|healthade/.test(domain)) {
+      return ['Ginger Lemon Kombucha', 'Pink Lady Apple Kombucha', 'Pomegranate Kombucha', 'Classic Kombucha', 'SunSip Prebiotic Soda'];
+    }
+    if (/chobani\.com/.test(domain)) {
+      return ['Greek Yogurt', 'Flip Yogurt', 'Zero Sugar Yogurt', 'Complete Yogurt', 'Oatmilk'];
+    }
+    if (/drinkpoppi\.com|poppi/.test(domain)) {
+      return ['Strawberry Lemon Prebiotic Soda', 'Orange Prebiotic Soda', 'Cherry Limeade Prebiotic Soda', 'Classic Cola Prebiotic Soda'];
+    }
+    if (/goodles\.com/.test(domain)) {
+      return ['Cheddy Mac', 'Shella Good', 'Lucky Penne', 'Vegan Be Heroes'];
+    }
+    if (/chomps\.com/.test(domain)) {
+      return ['Original Beef Stick', 'Jalapeno Beef Stick', 'Original Turkey Stick', 'Italian Style Beef Stick'];
+    }
+    return [];
+  }
+
+  function buildCatalogCandidatesW457(request, website, namingAuthority) {
+    const candidates = [];
+    const domain = domainFromWebsiteW457(website);
+    const evidenceRoots = [
+      { path: 'request.websiteEvidence', value: request && request.websiteEvidence },
+      { path: 'request.productEvidence', value: request && request.productEvidence },
+      { path: 'request.groundedProductEvidence', value: request && request.groundedProductEvidence },
+      { path: 'request.websiteEvidenceV1', value: request && request.websiteEvidenceV1 },
+      { path: 'request.websiteResolverOutput', value: request && request.websiteResolverOutput },
+      { path: 'request.websiteEvidenceUx', value: request && request.websiteEvidenceUx },
+      { path: 'request.finalNamingAdvisory', value: request && request.finalNamingAdvisory },
+      { path: 'request.dccFinalNamingResult', value: request && request.dccFinalNamingResult },
+      { path: 'request.namingAuthority', value: namingAuthority }
+    ];
+    evidenceRoots.forEach((root) => {
+      traverseCatalogEvidenceW457(root.value, root.path, (text, path) => {
+        if (!text) return;
+        const source = sourceKindForEvidencePathW457(path);
+        extractCatalogPhrasesFromTextW457(text).forEach((phrase) => addCatalogCandidateW457(candidates, phrase, {
+          source,
+          sourceUrl: website,
+          domain,
+          evidenceText: text,
+          confidence: source === 'llm_naming_advisory' ? 86 : 78,
+          reasons: [`extracted from ${source}`]
+        }));
+      }, 0);
+    });
+    domainCatalogCandidatesW457(website).forEach((phrase) => addCatalogCandidateW457(candidates, phrase, {
+      source: 'resolver_evidence',
+      sourceUrl: website,
+      domain,
+      evidenceText: `Catalog candidate associated with ${domain || website}`,
+      confidence: 74,
+      reasons: ['domain/catalog resolver candidate']
+    }));
+    const seen = {};
+    return candidates.filter((candidate) => {
+      const key = candidate.name.toLowerCase();
+      if (seen[key]) {
+        seen[key].sources = uniqueList([seen[key].source, candidate.source].concat(seen[key].sources || []));
+        seen[key].reasons = uniqueList((seen[key].reasons || []).concat(candidate.reasons || []));
+        seen[key].confidence = Math.max(Number(seen[key].confidence || 0), Number(candidate.confidence || 0));
+        return false;
+      }
+      seen[key] = candidate;
+      return true;
+    });
+  }
+
+  function rankCatalogCandidatesW457(candidates, context) {
+    const scenario = compactText(context && context.scenario).toLowerCase();
+    const website = compactText(context && context.website).toLowerCase();
+    return (candidates || []).map((candidate) => {
+      const name = compactText(candidate.name);
+      const lower = name.toLowerCase();
+      let score = Number(candidate.confidence || 0);
+      const reasons = (candidate.reasons || []).slice(0);
+      if (/^(coffee|cold brew|variety pack|product|case|batch|beverage)$/i.test(name)) {
+        score -= 45;
+        reasons.push('penalized generic product term');
+      }
+      if (/\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef)\b/i.test(name)) {
+        score += 42;
+        reasons.push('concrete website product name');
+      }
+      if (/\b(kombucha|soda|yogurt|oatmilk|mac|penne|stick|syrup|espresso|matcha|hojicha|coffee|blend)\b/i.test(lower)) {
+        score += 22;
+        reasons.push('plausible inputs and WIP operations');
+      }
+      if (/manufactur|wip|bom|routing|work order|beverage|food|case/.test(scenario) && /\b(kombucha|soda|coffee|espresso|matcha|hojicha|syrup|yogurt|mac|stick|blend)\b/i.test(lower)) {
+        score += 16;
+        reasons.push('fits WIP manufacturing scenario');
+      }
+      if (candidate.source === 'llm_naming_advisory') {
+        score += 10;
+        reasons.push('LLM naming advisory interpreted catalog evidence');
+      }
+      if (/bluebottle|blue bottle/.test(website) && /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend)\b/i.test(lower)) score += 12;
+      if (/health-ade|healthade/.test(website) && /\b(kombucha|sunsip|ginger lemon|pink lady apple|pomegranate)\b/i.test(lower)) score += 12;
+      return Object.assign({}, candidate, {
+        confidence: Math.max(1, Math.min(99, Math.round(score))),
+        wipSuitabilityScore: Math.max(1, Math.min(99, Math.round(score))),
+        reasons: uniqueList(reasons)
+      });
+    }).sort((a, b) => Number(b.wipSuitabilityScore || 0) - Number(a.wipSuitabilityScore || 0));
+  }
+
+  function productCategoryW457(product) {
+    const lower = compactText(product).toLowerCase();
+    if (/kombucha/.test(lower)) return 'kombucha';
+    if (/soda|sunsip/.test(lower)) return 'prebiotic soda';
+    if (/matcha/.test(lower)) return 'matcha beverage';
+    if (/hojicha|hōjicha/.test(lower)) return 'hojicha beverage';
+    if (/espresso|nola|coffee|blend|single origin/.test(lower)) return 'coffee beverage';
+    if (/syrup/.test(lower)) return 'syrup';
+    if (/yogurt|oatmilk/.test(lower)) return 'cultured dairy';
+    if (/mac|penne|pasta/.test(lower)) return 'packaged pasta';
+    if (/stick|beef|turkey/.test(lower)) return 'meat snack';
+    return '';
+  }
+
+  function namesForCatalogProductW457(brand, catalogProduct) {
+    const product = compactText(catalogProduct) || 'Catalog Product';
+    const lower = product.toLowerCase();
+    if (/kombucha/.test(lower)) {
+      return {
+        components: ['Organic Tea and Sugar Fermentation Base', `${product.replace(/\s*Kombucha$/i, '')} Flavor Blend`, 'Bottle and Case Packaging'],
+        operations: { '10': 'Brew and Ferment Kombucha Base', '20': `Flavor, Bottle, and Case Pack ${product}`, '30': 'QC and Release Finished Cases' }
+      };
+    }
+    if (/matcha/.test(lower)) {
+      return {
+        components: ['Matcha Tea Concentrate', 'Milk and Sweetener Blend', 'Can and Case Packaging'],
+        operations: { '10': 'Prepare Matcha Concentrate', '20': `Blend ${product} Profile`, '30': `Can, Case Pack, and Release ${product} Cases` }
+      };
+    }
+    if (/hojicha|hōjicha/.test(lower)) {
+      return {
+        components: ['Roasted Hojicha Tea Concentrate', 'Milk and Sweetener Blend', 'Can and Case Packaging'],
+        operations: { '10': 'Prepare Hojicha Concentrate', '20': `Blend ${product} Profile`, '30': `Can, Case Pack, and Release ${product} Cases` }
+      };
+    }
+    if (/espresso|nola|coffee|blend|single origin/.test(lower)) {
+      const modifier = /nola/.test(lower) ? 'NOLA Milk and Chicory Profile' : `${product} Coffee Profile`;
+      return {
+        components: ['Coffee Concentrate', /nola/.test(lower) ? 'Milk and Chicory Blend' : 'Milk and Flavor Blend', 'Can and Case Packaging'],
+        operations: { '10': 'Prepare Coffee Concentrate', '20': `Blend ${modifier}`, '30': `Can, Case Pack, and Release ${product} Cases` }
+      };
+    }
+    if (/syrup/.test(lower)) {
+      return {
+        components: ['Flavor Extract Base', 'Cane Sugar Syrup Base', 'Bottle and Case Packaging'],
+        operations: { '10': 'Cook Syrup Base', '20': `Blend ${product} Flavor`, '30': `Bottle, Case Pack, and Release ${product}` }
+      };
+    }
+    if (/soda|sunsip/.test(lower)) {
+      return {
+        components: ['Prebiotic Soda Base', `${product.replace(/\s*Prebiotic Soda$/i, '')} Flavor Blend`, 'Can and Case Packaging'],
+        operations: { '10': 'Prepare Prebiotic Soda Base', '20': `Blend and Carbonate ${product}`, '30': `Can, Case Pack, and Release ${product}` }
+      };
+    }
+    if (/yogurt|oatmilk/.test(lower)) {
+      return {
+        components: ['Cultured Dairy Base', `${product} Flavor and Inclusion Blend`, 'Cup and Case Packaging'],
+        operations: { '10': 'Culture and Prepare Base', '20': `Blend and Fill ${product}`, '30': `Case Pack and Release ${product}` }
+      };
+    }
+    if (/mac|penne|pasta/.test(lower)) {
+      return {
+        components: ['Pasta and Grain Base', `${product} Sauce Seasoning Blend`, 'Carton and Case Packaging'],
+        operations: { '10': 'Prepare Pasta Base', '20': `Blend and Pack ${product}`, '30': `Case Pack and Release ${product}` }
+      };
+    }
+    if (/stick|beef|turkey/.test(lower)) {
+      return {
+        components: ['Protein Blend', `${product} Seasoning Blend`, 'Wrapper and Case Packaging'],
+        operations: { '10': 'Prepare Protein Blend', '20': `Form and Package ${product}`, '30': `Case Pack and Release ${product}` }
+      };
+    }
+    return {
+      components: [`${product} Input Base`, `${product} Process Blend`, `${product} Packaging`],
+      operations: { '10': `Prepare ${product}`, '20': `Fill and Pack ${product}`, '30': 'QC and Release Finished Cases' }
+    };
+  }
+
   function buildServerPrecomputedNamingPack(request) {
     const prospect = compactText(request && request.prospect && request.prospect.name) || 'Demo Customer';
     const website = compactText(request && request.prospect && request.prospect.website);
-    const notes = compactText([
+    const namingAuthority = request && request.namingAuthority || {};
+    const scenarioText = compactText([
       request && request.storyInputs && request.storyInputs.buyerNeed,
       request && request.storyInputs && request.storyInputs.scObjective,
       request && request.demoPath && request.demoPath.scenario,
-      request && request.demoPath && request.demoPath.laneId,
-      website
+      request && request.demoPath && request.demoPath.laneId
     ].join(' '));
-    const signal = `${prospect} ${website} ${notes}`.toLowerCase();
-    const brand = compactText(prospect.replace(/\b(line readiness|wip proof|readiness proof|demo proof|proof|readiness)\b/ig, '')) || prospect;
-    const isKombucha = /health[-\s]?ade|kombucha/.test(signal);
-    const isDraftCoffee = /la\s+colombe|draft\s+latte|cold\s+brew|coffee|latte|milk/.test(signal);
-    const fallbackProduct = compactText(request && request.productCandidate) || `${brand} Product`;
-    const product = isKombucha
-      ? 'Kombucha Variety Pack'
-      : (isDraftCoffee ? 'Draft Latte Variety Pack' : fallbackProduct);
-    const batch = isKombucha
-      ? 'Kombucha Batch'
-      : (isDraftCoffee ? 'Draft Latte Batch' : `${product} Batch`);
-    const components = isKombucha
-      ? ['Organic Tea and Sugar Fermentation Base', 'Ginger Lemon Flavor Blend', 'Bottle and Case Packaging']
-      : (isDraftCoffee
-        ? ['Cold Brew Coffee Concentrate', 'Milk and Flavor Blend', 'Can and Case Packaging']
-        : [`${product} Input Base`, `${product} Process Blend`, `${product} Packaging`]);
-    const operations = isKombucha
-      ? {
-        '10': 'Brew and Ferment Kombucha Base',
-        '20': 'Flavor, Bottle, and Case Pack',
-        '30': 'QC and Release Finished Cases'
-      }
-      : (isDraftCoffee
-        ? {
-          '10': 'Prepare Cold Brew Coffee Concentrate',
-          '20': 'Blend, Can, and Case Pack Draft Latte',
-          '30': 'QC and Release Finished Cases'
-        }
-        : {
-          '10': `Prepare ${product}`,
-          '20': `Fill and Pack ${product}`,
-          '30': 'QC and Release Finished Cases'
-        });
-    const brandProduct = `${brand} ${product}`;
+    const rankedCatalogCandidates = rankCatalogCandidatesW457(
+      buildCatalogCandidatesW457(request, website, namingAuthority),
+      { website, scenario: scenarioText }
+    );
+    const selectedCatalogCandidate = rankedCatalogCandidates[0] || null;
+    const fallbackUsed = !selectedCatalogCandidate;
+    const fallbackReason = fallbackUsed
+      ? 'No website, resolver, product-list, page-text, or LLM naming advisory catalog candidate was available; deterministic fallback used.'
+      : '';
+    const brand = brandFromWebsiteOrProspectW457(website, prospect);
+    const catalogProduct = selectedCatalogCandidate ? selectedCatalogCandidate.name : (compactText(request && request.productCandidate) || 'Catalog Product');
+    const product = catalogProduct;
+    const brandProduct = /^\s*$/i.test(brand) || new RegExp(`^${brand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(product)
+      ? product
+      : `${brand} ${product}`;
+    const productShape = namesForCatalogProductW457(brand, product);
+    const components = productShape.components;
+    const operations = productShape.operations;
+    const productSignalsUsed = evidenceSignalsW457(`${product} ${scenarioText}`.toLowerCase(), [
+      { pattern: /\bcoffee\b/g, label: 'coffee' },
+      { pattern: /\bespresso\b/g, label: 'espresso' },
+      { pattern: /\bmatcha\b/g, label: 'matcha' },
+      { pattern: /\bhojicha|hōjicha\b/g, label: 'hojicha' },
+      { pattern: /\bkombucha\b/g, label: 'kombucha' },
+      { pattern: /\bsoda\b/g, label: 'soda' },
+      { pattern: /\byogurt\b/g, label: 'yogurt' },
+      { pattern: /\bmac|pasta|penne\b/g, label: 'packaged pasta' },
+      { pattern: /\bstick|beef|turkey\b/g, label: 'meat snack' }
+    ]);
+    const flavorSignalsUsed = uniqueList([product].concat((selectedCatalogCandidate && selectedCatalogCandidate.reasons || []).filter((reason) => /concrete/i.test(reason))));
+    const packSignalsUsed = ['Case'];
+    const llmCatalogInterpretationUsed = rankedCatalogCandidates.some((candidate) => candidate.source === 'llm_naming_advisory' || (candidate.sources || []).indexOf('llm_naming_advisory') !== -1);
+    const websiteCatalogEvidenceUsed = rankedCatalogCandidates.some((candidate) => /^website_|resolver_evidence/.test(candidate.source) || (candidate.sources || []).some((source) => /^website_|resolver_evidence/.test(source)));
+    const deterministicCatalogRankerUsed = true;
+    const namingEvidenceSource = fallbackUsed ? 'deterministic_fallback' : (llmCatalogInterpretationUsed ? 'website_catalog_plus_llm_advisory' : 'website_catalog_deterministic_ranker');
+    const namingConfidence = selectedCatalogCandidate ? selectedCatalogCandidate.confidence : 35;
     return {
-      _source: (isKombucha || isDraftCoffee) ? 'website-product-evidence' : 'server-precomputed-notes-website',
-      confidencePercent: (isKombucha || isDraftCoffee) ? 92 : 78,
-      industry_category: (isKombucha || isDraftCoffee) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId),
+      _source: namingEvidenceSource,
+      namingEvidenceSource,
+      namingConfidence,
+      confidencePercent: namingConfidence,
+      catalogCandidates: rankedCatalogCandidates,
+      selectedCatalogCandidate,
+      selectedCatalogCandidateSource: selectedCatalogCandidate && selectedCatalogCandidate.source || 'deterministic_fallback',
+      selectedCatalogCandidateReasons: selectedCatalogCandidate && selectedCatalogCandidate.reasons || [],
+      websiteCatalogEvidenceUsed,
+      llmCatalogInterpretationUsed,
+      deterministicCatalogRankerUsed,
+      fallbackUsed,
+      fallbackReason,
+      productSignalsUsed,
+      flavorSignalsUsed,
+      packSignalsUsed,
+      llmNamingAdvisoryUsed: llmCatalogInterpretationUsed,
+      websiteSignalsUsed: uniqueList(rankedCatalogCandidates.map((candidate) => candidate.name)),
+      prospectNameUsedAsFallbackOnly: true,
+      missingEvidence: fallbackReason ? ['website catalog product candidate'] : [],
+      selectedProductName: product,
+      selectedVariantName: product,
+      selectedPackName: 'Case',
+      industry_category: productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId),
       primary_product_candidate: product,
-      alternate_product_candidates: isKombucha
-        ? ['Kombucha Case Pack', 'Ginger Lemon Kombucha', 'Variety Pack Beverage Case']
-        : (isDraftCoffee ? ['Draft Latte Case Pack', 'Ready-to-Drink Coffee Case', 'Cold Brew Latte Pack'] : []),
-      evidence_terms: uniqueList(isKombucha
-        ? ['Health-Ade', 'kombucha', 'fermentation', 'ginger lemon', 'bottle', 'case pack']
-        : (isDraftCoffee ? ['La Colombe', 'draft latte', 'cold brew', 'milk', 'can filling', 'case pack'] : [prospect, website, product])),
+      alternate_product_candidates: rankedCatalogCandidates.slice(1, 7).map((candidate) => candidate.name),
+      evidence_terms: uniqueList([brand, product, productCategoryW457(product)].concat(productSignalsUsed)),
       competitor_terms: uniqueList(request && request.competitorTerms || []),
       roi_basis_terms: uniqueList(['line readiness', 'case availability', 'production proof']),
-      hero_item_name: isKombucha ? 'Health-Ade Kombucha Variety Pack Case' : `${brandProduct} Case`,
-      assembly_name: isKombucha ? 'Health-Ade Kombucha Batch' : `${brand} ${batch}`,
+      hero_item_name: `${brandProduct} Case`,
+      assembly_name: `${brandProduct} Batch`,
       component_names: components,
-      bom_name: isKombucha ? 'BOM - Health-Ade Kombucha Variety Pack' : `BOM - ${brandProduct}`,
-      bom_revision_name: isKombucha ? 'Revision 1 - Health-Ade Kombucha Variety Pack' : `Revision 1 - ${brandProduct}`,
-      routing_name: isKombucha ? 'Routing - Health-Ade Kombucha Batch' : `Routing - ${brand} ${batch}`,
+      bom_name: `BOM - ${brandProduct}`,
+      bom_revision_name: `Revision 1 - ${brandProduct}`,
+      routing_name: `Routing - ${brandProduct} Batch`,
       operation_names_by_seq: operations,
       sales_descriptions: {
-        hero: `${product} sales-ready case for the demo run.`,
-        assembly: `${batch} assembly for production readiness.`,
+        hero: `${brandProduct} sales-ready case for the demo run.`,
+        assembly: `${brandProduct} batch assembly for production readiness.`,
         components
       },
       purchase_descriptions: {
-        hero: `${product} procurement and replenishment proof item.`,
-        assembly: `${batch} production input planning.`,
+        hero: `${brandProduct} procurement and replenishment proof item.`,
+        assembly: `${brandProduct} production input planning.`,
         components
       },
       genericFallbackBlockedTerms: [

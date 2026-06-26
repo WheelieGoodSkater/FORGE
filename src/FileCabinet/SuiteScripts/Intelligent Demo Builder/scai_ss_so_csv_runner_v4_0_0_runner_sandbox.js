@@ -489,7 +489,36 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
     const names = namingPayload.payload;
-    log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({ source: namingPayload.source || names._source || 'deterministic', signalLen: names._signalLen || 0, industry_category: names.industry_category || '', namingFileId: namingPayload.fileId || namingFileId || null, namingPayloadFound: !!namingPayload.found, namingPayloadParsed: !!namingPayload.parsed, namingPayloadApplied: !!namingPayload.applied, namingDiscoveryMode: namingPayload.discoveryMode || 'none' }) });
+    log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
+      source: namingPayload.source || names._source || 'deterministic',
+      signalLen: names._signalLen || 0,
+      industry_category: names.industry_category || '',
+      namingFileId: namingPayload.fileId || namingFileId || null,
+      namingPayloadFound: !!namingPayload.found,
+      namingPayloadParsed: !!namingPayload.parsed,
+      namingPayloadApplied: !!namingPayload.applied,
+      namingDiscoveryMode: namingPayload.discoveryMode || 'none',
+      namingEvidenceSource: names.namingEvidenceSource || names._source || '',
+      namingConfidence: names.namingConfidence || names.confidencePercent || null,
+      catalogCandidates: names.catalogCandidates || [],
+      selectedCatalogCandidate: names.selectedCatalogCandidate || null,
+      selectedCatalogCandidateSource: names.selectedCatalogCandidateSource || '',
+      selectedCatalogCandidateReasons: names.selectedCatalogCandidateReasons || [],
+      websiteCatalogEvidenceUsed: names.websiteCatalogEvidenceUsed === true,
+      llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
+      deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,
+      fallbackUsed: names.fallbackUsed === true,
+      productSignalsUsed: names.productSignalsUsed || [],
+      flavorSignalsUsed: names.flavorSignalsUsed || [],
+      packSignalsUsed: names.packSignalsUsed || [],
+      llmNamingAdvisoryUsed: names.llmNamingAdvisoryUsed === true,
+      websiteSignalsUsed: names.websiteSignalsUsed || [],
+      prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
+      fallbackReason: names.fallbackReason || '',
+      selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
+      selectedVariantName: names.selectedVariantName || '',
+      selectedPackName: names.selectedPackName || ''
+    }) });
 
     // 4) Apply naming + one-line sales/purchase descriptions
     applyNamingToAnchors(ids, names, { enableManufacturing: finalEnableManufacturing, createNewHeroItem: effectiveCreateNewHeroItem, extId });
@@ -732,26 +761,34 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const routingMemo = `SCAI Demo Reset: ${extId} | ${prospect} | WIP routing`;
     const assemblyBomProof = verifyAssemblyBomContextW455({ assemblyId, bomId });
     const assemblyRoutingState = inspectAssemblyRoutingStateW455({ assemblyId, extId, expectedRoutingName: routingName });
-    const discoveredAssemblyRoutingId = assemblyRoutingState.managedRoutingId || null;
-    const searchedRoutingId = discoveredAssemblyRoutingId ? null : findManagedRoutingIdByBom({ bomId, subsidiaryId: subs, extId, preferredName: routingName });
-    const existingRoutingId = discoveredAssemblyRoutingId || searchedRoutingId || null;
+    const routingDiscovery = discoverReusableRoutingContextW455({
+      assemblyId,
+      bomId,
+      subsidiaryId: subs,
+      extId,
+      preferredName: routingName,
+      assemblyBomProof,
+      assemblyRoutingState
+    });
+    const existingRoutingId = routingDiscovery.acceptedRoutingId || null;
 
     log.audit({
       title: `WIP managed routing decision [${VERSION}]`,
       details: JSON.stringify({
         assemblyId: Number(assemblyId),
         existingRoutingId,
-        discoveredAssemblyRoutingId,
-        searchedRoutingId,
         assemblyBomProof,
         staleRoutingDetected: assemblyRoutingState.staleRoutingDetected,
         staleRoutingName: assemblyRoutingState.staleRoutingName || '',
         staleRoutingId: assemblyRoutingState.staleRoutingId || null,
-        createNew: !existingRoutingId
+        routingDiscovery,
+        createNew: false,
+        routingTemplateSearchDisabled: true,
+        routingPolicy: 'reuse_assembly_attached_or_bom_matched_routing_no_global_template'
       })
 	    });
   	
-    const reusableRoutingId = existingRoutingId || findRoutingCopyTemplateW455({ preferredName: routingName });
+    const reusableRoutingId = existingRoutingId;
     if (reusableRoutingId) {
       return reuseExistingRoutingContextW455({
         routingId: Number(reusableRoutingId),
@@ -765,325 +802,112 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         assemblyBomProof,
         assemblyRoutingState,
         existingRoutingId,
-        source: existingRoutingId ? 'managed-routing' : 'valid-routing-template'
+        routingDiscovery,
+        source: routingDiscovery.acceptedRoutingSource || 'bom-matched-routing'
       });
     }
 
-	    // Step 4: Reuse existing managed routing when possible; otherwise copy a known-valid
-    // routing template before falling back to direct creation. Copying keeps NetSuite's
-    // hidden routing/work-center context while still producing a new product routing.
-    const routingCopyTemplateId = existingRoutingId ? null : findRoutingCopyTemplateW455({ preferredName: routingName });
-    const routing = existingRoutingId
-      ? record.load({ type: 'manufacturingrouting', id: Number(existingRoutingId), isDynamic: true })
-      : (routingCopyTemplateId
-        ? record.copy({ type: 'manufacturingrouting', id: Number(routingCopyTemplateId), isDynamic: true })
-        : record.create({ type: 'manufacturingrouting', isDynamic: true }));
-
-    const headerTelemetry = {
+    return routingDiagnosticW455({
+      assemblyId,
+      bomId,
+      subsidiaryId: subs,
+      locationId: loc,
+      routingName,
       assemblyBomProof,
-      billofmaterials: { attempted: true, skippedBecauseAssemblyBomVerified: false, errorName: '', errorMessage: '' },
-      headerFieldsAccepted: [],
-      headerFieldsRejected: []
-    };
-    try {
-      routing.setValue({ fieldId: 'subsidiary', value: subs });
-      headerTelemetry.headerFieldsAccepted.push('subsidiary');
-    } catch (e) {
-      headerTelemetry.headerFieldsRejected.push({ fieldId: 'subsidiary', errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') });
-    }
-    try {
-      routing.setValue({ fieldId: 'billofmaterials', value: Number(bomId) });
-      headerTelemetry.headerFieldsAccepted.push('billofmaterials');
-    } catch (e) {
-      headerTelemetry.billofmaterials.errorName = e && e.name || '';
-      headerTelemetry.billofmaterials.errorMessage = e && e.message || String(e || '');
-      if (String(e && (e.name || e.message) || e).indexOf('INVALID_FLD_VALUE') !== -1 && assemblyBomProof && assemblyBomProof.assemblyBomVerified) {
-        headerTelemetry.billofmaterials.skippedBecauseAssemblyBomVerified = true;
-        log.audit({
-          title: `Routing BOM field skipped after assembly BOM verification [${VERSION}]`,
-          details: JSON.stringify({ assemblyId: Number(assemblyId), bomId: Number(bomId), errorName: headerTelemetry.billofmaterials.errorName, errorMessage: headerTelemetry.billofmaterials.errorMessage })
-        });
-      } else {
-        throw e;
-      }
-    }
-
-    // "location" is multi-select; pass array if we have one
-    if (loc) {
-      const locationOk = safeTryReturn(() => {
-        routing.setValue({ fieldId: 'location', value: [loc] });
-        return true;
-      });
-      if (locationOk) headerTelemetry.headerFieldsAccepted.push('location');
-      else headerTelemetry.headerFieldsRejected.push({ fieldId: 'location', errorName: 'LOCATION_SET_SKIPPED', errorMessage: 'location was not accepted on routing header' });
-    }
-
-    const routingHeaderFields = safeTryReturn(() => routing.getFields()) || [];
-    const routingDefaultField = firstExisting(routingHeaderFields, ['default', 'isdefault', 'masterdefault']);
-
-    routing.setValue({ fieldId: 'name', value: routingName });
-    headerTelemetry.headerFieldsAccepted.push('name');
-    if (routingDefaultField) {
-      const defaultOk = safeTryReturn(() => {
-        routing.setValue({ fieldId: routingDefaultField, value: true });
-        return true;
-      });
-      if (defaultOk) headerTelemetry.headerFieldsAccepted.push(routingDefaultField);
-      else headerTelemetry.headerFieldsRejected.push({ fieldId: routingDefaultField, errorName: 'DEFAULT_SET_SKIPPED', errorMessage: 'default field was not accepted on routing header' });
-    }
-    safeTry(() => routing.setValue({ fieldId: 'memo', value: routingMemo }));
-
-    log.audit({
-      title: `Routing header default field resolution [${VERSION}]`,
-      details: JSON.stringify({ routingDefaultField, routingHeaderFields })
+      assemblyRoutingState,
+      opNames,
+      centers: [c1, c2, c3],
+      templates: [t1, t2, t3],
+      routingDiscovery,
+      failureStage: 'no_assembly_attached_routing_available',
+      errorName: 'ROUTING_TEMPLATE_REUSE_BLOCKED',
+      errorMessage: `No reusable routing exists with BOM ${bomId}; create/seed one correct-BOM routing template or enable a dedicated correct-BOM routing creation path.`
     });
+	  }
 
-    const stepSublist = 'routingstep';
-    function updateCopiedRoutingStepsW455() {
-      const lineCount = Number(safeTryReturn(() => routing.getLineCount({ sublistId: stepSublist })) || 0);
-      const planned = [
-        { index: 1, seq: 10, name: opNames.op10 || 'Blending', center: c1, template: t1 },
-        { index: 2, seq: 20, name: opNames.op20 || 'Dispensing', center: c2, template: t2 },
-        { index: 3, seq: 30, name: opNames.op30 || 'Packaging', center: c3, template: t3 }
-      ];
-      return planned.map(function(plan, idx) {
-        if (idx >= lineCount) {
-          const row = buildRoutingOperationRowW453(plan.index, plan.seq, plan.name, plan.center, plan.template);
-          row.accepted = false;
-          row.rejected = true;
-          row.plannedOnly = true;
-          row.errorName = 'COPIED_ROUTING_LINE_MISSING';
-          row.errorMessage = 'Copied routing did not include this operation line.';
-          return row;
-        }
-        const line = idx;
-        const accepted = safeTryReturn(function() {
-          routing.selectLine({ sublistId: stepSublist, line });
-          safeTry(() => routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(plan.seq) }));
-          routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(plan.name).slice(0, 60) });
-          routing.commitLine({ sublistId: stepSublist });
-          return true;
-        }) === true;
-        const row = buildRoutingOperationRowW453(plan.index, plan.seq, plan.name, plan.center, plan.template);
-        row.accepted = accepted;
-        row.rejected = !accepted;
-        row.plannedOnly = !accepted;
-        row.errorName = accepted ? '' : 'COPIED_ROUTING_LINE_UPDATE_FAILED';
-        row.errorMessage = accepted ? '' : 'Copied routing line could not be relabeled.';
-        return row;
-      });
-    }
-
-    let operationRows = [];
-    let routingLocationClearedForOperationRetry = false;
-    if (routingCopyTemplateId && !existingRoutingId) {
-      operationRows = updateCopiedRoutingStepsW455();
-      log.audit({
-        title: `Routing copied from existing valid template W455 [${VERSION}]`,
-        details: JSON.stringify({ routingCopyTemplateId: Number(routingCopyTemplateId), operationRows })
-      });
-    } else {
-    clearRoutingSteps(routing, stepSublist);
-
-    function resolveRoutingStepFieldIds(routingRec, sublistId) {
-      const fields = safeTryReturn(() => routingRec.getSublistFields({ sublistId })) || [];
-
-      const setupCandidates = ['setuptimemin', 'setuptime', 'setuptimeminutes'];
-      const runRateCandidates = ['runrate', 'runratemin', 'runrateperunit'];
-
-      const setupField = firstExisting(fields, setupCandidates);
-      const runRateField = firstExisting(fields, runRateCandidates);
-
-      log.audit({
-        title: `Routing step field resolution [${VERSION}]`,
-        details: JSON.stringify({ sublistId, setupField, runRateField, fields })
-      });
-
-      return { setupField, runRateField };
-    }
-
-    const stepFieldIds = resolveRoutingStepFieldIds(routing, stepSublist);
-
-    function uniqueByIdW455(rows) {
-      const seen = {};
-      return (rows || []).filter(function(row) {
-        const id = row && row.id ? String(row.id) : '';
-        if (!id || seen[id]) return false;
-        seen[id] = true;
-        return true;
-      });
-    }
-
-    function addStep(seq, opName, center, template) {
-      const centerId = center && center.id;
-      const templateId = template && template.id;
-      try {
-        routing.selectNewLine({ sublistId: stepSublist });
-
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(seq) });
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(opName).slice(0, 60) });
-
-        // LIST fields must be set AFTER subsidiary is chosen (we already did)
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: Number(centerId) });
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: Number(templateId) });
-
-        if (!stepFieldIds.setupField) throw new Error('Could not resolve routing step setup-time field ID');
-        if (!stepFieldIds.runRateField) throw new Error('Could not resolve routing step run-rate field ID');
-
-        // Mandatory float fields: keep demo-safe decimal values low and deterministic
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.setupField, value: 0.5 });
-        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.runRateField, value: 1.0 });
-
-        log.audit({
-          title: `Routing step values before commit [${VERSION}]`,
-          details: JSON.stringify({
-            seq,
-            opName,
-            centerId: Number(centerId),
-            templateId: Number(templateId),
-            setupField: stepFieldIds.setupField,
-            setupValue: 0.5,
-            runRateField: stepFieldIds.runRateField,
-            runRateValue: 1.0
-          })
-        });
-
-        routing.commitLine({ sublistId: stepSublist });
-        return { accepted: true, seq, opName, centerId: Number(centerId), templateId: Number(templateId), center, template };
-      } catch (e) {
-        safeTry(() => routing.cancelLine({ sublistId: stepSublist }));
-        log.audit({
-          title: `Routing step skipped W455 [${VERSION}]`,
-          details: JSON.stringify({ seq, opName, centerId: Number(centerId), templateId: Number(templateId), errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') })
-        });
-        return { accepted: false, seq, opName, centerId: Number(centerId), templateId: Number(templateId), errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') };
-      }
-    }
-
-    function addStepWithCandidateFallback(seq, opName, preferredCenter, preferredTemplate) {
-      const centerPool = uniqueByIdW455([preferredCenter].concat(centers)).slice(0, 14);
-      const templatePool = uniqueByIdW455([preferredTemplate].concat(templates)).slice(0, 4);
-      let lastAttempt = null;
-      for (let ci = 0; ci < centerPool.length; ci += 1) {
-        for (let ti = 0; ti < templatePool.length; ti += 1) {
-          const attempt = addStep(seq, opName, centerPool[ci], templatePool[ti]);
-          lastAttempt = attempt;
-          if (attempt && attempt.accepted) return attempt;
-          if (!/manufacturingcosttemplate/i.test(String(attempt && attempt.errorMessage || ''))) break;
-        }
-      }
-      return lastAttempt || { accepted: false, seq, opName, centerId: 0, templateId: 0, errorName: 'NO_ROUTING_STEP_ATTEMPT', errorMessage: 'No center/template candidates were available.' };
-    }
-
-    function buildStepAttempts() {
-      return [
-        addStepWithCandidateFallback(10, opNames.op10 || 'Blending', c1, t1),
-        addStepWithCandidateFallback(20, opNames.op20 || 'Dispensing', c2, t2),
-        addStepWithCandidateFallback(30, opNames.op30 || 'Packaging', c3, t3)
-      ];
-    }
-
-    let stepAttempts = buildStepAttempts();
-    let acceptedSteps = stepAttempts.filter(function(step) { return step && step.accepted; });
-    if (!acceptedSteps.length && loc) {
-      routingLocationClearedForOperationRetry = true;
-      safeTry(() => routing.setValue({ fieldId: 'location', value: [] }));
-      safeTry(() => routing.setValue({ fieldId: 'location', value: null }));
-      clearRoutingSteps(routing, stepSublist);
-      log.audit({
-        title: `Routing operation retry without routing location W455 [${VERSION}]`,
-        details: JSON.stringify({ assemblyId: Number(assemblyId), bomId: Number(bomId), rejectedLocationId: Number(loc), reason: 'all work centers rejected under located routing header' })
-      });
-      stepAttempts = buildStepAttempts();
-      acceptedSteps = stepAttempts.filter(function(step) { return step && step.accepted; });
-    }
-    if (!acceptedSteps.length) {
-      throw new Error('No routing operation lines were accepted; NetSuite rejected all W455 operation rows.');
-    }
-    operationRows = [
-      buildRoutingOperationRowW453(1, 10, opNames.op10 || 'Blending', (stepAttempts[0] && stepAttempts[0].center) || c1, (stepAttempts[0] && stepAttempts[0].template) || t1),
-      buildRoutingOperationRowW453(2, 20, opNames.op20 || 'Dispensing', (stepAttempts[1] && stepAttempts[1].center) || c2, (stepAttempts[1] && stepAttempts[1].template) || t2),
-      buildRoutingOperationRowW453(3, 30, opNames.op30 || 'Packaging', (stepAttempts[2] && stepAttempts[2].center) || c3, (stepAttempts[2] && stepAttempts[2].template) || t3)
+  function routingDiagnosticW455({ assemblyId, bomId, subsidiaryId, locationId, routingName, assemblyBomProof, assemblyRoutingState, opNames, centers, templates, routingDiscovery, failureStage, errorName, errorMessage }) {
+    const operationRows = [
+      buildRoutingOperationRowW453(1, 10, opNames && opNames.op10 || 'Operation 10', centers && centers[0], templates && templates[0]),
+      buildRoutingOperationRowW453(2, 20, opNames && opNames.op20 || 'Operation 20', centers && centers[1], templates && templates[1]),
+      buildRoutingOperationRowW453(3, 30, opNames && opNames.op30 || 'Operation 30', centers && centers[2], templates && templates[2])
     ].map(function(row) {
-      const attempt = stepAttempts.find(function(step) { return Number(step.seq) === Number(row.sequence); }) || {};
-      row.accepted = attempt.accepted === true;
-      row.rejected = attempt.accepted === false;
-      row.errorName = attempt.errorName || '';
-      row.errorMessage = attempt.errorMessage || '';
-      row.plannedOnly = attempt.accepted !== true;
+      row.accepted = false;
+      row.rejected = false;
+      row.plannedOnly = true;
+      row.linkAuthority = { status: 'planned_operation_not_record_link', openable: false, url: '' };
       return row;
     });
-    }
-
-    const routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
-
-    log.audit({
-      title: existingRoutingId ? `Routing reused+updated [${VERSION}]` : `Routing created [${VERSION}]`,
-      details: JSON.stringify({
-        routingId,
-        existingRoutingId,
-        chosen: {
-          centers: [c1, c2, c3],
-          templates: [t1, t2, t3],
-          ops: opNames
-        }
-      })
-    });
-
-    // Step 5: Only attach when the assembly has no existing managed routing
-    let attachResult = 'not-attempted';
-    if (!existingRoutingId) {
-      attachResult = attachRoutingToAssemblySafe({ assemblyId, routingId });
-    } else {
-      attachResult = 'skipped-reused-existing-routing';
-      log.audit({
-        title: `Assembly routing attach skipped (reused existing routing) [${VERSION}]`,
-        details: JSON.stringify({ assemblyId: Number(assemblyId), routingId })
-      });
-    }
-
-    const verification = verifyAssemblyRoutingDefaultW455({ assemblyId, routingId, expectedRoutingName: routingName });
     return {
-      status: verification.defaulted ? 'defaulted' : (attachResult === 'attached' || attachResult === 'already-linked' ? 'attached' : 'created'),
-      routingId,
-      routing: {
-        id: String(routingId),
-        internalId: String(routingId),
-        url: recordUrlW453('manufacturingrouting', routingId),
-        name: routingName,
-        status: verification.defaulted ? 'defaulted' : (attachResult === 'attached' || attachResult === 'already-linked' ? 'attached' : 'created')
-      },
-      routingUrl: recordUrlW453('manufacturingrouting', routingId),
+      status: 'failed_best_effort',
+      decision: 'assembly-routing-required-diagnostic',
+      attachResult: 'not-attached-template-reuse-blocked',
+      routingId: null,
+      routing: null,
+      routingUrl: '',
       routingName,
       name: routingName,
-      existingRoutingId: existingRoutingId ? Number(existingRoutingId) : null,
-      copiedFromRoutingTemplateId: routingCopyTemplateId ? Number(routingCopyTemplateId) : null,
-      decision: existingRoutingId ? 'reused-existing-routing' : (routingCopyTemplateId ? 'copied-valid-routing-template' : 'created-new-routing'),
-      attachResult,
+      existingRoutingId: null,
+      copiedFromRoutingTemplateId: null,
       assemblyBomProof,
-      routingBomFieldSkippedBecauseAssemblyBomVerified: headerTelemetry.billofmaterials.skippedBecauseAssemblyBomVerified === true,
-      rejectedBomFieldError: headerTelemetry.billofmaterials.errorMessage ? headerTelemetry.billofmaterials : null,
-      routingHeaderTelemetry: headerTelemetry,
-      routingLocationClearedForOperationRetry,
-      attachDefaultVerification: verification,
-      staleRoutingDetected: assemblyRoutingState.staleRoutingDetected === true,
-      staleRoutingName: assemblyRoutingState.staleRoutingName || '',
-      staleRoutingId: assemblyRoutingState.staleRoutingId || null,
-      supersedeResult: assemblyRoutingState.staleRoutingDetected ? (verification.defaulted ? 'superseded-with-new-product-routing' : attachResult) : 'not-needed',
+      routingBomFieldSkippedBecauseAssemblyBomVerified: false,
+      rejectedBomFieldError: null,
+      routingHeaderTelemetry: {
+        assemblyBomProof,
+        billofmaterials: { attempted: false, skippedBecauseAssemblyBomVerified: false, errorName: '', errorMessage: '' },
+        headerFieldsAccepted: [],
+        headerFieldsRejected: []
+      },
+      attachDefaultVerification: {
+        assemblyId: Number(assemblyId || 0),
+        routingId: 0,
+        expectedRoutingName: routingName || '',
+        attached: false,
+        defaulted: false,
+        actualRoutingName: '',
+        staleRoutingDetected: assemblyRoutingState && assemblyRoutingState.staleRoutingDetected === true,
+        staleRoutingId: assemblyRoutingState && assemblyRoutingState.staleRoutingId || null,
+        staleRoutingName: assemblyRoutingState && assemblyRoutingState.staleRoutingName || '',
+        routings: assemblyRoutingState && assemblyRoutingState.routings || []
+      },
+      staleRoutingDetected: assemblyRoutingState && assemblyRoutingState.staleRoutingDetected === true,
+      staleRoutingName: assemblyRoutingState && assemblyRoutingState.staleRoutingName || '',
+      staleRoutingId: assemblyRoutingState && assemblyRoutingState.staleRoutingId || null,
+      supersedeResult: 'blocked-template-routing-context-wrong-bom',
+      routingDiscoveryMode: routingDiscovery && routingDiscovery.routingDiscoveryMode || 'none',
+      routingCandidatesInspected: routingDiscovery && routingDiscovery.routingCandidatesInspected || 0,
+      routingCandidatesRejected: routingDiscovery && routingDiscovery.routingCandidatesRejected || [],
+      acceptedRoutingId: null,
+      acceptedRoutingBomId: null,
+      acceptedRoutingName: '',
+      acceptedRoutingSource: '',
+      routingDiscovery,
       operationRows,
       routingOperations: operationRows,
-      chosen: {
-        centers: [c1, c2, c3],
-        templates: [t1, t2, t3],
-        ops: opNames,
-        copiedFromRoutingTemplateId: routingCopyTemplateId ? Number(routingCopyTemplateId) : null
+      chosen: { centers, templates, ops: opNames },
+      routingFailure: {
+        status: 'failed_best_effort',
+        failureStage,
+        errorName,
+        errorMessage,
+        assemblyId: Number(assemblyId || 0),
+        bomId: Number(bomId || 0),
+        subsidiaryId: Number(subsidiaryId || 0),
+        locationId: Number(locationId || 0),
+        assemblyBomProof,
+        assemblyRoutingState,
+        routingDiscovery,
+        nextFixHint: `No reusable routing exists with BOM ${bomId}; create/seed one correct-BOM routing template or enable a dedicated correct-BOM routing creation path.`
       }
     };
-	  }
-	
-  function reuseExistingRoutingContextW455({ routingId, routingName, routingMemo, assemblyId, bomId, opNames, centers, templates, assemblyBomProof, assemblyRoutingState, existingRoutingId, source }) {
+  }
+
+  function reuseExistingRoutingContextW455({ routingId, routingName, routingMemo, assemblyId, bomId, opNames, centers, templates, assemblyBomProof, assemblyRoutingState, existingRoutingId, routingDiscovery, source }) {
     const routingRec = record.load({ type: 'manufacturingrouting', id: Number(routingId), isDynamic: true });
     const stepSublist = 'routingstep';
+    const preSaveBomId = Number(safeTryReturn(() => routingRec.getValue({ fieldId: 'billofmaterials' })) || 0);
+    if (Number(preSaveBomId) !== Number(bomId)) {
+      throw new Error(`Exact BOM routing guard rejected routing ${routingId}; expected BOM ${bomId} but found ${preSaveBomId || 'blank'}.`);
+    }
     const lineCount = Number(safeTryReturn(() => routingRec.getLineCount({ sublistId: stepSublist })) || 0);
     const planned = [
       { index: 1, seq: 10, name: opNames.op10 || 'Operation 10', center: centers[0], template: templates[0] },
@@ -1118,22 +942,59 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       row.errorMessage = errorMessage;
       return row;
     });
-    safeTry(() => routingRec.setValue({ fieldId: 'name', value: routingName }));
-    safeTry(() => routingRec.setValue({ fieldId: 'memo', value: routingMemo }));
-    const saveResult = safeTryReturn(() => Number(routingRec.save({ enableSourcing: true, ignoreMandatoryFields: true }))) || Number(routingId);
+    const acceptedOperationRenames = operationRows.filter(function(row) { return row && row.accepted === true; });
+    let saveResult = null;
+    let routeSaveSkippedReason = '';
+    const headerFieldsAccepted = [];
+    const headerFieldsRejected = [];
+    const nameAccepted = safeTryReturn(() => {
+      routingRec.setValue({ fieldId: 'name', value: routingName });
+      return true;
+    }) === true;
+    if (nameAccepted) headerFieldsAccepted.push('name');
+    else headerFieldsRejected.push({ fieldId: 'name', reason: 'routing_name_rename_rejected' });
+    const memoAccepted = safeTryReturn(() => {
+      routingRec.setValue({ fieldId: 'memo', value: routingMemo });
+      return true;
+    }) === true;
+    if (memoAccepted) headerFieldsAccepted.push('memo');
+    else headerFieldsRejected.push({ fieldId: 'memo', reason: 'routing_memo_rename_rejected' });
+    if (acceptedOperationRenames.length || headerFieldsAccepted.length) {
+      saveResult = safeTryReturn(() => Number(routingRec.save({ enableSourcing: true, ignoreMandatoryFields: true }))) || Number(routingId);
+    } else {
+      routeSaveSkippedReason = 'no_header_or_operation_rename_accepted';
+    }
+    const postSaveVerification = verifyRoutingBomAndOperationsW456({
+      routingId: Number(routingId),
+      expectedBomId: Number(bomId),
+      expectedOperationNames: planned.map(function(plan) { return plan.name; })
+    });
+    let attachResult = 'not-attempted';
+    if (source === 'assembly-attached-routing' || source === 'managed-routing' || source === 'assembly-default-routing' || source === 'assembly-first-routing') {
+      attachResult = 'reused-existing-assembly-routing';
+    } else {
+      attachResult = attachRoutingToAssemblySafe({ assemblyId, routingId: Number(routingId) });
+    }
     const verification = verifyAssemblyRoutingDefaultW455({ assemblyId, routingId: Number(routingId), expectedRoutingName: routingName });
     log.audit({
       title: `Routing reused with product operation labels W455 [${VERSION}]`,
       details: JSON.stringify({
         routingId: Number(routingId),
         saveResult,
+        routeSaveSkippedReason,
         source,
         lineCount,
         routingName,
         operationRows,
-        assemblyBomProof
+        assemblyBomProof,
+        postSaveVerification,
+        routingDiscovery,
+        headerFieldsAccepted,
+        headerFieldsRejected
       })
     });
+    const acceptedRoutingSubsidiaryMismatch = routingDiscovery && routingDiscovery.acceptedRoutingSubsidiaryMismatch === true;
+    const attachAttempted = !(source === 'assembly-attached-routing' || source === 'managed-routing' || source === 'assembly-default-routing' || source === 'assembly-first-routing');
     return {
       status: verification.defaulted ? 'defaulted' : 'reused',
       routingId: Number(routingId),
@@ -1148,20 +1009,46 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingName,
       name: routingName,
       existingRoutingId: existingRoutingId ? Number(existingRoutingId) : Number(routingId),
-      copiedFromRoutingTemplateId: source === 'valid-routing-template' ? Number(routingId) : null,
+      copiedFromRoutingTemplateId: null,
       decision: 'reused-existing-routing-renamed-operations',
-      attachResult: 'reused-existing-routing-context-left-intact',
+      attachResult,
       assemblyBomProof,
+      acceptedRoutingId: routingDiscovery && routingDiscovery.acceptedRoutingId || Number(routingId),
+      acceptedRoutingBomId: routingDiscovery && routingDiscovery.acceptedRoutingBomId || Number(bomId),
+      acceptedRoutingName: routingDiscovery && routingDiscovery.acceptedRoutingName || routingName,
+      acceptedRoutingSource: routingDiscovery && routingDiscovery.acceptedRoutingSource || source,
+      acceptedRoutingHadStaleName: routingDiscovery && routingDiscovery.acceptedRoutingHadStaleName === true,
+      acceptedRoutingSubsidiaryMismatch,
+      acceptedRoutingSubsidiaryId: routingDiscovery && routingDiscovery.acceptedRoutingSubsidiaryId || null,
+      acceptedRoutingExpectedSubsidiaryId: routingDiscovery && routingDiscovery.acceptedRoutingExpectedSubsidiaryId || null,
+      acceptedRoutingSubsidiaryMismatchSeverity: acceptedRoutingSubsidiaryMismatch ? 'attach_or_wo_warning' : '',
+      routingDiscoveryMode: routingDiscovery && routingDiscovery.routingDiscoveryMode || source,
+      routingCandidatesInspected: routingDiscovery && routingDiscovery.routingCandidatesInspected || 0,
+      routingCandidatesRejected: routingDiscovery && routingDiscovery.routingCandidatesRejected || [],
+      routingDiscovery,
       routingBomFieldSkippedBecauseAssemblyBomVerified: false,
       rejectedBomFieldError: null,
       routingHeaderTelemetry: {
         assemblyBomProof,
         billofmaterials: { attempted: false, skippedBecauseAssemblyBomVerified: false, errorName: '', errorMessage: '' },
-        headerFieldsAccepted: ['name', 'memo'],
-        headerFieldsRejected: []
+        headerFieldsAccepted,
+        headerFieldsRejected
       },
       routingLocationClearedForOperationRetry: false,
       attachDefaultVerification: verification,
+      attachAttempted,
+      assemblyDefaultVerified: verification.defaulted === true,
+      routingOpenable: true,
+      routingBomVerified: postSaveVerification && postSaveVerification.bomVerified === true,
+      routingBomVerificationW456: postSaveVerification,
+      routingLineEditDiagnosticW456: {
+        status: acceptedOperationRenames.length ? 'operation_labels_updated_or_partially_updated' : 'operation_line_edit_not_exposed_header_rename_only',
+        acceptedCount: acceptedOperationRenames.length,
+        lineCount,
+        saveResult,
+        routeSaveSkippedReason,
+        postSaveVerification
+      },
       staleRoutingDetected: assemblyRoutingState && assemblyRoutingState.staleRoutingDetected === true,
       staleRoutingName: assemblyRoutingState && assemblyRoutingState.staleRoutingName || '',
       staleRoutingId: assemblyRoutingState && assemblyRoutingState.staleRoutingId || null,
@@ -1173,62 +1060,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         templates,
         ops: opNames,
         reusedRoutingId: Number(routingId),
-        reuseSource: source
+        reuseSource: source,
+        copiedFromRoutingTemplateId: null
       }
     };
-  }
-
-  function findRoutingCopyTemplateW455({ preferredName }) {
-    const preferred = String(preferredName || '').toLowerCase();
-    try {
-      const rows = search.create({
-        type: 'manufacturingrouting',
-        filters: [['isinactive', 'is', 'F']],
-        columns: ['internalid', 'name']
-      }).run().getRange({ start: 0, end: 50 }) || [];
-      let best = null;
-      let bestScore = -9999;
-      rows.forEach(function(row) {
-        const id = Number(row.getValue({ name: 'internalid' }));
-        const name = str(row.getValue({ name: 'name' }));
-        const lower = name.toLowerCase();
-        let score = 0;
-        if (!id) return;
-        if (/kombucha/.test(lower)) score += 100;
-        if (/production|routing|line/.test(lower)) score += 20;
-        if (preferred && lower === preferred) score += 80;
-        if (/bbq|cookie/.test(lower)) score -= 50;
-        if (score > bestScore) {
-          bestScore = score;
-          best = { id, name, score };
-        }
-      });
-      if (best && bestScore > 0) {
-        log.audit({
-          title: `Routing copy template selected W455 [${VERSION}]`,
-          details: JSON.stringify(best)
-        });
-        return Number(best.id);
-      }
-    } catch (e) {
-      log.audit({
-        title: `Routing copy template search failed W455 [${VERSION}]`,
-        details: JSON.stringify({ errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') })
-      });
-    }
-    const knownTemplateId = 707;
-    const known = safeTryReturn(function() {
-      const rec = record.load({ type: 'manufacturingrouting', id: knownTemplateId, isDynamic: false });
-      return { id: knownTemplateId, name: str(rec.getValue({ fieldId: 'name' })) };
-    });
-    if (known && /kombucha|production|routing|line/i.test(known.name || '')) {
-      log.audit({
-        title: `Routing copy template selected from known valid route W455 [${VERSION}]`,
-        details: JSON.stringify(known)
-      });
-      return knownTemplateId;
-    }
-    return null;
   }
 
   function attachRoutingToAssemblySafe({ assemblyId, routingId }) {
@@ -1364,55 +1199,275 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
 
-  function findManagedRoutingIdByBom({ bomId, subsidiaryId, extId, preferredName }) {
+  function discoverReusableRoutingContextW455({ assemblyId, bomId, subsidiaryId, extId, preferredName, assemblyBomProof, assemblyRoutingState }) {
+    const telemetry = {
+      routingDiscoveryMode: 'not_found',
+      routingCandidatesInspected: 0,
+      routingCandidatesRejected: [],
+      acceptedRoutingId: null,
+      acceptedRoutingBomId: null,
+      acceptedRoutingName: '',
+      acceptedRoutingSource: '',
+      acceptedRoutingScore: 0,
+      acceptedRoutingHadStaleName: false,
+      acceptedRoutingSubsidiaryMismatch: false,
+      acceptedRoutingSubsidiaryId: null,
+      acceptedRoutingExpectedSubsidiaryId: null,
+      assemblyRoutingCandidates: assemblyRoutingState && assemblyRoutingState.routings || []
+    };
+    const seen = {};
+
+    function rememberRejected(result) {
+      if (!result || !result.rejected) return;
+      telemetry.routingCandidatesRejected.push(result.rejected);
+      if (telemetry.routingCandidatesRejected.length > 30) telemetry.routingCandidatesRejected.shift();
+    }
+
+    function inspect(candidate) {
+      const id = Number(candidate && candidate.id);
+      if (!Number.isFinite(id) || id < 1 || seen[id]) return null;
+      seen[id] = true;
+      telemetry.routingCandidatesInspected += 1;
+      const result = inspectRoutingCandidateForExactBomW456({
+        candidate,
+        bomId,
+        subsidiaryId,
+        extId,
+        preferredName,
+        assemblyBomProof
+      });
+      if (!result.accepted) rememberRejected(result);
+      return result.accepted ? result.accepted : null;
+    }
+
+    function accept(best, mode) {
+      if (!best) return null;
+      telemetry.routingDiscoveryMode = mode;
+      telemetry.acceptedRoutingId = Number(best.id);
+      telemetry.acceptedRoutingBomId = Number(best.routeBomId);
+      telemetry.acceptedRoutingName = best.name || '';
+      telemetry.acceptedRoutingSource = best.source || mode;
+      telemetry.acceptedRoutingScore = Number(best.score || 0);
+      telemetry.acceptedRoutingHadStaleName = best.staleProductName === true;
+      telemetry.acceptedRoutingSubsidiaryMismatch = best.subsidiaryMismatch === true;
+      telemetry.acceptedRoutingSubsidiaryId = best.routeSubsidiary || null;
+      telemetry.acceptedRoutingExpectedSubsidiaryId = best.expectedSubsidiaryId || null;
+      return telemetry;
+    }
+
+    const assemblyCandidates = (assemblyRoutingState && assemblyRoutingState.routings || []).map(function(row) {
+      let source = 'assembly-attached-routing';
+      if (row.managed) source = 'managed-routing';
+      else if (row.isDefault) source = 'assembly-default-routing';
+      else if (Number(row.id) === Number(assemblyRoutingState && assemblyRoutingState.firstRoutingId)) source = 'assembly-first-routing';
+      return { id: row.id, name: row.name, source, assemblyAttached: true, isDefault: row.isDefault, managed: row.managed };
+    });
+    let best = null;
+    assemblyCandidates.forEach(function(candidate) {
+      const accepted = inspect(candidate);
+      if (accepted && (!best || accepted.score > best.score)) best = accepted;
+    });
+    if (best) return accept(best, 'assembly_loaded_exact_bom');
+
+    findRoutingCandidatesByBomSearchW456({ bomId, subsidiaryId }).forEach(function(candidate) {
+      const accepted = inspect(candidate);
+      if (accepted && (!best || accepted.score > best.score)) best = accepted;
+    });
+    if (best) return accept(best, 'manufacturingrouting_bom_search_loaded_exact_bom');
+
+    findRoutingCandidatesByLoadedActiveScanW456({ bomId, subsidiaryId }).forEach(function(candidate) {
+      const accepted = inspect(candidate);
+      if (accepted && (!best || accepted.score > best.score)) best = accepted;
+    });
+    if (best) return accept(best, 'loaded_active_routing_scan_exact_bom');
+
+    log.audit({
+      title: `W456 exact-BOM routing discovery diagnostic [${VERSION}]`,
+      details: JSON.stringify(telemetry)
+    });
+    return telemetry;
+  }
+
+  function inspectRoutingCandidateForExactBomW456({ candidate, bomId, subsidiaryId, extId, preferredName, assemblyBomProof }) {
+    const id = Number(candidate && candidate.id);
+    const source = candidate && candidate.source || 'unknown';
+    const rejectedBase = { id, source, candidateName: candidate && candidate.name || '' };
+    const rec = safeTryReturn(function() {
+      return record.load({ type: 'manufacturingrouting', id, isDynamic: false });
+    });
+    if (!rec) {
+      return { accepted: null, rejected: Object.assign(rejectedBase, { reason: 'routing_load_failed' }) };
+    }
+    const routeBomId = Number(safeTryReturn(() => rec.getValue({ fieldId: 'billofmaterials' })) || 0);
+    const routeSubsidiary = Number(safeTryReturn(() => rec.getValue({ fieldId: 'subsidiary' })) || 0);
+    const name = str(safeTryReturn(() => rec.getValue({ fieldId: 'name' })) || candidate.name || '');
+    const memo = str(safeTryReturn(() => rec.getValue({ fieldId: 'memo' })) || '');
+    const staleProductName = /poppi|bbq|cookie|sauce/i.test(name);
+    const subsidiaryMismatch = !!(subsidiaryId && routeSubsidiary && Number(routeSubsidiary) !== Number(subsidiaryId));
+    if (Number(routeBomId) !== Number(bomId)) {
+      return { accepted: null, rejected: Object.assign(rejectedBase, { name, routeBomId, expectedBomId: Number(bomId), reason: 'wrong_bom' }) };
+    }
+    if (staleProductName && !(assemblyBomProof && assemblyBomProof.assemblyBomVerified)) {
+      return { accepted: null, rejected: Object.assign(rejectedBase, { name, routeBomId, staleProductName: true, reason: 'stale_product_name_without_assembly_bom_proof' }) };
+    }
+    let score = 10;
+    if (candidate && candidate.assemblyAttached) score += 100;
+    if (candidate && candidate.isDefault) score += 40;
+    if (candidate && candidate.managed) score += 35;
+    if (extId && memo.indexOf(extId) !== -1) score += 80;
+    if (preferredName && name === preferredName) score += 70;
+    if (memo.indexOf('SCAI Demo Reset') !== -1 || /^SCAI\b|^Routing - /i.test(name)) score += 20;
+    if (/draft|latte|cold brew|coffee|kombucha|soda|beverage|batch|routing/i.test(name)) score += 10;
+    if (staleProductName) score -= 25;
+    if (subsidiaryMismatch) score -= 15;
+    return {
+      accepted: {
+        id,
+        name,
+        memo,
+        routeBomId,
+        routeSubsidiary,
+        expectedSubsidiaryId: subsidiaryId ? Number(subsidiaryId) : null,
+        subsidiaryMismatch,
+        subsidiaryMismatchSeverity: subsidiaryMismatch ? 'attach_or_wo_warning' : '',
+        source,
+        score,
+        staleProductName,
+        assemblyAttached: candidate && candidate.assemblyAttached === true
+      },
+      rejected: null
+    };
+  }
+
+  function findRoutingCandidatesByBomSearchW456({ bomId, subsidiaryId }) {
     try {
       const filters = [['billofmaterials', 'anyof', Number(bomId)]];
-      if (subsidiaryId) filters.push('AND', ['subsidiary', 'anyof', Number(subsidiaryId)]);
-
-      const cols = [
-        search.createColumn({ name: 'internalid', sort: search.Sort.ASC }),
-        search.createColumn({ name: 'name' }),
-        search.createColumn({ name: 'memo' }),
-        search.createColumn({ name: 'billofmaterials' })
-      ];
-
-      const rows = search.create({ type: 'manufacturingrouting', filters, columns: cols })
-        .run().getRange({ start: 0, end: 100 }) || [];
-
-      let best = null;
-      let bestScore = -9999;
-      rows.forEach(function(r) {
-        const id = Number(r.getValue({ name: 'internalid' }));
-        if (!Number.isFinite(id)) return;
-        const name = str(r.getValue({ name: 'name' }));
-        const memo = str(r.getValue({ name: 'memo' }));
-        let score = 0;
-        const sameRun = !!(extId && memo.indexOf(extId) !== -1);
-        const exactProductName = !!(preferredName && name === preferredName);
-        if (sameRun) score += 100;
-        if (exactProductName) score += 80;
-        if (memo.indexOf('SCAI Demo Reset') !== -1) score += 10;
-        if (name.indexOf('SCAI Routing') === 0) score += 5;
-        if (!sameRun && !exactProductName) score -= 100;
-        if (score > bestScore) {
-          bestScore = score;
-          best = { id, name, memo, score, sameRun, exactProductName };
-        }
-      });
-
-      log.audit({
-        title: `Manufacturing routing search fallback [${VERSION}]`,
-        details: JSON.stringify({ bomId: Number(bomId), subsidiaryId: Number(subsidiaryId || 0), rows: rows.length, chosen: best })
-      });
-
-      return best && (best.sameRun || best.exactProductName) ? Number(best.id) : null;
+      const rows = search.create({
+        type: 'manufacturingrouting',
+        filters,
+        columns: [
+          search.createColumn({ name: 'internalid', sort: search.Sort.ASC }),
+          search.createColumn({ name: 'name' }),
+          search.createColumn({ name: 'memo' }),
+          search.createColumn({ name: 'billofmaterials' })
+        ]
+      }).run().getRange({ start: 0, end: 100 }) || [];
+      return rows.map(function(row) {
+        return {
+          id: Number(row.getValue({ name: 'internalid' })),
+          name: str(row.getValue({ name: 'name' })),
+          memo: str(row.getValue({ name: 'memo' })),
+          searchBomId: Number(row.getValue({ name: 'billofmaterials' })) || 0,
+          source: 'bom-search-routing'
+        };
+      }).filter(function(row) { return Number.isFinite(Number(row.id)) && Number(row.id) > 0; });
     } catch (e) {
-      log.error({
-        title: `Manufacturing routing search fallback failed [${VERSION}]`,
-        details: JSON.stringify({ bomId: Number(bomId), subsidiaryId: Number(subsidiaryId || 0), error: String(e && e.message ? e.message : e) })
+      log.audit({
+        title: `Manufacturing routing BOM search failed W456 [${VERSION}]`,
+        details: JSON.stringify({ bomId: Number(bomId), subsidiaryId: Number(subsidiaryId || 0), errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') })
       });
-      return null;
+      return [];
     }
+  }
+
+  function findRoutingCandidatesByLoadedActiveScanW456({ bomId, subsidiaryId }) {
+    try {
+      const rows = search.create({
+        type: 'manufacturingrouting',
+        filters: [['isinactive', 'is', 'F']],
+        columns: [
+          search.createColumn({ name: 'internalid', sort: search.Sort.DESC }),
+          search.createColumn({ name: 'name' }),
+          search.createColumn({ name: 'memo' })
+        ]
+      }).run().getRange({ start: 0, end: 200 }) || [];
+      const out = [];
+      rows.forEach(function(row) {
+        const id = Number(row.getValue({ name: 'internalid' }));
+        if (!Number.isFinite(id) || id < 1) return;
+        const rec = safeTryReturn(function() {
+          return record.load({ type: 'manufacturingrouting', id, isDynamic: false });
+        });
+        if (!rec) {
+          out.push({ id, name: str(row.getValue({ name: 'name' })), source: 'loaded-active-routing-scan-load-failed' });
+          return;
+        }
+        const routeBomId = Number(safeTryReturn(() => rec.getValue({ fieldId: 'billofmaterials' })) || 0);
+        const routeSubsidiary = Number(safeTryReturn(() => rec.getValue({ fieldId: 'subsidiary' })) || 0);
+        if (Number(routeBomId) !== Number(bomId)) {
+          out.push({ id, name: str(row.getValue({ name: 'name' })), source: 'loaded-active-routing-scan', preloadedRouteBomId: routeBomId });
+          return;
+        }
+        out.push({
+          id,
+          name: str(safeTryReturn(() => rec.getValue({ fieldId: 'name' })) || row.getValue({ name: 'name' })),
+          memo: str(safeTryReturn(() => rec.getValue({ fieldId: 'memo' })) || row.getValue({ name: 'memo' })),
+          source: 'loaded-active-routing-scan',
+          preloadedRouteBomId: routeBomId,
+          preloadedRouteSubsidiary: routeSubsidiary,
+          preloadedSubsidiaryMismatch: !!(subsidiaryId && routeSubsidiary && Number(routeSubsidiary) !== Number(subsidiaryId))
+        });
+      });
+      log.audit({
+        title: `Manufacturing routing loaded BOM scan W456 [${VERSION}]`,
+        details: JSON.stringify({ bomId: Number(bomId), subsidiaryId: Number(subsidiaryId || 0), rows: rows.length, candidates: out.length })
+      });
+      return out;
+    } catch (e) {
+      log.audit({
+        title: `Manufacturing routing loaded BOM scan failed W456 [${VERSION}]`,
+        details: JSON.stringify({ bomId: Number(bomId), errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') })
+      });
+      return [];
+    }
+  }
+
+  function findManagedRoutingIdByBom(args) {
+    const discovery = discoverReusableRoutingContextW455(Object.assign({
+      assemblyId: 0,
+      assemblyBomProof: null,
+      assemblyRoutingState: { routings: [] }
+    }, args || {}));
+    return discovery && discovery.acceptedRoutingId ? Number(discovery.acceptedRoutingId) : null;
+  }
+
+  function findRoutingIdByLoadedBomW455(args) {
+    const discovery = discoverReusableRoutingContextW455(Object.assign({
+      assemblyId: 0,
+      assemblyBomProof: null,
+      assemblyRoutingState: { routings: [] }
+    }, args || {}));
+    return discovery && discovery.acceptedRoutingId ? Number(discovery.acceptedRoutingId) : null;
+  }
+
+  function verifyRoutingBomAndOperationsW456({ routingId, expectedBomId, expectedOperationNames }) {
+    const verification = {
+      routingId: Number(routingId || 0),
+      expectedBomId: Number(expectedBomId || 0),
+      actualBomId: 0,
+      bomVerified: false,
+      operationLabelsVerified: false,
+      operationLabelsFound: [],
+      expectedOperationNames: expectedOperationNames || [],
+      errorName: '',
+      errorMessage: ''
+    };
+    try {
+      const rec = record.load({ type: 'manufacturingrouting', id: Number(routingId), isDynamic: false });
+      verification.actualBomId = Number(safeTryReturn(() => rec.getValue({ fieldId: 'billofmaterials' })) || 0);
+      verification.bomVerified = Number(verification.actualBomId) === Number(expectedBomId);
+      const count = Number(safeTryReturn(() => rec.getLineCount({ sublistId: 'routingstep' })) || 0);
+      for (let i = 0; i < Math.min(3, count); i++) {
+        verification.operationLabelsFound.push(str(safeTryReturn(() => rec.getSublistValue({ sublistId: 'routingstep', fieldId: 'operationname', line: i }))));
+      }
+      verification.operationLabelsVerified = (expectedOperationNames || []).slice(0, 3).some(function(name) {
+        return verification.operationLabelsFound.indexOf(String(name || '').slice(0, 60)) !== -1;
+      });
+    } catch (e) {
+      verification.errorName = e && e.name || '';
+      verification.errorMessage = e && e.message || String(e || '');
+    }
+    return verification;
   }
 
   function findManagedAssemblyRoutingId({ assemblyId, extId }) {
@@ -3434,6 +3489,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }));
 
     if (enableManufacturing && ids.assemblyId) {
+      const wipStackRenameTelemetryW456 = {
+        assemblyId: Number(ids.assemblyId || 0),
+        bomId: Number(ids.bomId || 0),
+        bomRevId: Number(ids.bomRevId || 0),
+        assemblyName: asmNamePair.itemIdName,
+        assemblyDisplayName: asmNamePair.displayName,
+        bomName: '',
+        bomRevisionName: '',
+        assemblyRenameAttempted: true,
+        bomRenameAttempted: false,
+        bomRevisionRenameAttempted: false
+      };
       safeTry(() => record.submitFields({
         type: 'assemblyitem',
         id: Number(ids.assemblyId),
@@ -3469,6 +3536,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
       if (ids.bomId) {
         const bomNamePair = buildDifferentiatedNames(names.bom_name, extId);
+        wipStackRenameTelemetryW456.bomName = bomNamePair.itemIdName;
+        wipStackRenameTelemetryW456.bomRenameAttempted = true;
         safeTry(() => record.submitFields({
           type: 'bom',
           id: Number(ids.bomId),
@@ -3479,6 +3548,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
       if (ids.bomRevId) {
         const bomRevNamePair = buildDifferentiatedNames(names.bom_revision_name, extId);
+        wipStackRenameTelemetryW456.bomRevisionName = bomRevNamePair.itemIdName;
+        wipStackRenameTelemetryW456.bomRevisionRenameAttempted = true;
         safeTry(() => record.submitFields({
           type: 'bomrevision',
           id: Number(ids.bomRevId),
@@ -3486,6 +3557,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           options: { enableSourcing: true, ignoreMandatoryFields: true }
         }));
       }
+      log.audit({
+        title: `Existing WIP stack naming applied W456 [${VERSION}]`,
+        details: JSON.stringify(wipStackRenameTelemetryW456)
+      });
     }
   }
 
@@ -3740,17 +3815,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       });
       routingOperations.forEach(function(op) {
         op.routingId = String(args.routingId);
-        op.url = records.routing.url;
-        op.openableUrl = records.routing.url;
-        op.linkAuthority = records.routing.linkAuthority;
-        op.plannedOnly = op.accepted === false;
+        op.url = '';
+        op.openableUrl = '';
+        op.linkAuthority = { status: 'planned_operation_not_record_link', openable: false, url: '' };
+        op.plannedOnly = true;
       });
     } else if (args.enableWip) {
       records.routingDiagnostic = buildRoutingDiagnosticW453(args);
     }
-    routingOperations.forEach(function(op, index) {
-      records[`operation${index + 1}`] = op;
-    });
 
     const generatedRecordOwner = 'governed_runner_internal_build_engine';
     const payload = {
@@ -3813,6 +3885,26 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingPayloadParsed: !!namingPayload.parsed,
       namingPayloadApplied: !!namingPayload.applied,
       namingSource: namingPayload.source || names._source || 'deterministic',
+      namingEvidenceSource: names.namingEvidenceSource || names._source || '',
+      namingConfidence: names.namingConfidence || names.confidencePercent || null,
+      catalogCandidates: names.catalogCandidates || [],
+      selectedCatalogCandidate: names.selectedCatalogCandidate || null,
+      selectedCatalogCandidateSource: names.selectedCatalogCandidateSource || '',
+      selectedCatalogCandidateReasons: names.selectedCatalogCandidateReasons || [],
+      websiteCatalogEvidenceUsed: names.websiteCatalogEvidenceUsed === true,
+      llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
+      deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,
+      fallbackUsed: names.fallbackUsed === true,
+      productSignalsUsed: names.productSignalsUsed || [],
+      flavorSignalsUsed: names.flavorSignalsUsed || [],
+      packSignalsUsed: names.packSignalsUsed || [],
+      llmNamingAdvisoryUsed: names.llmNamingAdvisoryUsed === true,
+      websiteSignalsUsed: names.websiteSignalsUsed || [],
+      prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
+      fallbackReason: names.fallbackReason || '',
+      selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
+      selectedVariantName: names.selectedVariantName || '',
+      selectedPackName: names.selectedPackName || '',
       workOrderTelemetry: args.workOrderTelemetry || null,
       openLinkPreconditions: {
         realUrlsOnly: true,
@@ -4115,6 +4207,26 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       productCandidateSource: names._source || args.namingPayload && args.namingPayload.source || 'legacy_runner_naming_pack',
       confidencePercent: Number(names.confidencePercent || names.confidence_percent || 0) || null,
       evidenceTerms: Array.isArray(names.evidence_terms) ? names.evidence_terms : [],
+      namingEvidenceSource: names.namingEvidenceSource || names._source || '',
+      namingConfidence: names.namingConfidence || names.confidencePercent || null,
+      catalogCandidates: names.catalogCandidates || [],
+      selectedCatalogCandidate: names.selectedCatalogCandidate || null,
+      selectedCatalogCandidateSource: names.selectedCatalogCandidateSource || '',
+      selectedCatalogCandidateReasons: names.selectedCatalogCandidateReasons || [],
+      websiteCatalogEvidenceUsed: names.websiteCatalogEvidenceUsed === true,
+      llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
+      deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,
+      fallbackUsed: names.fallbackUsed === true,
+      productSignalsUsed: names.productSignalsUsed || [],
+      flavorSignalsUsed: names.flavorSignalsUsed || [],
+      packSignalsUsed: names.packSignalsUsed || [],
+      llmNamingAdvisoryUsed: names.llmNamingAdvisoryUsed === true,
+      websiteSignalsUsed: names.websiteSignalsUsed || [],
+      prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
+      fallbackReason: names.fallbackReason || '',
+      selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
+      selectedVariantName: names.selectedVariantName || '',
+      selectedPackName: names.selectedPackName || '',
       nextCandidateHint: ''
     };
   }

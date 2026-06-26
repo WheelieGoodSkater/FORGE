@@ -14378,10 +14378,11 @@
   function rawRunnerRecordsW215(payload) {
     const source = payload || {};
     const records = parseMaybeJsonObjectW455(source.records || source.createdRecords || source.result && source.result.records || {});
-    if (Array.isArray(source.displayReadyRecords)) return source.displayReadyRecords;
-    if (Array.isArray(source.recordsArray)) return source.recordsArray;
-    if (Array.isArray(source.displayRecords)) return source.displayRecords;
-    if (Array.isArray(records)) return records;
+    const withoutOperationLinkRowsW455 = (items) => arrayValue(items).filter((record) => !isOperationLinkRecordW455(record));
+    if (Array.isArray(source.displayReadyRecords)) return withoutOperationLinkRowsW455(source.displayReadyRecords);
+    if (Array.isArray(source.recordsArray)) return withoutOperationLinkRowsW455(source.recordsArray);
+    if (Array.isArray(source.displayRecords)) return withoutOperationLinkRowsW455(source.displayRecords);
+    if (Array.isArray(records)) return withoutOperationLinkRowsW455(records);
     const collected = [];
     Object.keys(records || {}).forEach((key) => {
       const value = records[key];
@@ -14408,14 +14409,12 @@
       'workOrder',
       'routing',
       'routingDiagnostic',
-      'routingOperations',
-      'operationPlanRecords',
       'workCenter',
       'wipObject'
     ].forEach((key) => {
       if (source[key] && typeof source[key] === 'object') collected.push(Object.assign({ outputRole: key }, source[key]));
     });
-    return collected;
+    return withoutOperationLinkRowsW455(collected);
   }
 
   function findRunnerRecordByW215Aliases(payload, aliases) {
@@ -23808,28 +23807,28 @@
       }
       .idb-w415-demo-cockpit {
         display: grid;
-        gap: 9px;
+        gap: var(--rw-space-150);
       }
       .idb-w415-cockpit-header {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(150px, 1.15fr);
+        grid-template-columns: minmax(0, 1fr) minmax(136px, .9fr);
         align-items: flex-start;
-        gap: 10px;
+        gap: var(--rw-space-150);
       }
       .idb-w415-cockpit-heading {
         min-width: 0;
       }
       .idb-w415-cockpit-title {
-        color: #17202d;
-        font-size: 18px;
-        font-weight: 950;
-        line-height: 1.12;
+        color: var(--rw-color-text-primary);
+        font-size: var(--rw-font-size-heading);
+        font-weight: 900;
+        line-height: 1.18;
       }
       .idb-w415-cockpit-subtitle {
         margin-top: 3px;
-        color: #2f4155;
-        font-size: 12px;
-        line-height: 1.35;
+        color: var(--rw-color-text-secondary);
+        font-size: var(--rw-font-size-body-sm);
+        line-height: var(--rw-line-height-body);
       }
       .idb-w415-cockpit-status {
         display: flex;
@@ -23844,8 +23843,8 @@
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: 4px;
-        padding: 6px;
+        gap: var(--rw-space-050);
+        padding: var(--rw-space-100);
         border: 1px solid #d5e2e8;
         border-radius: 7px;
         background: #f8fbfc;
@@ -23885,18 +23884,66 @@
         border-left: 4px solid #006685;
         border-radius: 7px;
         background: #fbfdff;
-        padding: 8px;
+        padding: var(--rw-space-150);
+      }
+      .idb-w456-erp-build-story {
+        display: grid;
+        gap: var(--rw-space-100);
+      }
+      .idb-w456-story-grid {
+        display: grid;
+        grid-template-columns: var(--idb-cockpit-columns, repeat(auto-fit, minmax(150px, 1fr)));
+        gap: var(--rw-space-100);
+      }
+      .idb-w456-story-cell {
+        border: 1px solid #cbd7df;
+        border-radius: 7px;
+        background: #fff;
+        padding: var(--rw-space-150);
+      }
+      .idb-w456-story-cell-build {
+        background: #f8fbfc;
+      }
+      .idb-w456-story-diagnostic {
+        border-left: 4px solid #7a5f15;
+        background: #fffdf6;
+      }
+      .idb-w456-story-path {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--rw-space-050);
+        margin-top: var(--rw-space-100);
+      }
+      .idb-w456-story-path-node {
+        max-width: 100%;
+        border: 1px solid #d8e1e6;
+        border-radius: 999px;
+        background: #fff;
+        color: var(--rw-color-text-primary);
+        font-size: var(--rw-font-size-body-sm);
+        font-weight: 850;
+        line-height: 1.2;
+        padding: 3px 7px;
+        text-decoration: none;
+        overflow-wrap: anywhere;
+      }
+      .idb-w456-story-path-node:hover,
+      .idb-w456-story-path-node:focus-visible {
+        background: #e8f4f7;
+        outline: 2px solid #006685;
+        outline-offset: 1px;
       }
       .idb-w415-cockpit-grid {
         display: grid;
         grid-template-columns: var(--idb-cockpit-columns, repeat(auto-fit, minmax(150px, 1fr)));
-        gap: 7px;
+        gap: var(--rw-space-100);
       }
       .idb-w415-cockpit-panel {
         border: 1px solid #cbd7df;
         border-radius: 7px;
         background: #fff;
-        padding: 8px;
+        padding: var(--rw-space-150);
       }
       .idb-w415-cockpit-panel.idb-w415-roi-panel {
         border-left: 4px solid #4f7f52;
@@ -23941,38 +23988,38 @@
       }
       .idb-w415-cockpit-records {
         display: grid;
-        gap: 5px;
+        gap: var(--rw-space-050);
       }
       .idb-w442-cockpit-flow-group {
         display: grid;
-        gap: 5px;
+        gap: var(--rw-space-050);
       }
       .idb-w442-cockpit-flow-title {
         cursor: pointer;
-        color: #536579;
-        font-size: 9px;
+        color: var(--rw-color-text-muted);
+        font-size: var(--rw-font-size-body-sm);
         font-weight: 900;
         letter-spacing: 0;
         text-transform: uppercase;
-        padding: 2px 1px 0;
+        padding: 1px 0 0;
       }
       .idb-w446-flow-group-body {
         display: grid;
-        gap: 5px;
+        gap: var(--rw-space-050);
       }
       .idb-w415-cockpit-record-row {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        gap: 8px;
+        gap: var(--rw-space-100);
         border: 1px solid #d8e1e6;
         border-radius: 7px;
         background: #fff;
-        padding: 7px 8px;
+        padding: var(--rw-space-100) var(--rw-space-150);
       }
       .idb-w415-record-name {
-        color: #17202d;
-        font-size: 11px;
+        color: var(--rw-color-text-primary);
+        font-size: var(--rw-font-size-body-sm);
         font-weight: 850;
         line-height: 1.25;
         overflow-wrap: anywhere;
@@ -24081,10 +24128,10 @@
         background: #8aa0ad;
       }
       .idb-w415-record-label {
-        color: #536579;
-        font-size: 9px;
+        color: var(--rw-color-text-muted);
+        font-size: var(--rw-font-size-body-sm);
         font-weight: 900;
-        letter-spacing: .04em;
+        letter-spacing: 0;
         text-transform: uppercase;
       }
       .idb-w415-claim-caution {
@@ -24092,7 +24139,7 @@
         border-left: 4px solid #006685;
         border-radius: 7px;
         background: #fff;
-        padding: 8px;
+        padding: var(--rw-space-150);
       }
       .idb-w416-day-in-life {
         display: grid;
@@ -26103,6 +26150,11 @@
     return !!(item && (item.plannedOnly === true || /manufacturingrouting_operation_plan|operation\d+|planned operation/.test(text)));
   }
 
+  function isOperationLinkRecordW455(item) {
+    const text = `${item && (item.role || '') || ''} ${item && (item.label || '') || ''} ${item && (item.recordType || item.type || '') || ''} ${item && (item.name || item.recordName || '') || ''}`.toLowerCase();
+    return !!(item && (isPlannedOperationRowW449(item) || /manufacturingrouting_operation|routing operation|\boperation\s*\d+\b|planned operation/.test(text)));
+  }
+
   function isDiagnosticRowW449(item) {
     return /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`);
   }
@@ -26178,6 +26230,74 @@
           ${planned ? `<ol class="idb-w449-operation-plan">${planned}</ol>` : '<div class="idb-copy">No planned operation detail returned.</div>'}
           ${diagnosticCopy || '<div class="idb-copy">No WIP diagnostic returned.</div>'}
         </details>
+      </div>
+    `;
+  }
+
+  function erpBuildStoryModelW456(model, visibleNarrative, objects, diagnostics, detailModelW444, storyLine, proofLine) {
+    const rows = arrayValue(objects);
+    const customer = findCockpitRowW449(rows, [/customer|prospect|account|crm/], true);
+    const salesOrder = findCockpitRowW449(rows, [/sales[_\s-]*order|salesorder|demo sales order|demand/], true);
+    const finishedGood = findCockpitRowW449(rows, [/finished|output|hero|sellable|inventoryitem|item/], true);
+    const assembly = findCockpitRowW449(rows, [/assembly|production batch/], true);
+    const bomRevision = findCockpitRowW449(rows, [/bom[_\s-]*revision|bomrevision|revision/], true);
+    const routing = findCockpitRowW449(rows, [/manufacturingrouting|routing/], true);
+    const workOrder = findCockpitRowW449(rows, [/work\s*order|workorder/], true);
+    const components = rows.filter((item) => {
+      const text = `${item && (item.role || item.canonicalRole || '') || ''} ${item && (item.label || item.recordType || item.type || item.name || item.recordName || '') || ''}`.toLowerCase();
+      return /component|ingredient|input|material/.test(text) && !isOperationLinkRecordW455(item);
+    }).slice(0, 3);
+    const statusText = `${model && model.finalNavigation && model.finalNavigation.status || ''} ${model && model.state && model.state.integratedBuildRunnerResult && model.state.integratedBuildRunnerResult.status || ''}`.toLowerCase();
+    const hasWipDiagnostic = /completed_with_wip_diagnostic/.test(statusText) || arrayValue(diagnostics).some((item) => /routing|work\s*order|workorder|wip/i.test(`${item && (item.role || item.label || item.recordType || item.type || item.name) || ''}`));
+    return {
+      demandPath: [customer, salesOrder, finishedGood].filter(Boolean),
+      buildPath: [assembly, bomRevision, routing, workOrder, finishedGood].filter(Boolean),
+      components,
+      hasWipDiagnostic,
+      recordCount: rows.length,
+      diagnosticCount: arrayValue(diagnostics).length,
+      headline: firstNonBlank(storyLine, detailModelW444 && detailModelW444.roi && detailModelW444.roi.metricDirection, 'Open verified records to prove the ERP story.'),
+      proof: firstNonBlank(proofLine, 'Open verified records to prove demand, supply, WIP status, and impact.'),
+      readiness: components.length
+        ? `Inputs: ${components.map((item) => consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW441(item, visibleNarrative)).filter(Boolean).slice(0, 3).join(' / ')}`
+        : 'Readiness evidence appears as returned component, vendor, purchase, or diagnostic records.'
+    };
+  }
+
+  function renderErpBuildStoryW456(storyModel) {
+    if (!storyModel) return '';
+    const node = (item, fallback) => {
+      const label = firstNonBlank(item && consultantRunNavigationNameW334(item), item && consultantRunNavigationDisplayW441(item), fallback);
+      const authority = item ? recordOpenAuthorityW446(item) : null;
+      if (authority && authority.openable === true) {
+        return `<a class="idb-w456-story-path-node" href="${escapeHtml(authority.url)}" target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`;
+      }
+      return `<span class="idb-w456-story-path-node">${escapeHtml(label || (authority && authority.displayLabel) || 'Open pending')}</span>`;
+    };
+    const path = (items, fallback) => arrayValue(items).length
+      ? arrayValue(items).map((item) => node(item)).join('<span class="idb-w443-workflow-arrow">→</span>')
+      : `<span class="idb-w456-story-path-node">${escapeHtml(fallback)}</span>`;
+    return `
+      <div class="idb-w456-erp-build-story" aria-label="ERP build story">
+        <div class="idb-w456-story-grid">
+          <div class="idb-w456-story-cell">
+            <div class="idb-status-key">ERP Story</div>
+            <div class="idb-strong">${escapeHtml(storyModel.headline)}</div>
+            <div class="idb-copy">${escapeHtml(storyModel.proof)}</div>
+            <div class="idb-w456-story-path" aria-label="Demand path">${path(storyModel.demandPath, 'Demand records pending')}</div>
+          </div>
+          <div class="idb-w456-story-cell idb-w456-story-cell-build ${storyModel.hasWipDiagnostic ? 'idb-w456-story-diagnostic' : ''}">
+            <div class="idb-status-key">Build Story</div>
+            <div class="idb-strong">${escapeHtml(storyModel.hasWipDiagnostic ? 'Core records imported; review WIP diagnostic before claiming clean routed production.' : 'Core NetSuite records are imported and ready to inspect.')}</div>
+            <div class="idb-copy">${escapeHtml(storyModel.readiness)}</div>
+            <div class="idb-w456-story-path" aria-label="Build path">${path(storyModel.buildPath, 'Build records pending')}</div>
+            <div class="idb-chip-row">
+              <span class="idb-mini-chip">Records: ${escapeHtml(storyModel.recordCount)}</span>
+              <span class="idb-mini-chip">Diagnostics: ${escapeHtml(storyModel.diagnosticCount)}</span>
+              ${storyModel.hasWipDiagnostic ? '<span class="idb-mini-chip">WIP diagnostic</span>' : ''}
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -26292,17 +26412,17 @@
     const cautionCopy = cockpitCopy(value.grounded && value.grounded.unsupportedClaimBlocker && value.grounded.unsupportedClaimBlocker.blockedClaims && value.grounded.unsupportedClaimBlocker.blockedClaims[0]
       || valueNarrativeW443 && valueNarrativeW443.unsupportedClaimCaution
       || 'Measured savings require a customer baseline before they can be claimed.', 125);
-    const recordRowLimit = visibleNarrative.mode === 'distribution' ? 5 : (visibleNarrative.mode === 'wip' ? 24 : 14);
-    const cockpitSourceRowsW449 = objects.slice(0, recordRowLimit);
+    const cockpitSourceRowsW449 = objects.slice(0, visibleNarrative.mode === 'wip' ? 24 : 14);
     const plannedOperationRowsW449 = cockpitSourceRowsW449.filter(isPlannedOperationRowW449);
     const diagnosticRowsW449 = cockpitSourceRowsW449.filter(isDiagnosticRowW449);
     const hasBomRevisionW449 = cockpitSourceRowsW449.some((item) => /bom[_\s-]*revision|bomrevision|revision/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
+    const recordRowLimitW455 = visibleNarrative.mode === 'distribution' ? 5 : (visibleNarrative.mode === 'wip' ? 10 : 8);
     const primaryRecordRowsW449 = cockpitSourceRowsW449.filter((item) => {
-      if (visibleNarrative.mode === 'wip' && isPlannedOperationRowW449(item)) return false;
+      if (isOperationLinkRecordW455(item)) return false;
       if (visibleNarrative.mode === 'wip' && isDiagnosticRowW449(item)) return false;
       if (visibleNarrative.mode === 'wip' && hasBomRevisionW449 && isStandaloneBomRowW449(item)) return false;
       return true;
-    });
+    }).slice(0, recordRowLimitW455);
     const renderRecordRowW442 = (item) => {
       const label = item && item.plannedOnly && /operation/i.test(`${item.role || ''} ${item.label || ''}`)
         ? firstNonBlank(item.label, `Planned Operation ${Number(item.operationIndex || 0) + 1}`)
@@ -26348,6 +26468,7 @@
     const wipFlowComponentW449 = visibleNarrative.mode === 'wip'
       ? renderWipRoutingFlowW449(cockpitSourceRowsW449, plannedOperationRowsW449, diagnosticRowsW449)
       : '';
+    const erpBuildStoryW456 = renderErpBuildStoryW456(erpBuildStoryModelW456(model, visibleNarrative, cockpitSourceRowsW449, diagnosticRowsW449, detailModelW444, proofFlowCopy(storyLine), proofFlowCopy(proofLine)));
     return `
       <div class="idb-card idb-accent idb-w415-demo-cockpit">
         <div class="idb-w415-cockpit-header">
@@ -26375,6 +26496,7 @@
           </div>
         </details>
         ${wipFlowComponentW449}
+        ${erpBuildStoryW456}
         <div class="idb-w415-cockpit-records" aria-label="Open records">
           ${groupedRows}
         </div>

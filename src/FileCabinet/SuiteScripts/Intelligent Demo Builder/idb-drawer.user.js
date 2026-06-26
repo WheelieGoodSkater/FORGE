@@ -14075,6 +14075,7 @@
   function linkSummaryEligibleW446(item) {
     const text = `${item && (item.role || item.label || item.recordType || item.type || '') || ''}`.toLowerCase();
     if (item && item.plannedOnly === true) return false;
+    if (isOperationLinkRecordW455(item)) return false;
     if (/planned operation/.test(text)) return false;
     if (/diagnostic/.test(text)) return false;
     return true;
@@ -26389,9 +26390,16 @@
     const detailModelW444 = roiCompetitiveDetailModelW444(valueNarrativeW443, competitiveAdvisory, value, visibleNarrative);
     const activeDetailW444 = state.w444CockpitDetail === 'competitive' ? 'competitive' : 'roi';
     const lastRunReceipt = lastRunReceiptW444(state, finalNavigation, productModelW444, toggleReceipt, diagnostics);
+    const previousLastRunSnapshotW446 = readLastRunSnapshotW446();
     const currentLastRunSnapshotW446 = lastRunSnapshotW446(state, finalNavigation, productModelW444, toggleReceipt, diagnostics, detailModelW444, valueNarrativeW443);
     writeLastRunSnapshotW446(currentLastRunSnapshotW446);
-    const storedLastRunSnapshotW446 = readLastRunSnapshotW446() || currentLastRunSnapshotW446;
+    const previousRunKeyW446 = previousLastRunSnapshotW446
+      ? [previousLastRunSnapshotW446.extId, previousLastRunSnapshotW446.taskId, previousLastRunSnapshotW446.timestamp].filter(Boolean).join('|')
+      : '';
+    const currentRunKeyW446 = [currentLastRunSnapshotW446.extId, currentLastRunSnapshotW446.taskId, currentLastRunSnapshotW446.timestamp].filter(Boolean).join('|');
+    const hasPreviousDistinctRunW446 = !!(previousLastRunSnapshotW446 && previousRunKeyW446 && previousRunKeyW446 !== currentRunKeyW446);
+    const storedLastRunSnapshotW446 = hasPreviousDistinctRunW446 ? previousLastRunSnapshotW446 : currentLastRunSnapshotW446;
+    const runReceiptLabelW446 = hasPreviousDistinctRunW446 ? 'Previous run' : 'Current run receipt';
     if (valueNarrativeW443) {
       roiCopy = valueNarrativeW443.roiHeadline || roiCopy;
       objectionCopy = valueNarrativeW443.competitiveQuestion || objectionCopy;
@@ -26529,13 +26537,13 @@
         </div>
         ${renderW444DetailPanel(activeDetailW444, detailModelW444)}
         <details class="idb-w444-last-run">
-          <summary>Last run</summary>
+          <summary>${escapeHtml(runReceiptLabelW446)}</summary>
           <div class="idb-copy">${escapeHtml((storedLastRunSnapshotW446 && storedLastRunSnapshotW446.customer) || lastRunReceipt.customer || 'Customer')} / ${escapeHtml(websiteDomain((storedLastRunSnapshotW446 && storedLastRunSnapshotW446.website) || lastRunReceipt.website) || 'website')} / ${escapeHtml((storedLastRunSnapshotW446 && storedLastRunSnapshotW446.runStatus) || lastRunReceipt.runStatus || 'status unknown')}</div>
           <div class="idb-copy">Product: ${escapeHtml((storedLastRunSnapshotW446 && storedLastRunSnapshotW446.selectedProduct) || lastRunReceipt.selectedProduct || 'not returned')} / Records: ${escapeHtml(arrayValue(storedLastRunSnapshotW446 && storedLastRunSnapshotW446.returnedRecords).length || lastRunReceipt.returnedCount)} / Diagnostics: ${escapeHtml(arrayValue(storedLastRunSnapshotW446 && storedLastRunSnapshotW446.diagnostics).length || lastRunReceipt.diagnosticsCount)}</div>
           <div class="idb-copy">${escapeHtml(lastRunReceipt.toggles.join(' / '))}</div>
           <div class="idb-copy">Run: ${escapeHtml([storedLastRunSnapshotW446 && storedLastRunSnapshotW446.timestamp, storedLastRunSnapshotW446 && storedLastRunSnapshotW446.extId, storedLastRunSnapshotW446 && storedLastRunSnapshotW446.taskId].filter(Boolean).join(' / ') || [lastRunReceipt.timestamp, lastRunReceipt.extId, lastRunReceipt.taskId].filter(Boolean).join(' / ') || 'no task receipt')}</div>
           ${state.w446LastRunRestoreMessage ? `<div class="idb-copy">${escapeHtml(state.w446LastRunRestoreMessage)}</div>` : ''}
-          <button class="idb-secondary idb-compact-button" type="button" data-idb-w446-restore-last-run>Last run</button>
+          <button class="idb-secondary idb-compact-button" type="button" data-idb-w446-restore-last-run>${escapeHtml(hasPreviousDistinctRunW446 ? 'Restore previous run' : 'Restore saved run')}</button>
         </details>
         <div class="idb-actions idb-w444-run-actions">
           <button class="idb-secondary" type="button" data-idb-w445-start-new-run>Start new run</button>
@@ -29534,11 +29542,13 @@
       capture.workOrderTelemetry,
       runner.workOrderTelemetry
     );
-    const workOrderRecords = records.concat(pivotObjects).filter((item) => /work\s*order|workorder/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
+    const isWorkOrderRecordW455 = (item) => /work[_\s-]*order|workorder/i.test(`${item && (item.role || item.label || item.recordType || item.type || item.name || item.recordName) || ''}`);
+    const workOrderRecords = records.concat(pivotObjects).filter(isWorkOrderRecordW455);
     const routingRecords = records.concat(pivotObjects).filter((item) => /routing/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const intake = normalizedIntake(state || {});
     const allExportRows = records.concat(pivotObjects);
     const plannedOnlyRows = allExportRows.filter((item) => !linkSummaryEligibleW446(item));
+    const plannedOperationRows = allExportRows.filter(isOperationLinkRecordW455);
     const realLinkRows = allExportRows.filter(linkSummaryEligibleW446);
     const lastRunSnapshot = readLastRunSnapshotW446();
     const runnerTelemetryW446 = firstNonBlankObject(
@@ -29612,7 +29622,7 @@
       truthSummaryW448: {
         schema: 'idb.w448-troubleshoot-truth-summary.v1',
         openableLinks: finalNavigation.linkAuthoritySummaryExcludingPlannedW446 || finalNavigation.linkAuthoritySummary,
-        plannedOnlyOperationCount: plannedOnlyRows.length,
+        plannedOnlyOperationCount: plannedOperationRows.length,
         wipRequested: !!(toggleReceipt && toggleReceipt.enableWip),
         coreRecordsReturned: records.filter((item) => !/diagnostic|operation/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`)).length,
         routingStatus: firstNonBlank(routingDiagnostics && routingDiagnostics.status, routingDiagnostics && routingDiagnostics.decision, routingDiagnostics && routingDiagnostics.failureStage),
@@ -29652,7 +29662,7 @@
       linkSummaryExcludingPlanned: finalNavigation.linkAuthoritySummaryExcludingPlannedW446 || finalNavigation.linkAuthoritySummary,
       plannedOnlyRows,
       realLinkRows,
-      plannedOnlyOperationCount: plannedOnlyRows.length,
+      plannedOnlyOperationCount: plannedOperationRows.length,
       realMissingUrlRows: realLinkRows.filter((item) => item && item.linkAuthority && item.linkAuthority.openable !== true),
       plannedAndDiagnosticRowsExcludedFromLinkDebt: plannedOnlyRows.concat(allExportRows.filter(isDiagnosticRowW449)),
       workflowStages: cockpitWorkflowNodesW446(toggleReceipt && toggleReceipt.enableWip ? 'wip' : (toggleReceipt && toggleReceipt.enableManufacturing ? 'manufacturing' : 'distribution'), records.concat(pivotObjects)).map((stage) => ({

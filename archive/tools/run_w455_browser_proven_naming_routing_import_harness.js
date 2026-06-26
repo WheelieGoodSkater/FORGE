@@ -96,6 +96,12 @@ assert(contains(runner, 'routeSaveSkippedReason'), 'runner must diagnose when op
 assert(contains(runner, 'attachDefaultVerification'), 'runner must return attach/default verification');
 assert(contains(runner, 'attachAttempted'), 'runner must expose whether exact-BOM route attach/default was attempted');
 assert(contains(runner, 'routingBomVerified'), 'runner must expose post-save routing BOM verification');
+assert(contains(runner, 'enableWip: effectiveEnableWip'), 'runner must pass the effective WIP toggle into Work Order creation');
+assert(contains(runner, "const WORK_ORDER_WIP_FIELD_CANDIDATES_W455 = ['iswip'"), 'runner must guard candidate Work Order WIP field IDs');
+assert(contains(runner, 'applyWorkOrderWipModeW455'), 'runner must apply/probe Work Order WIP mode during create attempts');
+assert(contains(runner, 'applyWorkOrderWipModeToExistingW455'), 'runner must attempt WIP telemetry/application when reusing an existing Work Order');
+assert(contains(runner, "status: enableWip === true ? 'requested_not_applied' : 'not_requested_wip_disabled'"), 'runner must leave Work Order WIP unmodified when WIP is disabled');
+assert(contains(runner, 'all_candidate_fields_rejected'), 'runner must return explicit diagnostic telemetry when WIP fields are not scriptable');
 assert(contains(runner, 'staleRoutingDetected'), 'runner must detect stale routing');
 assert(contains(runner, 'stale_product_name_without_assembly_bom_proof'), 'runner must reject stale BBQ/Cookie/Sauce routes without exact safe proof');
 assert(contains(runner, 'poppi|bbq|cookie|sauce'), 'runner must treat stale Poppi/BBQ/Cookie/Sauce names as renameable only after exact BOM proof');
@@ -148,6 +154,9 @@ assert(contains(adapter, 'completed_with_wip_diagnostic'), 'adapter must treat c
 assert(contains(drawer, 'componentItem1') && contains(drawer, 'componentItem2') && contains(drawer, 'componentItem3'), 'drawer must import keyed component records');
 assert(contains(drawer, "linkAuthorityStatus: plannedOperation ? 'planned_operation_not_record_link'"), 'drawer must keep planned operations as detail rows, not missing-link rows');
 assert(contains(drawer, 'isOperationLinkRecordW455'), 'drawer must filter operation-style rows from primary record links');
+assert(contains(drawer, 'plannedOperationRows.length'), 'drawer troubleshoot export must count operation rows as planned/detail-only');
+assert(contains(drawer, "const runReceiptLabelW446 = hasPreviousDistinctRunW446 ? 'Previous run' : 'Current run receipt';"), 'drawer must not label the current run as Last run');
+assert(contains(drawer, '/work[_\\s-]*order|workorder/i'), 'drawer troubleshoot export must recognize role work_order as a Work Order');
 assert(contains(drawer, 'Routing diagnostic') && contains(drawer, 'Work Order diagnostic'), 'drawer WIP flow must show diagnostic nodes');
 assert(contains(drawer, 'erpBuildStoryModelW456'), 'drawer must build a compact ERP Story model');
 assert(contains(drawer, 'renderErpBuildStoryW456'), 'drawer must render the compact ERP/Build Story');
@@ -159,6 +168,8 @@ assert(contains(drawer, 'idb-w415-cockpit-panel idb-w415-competitive-panel'), 'd
 
 assert(contains(adapter, 'completedKeyedResultCaptureW455'), 'poll adapter must pass through keyed completed captures');
 assert(contains(adapter, "status: keyedCompletedW455.status === 'completed_with_wip_diagnostic'"), 'poll adapter must return completed_with_wip_diagnostic terminal status');
+assert(contains(adapter, 'safeSourceRequestIdFileTokenW455ResultStem'), 'poll adapter must search completed captures by sourceRequestId/request identity');
+assert(contains(adapter, 'completed_keyed_result_capture_matches_current_safe_file_token'), 'poll adapter must allow terminal keyed safe-token captures without weakening stale guards');
 
 const bannedInHealthAdeFixture = notContainsAny(
   [
@@ -180,7 +191,7 @@ assert(
 console.log(JSON.stringify({
   ok: true,
   harness: 'browser-proven-naming-routing-import-w455',
-  assertions: 14,
+  assertions: 25,
   files: [
     'idb-drawer.user.js',
     'src/FileCabinet/SuiteScripts/Intelligent Demo Builder/idb_governed_runner_adapter_w144_suitelet.js',

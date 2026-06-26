@@ -900,6 +900,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455Short', safeToken.slice(0, 36));
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455ResultStem', `IDB-${safeToken}`.slice(0, 40));
     }
+    if (expected && expected.sourceRequestId) {
+      const safeSourceRequest = safeFileToken(expected.sourceRequestId);
+      pushUniqueSearchToken(searchTokens, seen, 'sourceRequestId', expected.sourceRequestId);
+      pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW455', safeSourceRequest.slice(0, 48));
+      pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW455ResultStem', `IDB-${safeSourceRequest}`.slice(0, 40));
+    }
     if (expected && expected.runnerExternalId) {
       const safeRunnerExtId = safeFileToken(expected.runnerExternalId);
       pushUniqueSearchToken(searchTokens, seen, 'runnerExternalId', expected.runnerExternalId);

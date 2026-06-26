@@ -581,11 +581,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           bomId: ids.bomId,
           bomRevId: ids.bomRevId,
           routingId,
+          enableWip: effectiveEnableWip,
           quantity: 10,
           memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded`
         });
-        workOrderTelemetry = { status: 'created', woId, workOrderId: woId };
-        log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId }) });
+        const workOrderResult = typeof woId === 'object' && woId ? woId : { id: woId, telemetry: null };
+        woId = Number(workOrderResult.id || 0) || null;
+        workOrderTelemetry = Object.assign({
+          status: workOrderResult && workOrderResult.telemetry && workOrderResult.telemetry.status || 'created',
+          woId,
+          workOrderId: woId,
+          effectiveEnableWip
+        }, workOrderResult.telemetry || {});
+        log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId, effectiveEnableWip, workOrderTelemetry }) });
       } catch (woError) {
         workOrderTelemetry = {
           status: 'best_effort_failed',
@@ -1916,19 +1924,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // Work Order seed (includes start + end dates)
   // ----------------------------
-  function createWorkOrder({ assemblyId, subsidiaryId, locationId, quantity, memo, routingId, bomId, bomRevId }) {
+  const WORK_ORDER_WIP_FIELD_CANDIDATES_W455 = ['iswip', 'wip', 'iswipworkorder', 'wipworkorder', 'manufacturingmode'];
+
+  function createWorkOrder({ assemblyId, subsidiaryId, locationId, quantity, memo, routingId, bomId, bomRevId, enableWip }) {
     const start = new Date();
     const end = addMonths(start, 1);
     const failures = [];
     const attempts = [
-      { name: 'static_subsidiary_assembly_routing_location', isDynamic: false, includeLocation: true, order: ['subsidiary', 'assembly', 'routing', 'bom', 'bomRevision', 'location'] },
-      { name: 'dynamic_subsidiary_assembly_routing_location', isDynamic: true, includeLocation: true, order: ['subsidiary', 'assembly', 'routing', 'bom', 'bomRevision', 'location'] },
-      { name: 'static_assembly_subsidiary_routing_location', isDynamic: false, includeLocation: true, order: ['assembly', 'subsidiary', 'routing', 'bom', 'bomRevision', 'location'] },
-      { name: 'dynamic_assembly_subsidiary_routing_location', isDynamic: true, includeLocation: true, order: ['assembly', 'subsidiary', 'routing', 'bom', 'bomRevision', 'location'] },
-      { name: 'static_subsidiary_assembly_routing_no_location', isDynamic: false, includeLocation: false, order: ['subsidiary', 'assembly', 'routing', 'bom', 'bomRevision'] },
-      { name: 'dynamic_subsidiary_assembly_routing_no_location', isDynamic: true, includeLocation: false, order: ['subsidiary', 'assembly', 'routing', 'bom', 'bomRevision'] },
-      { name: 'static_assembly_subsidiary_no_location', isDynamic: false, includeLocation: false, order: ['assembly', 'subsidiary', 'routing', 'bom', 'bomRevision'] },
-      { name: 'dynamic_assembly_subsidiary_no_location', isDynamic: true, includeLocation: false, order: ['assembly', 'subsidiary', 'routing', 'bom', 'bomRevision'] }
+      { name: 'static_subsidiary_wip_assembly_routing_location', isDynamic: false, includeLocation: true, order: ['subsidiary', 'wip', 'assembly', 'routing', 'bom', 'bomRevision', 'location'] },
+      { name: 'dynamic_subsidiary_wip_assembly_routing_location', isDynamic: true, includeLocation: true, order: ['subsidiary', 'wip', 'assembly', 'routing', 'bom', 'bomRevision', 'location'] },
+      { name: 'static_assembly_subsidiary_wip_routing_location', isDynamic: false, includeLocation: true, order: ['assembly', 'subsidiary', 'wip', 'routing', 'bom', 'bomRevision', 'location'] },
+      { name: 'dynamic_assembly_subsidiary_wip_routing_location', isDynamic: true, includeLocation: true, order: ['assembly', 'subsidiary', 'wip', 'routing', 'bom', 'bomRevision', 'location'] },
+      { name: 'static_subsidiary_wip_assembly_routing_no_location', isDynamic: false, includeLocation: false, order: ['subsidiary', 'wip', 'assembly', 'routing', 'bom', 'bomRevision'] },
+      { name: 'dynamic_subsidiary_wip_assembly_routing_no_location', isDynamic: true, includeLocation: false, order: ['subsidiary', 'wip', 'assembly', 'routing', 'bom', 'bomRevision'] },
+      { name: 'static_assembly_subsidiary_wip_no_location', isDynamic: false, includeLocation: false, order: ['assembly', 'subsidiary', 'wip', 'routing', 'bom', 'bomRevision'] },
+      { name: 'dynamic_assembly_subsidiary_wip_no_location', isDynamic: true, includeLocation: false, order: ['assembly', 'subsidiary', 'wip', 'routing', 'bom', 'bomRevision'] }
     ];
 
     function trySetField(wo, fieldId, value, required, accepted, rejected) {
@@ -1968,9 +1978,48 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return false;
     }
 
-    function applyToken(wo, token, attempt, accepted, rejected) {
+    function applyWorkOrderWipModeW455(wo, requested, accepted, rejected) {
+      const telemetry = {
+        requested: requested === true,
+        candidates: WORK_ORDER_WIP_FIELD_CANDIDATES_W455.slice(),
+        exposedCandidateFields: [],
+        acceptedField: '',
+        rejectedFields: [],
+        status: requested === true ? 'requested_not_applied' : 'not_requested_wip_disabled'
+      };
+      if (requested !== true) return telemetry;
+      const fields = safeTryReturn(() => wo.getFields && wo.getFields()) || [];
+      telemetry.exposedCandidateFields = fields.filter(function(fieldId) {
+        return WORK_ORDER_WIP_FIELD_CANDIDATES_W455.indexOf(fieldId) >= 0;
+      });
+      for (let i = 0; i < WORK_ORDER_WIP_FIELD_CANDIDATES_W455.length; i += 1) {
+        const fieldId = WORK_ORDER_WIP_FIELD_CANDIDATES_W455[i];
+        try {
+          wo.setValue({ fieldId, value: true });
+          accepted.push(fieldId);
+          telemetry.acceptedField = fieldId;
+          telemetry.status = 'applied';
+          return telemetry;
+        } catch (e) {
+          const rejection = {
+            fieldId,
+            errorName: e && e.name || '',
+            errorMessage: e && e.message || String(e || '')
+          };
+          rejected.push(rejection);
+          telemetry.rejectedFields.push(rejection);
+        }
+      }
+      telemetry.status = 'all_candidate_fields_rejected';
+      telemetry.diagnostic = 'WIP was requested, but no known Work Order WIP field ID accepted a script-set value in this account/form.';
+      return telemetry;
+    }
+
+    function applyToken(wo, token, attempt, accepted, rejected, attemptTelemetry) {
       if (token === 'subsidiary') {
         trySetField(wo, 'subsidiary', Number(subsidiaryId), false, accepted, rejected);
+      } else if (token === 'wip') {
+        attemptTelemetry.wipFieldTelemetry = applyWorkOrderWipModeW455(wo, enableWip === true, accepted, rejected);
       } else if (token === 'assembly') {
         trySetAnyField(wo, ['assemblyitem', 'item', 'recipe'], Number(assemblyId), true, accepted, rejected);
       } else if (token === 'routing' && routingId) {
@@ -1988,10 +2037,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       const attempt = attempts[i];
       const accepted = [];
       const rejected = [];
+      const attemptTelemetry = {
+        enableWipRequested: enableWip === true,
+        wipFieldTelemetry: { requested: enableWip === true, status: enableWip === true ? 'not_attempted' : 'not_requested_wip_disabled' }
+      };
       try {
         const wo = record.create({ type: 'workorder', isDynamic: attempt.isDynamic });
         attempt.order.forEach(function(token) {
-          applyToken(wo, token, attempt, accepted, rejected);
+          applyToken(wo, token, attempt, accepted, rejected, attemptTelemetry);
         });
         trySetField(wo, 'quantity', Number(quantity || 10), false, accepted, rejected);
         if (memo) trySetField(wo, 'memo', String(memo).slice(0, 300), false, accepted, rejected);
@@ -2008,16 +2061,30 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
             routingId: routingId ? Number(routingId) : null,
             bomId: bomId ? Number(bomId) : null,
             bomRevId: bomRevId ? Number(bomRevId) : null,
+            enableWipRequested: enableWip === true,
+            wipFieldTelemetry: attemptTelemetry.wipFieldTelemetry,
             acceptedFields: accepted,
             rejectedFields: rejected
           })
         });
-        return woId;
+        return {
+          id: woId,
+          telemetry: {
+            status: 'created',
+            creationAttempt: attempt.name,
+            enableWipRequested: enableWip === true,
+            wipFieldTelemetry: attemptTelemetry.wipFieldTelemetry,
+            acceptedFields: accepted,
+            rejectedFields: rejected
+          }
+        };
       } catch (e) {
         failures.push({
           attempt: attempt.name,
           isDynamic: attempt.isDynamic,
           includeLocation: attempt.includeLocation,
+          enableWipRequested: enableWip === true,
+          wipFieldTelemetry: attemptTelemetry.wipFieldTelemetry,
           acceptedFields: accepted,
           rejectedFields: rejected,
           errorName: e && e.name || '',
@@ -2035,25 +2102,78 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         bomRevId: bomRevId ? Number(bomRevId) : null,
         subsidiaryId: Number(subsidiaryId || 0),
         locationId: Number(locationId || 0),
+        enableWipRequested: enableWip === true,
         attempts: failures
       })
     });
     const reusableWorkOrder = findReusableWorkOrderByAssemblyW455({ assemblyId, memo, routingId });
     if (reusableWorkOrder && reusableWorkOrder.id) {
+      reusableWorkOrder.wipFieldTelemetry = applyWorkOrderWipModeToExistingW455({
+        workOrderId: reusableWorkOrder.id,
+        enableWip: enableWip === true
+      });
       log.audit({
         title: `Work Order reused after W455 create rejection [${VERSION}]`,
         details: JSON.stringify(Object.assign({}, reusableWorkOrder, {
           assemblyId: Number(assemblyId || 0),
           routingId: routingId ? Number(routingId) : null,
+          enableWipRequested: enableWip === true,
           reuseReason: 'work_order_form_requires_recipe_not_scriptable_in_create_context'
         }))
       });
-      return Number(reusableWorkOrder.id);
+      return {
+        id: Number(reusableWorkOrder.id),
+        telemetry: {
+          status: 'reused_after_create_rejection',
+          source: reusableWorkOrder.source || '',
+          tranid: reusableWorkOrder.tranid || '',
+          statusRef: reusableWorkOrder.statusRef || '',
+          enableWipRequested: enableWip === true,
+          wipFieldTelemetry: reusableWorkOrder.wipFieldTelemetry,
+          creationAttempts: failures
+        }
+      };
     }
     const finalError = new Error(`Work Order W455 attempts exhausted for assembly ${assemblyId}`);
     finalError.name = 'WORK_ORDER_W455_ATTEMPTS_EXHAUSTED';
     finalError.workOrderAttempts = failures;
     throw finalError;
+  }
+
+  function applyWorkOrderWipModeToExistingW455({ workOrderId, enableWip }) {
+    const telemetry = {
+      requested: enableWip === true,
+      candidates: WORK_ORDER_WIP_FIELD_CANDIDATES_W455.slice(),
+      acceptedField: '',
+      rejectedFields: [],
+      status: enableWip === true ? 'requested_not_applied' : 'not_requested_wip_disabled'
+    };
+    if (enableWip !== true || !workOrderId) return telemetry;
+    for (let i = 0; i < WORK_ORDER_WIP_FIELD_CANDIDATES_W455.length; i += 1) {
+      const fieldId = WORK_ORDER_WIP_FIELD_CANDIDATES_W455[i];
+      try {
+        const values = {};
+        values[fieldId] = true;
+        record.submitFields({
+          type: 'workorder',
+          id: Number(workOrderId),
+          values,
+          options: { enableSourcing: true, ignoreMandatoryFields: true }
+        });
+        telemetry.acceptedField = fieldId;
+        telemetry.status = 'applied_to_existing_work_order';
+        return telemetry;
+      } catch (e) {
+        telemetry.rejectedFields.push({
+          fieldId,
+          errorName: e && e.name || '',
+          errorMessage: e && e.message || String(e || '')
+        });
+      }
+    }
+    telemetry.status = 'all_candidate_fields_rejected_on_existing_work_order';
+    telemetry.diagnostic = 'WIP was requested on a reused Work Order, but no known Work Order WIP field ID accepted submitFields.';
+    return telemetry;
   }
 
   function findReusableWorkOrderByAssemblyW455({ assemblyId, memo, routingId }) {

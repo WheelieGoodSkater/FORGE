@@ -293,38 +293,58 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       website
     ].join(' '));
     const signal = `${prospect} ${website} ${notes}`.toLowerCase();
-    const isKombucha = /health[-\s]?ade|kombucha|beverage|ferment|tea|ginger|lemon|bottle|case/.test(signal);
-    const product = isKombucha ? 'Kombucha Variety Pack' : compactText(request && request.productCandidate) || `${prospect} Product`;
-    const batch = isKombucha ? 'Kombucha Batch' : `${product} Batch`;
+    const brand = compactText(prospect.replace(/\b(line readiness|wip proof|readiness proof|demo proof|proof|readiness)\b/ig, '')) || prospect;
+    const isKombucha = /health[-\s]?ade|kombucha/.test(signal);
+    const isDraftCoffee = /la\s+colombe|draft\s+latte|cold\s+brew|coffee|latte|milk/.test(signal);
+    const fallbackProduct = compactText(request && request.productCandidate) || `${brand} Product`;
+    const product = isKombucha
+      ? 'Kombucha Variety Pack'
+      : (isDraftCoffee ? 'Draft Latte Variety Pack' : fallbackProduct);
+    const batch = isKombucha
+      ? 'Kombucha Batch'
+      : (isDraftCoffee ? 'Draft Latte Batch' : `${product} Batch`);
     const components = isKombucha
       ? ['Organic Tea and Sugar Fermentation Base', 'Ginger Lemon Flavor Blend', 'Bottle and Case Packaging']
-      : [`${product} Input Base`, `${product} Process Blend`, `${product} Packaging`];
+      : (isDraftCoffee
+        ? ['Cold Brew Coffee Concentrate', 'Milk and Flavor Blend', 'Can and Case Packaging']
+        : [`${product} Input Base`, `${product} Process Blend`, `${product} Packaging`]);
     const operations = isKombucha
       ? {
         '10': 'Brew and Ferment Kombucha Base',
         '20': 'Flavor, Bottle, and Case Pack',
         '30': 'QC and Release Finished Cases'
       }
-      : {
-        '10': `Prepare ${product}`,
-        '20': `Fill and Pack ${product}`,
-        '30': 'QC and Release Finished Cases'
-      };
+      : (isDraftCoffee
+        ? {
+          '10': 'Prepare Cold Brew Coffee Concentrate',
+          '20': 'Blend, Can, and Case Pack Draft Latte',
+          '30': 'QC and Release Finished Cases'
+        }
+        : {
+          '10': `Prepare ${product}`,
+          '20': `Fill and Pack ${product}`,
+          '30': 'QC and Release Finished Cases'
+        });
+    const brandProduct = `${brand} ${product}`;
     return {
-      _source: isKombucha ? 'website-product-evidence' : 'server-precomputed-notes-website',
-      confidencePercent: isKombucha ? 92 : 78,
-      industry_category: isKombucha ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId),
+      _source: (isKombucha || isDraftCoffee) ? 'website-product-evidence' : 'server-precomputed-notes-website',
+      confidencePercent: (isKombucha || isDraftCoffee) ? 92 : 78,
+      industry_category: (isKombucha || isDraftCoffee) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId),
       primary_product_candidate: product,
-      alternate_product_candidates: isKombucha ? ['Kombucha Case Pack', 'Ginger Lemon Kombucha', 'Variety Pack Beverage Case'] : [],
-      evidence_terms: uniqueList(isKombucha ? ['Health-Ade', 'kombucha', 'fermentation', 'ginger lemon', 'bottle', 'case pack'] : [prospect, website, product]),
+      alternate_product_candidates: isKombucha
+        ? ['Kombucha Case Pack', 'Ginger Lemon Kombucha', 'Variety Pack Beverage Case']
+        : (isDraftCoffee ? ['Draft Latte Case Pack', 'Ready-to-Drink Coffee Case', 'Cold Brew Latte Pack'] : []),
+      evidence_terms: uniqueList(isKombucha
+        ? ['Health-Ade', 'kombucha', 'fermentation', 'ginger lemon', 'bottle', 'case pack']
+        : (isDraftCoffee ? ['La Colombe', 'draft latte', 'cold brew', 'milk', 'can filling', 'case pack'] : [prospect, website, product])),
       competitor_terms: uniqueList(request && request.competitorTerms || []),
       roi_basis_terms: uniqueList(['line readiness', 'case availability', 'production proof']),
-      hero_item_name: isKombucha ? 'Health-Ade Kombucha Variety Pack Case' : `${prospect} ${product} Case`,
-      assembly_name: isKombucha ? 'Health-Ade Kombucha Batch' : `${prospect} ${batch}`,
+      hero_item_name: isKombucha ? 'Health-Ade Kombucha Variety Pack Case' : `${brandProduct} Case`,
+      assembly_name: isKombucha ? 'Health-Ade Kombucha Batch' : `${brand} ${batch}`,
       component_names: components,
-      bom_name: isKombucha ? 'BOM - Health-Ade Kombucha Variety Pack' : `BOM - ${prospect} ${product}`,
-      bom_revision_name: isKombucha ? 'Revision 1 - Health-Ade Kombucha Variety Pack' : `Revision 1 - ${prospect} ${product}`,
-      routing_name: isKombucha ? 'Routing - Health-Ade Kombucha Batch' : `Routing - ${prospect} ${batch}`,
+      bom_name: isKombucha ? 'BOM - Health-Ade Kombucha Variety Pack' : `BOM - ${brandProduct}`,
+      bom_revision_name: isKombucha ? 'Revision 1 - Health-Ade Kombucha Variety Pack' : `Revision 1 - ${brandProduct}`,
+      routing_name: isKombucha ? 'Routing - Health-Ade Kombucha Batch' : `Routing - ${brand} ${batch}`,
       operation_names_by_seq: operations,
       sales_descriptions: {
         hero: `${product} sales-ready case for the demo run.`,
@@ -551,12 +571,21 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       const safeAttempt = safeFileToken(buildAttemptId);
       pushUniqueSearchToken(searchTokens, seen, 'safeBuildAttemptId', safeAttempt);
       pushUniqueSearchToken(searchTokens, seen, 'safeBuildAttemptIdFileTokenW320', safeAttempt.slice(0, 56));
+      pushUniqueSearchToken(searchTokens, seen, 'safeBuildAttemptIdFileTokenW455Short', safeAttempt.slice(0, 36));
     }
     if (idempotencyToken) {
       pushUniqueSearchToken(searchTokens, seen, 'idempotencyToken', idempotencyToken);
       const safeToken = safeFileToken(idempotencyToken);
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyToken', safeToken);
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW320', safeToken.slice(0, 48));
+      pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455Short', safeToken.slice(0, 36));
+      pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455ResultStem', `IDB-${safeToken}`.slice(0, 40));
+    }
+    if (expected && expected.runnerExternalId) {
+      const safeRunnerExtId = safeFileToken(expected.runnerExternalId);
+      pushUniqueSearchToken(searchTokens, seen, 'runnerExternalId', expected.runnerExternalId);
+      pushUniqueSearchToken(searchTokens, seen, 'safeRunnerExternalIdFileTokenW455', safeRunnerExtId.slice(0, 48));
+      pushUniqueSearchToken(searchTokens, seen, 'safeRunnerExternalIdFileTokenW455Short', safeRunnerExtId.slice(0, 40));
     }
     return searchTokens;
   }
@@ -567,6 +596,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     return {
       runnerTaskId: String(lookup && lookup.runnerTaskId || '').trim(),
       idempotencyToken: String(lookup && lookup.idempotencyToken || confirmed.idempotencyToken || '').trim(),
+      runnerExternalId: String(confirmed.idempotencyToken || confirmed.runnerExternalId || '').trim(),
       buildAttemptId: String(lookup && lookup.buildAttemptId || confirmed.buildAttemptId || provenance.buildAttemptId || '').trim(),
       sourceRequestId: String(lookup && lookup.sourceRequestId || confirmed.requestId || provenance.sourceRequestId || '').trim(),
       submittedAt: String(lookup && lookup.submittedAt || confirmed.submittedAt || provenance.submittedAt || '').trim()
@@ -640,6 +670,28 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       idempotencyMatchesExtIdAlias &&
       fileTime > 0 &&
       (!submittedTime || fileTime >= submittedTime);
+  }
+
+  function terminalKeyedSafeTokenCaptureAllowedW455(parsed, matchResult, searchToken, fileName) {
+    const tokenSource = searchToken && searchToken.source || '';
+    if (tokenSource.indexOf('safeIdempotency') === -1 && tokenSource.indexOf('safeBuildAttempt') === -1 && tokenSource.indexOf('safeRunnerExternalId') === -1) return false;
+    const token = String(searchToken && searchToken.token || '').trim();
+    if (!token || String(fileName || '').indexOf(token) === -1) return false;
+    if (!/^idb_result_capture_/i.test(String(fileName || ''))) return false;
+    const keyed = completedKeyedResultCaptureW455(parsed);
+    if (!keyed.ready) return false;
+    const reasons = matchResult && matchResult.reasons || [];
+    const expected = matchResult && matchResult.expected || {};
+    const actual = matchResult && matchResult.actual || {};
+    const expectedToken = String(expected.idempotencyToken || expected.sourceRequestId || '').trim();
+    const actualToken = String(actual.idempotencyToken || actual.sourceRequestId || actual.buildAttemptId || '').trim();
+    const aliasesCurrentRequest = !!(expectedToken && actualToken &&
+      (actualToken === expectedToken || actualToken.indexOf(expectedToken) !== -1 || expectedToken.indexOf(actualToken) !== -1));
+    const hardMismatch = reasons.some(function(reason) {
+      if (aliasesCurrentRequest && (reason === 'runnerTaskId_mismatch' || reason === 'sourceRequestId_mismatch' || reason === 'buildAttemptId_mismatch' || reason === 'idempotencyToken_mismatch')) return false;
+      return reason === 'runnerTaskId_mismatch' || reason === 'sourceRequestId_mismatch';
+    });
+    return !hardMismatch;
   }
 
   function buildNetSuiteRecordUrl(type, id) {
@@ -1045,6 +1097,22 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         }
         const matchResult = resultCaptureMatchesCurrentAttempt(parsed, expected);
         if (!matchResult.matches) {
+          if (terminalKeyedSafeTokenCaptureAllowedW455(parsed, matchResult, searchToken, fileName || captureFile.name || '')) {
+            return {
+              found: true,
+              fileId,
+              fileName: String(fileName || captureFile.name || ''),
+              contents,
+              lookupSource: searchToken.source,
+              provenance: matchResult.actual,
+              provenanceFallback: {
+                status: 'terminal_keyed_safe_token_capture_allowed_w455',
+                reason: 'completed_keyed_result_capture_matches_current_safe_file_token',
+                expected: matchResult.expected,
+                actual: matchResult.actual
+              }
+            };
+          }
           if (legacyCurrentSafeTokenCaptureAllowed(matchResult, searchToken, fileName || captureFile.name || '')) {
             return {
               found: true,

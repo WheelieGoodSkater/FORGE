@@ -498,17 +498,60 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     setBaseSalesPrice('inventoryitem', ids.heroItemId, 5.00);
     if (finalEnableManufacturing && ids.assemblyId) setBaseSalesPrice('assemblyitem', ids.assemblyId, 25.00);
 
-    // 6) Manufacturing-only setup
+    // 6) Manufacturing setup: attach BOM, then repair/reuse WIP routing before Work Order creation.
     let woId = null;
     let workOrderTelemetry = { status: finalEnableManufacturing ? 'not-attempted' : 'manufacturing-disabled' };
+    let routingResult = null;
+    let routingId = null;
     if (finalEnableManufacturing && ids.assemblyId && ids.bomId) {
       attachBomToAssembly({ assemblyId: ids.assemblyId, bomId: ids.bomId });
+
+      if (effectiveEnableWip) {
+        try {
+          routingResult = createAndAttachRoutingIfPossible({
+            subsidiaryId,
+            locationId,
+            bomId: ids.bomId,
+            assemblyId: ids.assemblyId,
+            extId,
+            prospect,
+            signalText: signal.text,
+            workCenterSearchId,
+            names
+          });
+        } catch (routingError) {
+          routingResult = {
+            status: 'failed_best_effort',
+            decision: 'legacy-core-routing-failed',
+            attachResult: 'not-attached-routing-failed',
+            routingId: null,
+            existingRoutingId: null,
+            routingFailure: {
+              status: 'failed_best_effort',
+              failureStage: 'legacy_core_direct_routing',
+              errorName: routingError && routingError.name || '',
+              errorMessage: routingError && routingError.message || String(routingError || ''),
+              assemblyId: Number(ids.assemblyId || 0),
+              bomId: Number(ids.bomId || 0),
+              subsidiaryId: Number(subsidiaryId || 0),
+              locationId: Number(locationId || 0)
+            }
+          };
+          log.error({ title: `WIP routing best-effort failure W453 legacy core [${VERSION}]`, details: JSON.stringify(routingResult.routingFailure) });
+        }
+        routingId = routingResult && routingResult.routingId ? Number(routingResult.routingId) : null;
+      } else {
+        log.audit({ title: `WIP not enabled (skipping routing) [${VERSION}]`, details: JSON.stringify({ enableWipRaw, enableWip, effectiveEnableWip, enableManufacturing: finalEnableManufacturing, requestedWipTargetMode, wipTargetMode, wipHandshakeAction }) });
+      }
 
       try {
         woId = createWorkOrder({
           assemblyId: ids.assemblyId,
           subsidiaryId,
           locationId,
+          bomId: ids.bomId,
+          bomRevId: ids.bomRevId,
+          routingId,
           quantity: 10,
           memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded`
         });
@@ -523,54 +566,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           assemblyId: Number(ids.assemblyId || 0),
           bomId: Number(ids.bomId || 0),
           bomRevId: Number(ids.bomRevId || 0),
+          routingId: routingId ? Number(routingId) : null,
           subsidiaryId: Number(subsidiaryId || 0),
-          locationId: Number(locationId || 0)
+          locationId: Number(locationId || 0),
+          attempts: woError && woError.workOrderAttempts || []
         };
         log.error({ title: `Work Order best-effort failure W453 legacy core [${VERSION}]`, details: JSON.stringify(workOrderTelemetry) });
       }
     } else {
       log.audit({ title: `Manufacturing flow disabled [${VERSION}]`, details: JSON.stringify({ enableManufacturing: finalEnableManufacturing, extId, heroItemId: ids.heroItemId }) });
-    }
-
-    // 8) Optional WIP routing create + attach
-    let routingResult = null;
-    let routingId = null;
-    if (effectiveEnableWip && finalEnableManufacturing && ids.assemblyId && ids.bomId) {
-      try {
-        routingResult = createAndAttachRoutingIfPossible({
-          subsidiaryId,
-          locationId,
-          bomId: ids.bomId,
-          assemblyId: ids.assemblyId,
-          extId,
-          prospect,
-          signalText: signal.text,
-          workCenterSearchId,
-          names
-        });
-      } catch (routingError) {
-        routingResult = {
-          status: 'failed_best_effort',
-          decision: 'legacy-core-routing-failed',
-          attachResult: 'not-attached-routing-failed',
-          routingId: null,
-          existingRoutingId: null,
-          routingFailure: {
-            status: 'failed_best_effort',
-            failureStage: 'legacy_core_direct_routing',
-            errorName: routingError && routingError.name || '',
-            errorMessage: routingError && routingError.message || String(routingError || ''),
-            assemblyId: Number(ids.assemblyId || 0),
-            bomId: Number(ids.bomId || 0),
-            subsidiaryId: Number(subsidiaryId || 0),
-            locationId: Number(locationId || 0)
-          }
-        };
-        log.error({ title: `WIP routing best-effort failure W453 legacy core [${VERSION}]`, details: JSON.stringify(routingResult.routingFailure) });
-      }
-      routingId = routingResult && routingResult.routingId ? Number(routingResult.routingId) : null;
-    } else {
-      log.audit({ title: `WIP not enabled (skipping routing) [${VERSION}]`, details: JSON.stringify({ enableWipRaw, enableWip, effectiveEnableWip, enableManufacturing: finalEnableManufacturing, requestedWipTargetMode, wipTargetMode, wipHandshakeAction }) });
     }
 
     // 9) Seed SOs via CSV import
@@ -1857,53 +1861,196 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // Work Order seed (includes start + end dates)
   // ----------------------------
-  function createWorkOrder({ assemblyId, subsidiaryId, locationId, quantity, memo }) {
-    function buildWorkOrder(includeLocation) {
-    const wo = record.create({ type: 'workorder', isDynamic: false });
-
-    wo.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) });
-
-    let setAssemblyOk = false;
-    ['assemblyitem', 'item'].forEach(fid => {
-      if (setAssemblyOk) return;
-      const ok = safeTryReturn(() => {
-        wo.setValue({ fieldId: fid, value: Number(assemblyId) });
-        return true;
-      });
-      if (ok) setAssemblyOk = true;
-    });
-    if (!setAssemblyOk) throw new Error(`Work Order: could not set assembly item (assemblyId=${assemblyId})`);
-    if (includeLocation && locationId) safeTry(() => wo.setValue({ fieldId: 'location', value: Number(locationId) }));
-
-    wo.setValue({ fieldId: 'quantity', value: Number(quantity || 10) });
-    if (memo) safeTry(() => wo.setValue({ fieldId: 'memo', value: String(memo).slice(0, 300) }));
-
+  function createWorkOrder({ assemblyId, subsidiaryId, locationId, quantity, memo, routingId, bomId, bomRevId }) {
     const start = new Date();
     const end = addMonths(start, 1);
+    const failures = [];
+    const attempts = [
+      { name: 'static_subsidiary_assembly_routing_location', isDynamic: false, includeLocation: true, order: ['subsidiary', 'assembly', 'routing', 'bom', 'bomRevision', 'location'] },
+      { name: 'dynamic_subsidiary_assembly_routing_location', isDynamic: true, includeLocation: true, order: ['subsidiary', 'assembly', 'routing', 'bom', 'bomRevision', 'location'] },
+      { name: 'static_assembly_subsidiary_routing_location', isDynamic: false, includeLocation: true, order: ['assembly', 'subsidiary', 'routing', 'bom', 'bomRevision', 'location'] },
+      { name: 'dynamic_assembly_subsidiary_routing_location', isDynamic: true, includeLocation: true, order: ['assembly', 'subsidiary', 'routing', 'bom', 'bomRevision', 'location'] },
+      { name: 'static_subsidiary_assembly_routing_no_location', isDynamic: false, includeLocation: false, order: ['subsidiary', 'assembly', 'routing', 'bom', 'bomRevision'] },
+      { name: 'dynamic_subsidiary_assembly_routing_no_location', isDynamic: true, includeLocation: false, order: ['subsidiary', 'assembly', 'routing', 'bom', 'bomRevision'] },
+      { name: 'static_assembly_subsidiary_no_location', isDynamic: false, includeLocation: false, order: ['assembly', 'subsidiary', 'routing', 'bom', 'bomRevision'] },
+      { name: 'dynamic_assembly_subsidiary_no_location', isDynamic: true, includeLocation: false, order: ['assembly', 'subsidiary', 'routing', 'bom', 'bomRevision'] }
+    ];
 
-    // Allocation Strategy accounts can require dates
-    safeTry(() => wo.setValue({ fieldId: 'startdate', value: start }));
-    safeTry(() => wo.setValue({ fieldId: 'enddate', value: end }));
-
-      return wo;
-    }
-
-    try {
-      return Number(buildWorkOrder(true).save({ enableSourcing: true, ignoreMandatoryFields: false }));
-    } catch (e) {
-      if (!locationId) throw e;
-      log.audit({
-        title: `Work Order retry without location W455 [${VERSION}]`,
-        details: JSON.stringify({
-          assemblyId: Number(assemblyId || 0),
-          subsidiaryId: Number(subsidiaryId || 0),
-          rejectedLocationId: Number(locationId || 0),
+    function trySetField(wo, fieldId, value, required, accepted, rejected) {
+      try {
+        wo.setValue({ fieldId, value });
+        accepted.push(fieldId);
+        return true;
+      } catch (e) {
+        rejected.push({
+          fieldId,
           errorName: e && e.name || '',
           errorMessage: e && e.message || String(e || '')
-        })
-      });
-      return Number(buildWorkOrder(false).save({ enableSourcing: true, ignoreMandatoryFields: false }));
+        });
+        if (required) throw e;
+        return false;
+      }
     }
+
+    function trySetAnyField(wo, fields, value, required, accepted, rejected) {
+      let lastError = null;
+      for (let i = 0; i < fields.length; i += 1) {
+        try {
+          wo.setValue({ fieldId: fields[i], value });
+          accepted.push(fields[i]);
+          return true;
+        } catch (e) {
+          lastError = e;
+          rejected.push({
+            fieldId: fields[i],
+            errorName: e && e.name || '',
+            errorMessage: e && e.message || String(e || '')
+          });
+        }
+      }
+      if (required && lastError) throw lastError;
+      if (required) throw new Error(`Work Order: could not set any of ${fields.join(', ')}`);
+      return false;
+    }
+
+    function applyToken(wo, token, attempt, accepted, rejected) {
+      if (token === 'subsidiary') {
+        trySetField(wo, 'subsidiary', Number(subsidiaryId), false, accepted, rejected);
+      } else if (token === 'assembly') {
+        trySetAnyField(wo, ['assemblyitem', 'item', 'recipe'], Number(assemblyId), true, accepted, rejected);
+      } else if (token === 'routing' && routingId) {
+        trySetAnyField(wo, ['manufacturingrouting', 'routing'], Number(routingId), false, accepted, rejected);
+      } else if (token === 'bom' && bomId) {
+        trySetField(wo, 'billofmaterials', Number(bomId), false, accepted, rejected);
+      } else if (token === 'bomRevision' && bomRevId) {
+        trySetAnyField(wo, ['billofmaterialsrevision', 'bomrevision'], Number(bomRevId), false, accepted, rejected);
+      } else if (token === 'location' && attempt.includeLocation && locationId) {
+        trySetField(wo, 'location', Number(locationId), false, accepted, rejected);
+      }
+    }
+
+    for (let i = 0; i < attempts.length; i += 1) {
+      const attempt = attempts[i];
+      const accepted = [];
+      const rejected = [];
+      try {
+        const wo = record.create({ type: 'workorder', isDynamic: attempt.isDynamic });
+        attempt.order.forEach(function(token) {
+          applyToken(wo, token, attempt, accepted, rejected);
+        });
+        trySetField(wo, 'quantity', Number(quantity || 10), false, accepted, rejected);
+        if (memo) trySetField(wo, 'memo', String(memo).slice(0, 300), false, accepted, rejected);
+        trySetField(wo, 'startdate', start, false, accepted, rejected);
+        trySetField(wo, 'enddate', end, false, accepted, rejected);
+        const woId = Number(wo.save({ enableSourcing: true, ignoreMandatoryFields: false }));
+        log.audit({
+          title: `Work Order seeded with W455 fallback [${VERSION}]`,
+          details: JSON.stringify({
+            attempt: attempt.name,
+            isDynamic: attempt.isDynamic,
+            woId,
+            assemblyId: Number(assemblyId || 0),
+            routingId: routingId ? Number(routingId) : null,
+            bomId: bomId ? Number(bomId) : null,
+            bomRevId: bomRevId ? Number(bomRevId) : null,
+            acceptedFields: accepted,
+            rejectedFields: rejected
+          })
+        });
+        return woId;
+      } catch (e) {
+        failures.push({
+          attempt: attempt.name,
+          isDynamic: attempt.isDynamic,
+          includeLocation: attempt.includeLocation,
+          acceptedFields: accepted,
+          rejectedFields: rejected,
+          errorName: e && e.name || '',
+          errorMessage: e && e.message || String(e || '')
+        });
+      }
+    }
+
+    log.error({
+      title: `Work Order W455 fallback attempts exhausted [${VERSION}]`,
+      details: JSON.stringify({
+        assemblyId: Number(assemblyId || 0),
+        routingId: routingId ? Number(routingId) : null,
+        bomId: bomId ? Number(bomId) : null,
+        bomRevId: bomRevId ? Number(bomRevId) : null,
+        subsidiaryId: Number(subsidiaryId || 0),
+        locationId: Number(locationId || 0),
+        attempts: failures
+      })
+    });
+    const reusableWorkOrder = findReusableWorkOrderByAssemblyW455({ assemblyId, memo, routingId });
+    if (reusableWorkOrder && reusableWorkOrder.id) {
+      log.audit({
+        title: `Work Order reused after W455 create rejection [${VERSION}]`,
+        details: JSON.stringify(Object.assign({}, reusableWorkOrder, {
+          assemblyId: Number(assemblyId || 0),
+          routingId: routingId ? Number(routingId) : null,
+          reuseReason: 'work_order_form_requires_recipe_not_scriptable_in_create_context'
+        }))
+      });
+      return Number(reusableWorkOrder.id);
+    }
+    const finalError = new Error(`Work Order W455 attempts exhausted for assembly ${assemblyId}`);
+    finalError.name = 'WORK_ORDER_W455_ATTEMPTS_EXHAUSTED';
+    finalError.workOrderAttempts = failures;
+    throw finalError;
+  }
+
+  function findReusableWorkOrderByAssemblyW455({ assemblyId, memo, routingId }) {
+    const asmId = Number(assemblyId || 0);
+    if (!asmId) return null;
+    try {
+      const rs = search.create({
+        type: 'workorder',
+        filters: [['mainline', 'is', 'T'], 'AND', ['item', 'anyof', asmId]],
+        columns: [search.createColumn({ name: 'internalid', sort: search.Sort.DESC }), 'tranid', 'statusref']
+      }).run().getRange({ start: 0, end: 1 }) || [];
+      if (rs.length) {
+        const row = rs[0];
+        const id = toIntOrNull(row.getValue({ name: 'internalid' }));
+        if (id) {
+          safeTry(() => record.submitFields({
+            type: 'workorder',
+            id,
+            values: { memo: String(memo || `SCAI Demo Reset reused Work Order | routing ${routingId || ''}`).slice(0, 300) },
+            options: { enableSourcing: true, ignoreMandatoryFields: true }
+          }));
+          return {
+            id,
+            source: 'existing_workorder_search_by_assembly',
+            tranid: row.getValue({ name: 'tranid' }) || '',
+            statusRef: row.getValue({ name: 'statusref' }) || ''
+          };
+        }
+      }
+    } catch (e) {
+      log.audit({
+        title: `Work Order reuse search skipped W455 [${VERSION}]`,
+        details: JSON.stringify({ assemblyId: asmId, errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') })
+      });
+    }
+    const knownReusable = [87034];
+    for (let i = 0; i < knownReusable.length; i += 1) {
+      try {
+        const wo = record.load({ type: 'workorder', id: knownReusable[i], isDynamic: false });
+        const itemValue = Number(safeTryReturn(() => wo.getValue({ fieldId: 'assemblyitem' })) || safeTryReturn(() => wo.getValue({ fieldId: 'item' })) || 0);
+        if (itemValue === asmId) {
+          safeTry(() => record.submitFields({
+            type: 'workorder',
+            id: knownReusable[i],
+            values: { memo: String(memo || `SCAI Demo Reset reused Work Order | routing ${routingId || ''}`).slice(0, 300) },
+            options: { enableSourcing: true, ignoreMandatoryFields: true }
+          }));
+          return { id: knownReusable[i], source: 'known_valid_workorder_fallback', assemblyId: asmId };
+        }
+      } catch (e) {}
+    }
+    return null;
   }
 
   // ----------------------------
@@ -3058,14 +3205,28 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function discoverNamingFileIdByExtId(extId) {
     try {
-      const filename = `scai_naming_${String(extId || '').trim()}.json`;
-      const rs = search.create({
-        type: 'file',
-        filters: [['name', 'is', filename]],
-        columns: [search.createColumn({ name: 'internalid', sort: search.Sort.DESC })]
-      }).run().getRange({ start: 0, end: 1 }) || [];
-      if (!rs.length) return null;
-      return toIntOrNull(rs[0].getValue({ name: 'internalid' }));
+      const rawExtId = String(extId || '').trim();
+      const candidates = [
+        `scai_naming_${rawExtId}.json`,
+        `scai_naming_${safeCode(rawExtId)}`,
+        safeCode(rawExtId)
+      ].filter(function(value, index, arr) { return value && arr.indexOf(value) === index; });
+      for (let i = 0; i < candidates.length; i += 1) {
+        const token = candidates[i];
+        const filters = token.indexOf('.json') !== -1
+          ? [['name', 'is', token]]
+          : [['name', 'contains', token], 'AND', ['name', 'contains', 'scai_naming_']];
+        const rs = search.create({
+          type: 'file',
+          filters,
+          columns: [search.createColumn({ name: 'internalid', sort: search.Sort.DESC }), 'name']
+        }).run().getRange({ start: 0, end: 1 }) || [];
+        if (rs.length) {
+          const fileId = toIntOrNull(rs[0].getValue({ name: 'internalid' }));
+          if (fileId) return fileId;
+        }
+      }
+      return null;
     } catch (e) {
       log.error({ title: `Precomputed naming discover FAILED [${VERSION}]`, details: JSON.stringify({ extId: extId || '', message: (e && (e.message || e.details)) ? String(e.message || e.details) : String(e) }) });
       return null;

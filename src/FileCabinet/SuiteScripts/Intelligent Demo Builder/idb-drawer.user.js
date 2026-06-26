@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.59
+// @version      1.0.60
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.59';
-  const CURRENT_UX_BLOCK_W346 = 'W451';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.60';
+  const CURRENT_UX_BLOCK_W346 = 'W454';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -3742,7 +3742,7 @@
     const matchesCurrent = recommendedLane.id === lane.id;
     const lowConfidence = confidenceModel.state === WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION;
     const needsWebsiteReview = confidenceModel.state === WEBSITE_CONFIDENCE_STATE.INSUFFICIENT;
-    const needsLaneReview = readiness.tone === 'ready' && confidenceModel.state === WEBSITE_CONFIDENCE_STATE.INSUFFICIENT;
+    const needsLaneReview = false;
     const headline = suggested
       ? matchesCurrent
         ? `${recommendedLane.name} is the working lane.`
@@ -26998,7 +26998,7 @@
           <button class="idb-secondary" data-idb-view="review">Build records</button>
           <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
         `
-        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext || intakeGuide.needsLaneReview ? 'disabled' : ''}>Build records</button>`;
+        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext ? 'disabled' : ''}>Build records</button>`;
       return `
         <div class="idb-card idb-accent idb-compact idb-w98-request-summary">
           <div class="idb-section-title">Request summary</div>
@@ -27131,7 +27131,7 @@
                 <button class="idb-secondary" data-idb-view="review">Build records</button>
                 <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
               `
-              : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext || intakeGuide.needsLaneReview ? 'disabled' : ''}>Build records</button>`
+              : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext ? 'disabled' : ''}>Build records</button>`
             : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${flow.primaryDisabled ? 'disabled' : ''}>Build records</button>`}
           ${briefPrepared ? '<button class="idb-secondary" data-idb-edit-setup>Edit request</button>' : '<span class="idb-mini-chip">Draft autosaved</span>'}
           <button class="idb-secondary" data-idb-toggle-lanes>Change lane manually</button>

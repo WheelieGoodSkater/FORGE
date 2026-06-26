@@ -265,10 +265,10 @@ function main() {
   const w453ResetMode = runner.includes("w453-legacy-runner-core-sidecar-bridge");
 
   assertCase(results, 'w449-marker-updated',
-    /@version\s+1\.0\.(57|58|59)/.test(drawer) &&
-      /const DRAWER_USERSCRIPT_VERSION = '1\.0\.(57|58|59)';/.test(drawer) &&
-      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451)';/.test(drawer),
-    'Drawer should identify W449 / 1.0.57 or successor W450/W451.');
+    /@version\s+1.0.(57|58|59|60)/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1.0.(57|58|59|60)';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451|454)';/.test(drawer),
+    'Drawer should identify W449 / 1.0.57 or successor W450/W451/W454.');
 
   assertCase(results, 'w449-authoritative-work-center-search',
     w453ResetMode || runner.includes('customsearch_scai_ss_wc_wip') &&

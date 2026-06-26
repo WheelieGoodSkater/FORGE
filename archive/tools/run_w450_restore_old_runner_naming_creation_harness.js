@@ -123,17 +123,18 @@ function main() {
   const itemAssemblyCreateFn = runner.slice(runner.indexOf('function createInventoryOrAssemblyWithLocationRetryW453'), runner.indexOf('function ensureBomByExternalId'));
   const subsLocFn = runner.slice(runner.indexOf('function buildSubsLocValues'), runner.indexOf('// ----------------------------', runner.indexOf('function buildSubsLocValues')));
 
-  assertCase(results, 'w453-item-body-location-omitted-for-copied-records',
+  assertCase(results, 'w453-old-runner-location-first-with-invalid-sub-fallback',
     runner.includes('function isInvalidSubLocationErrorW453') &&
       runner.includes('function clearBodyLocationW453') &&
       runner.includes('itemBodyLocationPolicy') &&
       runner.includes('createInventoryOrAssemblyWithLocationRetryW453') &&
+      freshHeroFn.includes("fieldId: 'location', value: Number(locationId)") &&
+      itemAssemblyCreateFn.includes("fieldId: 'location', value: Number(locationId)") &&
       freshHeroFn.includes('clearBodyLocationW453(rec)') &&
       itemAssemblyCreateFn.includes('clearBodyLocationW453(rec)') &&
-      !freshHeroFn.includes("fieldId: 'location', value: Number(locationId)") &&
-      !itemAssemblyCreateFn.includes("fieldId: 'location', value: Number(locationId)") &&
-      !subsLocFn.includes('values.location'),
-    'Fresh hero, component, assembly, and existing item updates should not push run location onto item body location.');
+      subsLocFn.includes('values.location = locationId') &&
+      runner.includes('old-runner-location-first-clear-copied-body-location-on-invalid-sub'),
+    'Fresh hero, component, assembly, and existing item updates should apply the run location like the old runner, with INVALID_SUB fallback only.');
 
   assertCase(results, 'w453-result-size-guard',
     runner.includes('const maxChars = 9000000') &&

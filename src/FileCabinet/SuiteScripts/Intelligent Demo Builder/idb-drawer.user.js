@@ -7365,17 +7365,25 @@
     'finalGeneratedNamesJson',
     'completedResultJson',
     'generatedNamesJson',
+    'sidecarGeneratedNamesJson',
+    'partialGeneratedNamesJson',
     'finalNamesJson',
     'resultCapture.finalGeneratedNamesJson',
     'resultCapture.completedResultJson',
     'resultCapture.generatedNamesJson',
+    'resultCapture.sidecarGeneratedNamesJson',
+    'resultCapture.partialGeneratedNamesJson',
     'body.finalGeneratedNamesJson',
     'body.completedResultJson',
     'body.generatedNamesJson',
+    'body.sidecarGeneratedNamesJson',
+    'body.partialGeneratedNamesJson',
     'body.finalNamesJson',
     'body.resultCapture.finalGeneratedNamesJson',
     'body.resultCapture.completedResultJson',
-    'body.resultCapture.generatedNamesJson'
+    'body.resultCapture.generatedNamesJson',
+    'body.resultCapture.sidecarGeneratedNamesJson',
+    'body.resultCapture.partialGeneratedNamesJson'
   ]);
 
   function connectedBuildNonBlankResultW285(value) {
@@ -7397,17 +7405,25 @@
       result && result.finalGeneratedNamesJson,
       result && result.completedResultJson,
       result && result.generatedNamesJson,
+      result && result.sidecarGeneratedNamesJson,
+      result && result.partialGeneratedNamesJson,
       result && result.finalNamesJson,
       resultCapture && resultCapture.finalGeneratedNamesJson,
       resultCapture && resultCapture.completedResultJson,
       resultCapture && resultCapture.generatedNamesJson,
+      resultCapture && resultCapture.sidecarGeneratedNamesJson,
+      resultCapture && resultCapture.partialGeneratedNamesJson,
       nestedResult && nestedResult.finalGeneratedNamesJson,
       nestedResult && nestedResult.completedResultJson,
       nestedResult && nestedResult.generatedNamesJson,
+      nestedResult && nestedResult.sidecarGeneratedNamesJson,
+      nestedResult && nestedResult.partialGeneratedNamesJson,
       nestedResult && nestedResult.finalNamesJson,
       nestedCapture && nestedCapture.finalGeneratedNamesJson,
       nestedCapture && nestedCapture.completedResultJson,
-      nestedCapture && nestedCapture.generatedNamesJson
+      nestedCapture && nestedCapture.generatedNamesJson,
+      nestedCapture && nestedCapture.sidecarGeneratedNamesJson,
+      nestedCapture && nestedCapture.partialGeneratedNamesJson
     ], CONNECTED_BUILD_COMPLETED_JSON_LOCATION_CANDIDATES_W285);
   }
 
@@ -7416,17 +7432,25 @@
       raw && raw.finalGeneratedNamesJson,
       raw && raw.completedResultJson,
       raw && raw.generatedNamesJson,
+      raw && raw.sidecarGeneratedNamesJson,
+      raw && raw.partialGeneratedNamesJson,
       raw && raw.finalNamesJson,
       resultCapture && resultCapture.finalGeneratedNamesJson,
       resultCapture && resultCapture.completedResultJson,
       resultCapture && resultCapture.generatedNamesJson,
+      resultCapture && resultCapture.sidecarGeneratedNamesJson,
+      resultCapture && resultCapture.partialGeneratedNamesJson,
       body && body.finalGeneratedNamesJson,
       body && body.completedResultJson,
       body && body.generatedNamesJson,
+      body && body.sidecarGeneratedNamesJson,
+      body && body.partialGeneratedNamesJson,
       body && body.finalNamesJson,
       nestedCapture && nestedCapture.finalGeneratedNamesJson,
       nestedCapture && nestedCapture.completedResultJson,
-      nestedCapture && nestedCapture.generatedNamesJson
+      nestedCapture && nestedCapture.generatedNamesJson,
+      nestedCapture && nestedCapture.sidecarGeneratedNamesJson,
+      nestedCapture && nestedCapture.partialGeneratedNamesJson
     ], CONNECTED_BUILD_COMPLETED_JSON_LOCATION_CANDIDATES_W285);
   }
 
@@ -7487,10 +7511,10 @@
 
   function normalizeApprovedServerAdapterTransportResponseV1(transportResult, options) {
     const opts = options || {};
-    const result = transportResult || {};
-    const resultCapture = result.resultCapture || {};
-    const nestedResult = result.result || result.payload || result.data || result.response || {};
-    const nestedCapture = nestedResult.resultCapture || {};
+    const result = parseMaybeJsonObjectW455(transportResult || {}) || {};
+    const resultCapture = parseMaybeJsonObjectW455(result.resultCapture || {});
+    const nestedResult = parseMaybeJsonObjectW455(result.result || result.payload || result.data || result.response || {}) || {};
+    const nestedCapture = parseMaybeJsonObjectW455(nestedResult.resultCapture || {});
     const rawStatus = firstNonBlank(
       result.status,
       result.adapterStatus,
@@ -18954,10 +18978,10 @@
 
   function actualAdapterResponseShapeW265(rawResponse, options) {
     const opts = options || {};
-    const raw = rawResponse || {};
-    const body = raw.body || raw.payload || raw.data || raw.result || raw.response || {};
-    const resultCapture = raw.resultCapture || body.resultCapture || {};
-    const nestedCapture = body.resultCapture || {};
+    const raw = parseMaybeJsonObjectW455(rawResponse || {}) || {};
+    const body = parseMaybeJsonObjectW455(raw.body || raw.payload || raw.data || raw.result || raw.response || {}) || {};
+    const resultCapture = parseMaybeJsonObjectW455(raw.resultCapture || body.resultCapture || {}) || {};
+    const nestedCapture = parseMaybeJsonObjectW455(body.resultCapture || {}) || {};
     const completedJson = connectedBuildCompletedJsonFromActualResponseW285(raw, resultCapture, body, nestedCapture);
     const flattened = Object.assign({}, body, raw, {
       resultCapture,
@@ -21090,16 +21114,16 @@
   }
 
   function runnerSidecarBrandNamesAreUsableW431(finalNaming) {
-    const returned = arrayValue(finalNaming && finalNaming.displayObjects)
-      .concat(arrayValue(finalNaming && finalNaming.componentItems), arrayValue(finalNaming && finalNaming.locationPlanningRecords))
+    const returned = arrayValue(finalNaming && finalNaming.displayReadyRecords)
+      .concat(arrayValue(finalNaming && finalNaming.displayObjects), arrayValue(finalNaming && finalNaming.componentItems), arrayValue(finalNaming && finalNaming.locationPlanningRecords))
       .filter((item) => item && item.source === 'dcc_final' && firstNonBlank(item.name, item.recordName));
     const genericOnlyPattern = /^(?:finished good(?: item)?|finished good variety pack|product availability sku|branch availability\s*\/\s*replenishment flow|safe substitute fulfillment support sku|product\s*\/\s*sku|proof item|demo product|generic sku|inventory\s*\/\s*fulfillment|matrix item|component item|customer|sales order)$/i;
     return returned.length > 0 && returned.some((item) => !genericOnlyPattern.test(String(firstNonBlank(item.name, item.recordName)).trim()));
   }
 
   function runnerSidecarReturnedRecordsForImportW433(finalNaming) {
-    return arrayValue(finalNaming && finalNaming.displayObjects)
-      .concat(arrayValue(finalNaming && finalNaming.componentItems), arrayValue(finalNaming && finalNaming.locationPlanningRecords))
+    return arrayValue(finalNaming && finalNaming.displayReadyRecords)
+      .concat(arrayValue(finalNaming && finalNaming.displayObjects), arrayValue(finalNaming && finalNaming.componentItems), arrayValue(finalNaming && finalNaming.locationPlanningRecords))
       .filter((item) => item && item.source === 'dcc_final' && (firstNonBlank(item.name, item.recordName) || firstNonBlank(item.id, item.internalId) || firstNonBlank(item.url, item.supportedOpenUrl)));
   }
 

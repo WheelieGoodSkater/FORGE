@@ -745,12 +745,35 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         staleRoutingId: assemblyRoutingState.staleRoutingId || null,
         createNew: !existingRoutingId
       })
-    });
+	    });
+  	
+    const reusableRoutingId = existingRoutingId || findRoutingCopyTemplateW455({ preferredName: routingName });
+    if (reusableRoutingId) {
+      return reuseExistingRoutingContextW455({
+        routingId: Number(reusableRoutingId),
+        routingName,
+        routingMemo,
+        assemblyId,
+        bomId,
+        opNames,
+        centers: [c1, c2, c3],
+        templates: [t1, t2, t3],
+        assemblyBomProof,
+        assemblyRoutingState,
+        existingRoutingId,
+        source: existingRoutingId ? 'managed-routing' : 'valid-routing-template'
+      });
+    }
 
-    // Step 4: Reuse existing managed routing when possible; only create+attach if none exists
+	    // Step 4: Reuse existing managed routing when possible; otherwise copy a known-valid
+    // routing template before falling back to direct creation. Copying keeps NetSuite's
+    // hidden routing/work-center context while still producing a new product routing.
+    const routingCopyTemplateId = existingRoutingId ? null : findRoutingCopyTemplateW455({ preferredName: routingName });
     const routing = existingRoutingId
       ? record.load({ type: 'manufacturingrouting', id: Number(existingRoutingId), isDynamic: true })
-      : record.create({ type: 'manufacturingrouting', isDynamic: true });
+      : (routingCopyTemplateId
+        ? record.copy({ type: 'manufacturingrouting', id: Number(routingCopyTemplateId), isDynamic: true })
+        : record.create({ type: 'manufacturingrouting', isDynamic: true }));
 
     const headerTelemetry = {
       assemblyBomProof,
@@ -812,6 +835,50 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
 
     const stepSublist = 'routingstep';
+    function updateCopiedRoutingStepsW455() {
+      const lineCount = Number(safeTryReturn(() => routing.getLineCount({ sublistId: stepSublist })) || 0);
+      const planned = [
+        { index: 1, seq: 10, name: opNames.op10 || 'Blending', center: c1, template: t1 },
+        { index: 2, seq: 20, name: opNames.op20 || 'Dispensing', center: c2, template: t2 },
+        { index: 3, seq: 30, name: opNames.op30 || 'Packaging', center: c3, template: t3 }
+      ];
+      return planned.map(function(plan, idx) {
+        if (idx >= lineCount) {
+          const row = buildRoutingOperationRowW453(plan.index, plan.seq, plan.name, plan.center, plan.template);
+          row.accepted = false;
+          row.rejected = true;
+          row.plannedOnly = true;
+          row.errorName = 'COPIED_ROUTING_LINE_MISSING';
+          row.errorMessage = 'Copied routing did not include this operation line.';
+          return row;
+        }
+        const line = idx;
+        const accepted = safeTryReturn(function() {
+          routing.selectLine({ sublistId: stepSublist, line });
+          safeTry(() => routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(plan.seq) }));
+          routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(plan.name).slice(0, 60) });
+          routing.commitLine({ sublistId: stepSublist });
+          return true;
+        }) === true;
+        const row = buildRoutingOperationRowW453(plan.index, plan.seq, plan.name, plan.center, plan.template);
+        row.accepted = accepted;
+        row.rejected = !accepted;
+        row.plannedOnly = !accepted;
+        row.errorName = accepted ? '' : 'COPIED_ROUTING_LINE_UPDATE_FAILED';
+        row.errorMessage = accepted ? '' : 'Copied routing line could not be relabeled.';
+        return row;
+      });
+    }
+
+    let operationRows = [];
+    let routingLocationClearedForOperationRetry = false;
+    if (routingCopyTemplateId && !existingRoutingId) {
+      operationRows = updateCopiedRoutingStepsW455();
+      log.audit({
+        title: `Routing copied from existing valid template W455 [${VERSION}]`,
+        details: JSON.stringify({ routingCopyTemplateId: Number(routingCopyTemplateId), operationRows })
+      });
+    } else {
     clearRoutingSteps(routing, stepSublist);
 
     function resolveRoutingStepFieldIds(routingRec, sublistId) {
@@ -833,7 +900,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     const stepFieldIds = resolveRoutingStepFieldIds(routing, stepSublist);
 
-    function addStep(seq, opName, centerId, templateId) {
+    function uniqueByIdW455(rows) {
+      const seen = {};
+      return (rows || []).filter(function(row) {
+        const id = row && row.id ? String(row.id) : '';
+        if (!id || seen[id]) return false;
+        seen[id] = true;
+        return true;
+      });
+    }
+
+    function addStep(seq, opName, center, template) {
+      const centerId = center && center.id;
+      const templateId = template && template.id;
       try {
         routing.selectNewLine({ sublistId: stepSublist });
 
@@ -866,7 +945,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         });
 
         routing.commitLine({ sublistId: stepSublist });
-        return { accepted: true, seq, opName, centerId: Number(centerId), templateId: Number(templateId) };
+        return { accepted: true, seq, opName, centerId: Number(centerId), templateId: Number(templateId), center, template };
       } catch (e) {
         safeTry(() => routing.cancelLine({ sublistId: stepSublist }));
         log.audit({
@@ -877,19 +956,50 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       }
     }
 
-    const stepAttempts = [
-      addStep(10, opNames.op10 || 'Blending',    c1.id, t1.id),
-      addStep(20, opNames.op20 || 'Dispensing',  c2.id, t2.id),
-      addStep(30, opNames.op30 || 'Packaging',   c3.id, t3.id)
-    ];
-    const acceptedSteps = stepAttempts.filter(function(step) { return step && step.accepted; });
+    function addStepWithCandidateFallback(seq, opName, preferredCenter, preferredTemplate) {
+      const centerPool = uniqueByIdW455([preferredCenter].concat(centers)).slice(0, 14);
+      const templatePool = uniqueByIdW455([preferredTemplate].concat(templates)).slice(0, 4);
+      let lastAttempt = null;
+      for (let ci = 0; ci < centerPool.length; ci += 1) {
+        for (let ti = 0; ti < templatePool.length; ti += 1) {
+          const attempt = addStep(seq, opName, centerPool[ci], templatePool[ti]);
+          lastAttempt = attempt;
+          if (attempt && attempt.accepted) return attempt;
+          if (!/manufacturingcosttemplate/i.test(String(attempt && attempt.errorMessage || ''))) break;
+        }
+      }
+      return lastAttempt || { accepted: false, seq, opName, centerId: 0, templateId: 0, errorName: 'NO_ROUTING_STEP_ATTEMPT', errorMessage: 'No center/template candidates were available.' };
+    }
+
+    function buildStepAttempts() {
+      return [
+        addStepWithCandidateFallback(10, opNames.op10 || 'Blending', c1, t1),
+        addStepWithCandidateFallback(20, opNames.op20 || 'Dispensing', c2, t2),
+        addStepWithCandidateFallback(30, opNames.op30 || 'Packaging', c3, t3)
+      ];
+    }
+
+    let stepAttempts = buildStepAttempts();
+    let acceptedSteps = stepAttempts.filter(function(step) { return step && step.accepted; });
+    if (!acceptedSteps.length && loc) {
+      routingLocationClearedForOperationRetry = true;
+      safeTry(() => routing.setValue({ fieldId: 'location', value: [] }));
+      safeTry(() => routing.setValue({ fieldId: 'location', value: null }));
+      clearRoutingSteps(routing, stepSublist);
+      log.audit({
+        title: `Routing operation retry without routing location W455 [${VERSION}]`,
+        details: JSON.stringify({ assemblyId: Number(assemblyId), bomId: Number(bomId), rejectedLocationId: Number(loc), reason: 'all work centers rejected under located routing header' })
+      });
+      stepAttempts = buildStepAttempts();
+      acceptedSteps = stepAttempts.filter(function(step) { return step && step.accepted; });
+    }
     if (!acceptedSteps.length) {
       throw new Error('No routing operation lines were accepted; NetSuite rejected all W455 operation rows.');
     }
-    const operationRows = [
-      buildRoutingOperationRowW453(1, 10, opNames.op10 || 'Blending', c1, t1),
-      buildRoutingOperationRowW453(2, 20, opNames.op20 || 'Dispensing', c2, t2),
-      buildRoutingOperationRowW453(3, 30, opNames.op30 || 'Packaging', c3, t3)
+    operationRows = [
+      buildRoutingOperationRowW453(1, 10, opNames.op10 || 'Blending', (stepAttempts[0] && stepAttempts[0].center) || c1, (stepAttempts[0] && stepAttempts[0].template) || t1),
+      buildRoutingOperationRowW453(2, 20, opNames.op20 || 'Dispensing', (stepAttempts[1] && stepAttempts[1].center) || c2, (stepAttempts[1] && stepAttempts[1].template) || t2),
+      buildRoutingOperationRowW453(3, 30, opNames.op30 || 'Packaging', (stepAttempts[2] && stepAttempts[2].center) || c3, (stepAttempts[2] && stepAttempts[2].template) || t3)
     ].map(function(row) {
       const attempt = stepAttempts.find(function(step) { return Number(step.seq) === Number(row.sequence); }) || {};
       row.accepted = attempt.accepted === true;
@@ -899,6 +1009,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       row.plannedOnly = attempt.accepted !== true;
       return row;
     });
+    }
 
     const routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
 
@@ -942,12 +1053,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingName,
       name: routingName,
       existingRoutingId: existingRoutingId ? Number(existingRoutingId) : null,
-      decision: existingRoutingId ? 'reused-existing-routing' : 'created-new-routing',
+      copiedFromRoutingTemplateId: routingCopyTemplateId ? Number(routingCopyTemplateId) : null,
+      decision: existingRoutingId ? 'reused-existing-routing' : (routingCopyTemplateId ? 'copied-valid-routing-template' : 'created-new-routing'),
       attachResult,
       assemblyBomProof,
       routingBomFieldSkippedBecauseAssemblyBomVerified: headerTelemetry.billofmaterials.skippedBecauseAssemblyBomVerified === true,
       rejectedBomFieldError: headerTelemetry.billofmaterials.errorMessage ? headerTelemetry.billofmaterials : null,
       routingHeaderTelemetry: headerTelemetry,
+      routingLocationClearedForOperationRetry,
       attachDefaultVerification: verification,
       staleRoutingDetected: assemblyRoutingState.staleRoutingDetected === true,
       staleRoutingName: assemblyRoutingState.staleRoutingName || '',
@@ -958,9 +1071,160 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       chosen: {
         centers: [c1, c2, c3],
         templates: [t1, t2, t3],
-        ops: opNames
+        ops: opNames,
+        copiedFromRoutingTemplateId: routingCopyTemplateId ? Number(routingCopyTemplateId) : null
       }
     };
+	  }
+	
+  function reuseExistingRoutingContextW455({ routingId, routingName, routingMemo, assemblyId, bomId, opNames, centers, templates, assemblyBomProof, assemblyRoutingState, existingRoutingId, source }) {
+    const routingRec = record.load({ type: 'manufacturingrouting', id: Number(routingId), isDynamic: true });
+    const stepSublist = 'routingstep';
+    const lineCount = Number(safeTryReturn(() => routingRec.getLineCount({ sublistId: stepSublist })) || 0);
+    const planned = [
+      { index: 1, seq: 10, name: opNames.op10 || 'Operation 10', center: centers[0], template: templates[0] },
+      { index: 2, seq: 20, name: opNames.op20 || 'Operation 20', center: centers[1], template: templates[1] },
+      { index: 3, seq: 30, name: opNames.op30 || 'Operation 30', center: centers[2], template: templates[2] }
+    ];
+    const operationRows = planned.map(function(plan, idx) {
+      let accepted = false;
+      let errorName = '';
+      let errorMessage = '';
+      if (idx < lineCount) {
+        accepted = safeTryReturn(function() {
+          routingRec.selectLine({ sublistId: stepSublist, line: idx });
+          safeTry(() => routingRec.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(plan.seq) }));
+          routingRec.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(plan.name).slice(0, 60) });
+          routingRec.commitLine({ sublistId: stepSublist });
+          return true;
+        }) === true;
+        if (!accepted) {
+          errorName = 'ROUTING_OPERATION_RENAME_SKIPPED';
+          errorMessage = 'Existing routing operation line could not be renamed; routing context was left intact.';
+        }
+      } else {
+        errorName = 'ROUTING_OPERATION_LINE_NOT_EXPOSED';
+        errorMessage = 'Existing routing did not expose this operation line for editing; routing context was left intact.';
+      }
+      const row = buildRoutingOperationRowW453(plan.index, plan.seq, plan.name, plan.center, plan.template);
+      row.accepted = accepted;
+      row.rejected = !accepted;
+      row.plannedOnly = !accepted;
+      row.errorName = errorName;
+      row.errorMessage = errorMessage;
+      return row;
+    });
+    safeTry(() => routingRec.setValue({ fieldId: 'name', value: routingName }));
+    safeTry(() => routingRec.setValue({ fieldId: 'memo', value: routingMemo }));
+    const saveResult = safeTryReturn(() => Number(routingRec.save({ enableSourcing: true, ignoreMandatoryFields: true }))) || Number(routingId);
+    const verification = verifyAssemblyRoutingDefaultW455({ assemblyId, routingId: Number(routingId), expectedRoutingName: routingName });
+    log.audit({
+      title: `Routing reused with product operation labels W455 [${VERSION}]`,
+      details: JSON.stringify({
+        routingId: Number(routingId),
+        saveResult,
+        source,
+        lineCount,
+        routingName,
+        operationRows,
+        assemblyBomProof
+      })
+    });
+    return {
+      status: verification.defaulted ? 'defaulted' : 'reused',
+      routingId: Number(routingId),
+      routing: {
+        id: String(routingId),
+        internalId: String(routingId),
+        url: recordUrlW453('manufacturingrouting', Number(routingId)),
+        name: routingName,
+        status: verification.defaulted ? 'defaulted' : 'reused'
+      },
+      routingUrl: recordUrlW453('manufacturingrouting', Number(routingId)),
+      routingName,
+      name: routingName,
+      existingRoutingId: existingRoutingId ? Number(existingRoutingId) : Number(routingId),
+      copiedFromRoutingTemplateId: source === 'valid-routing-template' ? Number(routingId) : null,
+      decision: 'reused-existing-routing-renamed-operations',
+      attachResult: 'reused-existing-routing-context-left-intact',
+      assemblyBomProof,
+      routingBomFieldSkippedBecauseAssemblyBomVerified: false,
+      rejectedBomFieldError: null,
+      routingHeaderTelemetry: {
+        assemblyBomProof,
+        billofmaterials: { attempted: false, skippedBecauseAssemblyBomVerified: false, errorName: '', errorMessage: '' },
+        headerFieldsAccepted: ['name', 'memo'],
+        headerFieldsRejected: []
+      },
+      routingLocationClearedForOperationRetry: false,
+      attachDefaultVerification: verification,
+      staleRoutingDetected: assemblyRoutingState && assemblyRoutingState.staleRoutingDetected === true,
+      staleRoutingName: assemblyRoutingState && assemblyRoutingState.staleRoutingName || '',
+      staleRoutingId: assemblyRoutingState && assemblyRoutingState.staleRoutingId || null,
+      supersedeResult: 'reused-valid-routing-context',
+      operationRows,
+      routingOperations: operationRows,
+      chosen: {
+        centers,
+        templates,
+        ops: opNames,
+        reusedRoutingId: Number(routingId),
+        reuseSource: source
+      }
+    };
+  }
+
+  function findRoutingCopyTemplateW455({ preferredName }) {
+    const preferred = String(preferredName || '').toLowerCase();
+    try {
+      const rows = search.create({
+        type: 'manufacturingrouting',
+        filters: [['isinactive', 'is', 'F']],
+        columns: ['internalid', 'name']
+      }).run().getRange({ start: 0, end: 50 }) || [];
+      let best = null;
+      let bestScore = -9999;
+      rows.forEach(function(row) {
+        const id = Number(row.getValue({ name: 'internalid' }));
+        const name = str(row.getValue({ name: 'name' }));
+        const lower = name.toLowerCase();
+        let score = 0;
+        if (!id) return;
+        if (/kombucha/.test(lower)) score += 100;
+        if (/production|routing|line/.test(lower)) score += 20;
+        if (preferred && lower === preferred) score += 80;
+        if (/bbq|cookie/.test(lower)) score -= 50;
+        if (score > bestScore) {
+          bestScore = score;
+          best = { id, name, score };
+        }
+      });
+      if (best && bestScore > 0) {
+        log.audit({
+          title: `Routing copy template selected W455 [${VERSION}]`,
+          details: JSON.stringify(best)
+        });
+        return Number(best.id);
+      }
+    } catch (e) {
+      log.audit({
+        title: `Routing copy template search failed W455 [${VERSION}]`,
+        details: JSON.stringify({ errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') })
+      });
+    }
+    const knownTemplateId = 707;
+    const known = safeTryReturn(function() {
+      const rec = record.load({ type: 'manufacturingrouting', id: knownTemplateId, isDynamic: false });
+      return { id: knownTemplateId, name: str(rec.getValue({ fieldId: 'name' })) };
+    });
+    if (known && /kombucha|production|routing|line/i.test(known.name || '')) {
+      log.audit({
+        title: `Routing copy template selected from known valid route W455 [${VERSION}]`,
+        details: JSON.stringify(known)
+      });
+      return knownTemplateId;
+    }
+    return null;
   }
 
   function attachRoutingToAssemblySafe({ assemblyId, routingId }) {
@@ -1119,13 +1383,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         const name = str(r.getValue({ name: 'name' }));
         const memo = str(r.getValue({ name: 'memo' }));
         let score = 0;
-        if (extId && memo.indexOf(extId) !== -1) score += 100;
-        if (memo.indexOf('SCAI Demo Reset') !== -1) score += 60;
-        if (preferredName && name === preferredName) score += 40;
-        if (name.indexOf('SCAI Routing') === 0) score += 20;
+        const sameRun = !!(extId && memo.indexOf(extId) !== -1);
+        const exactProductName = !!(preferredName && name === preferredName);
+        if (sameRun) score += 100;
+        if (exactProductName) score += 80;
+        if (memo.indexOf('SCAI Demo Reset') !== -1) score += 10;
+        if (name.indexOf('SCAI Routing') === 0) score += 5;
+        if (!sameRun && !exactProductName) score -= 100;
         if (score > bestScore) {
           bestScore = score;
-          best = { id, name, memo, score };
+          best = { id, name, memo, score, sameRun, exactProductName };
         }
       });
 
@@ -1134,7 +1401,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         details: JSON.stringify({ bomId: Number(bomId), subsidiaryId: Number(subsidiaryId || 0), rows: rows.length, chosen: best })
       });
 
-      return best ? Number(best.id) : null;
+      return best && (best.sameRun || best.exactProductName) ? Number(best.id) : null;
     } catch (e) {
       log.error({
         title: `Manufacturing routing search fallback failed [${VERSION}]`,
@@ -1591,10 +1858,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // Work Order seed (includes start + end dates)
   // ----------------------------
   function createWorkOrder({ assemblyId, subsidiaryId, locationId, quantity, memo }) {
+    function buildWorkOrder(includeLocation) {
     const wo = record.create({ type: 'workorder', isDynamic: false });
 
     wo.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) });
-    if (locationId) safeTry(() => wo.setValue({ fieldId: 'location', value: Number(locationId) }));
 
     let setAssemblyOk = false;
     ['assemblyitem', 'item'].forEach(fid => {
@@ -1606,6 +1873,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (ok) setAssemblyOk = true;
     });
     if (!setAssemblyOk) throw new Error(`Work Order: could not set assembly item (assemblyId=${assemblyId})`);
+    if (includeLocation && locationId) safeTry(() => wo.setValue({ fieldId: 'location', value: Number(locationId) }));
 
     wo.setValue({ fieldId: 'quantity', value: Number(quantity || 10) });
     if (memo) safeTry(() => wo.setValue({ fieldId: 'memo', value: String(memo).slice(0, 300) }));
@@ -1617,7 +1885,25 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     safeTry(() => wo.setValue({ fieldId: 'startdate', value: start }));
     safeTry(() => wo.setValue({ fieldId: 'enddate', value: end }));
 
-    return Number(wo.save({ enableSourcing: true, ignoreMandatoryFields: false }));
+      return wo;
+    }
+
+    try {
+      return Number(buildWorkOrder(true).save({ enableSourcing: true, ignoreMandatoryFields: false }));
+    } catch (e) {
+      if (!locationId) throw e;
+      log.audit({
+        title: `Work Order retry without location W455 [${VERSION}]`,
+        details: JSON.stringify({
+          assemblyId: Number(assemblyId || 0),
+          subsidiaryId: Number(subsidiaryId || 0),
+          rejectedLocationId: Number(locationId || 0),
+          errorName: e && e.name || '',
+          errorMessage: e && e.message || String(e || '')
+        })
+      });
+      return Number(buildWorkOrder(false).save({ enableSourcing: true, ignoreMandatoryFields: false }));
+    }
   }
 
   // ----------------------------
@@ -1705,7 +1991,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function adoptFreshHeroItem({ itemId, subsidiaryId, locationId, extId, prospect }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
-    const externalId = `SCAI_HERO_${safeCode(extId || itemId)}`;
+    const externalId = `SCAI_HERO_${safeRecordExternalCodeW455(extId || itemId)}`;
     const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
 
     safeTry(() => record.submitFields({
@@ -1752,14 +2038,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function createFreshHeroItem({ subsidiaryId, locationId, extId, prospect }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
-    const externalId = `SCAI_HERO_${safeCode(extId || new Date().getTime())}`;
+    const externalId = `SCAI_HERO_${safeRecordExternalCodeW455(extId || new Date().getTime())}`;
     const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
 
     let clonedFromAnchor = false;
 
-    function buildFreshHeroRecord(includeLocation) {
+    function buildFreshHeroRecord(includeLocation, forceCreate) {
       let rec = null;
       try {
+        if (forceCreate) throw new Error('force-create-minimal-fresh-hero');
         rec = record.copy({ type: 'inventoryitem', id: Number(anchorHeroId), isDynamic: false });
         clonedFromAnchor = true;
       } catch (e) {
@@ -1776,24 +2063,50 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     let locationDroppedForInvalidSub = false;
+    let copiedItemSaveFailed = false;
+    let minimalCreateFallbackUsed = false;
+    let firstSaveError = null;
+    let noLocationSaveError = null;
     let id = null;
     try {
       id = Number(buildFreshHeroRecord(true).save({ enableSourcing: true, ignoreMandatoryFields: true }));
     } catch (e) {
-      if (!locationId || !isInvalidSubLocationErrorW453(e)) throw e;
+      firstSaveError = e;
+      if (!locationId && isInvalidSubLocationErrorW453(e)) throw e;
       locationDroppedForInvalidSub = true;
+      copiedItemSaveFailed = !isInvalidSubLocationErrorW453(e);
       log.audit({
-        title: `Fresh HERO location retry without item body location after INVALID_SUB [${VERSION}]`,
+        title: `Fresh HERO retry without copied item body location [${VERSION}]`,
         details: JSON.stringify({
           extId,
           subsidiaryId: Number(subsidiaryId || 0),
           rejectedLocationId: Number(locationId || 0),
           errorName: e && e.name || '',
           errorMessage: e && e.message || String(e || ''),
-          itemBodyLocationPolicy: 'old-runner-location-first-clear-copied-body-location-on-invalid-sub'
+          itemBodyLocationPolicy: 'retry-without-body-location-then-minimal-create-if-copy-save-fails',
+          copiedItemSaveFailed
         })
       });
-      id = Number(buildFreshHeroRecord(false).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+      try {
+        id = Number(buildFreshHeroRecord(false).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+      } catch (retryError) {
+        noLocationSaveError = retryError;
+        minimalCreateFallbackUsed = true;
+        log.audit({
+          title: `Fresh HERO minimal create fallback after copied item save failed [${VERSION}]`,
+          details: JSON.stringify({
+            extId,
+            subsidiaryId: Number(subsidiaryId || 0),
+            rejectedLocationId: Number(locationId || 0),
+            firstErrorName: firstSaveError && firstSaveError.name || '',
+            firstErrorMessage: firstSaveError && firstSaveError.message || String(firstSaveError || ''),
+            retryErrorName: retryError && retryError.name || '',
+            retryErrorMessage: retryError && retryError.message || String(retryError || ''),
+            fallbackPolicy: 'create-inventoryitem-minimal-then-apply-shared-persistence'
+          })
+        });
+        id = Number(buildFreshHeroRecord(false, true).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+      }
     }
 
     const persistence = applyFreshHeroPersistence({
@@ -1814,6 +2127,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         namingCollisionAvoidance: 'extid-suffix',
         anchorHeroId: Number(anchorHeroId),
         clonedFromAnchor,
+        copiedItemSaveFailed,
+        minimalCreateFallbackUsed,
+        firstSaveErrorName: firstSaveError && firstSaveError.name || '',
+        firstSaveErrorMessage: firstSaveError && firstSaveError.message || '',
+        noLocationSaveErrorName: noLocationSaveError && noLocationSaveError.name || '',
+        noLocationSaveErrorMessage: noLocationSaveError && noLocationSaveError.message || '',
         preferredVendorOk: !!persistence.preferredVendorOk,
         planningAutoCalcOff: !!persistence.planningAutoCalcOff,
         locationPlanningCopied: !!persistence.locationPlanningCopied,
@@ -3775,18 +4094,39 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function safeJsonParse(s) { try { return JSON.parse(String(s || '')); } catch (e) { return null; } }
+  function simpleHashW455(value) {
+    const raw = String(value || '');
+    let hash = 0;
+    for (let i = 0; i < raw.length; i += 1) {
+      hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash).toString(36).toUpperCase();
+  }
+
+  function safeRecordExternalCodeW455(value) {
+    const raw = String(value || 'RUN');
+    const cleaned = raw.replace(/[^A-Za-z0-9_\-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '') || 'RUN';
+    const hash = simpleHashW455(raw).slice(0, 8) || '0';
+    const prefix = cleaned.slice(0, 27).replace(/[_-]+$/g, '') || 'RUN';
+    return trimLen(`${prefix}_${hash}`, 40);
+  }
+
   function shortExtSuffix(extId) {
     const raw = String(extId || '').replace(/^SCAI_SO_/i, '').replace(/[^A-Za-z0-9]/g, '');
     if (!raw) return 'RUN';
-    return raw.slice(-8).toUpperCase();
+    const tail = raw.slice(-4).toUpperCase();
+    const hash = simpleHashW455(extId).slice(0, 4);
+    return `${tail}${hash}`.slice(0, 8).toUpperCase();
   }
 
   function buildDifferentiatedNames(baseName, extId) {
     const cleanBase = String(baseName || 'Demo').replace(/^SCAI\s*-\s*/i, '').trim() || 'Demo';
     const suffix = shortExtSuffix(extId);
+    const itemBase = trimLen(`SCAI - ${cleanBase}`, Math.max(20, 60 - suffix.length - 3));
     return {
       displayName: trimLen(`SCAI - ${cleanBase}`, 120),
-      itemIdName: trimLen(`SCAI - ${cleanBase} - ${suffix}`, 60),
+      itemIdName: `${itemBase} - ${suffix}`,
       suffix
     };
   }

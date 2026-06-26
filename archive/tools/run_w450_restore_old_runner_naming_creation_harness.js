@@ -133,7 +133,8 @@ function main() {
       freshHeroFn.includes('clearBodyLocationW453(rec)') &&
       itemAssemblyCreateFn.includes('clearBodyLocationW453(rec)') &&
       subsLocFn.includes('values.location = locationId') &&
-      runner.includes('old-runner-location-first-clear-copied-body-location-on-invalid-sub'),
+      runner.includes('old-runner-location-first-clear-copied-body-location-on-invalid-sub') &&
+      !runner.includes("fieldId: 'location', value: []"),
     'Fresh hero, component, assembly, and existing item updates should apply the run location like the old runner, with INVALID_SUB fallback only.');
 
   assertCase(results, 'w453-result-size-guard',

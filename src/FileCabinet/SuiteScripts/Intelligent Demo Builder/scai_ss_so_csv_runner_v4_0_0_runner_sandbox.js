@@ -3520,7 +3520,6 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function clearBodyLocationW453(rec) {
     safeTry(() => rec.setValue({ fieldId: 'location', value: null }));
     safeTry(() => rec.setValue({ fieldId: 'location', value: '' }));
-    safeTry(() => rec.setValue({ fieldId: 'location', value: [] }));
   }
 
   return {

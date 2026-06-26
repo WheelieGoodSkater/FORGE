@@ -119,6 +119,13 @@ function main() {
       !runner.includes('Fresh hero mode requires custscript_scai_runner_hero_item'),
     'Fresh v3 runs should create the hero item in the runner when no hero id was passed.');
 
+  assertCase(results, 'w453-invalid-sub-location-retry',
+    runner.includes('function isInvalidSubLocationErrorW453') &&
+      runner.includes('Fresh HERO location dropped after INVALID_SUB') &&
+      runner.includes('createInventoryOrAssemblyWithLocationRetryW453') &&
+      runner.includes('Location dropped after INVALID_SUB for'),
+    'Fresh hero, component, and assembly creation should retry without incompatible body location when NetSuite raises INVALID_SUB.');
+
   assertCase(results, 'w453-result-size-guard',
     runner.includes('const maxChars = 9000000') &&
       runner.includes('text.length > maxChars ? text.slice(0, maxChars) : text'),

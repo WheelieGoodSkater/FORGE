@@ -1550,31 +1550,50 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const externalId = `SCAI_HERO_${safeCode(extId || new Date().getTime())}`;
     const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
 
-    let rec = null;
     let clonedFromAnchor = false;
 
-    try {
-      rec = record.copy({ type: 'inventoryitem', id: Number(anchorHeroId), isDynamic: false });
-      clonedFromAnchor = true;
-    } catch (e) {
-      rec = record.create({ type: 'inventoryitem', isDynamic: false });
+    function buildFreshHeroRecord(includeLocation) {
+      let rec = null;
+      try {
+        rec = record.copy({ type: 'inventoryitem', id: Number(anchorHeroId), isDynamic: false });
+        clonedFromAnchor = true;
+      } catch (e) {
+        rec = record.create({ type: 'inventoryitem', isDynamic: false });
+      }
+      rec.setValue({ fieldId: 'externalid', value: externalId });
+      rec.setValue({ fieldId: 'itemid', value: differentiated.itemIdName });
+      safeTry(() => rec.setValue({ fieldId: 'displayname', value: differentiated.displayName }));
+      try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
+      catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
+      if (includeLocation && locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: Number(locationId) }));
+      return rec;
     }
 
-    rec.setValue({ fieldId: 'externalid', value: externalId });
-    rec.setValue({ fieldId: 'itemid', value: differentiated.itemIdName });
-    safeTry(() => rec.setValue({ fieldId: 'displayname', value: differentiated.displayName }));
-
-    try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
-    catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
-    if (locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: Number(locationId) }));
-
-    const id = Number(rec.save({ enableSourcing: true, ignoreMandatoryFields: true }));
+    let locationDroppedForInvalidSub = false;
+    let id = null;
+    try {
+      id = Number(buildFreshHeroRecord(true).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+    } catch (e) {
+      if (!locationId || !isInvalidSubLocationErrorW453(e)) throw e;
+      locationDroppedForInvalidSub = true;
+      log.audit({
+        title: `Fresh HERO location dropped after INVALID_SUB [${VERSION}]`,
+        details: JSON.stringify({
+          extId,
+          subsidiaryId: Number(subsidiaryId || 0),
+          rejectedLocationId: Number(locationId || 0),
+          errorName: e && e.name || '',
+          errorMessage: e && e.message || String(e || '')
+        })
+      });
+      id = Number(buildFreshHeroRecord(false).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+    }
 
     const persistence = applyFreshHeroPersistence({
       itemId: id,
       anchorHeroId: Number(anchorHeroId),
       subsidiaryId,
-      locationId
+      locationId: locationDroppedForInvalidSub ? null : locationId
     });
 
     log.audit({
@@ -1593,7 +1612,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         locationPlanningCopied: !!persistence.locationPlanningCopied,
         bodyPlanningFieldsOff: persistence.bodyPlanningFieldsOff || [],
         vendorSublistUsed: persistence.vendorSublistUsed || '',
-        vendorId: Number(persistence.vendorId || 0)
+        vendorId: Number(persistence.vendorId || 0),
+        locationDroppedForInvalidSub
       })
     });
 
@@ -2030,16 +2050,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     let id = findByExternalId('inventoryitem', externalId);
 
     if (!id) {
-      const rec = record.create({ type: 'inventoryitem', isDynamic: false });
-      rec.setValue({ fieldId: 'externalid', value: externalId });
-      rec.setValue({ fieldId: 'itemid', value: defaultName });
-
-      try { rec.setValue({ fieldId: 'subsidiary', value: [subsidiaryId] }); }
-      catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: subsidiaryId })); }
-
-      if (locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: locationId }));
-
-      id = rec.save({ enableSourcing: true, ignoreMandatoryFields: true });
+      id = createInventoryOrAssemblyWithLocationRetryW453({
+        type: 'inventoryitem',
+        externalId,
+        defaultName,
+        subsidiaryId,
+        locationId
+      });
     } else {
       safeTry(() => record.submitFields({
         type: 'inventoryitem',
@@ -2056,16 +2073,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     let id = findByExternalId('assemblyitem', externalId);
 
     if (!id) {
-      const rec = record.create({ type: 'assemblyitem', isDynamic: false });
-      rec.setValue({ fieldId: 'externalid', value: externalId });
-      rec.setValue({ fieldId: 'itemid', value: defaultName });
-
-      try { rec.setValue({ fieldId: 'subsidiary', value: [subsidiaryId] }); }
-      catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: subsidiaryId })); }
-
-      if (locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: locationId }));
-
-      id = rec.save({ enableSourcing: true, ignoreMandatoryFields: true });
+      id = createInventoryOrAssemblyWithLocationRetryW453({
+        type: 'assemblyitem',
+        externalId,
+        defaultName,
+        subsidiaryId,
+        locationId
+      });
     } else {
       safeTry(() => record.submitFields({
         type: 'assemblyitem',
@@ -2076,6 +2090,35 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     return Number(id);
+  }
+
+  function createInventoryOrAssemblyWithLocationRetryW453({ type, externalId, defaultName, subsidiaryId, locationId }) {
+    function buildRecord(includeLocation) {
+      const rec = record.create({ type, isDynamic: false });
+      rec.setValue({ fieldId: 'externalid', value: externalId });
+      rec.setValue({ fieldId: 'itemid', value: defaultName });
+      try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
+      catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
+      if (includeLocation && locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: Number(locationId) }));
+      return rec;
+    }
+    try {
+      return Number(buildRecord(true).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+    } catch (e) {
+      if (!locationId || !isInvalidSubLocationErrorW453(e)) throw e;
+      log.audit({
+        title: `Location dropped after INVALID_SUB for ${type} [${VERSION}]`,
+        details: JSON.stringify({
+          type,
+          externalId,
+          subsidiaryId: Number(subsidiaryId || 0),
+          rejectedLocationId: Number(locationId || 0),
+          errorName: e && e.name || '',
+          errorMessage: e && e.message || String(e || '')
+        })
+      });
+      return Number(buildRecord(false).save({ enableSourcing: true, ignoreMandatoryFields: true }));
+    }
   }
 
   function ensureBomByExternalId(externalId, defaultName, subsidiaryId) {
@@ -3459,6 +3502,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const s = String(v || '').trim().toUpperCase();
     if (!s) return false;
     return (s === 'T' || s === 'TRUE' || s === 'YES' || s === '1' || s === 'ON');
+  }
+
+  function isInvalidSubLocationErrorW453(e) {
+    const name = String(e && e.name || '').toUpperCase();
+    const message = String(e && (e.message || e.details) || e || '');
+    return name === 'INVALID_SUB' ||
+      /subsidiary restrictions/i.test(message) && /location/i.test(message) ||
+      /incompatible with those defined for location/i.test(message);
   }
 
   return {

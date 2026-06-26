@@ -113,6 +113,12 @@ function main() {
     ]),
     'WO/routing failures should return diagnostics without blocking CSV/sidecar.');
 
+  assertCase(results, 'w453-fresh-hero-created-when-v3-does-not-pass-item',
+    runner.includes("handshakeAction = 'fresh-mode-runner-will-create-hero'") &&
+      runner.includes('const created = createFreshHeroItem') &&
+      !runner.includes('Fresh hero mode requires custscript_scai_runner_hero_item'),
+    'Fresh v3 runs should create the hero item in the runner when no hero id was passed.');
+
   assertCase(results, 'w453-result-size-guard',
     runner.includes('const maxChars = 9000000') &&
       runner.includes('text.length > maxChars ? text.slice(0, maxChars) : text'),

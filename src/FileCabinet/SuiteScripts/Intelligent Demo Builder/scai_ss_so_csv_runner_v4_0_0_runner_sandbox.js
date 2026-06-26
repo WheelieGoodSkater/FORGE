@@ -313,7 +313,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         passedHeroItemId = inferredFreshHeroItemId;
         handshakeAction = 'fresh-mode-fallback-to-inferred';
       } else {
-        throw new Error('Fresh hero mode requires custscript_scai_runner_hero_item (or recoverable inferred hero item).');
+        passedHeroItemId = null;
+        handshakeAction = 'fresh-mode-runner-will-create-hero';
       }
       effectiveCreateNewHeroItem = true;
     }

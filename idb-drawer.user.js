@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.60
+// @version      1.0.61
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.60';
-  const CURRENT_UX_BLOCK_W346 = 'W454';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.61';
+  const CURRENT_UX_BLOCK_W346 = 'W455';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -7387,7 +7387,7 @@
     return {
       index,
       location: index >= 0 ? (locations || [])[index] || '' : '',
-      value: index >= 0 ? candidates[index] : null,
+      value: index >= 0 ? parseMaybeJsonObjectW455(candidates[index]) : null,
       ready: index >= 0
     };
   }
@@ -13849,6 +13849,20 @@
     return null;
   }
 
+  function parseMaybeJsonObjectW455(value) {
+    if (!value) return value;
+    if (typeof value === 'object') return value;
+    if (typeof value !== 'string') return value;
+    const text = value.trim();
+    if (!text || !/^[\[{]/.test(text)) return value;
+    try {
+      const parsed = JSON.parse(text);
+      return parsed && typeof parsed === 'object' ? parsed : value;
+    } catch (error) {
+      return value;
+    }
+  }
+
   function safeFileToken(value) {
     return String(value || 'run')
       .toLowerCase()
@@ -14079,6 +14093,8 @@
         const rawRole = firstNonBlank(linked.w215MappedRole, linked.w214Role, linked.role);
         const canonicalRole = canonicalImportRoleW245(rawRole, mode);
         const consultantRecordLabel = lanePackAwareRecordLabelW250(canonicalRole, mode, lanePack, rawRole);
+        const plannedOperation = isPlannedOperationRowW449(linked) || /^operation\d+$/i.test(String(linked.role || linked.outputRole || ''));
+        const diagnosticRow = isDiagnosticRowW449(linked);
         const key = [canonicalRole, linked.name, linked.id, linked.url].join('|');
         if (seen[key]) return null;
         seen[key] = true;
@@ -14090,11 +14106,11 @@
           recordName: linked.name,
           recordType: inferNetSuiteRecordTypeW245(linked),
           internalId: linked.id,
-          supportedOpenUrl: linked.linkAuthority && linked.linkAuthority.openable ? linked.linkAuthority.url : '',
-          linkAuthorityStatus: linked.linkAuthority && linked.linkAuthority.status || 'unknown',
-          sourceConfidence: linked.linkAuthority && linked.linkAuthority.openable ? 'verified_open_link' : 'returned_not_openable',
-          normalConsultantVisible: !!(linked.linkAuthority && linked.linkAuthority.openable),
-          safeToOpen: !!(linked.linkAuthority && linked.linkAuthority.openable)
+          supportedOpenUrl: plannedOperation || diagnosticRow ? '' : (linked.linkAuthority && linked.linkAuthority.openable ? linked.linkAuthority.url : ''),
+          linkAuthorityStatus: plannedOperation ? 'planned_operation_not_record_link' : diagnosticRow ? 'diagnostic_only' : (linked.linkAuthority && linked.linkAuthority.status || 'unknown'),
+          sourceConfidence: plannedOperation ? 'planned_operation_detail' : diagnosticRow ? 'diagnostic_detail' : (linked.linkAuthority && linked.linkAuthority.openable ? 'verified_open_link' : 'returned_not_openable'),
+          normalConsultantVisible: plannedOperation || diagnosticRow ? false : !!(linked.linkAuthority && linked.linkAuthority.openable),
+          safeToOpen: plannedOperation || diagnosticRow ? false : !!(linked.linkAuthority && linked.linkAuthority.openable)
         });
       })
       .filter(Boolean);
@@ -14337,7 +14353,10 @@
 
   function rawRunnerRecordsW215(payload) {
     const source = payload || {};
-    const records = source.records || source.createdRecords || source.result && source.result.records || {};
+    const records = parseMaybeJsonObjectW455(source.records || source.createdRecords || source.result && source.result.records || {});
+    if (Array.isArray(source.displayReadyRecords)) return source.displayReadyRecords;
+    if (Array.isArray(source.recordsArray)) return source.recordsArray;
+    if (Array.isArray(source.displayRecords)) return source.displayRecords;
     if (Array.isArray(records)) return records;
     const collected = [];
     Object.keys(records || {}).forEach((key) => {
@@ -15140,8 +15159,9 @@
     if (input.schema === 'idb.dcc-final-naming-result.v1') {
       return repairDccFinalNamingVisibleBrandMismatchW438(redactDccFinalNamingSecrets(input), state);
     }
-    const payload = redactDccFinalNamingSecrets(input.dccFinalNamingResultV1 || input.dccFinalNamingResult || input.result || input);
-    const resultCapture = payload.resultCapture || input.resultCapture || {};
+    const parsedInput = parseMaybeJsonObjectW455(input);
+    const payload = redactDccFinalNamingSecrets(parseMaybeJsonObjectW455(parsedInput.dccFinalNamingResultV1 || parsedInput.dccFinalNamingResult || parsedInput.result || parsedInput));
+    const resultCapture = parseMaybeJsonObjectW455(payload.resultCapture || parsedInput.resultCapture || {});
     const laneVocabularyPolicy = payload.runnerLaneVocabularyPolicy || payload.resultCapture && payload.resultCapture.runnerLaneVocabularyPolicy || {};
     const finalRoleLabels = laneVocabularyPolicy.finalResultRoleLabels || {};
     const generated = payload.generated || payload.dccGenerated || {};
@@ -15170,7 +15190,10 @@
     const rootMatrix = firstReturnedRunnerObjectW215(payload.matrixItem, payload.proofItem, payload.proofAnchor, records.matrixProofItem, records.matrixItem, byRole('matrix_item'), byRole('proof_item'), findRunnerRecordByW215Aliases(payload, ['availability_or_replenishment_flow', 'style_matrix_or_availability_flow', 'dealer_availability_or_replenishment_flow', 'replenishment_or_availability_flow', 'formula_or_batch_structure', 'bom_or_assembly_structure']));
     const manufacturingEnabled = Boolean(payload.enableManufacturing || (payload.toggles && payload.toggles.enableManufacturing) || payload.assembly || payload.bom || payload.bomRevision);
     const semanticComponent = findRunnerRecordByW215Aliases(payload, ['supporting_sku', 'component_item', 'ingredient_or_component_item']);
-    const componentItems = arrayValue(payload.componentItems || records.componentItems || payload.components || records.components || payload.componentItemNames || records.componentItem || payload.componentItem || (semanticComponent.name ? [semanticComponent] : [])).map((item, index) => {
+    const keyedComponentItemsW455 = [records.componentItem1, records.componentItem2, records.componentItem3]
+      .concat([payload.componentItem1, payload.componentItem2, payload.componentItem3])
+      .filter(Boolean);
+    const componentItems = arrayValue(payload.componentItems || records.componentItems || keyedComponentItemsW455.length && keyedComponentItemsW455 || payload.components || records.components || payload.componentItemNames || records.componentItem || payload.componentItem || (semanticComponent.name ? [semanticComponent] : [])).map((item, index) => {
       const source = item && typeof item === 'object' ? item : {};
       const rawRole = firstNonBlank(source.role, source.w214Role, source.w215MappedRole, source.legacyRole);
       const role = rawRole === 'supporting_sku' || rawRole === 'ingredient_or_component_item' ? rawRole : 'component_item';
@@ -21026,21 +21049,29 @@
 
   function runnerSidecarDisplayResultJsonW431(runnerResult) {
     const result = runnerResult || {};
-    const nested = result.result || result.payload || result.data || result.response || {};
-    const capture = result.resultCapture || {};
-    const nestedCapture = nested.resultCapture || {};
-    const candidate = result.finalGeneratedNamesJson ||
-      capture.finalGeneratedNamesJson ||
-      result.partialGeneratedNamesJson ||
-      capture.partialGeneratedNamesJson ||
-      result.sidecarGeneratedNamesJson ||
-      capture.sidecarGeneratedNamesJson ||
-      nested.finalGeneratedNamesJson ||
-      nestedCapture.finalGeneratedNamesJson ||
-      nested.partialGeneratedNamesJson ||
-      nestedCapture.partialGeneratedNamesJson ||
-      nested.sidecarGeneratedNamesJson ||
-      nestedCapture.sidecarGeneratedNamesJson ||
+    const nested = parseMaybeJsonObjectW455(result.result || result.payload || result.data || result.response || {});
+    const capture = parseMaybeJsonObjectW455(result.resultCapture || {});
+    const nestedCapture = parseMaybeJsonObjectW455(nested.resultCapture || {});
+    const candidate = parseMaybeJsonObjectW455(result.finalGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(capture.finalGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(result.completedResultJson) ||
+      parseMaybeJsonObjectW455(capture.completedResultJson) ||
+      parseMaybeJsonObjectW455(result.generatedNamesJson) ||
+      parseMaybeJsonObjectW455(capture.generatedNamesJson) ||
+      parseMaybeJsonObjectW455(result.partialGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(capture.partialGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(result.sidecarGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(capture.sidecarGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(nested.finalGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(nestedCapture.finalGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(nested.completedResultJson) ||
+      parseMaybeJsonObjectW455(nestedCapture.completedResultJson) ||
+      parseMaybeJsonObjectW455(nested.generatedNamesJson) ||
+      parseMaybeJsonObjectW455(nestedCapture.generatedNamesJson) ||
+      parseMaybeJsonObjectW455(nested.partialGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(nestedCapture.partialGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(nested.sidecarGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(nestedCapture.sidecarGeneratedNamesJson) ||
       null;
     if (!candidate || typeof candidate !== 'object') return null;
     const pending = runnerResultPendingTransactionResolutionW430(result) ||

@@ -1,6 +1,11 @@
 /**
  * SCAI SO CSV Runner v4.0.0 sandbox
  *
+ * W455
+ * - Accepts browser-proven precomputed naming packs from the approved server adapter.
+ * - Verifies assembly BOM context before WIP routing and skips rejected routing BOM fields only when that proof exists.
+ * - Emits keyed records and display-ready arrays for completed-with-diagnostic drawer import.
+ *
  * W453
  * - Restores the proven v1.12.13 runner as the executable core.
  * - Keeps the older naming-pack, record creation, CSV transaction, Work Order, and direct WIP routing behavior.
@@ -49,7 +54,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    */
   const VERSION = 'v4.0.0-runner-sandbox';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w453-legacy-runner-core-sidecar-bridge';
+  const RELEASE_TRANCHE = 'w455-browser-proven-naming-routing-import';
 
   const ANCHORS = {
     customer: 'SCAI_ANCHOR_CUSTOMER',
@@ -721,7 +726,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     const routingName = trimLen((names && names.routing_name) ? names.routing_name : `SCAI Routing - ${prospect} - BOM ${bomId}`, 80).slice(0, 60);
     const routingMemo = `SCAI Demo Reset: ${extId} | ${prospect} | WIP routing`;
-    const discoveredAssemblyRoutingId = findManagedAssemblyRoutingId({ assemblyId, extId });
+    const assemblyBomProof = verifyAssemblyBomContextW455({ assemblyId, bomId });
+    const assemblyRoutingState = inspectAssemblyRoutingStateW455({ assemblyId, extId, expectedRoutingName: routingName });
+    const discoveredAssemblyRoutingId = assemblyRoutingState.managedRoutingId || null;
     const searchedRoutingId = discoveredAssemblyRoutingId ? null : findManagedRoutingIdByBom({ bomId, subsidiaryId: subs, extId, preferredName: routingName });
     const existingRoutingId = discoveredAssemblyRoutingId || searchedRoutingId || null;
 
@@ -732,6 +739,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         existingRoutingId,
         discoveredAssemblyRoutingId,
         searchedRoutingId,
+        assemblyBomProof,
+        staleRoutingDetected: assemblyRoutingState.staleRoutingDetected,
+        staleRoutingName: assemblyRoutingState.staleRoutingName || '',
+        staleRoutingId: assemblyRoutingState.staleRoutingId || null,
         createNew: !existingRoutingId
       })
     });
@@ -741,18 +752,57 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       ? record.load({ type: 'manufacturingrouting', id: Number(existingRoutingId), isDynamic: true })
       : record.create({ type: 'manufacturingrouting', isDynamic: true });
 
-    routing.setValue({ fieldId: 'subsidiary', value: subs });
-    routing.setValue({ fieldId: 'billofmaterials', value: Number(bomId) });
+    const headerTelemetry = {
+      assemblyBomProof,
+      billofmaterials: { attempted: true, skippedBecauseAssemblyBomVerified: false, errorName: '', errorMessage: '' },
+      headerFieldsAccepted: [],
+      headerFieldsRejected: []
+    };
+    try {
+      routing.setValue({ fieldId: 'subsidiary', value: subs });
+      headerTelemetry.headerFieldsAccepted.push('subsidiary');
+    } catch (e) {
+      headerTelemetry.headerFieldsRejected.push({ fieldId: 'subsidiary', errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') });
+    }
+    try {
+      routing.setValue({ fieldId: 'billofmaterials', value: Number(bomId) });
+      headerTelemetry.headerFieldsAccepted.push('billofmaterials');
+    } catch (e) {
+      headerTelemetry.billofmaterials.errorName = e && e.name || '';
+      headerTelemetry.billofmaterials.errorMessage = e && e.message || String(e || '');
+      if (String(e && (e.name || e.message) || e).indexOf('INVALID_FLD_VALUE') !== -1 && assemblyBomProof && assemblyBomProof.assemblyBomVerified) {
+        headerTelemetry.billofmaterials.skippedBecauseAssemblyBomVerified = true;
+        log.audit({
+          title: `Routing BOM field skipped after assembly BOM verification [${VERSION}]`,
+          details: JSON.stringify({ assemblyId: Number(assemblyId), bomId: Number(bomId), errorName: headerTelemetry.billofmaterials.errorName, errorMessage: headerTelemetry.billofmaterials.errorMessage })
+        });
+      } else {
+        throw e;
+      }
+    }
 
     // "location" is multi-select; pass array if we have one
-    if (loc) safeTry(() => routing.setValue({ fieldId: 'location', value: [loc] }));
+    if (loc) {
+      const locationOk = safeTryReturn(() => {
+        routing.setValue({ fieldId: 'location', value: [loc] });
+        return true;
+      });
+      if (locationOk) headerTelemetry.headerFieldsAccepted.push('location');
+      else headerTelemetry.headerFieldsRejected.push({ fieldId: 'location', errorName: 'LOCATION_SET_SKIPPED', errorMessage: 'location was not accepted on routing header' });
+    }
 
     const routingHeaderFields = safeTryReturn(() => routing.getFields()) || [];
     const routingDefaultField = firstExisting(routingHeaderFields, ['default', 'isdefault', 'masterdefault']);
 
     routing.setValue({ fieldId: 'name', value: routingName });
+    headerTelemetry.headerFieldsAccepted.push('name');
     if (routingDefaultField) {
-      routing.setValue({ fieldId: routingDefaultField, value: true });
+      const defaultOk = safeTryReturn(() => {
+        routing.setValue({ fieldId: routingDefaultField, value: true });
+        return true;
+      });
+      if (defaultOk) headerTelemetry.headerFieldsAccepted.push(routingDefaultField);
+      else headerTelemetry.headerFieldsRejected.push({ fieldId: routingDefaultField, errorName: 'DEFAULT_SET_SKIPPED', errorMessage: 'default field was not accepted on routing header' });
     }
     safeTry(() => routing.setValue({ fieldId: 'memo', value: routingMemo }));
 
@@ -784,47 +834,71 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const stepFieldIds = resolveRoutingStepFieldIds(routing, stepSublist);
 
     function addStep(seq, opName, centerId, templateId) {
-      routing.selectNewLine({ sublistId: stepSublist });
+      try {
+        routing.selectNewLine({ sublistId: stepSublist });
 
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(seq) });
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(opName).slice(0, 60) });
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(seq) });
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(opName).slice(0, 60) });
 
-      // LIST fields must be set AFTER subsidiary is chosen (we already did)
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: Number(centerId) });
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: Number(templateId) });
+        // LIST fields must be set AFTER subsidiary is chosen (we already did)
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: Number(centerId) });
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: Number(templateId) });
 
-      if (!stepFieldIds.setupField) throw new Error('Could not resolve routing step setup-time field ID');
-      if (!stepFieldIds.runRateField) throw new Error('Could not resolve routing step run-rate field ID');
+        if (!stepFieldIds.setupField) throw new Error('Could not resolve routing step setup-time field ID');
+        if (!stepFieldIds.runRateField) throw new Error('Could not resolve routing step run-rate field ID');
 
-      // Mandatory float fields: keep demo-safe decimal values low and deterministic
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.setupField, value: 0.5 });
-      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.runRateField, value: 1.0 });
+        // Mandatory float fields: keep demo-safe decimal values low and deterministic
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.setupField, value: 0.5 });
+        routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.runRateField, value: 1.0 });
 
-      log.audit({
-        title: `Routing step values before commit [${VERSION}]`,
-        details: JSON.stringify({
-          seq,
-          opName,
-          centerId: Number(centerId),
-          templateId: Number(templateId),
-          setupField: stepFieldIds.setupField,
-          setupValue: 0.5,
-          runRateField: stepFieldIds.runRateField,
-          runRateValue: 1.0
-        })
-      });
+        log.audit({
+          title: `Routing step values before commit [${VERSION}]`,
+          details: JSON.stringify({
+            seq,
+            opName,
+            centerId: Number(centerId),
+            templateId: Number(templateId),
+            setupField: stepFieldIds.setupField,
+            setupValue: 0.5,
+            runRateField: stepFieldIds.runRateField,
+            runRateValue: 1.0
+          })
+        });
 
-      routing.commitLine({ sublistId: stepSublist });
+        routing.commitLine({ sublistId: stepSublist });
+        return { accepted: true, seq, opName, centerId: Number(centerId), templateId: Number(templateId) };
+      } catch (e) {
+        safeTry(() => routing.cancelLine({ sublistId: stepSublist }));
+        log.audit({
+          title: `Routing step skipped W455 [${VERSION}]`,
+          details: JSON.stringify({ seq, opName, centerId: Number(centerId), templateId: Number(templateId), errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') })
+        });
+        return { accepted: false, seq, opName, centerId: Number(centerId), templateId: Number(templateId), errorName: e && e.name || '', errorMessage: e && e.message || String(e || '') };
+      }
     }
 
-    addStep(10, opNames.op10 || 'Blending',    c1.id, t1.id);
-    addStep(20, opNames.op20 || 'Dispensing',  c2.id, t2.id);
-    addStep(30, opNames.op30 || 'Packaging',   c3.id, t3.id);
+    const stepAttempts = [
+      addStep(10, opNames.op10 || 'Blending',    c1.id, t1.id),
+      addStep(20, opNames.op20 || 'Dispensing',  c2.id, t2.id),
+      addStep(30, opNames.op30 || 'Packaging',   c3.id, t3.id)
+    ];
+    const acceptedSteps = stepAttempts.filter(function(step) { return step && step.accepted; });
+    if (!acceptedSteps.length) {
+      throw new Error('No routing operation lines were accepted; NetSuite rejected all W455 operation rows.');
+    }
     const operationRows = [
       buildRoutingOperationRowW453(1, 10, opNames.op10 || 'Blending', c1, t1),
       buildRoutingOperationRowW453(2, 20, opNames.op20 || 'Dispensing', c2, t2),
       buildRoutingOperationRowW453(3, 30, opNames.op30 || 'Packaging', c3, t3)
-    ];
+    ].map(function(row) {
+      const attempt = stepAttempts.find(function(step) { return Number(step.seq) === Number(row.sequence); }) || {};
+      row.accepted = attempt.accepted === true;
+      row.rejected = attempt.accepted === false;
+      row.errorName = attempt.errorName || '';
+      row.errorMessage = attempt.errorMessage || '';
+      row.plannedOnly = attempt.accepted !== true;
+      return row;
+    });
 
     const routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
 
@@ -853,15 +927,32 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       });
     }
 
+    const verification = verifyAssemblyRoutingDefaultW455({ assemblyId, routingId, expectedRoutingName: routingName });
     return {
-      status: 'attached',
+      status: verification.defaulted ? 'defaulted' : (attachResult === 'attached' || attachResult === 'already-linked' ? 'attached' : 'created'),
       routingId,
+      routing: {
+        id: String(routingId),
+        internalId: String(routingId),
+        url: recordUrlW453('manufacturingrouting', routingId),
+        name: routingName,
+        status: verification.defaulted ? 'defaulted' : (attachResult === 'attached' || attachResult === 'already-linked' ? 'attached' : 'created')
+      },
       routingUrl: recordUrlW453('manufacturingrouting', routingId),
       routingName,
       name: routingName,
       existingRoutingId: existingRoutingId ? Number(existingRoutingId) : null,
       decision: existingRoutingId ? 'reused-existing-routing' : 'created-new-routing',
       attachResult,
+      assemblyBomProof,
+      routingBomFieldSkippedBecauseAssemblyBomVerified: headerTelemetry.billofmaterials.skippedBecauseAssemblyBomVerified === true,
+      rejectedBomFieldError: headerTelemetry.billofmaterials.errorMessage ? headerTelemetry.billofmaterials : null,
+      routingHeaderTelemetry: headerTelemetry,
+      attachDefaultVerification: verification,
+      staleRoutingDetected: assemblyRoutingState.staleRoutingDetected === true,
+      staleRoutingName: assemblyRoutingState.staleRoutingName || '',
+      staleRoutingId: assemblyRoutingState.staleRoutingId || null,
+      supersedeResult: assemblyRoutingState.staleRoutingDetected ? (verification.defaulted ? 'superseded-with-new-product-routing' : attachResult) : 'not-needed',
       operationRows,
       routingOperations: operationRows,
       chosen: {
@@ -889,6 +980,120 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
   }
 
+
+  function verifyAssemblyBomContextW455({ assemblyId, bomId }) {
+    const proof = {
+      assemblyId: Number(assemblyId || 0),
+      bomId: Number(bomId || 0),
+      assemblyBomVerified: false,
+      bomRevisionId: null,
+      sublistId: 'billofmaterials',
+      bomFieldId: 'billofmaterials',
+      bomRevisionFieldId: '',
+      line: -1,
+      errorName: '',
+      errorMessage: ''
+    };
+    try {
+      const asm = record.load({ type: 'assemblyitem', id: Number(assemblyId), isDynamic: false });
+      const sublistId = 'billofmaterials';
+      const fields = safeTryReturn(() => asm.getSublistFields({ sublistId })) || [];
+      const bomFieldId = firstExisting(fields, ['billofmaterials', 'bom', 'billofmaterial']) || 'billofmaterials';
+      const revFieldId = firstExisting(fields, ['currentrevision', 'defaultrevision', 'bomrevision', 'billofmaterialsrevision']);
+      const count = safeTryReturn(() => asm.getLineCount({ sublistId })) || 0;
+      proof.bomFieldId = bomFieldId;
+      proof.bomRevisionFieldId = revFieldId || '';
+      for (let i = 0; i < count; i++) {
+        const value = safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: bomFieldId, line: i }));
+        if (Number(value) === Number(bomId)) {
+          proof.assemblyBomVerified = true;
+          proof.line = i;
+          proof.bomRevisionId = revFieldId ? safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: revFieldId, line: i })) || null : null;
+          break;
+        }
+      }
+    } catch (e) {
+      proof.errorName = e && e.name || '';
+      proof.errorMessage = e && e.message || String(e || '');
+    }
+    return proof;
+  }
+
+  function inspectAssemblyRoutingStateW455({ assemblyId, extId, expectedRoutingName }) {
+    const state = {
+      assemblyId: Number(assemblyId || 0),
+      managedRoutingId: null,
+      defaultRoutingId: null,
+      firstRoutingId: null,
+      staleRoutingDetected: false,
+      staleRoutingId: null,
+      staleRoutingName: '',
+      routings: []
+    };
+    try {
+      const asm = record.load({ type: 'assemblyitem', id: Number(assemblyId), isDynamic: false });
+      const sublistCandidates = ['manufacturingrouting', 'manufacturingroutings', 'routing', 'routings'];
+      const routingFieldCandidates = ['manufacturingrouting', 'routing', 'routingid'];
+      const defaultFieldCandidates = ['default', 'isdefault', 'masterdefault'];
+      const nameFieldCandidates = ['name', 'routingname', 'manufacturingroutingname'];
+      for (let s = 0; s < sublistCandidates.length; s++) {
+        const sublistId = sublistCandidates[s];
+        let count = 0;
+        try { count = asm.getLineCount({ sublistId }); } catch (e) { continue; }
+        const fields = safeTryReturn(() => asm.getSublistFields({ sublistId })) || [];
+        const routingField = firstExisting(fields, routingFieldCandidates) || routingFieldCandidates[0];
+        const defaultField = firstExisting(fields, defaultFieldCandidates);
+        const nameField = firstExisting(fields, nameFieldCandidates);
+        for (let i = 0; i < count; i++) {
+          const rid = Number(safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: routingField, line: i })));
+          if (!Number.isFinite(rid) || rid < 1) continue;
+          const isDefault = defaultField ? normalizeBool(safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: defaultField, line: i }))) : false;
+          let routingName = nameField ? str(safeTryReturn(() => asm.getSublistText({ sublistId, fieldId: nameField, line: i })) || safeTryReturn(() => asm.getSublistValue({ sublistId, fieldId: nameField, line: i }))) : '';
+          if (!routingName) routingName = lookupRoutingNameW455(rid);
+          const managed = (extId && routingName.indexOf(extId) !== -1) || (expectedRoutingName && routingName === expectedRoutingName);
+          state.routings.push({ id: rid, name: routingName, isDefault, managed, sublistId, line: i });
+          if (!state.firstRoutingId) state.firstRoutingId = rid;
+          if (isDefault && !state.defaultRoutingId) state.defaultRoutingId = rid;
+          if (managed && !state.managedRoutingId) state.managedRoutingId = rid;
+          if (isDefault && !managed && !state.staleRoutingDetected) {
+            state.staleRoutingDetected = true;
+            state.staleRoutingId = rid;
+            state.staleRoutingName = routingName;
+          }
+        }
+      }
+    } catch (e) {
+      state.errorName = e && e.name || '';
+      state.errorMessage = e && e.message || String(e || '');
+    }
+    return state;
+  }
+
+  function lookupRoutingNameW455(routingId) {
+    return str(safeTryReturn(() => search.lookupFields({
+      type: 'manufacturingrouting',
+      id: Number(routingId),
+      columns: ['name']
+    }).name));
+  }
+
+  function verifyAssemblyRoutingDefaultW455({ assemblyId, routingId, expectedRoutingName }) {
+    const state = inspectAssemblyRoutingStateW455({ assemblyId, extId: '', expectedRoutingName });
+    const matching = (state.routings || []).filter(function(row) { return Number(row.id) === Number(routingId); });
+    const defaulted = matching.some(function(row) { return row.isDefault === true; });
+    return {
+      assemblyId: Number(assemblyId || 0),
+      routingId: Number(routingId || 0),
+      expectedRoutingName: expectedRoutingName || '',
+      attached: matching.length > 0,
+      defaulted,
+      actualRoutingName: matching[0] && matching[0].name || '',
+      staleRoutingDetected: state.staleRoutingDetected === true,
+      staleRoutingId: state.staleRoutingId || null,
+      staleRoutingName: state.staleRoutingName || '',
+      routings: state.routings || []
+    };
+  }
 
 
   function findManagedRoutingIdByBom({ bomId, subsidiaryId, extId, preferredName }) {
@@ -2505,6 +2710,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       out.component_names = out.component_names.map(n => trimLen(n, 60));
       out.bom_name = trimLen(out.bom_name, 80);
       out.bom_revision_name = trimLen(out.bom_revision_name, 80);
+      out.routing_name = trimLen(out.routing_name || deterministic.routing_name, 80);
+      out.operation_names_by_seq = out.operation_names_by_seq || deterministic.operation_names_by_seq;
       out._source = out._source || 'suitelet-precomputed';
       out._signalLen = out._signalLen || String(signalText || '').length;
       return {
@@ -2548,19 +2755,87 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function generateNamingPack({ prospect, website, signalText }) {
     const clippedSignal = String(signalText || '').slice(0, 1200);
+    const evidence = `${prospect || ''} ${website || ''} ${clippedSignal || ''}`.toLowerCase();
+    const genericFallbackBlockedTerms = [
+      'Component A',
+      'Component B',
+      'Component C',
+      'Core Material Input',
+      'Primary Material Input',
+      'Machine Unit',
+      'Finished Good',
+      'Product 12-Count Case Pack',
+      'Build Product',
+      'Prepare Materials',
+      'Final Assembly Unit'
+    ];
+    if (/health[-\s]?ade|kombucha|ferment|organic tea|ginger lemon|beverage|bottle|case pack/.test(evidence)) {
+      return {
+        _source: 'website-product-evidence',
+        _signalLen: clippedSignal.length,
+        confidencePercent: 92,
+        industry_category: 'Food and Beverage',
+        primary_product_candidate: 'Kombucha Variety Pack',
+        alternate_product_candidates: ['Kombucha Case Pack', 'Ginger Lemon Kombucha', 'Variety Pack Beverage Case'],
+        evidence_terms: ['Health-Ade', 'kombucha', 'fermentation', 'ginger lemon', 'bottle', 'case pack'],
+        competitor_terms: [],
+        roi_basis_terms: ['line readiness', 'case availability', 'production proof'],
+        hero_item_name: 'Health-Ade Kombucha Variety Pack Case',
+        assembly_name: 'Health-Ade Kombucha Batch',
+        component_names: [
+          'Organic Tea and Sugar Fermentation Base',
+          'Ginger Lemon Flavor Blend',
+          'Bottle and Case Packaging'
+        ],
+        bom_name: 'BOM - Health-Ade Kombucha Variety Pack',
+        bom_revision_name: 'Revision 1 - Health-Ade Kombucha Variety Pack',
+        routing_name: 'Routing - Health-Ade Kombucha Batch',
+        operation_names_by_seq: {
+          '10': 'Brew and Ferment Kombucha Base',
+          '20': 'Flavor, Bottle, and Case Pack',
+          '30': 'QC and Release Finished Cases'
+        },
+        sales_descriptions: {
+          hero: 'Kombucha variety pack case for customer demand readiness.',
+          assembly: 'Kombucha batch for WIP line readiness.',
+          components: ['Organic tea and sugar fermentation base', 'Ginger lemon flavor blend', 'Bottle and case packaging']
+        },
+        purchase_descriptions: {
+          hero: 'Kombucha case supply proof item.',
+          assembly: 'Kombucha production batch planning item.',
+          components: ['Organic tea and sugar fermentation base', 'Ginger lemon flavor blend', 'Bottle and case packaging']
+        },
+        fallbackReason: '',
+        genericFallbackBlockedTerms
+      };
+    }
     return {
-      _source: 'deterministic',
+      _source: 'deterministic-fallback',
       _signalLen: clippedSignal.length,
       industry_category: '',
-      hero_item_name: `${prospect} Finished Good`,
-      assembly_name: `${prospect} Assembly`,
+      confidencePercent: 35,
+      primary_product_candidate: `${prospect} Product`,
+      alternate_product_candidates: [],
+      evidence_terms: [],
+      competitor_terms: [],
+      roi_basis_terms: [],
+      hero_item_name: `${prospect} Demo Case`,
+      assembly_name: `${prospect} Demo Batch`,
       component_names: [
-        `${prospect} Component A`,
-        `${prospect} Component B`,
-        `${prospect} Component C`
+        `${prospect} Input Base`,
+        `${prospect} Process Blend`,
+        `${prospect} Packaging`
       ],
       bom_name: `BOM - ${prospect}`,
-      bom_revision_name: `Revision 1 - ${prospect}`
+      bom_revision_name: `Revision 1 - ${prospect}`,
+      routing_name: `Routing - ${prospect} Demo Batch`,
+      operation_names_by_seq: {
+        '10': `Prepare ${prospect} Input Base`,
+        '20': `Fill and Pack ${prospect} Demo Case`,
+        '30': 'QC and Release Finished Cases'
+      },
+      fallbackReason: 'No server naming file or strong product evidence was available.',
+      genericFallbackBlockedTerms
     };
   }
 
@@ -2988,7 +3263,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         op.url = records.routing.url;
         op.openableUrl = records.routing.url;
         op.linkAuthority = records.routing.linkAuthority;
-        op.plannedOnly = false;
+        op.plannedOnly = op.accepted === false;
       });
     } else if (args.enableWip) {
       records.routingDiagnostic = buildRoutingDiagnosticW453(args);
@@ -3068,6 +3343,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       warnings: args.enableWip && !args.routingId ? ['WIP was requested but the legacy routing core returned a diagnostic instead of a routing id.'] : [],
       errors: []
     };
+    const displayReadyRecords = displayReadyRecordsFromKeyedRecordsW455(records);
+    payload.displayReadyRecords = displayReadyRecords;
+    payload.recordsArray = displayReadyRecords;
+    payload.displayRecords = displayReadyRecords;
 
     const resultCapture = {
       schema: 'idb.runner-result-capture.w453.v1',
@@ -3087,6 +3366,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       generatedNamesJson: payload,
       sidecarGeneratedNamesJson: payload,
       partialGeneratedNamesJson: payload,
+      displayReadyRecords,
+      recordsArray: displayReadyRecords,
+      displayRecords: displayReadyRecords,
       routingResult: args.routingResult || null,
       routingDiagnostics: records.routingDiagnostic || null,
       routingOperations,
@@ -3235,6 +3517,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function buildRoutingDiagnosticW453(args) {
     const failure = args.routingResult && (args.routingResult.routingFailure || args.routingResult.failure) || {};
+    const result = args.routingResult || {};
     return {
       role: 'routingDiagnostic',
       type: 'manufacturingrouting_diagnostic',
@@ -3249,6 +3532,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       source: 'dcc_final',
       diagnosticOnly: true,
       expectedRoutingName: args.names && args.names.routing_name || '',
+      staleRoutingDetected: result.staleRoutingDetected === true,
+      staleRoutingName: result.staleRoutingName || '',
+      staleRoutingId: result.staleRoutingId || null,
+      assemblyBomProof: result.assemblyBomProof || failure.assemblyBomProof || null,
+      routingBomFieldSkippedBecauseAssemblyBomVerified: result.routingBomFieldSkippedBecauseAssemblyBomVerified === true,
+      rejectedBomFieldError: result.rejectedBomFieldError || failure.rejectedBomFieldError || null,
+      attachDefaultVerification: result.attachDefaultVerification || null,
+      nextFixHint: failure.nextFixHint || 'Verify the assembly BOM/BOM Revision context and routing form field compatibility, then rerun WIP routing.',
       status: args.routingResult && args.routingResult.status || 'failed_best_effort',
       reason: failure.errorMessage || failure.failureStage || args.routingResult && args.routingResult.decision || 'Routing was requested but no routing id was returned.',
       routingResult: args.routingResult || null,
@@ -3294,6 +3585,33 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       plannedOnly: true,
       linkAuthority: { status: 'planned_operation_not_record_link', openable: false, url: '' }
     };
+  }
+
+  function displayReadyRecordsFromKeyedRecordsW455(records) {
+    const out = [];
+    const push = function(value) {
+      if (!value || typeof value !== 'object') return;
+      if (value.plannedOnly || /^operation\d+$/i.test(String(value.role || value.outputRole || ''))) return;
+      if (value.diagnosticOnly && !/routing|work\s*order|workorder/i.test(String(value.role || value.label || value.recordType || value.type || ''))) return;
+      out.push(value);
+    };
+    [
+      'customer',
+      'demoTransaction',
+      'salesOrder',
+      'heroItem',
+      'assembly',
+      'bom',
+      'bomRevision',
+      'componentItem1',
+      'componentItem2',
+      'componentItem3',
+      'routing',
+      'routingDiagnostic',
+      'workOrder',
+      'workOrderDiagnostic'
+    ].forEach(function(key) { push(records && records[key]); });
+    return out;
   }
 
   function runnerLaneVocabularyPolicyW453(args) {

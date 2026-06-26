@@ -204,7 +204,8 @@
     "harness:authoritative-wip-routing-naming-ux-w449": "node archive/tools/run_w449_authoritative_wip_routing_naming_ux_harness.js",
     "harness:restore-old-runner-naming-creation-w450": "node archive/tools/run_w450_restore_old_runner_naming_creation_harness.js",
     "harness:llm-naming-and-real-wip-routing-w450": "node archive/tools/run_w450_llm_naming_and_real_wip_routing_harness.js",
-    "harness:llm-naming-real-wip-routing-w450": "node archive/tools/run_w450_llm_naming_and_real_wip_routing_harness.js"
+    "harness:llm-naming-real-wip-routing-w450": "node archive/tools/run_w450_llm_naming_and_real_wip_routing_harness.js",
+    "harness:browser-proven-naming-routing-import-w455": "node archive/tools/run_w455_browser_proven_naming_routing_import_harness.js"
   },
   "keywords": [
     "netsuite",

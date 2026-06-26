@@ -210,10 +210,10 @@ function main() {
   const surface = buildSurface(hooks);
 
   assertCase(results, 'w446-marker-updated',
-    /@version\s+1.0.(57|58|59|60)/.test(drawer) &&
-      /const DRAWER_USERSCRIPT_VERSION = '1.0.(57|58|59|60)';/.test(drawer) &&
-      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451|454)';/.test(drawer),
-    'Drawer should identify current W449/W450/W451/W454 while preserving W446 behavior.');
+    /@version\s+1.0.(57|58|59|60|61)/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1.0.(57|58|59|60|61)';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451|454|455)';/.test(drawer),
+    'Drawer should identify current W449/W450/W451/W454/W455 while preserving W446 behavior.');
 
   assertCase(results, 'w446-wip-visual-three-stage-clickable',
     hooks.cockpitWorkflowNodesW446('wip', surface.finalNavigation.scriptPivotObjects).length <= 3 &&

@@ -262,13 +262,14 @@ function main() {
   const hooks = loadHooks();
   const surface = buildSurface(hooks);
   const results = [];
-  const w453ResetMode = runner.includes("w453-legacy-runner-core-sidecar-bridge");
+  const w453ResetMode = runner.includes("w453-legacy-runner-core-sidecar-bridge") ||
+    runner.includes("w455-browser-proven-naming-routing-import");
 
   assertCase(results, 'w449-marker-updated',
-    /@version\s+1.0.(57|58|59|60)/.test(drawer) &&
-      /const DRAWER_USERSCRIPT_VERSION = '1.0.(57|58|59|60)';/.test(drawer) &&
-      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451|454)';/.test(drawer),
-    'Drawer should identify W449 / 1.0.57 or successor W450/W451/W454.');
+    /@version\s+1.0.(57|58|59|60|61)/.test(drawer) &&
+      /const DRAWER_USERSCRIPT_VERSION = '1.0.(57|58|59|60|61)';/.test(drawer) &&
+      /const CURRENT_UX_BLOCK_W346 = 'W(449|450|451|454|455)';/.test(drawer),
+    'Drawer should identify W449 / 1.0.57 or successor W450/W451/W454/W455.');
 
   assertCase(results, 'w449-authoritative-work-center-search',
     w453ResetMode || runner.includes('customsearch_scai_ss_wc_wip') &&

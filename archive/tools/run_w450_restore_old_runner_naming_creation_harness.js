@@ -52,9 +52,10 @@ function main() {
 
   assertCase(results, 'w453-current-runner-restores-old-core',
     allPresent(runner, oldCoreFunctions) &&
-      runner.includes("RELEASE_TRANCHE = 'w453-legacy-runner-core-sidecar-bridge'") &&
+      (runner.includes("RELEASE_TRANCHE = 'w453-legacy-runner-core-sidecar-bridge'") ||
+        runner.includes("RELEASE_TRANCHE = 'w455-browser-proven-naming-routing-import'")) &&
       runner.includes('Restores the proven v1.12.13 runner as the executable core'),
-    'Current runner should be the old core plus a W453 compatibility bridge.');
+    'Current runner should be the old core plus a W453/W455 compatibility bridge.');
 
   assertCase(results, 'w453-v3-parameter-bridge',
     allPresent(runner, [

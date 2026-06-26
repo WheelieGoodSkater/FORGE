@@ -45,6 +45,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     enableManufacturing: 'custscript_v3_runner_enable_mfg',
     createNewHero: 'custscript_v3_runner_create_new_hero',
     heroItem: 'custscript_v3_runner_hero_item',
+    namingFileId: 'custscript_scai_runner_naming_file_id',
     resultCaptureFolderId: 'custscript_v3_runner_result_capture_folder',
     confirmedBuildRequestJson: 'custscript_v3_runner_idb_request_json'
   };
@@ -241,7 +242,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     return `IDB-${request.requestId || 'request'}-${safeToken(request.prospect && request.prospect.name)}-${safeToken(request.demoPath && request.demoPath.laneId)}`.slice(0, 120);
   }
 
-  function buildRunnerParams(request, config, idempotencyToken) {
+  function buildRunnerParams(request, config, idempotencyToken, namingFileId) {
     const runnerParams = {};
     const toggles = normalizeSelectedToggles(request);
     runnerParams[RUNNER_PARAM_MAP.prospect] = String(request.prospect.name || '');
@@ -258,9 +259,116 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     runnerParams[RUNNER_PARAM_MAP.enableManufacturing] = toTf(toggles.enableManufacturing);
     runnerParams[RUNNER_PARAM_MAP.createNewHero] = toTf(toggles.createNewHeroItem);
     runnerParams[RUNNER_PARAM_MAP.heroItem] = toggles.createNewHeroItem ? '' : String(request.heroItemId || request.existingHeroItemId || '');
+    if (namingFileId) runnerParams[RUNNER_PARAM_MAP.namingFileId] = String(namingFileId);
     runnerParams[RUNNER_PARAM_MAP.resultCaptureFolderId] = config.resultCaptureFolderId;
     runnerParams[RUNNER_PARAM_MAP.confirmedBuildRequestJson] = JSON.stringify(buildRunnerRequestContext(request, toggles, idempotencyToken));
     return runnerParams;
+  }
+
+  function compactText(value) {
+    return String(value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function uniqueList(values) {
+    const seen = {};
+    const out = [];
+    (values || []).forEach((value) => {
+      const text = compactText(value);
+      const key = text.toLowerCase();
+      if (!text || seen[key]) return;
+      seen[key] = true;
+      out.push(text);
+    });
+    return out;
+  }
+
+  function buildServerPrecomputedNamingPack(request) {
+    const prospect = compactText(request && request.prospect && request.prospect.name) || 'Demo Customer';
+    const website = compactText(request && request.prospect && request.prospect.website);
+    const notes = compactText([
+      request && request.storyInputs && request.storyInputs.buyerNeed,
+      request && request.storyInputs && request.storyInputs.scObjective,
+      request && request.demoPath && request.demoPath.scenario,
+      request && request.demoPath && request.demoPath.laneId,
+      website
+    ].join(' '));
+    const signal = `${prospect} ${website} ${notes}`.toLowerCase();
+    const isKombucha = /health[-\s]?ade|kombucha|beverage|ferment|tea|ginger|lemon|bottle|case/.test(signal);
+    const product = isKombucha ? 'Kombucha Variety Pack' : compactText(request && request.productCandidate) || `${prospect} Product`;
+    const batch = isKombucha ? 'Kombucha Batch' : `${product} Batch`;
+    const components = isKombucha
+      ? ['Organic Tea and Sugar Fermentation Base', 'Ginger Lemon Flavor Blend', 'Bottle and Case Packaging']
+      : [`${product} Input Base`, `${product} Process Blend`, `${product} Packaging`];
+    const operations = isKombucha
+      ? {
+        '10': 'Brew and Ferment Kombucha Base',
+        '20': 'Flavor, Bottle, and Case Pack',
+        '30': 'QC and Release Finished Cases'
+      }
+      : {
+        '10': `Prepare ${product}`,
+        '20': `Fill and Pack ${product}`,
+        '30': 'QC and Release Finished Cases'
+      };
+    return {
+      _source: isKombucha ? 'website-product-evidence' : 'server-precomputed-notes-website',
+      confidencePercent: isKombucha ? 92 : 78,
+      industry_category: isKombucha ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId),
+      primary_product_candidate: product,
+      alternate_product_candidates: isKombucha ? ['Kombucha Case Pack', 'Ginger Lemon Kombucha', 'Variety Pack Beverage Case'] : [],
+      evidence_terms: uniqueList(isKombucha ? ['Health-Ade', 'kombucha', 'fermentation', 'ginger lemon', 'bottle', 'case pack'] : [prospect, website, product]),
+      competitor_terms: uniqueList(request && request.competitorTerms || []),
+      roi_basis_terms: uniqueList(['line readiness', 'case availability', 'production proof']),
+      hero_item_name: isKombucha ? 'Health-Ade Kombucha Variety Pack Case' : `${prospect} ${product} Case`,
+      assembly_name: isKombucha ? 'Health-Ade Kombucha Batch' : `${prospect} ${batch}`,
+      component_names: components,
+      bom_name: isKombucha ? 'BOM - Health-Ade Kombucha Variety Pack' : `BOM - ${prospect} ${product}`,
+      bom_revision_name: isKombucha ? 'Revision 1 - Health-Ade Kombucha Variety Pack' : `Revision 1 - ${prospect} ${product}`,
+      routing_name: isKombucha ? 'Routing - Health-Ade Kombucha Batch' : `Routing - ${prospect} ${batch}`,
+      operation_names_by_seq: operations,
+      sales_descriptions: {
+        hero: `${product} sales-ready case for the demo run.`,
+        assembly: `${batch} assembly for production readiness.`,
+        components
+      },
+      purchase_descriptions: {
+        hero: `${product} procurement and replenishment proof item.`,
+        assembly: `${batch} production input planning.`,
+        components
+      },
+      genericFallbackBlockedTerms: [
+        'Component A',
+        'Component B',
+        'Component C',
+        'Core Material Input',
+        'Primary Material Input',
+        'Machine Unit',
+        'Finished Good',
+        'Product 12-Count Case Pack',
+        'Build Product',
+        'Prepare Materials',
+        'Final Assembly Unit'
+      ]
+    };
+  }
+
+  function createNamingPackFile(request, config, idempotencyToken) {
+    const folderId = config.resultCaptureFolderId || config.folderId;
+    if (!folderId) return { fileId: null, status: 'naming_folder_missing' };
+    const namingPack = buildServerPrecomputedNamingPack(request);
+    const namingFile = file.create({
+      name: `scai_naming_${safeFileToken(idempotencyToken)}.json`,
+      fileType: file.Type.JSON,
+      folder: Number(folderId),
+      contents: JSON.stringify(namingPack, null, 2)
+    });
+    const fileId = namingFile.save();
+    return {
+      fileId: String(fileId || ''),
+      fileName: namingFile.name,
+      status: fileId ? 'created' : 'not_created',
+      namingPack
+    };
   }
 
   function toTf(value) {
@@ -727,6 +835,64 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     };
   }
 
+  function parseMaybeJsonObjectW455(value) {
+    if (!value) return value;
+    if (typeof value === 'object') return value;
+    if (typeof value !== 'string') return value;
+    const text = value.trim();
+    if (!text || !/^[\[{]/.test(text)) return value;
+    try {
+      const parsed = JSON.parse(text);
+      return parsed && typeof parsed === 'object' ? parsed : value;
+    } catch (e) {
+      return value;
+    }
+  }
+
+  function completedKeyedResultCaptureW455(parsed) {
+    const capture = parsed || {};
+    const payload = parseMaybeJsonObjectW455(capture.finalGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(capture.completedResultJson) ||
+      parseMaybeJsonObjectW455(capture.generatedNamesJson) ||
+      parseMaybeJsonObjectW455(capture.sidecarGeneratedNamesJson) ||
+      parseMaybeJsonObjectW455(capture.partialGeneratedNamesJson) ||
+      capture;
+    const status = String(payload && (payload.status || payload.runStatus) || capture.status || '').trim();
+    const records = payload && payload.records || {};
+    const hasKeyedRecords = !!(records && !Array.isArray(records) && (records.customer || records.heroItem || records.assembly || records.routingDiagnostic));
+    const terminal = /completed|completed_with_wip_diagnostic/.test(status);
+    if (!terminal || !hasKeyedRecords) return { ready: false };
+    payload.generatedRecordOwner = payload.generatedRecordOwner || payload.recordOwner || 'governed_runner_internal_build_engine';
+    payload.recordOwner = payload.recordOwner || payload.generatedRecordOwner;
+    payload.displayReadyRecords = Array.isArray(payload.displayReadyRecords) ? payload.displayReadyRecords : displayRecordsFromKeyedW455(records);
+    payload.recordsArray = Array.isArray(payload.recordsArray) ? payload.recordsArray : payload.displayReadyRecords;
+    return { ready: true, payload, status };
+  }
+
+  function displayRecordsFromKeyedW455(records) {
+    const out = [];
+    [
+      'customer',
+      'demoTransaction',
+      'salesOrder',
+      'heroItem',
+      'assembly',
+      'bom',
+      'bomRevision',
+      'componentItem1',
+      'componentItem2',
+      'componentItem3',
+      'routing',
+      'routingDiagnostic',
+      'workOrder',
+      'workOrderDiagnostic'
+    ].forEach((key) => {
+      const record = records && records[key];
+      if (record && typeof record === 'object' && !record.plannedOnly) out.push(record);
+    });
+    return out;
+  }
+
   function getSidecarRecords(pendingSidecar) {
     const source = pendingSidecar && pendingSidecar.partialGeneratedNamesJson || {};
     return source.records || {};
@@ -1054,6 +1220,39 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         generatedRecordOwner: 'governed_runner_internal_build_engine'
       };
     }
+    const keyedCompletedW455 = completedKeyedResultCaptureW455(parsed);
+    if (keyedCompletedW455.ready) {
+      return {
+        schema: 'idb.approved-server-adapter-result-envelope.v1',
+        adapterVersion: ADAPTER_VERSION,
+        status: keyedCompletedW455.status === 'completed_with_wip_diagnostic' ? 'completed_with_wip_diagnostic' : 'completed_runner_result_ready',
+        queueSubmitted: true,
+        runnerTaskId,
+        idempotencyToken,
+        sourceRequestId,
+        buildAttemptId,
+        submittedAt,
+        resultCapture: Object.assign({}, parsed, {
+          schema: 'idb.runner-result-capture.v1',
+          status: keyedCompletedW455.status,
+          runnerTaskId,
+          idempotencyToken,
+          sourceRequestId,
+          buildAttemptId,
+          submittedAt,
+          resultCaptureCursor: `file:${found.fileId}`,
+          sourceFileId: found.fileId,
+          sourceFileName: found.fileName,
+          lookupSource: found.lookupSource || '',
+          finalGeneratedNamesReady: true,
+          finalGeneratedNamesJson: keyedCompletedW455.payload
+        }),
+        finalGeneratedNamesJson: keyedCompletedW455.payload,
+        finalGeneratedNamesJsonReady: true,
+        activeOpenLinks: 0,
+        generatedRecordOwner: 'governed_runner_internal_build_engine'
+      };
+    }
     const normalized = normalizeCompletedRunnerResult(parsed);
     if (!normalized.valid) {
       return adapterPollError(runnerTaskId, idempotencyToken, normalized.errors.join(' '), cursor, found);
@@ -1127,10 +1326,34 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       .concat(requestValidation.errors || [])
       .concat(configValidation.errors || [])
       .concat(operatorValidation.errors || []);
-    const idempotencyToken = requestValidation.valid ? buildIdempotencyToken(request) : '';
-    const runnerParams = !errors.length ? buildRunnerParams(request, config, idempotencyToken) : {};
     const queueGate = buildQueueGate(requestValidation, configValidation, operatorValidation, config);
-    const queueSubmit = submitRunnerIfAllowed(queueGate, config, runnerParams);
+    const idempotencyToken = requestValidation.valid ? buildIdempotencyToken(request) : '';
+    let namingPackHandoff = { fileId: null, status: errors.length ? 'blocked_before_naming_pack' : 'not_attempted' };
+    if (!errors.length && queueGate.canSubmit) {
+      try {
+        namingPackHandoff = createNamingPackFile(request, config, idempotencyToken);
+        if (!namingPackHandoff.fileId) errors.push('server naming pack file was not created before runner submit.');
+      } catch (namingError) {
+        namingPackHandoff = {
+          fileId: null,
+          status: 'naming_pack_create_failed',
+          errorName: namingError && (namingError.name || namingError.id) ? String(namingError.name || namingError.id) : 'NAMING_PACK_CREATE_FAILED',
+          errorMessage: namingError && namingError.message ? String(namingError.message) : String(namingError || 'Naming pack create failed.')
+        };
+        errors.push(namingPackHandoff.errorMessage);
+      }
+    }
+    const submitGate = errors.length
+      ? Object.assign({}, queueGate, {
+        canSubmit: false,
+        queueReadinessStatus: 'blocked_no_submit',
+        gates: Object.assign({}, queueGate.gates || {}, { namingPackCreated: false })
+      })
+      : Object.assign({}, queueGate, {
+        gates: Object.assign({}, queueGate.gates || {}, { namingPackCreated: !!namingPackHandoff.fileId })
+      });
+    const runnerParams = !errors.length ? buildRunnerParams(request, config, idempotencyToken, namingPackHandoff.fileId) : {};
+    const queueSubmit = submitRunnerIfAllowed(submitGate, config, runnerParams);
     const adapterError = queueSubmit.error === true;
 
     return {
@@ -1153,7 +1376,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       idempotencyToken,
       runnerRuntimeConfig: redactRuntimeConfig(config),
       runnerParams: runnerParams,
-      queueGate,
+      namingPackHandoff,
+      queueGate: submitGate,
       queueSubmit,
       resultCapture: resultCapturePending(idempotencyToken, queueSubmit, request),
       noSubmitRollback: {

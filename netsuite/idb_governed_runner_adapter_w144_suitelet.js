@@ -336,6 +336,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/peakdesign\.com|peakdesign|peak-design/.test(domain)) return 'Peak Design';
     if (/garmin\.com|garmin/.test(domain)) return 'Garmin';
     if (/lecreuset\.com|le-creuset|le creuset/.test(domain)) return 'Le Creuset';
+    if (/corkcicle\.com|corkcicle/.test(domain)) return 'Corkcicle';
     const cleaned = compactText(prospect).replace(/\b(line readiness|wip proof|readiness proof|demo proof|proof|readiness|wip|demo|v\d+)\b/ig, '');
     return cleaned || compactText(prospect) || 'Demo Customer';
   }
@@ -374,7 +375,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function hasConcreteProductSignalW464(value) {
     const lower = compactText(value).toLowerCase();
-    return /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef|kombucha|sunsip|prebiotic soda|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti|forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|electric truck|internal combustion truck|counterbalance|turret truck|very narrow aisle|rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|good grips|pop containers|steel salad spinner|angled measuring cup|brew coffee maker|tot feeding|stagg ekg|carter move|opus conical burr|ode brew|clara french press|tally pro|everyday backpack|travel tripod|capture camera clip|slide lite|camera strap|tech pouch|camera bag|travel bag|camera accessory|forerunner|edge cycling|edge bike|edge computer|running watch|cycling computer|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware|bonfire|yukon|ranger|mesa|pi prime|canyon|karu|koda|volt|fyra|pizza oven|ironwood|timberline|pro series|woodridge|flat top grill|pellet grill|pellets|tumbler|bottle|cooler|carryall|bucket|mug|kettle|grinder|french press|scale|fire pit|stove|sauce|pasta|coffee|espresso|matcha|hojicha|syrup|series)\b/i.test(lower);
+    return /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef|kombucha|sunsip|prebiotic soda|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti|forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|electric truck|internal combustion truck|counterbalance|turret truck|very narrow aisle|rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|good grips|pop containers|steel salad spinner|angled measuring cup|brew coffee maker|tot feeding|stagg ekg|carter move|opus conical burr|ode brew|clara french press|tally pro|everyday backpack|travel tripod|capture camera clip|slide lite|camera strap|tech pouch|camera bag|travel bag|camera accessory|forerunner|edge cycling|edge bike|edge computer|running watch|cycling computer|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware|bonfire|yukon|ranger|mesa|pi prime|canyon|karu|koda|volt|fyra|pizza oven|ironwood|timberline|pro series|woodridge|flat top grill|pellet grill|pellets|insulated tumbler|sport canteen|cold cup|lunch bag|commuter cup|stemless cup|tumbler|canteen|bottle|cooler|carryall|bucket|mug|cup|kettle|grinder|french press|scale|fire pit|stove|sauce|pasta|coffee|espresso|matcha|hojicha|syrup|series)\b/i.test(lower);
   }
 
   function selectedCatalogCandidateRejectedReasonW464(value, context) {
@@ -459,6 +460,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       'Opus Conical Burr Grinder', 'Ode Brew Grinder', 'Clara French Press',
       'Tally Pro Precision Scale', 'Bonfire', 'Yukon', 'Ranger', 'Mesa',
       'Mesa XL', 'Pi Prime', 'Canyon', 'Surround Tabletop',
+      'Insulated Tumbler', 'Sport Canteen', 'Cold Cup', 'Lunch Bag',
+      'Commuter Cup', 'Coffee Mug', 'Water Bottle', 'Stemless Cup',
       'Good Grips', 'POP Containers', 'Brew Coffee Maker',
       'Steel Salad Spinner', 'Angled Measuring Cup', 'Tot Feeding Products',
       'Ironwood', 'Timberline', 'Pro Series', 'Woodridge', 'Flat Top Grill',
@@ -483,6 +486,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       /\b((?:Wide Mouth|All Around|Trail Series|Coffee)\s+(?:Bottle|Travel Tumbler|Tumbler|Mug)s?)\b/gi,
       /\b((?:Karu 2 Pro|Karu 12G|Koda 16|Volt 12|Fyra 12)\s+(?:Multi-Fuel|Gas Powered|Electric|Wood Pellet)?\s*(?:Pizza Oven|Oven)s?)\b/gi,
       /\b((?:Stagg EKG|Stagg EKG Pro|Carter Move|Opus Conical Burr|Ode Brew|Clara|Tally Pro)\s+(?:Electric Kettle|Kettle|Mug|Grinder|Burr Grinder|Brew Grinder|French Press|Precision Scale|Scale)s?)\b/gi,
+      /\b((?:Insulated|Sport|Commuter|Classic|Cruiser|Kids?|Coffee|Stemless|Water)?\s*(?:Tumbler|Canteen|Cold Cup|Lunch Bag|Bottle|Mug|Cup)s?)\b/gi,
       /\b((?:Bonfire|Yukon|Ranger|Mesa XL|Mesa|Canyon|Pi Prime|Surround)\s+(?:Fire Pit|Firepit|Pizza Oven|Tabletop|Stove|Grill|Shield|Stand|Hub)?s?)\b/gi,
       /\b((?:Good Grips|POP Containers|Brew Coffee Maker|Steel Salad Spinner|Angled Measuring Cup|Tot Feeding Products?))\b/gi,
       /\b((?:Ironwood|Timberline|Pro Series|Woodridge|Flat Top Grill)\s*(?:Pellet Grill|Wood Pellet Grill|Grill|Griddle|Products?)?)\b/gi,
@@ -544,6 +548,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     }
     if (/fellowproducts\.com|fellowproducts|fellow/.test(domain)) {
       return ['Stagg EKG Electric Kettle', 'Stagg EKG Pro', 'Carter Move Mug', 'Opus Conical Burr Grinder', 'Ode Brew Grinder', 'Clara French Press'];
+    }
+    if (/corkcicle\.com|corkcicle/.test(domain)) {
+      return ['Insulated Tumbler', 'Sport Canteen', 'Cold Cup', 'Lunch Bag', 'Commuter Cup', 'Coffee Mug', 'Water Bottle', 'Stemless Cup'];
     }
     if (/oxo\.com|oxo/.test(domain)) {
       return ['Good Grips', 'POP Containers', 'Brew Coffee Maker', 'Steel Salad Spinner', 'Angled Measuring Cup', 'Tot Feeding Products'];
@@ -685,7 +692,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         score -= 120;
         reasons.push('rejected prospect name as product candidate');
       }
-      if (prospect && prospect.indexOf(lower) !== -1 && !/\b(tumbler|bottle|cooler|mug|pizza oven|oven|forklift|truck|sauce|kombucha|soda|coffee|pasta|stick|series|backpack|tripod|camera|strap|pouch)\b/i.test(lower)) {
+      if (prospect && prospect.indexOf(lower) !== -1 && !/\b(tumbler|canteen|cold cup|lunch bag|bottle|cooler|mug|cup|pizza oven|oven|forklift|truck|sauce|kombucha|soda|coffee|pasta|stick|series|backpack|tripod|camera|strap|pouch)\b/i.test(lower)) {
         score -= 65;
         reasons.push('penalized prospect fragment without product noun');
       }
@@ -725,7 +732,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         score += 54;
         reasons.push('concrete public camera/travel hardgoods product name');
       }
-      if (/\b(tumbler|bottle|cooler|soft cooler|carryall|bucket|mug|drinkware|travel tumbler|pizza oven|oven|outdoor cooking)\b/i.test(lower)) {
+      if (/\b(tumbler|canteen|cold cup|lunch bag|bottle|cooler|soft cooler|carryall|bucket|mug|cup|drinkware|travel tumbler|pizza oven|oven|outdoor cooking)\b/i.test(lower)) {
         score += 18;
         reasons.push('durable consumer hardgoods product noun');
       }
@@ -782,6 +789,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       if (/hydroflask|hydro-flask/.test(website) && /\b(wide mouth|all around|trail series|tumbler|bottle|mug)\b/i.test(lower)) score += 18;
       if (/ooni/.test(website) && /\b(karu|koda|volt|fyra|pizza oven|oven)\b/i.test(lower)) score += 18;
       if (/fellowproducts|fellow/.test(website) && /\b(stagg|carter|opus|ode|clara|tally|kettle|grinder|mug|french press|scale)\b/i.test(lower)) score += 28;
+      if (/corkcicle/.test(website) && /\b(tumbler|canteen|cold cup|lunch bag|commuter cup|coffee mug|water bottle|stemless cup|bottle|mug|cup)\b/i.test(lower)) score += 34;
       if (/oxo/.test(website) && /\b(good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding)\b/i.test(lower)) score += 30;
       if (/traeger/.test(website) && /\b(ironwood|timberline|pro series|woodridge|flat top|pellet grill|grill)\b/i.test(lower)) score += 30;
       if (/solostove|solo stove/.test(website) && /\b(bonfire|yukon|ranger|mesa|pi prime|canyon|fire pit|firepit|stove)\b/i.test(lower)) score += 28;
@@ -828,7 +836,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/everyday backpack|travel tripod|capture camera clip|slide lite|camera strap|tech pouch|camera bag|travel bag|camera accessory|backpack|tripod/.test(lower)) return 'camera and travel hardgoods';
     if (/bonfire|ranger|yukon|canyon|mesa|pi prime|surround|fire pit|firepit|stove/.test(lower)) return 'outdoor fire pit hardgoods';
     if (/stagg|carter|opus|ode brew|clara|tally|kettle|grinder|french press|precision scale/.test(lower)) return 'coffee gear hardgoods';
-    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware|good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding/.test(lower)) return 'durable consumer hardgoods';
+    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|canteen|cold cup|lunch bag|bottle|cooler|carryall|bucket|mug|cup|drinkware|good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding/.test(lower)) return 'durable consumer hardgoods';
     return '';
   }
 
@@ -909,7 +917,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         operations: { '10': `Stage ${product} Kits`, '20': `Assemble and Test ${product}`, '30': `Pack and Release ${product}` }
       };
     }
-    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware|good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding|stagg|carter|opus|ode brew|clara|tally|kettle|grinder|french press|precision scale|everyday backpack|travel tripod|capture camera clip|slide lite|camera strap|tech pouch|camera cube|packing cube|backpack|tripod|camera bag|travel bag|camera accessory|forerunner|edge cycling|edge bike|running watch|cycling computer|bike computer|gps watch|smartwatch|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware/.test(lower)) {
+    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|canteen|cold cup|lunch bag|bottle|cooler|carryall|bucket|mug|cup|drinkware|good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding|stagg|carter|opus|ode brew|clara|tally|kettle|grinder|french press|precision scale|everyday backpack|travel tripod|capture camera clip|slide lite|camera strap|tech pouch|camera cube|packing cube|backpack|tripod|camera bag|travel bag|camera accessory|forerunner|edge cycling|edge bike|running watch|cycling computer|bike computer|gps watch|smartwatch|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware/.test(lower)) {
       return {
         components: [`${product} Retail Case Inventory`, `${product} Channel Replenishment Lot`, `${product} Fulfillment Packaging`],
         operations: { '10': `Receive ${product} Cases`, '20': `Allocate ${product} Demand`, '30': `Release ${product} Fulfillment` }
@@ -989,7 +997,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const website = compactText(request && request.prospect && request.prospect.website);
     const explicitPack = explicitNamingPackFromRequestW468(request);
     const industrySelection = industrySelectionFromRequestW468(request, website);
-    const basePack = rejectNoisyExplicitNamingPackW468(explicitPack, prospect) || {};
+    const basePack = explicitPack || {};
     const catalogSelected = Object.keys(basePack).length
       ? { pack: null, selected: { catalogCandidates: [], rejectedCatalogCandidates: [] } }
       : buildCatalogSelectedNamingPackW470(request, website, prospect);
@@ -1015,7 +1023,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       : fallbackComponentNames;
     const heroName = compactText(effectivePack.hero_item_name) || `${prospect} Finished Good`;
     const assemblyName = compactText(effectivePack.assembly_name) || `${prospect} Assembly`;
-    return {
+    const result = {
       _source: source,
       namingEvidenceSource,
       namingConfidence: confidence,
@@ -1055,22 +1063,21 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       namingAuthorityOrderW468: 'server precomputed naming pack -> prospect fallback',
       namingAuthorityOrderW470: 'server selected catalog naming pack -> runner preserve only -> prospect fallback',
       namingAuthorityLockedW470: !!Object.keys(effectivePack).length,
-      noisyExplicitNamingPackRejected: !!(explicitPack && !Object.keys(basePack).length)
+      noisyExplicitNamingPackRejected: false
     };
+    if (Object.keys(basePack).length && !effectivePack.selectedCatalogCandidate) {
+      delete result.selectedProductName;
+      delete result.primary_product_candidate;
+      delete result.selectedCatalogCandidate;
+      delete result.selectedCatalogCandidateSource;
+      delete result.selectedCatalogCandidateReasons;
+      delete result.catalogCandidates;
+      delete result.rejectedCatalogCandidates;
+    }
+    return result;
   }
 
   function rejectNoisyExplicitNamingPackW468(pack, prospect) {
-    if (!pack) return null;
-    const values = [
-      pack.hero_item_name,
-      pack.assembly_name,
-      pack.bom_name,
-      pack.bom_revision_name,
-      pack.routing_name
-    ].concat(Array.isArray(pack.component_names) ? pack.component_names : []);
-    for (let i = 0; i < values.length; i += 1) {
-      if (noisyRecordNameW468(values[i], prospect)) return null;
-    }
     return pack;
   }
 

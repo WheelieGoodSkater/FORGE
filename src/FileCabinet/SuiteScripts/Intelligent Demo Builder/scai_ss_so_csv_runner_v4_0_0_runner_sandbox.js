@@ -3533,18 +3533,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
     const namingPayload = context && context.namingPayload || {};
     const authoritativePackApplied = namingPayload.parsed === true && namingPayload.applied === true;
-    const fields = ['hero_item_name', 'assembly_name', 'bom_name', 'bom_revision_name', 'routing_name'];
     const components = Array.isArray(names.component_names) ? names.component_names.slice(0, 3) : [];
-    let noisyField = '';
 
-    fields.forEach(function(fieldId) {
-      if (!noisyField && noisyRecordNameW468(names[fieldId])) noisyField = fieldId;
-    });
-    components.forEach(function(value, index) {
-      if (!noisyField && noisyRecordNameW468(value)) noisyField = `component_names[${index}]`;
-    });
-
-    if (authoritativePackApplied && !noisyField && names.hero_item_name && names.assembly_name && components.length === 3) {
+    if (authoritativePackApplied && names.hero_item_name && names.assembly_name && components.length === 3) {
       names.component_names = components.map(function(name) { return trimLen(name, 60); });
       names.hero_item_name = trimLen(names.hero_item_name, 60);
       names.assembly_name = trimLen(names.assembly_name, 60);
@@ -3555,35 +3546,31 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       names.namingAuthorityOrderW468 = names.namingAuthorityOrderW468 || 'server precomputed naming pack -> prospect fallback';
       names.namingAuthorityOrderW470 = names.namingAuthorityOrderW470 || 'server selected catalog naming pack -> runner preserve only -> prospect fallback';
       names.runnerNamingOverrideBlockedW470 = true;
+      names.namingPackAuthoritativeW470 = true;
+      names.fallbackUsed = false;
       return names;
     }
 
-    if (!names.hero_item_name || !names.assembly_name || components.length !== 3 || noisyField) {
+    if (!names.hero_item_name || !names.assembly_name || components.length !== 3) {
       const industrySelection = names.industrySelection || fallback.industrySelection || null;
       const websiteEvidenceSource = names.websiteEvidenceSource || fallback.websiteEvidenceSource || '';
       const websiteEvidenceSourceUrls = names.websiteEvidenceSourceUrls || fallback.websiteEvidenceSourceUrls || [];
       return Object.assign({}, fallback, {
-        _source: authoritativePackApplied && noisyField ? 'old-runner-prospect-fallback-noisy-pack-blocked' : fallback._source,
-        namingEvidenceSource: authoritativePackApplied && noisyField ? 'old_runner_noisy_pack_blocked' : fallback.namingEvidenceSource,
-        namingConfidence: authoritativePackApplied && noisyField ? 35 : fallback.namingConfidence,
-        confidencePercent: authoritativePackApplied && noisyField ? 35 : fallback.confidencePercent,
+        _source: fallback._source,
+        namingEvidenceSource: fallback.namingEvidenceSource,
+        namingConfidence: fallback.namingConfidence,
+        confidencePercent: fallback.confidencePercent,
         industrySelection,
         industry_category: industrySelection && industrySelection.label || '',
         websiteEvidenceSource,
         websiteEvidenceSourceUrls,
         fallbackUsed: true,
-        fallbackReason: noisyField
-          ? `Old runner naming discipline blocked noisy record-name field ${noisyField}.`
-          : 'Old runner naming discipline required complete hero, assembly, and component names.',
+        fallbackReason: 'Old runner naming discipline required complete hero, assembly, and component names.',
         namingPayloadFound: !!namingPayload.found,
         namingPayloadParsed: !!namingPayload.parsed,
         namingPayloadApplied: !!namingPayload.applied,
         namingAuthorityOrderW468: 'server precomputed naming pack -> prospect fallback',
         namingAuthorityOrderW470: 'server selected catalog naming pack -> runner preserve only -> prospect fallback',
-        selectedProductName: null,
-        selectedCatalogCandidate: null,
-        primary_product_candidate: null,
-        catalogCandidates: [],
         fallbackUsedByOldRunnerDisciplineW468: true
       });
     }
@@ -3596,10 +3583,6 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     names.routing_name = trimLen(names.routing_name || `Routing - ${names.assembly_name}`, 80);
     names.operation_names_by_seq = names.operation_names_by_seq || fallback.operation_names_by_seq;
     names.namingAuthorityOrderW468 = 'server precomputed naming pack -> prospect fallback';
-    names.selectedProductName = null;
-    names.selectedCatalogCandidate = null;
-    names.primary_product_candidate = null;
-    names.catalogCandidates = [];
     return names;
   }
 

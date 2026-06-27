@@ -5,7 +5,7 @@
  * @NScriptType Suitelet
  */
 define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
-  const ADAPTER_VERSION = 'w468-governed-adapter-precomputed-naming-pack-simple';
+  const ADAPTER_VERSION = 'w468-governed-adapter-old-runner-naming-transaction-return';
   const NAMING_FILE_NAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -904,7 +904,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const website = compactText(request && request.prospect && request.prospect.website);
     const explicitPack = explicitNamingPackFromRequestW468(request);
     const industrySelection = industrySelectionFromRequestW468(request, website);
-    const basePack = explicitPack || {};
+    const basePack = rejectNoisyExplicitNamingPackW468(explicitPack, prospect) || {};
     const fallbackComponentNames = [
       `${prospect} Component A`,
       `${prospect} Component B`,
@@ -916,10 +916,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const heroName = compactText(basePack.hero_item_name) || `${prospect} Finished Good`;
     const assemblyName = compactText(basePack.assembly_name) || `${prospect} Assembly`;
     return {
-      _source: explicitPack ? 'suitelet-precomputed-naming-pack' : 'suitelet-prospect-fallback-naming-pack',
-      namingEvidenceSource: explicitPack ? 'precomputed_naming_pack' : 'prospect_fallback',
-      namingConfidence: explicitPack ? 90 : 35,
-      confidencePercent: explicitPack ? 90 : 35,
+      _source: Object.keys(basePack).length ? 'suitelet-precomputed-naming-pack' : 'suitelet-prospect-fallback-naming-pack',
+      namingEvidenceSource: Object.keys(basePack).length ? 'precomputed_naming_pack' : 'prospect_fallback',
+      namingConfidence: Object.keys(basePack).length ? 90 : 35,
+      confidencePercent: Object.keys(basePack).length ? 90 : 35,
       industrySelection,
       industry_category: industrySelection.label || '',
       websiteEvidenceSource: website ? 'website_industry_best_guess' : 'none',
@@ -944,8 +944,51 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         hero: `Purchased inputs supporting ${heroName} production.`,
         assembly: `Assembly supply inputs used to build ${assemblyName}.`,
         components: componentNames
-      }
+      },
+      namingAuthorityOrderW468: 'old runner naming pack -> prospect fallback',
+      noisyExplicitNamingPackRejected: !!(explicitPack && !Object.keys(basePack).length)
     };
+  }
+
+  function rejectNoisyExplicitNamingPackW468(pack, prospect) {
+    if (!pack) return null;
+    const values = [
+      pack.hero_item_name,
+      pack.assembly_name,
+      pack.bom_name,
+      pack.bom_revision_name,
+      pack.routing_name
+    ].concat(Array.isArray(pack.component_names) ? pack.component_names : []);
+    for (let i = 0; i < values.length; i += 1) {
+      if (noisyRecordNameW468(values[i], prospect)) return null;
+    }
+    return pack;
+  }
+
+  function noisyRecordNameW468(value, prospect) {
+    const text = compactText(value);
+    if (!text) return false;
+    const lower = text.toLowerCase();
+    const prospectLower = compactText(prospect).toLowerCase();
+    const blocked = [
+      'catalog product',
+      'products cpg',
+      'website evidence',
+      'product / sku',
+      'style / sku matrix',
+      'needs confirmation',
+      'dealer durable hardgoods',
+      'apparel & accessories',
+      'apparel and footwear style',
+      'core style color-size matrix',
+      'websiteresolverservicev1'
+    ];
+    for (let i = 0; i < blocked.length; i += 1) {
+      if (lower.indexOf(blocked[i]) !== -1) return true;
+    }
+    if (/^(?:SCAI\s*-\s*)?Assembly(?:\s*-\s*[A-Z0-9]{3,})?$/i.test(text)) return true;
+    if (lower === 'assembly' || lower === 'finished good') return true;
+    return !prospectLower && /^(component a|component b|component c)$/i.test(text);
   }
 
   function explicitNamingPackFromRequestW468(request) {

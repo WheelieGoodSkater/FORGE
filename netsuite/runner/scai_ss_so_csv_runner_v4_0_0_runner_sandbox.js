@@ -52,9 +52,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v4.0.0-runner-sandbox-w468-precomputed-naming-pack-simple';
+  const VERSION = 'v4.0.0-runner-sandbox-w468-old-runner-naming-transaction-return';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w468-precomputed-naming-pack-simple-result-filename-safe';
+  const RELEASE_TRANCHE = 'w468-old-runner-naming-transaction-return';
   const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -491,7 +491,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const names = namingPayload.payload;
+    const names = enforceOldRunnerNamingDisciplineW468(namingPayload.payload, { prospect, website, signalText: signal.text, namingPayload });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: namingPayload.source || names._source || 'deterministic',
       signalLen: names._signalLen || 0,
@@ -506,8 +506,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      namingAuthorityOrder: 'precomputed naming pack -> prospect fallback',
-      selectedProductName: ''
+      namingAuthorityOrder: 'old runner naming pack -> prospect fallback',
+      selectedProductName: '',
+      catalogCandidateAuthority: 'disabled_for_record_names'
     }) });
 
     // 4) Apply current-run identity + one-line sales/purchase descriptions
@@ -3522,6 +3523,94 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  function enforceOldRunnerNamingDisciplineW468(rawNames, context) {
+    const names = Object.assign({}, rawNames || {});
+    const fallback = generateNamingPack({
+      prospect: context && context.prospect,
+      website: context && context.website,
+      signalText: context && context.signalText
+    });
+    const namingPayload = context && context.namingPayload || {};
+    const authoritativePackApplied = namingPayload.parsed === true && namingPayload.applied === true;
+    const fields = ['hero_item_name', 'assembly_name', 'bom_name', 'bom_revision_name', 'routing_name'];
+    const components = Array.isArray(names.component_names) ? names.component_names.slice(0, 3) : [];
+    let noisyField = '';
+
+    fields.forEach(function(fieldId) {
+      if (!noisyField && noisyRecordNameW468(names[fieldId])) noisyField = fieldId;
+    });
+    components.forEach(function(value, index) {
+      if (!noisyField && noisyRecordNameW468(value)) noisyField = `component_names[${index}]`;
+    });
+
+    if (!names.hero_item_name || !names.assembly_name || components.length !== 3 || noisyField) {
+      const industrySelection = names.industrySelection || fallback.industrySelection || null;
+      const websiteEvidenceSource = names.websiteEvidenceSource || fallback.websiteEvidenceSource || '';
+      const websiteEvidenceSourceUrls = names.websiteEvidenceSourceUrls || fallback.websiteEvidenceSourceUrls || [];
+      return Object.assign({}, fallback, {
+        _source: authoritativePackApplied && noisyField ? 'old-runner-prospect-fallback-noisy-pack-blocked' : fallback._source,
+        namingEvidenceSource: authoritativePackApplied && noisyField ? 'old_runner_noisy_pack_blocked' : fallback.namingEvidenceSource,
+        namingConfidence: authoritativePackApplied && noisyField ? 35 : fallback.namingConfidence,
+        confidencePercent: authoritativePackApplied && noisyField ? 35 : fallback.confidencePercent,
+        industrySelection,
+        industry_category: industrySelection && industrySelection.label || '',
+        websiteEvidenceSource,
+        websiteEvidenceSourceUrls,
+        fallbackUsed: true,
+        fallbackReason: noisyField
+          ? `Old runner naming discipline blocked noisy record-name field ${noisyField}.`
+          : 'Old runner naming discipline required complete hero, assembly, and component names.',
+        namingPayloadFound: !!namingPayload.found,
+        namingPayloadParsed: !!namingPayload.parsed,
+        namingPayloadApplied: !!namingPayload.applied,
+        namingAuthorityOrderW468: 'old runner naming pack -> prospect fallback',
+        selectedProductName: null,
+        selectedCatalogCandidate: null,
+        primary_product_candidate: null,
+        catalogCandidates: [],
+        fallbackUsedByOldRunnerDisciplineW468: true
+      });
+    }
+
+    names.component_names = components.map(function(name) { return trimLen(name, 60); });
+    names.hero_item_name = trimLen(names.hero_item_name, 60);
+    names.assembly_name = trimLen(names.assembly_name, 60);
+    names.bom_name = trimLen(names.bom_name || `BOM - ${names.hero_item_name}`, 80);
+    names.bom_revision_name = trimLen(names.bom_revision_name || `Revision 1 - ${names.hero_item_name}`, 80);
+    names.routing_name = trimLen(names.routing_name || `Routing - ${names.assembly_name}`, 80);
+    names.operation_names_by_seq = names.operation_names_by_seq || fallback.operation_names_by_seq;
+    names.namingAuthorityOrderW468 = 'old runner naming pack -> prospect fallback';
+    names.selectedProductName = null;
+    names.selectedCatalogCandidate = null;
+    names.primary_product_candidate = null;
+    names.catalogCandidates = [];
+    return names;
+  }
+
+  function noisyRecordNameW468(value) {
+    const text = str(value).replace(/\s+/g, ' ');
+    if (!text) return false;
+    const lower = text.toLowerCase();
+    const blocked = [
+      'catalog product',
+      'products cpg',
+      'website evidence',
+      'product / sku',
+      'style / sku matrix',
+      'needs confirmation',
+      'dealer durable hardgoods',
+      'apparel & accessories',
+      'apparel and footwear style',
+      'core style color-size matrix',
+      'websiteresolverservicev1'
+    ];
+    for (let i = 0; i < blocked.length; i += 1) {
+      if (lower.indexOf(blocked[i]) !== -1) return true;
+    }
+    if (/^(?:SCAI\s*-\s*)?Assembly(?:\s*-\s*[A-Z0-9]{3,})?$/i.test(text)) return true;
+    return false;
+  }
+
   function industrySelectionW468(args) {
     const text = `${args && args.prospect || ''} ${args && args.website || ''} ${args && args.signalText || ''}`.toLowerCase();
     const rules = [
@@ -4412,8 +4501,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         };
       });
       if (!matches.length) {
+        const direct = directSalesOrderLookupW468(options || {});
+        if (direct && direct.status === 'resolved') {
+          return Object.assign({}, direct, {
+            savedSearchTelemetry: telemetry,
+            source: 'direct_sales_order_lookup_w468_after_saved_search_miss'
+          });
+        }
         telemetry.status = 'not_found';
-        telemetry.reason = 'FORGE SO lookup saved search returned no Sales Order row for the current CSV external id.';
+        telemetry.reason = 'FORGE SO lookup saved search and direct Sales Order lookup returned no row for the current CSV external id.';
+        telemetry.directLookupW468 = direct || null;
         return telemetry;
       }
       const exact = matches.filter(function(match) { return match.exactExternalId === true; });
@@ -4442,11 +4539,156 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       };
       return telemetry;
     } catch (e) {
+      const direct = directSalesOrderLookupW468(options || {});
+      if (direct && direct.status === 'resolved') {
+        return Object.assign({}, direct, {
+          savedSearchTelemetry: Object.assign({}, telemetry, {
+            status: 'lookup_failed',
+            errorName: e && e.name || '',
+            errorMessage: e && e.message || String(e || '')
+          }),
+          source: 'direct_sales_order_lookup_w468_after_saved_search_error'
+        });
+      }
       telemetry.status = 'lookup_failed';
       telemetry.errorName = e && e.name || '';
       telemetry.errorMessage = e && e.message || String(e || '');
+      telemetry.directLookupW468 = direct || null;
       return telemetry;
     }
+  }
+
+  function directSalesOrderLookupW468(options) {
+    const extId = str(options && options.extId);
+    const expectedProspect = str(options && options.prospect);
+    const telemetry = {
+      schema: 'idb.sales-order-direct-resolution.w468.v1',
+      status: 'not_found',
+      source: options && options.source || 'direct_sales_order_lookup_w468',
+      expectedExternalId: extId,
+      expectedProspect,
+      expectedWebsite: options && options.website || '',
+      expectedRole: 'sales_order',
+      demandRecordRolePolicy: 'sales_order_only_never_work_order',
+      rowsScanned: 0,
+      rejectedRows: []
+    };
+    if (!extId) {
+      telemetry.status = 'missing_expected_external_id';
+      return telemetry;
+    }
+
+    const filterSets = [
+      [['mainline', 'is', 'T'], 'AND', ['externalidstring', 'is', extId]],
+      [['mainline', 'is', 'T'], 'AND', ['memo', 'contains', extId]],
+      [['mainline', 'is', 'T'], 'AND', ['tranid', 'contains', extId]]
+    ];
+    const columns = [
+      'internalid',
+      'tranid',
+      'statusref',
+      'externalid',
+      'memo',
+      'entity',
+      'amount',
+      'datecreated'
+    ];
+    const matches = [];
+
+    for (let i = 0; i < filterSets.length; i += 1) {
+      try {
+        const rows = search.create({ type: 'salesorder', filters: filterSets[i], columns }).run().getRange({ start: 0, end: 20 }) || [];
+        telemetry.rowsScanned += rows.length;
+        rows.forEach(function(row) {
+          const mapped = mapDirectSalesOrderRowW468(row);
+          if (!mapped.internalId) return;
+          const haystack = `${mapped.externalId} ${mapped.memo} ${mapped.tranid} ${mapped.entityName}`.toLowerCase();
+          const exactExternalId = mapped.externalId === extId;
+          const containsExternalId = haystack.indexOf(extId.toLowerCase()) !== -1;
+          if (!exactExternalId && !containsExternalId) {
+            if (telemetry.rejectedRows.length < 5) {
+              telemetry.rejectedRows.push({
+                internalId: mapped.internalId,
+                tranid: mapped.tranid,
+                reason: 'direct_lookup_external_id_did_not_match_current_run'
+              });
+            }
+            return;
+          }
+          matches.push(Object.assign({}, mapped, {
+            exactExternalId,
+            prospectMatch: expectedProspect ? haystack.indexOf(expectedProspect.toLowerCase()) !== -1 : false,
+            lookupFilterIndex: i
+          }));
+        });
+        if (matches.length) break;
+      } catch (e) {
+        telemetry.lastFilterError = {
+          filterIndex: i,
+          errorName: e && e.name || '',
+          errorMessage: e && e.message || String(e || '')
+        };
+      }
+    }
+
+    telemetry.matches = matches.map(function(match) {
+      return {
+        internalId: match.internalId,
+        tranid: match.tranid,
+        status: match.status,
+        externalId: match.externalId,
+        entityName: match.entityName,
+        exactExternalId: match.exactExternalId === true,
+        prospectMatch: match.prospectMatch === true,
+        lookupFilterIndex: match.lookupFilterIndex
+      };
+    });
+    if (!matches.length) {
+      telemetry.reason = 'Direct Sales Order search found no current-run transaction by external id, memo, or tranid.';
+      return telemetry;
+    }
+
+    const exact = matches.filter(function(match) { return match.exactExternalId === true; });
+    const prospectMatches = matches.filter(function(match) { return match.prospectMatch === true; });
+    const eligible = exact.length ? exact : (prospectMatches.length ? prospectMatches : matches);
+    if (eligible.length > 1) {
+      telemetry.status = 'ambiguous';
+      telemetry.reason = 'Direct Sales Order search returned multiple candidate rows for the current external id.';
+      return telemetry;
+    }
+
+    const resolved = eligible[0];
+    telemetry.status = 'resolved';
+    telemetry.record = {
+      role: 'sales_order',
+      type: 'salesorder',
+      id: resolved.internalId,
+      internalId: resolved.internalId,
+      tranid: resolved.tranid,
+      name: resolved.tranid || `Sales Order ${resolved.internalId}`,
+      status: resolved.status,
+      externalId: resolved.externalId || extId,
+      memo: resolved.memo,
+      entityName: resolved.entityName,
+      amount: resolved.amount,
+      dateCreated: resolved.dateCreated,
+      url: recordUrlW453('salesorder', resolved.internalId)
+    };
+    telemetry.waitStatusW460 = 'resolved_by_direct_lookup_w468';
+    return telemetry;
+  }
+
+  function mapDirectSalesOrderRowW468(row) {
+    return {
+      internalId: str(row && row.getValue({ name: 'internalid' })),
+      tranid: str(row && row.getValue({ name: 'tranid' })),
+      status: str(row && (safeTryReturn(function() { return row.getText({ name: 'statusref' }); }) || row.getValue({ name: 'statusref' }))),
+      externalId: str(row && row.getValue({ name: 'externalid' })),
+      memo: str(row && row.getValue({ name: 'memo' })),
+      entityName: str(row && (safeTryReturn(function() { return row.getText({ name: 'entity' }); }) || row.getValue({ name: 'entity' }))),
+      amount: str(row && row.getValue({ name: 'amount' })),
+      dateCreated: str(row && row.getValue({ name: 'datecreated' }))
+    };
   }
 
   function loadSalesOrderLookupSearchW458() {

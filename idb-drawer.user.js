@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.64
+// @version      1.0.66
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.64';
-  const CURRENT_UX_BLOCK_W346 = 'W458';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.66';
+  const CURRENT_UX_BLOCK_W346 = 'W460';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -26064,16 +26064,24 @@
     const hasNamingEvidence = !!(productName || evidenceTerms.length || websiteEvidence.productSeed || notes);
     const blockedTerms = uniqueValues(arrayValue(plan.fallbackBlockedGenericTerms)
       .concat(arrayValue(plan.blockedGenericFallbackTerms))
+      .concat(arrayValue(plan.genericCandidateRejectedReasons))
       .concat(arrayValue(plan.evidence && (plan.evidence.fallbackBlockedGenericTerms || plan.evidence.rejectedGenericTerms)))
       .concat(hasNamingEvidence ? ['Product 12-Count Case Pack', 'Core Material Input', 'Product Seasoning Blend', 'Prepare Materials', 'Build Product'] : [])
       .filter(Boolean));
+    const fallbackUsed = plan.fallbackUsed === true || /deterministic_fallback|fallback/i.test(String(plan.productCandidateSource || plan.source || ''));
+    const fallbackReason = firstNonBlank(plan.fallbackReason, plan.evidence && plan.evidence.fallbackReason);
+    const sourceUrls = arrayValue(plan.websiteEvidenceSourceUrls || plan.sourceUrls || plan.evidence && plan.evidence.websiteEvidenceSourceUrls).slice(0, 4);
+    const selectedCatalogCandidate = plan.selectedCatalogCandidate || null;
+    const selectedCatalogCandidateReasons = arrayValue(plan.selectedCatalogCandidateReasons || selectedCatalogCandidate && selectedCatalogCandidate.reasons);
     return {
       schema: 'idb.w450-product-candidate-visibility.v1',
       primaryProductCandidate: productName,
       alternateProductCandidates: alternates,
-      selectedProductReason: firstNonBlank(advisoryProduct.selectedProductReason, plan.selectedProductReason, plan.selectionReason, productName ? 'Selected from LLM/web/product evidence for this run.' : 'No product candidate returned.'),
+      selectedProductReason: fallbackUsed
+        ? firstNonBlank(fallbackReason, 'Fallback: no website product candidate returned from public evidence.')
+        : firstNonBlank(advisoryProduct.selectedProductReason, plan.selectedProductReason, plan.selectionReason, productName ? 'Selected from LLM/web/product evidence for this run.' : 'No product candidate returned.'),
       productCandidateSource,
-      confidencePercent: Number(advisoryProduct.confidencePercent || plan.confidencePercent || plan.evidence && plan.evidence.confidencePercent || 0) || null,
+      confidencePercent: Number(advisoryProduct.confidencePercent || plan.productEvidenceConfidence || plan.confidencePercent || plan.evidence && plan.evidence.confidencePercent || 0) || null,
       evidenceTerms,
       namingAdvisoryUsed: !!(advisoryProduct.productSeed || advisoryProduct.primaryProductCandidate || plan.namingAdvisoryUsed || plan.namingAdvisory || plan.namingAdvisorySummary || (plan.evidence && plan.evidence.namingAdvisoryUsed)),
       namingAdvisorySummary: firstNonBlank(advisoryProduct.summary, plan.namingAdvisorySummary, plan.namingAdvisory && plan.namingAdvisory.summary, plan.evidence && plan.evidence.namingAdvisorySummary),
@@ -26082,7 +26090,16 @@
         writeAuthority: 'none',
         creationAllowed: false
       },
-      rejectedFallbackReason: firstNonBlank(advisoryProduct.rejectedFallbackReason, plan.rejectedFallbackReason, plan.evidence && plan.evidence.rejectedFallbackReason, blockedTerms.length ? 'Generic fallback terms blocked because website, notes, or category evidence exists.' : ''),
+      fallbackUsed,
+      fallbackReason,
+      selectedCatalogCandidate,
+      selectedCatalogCandidateSource: firstNonBlank(plan.selectedCatalogCandidateSource, selectedCatalogCandidate && selectedCatalogCandidate.source),
+      selectedCatalogCandidateReasons,
+      websiteEvidenceSource: firstNonBlank(plan.websiteEvidenceSource, plan.evidence && plan.evidence.websiteEvidenceSource),
+      websiteEvidenceSourceUrls: sourceUrls,
+      genericCandidateRejectedReasons: arrayValue(plan.genericCandidateRejectedReasons),
+      missingEvidence: arrayValue(plan.missingEvidence),
+      rejectedFallbackReason: firstNonBlank(advisoryProduct.rejectedFallbackReason, plan.rejectedFallbackReason, plan.evidence && plan.evidence.rejectedFallbackReason, fallbackReason, blockedTerms.length ? 'Generic fallback terms blocked because website, notes, or category evidence exists.' : ''),
       fallbackBlockedGenericTerms: blockedTerms,
       nextCandidateHint: firstNonBlank(plan.nextCandidateHint, alternates[0] ? `Use fresh candidate next run: ${alternates[0]}` : 'Use fresh candidate next run from current website evidence.')
     };
@@ -26578,9 +26595,13 @@
         ${cockpitWorkflowVisualW443(visibleNarrative, workflowObjectsW447, toggleReceipt)}
         <details class="idb-w444-product-candidate" ${state.w444ProductCandidateOpen ? 'open' : ''}>
           <summary><span class="idb-mini-chip">Product Expansion Audit: ${escapeHtml(productModelW444.primaryProductCandidate || visibleNarrative.productBaseName || 'Returned product')}</span></summary>
+          ${productModelW444.fallbackUsed ? `<div class="idb-copy"><strong>Fallback:</strong> ${escapeHtml(productModelW444.fallbackReason || 'no website product candidate returned from public evidence')}</div>` : ''}
           <div class="idb-copy">Alternates: ${escapeHtml(productModelW444.alternateProductCandidates.length ? productModelW444.alternateProductCandidates.join(', ') : 'No alternates returned.')}</div>
           <div class="idb-copy">${escapeHtml(productModelW444.selectedProductReason)}</div>
+          ${productModelW444.selectedCatalogCandidate ? `<div class="idb-copy">Selected source: ${escapeHtml(firstNonBlank(productModelW444.selectedCatalogCandidateSource, productModelW444.selectedCatalogCandidate.source, productModelW444.websiteEvidenceSource, 'website evidence'))} / ${escapeHtml(productModelW444.selectedCatalogCandidateReasons.slice(0, 3).join(', ') || 'candidate reasons returned')}</div>` : ''}
           <div class="idb-copy">Evidence: ${escapeHtml(arrayValue(productModelW444.evidenceTerms).slice(0, 6).join(', ') || 'No product evidence terms returned.')}</div>
+          ${productModelW444.websiteEvidenceSourceUrls.length ? `<div class="idb-copy">Source URLs: ${escapeHtml(productModelW444.websiteEvidenceSourceUrls.join(', '))}</div>` : ''}
+          ${productModelW444.genericCandidateRejectedReasons.length ? `<div class="idb-copy">Rejected generic: ${escapeHtml(productModelW444.genericCandidateRejectedReasons.slice(0, 3).join(' / '))}</div>` : ''}
           ${productModelW444.rejectedFallbackReason ? `<div class="idb-copy">Blocked fallback: ${escapeHtml(productModelW444.rejectedFallbackReason)}</div>` : ''}
           <div class="idb-chip-row">
             <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(productModelW444.productCandidateSource))}</span>

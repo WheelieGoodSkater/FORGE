@@ -19,9 +19,9 @@ const runner = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/scai_
 const adapter = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/idb_governed_runner_adapter_w144_suitelet.js');
 const pkg = JSON.parse(read('package.json'));
 
-assert(contains(drawer, '// @version      1.0.64'), 'drawer @version must be 1.0.64');
-assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.64';"), 'drawer userscript constant must be 1.0.64');
-assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W458';"), 'drawer block marker must be W458');
+assert(contains(drawer, '// @version      1.0.66'), 'drawer @version must be 1.0.66');
+assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.66';"), 'drawer userscript constant must be 1.0.66');
+assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W460';"), 'drawer block marker must be W460');
 
 assert(contains(adapter, 'createNamingPackFile(request, config, idempotencyToken)'), 'approved adapter must create a naming pack before runner submit');
 assert(contains(adapter, 'custscript_scai_runner_naming_file_id'), 'approved adapter must pass custscript_scai_runner_naming_file_id');
@@ -32,6 +32,14 @@ assert(contains(adapter, 'request.finalNamingAdvisory'), 'adapter must wire LLM/
 assert(contains(adapter, 'sourceKindForEvidencePathW457'), 'adapter must classify candidate evidence sources');
 assert(contains(adapter, "source === 'llm_naming_advisory'"), 'adapter must recognize LLM naming advisory candidates');
 assert(contains(adapter, 'domainCatalogCandidatesW457'), 'adapter must seed resolver catalog candidates when request evidence is sparse');
+assert(contains(adapter, 'isGenericCatalogCandidateW459'), 'adapter must reject generic catalog/product labels before ranking');
+assert(contains(adapter, 'Forklift Truck') && contains(adapter, 'Pallet Truck') && contains(adapter, 'Reach Truck') && contains(adapter, 'Order Picker'), 'adapter must extract industrial equipment website product candidates');
+assert(contains(adapter, 'Crown C-5 Series Forklift') && contains(adapter, 'Crown RC Series Stand-Up Rider Forklift'), 'adapter must seed concrete Crown product-line resolver candidates');
+assert(contains(adapter, 'manufacturable industrial equipment product-line noun'), 'adapter must score industrial equipment product-line nouns');
+assert(contains(adapter, 'productEvidenceConfidence'), 'adapter must emit productEvidenceConfidence telemetry');
+assert(contains(adapter, 'websiteEvidenceSourceUrls'), 'adapter must emit websiteEvidenceSourceUrls');
+assert(contains(adapter, 'genericCandidateRejectedReasons'), 'adapter must emit genericCandidateRejectedReasons');
+assert(contains(adapter, 'missingEvidence'), 'adapter must emit missingEvidence');
 assert(contains(adapter, 'Marinara Sauce') && contains(adapter, 'Tomato Basil Sauce') && contains(adapter, 'Arrabbiata Sauce'), 'Rao\'s resolver candidates must include concrete sauce products');
 assert(contains(adapter, 'Jar and Case Packaging'), 'Rao\'s sauce naming must use sauce-specific packaging, not generic Catalog Product packaging');
 assert(contains(adapter, 'Cook Tomato Sauce Base'), 'Rao\'s sauce naming must use sauce-specific WIP operations');
@@ -59,6 +67,11 @@ assert(contains(runner, 'namingPayloadApplied'), 'runner must keep namingPayload
 assert(contains(runner, 'namingEvidenceSource'), 'runner must pass through namingEvidenceSource telemetry');
 assert(contains(runner, 'catalogCandidates'), 'runner must pass through catalogCandidates telemetry');
 assert(contains(runner, 'selectedCatalogCandidate'), 'runner must pass through selectedCatalogCandidate telemetry');
+assert(contains(runner, 'websiteEvidenceSourceUrls'), 'runner must pass through websiteEvidenceSourceUrls telemetry');
+assert(contains(runner, 'genericCandidateRejectedReasons'), 'runner must pass through genericCandidateRejectedReasons telemetry');
+assert(contains(runner, 'productEvidenceConfidence'), 'runner must pass through productEvidenceConfidence telemetry');
+assert(contains(runner, 'industrialEquipmentNamingPackW460'), 'runner must preserve industrial product naming when naming file loading falls back');
+assert(contains(runner, 'waitForSalesOrderResolutionW460'), 'runner must wait briefly for Sales Order saved-search resolution after CSV import');
 assert(contains(runner, 'websiteCatalogEvidenceUsed'), 'runner must pass through websiteCatalogEvidenceUsed telemetry');
 assert(contains(runner, 'llmCatalogInterpretationUsed'), 'runner must pass through llmCatalogInterpretationUsed telemetry');
 assert(contains(runner, 'deterministicCatalogRankerUsed'), 'runner must pass through deterministicCatalogRankerUsed telemetry');
@@ -191,6 +204,8 @@ assert(contains(drawer, "'Order', 'Demand', 'Buy Inputs', 'Build Batch', 'WIP St
 assert(contains(drawer, "visibleNarrative && visibleNarrative.mode === 'wip'"), 'drawer story rail must render WIP Steps only when WIP is enabled');
 assert(contains(drawer, 'WIP production steps'), 'drawer must show compact WIP production steps');
 assert(contains(drawer, 'Product Expansion Audit'), 'drawer must keep Product Expansion Audit visible above the operational story');
+assert(contains(drawer, '<strong>Fallback:</strong>'), 'drawer Product Expansion Audit must expose fallback truth visibly');
+assert(contains(drawer, 'Rejected generic:'), 'drawer Product Expansion Audit must expose rejected generic candidates');
 assert(contains(drawer, 'Order -> Demand -> Buy Inputs -> Build Batch -> WIP Steps -> Finished Cases'), 'drawer must render compact WIP proof path copy instead of raw browser story text');
 assert(!contains(drawer, 'Planned Operation ${escapeHtml(Number(item.operationIndex || index) + 1)} ${escapeHtml(name)}'), 'drawer must not duplicate planned operation prefixes');
 assert(contains(drawer, 'Core records imported; review WIP diagnostic'), 'drawer ERP Story must truthfully describe WIP diagnostics');

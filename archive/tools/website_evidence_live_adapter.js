@@ -14,7 +14,7 @@ const TRACKING_PARAMS = new Set([
   'msclkid'
 ]);
 const UNSUPPORTED_SCHEMES = new Set(['javascript:', 'data:', 'file:', 'mailto:', 'tel:']);
-const DISCOVERY_LABELS = ['products', 'shop', 'catalog', 'industries', 'solutions', 'services', 'collections', 'bikes', 'equipment', 'dealers', 'stores'];
+const DISCOVERY_LABELS = ['products', 'shop', 'catalog', 'industries', 'solutions', 'services', 'collections', 'bikes', 'equipment', 'forklifts', 'lift trucks', 'pallet trucks', 'warehouse', 'dealers', 'stores'];
 const BLOCKED_STATUS_CODES = new Set([401, 403, 407, 429, 451]);
 const PRODUCT_TERMS = [
   'apparel',
@@ -36,6 +36,31 @@ const PRODUCT_TERMS = [
   'sku',
   'style',
   'variants'
+];
+const INDUSTRIAL_EQUIPMENT_PRODUCT_TERMS = [
+  'forklift',
+  'forklift truck',
+  'forklift trucks',
+  'lift truck',
+  'lift trucks',
+  'pallet truck',
+  'pallet trucks',
+  'reach truck',
+  'reach trucks',
+  'order picker',
+  'order pickers',
+  'tow tractor',
+  'tow tractors',
+  'electric truck',
+  'electric trucks',
+  'internal combustion truck',
+  'internal combustion trucks',
+  'counterbalance truck',
+  'counterbalance trucks',
+  'turret truck',
+  'turret trucks',
+  'very narrow aisle truck',
+  'warehouse equipment'
 ];
 const INDUSTRY_TERMS = [
   'dealer',
@@ -76,6 +101,9 @@ function emptyEvidence() {
     ecommerceSignals: [],
     manufacturingSignals: [],
     distributionSignals: [],
+    productNames: [],
+    productCardNames: [],
+    anchorText: [],
     sourceUrls: []
   };
 }
@@ -175,6 +203,26 @@ function extractNavigationLabels(html) {
   return unique(labels).slice(0, 16);
 }
 
+function extractProductNameCandidates(text) {
+  const source = String(text || '').replace(/\s+/g, ' ');
+  const candidates = [];
+  INDUSTRIAL_EQUIPMENT_PRODUCT_TERMS.forEach((term) => {
+    const pattern = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+    if (pattern.test(source)) candidates.push(term.replace(/\b\w/g, (char) => char.toUpperCase()));
+  });
+  [
+    /\b([A-Z][A-Za-z0-9-]{1,8}\s+Series\s+(?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck|Truck)s?)\b/g,
+    /\b((?:Electric|Internal Combustion|Counterbalance|Rider|Walkie|Walkie Rider|Very Narrow Aisle|Reach-Fork)\s+(?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck|Truck)s?)\b/gi
+  ].forEach((pattern) => {
+    let match = pattern.exec(source);
+    while (match) {
+      candidates.push(decodeHtml(match[1]));
+      match = pattern.exec(source);
+    }
+  });
+  return unique(candidates).slice(0, 16);
+}
+
 function discoverSecondaryUrls(baseUrl, html, maxPages) {
   const discovered = [];
   const anchorPattern = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
@@ -210,6 +258,7 @@ function extractEvidenceFromPage(page) {
   const h2Text = extractTagText(html, 'h2');
   const navigationLabels = extractNavigationLabels(html);
   const searchable = [pageTitle, metaDescription, h1Text.join(' '), h2Text.join(' '), navigationLabels.join(' '), fullText].join(' ');
+  const productNames = extractProductNameCandidates(searchable);
   return {
     pageTitle,
     metaDescription,
@@ -222,6 +271,9 @@ function extractEvidenceFromPage(page) {
     ecommerceSignals: termsFound(searchable, ECOMMERCE_TERMS),
     manufacturingSignals: termsFound(searchable, MANUFACTURING_TERMS),
     distributionSignals: termsFound(searchable, DISTRIBUTION_TERMS),
+    productNames,
+    productCardNames: productNames,
+    anchorText: navigationLabels,
     sourceUrls: [page.url]
   };
 }
@@ -241,6 +293,9 @@ function mergeEvidence(pages) {
       ecommerceSignals: unique(merged.ecommerceSignals.concat(extracted.ecommerceSignals)),
       manufacturingSignals: unique(merged.manufacturingSignals.concat(extracted.manufacturingSignals)),
       distributionSignals: unique(merged.distributionSignals.concat(extracted.distributionSignals)),
+      productNames: unique(merged.productNames.concat(extracted.productNames)).slice(0, 16),
+      productCardNames: unique(merged.productCardNames.concat(extracted.productCardNames)).slice(0, 16),
+      anchorText: unique(merged.anchorText.concat(extracted.anchorText)).slice(0, 24),
       sourceUrls: unique(merged.sourceUrls.concat(extracted.sourceUrls))
     };
   }, emptyEvidence());
@@ -299,7 +354,11 @@ function inferSignals(evidence) {
     apparel_accessories: ['Core Style Color-Size Matrix', 'Apparel and Footwear Style', 'style, size, and channel availability'],
     dealer_hardgoods: ['Bicycle SKU', 'Bicycle Dealer Hardgoods', 'dealer inventory and replenishment readiness'],
     industrial_distribution: ['Distributor SKU', 'Industrial Distribution SKU', 'stock, replenishment, and fulfillment readiness'],
-    industrial_equipment: ['Assembly', 'Industrial Equipment Manufacturing', 'component readiness and assembly promise control']
+    industrial_equipment: [
+      evidence.productNames[0] || 'Assembly',
+      'Industrial Equipment Manufacturing',
+      'component readiness and assembly promise control'
+    ]
   };
   const mapped = productMap[best.laneId] || ['', '', ''];
   return {

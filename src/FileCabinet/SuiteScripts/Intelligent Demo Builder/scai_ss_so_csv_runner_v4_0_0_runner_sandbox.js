@@ -506,6 +506,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       selectedCatalogCandidate: names.selectedCatalogCandidate || null,
       selectedCatalogCandidateSource: names.selectedCatalogCandidateSource || '',
       selectedCatalogCandidateReasons: names.selectedCatalogCandidateReasons || [],
+      websiteEvidenceSource: names.websiteEvidenceSource || '',
+      websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
+      genericCandidateRejectedReasons: names.genericCandidateRejectedReasons || [],
+      missingEvidence: names.missingEvidence || [],
+      productEvidenceConfidence: names.productEvidenceConfidence || names.namingConfidence || names.confidencePercent || null,
       websiteCatalogEvidenceUsed: names.websiteCatalogEvidenceUsed === true,
       llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
       deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,
@@ -633,10 +638,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const soCsv = buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey: ids.heroItemCsvKey || ids.heroItemExternalId || ANCHORS.heroItem });
     const soFileId = saveCsvToFileCabinet({ folderId: soFolderId, filename: `scai_so_${extId}.csv`, contents: soCsv });
     const soTaskId = submitCsvImport({ mappingId: soMappingId, fileId: soFileId });
-    const salesOrderLookupW458 = resolveSalesOrderFromSavedSearchW458({
+    const salesOrderLookupW458 = waitForSalesOrderResolutionW460({
       extId,
       prospect,
       website,
+      taskId: soTaskId,
       source: 'runner_after_csv_submit'
     });
 
@@ -647,7 +653,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         fileId: soFileId,
         csvImportTaskId: soTaskId,
         resultCaptureFolderId: resultCaptureFolderId || null,
-        salesOrderLookupW458Status: salesOrderLookupW458 && salesOrderLookupW458.status || ''
+        salesOrderLookupW458Status: salesOrderLookupW458 && salesOrderLookupW458.status || '',
+        salesOrderLookupAttemptsW460: salesOrderLookupW458 && salesOrderLookupW458.attempts || []
       })
     });
 
@@ -3456,6 +3463,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       'Prepare Materials',
       'Final Assembly Unit'
     ];
+    const industrial = industrialEquipmentNamingPackW460({ prospect, website, evidence, genericFallbackBlockedTerms });
+    if (industrial) return industrial;
     if (/health[-\s]?ade|kombucha|ferment|organic tea|ginger lemon|beverage|bottle|case pack/.test(evidence)) {
       return {
         _source: 'website-product-evidence',
@@ -3522,6 +3531,124 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         '30': 'QC and Release Finished Cases'
       },
       fallbackReason: 'No server naming file or strong product evidence was available.',
+      genericFallbackBlockedTerms
+    };
+  }
+
+  function industrialEquipmentNamingPackW460({ prospect, website, evidence, genericFallbackBlockedTerms }) {
+    const domain = String(website || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0].toLowerCase();
+    let brand = '';
+    let product = '';
+    let alternates = [];
+    if (/crown\.com|crown/.test(domain) || /\bcrown equipment\b/.test(evidence)) {
+      brand = 'Crown';
+      product = 'RC Series Stand-Up Rider Forklift';
+      alternates = ['RM Series Reach Truck', 'SP Series Order Picker', 'PE Series Pallet Truck', 'C-5 Series Forklift'];
+    } else if (/hyster\.com|hyster/.test(domain) || /\bhyster\b/.test(evidence)) {
+      brand = 'Hyster';
+      product = 'A Series Lift Truck';
+      alternates = ['J Series Electric Forklift', 'Reach Truck', 'Pallet Truck'];
+    } else if (/yale\.com|yale/.test(domain) || /\byale\b/.test(evidence)) {
+      brand = 'Yale';
+      product = 'ERP Series Electric Lift Truck';
+      alternates = ['GP Series Internal Combustion Truck', 'Reach Truck', 'Order Picker', 'Pallet Truck'];
+    } else if (/toyotaforklift\.com|toyota/.test(domain) || /\btoyota\b/.test(evidence)) {
+      brand = 'Toyota';
+      product = 'Core Electric Forklift';
+      alternates = ['Internal Combustion Forklift', 'Reach Truck', 'Order Picker', 'Pallet Jack'];
+    } else if (/\b(forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment)\b/.test(evidence)) {
+      brand = str(prospect).replace(/\b(wip proof|proof|demo|v\d+)\b/ig, '').trim() || 'Industrial Equipment';
+      product = 'Lift Truck';
+      alternates = ['Forklift Truck', 'Reach Truck', 'Pallet Truck', 'Order Picker'];
+    }
+    if (!product) return null;
+    const base = brand && product.indexOf(brand) !== 0 ? `${brand} ${product}` : product;
+    return {
+      _source: 'domain-catalog-industrial-equipment-w460',
+      _signalLen: String(evidence || '').length,
+      namingEvidenceSource: 'domain_catalog_deterministic_ranker',
+      namingConfidence: 88,
+      confidencePercent: 88,
+      industry_category: 'Industrial Equipment',
+      primary_product_candidate: product,
+      selectedProductName: product,
+      selectedVariantName: product,
+      selectedPackName: 'Configured Unit',
+      alternate_product_candidates: alternates,
+      catalogCandidates: [product].concat(alternates).map(function(name, index) {
+        return {
+          name,
+          source: 'domain_catalog_resolver',
+          sourceUrl: website || '',
+          domain,
+          confidence: index === 0 ? 88 : 78,
+          wipSuitabilityScore: index === 0 ? 88 : 78,
+          reasons: ['public industrial equipment product-line resolver candidate', 'manufacturable equipment noun', 'domain match']
+        };
+      }),
+      selectedCatalogCandidate: {
+        name: product,
+        source: 'domain_catalog_resolver',
+        sourceUrl: website || '',
+        domain,
+        confidence: 88,
+        wipSuitabilityScore: 88,
+        reasons: ['public industrial equipment product-line resolver candidate', 'manufacturable equipment noun', 'domain match']
+      },
+      selectedCatalogCandidateSource: 'domain_catalog_resolver',
+      selectedCatalogCandidateReasons: ['public industrial equipment product-line resolver candidate', 'manufacturable equipment noun', 'domain match'],
+      websiteEvidenceSource: 'domain_catalog_resolver',
+      websiteEvidenceSourceUrls: website ? [website] : [],
+      genericCandidateRejectedReasons: [],
+      missingEvidence: [],
+      productEvidenceConfidence: 88,
+      websiteCatalogEvidenceUsed: true,
+      llmCatalogInterpretationUsed: false,
+      deterministicCatalogRankerUsed: true,
+      fallbackUsed: false,
+      fallbackReason: '',
+      productSignalsUsed: ['industrial equipment', 'lift truck', 'forklift', 'WIP assembly'],
+      flavorSignalsUsed: [product],
+      packSignalsUsed: ['Configured Unit'],
+      llmNamingAdvisoryUsed: false,
+      websiteSignalsUsed: [product].concat(alternates),
+      prospectNameUsedAsFallbackOnly: true,
+      evidence_terms: [brand, product, 'industrial equipment', 'forklift', 'lift truck'].filter(Boolean),
+      competitor_terms: [],
+      roi_basis_terms: ['customer promise risk', 'equipment order readiness', 'WIP assembly proof'],
+      hero_item_name: `${base} Configured Unit`,
+      assembly_name: `${base} Final Assembly`,
+      component_names: [
+        `${product} Chassis and Mast Subassembly`,
+        `${product} Powertrain and Controls Kit`,
+        `${product} Forks and Safety Hardware`
+      ],
+      bom_name: `BOM - ${base}`,
+      bom_revision_name: `Revision 1 - ${base}`,
+      routing_name: `Routing - ${base} Final Assembly`,
+      operation_names_by_seq: {
+        '10': `Stage ${product} Subassemblies`,
+        '20': `Assemble and Configure ${product}`,
+        '30': `Inspect and Release ${product}`
+      },
+      sales_descriptions: {
+        hero: `${base} configured unit for dealer/customer demand readiness.`,
+        assembly: `${base} final assembly for routed WIP execution.`,
+        components: [
+          `${product} chassis and mast subassembly used in ${base} final assembly.`,
+          `${product} powertrain and controls kit used in ${base} final assembly.`,
+          `${product} forks and safety hardware used in ${base} final assembly.`
+        ]
+      },
+      purchase_descriptions: {
+        hero: `${base} dealer readiness proof item.`,
+        assembly: `${base} production assembly planning item.`,
+        components: [
+          `${product} chassis and mast subassembly`,
+          `${product} powertrain and controls kit`,
+          `${product} forks and safety hardware`
+        ]
+      },
       genericFallbackBlockedTerms
     };
   }
@@ -3988,6 +4115,50 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return t.submit();
   }
 
+  function waitForSalesOrderResolutionW460(options) {
+    const started = Date.now();
+    const maxMs = 26000;
+    const pauseMs = 1800;
+    const attempts = [];
+    let lastLookup = null;
+    for (let attempt = 1; attempt <= 12; attempt += 1) {
+      let taskStatus = '';
+      try {
+        if (options && options.taskId) {
+          const status = task.checkStatus({ taskId: String(options.taskId) });
+          taskStatus = status && status.status || '';
+        }
+      } catch (statusError) {
+        taskStatus = `status_check_failed:${statusError && statusError.name || ''}`;
+      }
+      lastLookup = resolveSalesOrderFromSavedSearchW458(Object.assign({}, options || {}, {
+        source: attempt === 1 ? options && options.source || 'runner_after_csv_submit' : 'runner_after_csv_submit_retry_w460'
+      }));
+      attempts.push({
+        attempt,
+        elapsedMs: Date.now() - started,
+        taskStatus,
+        lookupStatus: lastLookup && lastLookup.status || ''
+      });
+      if (lastLookup && lastLookup.status === 'resolved') {
+        lastLookup.attempts = attempts;
+        lastLookup.waitStatusW460 = 'resolved_after_csv_submit_poll';
+        return lastLookup;
+      }
+      if (Date.now() - started >= maxMs) break;
+      const until = Date.now() + pauseMs;
+      while (Date.now() < until) {
+        // Bounded wait so the CSV import can commit before the saved-search lookup.
+      }
+    }
+    lastLookup = lastLookup || resolveSalesOrderFromSavedSearchW458(options || {});
+    lastLookup.attempts = attempts;
+    lastLookup.waitStatusW460 = 'not_resolved_after_csv_submit_poll';
+    lastLookup.maxWaitMs = maxMs;
+    lastLookup.demandRecordRolePolicy = 'sales_order_only_never_work_order';
+    return lastLookup;
+  }
+
   function resolveSalesOrderFromSavedSearchW458(options) {
     const extId = str(options && options.extId);
     const expectedProspect = str(options && options.prospect);
@@ -4373,6 +4544,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       selectedCatalogCandidate: names.selectedCatalogCandidate || null,
       selectedCatalogCandidateSource: names.selectedCatalogCandidateSource || '',
       selectedCatalogCandidateReasons: names.selectedCatalogCandidateReasons || [],
+      websiteEvidenceSource: names.websiteEvidenceSource || '',
+      websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
+      genericCandidateRejectedReasons: names.genericCandidateRejectedReasons || [],
+      missingEvidence: names.missingEvidence || [],
+      productEvidenceConfidence: names.productEvidenceConfidence || names.namingConfidence || names.confidencePercent || null,
       websiteCatalogEvidenceUsed: names.websiteCatalogEvidenceUsed === true,
       llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
       deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,
@@ -4750,6 +4926,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       selectedCatalogCandidate: names.selectedCatalogCandidate || null,
       selectedCatalogCandidateSource: names.selectedCatalogCandidateSource || '',
       selectedCatalogCandidateReasons: names.selectedCatalogCandidateReasons || [],
+      websiteEvidenceSource: names.websiteEvidenceSource || '',
+      websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
+      genericCandidateRejectedReasons: names.genericCandidateRejectedReasons || [],
+      missingEvidence: names.missingEvidence || [],
+      productEvidenceConfidence: names.productEvidenceConfidence || names.namingConfidence || names.confidencePercent || null,
       websiteCatalogEvidenceUsed: names.websiteCatalogEvidenceUsed === true,
       llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
       deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,

@@ -338,8 +338,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const name = compactText(rawName).replace(/\s+\|\s+.*/, '').replace(/\s+-\s+Shop\b.*/i, '');
     if (!name || name.length < 3 || name.length > 80) return;
     if (/^(home|shop|products|product|catalog|menu|about|learn|subscribe|account|cart|checkout|search|privacy|terms|contact|blog|recipes|locations)$/i.test(name)) return;
-    const lower = name.toLowerCase();
-    if (/^(coffee|cold brew|beverage|case|batch|product|variety pack|product case|cold brew coffee batch|milk and flavor blend)$/i.test(name)) {
+    if (isGenericCatalogCandidateW459(name)) {
       if (!(opts && opts.allowGeneric)) return;
     }
     candidates.push({
@@ -353,6 +352,16 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       wipSuitabilityScore: 0,
       reasons: uniqueList(opts && opts.reasons || [])
     });
+  }
+
+  function isGenericCatalogCandidateW459(value) {
+    return /^(coffee|cold brew|beverage|case|batch|product|products|catalog product|catalog|equipment|industrial equipment|warehouse equipment|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good)$/i.test(compactText(value));
+  }
+
+  function genericCatalogCandidateRejectedReasonW459(value) {
+    const name = compactText(value);
+    if (!name || !isGenericCatalogCandidateW459(name)) return '';
+    return `${name} rejected: generic lane/category label without concrete website product-line evidence`;
   }
 
   function traverseCatalogEvidenceW457(value, path, visit, depth) {
@@ -382,17 +391,37 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       'Pomegranate', 'Kombucha', 'SunSip', 'Prebiotic Soda', 'Classic Kombucha',
       'Flip', 'Greek Yogurt', 'Oatmilk', 'Complete', 'Zero Sugar', 'Mac and Cheese',
       'Cheddy Mac', 'Shella Good', 'Lucky Penne', 'Beef Stick', 'Turkey Stick',
-      'Jalapeno Beef', 'Original Beef'
+      'Jalapeno Beef', 'Original Beef',
+      'Forklift Truck', 'Forklift Trucks', 'Lift Truck', 'Lift Trucks',
+      'Pallet Truck', 'Pallet Trucks', 'Reach Truck', 'Reach Trucks',
+      'Order Picker', 'Order Pickers', 'Tow Tractor', 'Tow Tractors',
+      'Electric Truck', 'Electric Trucks', 'Internal Combustion Truck',
+      'Internal Combustion Trucks', 'Counterbalance Truck', 'Counterbalance Trucks',
+      'Turret Truck', 'Turret Trucks', 'Very Narrow Aisle Truck',
+      'Very Narrow Aisle Trucks', 'Rider Pallet Truck', 'Walkie Pallet Truck',
+      'Reach-Fork Truck', 'SP Series Order Picker', 'C-5 Series', 'C-G Series',
+      'RC Series', 'RM Series', 'RR/RD Series', 'TSP Series', 'PE Series', 'WP Series'
     ];
     known.forEach((term) => {
       const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/o/g, '[oō]'), 'i');
       if (re.test(cleaned)) phrases.push(term);
     });
+    [
+      /\b([A-Z][A-Za-z0-9-]{1,8}\s+Series\s+(?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck|Truck)s?)\b/g,
+      /\b((?:Electric|Internal Combustion|Counterbalance|Rider|Walkie|Walkie Rider|Very Narrow Aisle|Reach-Fork)\s+(?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck|Truck)s?)\b/gi,
+      /\b((?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck)s?)\b/gi
+    ].forEach((pattern) => {
+      let match = pattern.exec(cleaned);
+      while (match) {
+        phrases.push(match[1]);
+        match = pattern.exec(cleaned);
+      }
+    });
     cleaned.split(/[\n\r|•;]+/).forEach((chunk) => {
       const candidate = compactText(chunk).replace(/^(shop|category|product|collection|nav|menu|title|name):\s*/i, '');
-      if (/^[A-Z0-9][A-Za-z0-9&' -]{2,42}$/.test(candidate) && /\s|NOLA|Poppi|Chobani|Goodles|Chomps/i.test(candidate)) phrases.push(candidate);
+      if (/^[A-Z0-9][A-Za-z0-9&'\/ -]{2,56}$/.test(candidate) && /\s|NOLA|Poppi|Chobani|Goodles|Chomps|Forklift|Truck|Picker|Tractor|Series/i.test(candidate)) phrases.push(candidate);
     });
-    return uniqueList(phrases).map(titleCaseEvidencePhraseW457);
+    return uniqueList(phrases).map(titleCaseEvidencePhraseW457).filter((phrase) => !isGenericCatalogCandidateW459(phrase));
   }
 
   function domainCatalogCandidatesW457(website) {
@@ -418,7 +447,28 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/chomps\.com/.test(domain)) {
       return ['Original Beef Stick', 'Jalapeno Beef Stick', 'Original Turkey Stick', 'Italian Style Beef Stick'];
     }
+    if (/crown\.com|crown/.test(domain)) {
+      return ['Crown C-5 Series Forklift', 'Crown RC Series Stand-Up Rider Forklift', 'Crown RM Series Reach Truck', 'Crown SP Series Order Picker', 'Crown PE Series Pallet Truck'];
+    }
+    if (/hyster\.com|hyster/.test(domain)) {
+      return ['Hyster A Series Lift Truck', 'Hyster J Series Electric Forklift', 'Hyster Hyster Tracker Forklift', 'Hyster Reach Truck', 'Hyster Pallet Truck'];
+    }
+    if (/yale\.com|yale/.test(domain)) {
+      return ['Yale ERP Series Electric Lift Truck', 'Yale GP Series Internal Combustion Truck', 'Yale Reach Truck', 'Yale Order Picker', 'Yale Pallet Truck'];
+    }
+    if (/toyotaforklift\.com|toyota/.test(domain)) {
+      return ['Toyota Core Electric Forklift', 'Toyota Internal Combustion Forklift', 'Toyota Reach Truck', 'Toyota Order Picker', 'Toyota Pallet Jack'];
+    }
     return [];
+  }
+
+  function evidenceSourceUrlsW459(request, website) {
+    const urls = [];
+    traverseCatalogEvidenceW457(request, 'request', (text, path) => {
+      if (/url|sourceurls|normalizedurl|inputurl/i.test(path || '') && /^https?:\/\//i.test(text)) urls.push(text);
+    }, 0);
+    if (website) urls.push(website);
+    return uniqueList(urls).slice(0, 10);
   }
 
   function buildCatalogCandidatesW457(request, website, namingAuthority) {
@@ -459,6 +509,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     }));
     const seen = {};
     return candidates.filter((candidate) => {
+      if (isGenericCatalogCandidateW459(candidate.name)) return false;
       const key = candidate.name.toLowerCase();
       if (seen[key]) {
         seen[key].sources = uniqueList([seen[key].source, candidate.source].concat(seen[key].sources || []));
@@ -479,7 +530,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       const lower = name.toLowerCase();
       let score = Number(candidate.confidence || 0);
       const reasons = (candidate.reasons || []).slice(0);
-      if (/^(coffee|cold brew|variety pack|product|catalog product|case|batch|beverage|sauce|pasta)$/i.test(name)) {
+      if (isGenericCatalogCandidateW459(name) || /^(coffee|cold brew|variety pack|product|catalog product|case|batch|beverage|sauce|pasta)$/i.test(name)) {
         score -= 45;
         reasons.push('penalized generic product term');
       }
@@ -491,9 +542,21 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         score += 22;
         reasons.push('plausible inputs and WIP operations');
       }
+      if (/\b(forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|electric truck|internal combustion truck|counterbalance|turret truck|very narrow aisle|warehouse equipment|series)\b/i.test(lower)) {
+        score += 30;
+        reasons.push('manufacturable industrial equipment product-line noun');
+      }
+      if (/\b[a-z0-9-]+\s+series\b/i.test(lower)) {
+        score += 18;
+        reasons.push('concrete public product series signal');
+      }
       if (/manufactur|wip|bom|routing|work order|beverage|food|case|sauce|pasta/.test(scenario) && /\b(kombucha|soda|coffee|espresso|matcha|hojicha|syrup|yogurt|mac|penne|rigate|spaghetti|pasta|stick|blend|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|sauce)\b/i.test(lower)) {
         score += 16;
         reasons.push('fits WIP manufacturing scenario');
+      }
+      if (/manufactur|wip|bom|routing|work order|warehouse equipment|industrial equipment|lift truck|forklift/.test(scenario) && /\b(forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|truck|equipment|series)\b/i.test(lower)) {
+        score += 18;
+        reasons.push('fits industrial WIP assembly scenario');
       }
       if (candidate.source === 'llm_naming_advisory') {
         score += 10;
@@ -502,12 +565,14 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       if (/bluebottle|blue bottle/.test(website) && /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend)\b/i.test(lower)) score += 12;
       if (/health-ade|healthade/.test(website) && /\b(kombucha|sunsip|ginger lemon|pink lady apple|pomegranate)\b/i.test(lower)) score += 12;
       if (/raos|rao'?s/.test(website) && /\b(marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti)\b/i.test(lower)) score += 18;
+      if (/hyster|crown/.test(website) && /\b(forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|truck|series)\b/i.test(lower)) score += 16;
       return Object.assign({}, candidate, {
         confidence: Math.max(1, Math.min(99, Math.round(score))),
         wipSuitabilityScore: Math.max(1, Math.min(99, Math.round(score))),
         reasons: uniqueList(reasons)
       });
-    }).sort((a, b) => Number(b.wipSuitabilityScore || 0) - Number(a.wipSuitabilityScore || 0));
+    }).filter((candidate) => !isGenericCatalogCandidateW459(candidate.name))
+      .sort((a, b) => Number(b.wipSuitabilityScore || 0) - Number(a.wipSuitabilityScore || 0));
   }
 
   function productCategoryW457(product) {
@@ -522,6 +587,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/yogurt|oatmilk/.test(lower)) return 'cultured dairy';
     if (/mac|penne|pasta/.test(lower)) return 'packaged pasta';
     if (/stick|beef|turkey/.test(lower)) return 'meat snack';
+    if (/forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series/.test(lower)) return 'industrial equipment';
     return '';
   }
 
@@ -590,6 +656,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         operations: { '10': 'Prepare Protein Blend', '20': `Form and Package ${product}`, '30': `Case Pack and Release ${product}` }
       };
     }
+    if (/forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series/.test(lower)) {
+      return {
+        components: [`${product} Chassis and Mast Subassembly`, `${product} Powertrain and Controls Kit`, `${product} Forks and Safety Hardware`],
+        operations: { '10': `Stage ${product} Subassemblies`, '20': `Assemble and Configure ${product}`, '30': `Inspect and Release ${product}` }
+      };
+    }
     return {
       components: [`${product} Input Base`, `${product} Process Blend`, `${product} Packaging`],
       operations: { '10': `Prepare ${product}`, '20': `Fill and Pack ${product}`, '30': 'QC and Release Finished Cases' }
@@ -615,8 +687,15 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const fallbackReason = fallbackUsed
       ? 'No website, resolver, product-list, page-text, or LLM naming advisory catalog candidate was available; deterministic fallback used.'
       : '';
+    const websiteEvidenceSourceUrls = evidenceSourceUrlsW459(request, website);
+    const genericCandidateRejectedReasons = uniqueList([
+      request && request.productCandidate,
+      request && request.product,
+      request && request.demoPath && request.demoPath.productSeed,
+      request && request.namingAuthority && request.namingAuthority.productSeed
+    ].map(genericCatalogCandidateRejectedReasonW459).filter(Boolean));
     const brand = brandFromWebsiteOrProspectW457(website, prospect);
-    const catalogProduct = selectedCatalogCandidate ? selectedCatalogCandidate.name : (compactText(request && request.productCandidate) || 'Catalog Product');
+    const catalogProduct = selectedCatalogCandidate ? selectedCatalogCandidate.name : 'Catalog Product';
     const product = catalogProduct;
     const brandProduct = /^\s*$/i.test(brand) || new RegExp(`^${brand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(product)
       ? product
@@ -633,7 +712,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       { pattern: /\bsoda\b/g, label: 'soda' },
       { pattern: /\byogurt\b/g, label: 'yogurt' },
       { pattern: /\bmac|pasta|penne\b/g, label: 'packaged pasta' },
-      { pattern: /\bstick|beef|turkey\b/g, label: 'meat snack' }
+      { pattern: /\bstick|beef|turkey\b/g, label: 'meat snack' },
+      { pattern: /\bforklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series\b/g, label: 'industrial equipment' }
     ]);
     const flavorSignalsUsed = uniqueList([product].concat((selectedCatalogCandidate && selectedCatalogCandidate.reasons || []).filter((reason) => /concrete/i.test(reason))));
     const packSignalsUsed = ['Case'];
@@ -651,6 +731,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       selectedCatalogCandidate,
       selectedCatalogCandidateSource: selectedCatalogCandidate && selectedCatalogCandidate.source || 'deterministic_fallback',
       selectedCatalogCandidateReasons: selectedCatalogCandidate && selectedCatalogCandidate.reasons || [],
+      websiteEvidenceSource: websiteEvidenceSourceUrls.length ? 'request_website_evidence_payload' : 'none',
+      websiteEvidenceSourceUrls,
+      genericCandidateRejectedReasons,
       websiteCatalogEvidenceUsed,
       llmCatalogInterpretationUsed,
       deterministicCatalogRankerUsed,
@@ -663,10 +746,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       websiteSignalsUsed: uniqueList(rankedCatalogCandidates.map((candidate) => candidate.name)),
       prospectNameUsedAsFallbackOnly: true,
       missingEvidence: fallbackReason ? ['website catalog product candidate'] : [],
+      productEvidenceConfidence: namingConfidence,
       selectedProductName: product,
       selectedVariantName: product,
       selectedPackName: 'Case',
-      industry_category: productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId),
+      industry_category: productCategoryW457(product) === 'industrial equipment'
+        ? 'Industrial Equipment'
+        : (productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId)),
       primary_product_candidate: product,
       alternate_product_candidates: rankedCatalogCandidates.slice(1, 7).map((candidate) => candidate.name),
       evidence_terms: uniqueList([brand, product, productCategoryW457(product)].concat(productSignalsUsed)),

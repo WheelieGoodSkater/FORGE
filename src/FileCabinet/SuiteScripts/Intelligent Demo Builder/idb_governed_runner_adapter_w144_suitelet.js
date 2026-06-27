@@ -5,7 +5,7 @@
  * @NScriptType Suitelet
  */
 define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
-  const ADAPTER_VERSION = 'w144-governed-sandbox-queue-submit-pilot-behind-server-flags';
+  const ADAPTER_VERSION = 'w465-governed-adapter-product-evidence-runtime-marker';
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
 
@@ -72,7 +72,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         : buildAdapterResult(requestParsed.value, runnerConfig, operatorGateParsed.value, requestParsed.errors.concat(operatorGateParsed.errors));
 
       log.audit({
-        title: 'IDB governed runner adapter W144',
+        title: 'IDB governed runner adapter W465',
         details: JSON.stringify({
           version: ADAPTER_VERSION,
           action: action || 'queue_submit',

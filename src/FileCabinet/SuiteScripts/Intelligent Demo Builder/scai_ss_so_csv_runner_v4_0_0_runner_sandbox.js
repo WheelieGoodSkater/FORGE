@@ -52,9 +52,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v4.0.0-runner-sandbox';
+  const VERSION = 'v4.0.0-runner-sandbox-w465-product-evidence-wip-off';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w455-browser-proven-naming-routing-import';
+  const RELEASE_TRANCHE = 'w465-deployed-product-evidence-wip-off-sidecar-truth';
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
 

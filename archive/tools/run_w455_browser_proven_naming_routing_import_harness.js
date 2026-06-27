@@ -19,10 +19,11 @@ const runner = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/scai_
 const adapter = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/idb_governed_runner_adapter_w144_suitelet.js');
 const pkg = JSON.parse(read('package.json'));
 
-assert(contains(drawer, '// @version      1.0.67'), 'drawer @version must be 1.0.67');
-assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.67';"), 'drawer userscript constant must be 1.0.67');
-assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W463';"), 'drawer block marker must move beyond W460');
-assert(contains(drawer, 'W463 result-capture export and website product naming active'), 'drawer installed marker must visibly identify the W463 sidecar/product block');
+assert(!contains(drawer, 'Drawer 1.0.67 / W463'), 'old installed drawer marker 1.0.67 / W463 must not be accepted');
+assert(contains(drawer, '// @version      1.0.68'), 'drawer @version must be 1.0.68');
+assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.68';"), 'drawer userscript constant must be 1.0.68');
+assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W465';"), 'drawer block marker must advance to W465');
+assert(contains(drawer, 'W465 deployed website product evidence and WIP-off sidecar truth active'), 'drawer installed marker must visibly identify the W465 sidecar/product deployment block');
 
 assert(contains(adapter, 'createNamingPackFile(request, config, idempotencyToken)'), 'approved adapter must create a naming pack before runner submit');
 assert(contains(adapter, 'custscript_scai_runner_naming_file_id'), 'approved adapter must pass custscript_scai_runner_naming_file_id');

@@ -2590,14 +2590,18 @@
       arrayValue(extracted.productCategoryTerms).join(' '),
       intake && intake.websiteEvidence
     ].join(' ');
-    const family = /\b(chip|chips|kettle|snack|pretzel|popcorn)\b/i.test(text)
+    const family = /\b(kettle|grinder|coffee gear|mug|drinkware|scale|french press)\b/i.test(text)
+      ? 'Coffee gear hardgoods'
+      : /\b(fire pit|fire pits|smokeless fire|outdoor cooking|pizza oven|griddle)\b/i.test(text)
+        ? 'Outdoor fire pit hardgoods'
+        : /\b(chip|chips|snack|pretzel|popcorn)\b/i.test(text)
       ? 'Packaged snacks'
       : /\b(beverage|drink|juice|tea|coffee)\b/i.test(text)
         ? 'Packaged beverages'
         : /\b(food|grocery|retail|cpg|consumer goods)\b/i.test(text)
           ? 'Packaged food and beverage'
           : '';
-    const productSuffix = /\b(chip|chips|kettle)\b/i.test(text) ? 'Chips' : /\b(pretzel|pretzels)\b/i.test(text) ? 'Pretzels' : '';
+    const productSuffix = /\b(chip|chips)\b/i.test(text) ? 'Chips' : /\b(pretzel|pretzels)\b/i.test(text) ? 'Pretzels' : '';
     const cleaned = uniqueValues(productLike.map((value) => {
       let name = value
         .replace(/\b(limited batch|limited edition|new|products?)\b/ig, ' ')
@@ -6832,7 +6836,12 @@
   function confirmedBuildRequestJsonV1(state, lane, pageContext, recommendation) {
     const buildPacket = idbBuildPacketV1(state, lane, pageContext, recommendation);
     const handoffPacket = dccRunnerHandoffPacketV1(state, lane, pageContext, recommendation);
-    const productionIntake = buildPacket.productionConsultantIntake || productionConsultantIntakeV1(state, lane, websiteProductNamingEvidence(state, lane));
+    const intake = normalizedIntake(state);
+    const namingEvidence = websiteProductNamingEvidence(state, lane);
+    const websiteEvidenceV1 = state && state.websiteEvidenceV1 || null;
+    const websiteEvidenceUx = websiteEvidenceUxModel(state, lane);
+    const websiteProductCandidates = websiteProductEvidenceCandidatesW424(websiteEvidenceV1, intake);
+    const productionIntake = buildPacket.productionConsultantIntake || productionConsultantIntakeV1(state, lane, namingEvidence);
     const operatingMode = resolveBuildOperatingModeW214(state, lane, pageContext, recommendation, {
       source: 'confirmed_build_request'
     });
@@ -6907,6 +6916,40 @@
       productSeed: buildPacket.identity.productSeed || '',
       productFamily: buildPacket.identity.productFamily || '',
       demandMoment: buildPacket.identity.demandMoment || '',
+      websiteEvidence: {
+        schema: 'idb.request_website_evidence_payload.v1',
+        source: 'drawer_confirmed_request',
+        suppliedText: intake.websiteEvidence || '',
+        websiteEvidenceV1,
+        websiteEvidenceUx,
+        productNamingEvidence: namingEvidence,
+        productCandidates: websiteProductCandidates.productCandidates || [],
+        productSeed: websiteProductCandidates.productSeed || namingEvidence.productSeed || '',
+        productFamily: websiteProductCandidates.productFamily || namingEvidence.productFamily || '',
+        demandMoment: websiteProductCandidates.demandMoment || namingEvidence.demandMoment || '',
+        sourceUrls: websiteEvidenceV1 && websiteEvidenceV1.sourceUrls || []
+      },
+      productEvidence: {
+        schema: 'idb.request_product_evidence_payload.v1',
+        productSeed: websiteProductCandidates.productSeed || namingEvidence.productSeed || '',
+        productFamily: websiteProductCandidates.productFamily || namingEvidence.productFamily || '',
+        demandMoment: websiteProductCandidates.demandMoment || namingEvidence.demandMoment || '',
+        productCandidates: websiteProductCandidates.productCandidates || [],
+        authority: namingEvidence.authority || '',
+        source: namingEvidence.source || '',
+        evidence: namingEvidence.evidence || ''
+      },
+      groundedProductEvidence: {
+        schema: 'idb.request_grounded_product_evidence_payload.v1',
+        websiteOwnedFields: ['productSeed', 'productFamily', 'demandMoment', 'productCandidates'],
+        notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach'],
+        productCandidates: websiteProductCandidates.productCandidates || [],
+        selectedProductSeed: websiteProductCandidates.productSeed || namingEvidence.productSeed || '',
+        selectedProductFamily: websiteProductCandidates.productFamily || namingEvidence.productFamily || ''
+      },
+      websiteEvidenceV1,
+      websiteResolverOutput: websiteEvidenceV1,
+      websiteEvidenceUx,
       demoPath: {
         laneId: buildPacket.stateAuthority.exportedLaneId || buildPacket.stateAuthority.confirmedLaneId || buildPacket.stateAuthority.selectedLaneId,
         laneName: buildPacket.stateAuthority.exportedLaneName || buildPacket.stateAuthority.confirmedLaneName || buildPacket.stateAuthority.selectedLaneName,
@@ -11867,6 +11910,61 @@
         httpOk: response.ok
       }, parsed || {});
     })).catch((error) => adapterTimeoutEnvelopeW461('poll', requestEnvelope, error));
+  }
+
+  function drawerSafePollExceptionResultW464(state, error, options) {
+    const opts = options || {};
+    const runner = state && state.integratedBuildRunnerResult || {};
+    const capture = runner.resultCapture || {};
+    const message = error && error.message ? error.message : String(error || 'Drawer poll failed before refresh completed.');
+    const shortMessage = message.slice(0, 240);
+    const patchedCapture = Object.assign({}, capture, {
+      status: firstNonBlank(capture.status, 'polling_pending'),
+      lookupStatus: 'drawer_poll_exception_waiting_for_retry',
+      previousLookupStatus: firstNonBlank(capture.lookupStatus, capture.status),
+      drawerPollException: true,
+      drawerPollExceptionAt: nowIso(),
+      drawerPollExceptionAction: opts.actionId || 'check_runner_result',
+      drawerPollExceptionMessage: shortMessage,
+      runnerTaskId: firstNonBlank(capture.runnerTaskId, runner.runnerTaskId),
+      idempotencyToken: firstNonBlank(capture.idempotencyToken, runner.idempotencyToken),
+      sourceRequestId: firstNonBlank(capture.sourceRequestId, runner.sourceRequestId),
+      buildAttemptId: firstNonBlank(capture.buildAttemptId, runner.buildAttemptId),
+      submittedAt: firstNonBlank(capture.submittedAt, runner.submittedAt),
+      terminalStatus: capture.terminalStatus || ''
+    });
+    const patchedRunner = Object.assign({}, runner, {
+      status: firstNonBlank(runner.status, 'polling_pending'),
+      drawerPollException: true,
+      drawerPollExceptionAt: patchedCapture.drawerPollExceptionAt,
+      drawerPollExceptionMessage: shortMessage,
+      resultCapture: patchedCapture,
+      finalGeneratedNamesJson: runner.finalGeneratedNamesJson || null,
+      activeOpenLinks: 0
+    });
+    return {
+      schema: 'forge.w464.drawer-safe-poll-exception-result.v1',
+      status: 'drawer_poll_exception_waiting_for_retry',
+      message: shortMessage,
+      statePatch: {
+        integratedBuildRunnerResult: patchedRunner
+      },
+      preservedStaleResultRejection: {
+        staleRejected: capture.staleRejected === true,
+        terminalStatus: patchedCapture.terminalStatus,
+        terminalStaleFailure: capture.terminalStatus === 'stale_result_capture_rejected_after_wait' || runner.status === 'stale_result_capture_rejected_after_wait',
+        terminalNotFoundFailure: capture.terminalStatus === 'result_capture_not_found_after_wait' || runner.status === 'result_capture_not_found_after_wait',
+        latestRejectedFile: capture.latestRejectedFile || runner.latestRejectedFile || null,
+        expectedProvenance: capture.expectedProvenance || runner.expectedProvenance || null
+      },
+      noRegression: {
+        noDrawerWrites: true,
+        noDrawerTransactionWrites: true,
+        noDrawerCreatedRecords: true,
+        terminalFailureNotInvented: patchedCapture.terminalStatus === '',
+        activeOpenLinksBeforeImport: 0
+      }
+    };
   }
 
   function buildReturnPollRefreshControlSurfaceV1(state, lane, pageContext, recommendation, options) {
@@ -29819,6 +29917,10 @@
       selectedProduct: productModel.primaryProductCandidate,
       productCandidates: productModel,
       resultCaptureSourceW462,
+      sidecarImportValidationW464: firstNonBlankObject(
+        runner.sidecarImportValidationW464,
+        capture.sidecarImportValidationW464
+      ),
       resultCaptureStatusTrailW462: {
         schema: 'idb.w462-result-capture-status-trail.v1',
         currentStatus: firstNonBlank(capture.status, runner.status),
@@ -30589,10 +30691,12 @@
     });
     root.querySelectorAll('[data-idb-build-return-action]').forEach((button) => {
       button.addEventListener('click', async () => {
+        const originalButtonText = button.textContent;
+        let actionId = button.getAttribute('data-idb-build-return-action') || '';
+        try {
         const pageContext = currentPageContext();
         const lane = getLane(state);
         const recommendation = recommendMove(lane, pageContext);
-        const actionId = button.getAttribute('data-idb-build-return-action');
         const adapterResult = state.integratedBuildRunnerResult || null;
         const normalizedAdapterResult = normalizeApprovedServerAdapterTransportResponseV1(adapterResult, {
           pollAttempted: actionId === 'check_runner_result'
@@ -30758,9 +30862,26 @@
                   noActiveOpenLinksWithoutRealUrls: true
                 });
               } else {
+                const pendingCapture = state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.resultCapture || {};
+                state.integratedBuildRunnerResult = Object.assign({}, state.integratedBuildRunnerResult || {}, {
+                  sidecarImportValidationW464: {
+                    schema: 'idb.w464-sidecar-import-validation-truth.v1',
+                    status: 'terminal_capture_found_import_validation_pending',
+                    reason: sidecarImport.reason || 'Completed runner result capture was found, but display import validation is still pending.',
+                    sourceFileId: firstNonBlank(pendingCapture.sourceFileId, state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.sourceFileId, pendingCapture.fileId, state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.fileId),
+                    sourceFileName: firstNonBlank(pendingCapture.sourceFileName, state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.sourceFileName, pendingCapture.fileName, state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.fileName),
+                    resultCaptureCursor: firstNonBlank(pendingCapture.resultCaptureCursor, state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.resultCaptureCursor),
+                    lookupStatus: firstNonBlank(pendingCapture.lookupStatus, state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.lookupStatus, pendingCapture.status, state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.status),
+                    latestRejectedFile: pendingCapture.latestRejectedFile || state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.latestRejectedFile || null,
+                    expectedProvenance: pendingCapture.expectedProvenance || state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.expectedProvenance || null,
+                    noDrawerWrites: true,
+                    noDrawerTransactionWrites: true
+                  }
+                });
                 trace('runner_sidecar_brand_records_import_skipped_on_refresh', {
                   status: sidecarImport.status,
                   reason: sidecarImport.reason || '',
+                  sidecarImportValidationW464: state.integratedBuildRunnerResult.sidecarImportValidationW464,
                   returnedNames: sidecarImport.returnedNames || [],
                   noDrawerWrites: true,
                   noDrawerTransactionWrites: true
@@ -30884,6 +31005,28 @@
           noActiveOpenLinksWithoutRealUrls: true
         });
         draw(root, state);
+        } catch (err) {
+          const recovery = drawerSafePollExceptionResultW464(state, err, { actionId });
+          if (recovery.statePatch && recovery.statePatch.integratedBuildRunnerResult) {
+            state.integratedBuildRunnerResult = recovery.statePatch.integratedBuildRunnerResult;
+          }
+          state.pageContext = currentPageContext();
+          saveState(state);
+          trace('w464_drawer_poll_exception_recovered', {
+            actionId,
+            status: recovery.status,
+            message: recovery.message,
+            preservedStaleResultRejection: recovery.preservedStaleResultRejection,
+            noDrawerWrites: true,
+            noDrawerTransactionWrites: true,
+            noActiveOpenLinksWithoutRealUrls: true
+          });
+          if (button) {
+            button.disabled = false;
+            button.textContent = originalButtonText || 'Refresh build status';
+          }
+          draw(root, state);
+        }
       });
     });
     root.querySelectorAll('[data-idb-action]').forEach((button) => {
@@ -31825,6 +31968,7 @@
       readLastRunSnapshotW446,
       restoreLastRunSnapshotW446,
       w444TroubleshootExportPayload,
+      drawerSafePollExceptionResultW464,
       drawerWidthContractW444,
       clearRunStateW444,
       industryAwareInputLabelW443,

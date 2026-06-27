@@ -542,7 +542,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     // 6) Manufacturing setup: attach BOM, then repair/reuse WIP routing before Work Order creation.
     let woId = null;
-    let workOrderTelemetry = { status: finalEnableManufacturing ? 'not-attempted' : 'manufacturing-disabled' };
+    let workOrderTelemetry = finalEnableManufacturing
+      ? (effectiveEnableWip
+        ? { status: 'not-attempted' }
+        : buildWipDisabledWorkOrderTelemetryW463({
+          extId,
+          assemblyId: ids.assemblyId,
+          bomId: ids.bomId,
+          bomRevId: ids.bomRevId,
+          subsidiaryId,
+          locationId
+        }))
+      : { status: 'manufacturing-disabled' };
     let routingResult = null;
     let routingId = null;
     if (finalEnableManufacturing && ids.assemblyId && ids.bomId) {
@@ -586,49 +597,61 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         log.audit({ title: `WIP not enabled (skipping routing) [${VERSION}]`, details: JSON.stringify({ enableWipRaw, enableWip, effectiveEnableWip, enableManufacturing: finalEnableManufacturing, requestedWipTargetMode, wipTargetMode, wipHandshakeAction }) });
       }
 
-      try {
-        woId = createWorkOrder({
+      if (effectiveEnableWip) {
+        try {
+          woId = createWorkOrder({
+            assemblyId: ids.assemblyId,
+            subsidiaryId,
+            locationId,
+            bomId: ids.bomId,
+            bomRevId: ids.bomRevId,
+            routingId,
+            enableWip: effectiveEnableWip,
+            quantity: 10,
+            memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded`
+          });
+          const workOrderResult = typeof woId === 'object' && woId ? woId : { id: woId, telemetry: null };
+          woId = Number(workOrderResult.id || 0) || null;
+          workOrderTelemetry = Object.assign({
+            status: workOrderResult && workOrderResult.telemetry && workOrderResult.telemetry.status || 'created',
+            woId,
+            workOrderId: woId,
+            effectiveEnableWip
+          }, workOrderResult.telemetry || {});
+          const workOrderLineCleanupW457 = cleanWorkOrderLineDescriptionsW457({
+            workOrderId: woId,
+            componentIds: [ids.comp1Id, ids.comp2Id, ids.comp3Id],
+            componentNames: names.component_names || [],
+            assemblyName: names.assembly_name || names.hero_item_name || prospect
+          });
+          workOrderTelemetry.workOrderLineCleanupW457 = workOrderLineCleanupW457;
+          log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId, effectiveEnableWip, workOrderTelemetry, workOrderLineCleanupW457 }) });
+        } catch (woError) {
+          workOrderTelemetry = {
+            status: 'best_effort_failed',
+            failureType: 'legacy_core_work_order_failure',
+            errorName: woError && woError.name || '',
+            errorMessage: woError && woError.message || String(woError || ''),
+            assemblyId: Number(ids.assemblyId || 0),
+            bomId: Number(ids.bomId || 0),
+            bomRevId: Number(ids.bomRevId || 0),
+            routingId: routingId ? Number(routingId) : null,
+            subsidiaryId: Number(subsidiaryId || 0),
+            locationId: Number(locationId || 0),
+            attempts: woError && woError.workOrderAttempts || []
+          };
+          log.error({ title: `Work Order best-effort failure W453 legacy core [${VERSION}]`, details: JSON.stringify(workOrderTelemetry) });
+        }
+      } else {
+        workOrderTelemetry = buildWipDisabledWorkOrderTelemetryW463({
+          extId,
           assemblyId: ids.assemblyId,
-          subsidiaryId,
-          locationId,
           bomId: ids.bomId,
           bomRevId: ids.bomRevId,
-          routingId,
-          enableWip: effectiveEnableWip,
-          quantity: 10,
-          memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded`
+          subsidiaryId,
+          locationId
         });
-        const workOrderResult = typeof woId === 'object' && woId ? woId : { id: woId, telemetry: null };
-        woId = Number(workOrderResult.id || 0) || null;
-        workOrderTelemetry = Object.assign({
-          status: workOrderResult && workOrderResult.telemetry && workOrderResult.telemetry.status || 'created',
-          woId,
-          workOrderId: woId,
-          effectiveEnableWip
-        }, workOrderResult.telemetry || {});
-        const workOrderLineCleanupW457 = cleanWorkOrderLineDescriptionsW457({
-          workOrderId: woId,
-          componentIds: [ids.comp1Id, ids.comp2Id, ids.comp3Id],
-          componentNames: names.component_names || [],
-          assemblyName: names.assembly_name || names.hero_item_name || prospect
-        });
-        workOrderTelemetry.workOrderLineCleanupW457 = workOrderLineCleanupW457;
-        log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId, effectiveEnableWip, workOrderTelemetry, workOrderLineCleanupW457 }) });
-      } catch (woError) {
-        workOrderTelemetry = {
-          status: 'best_effort_failed',
-          failureType: 'legacy_core_work_order_failure',
-          errorName: woError && woError.name || '',
-          errorMessage: woError && woError.message || String(woError || ''),
-          assemblyId: Number(ids.assemblyId || 0),
-          bomId: Number(ids.bomId || 0),
-          bomRevId: Number(ids.bomRevId || 0),
-          routingId: routingId ? Number(routingId) : null,
-          subsidiaryId: Number(subsidiaryId || 0),
-          locationId: Number(locationId || 0),
-          attempts: woError && woError.workOrderAttempts || []
-        };
-        log.error({ title: `Work Order best-effort failure W453 legacy core [${VERSION}]`, details: JSON.stringify(workOrderTelemetry) });
+        log.audit({ title: `Work Order skipped because WIP is disabled W463 [${VERSION}]`, details: JSON.stringify(workOrderTelemetry) });
       }
     } else {
       log.audit({ title: `Manufacturing flow disabled [${VERSION}]`, details: JSON.stringify({ enableManufacturing: finalEnableManufacturing, extId, heroItemId: ids.heroItemId }) });
@@ -703,10 +726,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         requestedWipTargetMode,
         wipTargetMode,
         wipHandshakeAction,
-        routingDecision: routingResult ? routingResult.decision : (enableWip ? 'requested-no-result' : 'wip-disabled'),
+        routingDecision: routingResult ? routingResult.decision : (effectiveEnableWip ? 'requested-no-result' : 'wip-disabled'),
         routingId,
         existingRoutingId: routingResult ? routingResult.existingRoutingId : null,
-        attachResult: routingResult ? routingResult.attachResult : (enableWip ? 'not-returned' : 'not-attempted'),
+        attachResult: routingResult ? routingResult.attachResult : (effectiveEnableWip ? 'not-returned' : 'not-attempted'),
         chosenCenters: routingResult && routingResult.chosen ? routingResult.chosen.centers : [],
         chosenTemplates: routingResult && routingResult.chosen ? routingResult.chosen.templates : [],
         namingFileId: namingFileId || null,
@@ -1965,7 +1988,42 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   const WORK_ORDER_WIP_FIELD_CANDIDATES_W455 = ['iswip', 'wip', 'iswipworkorder', 'wipworkorder', 'manufacturingmode'];
 
+  function buildWipDisabledWorkOrderTelemetryW463(args) {
+    args = args || {};
+    return {
+      status: 'not_requested_wip_disabled',
+      failureType: '',
+      effectiveEnableWip: false,
+      enableWipRequested: false,
+      assemblyId: Number(args.assemblyId || 0),
+      bomId: Number(args.bomId || 0),
+      bomRevId: Number(args.bomRevId || 0),
+      routingId: null,
+      workOrderId: null,
+      woId: null,
+      linkCount: 0,
+      workOrderLinks: [],
+      openableWorkOrderLinks: [],
+      source: 'wip_disabled_work_order_gate_w463',
+      reason: 'Manufacturing was enabled with WIP disabled; Work Order create, lookup, reuse, and links were not requested.',
+      extId: String(args.extId || ''),
+      subsidiaryId: Number(args.subsidiaryId || 0),
+      locationId: Number(args.locationId || 0)
+    };
+  }
+
   function createWorkOrder({ assemblyId, subsidiaryId, locationId, quantity, memo, routingId, bomId, bomRevId, enableWip }) {
+    if (enableWip !== true) {
+      const telemetry = buildWipDisabledWorkOrderTelemetryW463({
+        assemblyId,
+        bomId,
+        bomRevId,
+        subsidiaryId,
+        locationId
+      });
+      log.audit({ title: `Work Order create/reuse blocked because WIP is disabled W463 [${VERSION}]`, details: JSON.stringify(telemetry) });
+      return { id: null, telemetry };
+    }
     const start = new Date();
     const end = addMonths(start, 1);
     const failures = [];
@@ -2145,33 +2203,35 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         attempts: failures
       })
     });
-    const reusableWorkOrder = findReusableWorkOrderByAssemblyW455({ assemblyId, memo, routingId });
-    if (reusableWorkOrder && reusableWorkOrder.id) {
-      reusableWorkOrder.wipFieldTelemetry = applyWorkOrderWipModeToExistingW455({
-        workOrderId: reusableWorkOrder.id,
-        enableWip: enableWip === true
-      });
-      log.audit({
-        title: `Work Order reused after W455 create rejection [${VERSION}]`,
-        details: JSON.stringify(Object.assign({}, reusableWorkOrder, {
-          assemblyId: Number(assemblyId || 0),
-          routingId: routingId ? Number(routingId) : null,
-          enableWipRequested: enableWip === true,
-          reuseReason: 'work_order_form_requires_recipe_not_scriptable_in_create_context'
-        }))
-      });
-      return {
-        id: Number(reusableWorkOrder.id),
-        telemetry: {
-          status: 'reused_after_create_rejection',
-          source: reusableWorkOrder.source || '',
-          tranid: reusableWorkOrder.tranid || '',
-          statusRef: reusableWorkOrder.statusRef || '',
-          enableWipRequested: enableWip === true,
-          wipFieldTelemetry: reusableWorkOrder.wipFieldTelemetry,
-          creationAttempts: failures
-        }
-      };
+    if (enableWip === true) {
+      const reusableWorkOrder = findReusableWorkOrderByAssemblyW455({ assemblyId, memo, routingId });
+      if (reusableWorkOrder && reusableWorkOrder.id) {
+        reusableWorkOrder.wipFieldTelemetry = applyWorkOrderWipModeToExistingW455({
+          workOrderId: reusableWorkOrder.id,
+          enableWip: enableWip === true
+        });
+        log.audit({
+          title: `Work Order reused after W455 create rejection [${VERSION}]`,
+          details: JSON.stringify(Object.assign({}, reusableWorkOrder, {
+            assemblyId: Number(assemblyId || 0),
+            routingId: routingId ? Number(routingId) : null,
+            enableWipRequested: enableWip === true,
+            reuseReason: 'work_order_form_requires_recipe_not_scriptable_in_create_context'
+          }))
+        });
+        return {
+          id: Number(reusableWorkOrder.id),
+          telemetry: {
+            status: 'reused_after_create_rejection',
+            source: reusableWorkOrder.source || '',
+            tranid: reusableWorkOrder.tranid || '',
+            statusRef: reusableWorkOrder.statusRef || '',
+            enableWipRequested: enableWip === true,
+            wipFieldTelemetry: reusableWorkOrder.wipFieldTelemetry,
+            creationAttempts: failures
+          }
+        };
+      }
     }
     const finalError = new Error(`Work Order W455 attempts exhausted for assembly ${assemblyId}`);
     finalError.name = 'WORK_ORDER_W455_ATTEMPTS_EXHAUSTED';
@@ -3461,7 +3521,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       'Product 12-Count Case Pack',
       'Build Product',
       'Prepare Materials',
-      'Final Assembly Unit'
+      'Final Assembly Unit',
+      'Drinkware Product Line',
+      'Outdoor Cooking Product Line'
     ];
     const industrial = industrialEquipmentNamingPackW460({ prospect, website, evidence, genericFallbackBlockedTerms });
     if (industrial) return industrial;
@@ -3537,6 +3599,36 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  function concreteHardgoodsProductFromEvidenceW463(evidence) {
+    const text = String(evidence || '').toLowerCase();
+    const candidates = [
+      { name: 'Rambler 20 oz Tumbler', pattern: /\brambler\b.*\btumbler\b|\brambler 20 oz\b/ },
+      { name: 'Tundra Cooler', pattern: /\btundra\b.*\bcooler\b/ },
+      { name: 'Roadie Cooler', pattern: /\broadie\b.*\bcooler\b/ },
+      { name: 'Hopper Soft Cooler', pattern: /\bhopper\b.*\bsoft cooler\b|\bhopper\b.*\bcooler\b/ },
+      { name: 'Quencher H2.0 FlowState Tumbler', pattern: /\bquencher\b|\bflowstate\b/ },
+      { name: 'Wide Mouth Bottle', pattern: /\bwide mouth\b.*\bbottle\b/ },
+      { name: 'Karu 2 Pro Multi-Fuel Pizza Oven', pattern: /\bkaru 2 pro\b/ },
+      { name: 'Koda 16 Gas Powered Pizza Oven', pattern: /\bkoda 16\b/ },
+      { name: 'Stagg EKG Electric Kettle', pattern: /\bstagg ekg\b/ },
+      { name: 'Carter Move Mug', pattern: /\bcarter move\b/ },
+      { name: 'Opus Conical Burr Grinder', pattern: /\bopus\b.*\bgrinder\b|\bopus conical burr\b/ },
+      { name: 'Ode Brew Grinder', pattern: /\bode brew\b|\bode\b.*\bgrinder\b/ },
+      { name: 'Clara French Press', pattern: /\bclara\b.*\bfrench press\b/ },
+      { name: 'Tally Pro Precision Scale', pattern: /\btally pro\b|\bprecision scale\b/ },
+      { name: 'Bonfire Fire Pit', pattern: /\bbonfire\b/ },
+      { name: 'Yukon Fire Pit', pattern: /\byukon\b/ },
+      { name: 'Ranger Fire Pit', pattern: /\branger\b/ },
+      { name: 'Mesa Tabletop Fire Pit', pattern: /\bmesa\b/ },
+      { name: 'Pi Prime Pizza Oven', pattern: /\bpi prime\b/ },
+      { name: 'Canyon Fire Pit', pattern: /\bcanyon\b/ }
+    ];
+    for (let i = 0; i < candidates.length; i += 1) {
+      if (candidates[i].pattern.test(text)) return candidates[i].name;
+    }
+    return '';
+  }
+
   function durableHardgoodsNamingPackW462({ prospect, website, evidence, genericFallbackBlockedTerms }) {
     const domain = String(website || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0].toLowerCase();
     let brand = '';
@@ -3558,10 +3650,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       brand = 'Ooni';
       product = 'Karu 2 Pro Multi-Fuel Pizza Oven';
       alternates = ['Koda 16 Gas Powered Pizza Oven', 'Karu 12G Multi-Fuel Pizza Oven', 'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven'];
-    } else if (domain && /\b(rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|wide mouth|all around|trail series|karu|koda|volt|fyra|tumbler|bottle|cooler|carryall|bucket|mug|drinkware|pizza oven)\b/.test(evidence)) {
-      brand = str(prospect).replace(/\b(fulfillment proof|proof|demo|v\d+)\b/ig, '').trim() || 'Dealer Hardgoods';
-      product = /pizza oven|karu|koda|volt|fyra/.test(evidence) ? 'Outdoor Cooking Product Line' : 'Drinkware Product Line';
-      alternates = /pizza oven|karu|koda|volt|fyra/.test(evidence) ? ['Pizza Oven', 'Outdoor Cooking Oven'] : ['Tumbler', 'Bottle', 'Cooler'];
+    } else if (/fellowproducts\.com|fellowproducts|fellow/.test(domain)) {
+      brand = 'Fellow';
+      product = 'Stagg EKG Electric Kettle';
+      alternates = ['Stagg EKG Pro', 'Carter Move Mug', 'Opus Conical Burr Grinder', 'Ode Brew Grinder', 'Clara French Press'];
+    } else if (/solostove\.com|solo-stove|solo stove/.test(domain)) {
+      brand = 'Solo Stove';
+      product = 'Bonfire Fire Pit';
+      alternates = ['Yukon Fire Pit', 'Ranger Fire Pit', 'Mesa Tabletop Fire Pit', 'Pi Prime Pizza Oven', 'Canyon Fire Pit'];
+    } else if (domain) {
+      const concreteProduct = concreteHardgoodsProductFromEvidenceW463(evidence);
+      if (concreteProduct) {
+        brand = str(prospect).replace(/\b(fulfillment proof|proof|demo|v\d+)\b/ig, '').trim();
+        product = concreteProduct;
+        alternates = [];
+      }
     }
     if (!product) return null;
     const base = brand && product.indexOf(brand) !== 0 ? `${brand} ${product}` : product;
@@ -3614,16 +3717,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       hero_item_name: `${base} Case`,
       assembly_name: `${base} Fulfillment Batch`,
       component_names: [
-        /pizza oven|oven/i.test(product) ? `${product} Oven Body and Stone Kit` : `${product} Retail Case Inventory`,
-        /pizza oven|oven/i.test(product) ? `${product} Burner and Fuel System` : `${product} Channel Replenishment Lot`,
+        /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit/i.test(product) ? `${product} Body and Heat Shield Kit` : `${product} Retail Case Inventory`,
+        /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit/i.test(product) ? `${product} Fuel and Airflow System` : `${product} Channel Replenishment Lot`,
         /pizza oven|oven/i.test(product) ? `${product} Retail Packaging` : `${product} Fulfillment Packaging`
       ],
       bom_name: `BOM - ${base}`,
       bom_revision_name: `Revision 1 - ${base}`,
       routing_name: `Routing - ${base} Fulfillment`,
       operation_names_by_seq: {
-        '10': /pizza oven|oven/i.test(product) ? `Stage ${product} Oven Kits` : `Receive ${product} Cases`,
-        '20': /pizza oven|oven/i.test(product) ? `Assemble and Test ${product}` : `Allocate ${product} Demand`,
+        '10': /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit/i.test(product) ? `Stage ${product} Kits` : `Receive ${product} Cases`,
+        '20': /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit/i.test(product) ? `Assemble and Test ${product}` : `Allocate ${product} Demand`,
         '30': /pizza oven|oven/i.test(product) ? `Pack and Release ${product}` : `Release ${product} Fulfillment`
       },
       sales_descriptions: {
@@ -4504,7 +4607,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         componentItems.push(item);
       });
 
-      if (args.woId) {
+      if (args.enableWip && args.woId) {
         records.workOrder = normalizeIdbRecordW453({
           role: 'work_order',
           type: 'workorder',
@@ -4512,16 +4615,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           name: `WO - ${names.assembly_name || names.hero_item_name || args.prospect}`,
           id: args.woId
         });
-      } else if (args.workOrderTelemetry && args.workOrderTelemetry.status !== 'created') {
+      } else if (args.enableWip && args.workOrderTelemetry && args.workOrderTelemetry.status !== 'created') {
         records.workOrderDiagnostic = buildWorkOrderDiagnosticW453(args);
       }
     }
 
-    const routingOperations = operationPlanRowsW453({
+    const routingOperations = args.enableWip ? operationPlanRowsW453({
       names,
       routingResult: args.routingResult,
       routingRecord: null
-    });
+    }) : [];
     if (args.enableWip && args.routingId) {
       records.routing = normalizeIdbRecordW453({
         role: 'routing',
@@ -4577,7 +4680,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       workOrderDiagnostics: records.workOrderDiagnostic || null,
       routing: records.routing || null,
       routingDiagnostic: records.routingDiagnostic || null,
-      routingResult: args.routingResult || null,
+      routingResult: args.enableWip ? (args.routingResult || null) : null,
       routingOperations,
       componentItems,
       csvSalesOrderArtifacts: [{
@@ -4711,7 +4814,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       displayReadyRecords,
       recordsArray: displayReadyRecords,
       displayRecords: displayReadyRecords,
-      routingResult: args.routingResult || null,
+      routingResult: args.enableWip ? (args.routingResult || null) : null,
       routingDiagnostics: records.routingDiagnostic || null,
       routingOperations,
       workOrderTelemetry: args.workOrderTelemetry || null,

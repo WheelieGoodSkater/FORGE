@@ -1,0 +1,164 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const {
+  assertCase,
+  completedMotionResult,
+  completedRefreshResponse,
+  loadHooks,
+  motionContext,
+  motionState,
+  printResults,
+  root
+} = require('./lib/forge_harness_fixtures');
+
+function readRepoFile(...parts) {
+  return fs.readFileSync(path.join(root, ...parts), 'utf8');
+}
+
+function main() {
+  const results = [];
+  const hooks = loadHooks({ fetchMessage: 'live fetch disabled in W464 harness' });
+  const drawer = readRepoFile('idb-drawer.user.js');
+  const fileCabinetDrawer = readRepoFile('src', 'FileCabinet', 'SuiteScripts', 'Intelligent Demo Builder', 'idb-drawer.user.js');
+
+  const confirmedRequest = {
+    schema: 'idb.confirmed-build-request.v1',
+    requestId: 'idb-build-w464-drawer-sidecar-truth',
+    buildAttemptId: 'attempt-w464-current',
+    submittedAt: '2026-06-27T15:35:00.000Z',
+    stateAuthority: { handoffParityStatus: 'matched', noStateMismatch: true },
+    consultantConfirmation: { confirmed: true }
+  };
+  const expectedProvenance = {
+    runnerTaskId: 'CSVIMPORT_W464',
+    idempotencyToken: confirmedRequest.requestId,
+    buildAttemptId: confirmedRequest.buildAttemptId,
+    sourceRequestId: confirmedRequest.requestId,
+    submittedAt: confirmedRequest.submittedAt
+  };
+  const latestRejectedFile = {
+    fileId: '984101',
+    fileName: 'idb_runner_sidecar_old_attempt_w463_completed.json',
+    reason: 'buildAttemptId_mismatch'
+  };
+  const state = motionState(hooks, {
+    integratedBuildRunnerResult: {
+      schema: 'idb.approved-server-adapter-result-envelope.v1',
+      status: 'polling_pending',
+      queueSubmitted: true,
+      runnerTaskId: expectedProvenance.runnerTaskId,
+      idempotencyToken: expectedProvenance.idempotencyToken,
+      sourceRequestId: expectedProvenance.sourceRequestId,
+      buildAttemptId: expectedProvenance.buildAttemptId,
+      submittedAt: expectedProvenance.submittedAt,
+      confirmedBuildRequest: confirmedRequest,
+      resultCapture: {
+        status: 'polling_pending',
+        lookupStatus: 'polling_pending',
+        runnerTaskId: expectedProvenance.runnerTaskId,
+        idempotencyToken: expectedProvenance.idempotencyToken,
+        sourceRequestId: expectedProvenance.sourceRequestId,
+        buildAttemptId: expectedProvenance.buildAttemptId,
+        submittedAt: expectedProvenance.submittedAt,
+        confirmedBuildRequest: confirmedRequest,
+        staleRejected: true,
+        terminalStatus: '',
+        latestRejectedFile,
+        expectedProvenance
+      },
+      finalGeneratedNamesJson: null,
+      activeOpenLinks: 0
+    }
+  });
+  const context = motionContext(hooks, state);
+
+  const recovery = hooks.drawerSafePollExceptionResultW464(
+    state,
+    new Error('simulated client-side import normalization throw'),
+    { actionId: 'check_runner_result' }
+  );
+  const recoveredRunner = recovery.statePatch.integratedBuildRunnerResult;
+  const recoveredCapture = recoveredRunner.resultCapture || {};
+  const recoveredTroubleshoot = hooks.w444TroubleshootExportPayload(Object.assign({}, state, recovery.statePatch));
+
+  const completedResult = completedMotionResult({ prefix: '464', salesOrderName: 'SO-W464 Drawer Truth Import' });
+  const freshResponse = completedRefreshResponse(expectedProvenance.runnerTaskId, completedResult);
+  freshResponse.payload.idempotencyToken = expectedProvenance.idempotencyToken;
+  freshResponse.payload.sourceRequestId = expectedProvenance.sourceRequestId;
+  freshResponse.payload.buildAttemptId = expectedProvenance.buildAttemptId;
+  freshResponse.payload.submittedAt = expectedProvenance.submittedAt;
+  freshResponse.payload.resultCapture = Object.assign({}, freshResponse.payload.resultCapture, {
+    runnerTaskId: expectedProvenance.runnerTaskId,
+    idempotencyToken: expectedProvenance.idempotencyToken,
+    sourceRequestId: expectedProvenance.sourceRequestId,
+    buildAttemptId: expectedProvenance.buildAttemptId,
+    submittedAt: expectedProvenance.submittedAt
+  });
+  const recoveredState = Object.assign({}, state, recovery.statePatch);
+  const freshPoll = hooks.governedRunnerResultCapturePollingToCompletedJsonV1(
+    recoveredState,
+    context.lane,
+    context.page,
+    context.recommendation,
+    {
+      adapterResult: recoveredState.integratedBuildRunnerResult,
+      adapterConfig: recoveredState.integratedBuildAdapterConfig || {},
+      operatorEvidence: recoveredState.integratedBuildOperatorApproval || {},
+      approvedEndpointMode: 'approved_server_adapter_only',
+      executePoll: true,
+      transport: () => freshResponse
+    }
+  );
+  const freshState = Object.assign({}, recoveredState, freshPoll.statePatch || {});
+  const freshTroubleshoot = hooks.w444TroubleshootExportPayload(freshState);
+
+  assertCase(results, 'w464-root-and-filecabinet-drawer-synced',
+    drawer === fileCabinetDrawer,
+    'Root userscript and FileCabinet userscript should match.');
+
+  assertCase(results, 'w464-build-return-handler-recovers-from-client-throw',
+    drawer.includes('drawerSafePollExceptionResultW464(state, err, { actionId })') &&
+      drawer.includes("trace('w464_drawer_poll_exception_recovered'") &&
+      drawer.includes('button.disabled = false') &&
+      drawer.includes("button.textContent = originalButtonText || 'Refresh build status'"),
+    'Check runner result click handler should redraw instead of leaving the live DOM button Checking.');
+
+  assertCase(results, 'w464-poll-exception-is-nonterminal-and-retryable',
+    recovery.status === 'drawer_poll_exception_waiting_for_retry' &&
+      recoveredRunner.status === 'polling_pending' &&
+      recoveredCapture.status === 'polling_pending' &&
+      recoveredCapture.lookupStatus === 'drawer_poll_exception_waiting_for_retry' &&
+      recoveredCapture.drawerPollException === true &&
+      recoveredTroubleshoot.runnerErrorTruthW451.terminal === false,
+    JSON.stringify({ recoveryStatus: recovery.status, capture: recoveredCapture, runnerError: recoveredTroubleshoot.runnerErrorTruthW451 }));
+
+  assertCase(results, 'w464-stale-rejection-fields-preserved-before-success',
+    recovery.preservedStaleResultRejection.staleRejected === true &&
+      recovery.preservedStaleResultRejection.terminalStatus === '' &&
+      recovery.preservedStaleResultRejection.terminalStaleFailure === false &&
+      recovery.preservedStaleResultRejection.terminalNotFoundFailure === false &&
+      recoveredTroubleshoot.nonterminalStaleRejected === true &&
+      recoveredTroubleshoot.terminalStaleFailure === false &&
+      recoveredTroubleshoot.terminalNotFoundFailure === false &&
+      recoveredTroubleshoot.latestRejectedFile === latestRejectedFile &&
+      recoveredTroubleshoot.expectedProvenance === expectedProvenance,
+    JSON.stringify(recoveredTroubleshoot.resultCaptureSourceW462));
+
+  assertCase(results, 'w464-later-success-import-readiness-not-blocked-by-prior-stale-rejection',
+    freshPoll.status === 'w190_completed_result_ready_for_w151_import' &&
+      freshPoll.resultImportGuard.importReady === true &&
+      freshTroubleshoot.nonterminalStaleRejected === true &&
+      freshTroubleshoot.terminalStaleFailure === false &&
+      freshTroubleshoot.terminalNotFoundFailure === false &&
+      freshTroubleshoot.latestRejectedFile === latestRejectedFile &&
+      freshTroubleshoot.expectedProvenance === expectedProvenance,
+    JSON.stringify({ pollStatus: freshPoll.status, guard: freshPoll.resultImportGuard, capture: freshTroubleshoot.resultCaptureSourceW462 }));
+
+  printResults('w464_drawer_sidecar_truth_poll_recovery_harness', results);
+}
+
+main();

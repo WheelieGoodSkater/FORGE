@@ -357,13 +357,45 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   }
 
   function isGenericCatalogCandidateW459(value) {
-    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|catalog product|product sku|catalog|equipment|industrial equipment|warehouse equipment|outdoor gear|outdoor cooking|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof)$/i.test(compactText(value));
+    const name = compactText(value);
+    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|catalog product|product\s*\/?\s*sku|product sku|contractor job order|dealer channel availability|dealer channel availability sku|catalog|equipment|industrial equipment|warehouse equipment|outdoor gear|outdoor cooking|coffee gear|coffee equipment|kettles|grinders|fire pit|fire pits|smokeless fire pits|drinkware product line|outdoor cooking product line|outdoor product line|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof)$/i.test(name)
+      || /\b(building materials|contractor|dealer hardgoods|channel fulfillment|project fulfillment|readiness|fulfillment)\b/i.test(name);
   }
 
   function genericCatalogCandidateRejectedReasonW459(value) {
     const name = compactText(value);
     if (!name || !isGenericCatalogCandidateW459(name)) return '';
     return `${name} rejected: generic lane/category label without concrete website product-line evidence`;
+  }
+
+  function hasConcreteProductSignalW464(value) {
+    const lower = compactText(value).toLowerCase();
+    return /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef|kombucha|sunsip|prebiotic soda|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti|forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|electric truck|internal combustion truck|counterbalance|turret truck|very narrow aisle|rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|stagg ekg|carter move|opus conical burr|ode brew|clara french press|tally pro|bonfire|yukon|ranger|mesa|pi prime|canyon|karu|koda|volt|fyra|pizza oven|tumbler|bottle|cooler|carryall|bucket|mug|kettle|grinder|french press|scale|fire pit|stove|sauce|pasta|coffee|espresso|matcha|hojicha|syrup|series)\b/i.test(lower);
+  }
+
+  function selectedCatalogCandidateRejectedReasonW464(value, context) {
+    const name = compactText(value);
+    if (!name) return '';
+    const prospect = compactText(context && context.prospect).toLowerCase();
+    const lower = name.toLowerCase();
+    const genericReason = genericCatalogCandidateRejectedReasonW459(name);
+    if (genericReason) return genericReason;
+    if (/^(building materials\s*&\s*contractor project fulfillment|dealer hardgoods\s*&\s*channel fulfillment|contractor job order|dealer channel availability)$/i.test(name)) {
+      return `${name} rejected: lane/workflow label cannot be selected as a product`;
+    }
+    if (/^(building materials|dealer hardgoods|industrial distribution|food and beverage|apparel|parts\s*\/\s*service|medical\s*\/\s*dental|wholesale janitorial|hvac mechanical)$/i.test(name)) {
+      return `${name} rejected: industry label cannot be selected as a product`;
+    }
+    if (/\b(project fulfillment|channel fulfillment|job order|availability|workflow|proof path|readiness)\b/i.test(name) && !hasConcreteProductSignalW464(name)) {
+      return `${name} rejected: workflow label lacks public product-line evidence`;
+    }
+    if (prospect && lower === prospect) {
+      return `${name} rejected: prospect name cannot be selected as a product`;
+    }
+    if (prospect && lower.indexOf(prospect) === 0 && !hasConcreteProductSignalW464(name)) {
+      return `${name} rejected: prospect-name-only label lacks public product-line evidence`;
+    }
+    return '';
   }
 
   function traverseCatalogEvidenceW457(value, path, visit, depth) {
@@ -412,7 +444,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       'Wide Mouth Bottle', 'All Around Travel Tumbler', 'All Around Tumbler',
       'Trail Series Bottle', 'Coffee Mug', 'Karu 2 Pro Multi-Fuel Pizza Oven',
       'Koda 16 Gas Powered Pizza Oven', 'Karu 12G Multi-Fuel Pizza Oven',
-      'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven'
+      'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven',
+      'Stagg EKG Electric Kettle', 'Stagg EKG Pro', 'Carter Move Mug',
+      'Opus Conical Burr Grinder', 'Ode Brew Grinder', 'Clara French Press',
+      'Tally Pro Precision Scale', 'Bonfire', 'Yukon', 'Ranger', 'Mesa',
+      'Mesa XL', 'Pi Prime', 'Canyon', 'Surround Tabletop'
     ];
     known.forEach((term) => {
       const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/o/g, '[oō]'), 'i');
@@ -426,6 +462,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       /\b((?:Quencher H2\.0 FlowState|IceFlow Flip Straw|Classic Legendary|AeroLight Transit|Adventure Quencher)\s+(?:Tumbler|Bottle|Mug|Travel Tumbler)s?)\b/gi,
       /\b((?:Wide Mouth|All Around|Trail Series|Coffee)\s+(?:Bottle|Travel Tumbler|Tumbler|Mug)s?)\b/gi,
       /\b((?:Karu 2 Pro|Karu 12G|Koda 16|Volt 12|Fyra 12)\s+(?:Multi-Fuel|Gas Powered|Electric|Wood Pellet)?\s*(?:Pizza Oven|Oven)s?)\b/gi,
+      /\b((?:Stagg EKG|Stagg EKG Pro|Carter Move|Opus Conical Burr|Ode Brew|Clara|Tally Pro)\s+(?:Electric Kettle|Kettle|Mug|Grinder|Burr Grinder|Brew Grinder|French Press|Precision Scale|Scale)s?)\b/gi,
+      /\b((?:Bonfire|Yukon|Ranger|Mesa XL|Mesa|Canyon|Pi Prime|Surround)\s+(?:Fire Pit|Firepit|Pizza Oven|Tabletop|Stove|Grill|Shield|Stand|Hub)?s?)\b/gi,
       /\b((?:20 oz|30 oz|40 oz|64 oz)\s+(?:Tumbler|Bottle|Quencher|Mug))\b/gi
     ].forEach((pattern) => {
       let match = pattern.exec(cleaned);
@@ -476,6 +514,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/ooni\.com|ooni/.test(domain)) {
       return ['Karu 2 Pro Multi-Fuel Pizza Oven', 'Koda 16 Gas Powered Pizza Oven', 'Karu 12G Multi-Fuel Pizza Oven', 'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven'];
     }
+    if (/fellowproducts\.com|fellowproducts|fellow/.test(domain)) {
+      return ['Stagg EKG Electric Kettle', 'Stagg EKG Pro', 'Carter Move Mug', 'Opus Conical Burr Grinder', 'Ode Brew Grinder', 'Clara French Press'];
+    }
+    if (/solostove\.com|solo-stove|solo stove/.test(domain)) {
+      return ['Bonfire', 'Yukon', 'Ranger', 'Mesa', 'Mesa XL', 'Pi Prime', 'Canyon'];
+    }
     if (/crown\.com|crown/.test(domain)) {
       return ['Crown C-5 Series Forklift', 'Crown RC Series Stand-Up Rider Forklift', 'Crown RM Series Reach Truck', 'Crown SP Series Order Picker', 'Crown PE Series Pallet Truck'];
     }
@@ -503,6 +547,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function buildCatalogCandidatesW457(request, website, namingAuthority) {
     const candidates = [];
     const domain = domainFromWebsiteW457(website);
+    const rejectionContext = {
+      prospect: request && request.prospect && request.prospect.name
+    };
     const evidenceRoots = [
       { path: 'request.websiteEvidence', value: request && request.websiteEvidence },
       { path: 'request.productEvidence', value: request && request.productEvidence },
@@ -550,8 +597,17 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       reasons: ['domain/catalog resolver candidate']
     }));
     const seen = {};
-    return candidates.filter((candidate) => {
-      if (isGenericCatalogCandidateW459(candidate.name)) return false;
+    const rejectedCatalogCandidates = [];
+    const filtered = candidates.filter((candidate) => {
+      const rejectedReason = selectedCatalogCandidateRejectedReasonW464(candidate.name, rejectionContext);
+      if (rejectedReason) {
+        rejectedCatalogCandidates.push({
+          name: compactText(candidate.name),
+          source: candidate.source || '',
+          reason: rejectedReason
+        });
+        return false;
+      }
       const key = candidate.name.toLowerCase();
       if (seen[key]) {
         seen[key].sources = uniqueList([seen[key].source, candidate.source].concat(seen[key].sources || []));
@@ -562,17 +618,25 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       seen[key] = candidate;
       return true;
     });
+    filtered.rejectedCatalogCandidates = uniqueList(rejectedCatalogCandidates.map((candidate) => JSON.stringify(candidate))).map((candidateJson) => JSON.parse(candidateJson));
+    return filtered;
   }
 
   function rankCatalogCandidatesW457(candidates, context) {
     const scenario = compactText(context && context.scenario).toLowerCase();
     const website = compactText(context && context.website).toLowerCase();
     const prospect = compactText(context && context.prospect).toLowerCase();
-    return (candidates || []).map((candidate) => {
+    const rejectedCatalogCandidates = (candidates && candidates.rejectedCatalogCandidates || []).slice(0);
+    const ranked = (candidates || []).map((candidate) => {
       const name = compactText(candidate.name);
       const lower = name.toLowerCase();
       let score = Number(candidate.confidence || 0);
       const reasons = (candidate.reasons || []).slice(0);
+      const selectedRejectionReason = selectedCatalogCandidateRejectedReasonW464(name, context);
+      if (selectedRejectionReason) {
+        score -= 150;
+        reasons.push(selectedRejectionReason);
+      }
       if (isGenericCatalogCandidateW459(name) || /^(coffee|cold brew|variety pack|product|catalog product|case|batch|beverage|sauce|pasta)$/i.test(name)) {
         score -= 45;
         reasons.push('penalized generic product term');
@@ -605,9 +669,17 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         score += 38;
         reasons.push('concrete public website product-line name');
       }
+      if (/\b(stagg ekg|stagg ekg pro|carter move|opus conical burr|ode brew|clara french press|tally pro|bonfire|yukon|ranger|mesa xl|mesa|pi prime|canyon)\b/i.test(lower)) {
+        score += 48;
+        reasons.push('concrete public website product or product-line name');
+      }
       if (/\b(tumbler|bottle|cooler|soft cooler|carryall|bucket|mug|drinkware|travel tumbler|pizza oven|oven|outdoor cooking)\b/i.test(lower)) {
         score += 18;
         reasons.push('durable consumer hardgoods product noun');
+      }
+      if (/\b(kettle|grinder|burr grinder|brew grinder|french press|precision scale|fire pit|firepit|stove)\b/i.test(lower)) {
+        score += 18;
+        reasons.push('public product noun');
       }
       if (/\b[a-z0-9-]+\s+series\b/i.test(lower)) {
         score += 18;
@@ -641,13 +713,28 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       if (/stanley1913|stanley/.test(website) && /\b(quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|tumbler|bottle|mug)\b/i.test(lower)) score += 18;
       if (/hydroflask|hydro-flask/.test(website) && /\b(wide mouth|all around|trail series|tumbler|bottle|mug)\b/i.test(lower)) score += 18;
       if (/ooni/.test(website) && /\b(karu|koda|volt|fyra|pizza oven|oven)\b/i.test(lower)) score += 18;
+      if (/fellowproducts|fellow/.test(website) && /\b(stagg|carter|opus|ode|clara|tally|kettle|grinder|mug|french press|scale)\b/i.test(lower)) score += 28;
+      if (/solostove|solo stove/.test(website) && /\b(bonfire|yukon|ranger|mesa|pi prime|canyon|fire pit|firepit|stove)\b/i.test(lower)) score += 28;
       return Object.assign({}, candidate, {
         confidence: Math.max(1, Math.min(99, Math.round(score))),
         wipSuitabilityScore: Math.max(1, Math.min(99, Math.round(score))),
         reasons: uniqueList(reasons)
       });
-    }).filter((candidate) => !isGenericCatalogCandidateW459(candidate.name) && Number(candidate.wipSuitabilityScore || 0) > 20)
+    }).filter((candidate) => {
+      const rejectedReason = selectedCatalogCandidateRejectedReasonW464(candidate.name, context);
+      const eligible = !rejectedReason && Number(candidate.wipSuitabilityScore || 0) > 20;
+      if (!eligible && compactText(candidate.name)) {
+        rejectedCatalogCandidates.push({
+          name: compactText(candidate.name),
+          source: candidate.source || '',
+          reason: rejectedReason || `${compactText(candidate.name)} rejected: no usable public product-line evidence`
+        });
+      }
+      return eligible;
+    })
       .sort((a, b) => Number(b.wipSuitabilityScore || 0) - Number(a.wipSuitabilityScore || 0));
+    ranked.rejectedCatalogCandidates = uniqueList(rejectedCatalogCandidates.map((candidate) => JSON.stringify(candidate))).map((candidateJson) => JSON.parse(candidateJson));
+    return ranked;
   }
 
   function productCategoryW457(product) {
@@ -664,6 +751,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/stick|beef|turkey/.test(lower)) return 'meat snack';
     if (/forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series/.test(lower)) return 'industrial equipment';
     if (/karu|koda|volt|fyra|pizza oven|outdoor cooking/.test(lower)) return 'outdoor cooking hardgoods';
+    if (/bonfire|ranger|yukon|canyon|mesa|pi prime|surround|fire pit|firepit|stove/.test(lower)) return 'outdoor fire pit hardgoods';
+    if (/stagg|carter|opus|ode brew|clara|tally|kettle|grinder|french press|precision scale/.test(lower)) return 'coffee gear hardgoods';
     if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware/.test(lower)) return 'durable consumer hardgoods';
     return '';
   }
@@ -739,13 +828,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         operations: { '10': `Stage ${product} Subassemblies`, '20': `Assemble and Configure ${product}`, '30': `Inspect and Release ${product}` }
       };
     }
-    if (/karu|koda|volt|fyra|pizza oven|outdoor cooking/.test(lower)) {
+    if (/karu|koda|volt|fyra|pizza oven|outdoor cooking|bonfire|ranger|yukon|canyon|mesa|pi prime|surround|fire pit|firepit|stove/.test(lower)) {
       return {
-        components: [`${product} Oven Body and Stone Kit`, `${product} Burner and Fuel System`, `${product} Retail Packaging`],
-        operations: { '10': `Stage ${product} Oven Kits`, '20': `Assemble and Test ${product}`, '30': `Pack and Release ${product}` }
+        components: [`${product} Body and Hardware Kit`, `${product} Heat System and Controls`, `${product} Retail Packaging`],
+        operations: { '10': `Stage ${product} Kits`, '20': `Assemble and Test ${product}`, '30': `Pack and Release ${product}` }
       };
     }
-    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware/.test(lower)) {
+    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware|stagg|carter|opus|ode brew|clara|tally|kettle|grinder|french press|precision scale/.test(lower)) {
       return {
         components: [`${product} Retail Case Inventory`, `${product} Channel Replenishment Lot`, `${product} Fulfillment Packaging`],
         operations: { '10': `Receive ${product} Cases`, '20': `Allocate ${product} Demand`, '30': `Release ${product} Fulfillment` }
@@ -771,10 +860,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       buildCatalogCandidatesW457(request, website, namingAuthority),
       { website, scenario: scenarioText, prospect }
     );
+    const rejectedCatalogCandidates = rankedCatalogCandidates.rejectedCatalogCandidates || [];
     const selectedCatalogCandidate = rankedCatalogCandidates[0] || null;
     const fallbackUsed = !selectedCatalogCandidate;
     const fallbackReason = fallbackUsed
-      ? 'No website, resolver, product-list, page-text, or LLM naming advisory catalog candidate was available; deterministic fallback used.'
+      ? (rejectedCatalogCandidates.length
+        ? 'Website/resolver extraction ran, but only generic lane, workflow, industry, or prospect-name labels were found; deterministic fallback used.'
+        : 'No website, resolver, product-list, page-text, or LLM naming advisory catalog candidate was available; deterministic fallback used.')
       : '';
     const websiteEvidenceSourceUrls = evidenceSourceUrlsW459(request, website);
     const genericCandidateRejectedReasons = uniqueList([
@@ -822,9 +914,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       selectedCatalogCandidate,
       selectedCatalogCandidateSource: selectedCatalogCandidate && selectedCatalogCandidate.source || 'deterministic_fallback',
       selectedCatalogCandidateReasons: selectedCatalogCandidate && selectedCatalogCandidate.reasons || [],
+      rejectedCatalogCandidates,
+      rejectedCatalogCandidateReasons: rejectedCatalogCandidates.map((candidate) => candidate.reason),
       websiteEvidenceSource: websiteEvidenceSourceUrls.length ? 'request_website_evidence_payload' : 'none',
       websiteEvidenceSourceUrls,
-      genericCandidateRejectedReasons,
+      genericCandidateRejectedReasons: uniqueList(genericCandidateRejectedReasons.concat(rejectedCatalogCandidates.map((candidate) => candidate.reason))),
       websiteCatalogEvidenceUsed,
       llmCatalogInterpretationUsed,
       deterministicCatalogRankerUsed,
@@ -836,20 +930,23 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       llmNamingAdvisoryUsed: llmCatalogInterpretationUsed,
       websiteSignalsUsed: uniqueList(rankedCatalogCandidates.map((candidate) => candidate.name)),
       prospectNameUsedAsFallbackOnly: true,
-      missingEvidence: fallbackReason ? ['website catalog product candidate'] : [],
+      missingEvidence: fallbackReason ? ['website catalog product candidate', 'real public product/product-line evidence'] : [],
       productEvidenceConfidence: namingConfidence,
-      selectedProductName: product,
-      selectedVariantName: product,
+      selectedProductName: selectedCatalogCandidate ? product : null,
+      selectedVariantName: selectedCatalogCandidate ? product : null,
       selectedPackName: 'Case',
       industry_category: productCategoryW457(product) === 'industrial equipment'
         ? 'Industrial Equipment'
         : (productCategoryW457(product) === 'durable consumer hardgoods'
           ? 'Dealer Hardgoods'
           : (productCategoryW457(product) === 'outdoor cooking hardgoods'
+            || productCategoryW457(product) === 'outdoor fire pit hardgoods'
             ? 'Outdoor Cooking Hardgoods'
-            : (productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId)))),
-      primary_product_candidate: product,
-      alternate_product_candidates: rankedCatalogCandidates.slice(1, 7).map((candidate) => candidate.name),
+            : (productCategoryW457(product) === 'coffee gear hardgoods'
+              ? 'Dealer Hardgoods'
+              : (productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId))))),
+      primary_product_candidate: selectedCatalogCandidate ? product : null,
+      alternate_product_candidates: selectedCatalogCandidate ? rankedCatalogCandidates.slice(1, 7).map((candidate) => candidate.name) : [],
       evidence_terms: uniqueList([brand, product, productCategoryW457(product)].concat(productSignalsUsed)),
       competitor_terms: uniqueList(request && request.competitorTerms || []),
       roi_basis_terms: uniqueList(['line readiness', 'case availability', 'production proof']),
@@ -2324,6 +2421,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       buildRunnerParams,
       buildQueueGate,
       submitRunnerIfAllowed,
+      buildServerPrecomputedNamingPack,
+      buildCatalogCandidatesW457,
+      rankCatalogCandidatesW457,
+      selectedCatalogCandidateRejectedReasonW464,
       buildAdapterResult,
       buildResultCapturePollEnvelope,
       normalizeCompletedRunnerResult,

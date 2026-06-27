@@ -205,7 +205,13 @@
     "harness:restore-old-runner-naming-creation-w450": "node archive/tools/run_w450_restore_old_runner_naming_creation_harness.js",
     "harness:llm-naming-and-real-wip-routing-w450": "node archive/tools/run_w450_llm_naming_and_real_wip_routing_harness.js",
     "harness:llm-naming-real-wip-routing-w450": "node archive/tools/run_w450_llm_naming_and_real_wip_routing_harness.js",
-    "harness:browser-proven-naming-routing-import-w455": "node archive/tools/run_w455_browser_proven_naming_routing_import_harness.js"
+    "harness:browser-proven-naming-routing-import-w455": "node archive/tools/run_w455_browser_proven_naming_routing_import_harness.js",
+    "harness:wip-off-work-order-gate-w463": "node archive/tools/run_w463_wip_off_work_order_gate_harness.js",
+    "harness:runner-record-mapping-audit-w464": "node archive/tools/run_w464_runner_record_mapping_audit_harness.js",
+    "harness:website-product-wip-sidecar-hardening-w464": "node archive/tools/run_w464_website_product_wip_sidecar_hardening_harness.js",
+    "harness:drawer-sidecar-truth-poll-recovery-w464": "node archive/tools/run_w464_drawer_sidecar_truth_poll_recovery_harness.js",
+    "harness:catalog-candidate-ranking-w464": "node archive/tools/run_w464_catalog_candidate_ranking_harness.js",
+    "harness:website-product-evidence-pipeline-w463": "node archive/tools/run_w463_website_product_evidence_pipeline_harness.js"
   },
   "keywords": [
     "netsuite",

@@ -13,7 +13,7 @@ W428 repairs the simplified consultant flow after a runner task completes. Refre
 ## Pass/Fail
 | Gate | Result |
 | --- | --- |
-| w428-drawer-marker-updated | PASS |
+| w428-drawer-marker-updated | FAIL |
 | w427-filecabinet-drawer-synced | PASS |
 | w427-submitted-confirmed-request-is-preserved | PASS |
 | w427-refresh-auto-import-code-present | PASS |

@@ -6,6 +6,8 @@
  */
 define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
   const ADAPTER_VERSION = 'w144-governed-sandbox-queue-submit-pilot-behind-server-flags';
+  const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
+  const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
 
   const PARAMS = {
     action: 'custpage_idb_action',
@@ -1291,15 +1293,131 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     return source.records || {};
   }
 
+  function uniqueTextValuesW458(values) {
+    const unique = [];
+    (values || []).forEach((value) => {
+      const text = String(value || '').trim();
+      if (text && unique.indexOf(text) === -1) unique.push(text);
+    });
+    return unique;
+  }
+
+  function loadSalesOrderLookupSearchW458(searchModule) {
+    try {
+      return searchModule.load({ id: SALES_ORDER_LOOKUP_SEARCH_ID_W458 });
+    } catch (e) {
+      return searchModule.load({ id: SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 });
+    }
+  }
+
+  function mapSalesOrderLookupRowW458(row) {
+    const out = {
+      internalId: String(row && (row.id || '') || '').trim(),
+      values: [],
+      haystack: ''
+    };
+    const columns = row && row.columns || [];
+    columns.forEach((column) => {
+      let value = '';
+      let text = '';
+      try { value = row.getValue(column); } catch (e1) { value = ''; }
+      try { text = row.getText(column); } catch (e2) { text = ''; }
+      const key = String(column && (column.label || column.name || column.join || '') || '').toLowerCase();
+      const printable = String(value || text || '').trim();
+      if (!printable) return;
+      out.values.push(printable);
+      if (!out.internalId && /internal\s*id|internalid/.test(key) && numericId(printable)) out.internalId = printable;
+      if (!out.externalId && /external\s*id|externalid/.test(key)) out.externalId = printable;
+      if (!out.tranid && /document\s*number|tranid/.test(key)) out.tranid = printable;
+      if (!out.status && /status/.test(key)) out.status = printable;
+      if (!out.memo && /memo/.test(key)) out.memo = printable;
+      if (!out.entityName && /^name$|entity|customer/.test(key)) out.entityName = printable;
+      if (!out.amount && /amount/.test(key)) out.amount = printable;
+      if (!out.dateCreated && /date\s*created|created/.test(key)) out.dateCreated = printable;
+    });
+    out.haystack = out.values.join(' ');
+    return out;
+  }
+
+  function resolveSalesOrderByForgeSavedSearchW458(candidates, modules) {
+    const searchModule = modules && modules.search;
+    if (!searchModule) return { found: false, reason: 'search module unavailable', candidates };
+    const unique = uniqueTextValuesW458(candidates);
+    if (!unique.length) return { found: false, reason: 'no expected sales order external id candidates', candidates: unique };
+    try {
+      const saved = loadSalesOrderLookupSearchW458(searchModule);
+      const rows = saved.run().getRange({ start: 0, end: 1000 }) || [];
+      const matches = [];
+      rows.forEach((row) => {
+        const mapped = mapSalesOrderLookupRowW458(row);
+        if (!numericId(mapped.internalId)) return;
+        const haystack = String(mapped.haystack || '').toLowerCase();
+        const matchedCandidate = unique.find((candidate) => {
+          const expected = String(candidate || '').trim();
+          return expected && (String(mapped.externalId || '').trim() === expected || haystack.indexOf(expected.toLowerCase()) !== -1);
+        });
+        if (!matchedCandidate) return;
+        matches.push(Object.assign({}, mapped, { candidate: matchedCandidate }));
+      });
+      if (!matches.length) {
+        return {
+          found: false,
+          reason: 'FORGE SO lookup saved search returned no row for current-run external id candidates',
+          searchId: SALES_ORDER_LOOKUP_SEARCH_ID_W458,
+          searchInternalId: SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458,
+          rowsScanned: rows.length,
+          candidates: unique
+        };
+      }
+      if (matches.length > 1) {
+        return {
+          found: false,
+          reason: 'FORGE SO lookup saved search returned multiple rows for current-run external id candidates',
+          searchId: SALES_ORDER_LOOKUP_SEARCH_ID_W458,
+          searchInternalId: SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458,
+          rowsScanned: rows.length,
+          candidates: unique,
+          matches: matches.map((match) => ({ internalId: match.internalId, tranid: match.tranid, externalId: match.externalId }))
+        };
+      }
+      const match = matches[0];
+      return {
+        found: true,
+        source: 'forge_so_lookup_saved_search',
+        searchId: SALES_ORDER_LOOKUP_SEARCH_ID_W458,
+        searchInternalId: SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458,
+        candidate: match.candidate,
+        internalId: match.internalId,
+        name: match.tranid || `Sales Order ${match.internalId}`,
+        tranid: match.tranid || '',
+        status: match.status || '',
+        externalId: match.externalId || match.candidate,
+        memo: match.memo || '',
+        entityName: match.entityName || '',
+        amount: match.amount || '',
+        dateCreated: match.dateCreated || '',
+        url: buildNetSuiteRecordUrl('salesorder', match.internalId)
+      };
+    } catch (e) {
+      return {
+        found: false,
+        reason: 'FORGE SO lookup saved search failed',
+        searchId: SALES_ORDER_LOOKUP_SEARCH_ID_W458,
+        searchInternalId: SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458,
+        errorName: e && e.name || '',
+        errorMessage: e && e.message || String(e || ''),
+        candidates: unique
+      };
+    }
+  }
+
   function resolveSalesOrderByExternalIdCandidates(candidates, modules) {
     const searchModule = modules && modules.search;
     if (!searchModule) return { found: false, reason: 'search module unavailable' };
-    const unique = [];
-    (candidates || []).forEach((candidate) => {
-      const value = String(candidate || '').trim();
-      if (value && unique.indexOf(value) === -1) unique.push(value);
-    });
+    const unique = uniqueTextValuesW458(candidates);
     if (!unique.length) return { found: false, reason: 'no expected sales order external id candidates' };
+    const savedSearchMatch = resolveSalesOrderByForgeSavedSearchW458(unique, modules);
+    if (savedSearchMatch.found) return savedSearchMatch;
     for (let i = 0; i < unique.length; i++) {
       const candidate = unique[i];
       const attempts = [
@@ -1369,7 +1487,20 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
           type: 'salesorder',
           name: salesOrder.name || demoSource.name,
           internalId: salesOrder.internalId,
-          url: salesOrder.url
+          url: salesOrder.url,
+          currentRunIdentityW457: {
+            status: 'current_run_identity_verified',
+            role: 'sales_order',
+            expectedRole: 'sales_order',
+            expectedExternalId: salesOrder.candidate || '',
+            matchedExternalId: salesOrder.externalId || salesOrder.candidate || '',
+            matchedSalesOrderId: salesOrder.internalId,
+            matchedTranid: salesOrder.tranid || salesOrder.name || '',
+            savedSearchId: salesOrder.searchId || '',
+            savedSearchInternalId: salesOrder.searchInternalId || '',
+            notWorkOrder: true
+          },
+          identityValidationStatus: 'current_run_identity_verified'
         }, 'salesorder'),
         heroItem: normalizeRecord(records.heroItem, 'inventoryitem'),
         matrixProofItem: normalizeRecord(records.matrixProofItem || records.matrixItem, 'inventoryitem'),
@@ -1381,9 +1512,14 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         drawerTransactionWrites: false
       },
       transactionResolution: {
-        status: 'resolved_by_csv_import',
-        authority: 'legacy_runner_csv_import_path',
-        matchedExternalId: salesOrder.candidate
+        status: salesOrder.source === 'forge_so_lookup_saved_search' ? 'sales_order_resolved_by_saved_search' : 'resolved_by_csv_import',
+        authority: salesOrder.source === 'forge_so_lookup_saved_search' ? 'FORGE SO lookup saved search' : 'legacy_runner_csv_import_path',
+        savedSearchId: salesOrder.searchId || '',
+        savedSearchInternalId: salesOrder.searchInternalId || '',
+        matchedExternalId: salesOrder.externalId || salesOrder.candidate,
+        matchedSalesOrderId: salesOrder.internalId,
+        matchedTranid: salesOrder.tranid || salesOrder.name || '',
+        demandRecordRolePolicy: 'sales_order_only_never_work_order'
       }
     };
     completed.demoTransaction = completed.records.demoTransaction;
@@ -1394,6 +1530,89 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     return normalized.valid
       ? { promoted: true, completed: normalized.completed, transactionResolution: completed.transactionResolution }
       : { promoted: false, reason: normalized.errors.join(' '), candidates };
+  }
+
+  function promoteCompletedKeyedSalesOrderW458(payload, modules) {
+    const completed = payload || {};
+    const records = completed.records || {};
+    const tx = completed.transactionResolution || {};
+    const demoSource = records.demoTransaction || records.salesOrder || completed.demoTransaction || completed.salesOrder || {};
+    const candidates = []
+      .concat(tx.expectedExternalIdCandidates || [])
+      .concat(demoSource.externalIdCandidates || [])
+      .concat(tx.expectedExternalId || tx.expectedDemoTransactionExternalId || demoSource.expectedExternalId || completed.extId || completed.generatedExtId || []);
+    const alreadyResolved = numericId(demoSource.internalId || demoSource.id) &&
+      /salesord\.nl/i.test(String(demoSource.url || demoSource.openableUrl || ''));
+    if (alreadyResolved) return { promoted: false, alreadyResolved: true };
+    const salesOrder = resolveSalesOrderByExternalIdCandidates(candidates, modules);
+    if (!salesOrder.found) {
+      completed.transactionResolution = Object.assign({}, tx, {
+        lookupStatus: salesOrder.reason || 'pending_transaction_resolution',
+        savedSearchId: salesOrder.searchId || SALES_ORDER_LOOKUP_SEARCH_ID_W458,
+        savedSearchInternalId: salesOrder.searchInternalId || SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458,
+        candidates: salesOrder.candidates || uniqueTextValuesW458(candidates)
+      });
+      return { promoted: false, reason: salesOrder.reason, candidates: salesOrder.candidates || candidates };
+    }
+    const currentRunIdentity = {
+      status: 'current_run_identity_verified',
+      role: 'sales_order',
+      expectedRole: 'sales_order',
+      expectedExternalId: salesOrder.candidate || '',
+      matchedExternalId: salesOrder.externalId || salesOrder.candidate || '',
+      matchedSalesOrderId: salesOrder.internalId,
+      matchedTranid: salesOrder.tranid || salesOrder.name || '',
+      savedSearchId: salesOrder.searchId || '',
+      savedSearchInternalId: salesOrder.searchInternalId || '',
+      notWorkOrder: true
+    };
+    const salesOrderRecord = Object.assign({}, demoSource, {
+      role: 'sales_order',
+      type: 'salesorder',
+      recordType: 'salesorder',
+      label: 'Sales Order',
+      name: salesOrder.name || demoSource.name || `Sales Order ${salesOrder.internalId}`,
+      recordName: salesOrder.name || demoSource.recordName || `Sales Order ${salesOrder.internalId}`,
+      internalId: salesOrder.internalId,
+      id: salesOrder.internalId,
+      url: salesOrder.url,
+      openableUrl: salesOrder.url,
+      status: salesOrder.status || demoSource.status || '',
+      tranid: salesOrder.tranid || salesOrder.name || '',
+      externalId: salesOrder.externalId || salesOrder.candidate || '',
+      memo: salesOrder.memo || '',
+      entityName: salesOrder.entityName || '',
+      currentRunIdentityW457: currentRunIdentity,
+      identityValidationStatus: 'current_run_identity_verified',
+      linkAuthority: {
+        status: 'verified_openable_current_run',
+        openable: true,
+        url: salesOrder.url
+      }
+    });
+    records.demoTransaction = salesOrderRecord;
+    records.salesOrder = salesOrderRecord;
+    completed.records = records;
+    completed.demoTransaction = salesOrderRecord;
+    completed.salesOrder = salesOrderRecord;
+    completed.transactionResolution = {
+      status: salesOrder.source === 'forge_so_lookup_saved_search' ? 'sales_order_resolved_by_saved_search' : 'resolved_by_csv_import',
+      authority: salesOrder.source === 'forge_so_lookup_saved_search' ? 'FORGE SO lookup saved search' : 'legacy_runner_csv_import_path',
+      savedSearchId: salesOrder.searchId || '',
+      savedSearchInternalId: salesOrder.searchInternalId || '',
+      expectedExternalId: salesOrder.candidate || '',
+      matchedExternalId: salesOrder.externalId || salesOrder.candidate || '',
+      matchedSalesOrderId: salesOrder.internalId,
+      matchedTranid: salesOrder.tranid || salesOrder.name || '',
+      demandRecordRolePolicy: 'sales_order_only_never_work_order'
+    };
+    completed.currentRunIdentityChecksW457 = Object.assign({}, completed.currentRunIdentityChecksW457 || {}, {
+      salesOrder: currentRunIdentity
+    });
+    completed.displayReadyRecords = displayRecordsFromKeyedW455(records);
+    completed.recordsArray = completed.displayReadyRecords;
+    completed.displayRecords = completed.displayReadyRecords;
+    return { promoted: true, salesOrder, transactionResolution: completed.transactionResolution };
   }
 
   function findResultCaptureFile(config, lookup, modules) {
@@ -1631,6 +1850,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     }
     const keyedCompletedW455 = completedKeyedResultCaptureW455(parsed);
     if (keyedCompletedW455.ready) {
+      const salesOrderPromotionW458 = promoteCompletedKeyedSalesOrderW458(keyedCompletedW455.payload, modules);
       return {
         schema: 'idb.approved-server-adapter-result-envelope.v1',
         adapterVersion: ADAPTER_VERSION,
@@ -1653,6 +1873,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
           sourceFileId: found.fileId,
           sourceFileName: found.fileName,
           lookupSource: found.lookupSource || '',
+          salesOrderPromotionW458,
           finalGeneratedNamesReady: true,
           finalGeneratedNamesJson: keyedCompletedW455.payload
         }),

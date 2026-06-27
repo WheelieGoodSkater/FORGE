@@ -120,6 +120,10 @@ assert(contains(runner, 'ensureCustomerCurrentRunIdentityW457'), 'runner must ov
 assert(contains(runner, 'current_run_identity_verified'), 'runner must verify current customer prospect, website, memo, and stale Health-Ade cleanup');
 assert(contains(runner, 'demandRecordRolePolicy') && contains(runner, 'sales_order_only_never_work_order'), 'runner must not represent Work Order as demand/Sales Order');
 assert(contains(runner, 'demandDiagnostic') && contains(runner, "blockedLinkRole: 'work_order'"), 'runner must return a Sales Order demand diagnostic instead of a fake Work Order demand link');
+assert(contains(runner, 'customsearch_wms_atlas_bill_lookup_2'), 'runner must use the FORGE SO lookup saved search as a Sales Order resolution source');
+assert(contains(runner, 'SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458') && contains(runner, "'5006'"), 'runner must keep the FORGE SO lookup internal id available for accounts that cannot load by script id');
+assert(contains(runner, 'sales_order_resolved_by_saved_search'), 'runner must mark current-run Sales Orders resolved through the saved search distinctly');
+assert(contains(runner, 'FORGE SO lookup did not return a current-run Sales Order internal id'), 'runner must preserve truthful demand diagnostics when the saved search cannot resolve the SO');
 assert(contains(runner, 'fallbackTruthW458'), 'runner must emit explicit fallback truth telemetry for generic product outcomes');
 assert(contains(runner, 'reusedRecordOverwriteTelemetryW457'), 'runner must emit reused-record overwrite telemetry');
 assert(contains(runner, 'cleanWorkOrderLineDescriptionsW457'), 'runner must clean reused Work Order line descriptions');
@@ -197,6 +201,10 @@ assert(contains(adapter, 'completedKeyedResultCaptureW455'), 'poll adapter must 
 assert(contains(adapter, "status: keyedCompletedW455.status === 'completed_with_wip_diagnostic'"), 'poll adapter must return completed_with_wip_diagnostic terminal status');
 assert(contains(adapter, 'safeSourceRequestIdFileTokenW455ResultStem'), 'poll adapter must search completed captures by sourceRequestId/request identity');
 assert(contains(adapter, 'completed_keyed_result_capture_matches_current_safe_file_token'), 'poll adapter must allow terminal keyed safe-token captures without weakening stale guards');
+assert(contains(adapter, 'customsearch_wms_atlas_bill_lookup_2'), 'poll adapter must use the FORGE SO lookup saved search when promoting delayed SO imports');
+assert(contains(adapter, 'promoteCompletedKeyedSalesOrderW458'), 'poll adapter must promote completed keyed captures once the saved search sees the Sales Order');
+assert(contains(adapter, 'forge_so_lookup_saved_search'), 'poll adapter Sales Order promotion must record the saved-search source');
+assert(contains(adapter, 'sales_order_resolved_by_saved_search'), 'poll adapter must expose saved-search SO resolution in transactionResolution');
 
 const bannedInHealthAdeFixture = notContainsAny(
   [

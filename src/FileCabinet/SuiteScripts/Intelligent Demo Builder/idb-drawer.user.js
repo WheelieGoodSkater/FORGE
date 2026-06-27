@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.68
+// @version      1.0.69
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.68';
-  const CURRENT_UX_BLOCK_W346 = 'W465';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.69';
+  const CURRENT_UX_BLOCK_W346 = 'W466';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1248,7 +1248,7 @@
 
   const INSTALLED_DRAWER_RUNTIME_MARKER_W332 = 'W332 post-import story polish active';
   const INSTALLED_DRAWER_VERSION_FINGERPRINT_W339 = 'W339 imported proof record UX active';
-  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W465 deployed website product evidence and WIP-off sidecar truth active';
+  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W466 current-run sidecar provenance and product-first record naming active';
   const INSTALLED_DRAWER_COPY_FINGERPRINT_W339 = [
     'Use imported proof records',
     'Use returned NetSuite proof records',
@@ -1414,7 +1414,7 @@
       schema: 'forge.installed-drawer-current-block-marker.w465.v1',
       marker: INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342,
       active: true,
-      purpose: 'Current visible Trace marker for W465 deployed website product evidence, WIP-off gating, and sidecar truth verification.',
+      purpose: 'Current visible Trace marker for W466 current-run sidecar provenance, website product evidence, WIP-off gating, and sidecar truth verification.',
       previousMarkersRetainedInExportOnly: true,
       writebackAuthorityChanged: false,
       validationChanged: false,
@@ -21318,6 +21318,31 @@
       .filter((item) => item && item.source === 'dcc_final' && (firstNonBlank(item.name, item.recordName) || firstNonBlank(item.id, item.internalId) || firstNonBlank(item.url, item.supportedOpenUrl)));
   }
 
+  function runnerSidecarMatchesCurrentRunW466(state, sidecarJson, finalNaming) {
+    const intake = normalizedIntake(state || {});
+    const expectedProspect = firstNonBlank(intake.customer, state && state.customerName);
+    const expectedToken = String(expectedProspect || '').replace(/[^a-z0-9]+/gi, '').toLowerCase();
+    if (!expectedToken) return { matches: true, reason: 'no_current_prospect_available' };
+
+    const returnedRecords = runnerSidecarReturnedRecordsForImportW433(finalNaming);
+    const candidateText = [
+      sidecarJson && sidecarJson.prospect,
+      sidecarJson && sidecarJson.customerName,
+      sidecarJson && sidecarJson.customer && sidecarJson.customer.name,
+      sidecarJson && sidecarJson.customer && sidecarJson.customer.recordName
+    ].concat(returnedRecords.map((item) => firstNonBlank(item.name, item.recordName, item.customerName, item.label))).join(' ');
+    const candidateToken = String(candidateText || '').replace(/[^a-z0-9]+/gi, '').toLowerCase();
+    const matches = candidateToken.indexOf(expectedToken) !== -1;
+    return {
+      matches,
+      reason: matches ? 'current_prospect_matched_sidecar' : 'current_prospect_not_found_in_sidecar_records',
+      expectedProspect,
+      expectedToken,
+      returnedNames: returnedRecords.map((item) => firstNonBlank(item.name, item.recordName)).filter(Boolean).slice(0, 8),
+      sidecarProspect: firstNonBlank(sidecarJson && sidecarJson.prospect, sidecarJson && sidecarJson.customerName)
+    };
+  }
+
   function commitRunnerSidecarDisplayResultW431(state, lane, pageContext, recommendation, runnerResult, options) {
     const opts = options || {};
     const sidecarJson = opts.sidecarJson || runnerSidecarDisplayResultJsonW431(runnerResult);
@@ -21331,6 +21356,28 @@
     }
     const finalNaming = dccFinalNamingResultV1(sidecarJson, state, lane, pageContext, recommendation);
     const returnedRecords = runnerSidecarReturnedRecordsForImportW433(finalNaming);
+    const provenance = runnerSidecarMatchesCurrentRunW466(state, sidecarJson, finalNaming);
+    if (provenance.matches !== true) {
+      const capture = runnerResult && runnerResult.resultCapture || {};
+      return {
+        schema: 'idb.w431-sidecar-display-result-import.v1',
+        status: 'sidecar_current_run_provenance_mismatch_rejected',
+        imported: false,
+        reason: 'Runner sidecar belongs to a different prospect/current run; waiting for a current-run terminal sidecar.',
+        currentRunProvenanceW466: provenance,
+        sourceFileId: firstNonBlank(capture.sourceFileId, runnerResult && runnerResult.sourceFileId, capture.fileId, runnerResult && runnerResult.fileId),
+        sourceFileName: firstNonBlank(capture.sourceFileName, runnerResult && runnerResult.sourceFileName, capture.fileName, runnerResult && runnerResult.fileName),
+        resultCaptureCursor: firstNonBlank(capture.resultCaptureCursor, runnerResult && runnerResult.resultCaptureCursor),
+        lookupStatus: firstNonBlank(capture.lookupStatus, runnerResult && runnerResult.lookupStatus, capture.status, runnerResult && runnerResult.status),
+        lookupSource: firstNonBlank(capture.lookupSource, runnerResult && runnerResult.lookupSource),
+        nonterminalStaleRejected: capture.staleRejected === true && !capture.terminalStatus,
+        terminalStaleFailure: capture.terminalStatus === 'stale_result_capture_rejected_after_wait' || runnerResult && runnerResult.status === 'stale_result_capture_rejected_after_wait',
+        terminalNotFoundFailure: capture.terminalStatus === 'result_capture_not_found_after_wait' || runnerResult && runnerResult.status === 'result_capture_not_found_after_wait',
+        latestRejectedFile: capture.latestRejectedFile || runnerResult && runnerResult.latestRejectedFile || null,
+        expectedProvenance: capture.expectedProvenance || runnerResult && runnerResult.expectedProvenance || null,
+        returnedNames: provenance.returnedNames || []
+      };
+    }
     if (!returnedRecords.length) {
       return {
         schema: 'idb.w431-sidecar-display-result-import.v1',

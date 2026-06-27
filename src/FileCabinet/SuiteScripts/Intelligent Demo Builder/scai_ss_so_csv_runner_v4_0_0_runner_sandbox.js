@@ -490,9 +490,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const names = namingPayload.payload;
+    const names = normalizeProductFirstRecordNamesW466(namingPayload.payload, { prospect });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: namingPayload.source || names._source || 'deterministic',
+      productFirstRecordNamingW466: names.productFirstRecordNamingW466 || null,
       signalLen: names._signalLen || 0,
       industry_category: names.industry_category || '',
       namingFileId: namingPayload.fileId || namingFileId || null,
@@ -5357,6 +5358,73 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       itemIdName: `${itemBase} - ${suffix}`,
       suffix
     };
+  }
+
+  function normalizeProductFirstRecordNamesW466(rawNames, context) {
+    const names = Object.assign({}, rawNames || {});
+    const selectedCandidate = names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
+      ? names.selectedCatalogCandidate.name
+      : names.selectedCatalogCandidate;
+    const product = str(names.selectedProductName || names.primary_product_candidate || selectedCandidate || '');
+    if (!product || /^catalog product$/i.test(product) || names.fallbackUsed === true) return names;
+
+    const prospect = str(context && context.prospect || '');
+    const prospectCore = trimLen(prospect
+      .replace(/\bW\d+\b/ig, '')
+      .replace(/\bReal Naming\b/ig, '')
+      .replace(/\bDistribution\b/ig, '')
+      .replace(/\bManufacturing\b/ig, '')
+      .replace(/\bWIP Off\b/ig, '')
+      .replace(/\b\d{6,}\w*\b/g, '')
+      .replace(/\s+/g, ' ')
+      .trim(), 28);
+    const brandPrefix = prospectCore && product.toLowerCase().indexOf(prospectCore.toLowerCase()) === -1
+      ? `${prospectCore} `
+      : '';
+    const productCase = `${brandPrefix}${product} Case`;
+    const productAssembly = `${brandPrefix}${product} Assembly`;
+    const productBom = `${brandPrefix}${product}`;
+    const productComponentNames = [
+      `${product} Core Unit`,
+      `${product} Accessory Kit`,
+      `${product} Retail Packaging`
+    ];
+
+    function hasFullProduct(value) {
+      return String(value || '').toLowerCase().indexOf(product.toLowerCase()) !== -1;
+    }
+
+    const before = {
+      hero_item_name: names.hero_item_name || '',
+      assembly_name: names.assembly_name || '',
+      component_names: names.component_names || [],
+      bom_name: names.bom_name || '',
+      bom_revision_name: names.bom_revision_name || ''
+    };
+
+    if (!hasFullProduct(names.hero_item_name)) names.hero_item_name = productCase;
+    if (!hasFullProduct(names.assembly_name)) names.assembly_name = productAssembly;
+    if (!Array.isArray(names.component_names) || !names.component_names.length || names.component_names.some(function(name) { return !hasFullProduct(name); })) {
+      names.component_names = productComponentNames;
+    }
+    if (!hasFullProduct(names.bom_name)) names.bom_name = `BOM - ${productBom}`;
+    if (!hasFullProduct(names.bom_revision_name)) names.bom_revision_name = `Revision 1 - ${productBom}`;
+    if (!hasFullProduct(names.routing_name)) names.routing_name = `Routing - ${productBom}`;
+
+    names.productFirstRecordNamingW466 = {
+      applied: true,
+      selectedProductName: product,
+      before,
+      after: {
+        hero_item_name: names.hero_item_name || '',
+        assembly_name: names.assembly_name || '',
+        component_names: names.component_names || [],
+        bom_name: names.bom_name || '',
+        bom_revision_name: names.bom_revision_name || ''
+      },
+      policy: 'selected-public-product-visible-before-prospect-truncation'
+    };
+    return names;
   }
 
   function trimLen(s, n) { const t = String(s || '').trim(); return t.length <= n ? t : t.slice(0, n).trim(); }

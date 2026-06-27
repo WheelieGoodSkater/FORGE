@@ -25,7 +25,7 @@ assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W460';"), 'drawer block 
 
 assert(contains(adapter, 'createNamingPackFile(request, config, idempotencyToken)'), 'approved adapter must create a naming pack before runner submit');
 assert(contains(adapter, 'custscript_scai_runner_naming_file_id'), 'approved adapter must pass custscript_scai_runner_naming_file_id');
-assert(contains(adapter, 'scai_naming_${safeFileToken(idempotencyToken)}.json'), 'approved adapter must write discoverable scai_naming_<extId>.json files');
+assert(contains(adapter, 'boundedFileNameW461(`scai_naming_${safeFileToken(idempotencyToken)}.json`, 180)'), 'approved adapter must write bounded discoverable scai_naming_<extId>.json files');
 assert(contains(adapter, 'buildCatalogCandidatesW457(request, website, namingAuthority)'), 'adapter must build catalog candidates before naming pack creation');
 assert(contains(adapter, 'request.websiteEvidence'), 'adapter must wire request-carried website evidence into catalog candidate selection');
 assert(contains(adapter, 'request.finalNamingAdvisory'), 'adapter must wire LLM/final naming advisory into catalog candidate selection');
@@ -36,6 +36,11 @@ assert(contains(adapter, 'isGenericCatalogCandidateW459'), 'adapter must reject 
 assert(contains(adapter, 'Forklift Truck') && contains(adapter, 'Pallet Truck') && contains(adapter, 'Reach Truck') && contains(adapter, 'Order Picker'), 'adapter must extract industrial equipment website product candidates');
 assert(contains(adapter, 'Crown C-5 Series Forklift') && contains(adapter, 'Crown RC Series Stand-Up Rider Forklift'), 'adapter must seed concrete Crown product-line resolver candidates');
 assert(contains(adapter, 'manufacturable industrial equipment product-line noun'), 'adapter must score industrial equipment product-line nouns');
+assert(contains(adapter, 'Rambler 20 oz Tumbler') && contains(adapter, 'Tundra Cooler') && contains(adapter, 'Hopper Soft Cooler'), 'adapter must seed concrete YETI public product-line resolver candidates');
+assert(contains(adapter, 'Quencher H2.0 FlowState Tumbler') && contains(adapter, 'IceFlow Flip Straw Tumbler') && contains(adapter, 'Classic Legendary Bottle'), 'adapter must seed concrete Stanley public product-line resolver candidates');
+assert(contains(adapter, 'concrete public hardgoods product-line name'), 'adapter must score public hardgoods product-line names above generic terms');
+assert(contains(adapter, 'durable consumer hardgoods product noun'), 'adapter must score hardgoods product nouns');
+assert(contains(adapter, 'fits dealer hardgoods fulfillment scenario'), 'adapter must rank dealer hardgoods website candidates for distribution/fulfillment runs');
 assert(contains(adapter, 'productEvidenceConfidence'), 'adapter must emit productEvidenceConfidence telemetry');
 assert(contains(adapter, 'websiteEvidenceSourceUrls'), 'adapter must emit websiteEvidenceSourceUrls');
 assert(contains(adapter, 'genericCandidateRejectedReasons'), 'adapter must emit genericCandidateRejectedReasons');
@@ -71,6 +76,9 @@ assert(contains(runner, 'websiteEvidenceSourceUrls'), 'runner must pass through 
 assert(contains(runner, 'genericCandidateRejectedReasons'), 'runner must pass through genericCandidateRejectedReasons telemetry');
 assert(contains(runner, 'productEvidenceConfidence'), 'runner must pass through productEvidenceConfidence telemetry');
 assert(contains(runner, 'industrialEquipmentNamingPackW460'), 'runner must preserve industrial product naming when naming file loading falls back');
+assert(contains(runner, 'durableHardgoodsNamingPackW462'), 'runner must preserve YETI/Stanley hardgoods naming if the naming file handoff is absent');
+assert(contains(runner, 'domain-catalog-durable-hardgoods-w462'), 'runner hardgoods fallback must remain a website-domain catalog resolver, not a prospect-name fallback');
+assert(contains(runner, 'Catalog Product rejected: public website product-line candidate available'), 'runner must explicitly block Catalog Product when public hardgoods candidates exist');
 assert(contains(runner, 'waitForSalesOrderResolutionW460'), 'runner must wait briefly for Sales Order saved-search resolution after CSV import');
 assert(contains(runner, 'websiteCatalogEvidenceUsed'), 'runner must pass through websiteCatalogEvidenceUsed telemetry');
 assert(contains(runner, 'llmCatalogInterpretationUsed'), 'runner must pass through llmCatalogInterpretationUsed telemetry');
@@ -78,6 +86,11 @@ assert(contains(runner, 'deterministicCatalogRankerUsed'), 'runner must pass thr
 assert(contains(runner, 'fallbackUsed'), 'runner must pass through fallbackUsed telemetry');
 assert(contains(runner, 'flavorSignalsUsed'), 'runner must pass through flavorSignalsUsed telemetry');
 assert(contains(runner, 'selectedProductName'), 'runner must pass through selectedProductName telemetry');
+assert(contains(runner, 'boundedFileNameW461(`scai_so_${extId}.csv`, 180)'), 'runner SO CSV filenames must be bounded below NetSuite field length limits');
+assert(contains(runner, 'resultCaptureFileNameW453({ extId, buildAttemptId, status })'), 'runner result capture filenames must route through the bounded W461 helper');
+assert(contains(runner, 'resultCaptureFileNameW453({ extId, buildAttemptId: \'error\', status: \'error\' })'), 'runner error result capture filenames must route through the bounded W461 helper');
+assert(contains(runner, 'const safeName = boundedFileNameW461(name || `idb_result_${Date.now()}.json`, 180);'), 'runner text sidecar writer must bound file names');
+assert(contains(runner, 'const safeName = boundedFileNameW461(filename || `scai_file_${Date.now()}.csv`, 180);'), 'runner CSV writer must bound file names');
 
 [
   'Ginger Lemon Kombucha',
@@ -206,6 +219,11 @@ assert(contains(drawer, 'WIP production steps'), 'drawer must show compact WIP p
 assert(contains(drawer, 'Product Expansion Audit'), 'drawer must keep Product Expansion Audit visible above the operational story');
 assert(contains(drawer, '<strong>Fallback:</strong>'), 'drawer Product Expansion Audit must expose fallback truth visibly');
 assert(contains(drawer, 'Rejected generic:'), 'drawer Product Expansion Audit must expose rejected generic candidates');
+assert(contains(drawer, 'resultCaptureSourceW462'), 'drawer troubleshoot export must expose result capture file source metadata');
+assert(contains(drawer, 'sourceFileId: resultCaptureSourceW462.sourceFileId'), 'drawer troubleshoot export must include completed result sourceFileId');
+assert(contains(drawer, 'sourceFileName: resultCaptureSourceW462.sourceFileName'), 'drawer troubleshoot export must include completed result sourceFileName');
+assert(contains(drawer, 'resultCaptureStatusTrailW462'), 'drawer troubleshoot export must distinguish nonterminal stale rejection from terminal stale failure');
+assert(contains(drawer, 'nonterminalStaleRejected') && contains(drawer, 'terminalStaleFailure'), 'drawer export must distinguish nonterminal stale candidate rejection from terminal stale failure');
 assert(contains(drawer, 'Order -> Demand -> Buy Inputs -> Build Batch -> WIP Steps -> Finished Cases'), 'drawer must render compact WIP proof path copy instead of raw browser story text');
 assert(!contains(drawer, 'Planned Operation ${escapeHtml(Number(item.operationIndex || index) + 1)} ${escapeHtml(name)}'), 'drawer must not duplicate planned operation prefixes');
 assert(contains(drawer, 'Core records imported; review WIP diagnostic'), 'drawer ERP Story must truthfully describe WIP diagnostics');
@@ -220,6 +238,17 @@ assert(contains(adapter, 'customsearch_wms_atlas_bill_lookup_2'), 'poll adapter 
 assert(contains(adapter, 'promoteCompletedKeyedSalesOrderW458'), 'poll adapter must promote completed keyed captures once the saved search sees the Sales Order');
 assert(contains(adapter, 'forge_so_lookup_saved_search'), 'poll adapter Sales Order promotion must record the saved-search source');
 assert(contains(adapter, 'sales_order_resolved_by_saved_search'), 'poll adapter must expose saved-search SO resolution in transactionResolution');
+assert(contains(adapter, "status: 'runner_busy_inprogress'"), 'adapter must map scheduled task INPROGRESS to runner_busy_inprogress');
+assert(contains(adapter, 'retryAfterMs: 45000'), 'adapter runner busy response must include retry guidance');
+assert(contains(adapter, 'result_capture_not_found_after_wait'), 'adapter must return a terminal diagnostic when result capture is absent after max wait');
+assert(contains(adapter, 'stale_result_capture_rejected_after_wait'), 'adapter must return a terminal diagnostic for stale captures after max wait');
+assert(contains(adapter, 'latestRejectedFile'), 'adapter stale diagnostics must expose latest rejected file detail');
+assert(contains(adapter, 'expectedProvenance'), 'adapter stale diagnostics must expose expected provenance');
+assert(contains(adapter, 'mismatchReason'), 'adapter stale diagnostics must include mismatch reason');
+assert(contains(adapter, 'pollAttemptFromCursor'), 'adapter polling must carry finite attempt state via cursor');
+assert(contains(drawer, 'fetchWithTimeoutW461'), 'drawer adapter calls must use bounded request timeout');
+assert(contains(drawer, 'result_capture_terminal_diagnostic'), 'drawer must normalize result-capture max-wait diagnostics without generic adapter failure');
+assert(contains(drawer, 'w190_result_capture_terminal_diagnostic'), 'drawer poll state must expose terminal result-capture diagnostics');
 
 const bannedInHealthAdeFixture = notContainsAny(
   [

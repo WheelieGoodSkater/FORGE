@@ -326,6 +326,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const domain = domainFromWebsiteW457(website);
     if (/bluebottlecoffee\.com|bluebottle/.test(domain)) return 'Blue Bottle';
     if (/health-ade\.com|healthade/.test(domain)) return 'Health-Ade';
+    if (/yeti\.com|yeti/.test(domain)) return 'YETI';
+    if (/stanley1913\.com|stanley/.test(domain)) return 'Stanley';
     if (/chobani\.com/.test(domain)) return 'Chobani';
     if (/drinkpoppi\.com|poppi/.test(domain)) return 'Poppi';
     if (/goodles\.com/.test(domain)) return 'Goodles';
@@ -355,7 +357,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   }
 
   function isGenericCatalogCandidateW459(value) {
-    return /^(coffee|cold brew|beverage|case|batch|product|products|catalog product|catalog|equipment|industrial equipment|warehouse equipment|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good)$/i.test(compactText(value));
+    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|catalog product|catalog|equipment|industrial equipment|warehouse equipment|outdoor gear|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good)$/i.test(compactText(value));
   }
 
   function genericCatalogCandidateRejectedReasonW459(value) {
@@ -401,6 +403,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       'Very Narrow Aisle Trucks', 'Rider Pallet Truck', 'Walkie Pallet Truck',
       'Reach-Fork Truck', 'SP Series Order Picker', 'C-5 Series', 'C-G Series',
       'RC Series', 'RM Series', 'RR/RD Series', 'TSP Series', 'PE Series', 'WP Series'
+      , 'Rambler', 'Rambler Tumbler', 'Rambler 20 oz Tumbler',
+      'Rambler 30 oz Tumbler', 'Rambler Bottle', 'Tundra Cooler',
+      'Roadie Cooler', 'Hopper Soft Cooler', 'Camino Carryall',
+      'LoadOut Bucket', 'Yonder Bottle', 'Quencher H2.0 FlowState Tumbler',
+      'IceFlow Flip Straw Tumbler', 'Classic Legendary Bottle',
+      'AeroLight Transit Mug', 'Adventure Quencher Travel Tumbler'
     ];
     known.forEach((term) => {
       const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/o/g, '[oō]'), 'i');
@@ -409,7 +417,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     [
       /\b([A-Z][A-Za-z0-9-]{1,8}\s+Series\s+(?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck|Truck)s?)\b/g,
       /\b((?:Electric|Internal Combustion|Counterbalance|Rider|Walkie|Walkie Rider|Very Narrow Aisle|Reach-Fork)\s+(?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck|Truck)s?)\b/gi,
-      /\b((?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck)s?)\b/gi
+      /\b((?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck)s?)\b/gi,
+      /\b((?:Rambler|Tundra|Roadie|Hopper|Camino|LoadOut|Yonder)\s+(?:Tumbler|Bottle|Cooler|Soft Cooler|Carryall|Bucket|Mug|Drinkware)s?)\b/gi,
+      /\b((?:Quencher H2\.0 FlowState|IceFlow Flip Straw|Classic Legendary|AeroLight Transit|Adventure Quencher)\s+(?:Tumbler|Bottle|Mug|Travel Tumbler)s?)\b/gi,
+      /\b((?:20 oz|30 oz|40 oz|64 oz)\s+(?:Tumbler|Bottle|Quencher|Mug))\b/gi
     ].forEach((pattern) => {
       let match = pattern.exec(cleaned);
       while (match) {
@@ -446,6 +457,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     }
     if (/chomps\.com/.test(domain)) {
       return ['Original Beef Stick', 'Jalapeno Beef Stick', 'Original Turkey Stick', 'Italian Style Beef Stick'];
+    }
+    if (/yeti\.com|yeti/.test(domain)) {
+      return ['Rambler 20 oz Tumbler', 'Tundra Cooler', 'Roadie Cooler', 'Hopper Soft Cooler', 'Camino Carryall', 'LoadOut Bucket', 'Yonder Bottle'];
+    }
+    if (/stanley1913\.com|stanley/.test(domain)) {
+      return ['Quencher H2.0 FlowState Tumbler', 'IceFlow Flip Straw Tumbler', 'Classic Legendary Bottle', 'AeroLight Transit Mug', 'Adventure Quencher Travel Tumbler'];
     }
     if (/crown\.com|crown/.test(domain)) {
       return ['Crown C-5 Series Forklift', 'Crown RC Series Stand-Up Rider Forklift', 'Crown RM Series Reach Truck', 'Crown SP Series Order Picker', 'Crown PE Series Pallet Truck'];
@@ -546,6 +563,14 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         score += 30;
         reasons.push('manufacturable industrial equipment product-line noun');
       }
+      if (/\b(rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher)\b/i.test(lower)) {
+        score += 38;
+        reasons.push('concrete public hardgoods product-line name');
+      }
+      if (/\b(tumbler|bottle|cooler|soft cooler|carryall|bucket|mug|drinkware|travel tumbler)\b/i.test(lower)) {
+        score += 18;
+        reasons.push('durable consumer hardgoods product noun');
+      }
       if (/\b[a-z0-9-]+\s+series\b/i.test(lower)) {
         score += 18;
         reasons.push('concrete public product series signal');
@@ -558,6 +583,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         score += 18;
         reasons.push('fits industrial WIP assembly scenario');
       }
+      if (/dealer[_\s-]*hardgoods|durable consumer|distribution|fulfillment|retail|allocation|drinkware|cooler|outdoor/.test(`${scenario} ${website}`) && /\b(rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|tumbler|bottle|cooler|carryall|bucket|mug)\b/i.test(lower)) {
+        score += 20;
+        reasons.push('fits dealer hardgoods fulfillment scenario');
+      }
       if (candidate.source === 'llm_naming_advisory') {
         score += 10;
         reasons.push('LLM naming advisory interpreted catalog evidence');
@@ -566,6 +595,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       if (/health-ade|healthade/.test(website) && /\b(kombucha|sunsip|ginger lemon|pink lady apple|pomegranate)\b/i.test(lower)) score += 12;
       if (/raos|rao'?s/.test(website) && /\b(marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti)\b/i.test(lower)) score += 18;
       if (/hyster|crown/.test(website) && /\b(forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|truck|series)\b/i.test(lower)) score += 16;
+      if (/yeti/.test(website) && /\b(rambler|tundra|roadie|hopper|camino|loadout|yonder|tumbler|bottle|cooler|carryall|bucket)\b/i.test(lower)) score += 18;
+      if (/stanley1913|stanley/.test(website) && /\b(quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|tumbler|bottle|mug)\b/i.test(lower)) score += 18;
       return Object.assign({}, candidate, {
         confidence: Math.max(1, Math.min(99, Math.round(score))),
         wipSuitabilityScore: Math.max(1, Math.min(99, Math.round(score))),
@@ -588,6 +619,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/mac|penne|pasta/.test(lower)) return 'packaged pasta';
     if (/stick|beef|turkey/.test(lower)) return 'meat snack';
     if (/forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series/.test(lower)) return 'industrial equipment';
+    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|tumbler|bottle|cooler|carryall|bucket|mug|drinkware/.test(lower)) return 'durable consumer hardgoods';
     return '';
   }
 
@@ -662,6 +694,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         operations: { '10': `Stage ${product} Subassemblies`, '20': `Assemble and Configure ${product}`, '30': `Inspect and Release ${product}` }
       };
     }
+    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|tumbler|bottle|cooler|carryall|bucket|mug|drinkware/.test(lower)) {
+      return {
+        components: [`${product} Retail Case Inventory`, `${product} Channel Replenishment Lot`, `${product} Fulfillment Packaging`],
+        operations: { '10': `Receive ${product} Cases`, '20': `Allocate ${product} Demand`, '30': `Release ${product} Fulfillment` }
+      };
+    }
     return {
       components: [`${product} Input Base`, `${product} Process Blend`, `${product} Packaging`],
       operations: { '10': `Prepare ${product}`, '20': `Fill and Pack ${product}`, '30': 'QC and Release Finished Cases' }
@@ -714,6 +752,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       { pattern: /\bmac|pasta|penne\b/g, label: 'packaged pasta' },
       { pattern: /\bstick|beef|turkey\b/g, label: 'meat snack' },
       { pattern: /\bforklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series\b/g, label: 'industrial equipment' }
+      , { pattern: /\brambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|tumbler|bottle|cooler|carryall|bucket|mug|drinkware\b/g, label: 'durable consumer hardgoods' }
     ]);
     const flavorSignalsUsed = uniqueList([product].concat((selectedCatalogCandidate && selectedCatalogCandidate.reasons || []).filter((reason) => /concrete/i.test(reason))));
     const packSignalsUsed = ['Case'];
@@ -752,7 +791,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       selectedPackName: 'Case',
       industry_category: productCategoryW457(product) === 'industrial equipment'
         ? 'Industrial Equipment'
-        : (productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId)),
+        : (productCategoryW457(product) === 'durable consumer hardgoods'
+          ? 'Dealer Hardgoods'
+          : (productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId))),
       primary_product_candidate: product,
       alternate_product_candidates: rankedCatalogCandidates.slice(1, 7).map((candidate) => candidate.name),
       evidence_terms: uniqueList([brand, product, productCategoryW457(product)].concat(productSignalsUsed)),
@@ -795,8 +836,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const folderId = config.resultCaptureFolderId || config.folderId;
     if (!folderId) return { fileId: null, status: 'naming_folder_missing' };
     const namingPack = buildServerPrecomputedNamingPack(request);
+    const fileName = boundedFileNameW461(`scai_naming_${safeFileToken(idempotencyToken)}.json`, 180);
     const namingFile = file.create({
-      name: `scai_naming_${safeFileToken(idempotencyToken)}.json`,
+      name: fileName,
       fileType: file.Type.JSON,
       folder: Number(folderId),
       contents: JSON.stringify(namingPack, null, 2)
@@ -922,13 +964,30 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         reason: 'governed runner scheduled task submitted by NetSuite-side adapter'
       };
     } catch (error) {
+      const errorName = error && (error.name || error.id) ? String(error.name || error.id) : 'RUNNER_SUBMIT_FAILED';
+      const errorMessage = error && error.message ? String(error.message) : String(error || 'Scheduled runner submit failed.');
+      const inProgress = errorName === 'INPROGRESS' || /INPROGRESS|already running|in progress/i.test(errorMessage);
+      if (inProgress) {
+        return {
+          queueSubmitted: false,
+          runnerTaskId: null,
+          submitAttempted: true,
+          retryable: true,
+          retryAfterMs: 45000,
+          status: 'runner_busy_inprogress',
+          reason: 'scheduled runner deployment is already running; retry this same request after the current runner completes',
+          errorName,
+          errorMessage,
+          errorStack: error && error.stack ? String(error.stack).slice(0, 1200) : ''
+        };
+      }
       return {
         queueSubmitted: false,
         runnerTaskId: null,
         submitAttempted: true,
         error: true,
-        errorName: error && (error.name || error.id) ? String(error.name || error.id) : 'RUNNER_SUBMIT_FAILED',
-        errorMessage: error && error.message ? String(error.message) : String(error || 'Scheduled runner submit failed.'),
+        errorName,
+        errorMessage,
         errorStack: error && error.stack ? String(error.stack).slice(0, 1200) : '',
         reason: 'scheduled runner task submit failed inside W144 adapter'
       };
@@ -936,11 +995,15 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   }
 
   function resultCapturePending(idempotencyToken, queueSubmit, request) {
+    const busy = queueSubmit && queueSubmit.status === 'runner_busy_inprogress';
     return {
       schema: 'idb.runner-result-capture.v1',
-      status: queueSubmit.queueSubmitted ? 'pending_runner_completion' : 'not_started_no_submit',
+      status: busy ? 'runner_busy_inprogress' : (queueSubmit.queueSubmitted ? 'pending_runner_completion' : 'not_started_no_submit'),
       idempotencyToken,
       runnerTaskId: queueSubmit.runnerTaskId,
+      retryable: busy === true,
+      retryAfterMs: busy ? queueSubmit.retryAfterMs : null,
+      busyReason: busy ? queueSubmit.reason : '',
       sourceRequestId: request && request.requestId ? String(request.requestId) : '',
       buildAttemptId: request && (request.buildAttemptId || request.buildAttemptProvenance && request.buildAttemptProvenance.buildAttemptId) ? String(request.buildAttemptId || request.buildAttemptProvenance.buildAttemptId) : '',
       submittedAt: request && (request.submittedAt || request.buildAttemptProvenance && request.buildAttemptProvenance.submittedAt) ? String(request.submittedAt || request.buildAttemptProvenance.submittedAt) : '',
@@ -969,6 +1032,31 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function safeFileToken(value) {
     return String(value || '').replace(/[^A-Za-z0-9_\-]/g, '_').slice(0, 80) || 'missing_token';
+  }
+
+  function shortHashW461(value) {
+    const text = String(value || '');
+    let hash = 5381;
+    for (let i = 0; i < text.length; i += 1) {
+      hash = ((hash << 5) + hash) ^ text.charCodeAt(i);
+    }
+    return (`00000000${(hash >>> 0).toString(16)}`).slice(-8);
+  }
+
+  function boundedFileNameW461(name, maxLen) {
+    const limit = Math.max(20, Math.min(Number(maxLen || 180), 180));
+    const cleaned = String(name || 'idb_file.txt')
+      .replace(/[\\/:*?"<>|#%&{}$!'@+=`~]/g, '_')
+      .replace(/\s+/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    if (cleaned.length <= limit) return cleaned || 'idb_file.txt';
+    const dot = cleaned.lastIndexOf('.');
+    const ext = dot > 0 && cleaned.length - dot <= 12 ? cleaned.slice(dot) : '';
+    const base = ext ? cleaned.slice(0, dot) : cleaned;
+    const suffix = `_${shortHashW461(cleaned)}`;
+    const baseLimit = Math.max(8, limit - ext.length - suffix.length);
+    return `${base.slice(0, baseLimit)}${suffix}${ext}`;
   }
 
   function pushUniqueSearchToken(tokens, seen, source, token) {
@@ -1779,6 +1867,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
             fileId,
             fileName: String(fileName || captureFile.name || ''),
             lookupSource: searchToken.source,
+            mismatchReason: matchResult.reasons.join(',') || 'provenance_mismatch',
             reasons: matchResult.reasons,
             expected: matchResult.expected,
             actual: matchResult.actual
@@ -1800,8 +1889,18 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       reason: staleCandidates.length ? 'stale_result_capture_file_rejected' : 'result capture file not found',
       expected,
       staleRejected: staleCandidates.length > 0,
+      latestRejectedFile: staleCandidates.length ? staleCandidates[0] : null,
       staleCandidates
     };
+  }
+
+  function pollAttemptFromCursor(cursor) {
+    const match = String(cursor || '').match(/(?:^|:)attempt:(\d+)(?:$|:)/);
+    return match ? Math.max(0, Number(match[1] || 0)) : 0;
+  }
+
+  function resultCapturePendingCursor(runnerTaskId, attempt) {
+    return `pending:${runnerTaskId}:attempt:${Math.max(1, Number(attempt || 1))}`;
   }
 
   function buildResultCapturePollEnvelope(lookup, config, modules, parseErrors) {
@@ -1812,6 +1911,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const sourceRequestId = lookupProvenance.sourceRequestId;
     const submittedAt = lookupProvenance.submittedAt;
     const cursor = String(lookup && lookup.resultCaptureCursor || '').trim();
+    const pollAttempt = Math.max(1, pollAttemptFromCursor(cursor) + 1);
+    const maxPollAttempts = Math.max(1, Number(lookup && lookup.maxPollAttempts || 12));
     const errors = [].concat(parseErrors || []);
     if (!runnerTaskId) errors.push('runnerTaskId is required for result-capture polling.');
     if (!idempotencyToken) errors.push('idempotencyToken is required for result-capture polling.');
@@ -1825,10 +1926,16 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     }
     const found = findResultCaptureFile(config, lookup, modules);
     if (!found.found) {
+      const terminal = pollAttempt >= maxPollAttempts;
+      const terminalStatus = found.reason === 'stale_result_capture_file_rejected'
+        ? 'stale_result_capture_rejected_after_wait'
+        : 'result_capture_not_found_after_wait';
       return {
         schema: 'idb.approved-server-adapter-result-envelope.v1',
         adapterVersion: ADAPTER_VERSION,
-        status: 'polling_pending',
+        status: terminal ? terminalStatus : 'polling_pending',
+        terminal: terminal === true,
+        retryable: terminal !== true,
         queueSubmitted: true,
         runnerTaskId,
         idempotencyToken,
@@ -1843,10 +1950,16 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
           sourceRequestId,
           buildAttemptId,
           submittedAt,
-          resultCaptureCursor: cursor || `pending:${runnerTaskId}`,
+          resultCaptureCursor: resultCapturePendingCursor(runnerTaskId, pollAttempt),
           finalGeneratedNamesReady: false,
           finalGeneratedNamesJson: null,
           lookupStatus: found.reason,
+          terminalStatus: terminal ? terminalStatus : '',
+          pollAttempt,
+          maxPollAttempts,
+          expectedProvenance: found.expected || lookupProvenance,
+          resultCaptureFolderId: config.resultCaptureFolderId || '',
+          latestRejectedFile: found.latestRejectedFile || null,
           staleRejected: found.staleRejected === true,
           staleCandidates: found.staleCandidates || []
         },
@@ -2071,17 +2184,21 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const runnerParams = !errors.length ? buildRunnerParams(request, config, idempotencyToken, namingPackHandoff.fileId) : {};
     const queueSubmit = submitRunnerIfAllowed(submitGate, config, runnerParams);
     const adapterError = queueSubmit.error === true;
+    const runnerBusy = queueSubmit.status === 'runner_busy_inprogress';
 
     return {
       schema: 'idb.governed-runner-adapter-result.v1',
       adapterVersion: ADAPTER_VERSION,
-      status: adapterError ? 'adapter_error' : (queueSubmit.queueSubmitted ? 'queued_result_capture_pending' : (errors.length ? 'blocked_validation_failed' : 'validated_not_submitted')),
-      runnerStatus: adapterError ? 'adapter_error' : (queueSubmit.queueSubmitted ? 'queued_result_capture_pending' : (errors.length ? 'blocked_validation_failed' : 'validated_not_submitted')),
-      runMode: queueSubmit.queueSubmitted ? 'governed_sandbox_queue_submit' : 'write_disabled_or_gate_blocked_no_submit',
+      status: adapterError ? 'adapter_error' : (runnerBusy ? 'runner_busy_inprogress' : (queueSubmit.queueSubmitted ? 'queued_result_capture_pending' : (errors.length ? 'blocked_validation_failed' : 'validated_not_submitted'))),
+      runnerStatus: adapterError ? 'adapter_error' : (runnerBusy ? 'runner_busy_inprogress' : (queueSubmit.queueSubmitted ? 'queued_result_capture_pending' : (errors.length ? 'blocked_validation_failed' : 'validated_not_submitted'))),
+      runMode: queueSubmit.queueSubmitted ? 'governed_sandbox_queue_submit' : (runnerBusy ? 'runner_busy_wait_for_current_scheduled_task' : 'write_disabled_or_gate_blocked_no_submit'),
       error: adapterError,
       errorName: queueSubmit.errorName || '',
       errorMessage: queueSubmit.errorMessage || '',
       errorStack: queueSubmit.errorStack || '',
+      retryable: runnerBusy === true,
+      retryAfterMs: runnerBusy ? queueSubmit.retryAfterMs : null,
+      busyReason: runnerBusy ? queueSubmit.reason : '',
       createsRecords: false,
       queueSubmitted: queueSubmit.queueSubmitted,
       runnerTaskId: queueSubmit.runnerTaskId,

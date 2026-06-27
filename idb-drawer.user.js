@@ -7323,8 +7323,10 @@
 
   const CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285 = Object.freeze({
     FALSE_FLAG_NO_SUBMIT: 'false_flag_no_submit',
+    RUNNER_BUSY_INPROGRESS: 'runner_busy_inprogress',
     QUEUED_PENDING: 'queued_pending',
     POLLING_PENDING: 'polling_pending',
+    RESULT_CAPTURE_TERMINAL_DIAGNOSTIC: 'result_capture_terminal_diagnostic',
     COMPLETED_RESULT_AWAITING_W151_IMPORT: 'completed_result_awaiting_w151_import',
     ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE: 'adapter_transport_error_drawer_safe'
   });
@@ -7339,16 +7341,20 @@
 
   const CONNECTED_BUILD_TRANSPORT_LABELS_W285 = Object.freeze({
     false_flag_no_submit: 'False flags: no submit',
+    runner_busy_inprogress: 'Runner busy',
     queued_pending: 'Queued: result pending',
     polling_pending: 'Polling: result pending',
+    result_capture_terminal_diagnostic: 'Result capture diagnostic',
     completed_result_awaiting_w151_import: 'Completed result waiting for import',
     adapter_transport_error_drawer_safe: 'Adapter response error'
   });
 
   const CONNECTED_BUILD_TRANSPORT_MESSAGES_W285 = Object.freeze({
     false_flag_no_submit: 'Server flags or adapter response did not submit the runner. The drawer keeps Build in no-submit mode.',
+    runner_busy_inprogress: 'The scheduled runner is already active. Retry the same request after the current runner completes.',
     queued_pending: 'The approved adapter reports a runner task id, but result capture is still pending.',
     polling_pending: 'Polling is still waiting for governed runner result capture.',
+    result_capture_terminal_diagnostic: 'Polling reached the configured wait limit. Troubleshoot/export includes expected provenance and the latest rejected result capture.',
     completed_result_awaiting_w151_import: 'Completed runner result JSON is present, but W151 import guard must validate it before Open links appear.',
     adapter_transport_error_drawer_safe: 'The adapter response reported an error. The drawer keeps generated names and Open links unchanged.'
   });
@@ -7556,11 +7562,17 @@
       nestedResult.queue && nestedResult.queue.taskId,
       nestedCapture.taskId
     );
-    const hasError = result.error === true ||
+    const isRunnerBusy = rawStatus === 'runner_busy_inprogress' ||
+      result.retryable === true && (result.status === 'runner_busy_inprogress' || resultCapture.status === 'runner_busy_inprogress');
+    const isResultCaptureTerminalDiagnostic = rawStatus === 'result_capture_not_found_after_wait' ||
+      rawStatus === 'stale_result_capture_rejected_after_wait' ||
+      resultCapture.terminalStatus === 'result_capture_not_found_after_wait' ||
+      resultCapture.terminalStatus === 'stale_result_capture_rejected_after_wait';
+    const hasError = !isRunnerBusy && !isResultCaptureTerminalDiagnostic && (result.error === true ||
       resultCapture.error === true ||
       nestedResult.error === true ||
       nestedCapture.error === true ||
-      /error|failed|rejected|exception/i.test(rawStatus);
+      /error|failed|rejected|exception/i.test(rawStatus));
     const completedResult = connectedBuildCompletedJsonFromTransportW285(result, resultCapture, nestedResult, nestedCapture);
     const completedResultJson = completedResult.value;
     const hasCompletedResultJson = completedResult.ready;
@@ -7573,21 +7585,28 @@
     const captureStatus = firstNonBlank(resultCapture.status, nestedCapture.status, opts.resultCaptureStatus, normalizedRunnerTaskId ? 'pending_runner_completion' : 'not_started_no_submit');
     const normalizedStatus = hasError
       ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE
-      : hasCompletedResultJson
-        ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.COMPLETED_RESULT_AWAITING_W151_IMPORT
-        : opts.pollAttempted === true && normalizedRunnerTaskId
-          ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.POLLING_PENDING
-          : queueSubmitted && normalizedRunnerTaskId
-            ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.QUEUED_PENDING
-            : CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT;
+      : isRunnerBusy
+        ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.RUNNER_BUSY_INPROGRESS
+        : isResultCaptureTerminalDiagnostic
+          ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.RESULT_CAPTURE_TERMINAL_DIAGNOSTIC
+          : hasCompletedResultJson
+            ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.COMPLETED_RESULT_AWAITING_W151_IMPORT
+            : opts.pollAttempted === true && normalizedRunnerTaskId
+              ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.POLLING_PENDING
+              : queueSubmitted && normalizedRunnerTaskId
+                ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.QUEUED_PENDING
+                : CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT;
     return {
       schema: 'idb.integrated-build-approved-server-adapter-response-normalization.v1',
       status: normalizedStatus,
       label: CONNECTED_BUILD_TRANSPORT_LABELS_W285[normalizedStatus],
       message: CONNECTED_BUILD_TRANSPORT_MESSAGES_W285[normalizedStatus],
       rawStatus,
+      retryable: result.retryable === true || resultCapture.retryable === true,
+      retryAfterMs: result.retryAfterMs || resultCapture.retryAfterMs || null,
       queueSubmitted: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE ? false : queueSubmitted,
-      runnerTaskId: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT ? null : normalizedRunnerTaskId,
+      terminalDiagnostic: isResultCaptureTerminalDiagnostic === true,
+      runnerTaskId: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT || normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.RUNNER_BUSY_INPROGRESS ? null : normalizedRunnerTaskId,
       resultCaptureStatus: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT ? 'not_started_no_submit' : captureStatus,
       resultCapture: Object.assign({}, resultCapture, {
         status: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT ? 'not_started_no_submit' : captureStatus,
@@ -11232,6 +11251,38 @@
     };
   }
 
+  function fetchWithTimeoutW461(url, options, timeoutMs) {
+    const limit = Math.max(5000, Number(timeoutMs || 30000));
+    if (typeof AbortController === 'undefined') return fetch(url, options);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), limit);
+    const requestOptions = Object.assign({}, options || {}, { signal: controller.signal });
+    return fetch(url, requestOptions).finally(() => clearTimeout(timer));
+  }
+
+  function adapterTimeoutEnvelopeW461(kind, requestEnvelope, error) {
+    const isPoll = kind === 'poll';
+    return {
+      schema: isPoll ? 'idb.approved-server-adapter-result-envelope.v1' : 'idb.governed-runner-adapter-result.v1',
+      status: isPoll ? 'result_capture_poll_request_timeout' : 'adapter_submit_request_timeout',
+      queueSubmitted: isPoll === true,
+      runnerTaskId: requestEnvelope && requestEnvelope.runnerTaskId || null,
+      resultCapture: {
+        status: isPoll ? 'result_capture_poll_request_timeout' : 'adapter_submit_request_timeout',
+        error: true,
+        runnerTaskId: requestEnvelope && requestEnvelope.runnerTaskId || null,
+        retryable: true
+      },
+      error: true,
+      retryable: true,
+      errorMessage: error && error.name === 'AbortError'
+        ? 'Approved adapter request timed out in the drawer.'
+        : (error && error.message ? error.message : String(error || 'Approved adapter request failed.')),
+      finalGeneratedNamesJson: null,
+      activeOpenLinks: 0
+    };
+  }
+
   function invokeW144ApprovedServerAdapterFromDrawerV1(requestEnvelope) {
     if (!requestEnvelope || !requestEnvelope.endpointUrl || !requestEnvelope.bodyFormEncoded) {
       return Promise.resolve({
@@ -11246,14 +11297,14 @@
         activeOpenLinks: 0
       });
     }
-    return fetch(requestEnvelope.endpointUrl, {
+    return fetchWithTimeoutW461(requestEnvelope.endpointUrl, {
       method: 'POST',
       credentials: 'same-origin',
       headers: requestEnvelope.headers || {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
       },
       body: requestEnvelope.bodyFormEncoded
-    }).then((response) => response.text().then((text) => {
+    }, 30000).then((response) => response.text().then((text) => {
       let parsed = null;
       try {
         parsed = text ? JSON.parse(text) : {};
@@ -11274,7 +11325,7 @@
         httpStatus: response.status,
         httpOk: response.ok
       }, parsed || {});
-    }));
+    })).catch((error) => adapterTimeoutEnvelopeW461('submit', requestEnvelope, error));
   }
 
   function governedRunnerResultCapturePollingToCompletedJsonV1(state, lane, pageContext, recommendation, options) {
@@ -11496,11 +11547,13 @@
         ? 'w190_poll_blocked_missing_prerequisites'
         : normalized.status === 'adapter_transport_error_drawer_safe'
           ? 'w190_adapter_error_drawer_safe'
-          : completedResultW151Valid
-            ? 'w190_completed_result_ready_for_w151_import'
-            : requestReady && !requestSent
-              ? 'w190_poll_ready_not_executed'
-              : 'w190_poll_pending_result_capture';
+          : normalized.status === 'result_capture_terminal_diagnostic'
+            ? 'w190_result_capture_terminal_diagnostic'
+            : completedResultW151Valid
+              ? 'w190_completed_result_ready_for_w151_import'
+              : requestReady && !requestSent
+                ? 'w190_poll_ready_not_executed'
+                : 'w190_poll_pending_result_capture';
     return {
       schema: 'idb.w190-governed-runner-result-capture-polling-to-completed-json.v1',
       status,
@@ -11785,14 +11838,14 @@
         activeOpenLinks: 0
       });
     }
-    return fetch(requestEnvelope.endpointUrl, {
+    return fetchWithTimeoutW461(requestEnvelope.endpointUrl, {
       method: 'POST',
       credentials: 'same-origin',
       headers: requestEnvelope.headers || {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
       },
       body: requestEnvelope.bodyFormEncoded
-    }).then((response) => response.text().then((text) => {
+    }, 30000).then((response) => response.text().then((text) => {
       let parsed = null;
       try {
         parsed = text ? JSON.parse(text) : {};
@@ -11813,7 +11866,7 @@
         httpStatus: response.status,
         httpOk: response.ok
       }, parsed || {});
-    }));
+    })).catch((error) => adapterTimeoutEnvelopeW461('poll', requestEnvelope, error));
   }
 
   function buildReturnPollRefreshControlSurfaceV1(state, lane, pageContext, recommendation, options) {
@@ -29636,6 +29689,21 @@
       .filter((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
     const runner = state && state.integratedBuildRunnerResult || {};
     const capture = runner.resultCapture || {};
+    const resultCaptureSourceW462 = {
+      schema: 'idb.w462-result-capture-source.v1',
+      sourceFileId: firstNonBlank(capture.sourceFileId, runner.sourceFileId, capture.fileId, runner.fileId),
+      sourceFileName: firstNonBlank(capture.sourceFileName, runner.sourceFileName, capture.fileName, runner.fileName),
+      resultCaptureCursor: firstNonBlank(capture.resultCaptureCursor, runner.resultCaptureCursor),
+      lookupSource: firstNonBlank(capture.lookupSource, runner.lookupSource),
+      lookupStatus: firstNonBlank(capture.lookupStatus, runner.lookupStatus, capture.status, runner.status),
+      resultCaptureFolderId: firstNonBlank(capture.resultCaptureFolderId, runner.resultCaptureFolderId, runner.folderId),
+      nonterminalStaleRejected: capture.staleRejected === true && !capture.terminalStatus,
+      terminalStaleFailure: capture.terminalStatus === 'stale_result_capture_rejected_after_wait' || runner.status === 'stale_result_capture_rejected_after_wait',
+      terminalNotFoundFailure: capture.terminalStatus === 'result_capture_not_found_after_wait' || runner.status === 'result_capture_not_found_after_wait',
+      latestRejectedFile: capture.latestRejectedFile || runner.latestRejectedFile || null,
+      expectedProvenance: capture.expectedProvenance || runner.expectedProvenance || null,
+      staleCandidates: arrayValue(capture.staleCandidates || runner.staleCandidates).slice(0, 6)
+    };
     const runnerErrorW451 = runnerErrorTruthW451(state);
     const sidecar = runner.sidecarGeneratedNamesJson || runner.finalGeneratedNamesJson || runner.partialGeneratedNamesJson || {};
     const routingDiagnostics = firstNonBlankObject(
@@ -29750,6 +29818,18 @@
       selectedToggles: toggleReceipt,
       selectedProduct: productModel.primaryProductCandidate,
       productCandidates: productModel,
+      resultCaptureSourceW462,
+      resultCaptureStatusTrailW462: {
+        schema: 'idb.w462-result-capture-status-trail.v1',
+        currentStatus: firstNonBlank(capture.status, runner.status),
+        terminalStatus: firstNonBlank(capture.terminalStatus, runner.terminalStatus),
+        pollAttempt: capture.pollAttempt || runner.pollAttempt || null,
+        maxPollAttempts: capture.maxPollAttempts || runner.maxPollAttempts || null,
+        nonterminalStaleRejected: resultCaptureSourceW462.nonterminalStaleRejected,
+        terminalStaleFailure: resultCaptureSourceW462.terminalStaleFailure,
+        terminalNotFoundFailure: resultCaptureSourceW462.terminalNotFoundFailure,
+        latestRejectedFile: resultCaptureSourceW462.latestRejectedFile
+      },
       lastRunSnapshotSummary: lastRunSnapshot ? {
         schema: lastRunSnapshot.schema,
         savedAt: lastRunSnapshot.savedAt,
@@ -29823,8 +29903,11 @@
       },
       extId: firstNonBlank(runner.idempotencyToken, capture.idempotencyToken, state && state.dccFinalNamingResult && state.dccFinalNamingResult.generated && state.dccFinalNamingResult.generated.extId),
       taskId: firstNonBlank(runner.runnerTaskId, capture.runnerTaskId),
-      fileId: firstNonBlank(runner.fileId, capture.fileId),
-      taskFolder: firstNonBlank(runner.folderId, capture.resultCaptureFolderId),
+      fileId: firstNonBlank(resultCaptureSourceW462.sourceFileId, runner.fileId, capture.fileId),
+      sourceFileId: resultCaptureSourceW462.sourceFileId,
+      sourceFileName: resultCaptureSourceW462.sourceFileName,
+      resultCaptureCursor: resultCaptureSourceW462.resultCaptureCursor,
+      taskFolder: firstNonBlank(resultCaptureSourceW462.resultCaptureFolderId, runner.folderId, capture.resultCaptureFolderId),
       rawAppendix: {
         note: 'Raw keys and repeated arrays are appendix-only; use truthSummaryW448 and authoritativeWorkCenterRoutingW449 first for triage.',
         rawResultKeys: {

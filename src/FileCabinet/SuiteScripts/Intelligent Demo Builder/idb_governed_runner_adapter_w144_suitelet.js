@@ -358,7 +358,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function isGenericCatalogCandidateW459(value) {
     const name = compactText(value);
-    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|catalog product|product\s*\/?\s*sku|product sku|contractor job order|dealer channel availability|dealer channel availability sku|catalog|equipment|industrial equipment|industrial equipment manufacturing|warehouse equipment|outdoor gear|outdoor cooking|coffee gear|coffee equipment|kettles|grinders|fire pit|fire pits|smokeless fire pits|drinkware product line|outdoor cooking product line|outdoor product line|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof|wip line-flow readiness|advisory supported|supported advisory|website supported|evidence supported)$/i.test(name)
+    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|products cpg|catalog product|advisory insufficient|product\s*\/?\s*sku|product sku|contractor job order|dealer channel availability|dealer channel availability sku|catalog|equipment|industrial equipment|industrial supply|industrial equipment manufacturing|distribution|warehouse|warehouse equipment|lab|outdoor gear|outdoor cooking|coffee gear|coffee equipment|kettles|grinders|fire pit|fire pits|smokeless fire pits|drinkware product line|outdoor cooking product line|outdoor product line|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof|wip line-flow readiness|advisory supported|supported advisory|website supported|evidence supported)$/i.test(name)
       || /\b(building materials|contractor|dealer hardgoods|channel fulfillment|project fulfillment|readiness|fulfillment)\b/i.test(name);
   }
 
@@ -900,12 +900,24 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       request && request.namingAuthority && request.namingAuthority.productSeed
     ].map(genericCatalogCandidateRejectedReasonW459).filter(Boolean));
     const brand = brandFromWebsiteOrProspectW457(website, prospect);
-    const catalogProduct = selectedCatalogCandidate ? selectedCatalogCandidate.name : 'Catalog Product';
+    const fallbackBase = compactText(prospect) || 'Demo Customer';
+    const catalogProduct = selectedCatalogCandidate ? selectedCatalogCandidate.name : `${fallbackBase} Finished Good`;
     const product = catalogProduct;
-    const brandProduct = /^\s*$/i.test(brand) || new RegExp(`^${brand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(product)
+    const brandProduct = fallbackUsed
       ? product
-      : `${brand} ${product}`;
-    const productShape = namesForCatalogProductW457(brand, product);
+      : (/^\s*$/i.test(brand) || new RegExp(`^${brand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(product)
+      ? product
+      : `${brand} ${product}`);
+    const productShape = fallbackUsed
+      ? {
+        components: [`${fallbackBase} Component A`, `${fallbackBase} Component B`, `${fallbackBase} Component C`],
+        operations: {
+          '10': `Prepare ${fallbackBase} Component A`,
+          '20': `Build ${fallbackBase} Assembly`,
+          '30': `QC and Release ${fallbackBase} Finished Good`
+        }
+      }
+      : namesForCatalogProductW457(brand, product);
     const components = productShape.components;
     const operations = productShape.operations;
     const productSignalsUsed = evidenceSignalsW457(`${product} ${scenarioText}`.toLowerCase(), [
@@ -993,6 +1005,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         components
       },
       genericFallbackBlockedTerms: [
+        'industrial supply',
+        'distribution',
+        'warehouse',
+        'lab',
+        'Products CPG',
+        'Catalog Product',
+        'Advisory Insufficient',
         'Component A',
         'Component B',
         'Component C',

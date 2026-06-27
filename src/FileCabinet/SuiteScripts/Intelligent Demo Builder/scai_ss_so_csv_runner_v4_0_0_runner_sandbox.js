@@ -490,7 +490,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const names = normalizeProductFirstRecordNamesW466(namingPayload.payload, { prospect });
+    const names = normalizeProductFirstRecordNamesW466(namingPayload.payload, { prospect, namingPayload });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: namingPayload.source || names._source || 'deterministic',
       productFirstRecordNamingW466: names.productFirstRecordNamingW466 || null,
@@ -523,6 +523,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       websiteSignalsUsed: names.websiteSignalsUsed || [],
       prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
       fallbackReason: names.fallbackReason || '',
+      blockedWeakProductName: names.blockedWeakProductName || '',
+      blockedWeakProductNameReason: names.blockedWeakProductNameReason || '',
+      blockedWeakRecordName: names.blockedWeakRecordName || '',
+      namingAuthorityOrder: names.namingAuthorityOrderW467 || '',
       selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
       selectedVariantName: names.selectedVariantName || '',
       selectedPackName: names.selectedPackName || ''
@@ -3570,34 +3574,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         genericFallbackBlockedTerms
       };
     }
-    return {
-      _source: 'deterministic-fallback',
-      _signalLen: clippedSignal.length,
-      industry_category: '',
-      confidencePercent: 35,
-      primary_product_candidate: `${prospect} Product`,
-      alternate_product_candidates: [],
-      evidence_terms: [],
-      competitor_terms: [],
-      roi_basis_terms: [],
-      hero_item_name: `${prospect} Demo Case`,
-      assembly_name: `${prospect} Demo Batch`,
-      component_names: [
-        `${prospect} Input Base`,
-        `${prospect} Process Blend`,
-        `${prospect} Packaging`
-      ],
-      bom_name: `BOM - ${prospect}`,
-      bom_revision_name: `Revision 1 - ${prospect}`,
-      routing_name: `Routing - ${prospect} Demo Batch`,
-      operation_names_by_seq: {
-        '10': `Prepare ${prospect} Input Base`,
-        '20': `Fill and Pack ${prospect} Demo Case`,
-        '30': 'QC and Release Finished Cases'
-      },
+    return prospectFallbackNamingPackW467({
+      prospect,
+      signalLen: clippedSignal.length,
       fallbackReason: 'No server naming file or strong product evidence was available.',
       genericFallbackBlockedTerms
-    };
+    });
   }
 
   function concreteHardgoodsProductFromEvidenceW463(evidence) {
@@ -4786,7 +4768,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       fallbackTruthW458: {
         fallbackUsed: names.fallbackUsed === true,
         fallbackReason: names.fallbackReason || '',
-        genericCatalogProductBlocked: /^catalog product$/i.test(String(names.selectedProductName || names.primary_product_candidate || '')) && names.fallbackUsed !== true
+        genericCatalogProductBlocked: /^catalog product$/i.test(String(names.selectedProductName || names.primary_product_candidate || '')) && names.fallbackUsed !== true,
+        blockedWeakProductName: names.blockedWeakProductName || '',
+        blockedWeakProductNameReason: names.blockedWeakProductNameReason || '',
+        blockedWeakRecordName: names.blockedWeakRecordName || ''
       },
       productSignalsUsed: names.productSignalsUsed || [],
       flavorSignalsUsed: names.flavorSignalsUsed || [],
@@ -4794,6 +4779,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       llmNamingAdvisoryUsed: names.llmNamingAdvisoryUsed === true,
       websiteSignalsUsed: names.websiteSignalsUsed || [],
       prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
+      blockedWeakProductName: names.blockedWeakProductName || '',
+      blockedWeakProductNameReason: names.blockedWeakProductNameReason || '',
+      blockedWeakRecordName: names.blockedWeakRecordName || '',
       selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
       selectedVariantName: names.selectedVariantName || '',
       selectedPackName: names.selectedPackName || '',
@@ -5198,6 +5186,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       websiteSignalsUsed: names.websiteSignalsUsed || [],
       prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
       fallbackReason: names.fallbackReason || '',
+      blockedWeakProductName: names.blockedWeakProductName || '',
+      blockedWeakProductNameReason: names.blockedWeakProductNameReason || '',
+      blockedWeakRecordName: names.blockedWeakRecordName || '',
       selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
       selectedVariantName: names.selectedVariantName || '',
       selectedPackName: names.selectedPackName || '',
@@ -5378,13 +5369,145 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  const WEAK_PRODUCT_NAME_BLOCKLIST_W467 = [
+    'industrial supply',
+    'distribution',
+    'warehouse',
+    'assembly',
+    'lab',
+    'products cpg',
+    'catalog product',
+    'advisory insufficient'
+  ];
+
+  function weakProductNameReasonW467(value) {
+    const name = str(value).replace(/\s+/g, ' ');
+    if (!name) return '';
+    const lower = name.toLowerCase();
+    if (WEAK_PRODUCT_NAME_BLOCKLIST_W467.indexOf(lower) !== -1) {
+      return `${name} rejected: generic lane/category/workflow label cannot drive record naming`;
+    }
+    return '';
+  }
+
+  function firstWeakRecordNameW467(names) {
+    const componentNames = Array.isArray(names && names.component_names) ? names.component_names : [];
+    const values = [
+      names && names.hero_item_name,
+      names && names.assembly_name,
+      names && names.bom_name,
+      names && names.bom_revision_name,
+      names && names.routing_name
+    ].concat(componentNames);
+    for (let i = 0; i < values.length; i += 1) {
+      const value = str(values[i]);
+      if (!value) continue;
+      for (let j = 0; j < WEAK_PRODUCT_NAME_BLOCKLIST_W467.length; j += 1) {
+        const term = WEAK_PRODUCT_NAME_BLOCKLIST_W467[j];
+        if (term === 'assembly') {
+          if (/^(?:SCAI\s*-\s*)?Assembly(?:\s*-\s*[A-Z0-9]{3,})?$/i.test(value)) return value;
+          continue;
+        }
+        const pattern = new RegExp(`(^|[^A-Za-z0-9])${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^A-Za-z0-9]|$)`, 'i');
+        if (pattern.test(value)) return value;
+      }
+    }
+    return '';
+  }
+
+  function prospectFallbackNamingPackW467(args) {
+    const prospect = str(args && args.prospect) || 'Demo Customer';
+    const genericFallbackBlockedTerms = args && args.genericFallbackBlockedTerms || WEAK_PRODUCT_NAME_BLOCKLIST_W467.slice(0);
+    return {
+      _source: 'deterministic-fallback',
+      _signalLen: Number(args && args.signalLen || 0) || 0,
+      industry_category: '',
+      confidencePercent: 35,
+      namingConfidence: 35,
+      namingEvidenceSource: 'deterministic_fallback',
+      productEvidenceConfidence: 35,
+      primary_product_candidate: null,
+      selectedProductName: null,
+      selectedVariantName: null,
+      selectedPackName: 'Case',
+      selectedCatalogCandidate: null,
+      catalogCandidates: [],
+      alternate_product_candidates: [],
+      evidence_terms: [],
+      competitor_terms: [],
+      roi_basis_terms: [],
+      hero_item_name: `${prospect} Finished Good`,
+      assembly_name: `${prospect} Assembly`,
+      component_names: [
+        `${prospect} Component A`,
+        `${prospect} Component B`,
+        `${prospect} Component C`
+      ],
+      bom_name: `BOM - ${prospect}`,
+      bom_revision_name: `Revision 1 - ${prospect}`,
+      routing_name: `Routing - ${prospect} Assembly`,
+      operation_names_by_seq: {
+        '10': `Prepare ${prospect} Component A`,
+        '20': `Build ${prospect} Assembly`,
+        '30': `QC and Release ${prospect} Finished Good`
+      },
+      fallbackUsed: true,
+      fallbackReason: args && args.fallbackReason || 'No server naming file or strong product evidence was available.',
+      prospectNameUsedAsFallbackOnly: true,
+      missingEvidence: ['website catalog product candidate', 'real public product/product-line evidence'],
+      genericFallbackBlockedTerms
+    };
+  }
+
   function normalizeProductFirstRecordNamesW466(rawNames, context) {
     const names = Object.assign({}, rawNames || {});
+    const namingPayload = context && context.namingPayload || {};
+    const authoritativePackApplied = namingPayload.parsed === true && namingPayload.applied === true;
     const selectedCandidate = names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
       ? names.selectedCatalogCandidate.name
       : names.selectedCatalogCandidate;
     const product = str(names.selectedProductName || names.primary_product_candidate || selectedCandidate || '');
-    if (!product || /^catalog product$/i.test(product) || names.fallbackUsed === true) return names;
+    const weakProductReason = weakProductNameReasonW467(product);
+    const weakRecordName = firstWeakRecordNameW467(names);
+
+    if (weakProductReason) {
+      names.blockedWeakProductName = product;
+      names.blockedWeakProductNameReason = weakProductReason;
+      if (str(names.selectedProductName).toLowerCase() === product.toLowerCase()) names.selectedProductName = null;
+      if (str(names.primary_product_candidate).toLowerCase() === product.toLowerCase()) names.primary_product_candidate = null;
+      if (str(selectedCandidate).toLowerCase() === product.toLowerCase()) {
+        names.selectedCatalogCandidateBlockedW467 = names.selectedCatalogCandidate || product;
+        names.selectedCatalogCandidate = null;
+      }
+    }
+
+    if (weakRecordName) {
+      return Object.assign({}, names, prospectFallbackNamingPackW467({
+        prospect: context && context.prospect,
+        signalLen: names._signalLen,
+        fallbackReason: `Weak record naming "${weakRecordName}" was blocked; prospect-based deterministic fallback used.`,
+        genericFallbackBlockedTerms: names.genericFallbackBlockedTerms
+      }), {
+        blockedWeakProductName: names.blockedWeakProductName || product || '',
+        blockedWeakProductNameReason: names.blockedWeakProductNameReason || 'weak record name blocked',
+        blockedWeakRecordName: weakRecordName,
+        namingAuthorityOrderW467: 'validated naming pack -> validated product evidence -> prospect fallback'
+      });
+    }
+
+    if (authoritativePackApplied) {
+      names.namingAuthorityOrderW467 = 'validated naming pack -> validated product evidence -> prospect fallback';
+      names.productFirstRecordNamingW466 = names.productFirstRecordNamingW466 || {
+        applied: false,
+        policy: 'authoritative-precomputed-naming-pack-preserved'
+      };
+      return names;
+    }
+
+    if (!product || weakProductReason || /^catalog product$/i.test(product) || names.fallbackUsed === true) {
+      names.namingAuthorityOrderW467 = 'validated naming pack -> validated product evidence -> prospect fallback';
+      return names;
+    }
 
     const prospect = str(context && context.prospect || '');
     const prospectCore = trimLen(prospect

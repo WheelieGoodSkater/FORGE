@@ -161,6 +161,18 @@ assert(contains(runner, 'SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458') && contain
 assert(contains(runner, 'sales_order_resolved_by_saved_search'), 'runner must mark current-run Sales Orders resolved through the saved search distinctly');
 assert(contains(runner, 'FORGE SO lookup did not return a current-run Sales Order internal id'), 'runner must preserve truthful demand diagnostics when the saved search cannot resolve the SO');
 assert(contains(runner, 'fallbackTruthW458'), 'runner must emit explicit fallback truth telemetry for generic product outcomes');
+assert(contains(runner, 'WEAK_PRODUCT_NAME_BLOCKLIST_W467'), 'runner must keep an explicit weak product-name blocklist');
+assert(contains(runner, 'prospectFallbackNamingPackW467'), 'runner must fall back to prospect-based deterministic names instead of Catalog Product names');
+assert(contains(runner, 'authoritative-precomputed-naming-pack-preserved'), 'runner must preserve parsed naming-pack names instead of rewriting them with weak classifier output');
+assert(contains(runner, 'blockedWeakProductName'), 'runner result capture must expose blocked weak naming candidates');
+['industrial supply', 'distribution', 'warehouse', 'lab', 'products cpg', 'catalog product', 'advisory insufficient'].forEach((term) => {
+  assert(contains(runner.toLowerCase(), term), `runner weak naming blocklist missing ${term}`);
+});
+assert(contains(adapter, 'server naming pack file was not created before runner submit.'), 'adapter must block runner submit when server naming-pack creation fails');
+assert(contains(adapter, '`${fallbackBase} Finished Good`'), 'adapter fallback must use prospect-based finished-good names, not Catalog Product');
+['industrial supply', 'distribution', 'warehouse', 'lab', 'Products CPG', 'Catalog Product', 'Advisory Insufficient'].forEach((term) => {
+  assert(contains(adapter, term), `adapter generic catalog rejection missing ${term}`);
+});
 assert(contains(runner, 'reusedRecordOverwriteTelemetryW457'), 'runner must emit reused-record overwrite telemetry');
 assert(contains(runner, 'cleanWorkOrderLineDescriptionsW457'), 'runner must clean reused Work Order line descriptions');
 assert(contains(runner, 'staleTermsDetectedAfterReload'), 'runner must reload-check stale Work Order line descriptions');

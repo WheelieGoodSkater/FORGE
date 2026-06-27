@@ -21325,19 +21325,27 @@
     if (!expectedToken) return { matches: true, reason: 'no_current_prospect_available' };
 
     const returnedRecords = runnerSidecarReturnedRecordsForImportW433(finalNaming);
-    const candidateText = [
+    const sidecarText = [
       sidecarJson && sidecarJson.prospect,
       sidecarJson && sidecarJson.customerName,
       sidecarJson && sidecarJson.customer && sidecarJson.customer.name,
       sidecarJson && sidecarJson.customer && sidecarJson.customer.recordName
-    ].concat(returnedRecords.map((item) => firstNonBlank(item.name, item.recordName, item.customerName, item.label))).join(' ');
-    const candidateToken = String(candidateText || '').replace(/[^a-z0-9]+/gi, '').toLowerCase();
-    const matches = candidateToken.indexOf(expectedToken) !== -1;
+    ].join(' ');
+    const returnedText = returnedRecords.map((item) => firstNonBlank(item.name, item.recordName, item.customerName, item.label)).join(' ');
+    const sidecarToken = String(sidecarText || '').replace(/[^a-z0-9]+/gi, '').toLowerCase();
+    const returnedToken = String(returnedText || '').replace(/[^a-z0-9]+/gi, '').toLowerCase();
+    const matches = returnedRecords.length
+      ? returnedToken.indexOf(expectedToken) !== -1
+      : sidecarToken.indexOf(expectedToken) !== -1;
     return {
       matches,
-      reason: matches ? 'current_prospect_matched_sidecar' : 'current_prospect_not_found_in_sidecar_records',
+      reason: matches
+        ? (returnedRecords.length ? 'current_prospect_matched_returned_records' : 'current_prospect_matched_sidecar')
+        : (returnedRecords.length ? 'current_prospect_not_found_in_returned_records' : 'current_prospect_not_found_in_sidecar'),
       expectedProspect,
       expectedToken,
+      sidecarToken,
+      returnedToken,
       returnedNames: returnedRecords.map((item) => firstNonBlank(item.name, item.recordName)).filter(Boolean).slice(0, 8),
       sidecarProspect: firstNonBlank(sidecarJson && sidecarJson.prospect, sidecarJson && sidecarJson.customerName)
     };

@@ -115,6 +115,37 @@ function main() {
   );
   const freshState = Object.assign({}, recoveredState, freshPoll.statePatch || {});
   const freshTroubleshoot = hooks.w444TroubleshootExportPayload(freshState);
+  const staleReturnedRecordState = motionState(hooks, {
+    intake: {
+      customer: 'Traeger W466 Real Naming Manufacturing WIP Off 20260627162719',
+      website: 'https://www.traeger.com',
+      notes: 'WIP intentionally off; reject prior-run sidecars.'
+    }
+  });
+  const staleReturnedRecordContext = motionContext(hooks, staleReturnedRecordState);
+  const staleReturnedRecords = completedMotionResult({ prefix: '466', salesOrderName: 'SO-W466 stale Traeger' });
+  staleReturnedRecords.prospect = 'Traeger W466 Real Naming Manufacturing WIP Off 20260627162719';
+  staleReturnedRecords.customerName = 'Traeger W466 Real Naming Manufacturing WIP Off 20260627162719';
+  staleReturnedRecords.records[0].name = 'Traeger W466 Real Naming Manufacturing WIP Off 20260627162217 Customer Account';
+  staleReturnedRecords.records[1].name = 'SO2773';
+  staleReturnedRecords.records[2].name = 'Traeger Industrial Equipment Manufacturing Case';
+  staleReturnedRecords.records[3].name = 'Traeger Industrial Equipment Manufacturing Assembly';
+  const staleReturnedRecordImport = hooks.commitRunnerSidecarDisplayResultW431(
+    staleReturnedRecordState,
+    staleReturnedRecordContext.lane,
+    staleReturnedRecordContext.page,
+    staleReturnedRecordContext.recommendation,
+    {
+      status: 'completed_runner_result_ready',
+      resultCapture: {
+        sourceFileId: '64999',
+        sourceFileName: 'idb_runner_sidecar_traeger_current_wrapper_old_records.json',
+        lookupStatus: 'completed_result_capture_ready'
+      },
+      sidecarGeneratedNamesJson: staleReturnedRecords
+    },
+    { source: 'w464-current-wrapper-old-returned-records' }
+  );
 
   assertCase(results, 'w464-root-and-filecabinet-drawer-synced',
     drawer === fileCabinetDrawer,
@@ -157,6 +188,14 @@ function main() {
       freshTroubleshoot.latestRejectedFile === latestRejectedFile &&
       freshTroubleshoot.expectedProvenance === expectedProvenance,
     JSON.stringify({ pollStatus: freshPoll.status, guard: freshPoll.resultImportGuard, capture: freshTroubleshoot.resultCaptureSourceW462 }));
+
+  assertCase(results, 'w464-current-wrapper-stale-returned-records-rejected',
+    staleReturnedRecordImport.imported === false &&
+      staleReturnedRecordImport.status === 'sidecar_current_run_provenance_mismatch_rejected' &&
+      staleReturnedRecordImport.currentRunProvenanceW466 &&
+      staleReturnedRecordImport.currentRunProvenanceW466.reason === 'current_prospect_not_found_in_returned_records' &&
+      /20260627162217/.test(staleReturnedRecordImport.currentRunProvenanceW466.returnedNames.join(' ')),
+    JSON.stringify(staleReturnedRecordImport.currentRunProvenanceW466));
 
   printResults('w464_drawer_sidecar_truth_poll_recovery_harness', results);
 }

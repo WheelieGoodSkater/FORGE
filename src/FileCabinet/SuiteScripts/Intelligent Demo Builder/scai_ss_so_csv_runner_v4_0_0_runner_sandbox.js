@@ -3617,6 +3617,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       { name: 'Ode Brew Grinder', pattern: /\bode brew\b|\bode\b.*\bgrinder\b/ },
       { name: 'Clara French Press', pattern: /\bclara\b.*\bfrench press\b/ },
       { name: 'Tally Pro Precision Scale', pattern: /\btally pro\b|\bprecision scale\b/ },
+      { name: 'Good Grips', pattern: /\bgood grips\b/ },
+      { name: 'POP Containers', pattern: /\bpop containers?\b/ },
+      { name: 'Brew Coffee Maker', pattern: /\bbrew coffee maker\b/ },
+      { name: 'Steel Salad Spinner', pattern: /\bsteel salad spinner\b|\bsalad spinner\b/ },
+      { name: 'Angled Measuring Cup', pattern: /\bangled measuring cup\b/ },
+      { name: 'Ironwood Pellet Grill', pattern: /\bironwood\b/ },
+      { name: 'Timberline Pellet Grill', pattern: /\btimberline\b/ },
+      { name: 'Pro Series Pellet Grill', pattern: /\bpro series\b/ },
+      { name: 'Woodridge Pellet Grill', pattern: /\bwoodridge\b/ },
+      { name: 'Flat Top Grill', pattern: /\bflat top grill\b|\bflat top\b/ },
       { name: 'Bonfire Fire Pit', pattern: /\bbonfire\b/ },
       { name: 'Yukon Fire Pit', pattern: /\byukon\b/ },
       { name: 'Ranger Fire Pit', pattern: /\branger\b/ },
@@ -3655,6 +3665,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       brand = 'Fellow';
       product = 'Stagg EKG Electric Kettle';
       alternates = ['Stagg EKG Pro', 'Carter Move Mug', 'Opus Conical Burr Grinder', 'Ode Brew Grinder', 'Clara French Press'];
+    } else if (/oxo\.com|oxo/.test(domain)) {
+      brand = 'OXO';
+      product = 'Good Grips';
+      alternates = ['POP Containers', 'Brew Coffee Maker', 'Steel Salad Spinner', 'Angled Measuring Cup', 'Tot Feeding Products'];
+    } else if (/traeger\.com|traeger/.test(domain)) {
+      brand = 'Traeger';
+      product = 'Ironwood Pellet Grill';
+      alternates = ['Timberline Pellet Grill', 'Pro Series Pellet Grill', 'Woodridge Pellet Grill', 'Flat Top Grill'];
     } else if (/solostove\.com|solo-stove|solo stove/.test(domain)) {
       brand = 'Solo Stove';
       product = 'Bonfire Fire Pit';
@@ -3718,17 +3736,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       hero_item_name: `${base} Case`,
       assembly_name: `${base} Fulfillment Batch`,
       component_names: [
-        /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit/i.test(product) ? `${product} Body and Heat Shield Kit` : `${product} Retail Case Inventory`,
-        /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit/i.test(product) ? `${product} Fuel and Airflow System` : `${product} Channel Replenishment Lot`,
-        /pizza oven|oven/i.test(product) ? `${product} Retail Packaging` : `${product} Fulfillment Packaging`
+        /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `${product} Body and Heat Shield Kit` : `${product} Retail Case Inventory`,
+        /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `${product} Fuel and Airflow System` : `${product} Channel Replenishment Lot`,
+        /pizza oven|oven|pellet grill|flat top|grill/i.test(product) ? `${product} Retail Packaging` : `${product} Fulfillment Packaging`
       ],
       bom_name: `BOM - ${base}`,
       bom_revision_name: `Revision 1 - ${base}`,
       routing_name: `Routing - ${base} Fulfillment`,
       operation_names_by_seq: {
-        '10': /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit/i.test(product) ? `Stage ${product} Kits` : `Receive ${product} Cases`,
-        '20': /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit/i.test(product) ? `Assemble and Test ${product}` : `Allocate ${product} Demand`,
-        '30': /pizza oven|oven/i.test(product) ? `Pack and Release ${product}` : `Release ${product} Fulfillment`
+        '10': /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `Stage ${product} Kits` : `Receive ${product} Cases`,
+        '20': /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `Assemble and Test ${product}` : `Allocate ${product} Demand`,
+        '30': /pizza oven|oven|pellet grill|flat top|grill/i.test(product) ? `Pack and Release ${product}` : `Release ${product} Fulfillment`
       },
       sales_descriptions: {
         hero: `${base} case for retail demand and fulfillment readiness.`,

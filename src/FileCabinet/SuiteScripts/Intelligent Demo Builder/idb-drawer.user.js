@@ -2561,7 +2561,9 @@
       intake.websiteEvidence,
       websiteEvidenceV1Text(state || {})
     ].join(' ').toLowerCase();
-    const hasBuildingMaterials = /keystonebuildingsupply\.com|building materials|lumber|doors|windows|fasteners|contractor supply|special order materials|branch availability|jobsite delivery|will[-\s]?call|substitutions|project fulfillment|contractor account|job order|margin leakage/.test(text);
+    const hasMaterialCategory = /keystonebuildingsupply\.com|building materials|lumber|doors|windows|fasteners|contractor supply|special order materials/.test(text);
+    const hasContractorFulfillment = /jobsite delivery|will[-\s]?call|project fulfillment|contractor account|job order|margin leakage/.test(text);
+    const hasBuildingMaterials = hasMaterialCategory || hasContractorFulfillment;
     const hasManufacturing = /fabrication|custom shop|production routing|work center|wip|build\/test|build test|inspection|configured equipment assembly|manufacturing/.test(text);
     return hasBuildingMaterials && !hasManufacturing;
   }
@@ -11021,7 +11023,11 @@
     const oneSubmitAlreadyUsed = opts.oneSubmitAlreadyUsed === true ||
       !!(state && state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.runnerTaskId);
     const idempotencyToken = firstNonBlank(opts.idempotencyToken, confirmedRequest.requestId);
-    const serverFlags = adapterConfig.serverFlags || {};
+    const serverFlags = Object.assign({
+      CREATE_ENABLED: adapterConfig.CREATE_ENABLED === true,
+      GOVERNED_SANDBOX_WRITE_ENABLED: adapterConfig.GOVERNED_SANDBOX_WRITE_ENABLED === true,
+      QUEUE_SUBMIT_ENABLED: adapterConfig.QUEUE_SUBMIT_ENABLED === true
+    }, adapterConfig.serverFlags || {}, opts.serverFlags || {});
     const w151ResultImportGuard = {
       required: true,
       acceptsOnlyCompletedRunnerResultJson: true,
@@ -18378,9 +18384,10 @@
   }
 
   function productionConsultantIntakeAndBuildAutomationSimplificationW206V1(state, lane, pageContext, recommendation) {
+    if (state) ensureProductionBuildSavedAdminConfig(state);
     const productionIntake = productionConsultantIntakeV1(state, lane, websiteProductNamingEvidence(state, lane));
     const confirmedBuildRequest = confirmedBuildRequestJsonV1(state, lane, pageContext, recommendation);
-    const adapterConfig = state && state.integratedBuildAdapterConfig || {};
+    const adapterConfig = applySelectedAdapterProfileToConfigW263(state && state.integratedBuildAdapterConfig || {}, pageContext);
     const operatorEvidence = state && state.integratedBuildOperatorApproval || {};
     const adapterReadiness = realSandboxServerAdapterExecutionWiringAndRunnerTaskIdCaptureV1(state, lane, pageContext, recommendation, {
       adapterConfig,
@@ -30592,6 +30599,8 @@
       return field;
     };
     const syncRealAdapterFieldsFromDom = () => {
+      const debugPanel = root.querySelector('.idb-w200-admin-debug-server-config');
+      if (!(state.setupEditMode === true || debugPanel && debugPanel.open === true)) return;
       root.querySelectorAll('[data-idb-real-adapter-field]').forEach((fieldNode) => {
         applyRealAdapterField(fieldNode);
       });
@@ -30641,7 +30650,7 @@
       }
       const laneId = selectedLaneId || state.selectedLaneId;
       state.selectedLaneId = laneId;
-      state.laneSelectionSource = 'consultant_one_click_build_records';
+      state.laneSelectionSource = 'consultant_confirmed';
       state.selectedMoveIndex = 0;
       state.lanePickerOpen = false;
       state.activeView = 'review';
@@ -30669,11 +30678,11 @@
     };
     const submitBuildRecordsOnce = async (button, options) => {
       const opts = options || {};
-      syncBuildTogglesFromVisibleFieldsW440(root, state, state.selectedLaneId);
-      syncRealAdapterFieldsFromDom();
       const endpointBeforeRepair = state.integratedBuildAdapterConfig && state.integratedBuildAdapterConfig.endpointUrl || '';
       ensureProductionBuildSavedAdminConfig(state);
       state.integratedBuildAdapterConfig = applySelectedAdapterProfileToConfigW263(state.integratedBuildAdapterConfig || {}, opts.pageContext || currentPageContext());
+      syncBuildTogglesFromVisibleFieldsW440(root, state, state.selectedLaneId);
+      syncRealAdapterFieldsFromDom();
       if (!endpointBeforeRepair && state.integratedBuildAdapterConfig && state.integratedBuildAdapterConfig.endpointUrl) {
         persistProductionBuildSavedAdminConfig(state);
         trace('w421_released_w144_endpoint_repaired_before_submit', {

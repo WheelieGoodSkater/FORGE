@@ -332,6 +332,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/drinkpoppi\.com|poppi/.test(domain)) return 'Poppi';
     if (/goodles\.com/.test(domain)) return 'Goodles';
     if (/chomps\.com/.test(domain)) return 'Chomps';
+    if (/garmin\.com|garmin/.test(domain)) return 'Garmin';
+    if (/lecreuset\.com|le-creuset|le creuset/.test(domain)) return 'Le Creuset';
     const cleaned = compactText(prospect).replace(/\b(line readiness|wip proof|readiness proof|demo proof|proof|readiness|wip|demo|v\d+)\b/ig, '');
     return cleaned || compactText(prospect) || 'Demo Customer';
   }
@@ -358,7 +360,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function isGenericCatalogCandidateW459(value) {
     const name = compactText(value);
-    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|products cpg|catalog product|advisory insufficient|product\s*\/?\s*sku|product sku|contractor job order|dealer channel availability|dealer channel availability sku|catalog|equipment|industrial equipment|industrial supply|industrial equipment manufacturing|distribution|warehouse|warehouse equipment|lab|outdoor gear|outdoor cooking|coffee gear|coffee equipment|kettles|grinders|fire pit|fire pits|smokeless fire pits|drinkware product line|outdoor cooking product line|outdoor product line|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof|wip line-flow readiness|advisory supported|supported advisory|website supported|evidence supported)$/i.test(name)
+    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|products cpg|catalog product|advisory insufficient|product\s*\/?\s*sku|product sku|contractor job order|dealer channel availability|dealer channel availability sku|catalog|equipment|industrial equipment|industrial supply|industrial equipment manufacturing|distribution|warehouse|warehouse equipment|lab|outdoor gear|outdoor cooking|coffee gear|coffee equipment|kettles|grinders|fire pit|fire pits|smokeless fire pits|drinkware product line|outdoor cooking product line|outdoor product line|dealer hardgoods sku|dealer durable hardgoods|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof|wip line-flow readiness|advisory supported|supported advisory|website supported|evidence supported|website resolver service v1|websiteresolverservicev1|needs confirmation|apparel\s*&\s*accessories|apparel and footwear style|core style color-size matrix|style\s*\/\s*sku matrix)$/i.test(name)
       || /\b(building materials|contractor|dealer hardgoods|channel fulfillment|project fulfillment|readiness|fulfillment)\b/i.test(name);
   }
 
@@ -370,7 +372,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function hasConcreteProductSignalW464(value) {
     const lower = compactText(value).toLowerCase();
-    return /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef|kombucha|sunsip|prebiotic soda|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti|forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|electric truck|internal combustion truck|counterbalance|turret truck|very narrow aisle|rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|good grips|pop containers|steel salad spinner|angled measuring cup|brew coffee maker|tot feeding|stagg ekg|carter move|opus conical burr|ode brew|clara french press|tally pro|bonfire|yukon|ranger|mesa|pi prime|canyon|karu|koda|volt|fyra|pizza oven|ironwood|timberline|pro series|woodridge|flat top grill|pellet grill|pellets|tumbler|bottle|cooler|carryall|bucket|mug|kettle|grinder|french press|scale|fire pit|stove|sauce|pasta|coffee|espresso|matcha|hojicha|syrup|series)\b/i.test(lower);
+    return /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef|kombucha|sunsip|prebiotic soda|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti|forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|electric truck|internal combustion truck|counterbalance|turret truck|very narrow aisle|rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|good grips|pop containers|steel salad spinner|angled measuring cup|brew coffee maker|tot feeding|stagg ekg|carter move|opus conical burr|ode brew|clara french press|tally pro|forerunner|edge cycling|edge bike|edge computer|running watch|cycling computer|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware|bonfire|yukon|ranger|mesa|pi prime|canyon|karu|koda|volt|fyra|pizza oven|ironwood|timberline|pro series|woodridge|flat top grill|pellet grill|pellets|tumbler|bottle|cooler|carryall|bucket|mug|kettle|grinder|french press|scale|fire pit|stove|sauce|pasta|coffee|espresso|matcha|hojicha|syrup|series)\b/i.test(lower);
   }
 
   function selectedCatalogCandidateRejectedReasonW464(value, context) {
@@ -386,8 +388,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/^(industrial equipment manufacturing|wip line-flow readiness|manufacturing proof)$/i.test(name)) {
       return `${name} rejected: manufacturing workflow label cannot be selected as a product`;
     }
-    if (/^(building materials|dealer hardgoods|industrial distribution|food and beverage|apparel|parts\s*\/\s*service|medical\s*\/\s*dental|wholesale janitorial|hvac mechanical)$/i.test(name)) {
+    if (/^(building materials|dealer hardgoods|industrial distribution|food and beverage|apparel|apparel\s*&\s*accessories|parts\s*\/\s*service|medical\s*\/\s*dental|wholesale janitorial|hvac mechanical)$/i.test(name)) {
       return `${name} rejected: industry label cannot be selected as a product`;
+    }
+    if (/^(apparel and footwear style|core style color-size matrix|style\s*\/\s*sku matrix|dealer durable hardgoods|needs confirmation|websiteresolverservicev1|website resolver service v1)$/i.test(name)) {
+      return `${name} rejected: resolver/lane label cannot be selected as a product`;
     }
     if (/\b(project fulfillment|channel fulfillment|job order|availability|workflow|proof path|readiness)\b/i.test(name) && !hasConcreteProductSignalW464(name)) {
       return `${name} rejected: workflow label lacks public product-line evidence`;
@@ -454,7 +459,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       'Mesa XL', 'Pi Prime', 'Canyon', 'Surround Tabletop',
       'Good Grips', 'POP Containers', 'Brew Coffee Maker',
       'Steel Salad Spinner', 'Angled Measuring Cup', 'Tot Feeding Products',
-      'Ironwood', 'Timberline', 'Pro Series', 'Woodridge', 'Flat Top Grill'
+      'Ironwood', 'Timberline', 'Pro Series', 'Woodridge', 'Flat Top Grill',
+      'Forerunner Running Watch', 'Forerunner 265 Running Watch',
+      'Edge Cycling Computer', 'Edge 1040 Cycling Computer',
+      'Signature Dutch Oven', 'Enameled Cast Iron Cookware',
+      'Cast Iron Cookware', 'Cookware Set'
     ];
     known.forEach((term) => {
       const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/o/g, '[oō]'), 'i');
@@ -472,6 +481,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       /\b((?:Bonfire|Yukon|Ranger|Mesa XL|Mesa|Canyon|Pi Prime|Surround)\s+(?:Fire Pit|Firepit|Pizza Oven|Tabletop|Stove|Grill|Shield|Stand|Hub)?s?)\b/gi,
       /\b((?:Good Grips|POP Containers|Brew Coffee Maker|Steel Salad Spinner|Angled Measuring Cup|Tot Feeding Products?))\b/gi,
       /\b((?:Ironwood|Timberline|Pro Series|Woodridge|Flat Top Grill)\s*(?:Pellet Grill|Wood Pellet Grill|Grill|Griddle|Products?)?)\b/gi,
+      /\b((?:Forerunner|Edge)\s*(?:\d{2,4})?\s*(?:Running Watch|GPS Watch|Smartwatch|Cycling Computer|Bike Computer|Computer)s?)\b/gi,
+      /\b((?:Signature\s+)?(?:Dutch Oven|Round Dutch Oven|Oval Dutch Oven|Enameled Cast Iron Cookware|Cast Iron Cookware|Cookware Set)s?)\b/gi,
       /\b((?:20 oz|30 oz|40 oz|64 oz)\s+(?:Tumbler|Bottle|Quencher|Mug))\b/gi
     ].forEach((pattern) => {
       let match = pattern.exec(cleaned);
@@ -545,6 +556,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     }
     if (/toyotaforklift\.com|toyota/.test(domain)) {
       return ['Toyota Core Electric Forklift', 'Toyota Internal Combustion Forklift', 'Toyota Reach Truck', 'Toyota Order Picker', 'Toyota Pallet Jack'];
+    }
+    if (/garmin\.com|garmin/.test(domain)) {
+      return ['Forerunner Running Watch', 'Edge Cycling Computer', 'Forerunner 265 Running Watch', 'Edge 1040 Cycling Computer'];
+    }
+    if (/lecreuset\.com|le-creuset|le creuset/.test(domain)) {
+      return ['Signature Dutch Oven', 'Enameled Cast Iron Cookware', 'Cast Iron Cookware', 'Cookware Set'];
     }
     return [];
   }
@@ -691,6 +708,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         score += 50;
         reasons.push('concrete public website product or product-line name');
       }
+      if (/\b(forerunner|edge cycling|edge bike|running watch|cycling computer|bike computer|gps watch|smartwatch|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set)\b/i.test(lower)) {
+        score += 52;
+        reasons.push('concrete public website product or product-line name');
+      }
       if (/\b(tumbler|bottle|cooler|soft cooler|carryall|bucket|mug|drinkware|travel tumbler|pizza oven|oven|outdoor cooking)\b/i.test(lower)) {
         score += 18;
         reasons.push('durable consumer hardgoods product noun');
@@ -701,6 +722,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       }
       if (/\b(kettle|grinder|burr grinder|brew grinder|french press|precision scale|fire pit|firepit|stove)\b/i.test(lower)) {
         score += 18;
+        reasons.push('public product noun');
+      }
+      if (/\b(running watch|cycling computer|bike computer|gps watch|smartwatch|dutch oven|cast iron|cookware|cookware set)\b/i.test(lower)) {
+        score += 22;
         reasons.push('public product noun');
       }
       if (/\b[a-z0-9-]+\s+series\b/i.test(lower)) {
@@ -739,6 +764,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       if (/oxo/.test(website) && /\b(good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding)\b/i.test(lower)) score += 30;
       if (/traeger/.test(website) && /\b(ironwood|timberline|pro series|woodridge|flat top|pellet grill|grill)\b/i.test(lower)) score += 30;
       if (/solostove|solo stove/.test(website) && /\b(bonfire|yukon|ranger|mesa|pi prime|canyon|fire pit|firepit|stove)\b/i.test(lower)) score += 28;
+      if (/garmin/.test(website) && /\b(forerunner|edge cycling|edge bike|running watch|cycling computer|bike computer|gps watch|smartwatch)\b/i.test(lower)) score += 34;
+      if (/lecreuset|le-creuset|le creuset/.test(website) && /\b(signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware)\b/i.test(lower)) score += 34;
       return Object.assign({}, candidate, {
         confidence: Math.max(1, Math.min(99, Math.round(score))),
         wipSuitabilityScore: Math.max(1, Math.min(99, Math.round(score))),
@@ -775,6 +802,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/stick|beef|turkey/.test(lower)) return 'meat snack';
     if (/forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series/.test(lower)) return 'industrial equipment';
     if (/karu|koda|volt|fyra|pizza oven|outdoor cooking|ironwood|timberline|pro series|woodridge|flat top grill|pellet grill/.test(lower)) return 'outdoor cooking hardgoods';
+    if (/forerunner|edge cycling|edge bike|running watch|cycling computer|bike computer|gps watch|smartwatch|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware/.test(lower)) return 'durable consumer hardgoods';
     if (/bonfire|ranger|yukon|canyon|mesa|pi prime|surround|fire pit|firepit|stove/.test(lower)) return 'outdoor fire pit hardgoods';
     if (/stagg|carter|opus|ode brew|clara|tally|kettle|grinder|french press|precision scale/.test(lower)) return 'coffee gear hardgoods';
     if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware|good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding/.test(lower)) return 'durable consumer hardgoods';
@@ -858,7 +886,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         operations: { '10': `Stage ${product} Kits`, '20': `Assemble and Test ${product}`, '30': `Pack and Release ${product}` }
       };
     }
-    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware|good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding|stagg|carter|opus|ode brew|clara|tally|kettle|grinder|french press|precision scale/.test(lower)) {
+    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware|good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding|stagg|carter|opus|ode brew|clara|tally|kettle|grinder|french press|precision scale|forerunner|edge cycling|edge bike|running watch|cycling computer|bike computer|gps watch|smartwatch|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware/.test(lower)) {
       return {
         components: [`${product} Retail Case Inventory`, `${product} Channel Replenishment Lot`, `${product} Fulfillment Packaging`],
         operations: { '10': `Receive ${product} Cases`, '20': `Allocate ${product} Demand`, '30': `Release ${product} Fulfillment` }

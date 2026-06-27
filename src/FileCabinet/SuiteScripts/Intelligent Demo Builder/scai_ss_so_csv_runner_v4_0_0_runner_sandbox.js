@@ -490,7 +490,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const names = normalizeProductFirstRecordNamesW466(namingPayload.payload, { prospect, namingPayload });
+    const names = normalizeProductFirstRecordNamesW466(namingPayload.payload, { prospect, website, signalText: signal.text, namingPayload });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: namingPayload.source || names._source || 'deterministic',
       productFirstRecordNamingW466: names.productFirstRecordNamingW466 || null,
@@ -3528,7 +3528,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       'Prepare Materials',
       'Final Assembly Unit',
       'Drinkware Product Line',
-      'Outdoor Cooking Product Line'
+      'Outdoor Cooking Product Line',
+      'Apparel & Accessories',
+      'Apparel and Footwear Style',
+      'Core Style Color-Size Matrix',
+      'Style / SKU Matrix',
+      'Dealer Durable Hardgoods',
+      'websiteResolverServiceV1',
+      'Needs Confirmation'
     ];
     const industrial = industrialEquipmentNamingPackW460({ prospect, website, evidence, genericFallbackBlockedTerms });
     if (industrial) return industrial;
@@ -3604,6 +3611,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       { name: 'Brew Coffee Maker', pattern: /\bbrew coffee maker\b/ },
       { name: 'Steel Salad Spinner', pattern: /\bsteel salad spinner\b|\bsalad spinner\b/ },
       { name: 'Angled Measuring Cup', pattern: /\bangled measuring cup\b/ },
+      { name: 'Forerunner Running Watch', pattern: /\bforerunner\b.*\b(running watch|watch|gps|smartwatch)\b|\bforerunner\s*\d{2,4}\b/ },
+      { name: 'Edge Cycling Computer', pattern: /\bedge\b.*\b(cycling computer|bike computer|computer)\b|\bedge\s*\d{2,4}\b/ },
+      { name: 'Signature Dutch Oven', pattern: /\bsignature\b.*\bdutch oven\b|\bdutch oven\b/ },
+      { name: 'Enameled Cast Iron Cookware', pattern: /\benameled cast iron\b|\bcast iron cookware\b/ },
+      { name: 'Cookware Set', pattern: /\bcookware set\b/ },
       { name: 'Ironwood Pellet Grill', pattern: /\bironwood\b/ },
       { name: 'Timberline Pellet Grill', pattern: /\btimberline\b/ },
       { name: 'Pro Series Pellet Grill', pattern: /\bpro series\b/ },
@@ -3627,7 +3639,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     let brand = '';
     let product = '';
     let alternates = [];
-    if (/yeti\.com|yeti/.test(domain) || /\byeti\b/.test(evidence)) {
+    if (/garmin\.com|garmin/.test(domain) || /\bgarmin\b/.test(evidence)) {
+      brand = 'Garmin';
+      product = /edge\b.*\b(cycling|bike|computer)|\bedge\s*\d{2,4}\b/.test(evidence) && !/\bforerunner\b/.test(evidence)
+        ? 'Edge Cycling Computer'
+        : 'Forerunner Running Watch';
+      alternates = ['Edge Cycling Computer', 'Forerunner 265 Running Watch', 'Edge 1040 Cycling Computer'];
+    } else if (/lecreuset\.com|le-creuset|le creuset/.test(domain) || /\ble creuset\b/.test(evidence)) {
+      brand = 'Le Creuset';
+      product = 'Signature Dutch Oven';
+      alternates = ['Enameled Cast Iron Cookware', 'Cast Iron Cookware', 'Cookware Set'];
+    } else if (/yeti\.com|yeti/.test(domain) || /\byeti\b/.test(evidence)) {
       brand = 'YETI';
       product = 'Rambler 20 oz Tumbler';
       alternates = ['Tundra Cooler', 'Roadie Cooler', 'Hopper Soft Cooler', 'Camino Carryall', 'LoadOut Bucket', 'Yonder Bottle'];
@@ -3718,16 +3740,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       hero_item_name: `${base} Case`,
       assembly_name: `${base} Fulfillment Batch`,
       component_names: [
-        /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `${product} Body and Heat Shield Kit` : `${product} Retail Case Inventory`,
-        /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `${product} Fuel and Airflow System` : `${product} Channel Replenishment Lot`,
+        /karu|koda|volt|fyra|pizza oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `${product} Body and Heat Shield Kit` : `${product} Retail Case Inventory`,
+        /karu|koda|volt|fyra|pizza oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `${product} Fuel and Airflow System` : `${product} Channel Replenishment Lot`,
         /pizza oven|oven|pellet grill|flat top|grill/i.test(product) ? `${product} Retail Packaging` : `${product} Fulfillment Packaging`
       ],
       bom_name: `BOM - ${base}`,
       bom_revision_name: `Revision 1 - ${base}`,
       routing_name: `Routing - ${base} Fulfillment`,
       operation_names_by_seq: {
-        '10': /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `Stage ${product} Kits` : `Receive ${product} Cases`,
-        '20': /pizza oven|oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `Assemble and Test ${product}` : `Allocate ${product} Demand`,
+        '10': /karu|koda|volt|fyra|pizza oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `Stage ${product} Kits` : `Receive ${product} Cases`,
+        '20': /karu|koda|volt|fyra|pizza oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `Assemble and Test ${product}` : `Allocate ${product} Demand`,
         '30': /pizza oven|oven|pellet grill|flat top|grill/i.test(product) ? `Pack and Release ${product}` : `Release ${product} Fulfillment`
       },
       sales_descriptions: {
@@ -5377,7 +5399,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     'lab',
     'products cpg',
     'catalog product',
-    'advisory insufficient'
+    'advisory insufficient',
+    'apparel & accessories',
+    'apparel and footwear style',
+    'core style color-size matrix',
+    'style / sku matrix',
+    'dealer durable hardgoods',
+    'websiteresolverservicev1',
+    'needs confirmation'
   ];
 
   function weakProductNameReasonW467(value) {
@@ -5459,6 +5488,54 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  function websiteFromNamingPackW467(names) {
+    const urls = Array.isArray(names && names.websiteEvidenceSourceUrls) ? names.websiteEvidenceSourceUrls : [];
+    return str(urls[0] || names && names.website || names && names.sourceUrl || '');
+  }
+
+  function strongDomainRecoveryNamingPackW467(names, context, weakRecordName, weakReason) {
+    const prospect = str(context && context.prospect);
+    const website = str(context && context.website) || websiteFromNamingPackW467(names);
+    const signalText = str(context && context.signalText) || [
+      names && names.selectedProductName,
+      names && names.primary_product_candidate,
+      names && names.flavorSignalsUsed,
+      names && names.websiteSignalsUsed,
+      names && names.evidence_terms
+    ].map(function(value) {
+      if (Array.isArray(value)) return value.join(' ');
+      return str(value);
+    }).join(' ');
+    const recovered = generateNamingPack({ prospect, website, signalText });
+    const recoveredProduct = str(recovered && (recovered.selectedProductName || recovered.primary_product_candidate));
+    if (!recovered || recovered.fallbackUsed === true || !recoveredProduct || weakProductNameReasonW467(recoveredProduct)) return null;
+    return Object.assign({}, names, recovered, {
+      blockedWeakProductName: names.blockedWeakProductName || str(names.selectedProductName || names.primary_product_candidate || ''),
+      blockedWeakProductNameReason: names.blockedWeakProductNameReason || weakReason || 'weak product naming blocked',
+      blockedWeakRecordName: weakRecordName || names.blockedWeakRecordName || '',
+      namingAuthorityOrderW467: 'validated naming pack -> deterministic domain recovery -> prospect fallback',
+      productFirstRecordNamingW466: {
+        applied: true,
+        selectedProductName: recoveredProduct,
+        before: {
+          hero_item_name: names.hero_item_name || '',
+          assembly_name: names.assembly_name || '',
+          component_names: names.component_names || [],
+          bom_name: names.bom_name || '',
+          bom_revision_name: names.bom_revision_name || ''
+        },
+        after: {
+          hero_item_name: recovered.hero_item_name || '',
+          assembly_name: recovered.assembly_name || '',
+          component_names: recovered.component_names || [],
+          bom_name: recovered.bom_name || '',
+          bom_revision_name: recovered.bom_revision_name || ''
+        },
+        policy: 'weak-precomputed-record-name-recovered-by-domain-product-resolver'
+      }
+    });
+  }
+
   function normalizeProductFirstRecordNamesW466(rawNames, context) {
     const names = Object.assign({}, rawNames || {});
     const namingPayload = context && context.namingPayload || {};
@@ -5481,6 +5558,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       }
     }
 
+    if (weakProductReason || weakRecordName) {
+      const recovered = strongDomainRecoveryNamingPackW467(names, context, weakRecordName, weakProductReason || 'weak record name blocked');
+      if (recovered) return recovered;
+    }
+
     if (weakRecordName) {
       return Object.assign({}, names, prospectFallbackNamingPackW467({
         prospect: context && context.prospect,
@@ -5491,6 +5573,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         blockedWeakProductName: names.blockedWeakProductName || product || '',
         blockedWeakProductNameReason: names.blockedWeakProductNameReason || 'weak record name blocked',
         blockedWeakRecordName: weakRecordName,
+        namingAuthorityOrderW467: 'validated naming pack -> validated product evidence -> prospect fallback'
+      });
+    }
+
+    if (weakProductReason) {
+      return Object.assign({}, names, prospectFallbackNamingPackW467({
+        prospect: context && context.prospect,
+        signalLen: names._signalLen,
+        fallbackReason: `Weak product naming "${product}" was blocked; prospect-based deterministic fallback used.`,
+        genericFallbackBlockedTerms: names.genericFallbackBlockedTerms
+      }), {
+        blockedWeakProductName: product,
+        blockedWeakProductNameReason: weakProductReason,
         namingAuthorityOrderW467: 'validated naming pack -> validated product evidence -> prospect fallback'
       });
     }

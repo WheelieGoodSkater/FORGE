@@ -163,9 +163,13 @@ assert(contains(runner, 'FORGE SO lookup did not return a current-run Sales Orde
 assert(contains(runner, 'fallbackTruthW458'), 'runner must emit explicit fallback truth telemetry for generic product outcomes');
 assert(contains(runner, 'WEAK_PRODUCT_NAME_BLOCKLIST_W467'), 'runner must keep an explicit weak product-name blocklist');
 assert(contains(runner, 'prospectFallbackNamingPackW467'), 'runner must fall back to prospect-based deterministic names instead of Catalog Product names');
+assert(contains(runner, 'strongDomainRecoveryNamingPackW467'), 'runner must recover weak authoritative product names through deterministic domain packs before prospect fallback');
+assert(contains(runner, 'weak-precomputed-record-name-recovered-by-domain-product-resolver'), 'runner must make weak precomputed naming recovery explicit in telemetry');
+assert(contains(runner, 'Forerunner Running Watch') && contains(runner, 'Edge Cycling Computer'), 'runner hardgoods fallback must preserve Garmin product-line naming');
+assert(contains(runner, 'Signature Dutch Oven') && contains(runner, 'Enameled Cast Iron Cookware'), 'runner hardgoods fallback must preserve Le Creuset product-line naming');
 assert(contains(runner, 'authoritative-precomputed-naming-pack-preserved'), 'runner must preserve parsed naming-pack names instead of rewriting them with weak classifier output');
 assert(contains(runner, 'blockedWeakProductName'), 'runner result capture must expose blocked weak naming candidates');
-['industrial supply', 'distribution', 'warehouse', 'lab', 'products cpg', 'catalog product', 'advisory insufficient'].forEach((term) => {
+['industrial supply', 'distribution', 'warehouse', 'lab', 'products cpg', 'catalog product', 'advisory insufficient', 'apparel & accessories', 'websiteresolverservicev1', 'needs confirmation'].forEach((term) => {
   assert(contains(runner.toLowerCase(), term), `runner weak naming blocklist missing ${term}`);
 });
 assert(contains(adapter, 'server naming pack file was not created before runner submit.'), 'adapter must block runner submit when server naming-pack creation fails');

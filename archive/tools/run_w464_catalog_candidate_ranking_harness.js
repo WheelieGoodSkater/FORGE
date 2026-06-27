@@ -49,7 +49,14 @@ const rootAdapter = loadAdapterTest(rootAdapterRel);
   'Dealer Channel Availability',
   'Industrial Equipment Manufacturing',
   'WIP Line-Flow Readiness',
-  'Catalog Product'
+  'Catalog Product',
+  'Apparel & Accessories',
+  'Apparel and Footwear Style',
+  'Core Style Color-Size Matrix',
+  'Style / SKU Matrix',
+  'Dealer Durable Hardgoods',
+  'websiteResolverServiceV1',
+  'Needs Confirmation'
 ].forEach((blockedName) => {
   assert(
     adapter.selectedCatalogCandidateRejectedReasonW464(blockedName, { prospect: 'Acme Supply' }),
@@ -155,6 +162,52 @@ assert(traegerPack.fallbackUsed === false, 'Traeger domain product evidence must
 assert(traegerPack.selectedCatalogCandidate && traegerPack.selectedCatalogCandidate.name === 'Ironwood', 'Traeger Ironwood product line must be selected');
 assert(names(traegerPack.catalogCandidates).includes('Timberline Pellet Grill'), 'Traeger catalog candidates must include public product lines');
 assert(traegerPack.component_names.some((name) => /Ironwood/.test(name)), 'Traeger component names must use selected product line');
+
+const garminPack = adapter.buildServerPrecomputedNamingPack({
+  prospect: { name: 'Garmin Spring Dealer Replenishment Review', website: 'https://www.garmin.com' },
+  websiteEvidence: {
+    productNames: ['Apparel & Accessories', 'Core Style Color-Size Matrix', 'websiteResolverServiceV1'],
+    pageText: 'Garmin dealer replenishment notes mention Forerunner running watches, Edge cycling computers, inventory availability, and clean product naming.'
+  },
+  demoPath: {
+    laneId: 'dealer_hardgoods',
+    productSeed: 'Product / SKU',
+    scenario: 'dealer hardgoods electronics fulfillment'
+  },
+  storyInputs: {
+    buyerNeed: 'Forerunner watches, Edge cycling computers, inventory availability, clean product naming.'
+  }
+});
+
+assert(garminPack.fallbackUsed === false, 'Garmin product evidence must avoid fallback');
+assert(garminPack.selectedCatalogCandidate && garminPack.selectedCatalogCandidate.name === 'Forerunner Running Watch', 'Garmin Forerunner product line must be selected');
+assert(names(garminPack.catalogCandidates).includes('Edge Cycling Computer'), 'Garmin catalog candidates must include Edge Cycling Computer');
+assert(!names(garminPack.catalogCandidates).includes('Apparel & Accessories'), 'Garmin accepted catalogCandidates must exclude apparel resolver label');
+assert(garminPack.selectedProductName === 'Forerunner Running Watch', 'Garmin selectedProductName must be a real public product line');
+assert(garminPack.component_names.some((name) => /Forerunner Running Watch/.test(name)), 'Garmin component names must use selected product line');
+
+const leCreusetPack = adapter.buildServerPrecomputedNamingPack({
+  prospect: { name: 'Le Creuset Seasonal Showroom Demo Plan', website: 'https://www.lecreuset.com' },
+  websiteEvidence: {
+    productNames: ['Dealer Durable Hardgoods', 'Needs Confirmation', 'Style / SKU Matrix'],
+    pageText: 'Le Creuset buyer mentioned Signature Dutch Ovens, enameled cast iron cookware, color and size assortment planning, and store-level availability.'
+  },
+  demoPath: {
+    laneId: 'dealer_hardgoods',
+    productSeed: 'Product / SKU',
+    scenario: 'dealer hardgoods kitchenware fulfillment'
+  },
+  storyInputs: {
+    buyerNeed: 'Signature Dutch Ovens, enameled cast iron cookware, color and size assortment planning, and store-level availability.'
+  }
+});
+
+assert(leCreusetPack.fallbackUsed === false, 'Le Creuset product evidence must avoid fallback');
+assert(leCreusetPack.selectedCatalogCandidate && leCreusetPack.selectedCatalogCandidate.name === 'Signature Dutch Oven', 'Le Creuset Signature Dutch Oven product line must be selected');
+assert(names(leCreusetPack.catalogCandidates).includes('Enameled Cast Iron Cookware'), 'Le Creuset catalog candidates must include enameled cast iron cookware');
+assert(!names(leCreusetPack.catalogCandidates).includes('Dealer Durable Hardgoods'), 'Le Creuset accepted catalogCandidates must exclude lane label');
+assert(leCreusetPack.selectedProductName === 'Signature Dutch Oven', 'Le Creuset selectedProductName must be a real public product line');
+assert(leCreusetPack.component_names.some((name) => /Signature Dutch Oven/.test(name)), 'Le Creuset component names must use selected product line');
 
 const rootRanked = rootAdapter.rankCatalogCandidatesW457([
   { name: 'Dealer Channel Availability', source: 'website_nav', confidence: 99, reasons: ['workflow label'] },

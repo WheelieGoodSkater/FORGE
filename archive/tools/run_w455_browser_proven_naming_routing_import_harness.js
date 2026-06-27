@@ -27,79 +27,39 @@ assert(contains(drawer, 'W466 current-run sidecar provenance and product-first r
 
 assert(contains(adapter, 'createNamingPackFile(request, config, idempotencyToken)'), 'approved adapter must create a naming pack before runner submit');
 assert(contains(adapter, 'custscript_scai_runner_naming_file_id'), 'approved adapter must pass custscript_scai_runner_naming_file_id');
-assert(contains(adapter, 'boundedFileNameW461(`scai_naming_${safeFileToken(idempotencyToken)}.json`, 180)'), 'approved adapter must write bounded discoverable scai_naming_<extId>.json files');
-assert(contains(adapter, 'buildCatalogCandidatesW457(request, website, namingAuthority)'), 'adapter must build catalog candidates before naming pack creation');
-assert(contains(adapter, 'request.websiteEvidence'), 'adapter must wire request-carried website evidence into catalog candidate selection');
-assert(contains(adapter, 'request.finalNamingAdvisory'), 'adapter must wire LLM/final naming advisory into catalog candidate selection');
-assert(contains(adapter, 'sourceKindForEvidencePathW457'), 'adapter must classify candidate evidence sources');
-assert(contains(adapter, "source === 'llm_naming_advisory'"), 'adapter must recognize LLM naming advisory candidates');
-assert(contains(adapter, 'domainCatalogCandidatesW457'), 'adapter must seed resolver catalog candidates when request evidence is sparse');
-assert(contains(adapter, 'structured product evidence from ${source}'), 'adapter must mine structured resolver/product/card/title evidence before free-text fallback');
-assert(contains(adapter, 'isGenericCatalogCandidateW459'), 'adapter must reject generic catalog/product labels before ranking');
+assert(contains(adapter, 'boundedFileNameW461(`scai_naming_${safeFileToken(idempotencyToken)}.json`, NAMING_FILE_NAME_LIMIT_W468)'), 'approved adapter must write bounded discoverable scai_naming_<extId>.json files');
+assert(contains(adapter, 'explicitNamingPackFromRequestW468(request)'), 'adapter must load explicit precomputed naming before writing the handoff');
+assert(contains(adapter, 'industrySelectionFromRequestW468(request, website)'), 'adapter must compute Industry Selection separately from record naming');
+assert(contains(adapter, 'suitelet-precomputed-naming-pack'), 'adapter must mark explicit naming pack authority');
+assert(contains(adapter, 'suitelet-prospect-fallback-naming-pack'), 'adapter fallback must be prospect-shaped, not product inferred');
 assert(contains(adapter, 'shop all') && contains(adapter, 'featured products') && contains(adapter, 'accessories') && contains(adapter, 'services'), 'adapter must reject generic nav/category labels as product candidates');
 assert(contains(adapter, 'Forklift Truck') && contains(adapter, 'Pallet Truck') && contains(adapter, 'Reach Truck') && contains(adapter, 'Order Picker'), 'adapter must extract industrial equipment website product candidates');
 assert(contains(adapter, 'Crown C-5 Series Forklift') && contains(adapter, 'Crown RC Series Stand-Up Rider Forklift'), 'adapter must seed concrete Crown product-line resolver candidates');
-assert(contains(adapter, 'manufacturable industrial equipment product-line noun'), 'adapter must score industrial equipment product-line nouns');
-assert(contains(adapter, 'Rambler 20 oz Tumbler') && contains(adapter, 'Tundra Cooler') && contains(adapter, 'Hopper Soft Cooler'), 'adapter must seed concrete YETI public product-line resolver candidates');
-assert(contains(adapter, 'Quencher H2.0 FlowState Tumbler') && contains(adapter, 'IceFlow Flip Straw Tumbler') && contains(adapter, 'Classic Legendary Bottle'), 'adapter must seed concrete Stanley public product-line resolver candidates');
-assert(contains(adapter, 'Wide Mouth Bottle') && contains(adapter, 'All Around Travel Tumbler') && contains(adapter, 'Trail Series Bottle'), 'adapter must seed concrete Hydro Flask public product-line resolver candidates');
-assert(contains(adapter, 'Karu 2 Pro Multi-Fuel Pizza Oven') && contains(adapter, 'Koda 16 Gas Powered Pizza Oven') && contains(adapter, 'Volt 12 Electric Pizza Oven'), 'adapter must seed concrete Ooni public product-line resolver candidates');
-assert(contains(adapter, 'concrete public hardgoods product-line name'), 'adapter must score public hardgoods product-line names above generic terms');
-assert(contains(adapter, 'concrete public website product-line name'), 'adapter must score non-fixture website product-line names above generic terms');
-assert(contains(adapter, 'durable consumer hardgoods product noun'), 'adapter must score hardgoods product nouns');
-assert(contains(adapter, 'fits dealer hardgoods fulfillment scenario'), 'adapter must rank dealer hardgoods website candidates for distribution/fulfillment runs');
-assert(contains(adapter, 'fits durable hardgoods manufacturing scenario'), 'adapter must rank Ooni/outdoor cooking product candidates for manufacturing runs');
-assert(contains(adapter, 'productEvidenceConfidence'), 'adapter must emit productEvidenceConfidence telemetry');
 assert(contains(adapter, 'websiteEvidenceSourceUrls'), 'adapter must emit websiteEvidenceSourceUrls');
-assert(contains(adapter, 'genericCandidateRejectedReasons'), 'adapter must emit genericCandidateRejectedReasons');
-assert(contains(adapter, 'missingEvidence'), 'adapter must emit missingEvidence');
-assert(contains(adapter, 'Marinara Sauce') && contains(adapter, 'Tomato Basil Sauce') && contains(adapter, 'Arrabbiata Sauce'), 'Rao\'s resolver candidates must include concrete sauce products');
-assert(contains(adapter, 'Jar and Case Packaging'), 'Rao\'s sauce naming must use sauce-specific packaging, not generic Catalog Product packaging');
-assert(contains(adapter, 'Cook Tomato Sauce Base'), 'Rao\'s sauce naming must use sauce-specific WIP operations');
-assert(contains(adapter, 'catalogCandidates: rankedCatalogCandidates'), 'adapter must emit catalogCandidates');
-assert(contains(adapter, 'selectedCatalogCandidate'), 'adapter must emit selectedCatalogCandidate');
-assert(contains(adapter, 'selectedCatalogCandidateSource'), 'adapter must emit selectedCatalogCandidateSource');
-assert(contains(adapter, 'selectedCatalogCandidateReasons'), 'adapter must emit selectedCatalogCandidateReasons');
-assert(contains(adapter, 'websiteCatalogEvidenceUsed'), 'adapter must emit websiteCatalogEvidenceUsed');
-assert(contains(adapter, 'llmCatalogInterpretationUsed'), 'adapter must emit llmCatalogInterpretationUsed');
-assert(contains(adapter, 'deterministicCatalogRankerUsed'), 'adapter must emit deterministicCatalogRankerUsed');
-assert(contains(adapter, 'fallbackUsed'), 'adapter must emit fallbackUsed');
-assert(contains(adapter, 'prospectNameUsedAsFallbackOnly: true'), 'adapter must treat prospect name as fallback context only');
+assert(contains(adapter, "ADAPTER_VERSION = 'w468-governed-adapter-precomputed-naming-pack-simple'"), 'adapter must expose the W468 simple precomputed naming marker');
+assert(contains(adapter, 'explicitNamingPackFromRequestW468'), 'adapter must prefer explicit precomputed naming packs');
+assert(contains(adapter, 'industrySelectionFromRequestW468'), 'adapter must emit website/LLM best-guess industry selection');
+assert(contains(adapter, 'suitelet-precomputed-naming-pack'), 'adapter must mark explicit naming packs as the naming source');
+assert(contains(adapter, 'suitelet-prospect-fallback-naming-pack'), 'adapter must use only prospect fallback when no precomputed names exist');
 assert(contains(adapter, 'namingEvidenceSource'), 'adapter must emit namingEvidenceSource telemetry');
 assert(contains(adapter, 'namingConfidence'), 'adapter must emit namingConfidence telemetry');
-assert(contains(adapter, 'productSignalsUsed'), 'adapter must emit productSignalsUsed telemetry');
-assert(contains(adapter, 'flavorSignalsUsed'), 'adapter must emit flavorSignalsUsed telemetry');
-assert(contains(adapter, 'packSignalsUsed'), 'adapter must emit packSignalsUsed telemetry');
-assert(contains(adapter, 'llmNamingAdvisoryUsed'), 'adapter must emit llmNamingAdvisoryUsed telemetry');
-assert(contains(adapter, 'fallbackReason'), 'adapter must emit explicit fallbackReason telemetry');
-assert(contains(adapter, 'scenarioText'), 'adapter may use notes/scenario only as business context');
-assert(!contains(adapter, 'const signal = `${prospect} ${website} ${notes}`'), 'adapter must not use prospect+notes as the primary product naming signal');
+assert(contains(adapter, 'NAMING_FILE_NAME_LIMIT_W468 = 96'), 'adapter naming handoff filenames must be bounded below the prior 180-char ceiling');
 assert(contains(runner, 'namingPayloadFound'), 'runner must keep namingPayloadFound telemetry');
 assert(contains(runner, 'namingPayloadParsed'), 'runner must keep namingPayloadParsed telemetry');
 assert(contains(runner, 'namingPayloadApplied'), 'runner must keep namingPayloadApplied telemetry');
 assert(contains(runner, 'namingEvidenceSource'), 'runner must pass through namingEvidenceSource telemetry');
-assert(contains(runner, 'catalogCandidates'), 'runner must pass through catalogCandidates telemetry');
-assert(contains(runner, 'selectedCatalogCandidate'), 'runner must pass through selectedCatalogCandidate telemetry');
+assert(contains(runner, "const names = namingPayload.payload;"), 'runner must apply the precomputed naming pack directly');
+assert(contains(runner, 'industrySelection'), 'runner must expose industrySelection telemetry');
 assert(contains(runner, 'websiteEvidenceSourceUrls'), 'runner must pass through websiteEvidenceSourceUrls telemetry');
-assert(contains(runner, 'genericCandidateRejectedReasons'), 'runner must pass through genericCandidateRejectedReasons telemetry');
-assert(contains(runner, 'productEvidenceConfidence'), 'runner must pass through productEvidenceConfidence telemetry');
-assert(contains(runner, 'industrialEquipmentNamingPackW460'), 'runner must preserve industrial product naming when naming file loading falls back');
-assert(contains(runner, 'durableHardgoodsNamingPackW462'), 'runner must preserve YETI/Stanley hardgoods naming if the naming file handoff is absent');
-assert(contains(runner, 'Hydro Flask') && contains(runner, 'Wide Mouth Bottle'), 'runner fallback must preserve Hydro Flask product-line naming if naming file handoff is absent');
-assert(contains(runner, 'Ooni') && contains(runner, 'Karu 2 Pro Multi-Fuel Pizza Oven'), 'runner fallback must preserve Ooni product-line naming if naming file handoff is absent');
-assert(contains(runner, 'domain-catalog-durable-hardgoods-w462'), 'runner hardgoods fallback must remain a website-domain catalog resolver, not a prospect-name fallback');
-assert(contains(runner, 'Catalog Product rejected: public website product-line candidate available'), 'runner must explicitly block Catalog Product when public hardgoods candidates exist');
+assert(contains(runner, "VERSION = 'v4.0.0-runner-sandbox-w468-precomputed-naming-pack-simple'"), 'runner must expose the W468 runtime marker');
+assert(contains(runner, "RELEASE_TRANCHE = 'w468-precomputed-naming-pack-simple-result-filename-safe'"), 'runner tranche must describe the W468 naming/filename repair');
+assert(contains(runner, "_source: 'deterministic-prospect-fallback'"), 'runner fallback must be prospect-based, not product-catalog inference');
 assert(contains(runner, 'waitForSalesOrderResolutionW460'), 'runner must wait briefly for Sales Order saved-search resolution after CSV import');
-assert(contains(runner, 'websiteCatalogEvidenceUsed'), 'runner must pass through websiteCatalogEvidenceUsed telemetry');
-assert(contains(runner, 'llmCatalogInterpretationUsed'), 'runner must pass through llmCatalogInterpretationUsed telemetry');
-assert(contains(runner, 'deterministicCatalogRankerUsed'), 'runner must pass through deterministicCatalogRankerUsed telemetry');
-assert(contains(runner, 'fallbackUsed'), 'runner must pass through fallbackUsed telemetry');
-assert(contains(runner, 'flavorSignalsUsed'), 'runner must pass through flavorSignalsUsed telemetry');
-assert(contains(runner, 'selectedProductName'), 'runner must pass through selectedProductName telemetry');
 assert(contains(runner, 'boundedFileNameW461(`scai_so_${extId}.csv`, 180)'), 'runner SO CSV filenames must be bounded below NetSuite field length limits');
 assert(contains(runner, 'resultCaptureFileNameW453({ extId, buildAttemptId, status })'), 'runner result capture filenames must route through the bounded W461 helper');
 assert(contains(runner, 'resultCaptureFileNameW453({ extId, buildAttemptId: \'error\', status: \'error\' })'), 'runner error result capture filenames must route through the bounded W461 helper');
-assert(contains(runner, 'const safeName = boundedFileNameW461(name || `idb_result_${Date.now()}.json`, 180);'), 'runner text sidecar writer must bound file names');
+assert(contains(runner, 'RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96'), 'runner result capture file names must be bounded below the prior 180-char ceiling');
+assert(contains(runner, 'isExceededMaxFieldLengthW468'), 'runner result capture save must retry on NetSuite max-field-length errors');
 assert(contains(runner, 'const safeName = boundedFileNameW461(filename || `scai_file_${Date.now()}.csv`, 180);'), 'runner CSV writer must bound file names');
 
 [
@@ -160,23 +120,13 @@ assert(contains(runner, 'customsearch_wms_atlas_bill_lookup_2'), 'runner must us
 assert(contains(runner, 'SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458') && contains(runner, "'5006'"), 'runner must keep the FORGE SO lookup internal id available for accounts that cannot load by script id');
 assert(contains(runner, 'sales_order_resolved_by_saved_search'), 'runner must mark current-run Sales Orders resolved through the saved search distinctly');
 assert(contains(runner, 'FORGE SO lookup did not return a current-run Sales Order internal id'), 'runner must preserve truthful demand diagnostics when the saved search cannot resolve the SO');
-assert(contains(runner, 'fallbackTruthW458'), 'runner must emit explicit fallback truth telemetry for generic product outcomes');
-assert(contains(runner, 'WEAK_PRODUCT_NAME_BLOCKLIST_W467'), 'runner must keep an explicit weak product-name blocklist');
-assert(contains(runner, 'prospectFallbackNamingPackW467'), 'runner must fall back to prospect-based deterministic names instead of Catalog Product names');
-assert(contains(runner, 'strongDomainRecoveryNamingPackW467'), 'runner must recover weak authoritative product names through deterministic domain packs before prospect fallback');
-assert(contains(runner, 'weak-precomputed-record-name-recovered-by-domain-product-resolver'), 'runner must make weak precomputed naming recovery explicit in telemetry');
-assert(contains(runner, 'Forerunner Running Watch') && contains(runner, 'Edge Cycling Computer'), 'runner hardgoods fallback must preserve Garmin product-line naming');
-assert(contains(runner, 'Signature Dutch Oven') && contains(runner, 'Enameled Cast Iron Cookware'), 'runner hardgoods fallback must preserve Le Creuset product-line naming');
-assert(contains(runner, 'authoritative-precomputed-naming-pack-preserved'), 'runner must preserve parsed naming-pack names instead of rewriting them with weak classifier output');
-assert(contains(runner, 'blockedWeakProductName'), 'runner result capture must expose blocked weak naming candidates');
-['industrial supply', 'distribution', 'warehouse', 'lab', 'products cpg', 'catalog product', 'advisory insufficient', 'apparel & accessories', 'websiteresolverservicev1', 'needs confirmation'].forEach((term) => {
-  assert(contains(runner.toLowerCase(), term), `runner weak naming blocklist missing ${term}`);
-});
+assert(contains(runner, "const names = namingPayload.payload;"), 'runner must apply parsed naming packs directly without product recovery/fallback override');
+assert(contains(runner, "_source: 'deterministic-prospect-fallback'"), 'runner fallback must be old-runner-style prospect naming');
+assert(contains(runner, 'industrySelectionW468'), 'runner fallback must expose Industry Selection separately from record naming');
+assert(contains(runner, "namingAuthorityOrder: 'precomputed naming pack -> prospect fallback'"), 'runner telemetry must show the simplified naming authority order');
 assert(contains(adapter, 'server naming pack file was not created before runner submit.'), 'adapter must block runner submit when server naming-pack creation fails');
-assert(contains(adapter, '`${fallbackBase} Finished Good`'), 'adapter fallback must use prospect-based finished-good names, not Catalog Product');
-['industrial supply', 'distribution', 'warehouse', 'lab', 'Products CPG', 'Catalog Product', 'Advisory Insufficient'].forEach((term) => {
-  assert(contains(adapter, term), `adapter generic catalog rejection missing ${term}`);
-});
+assert(contains(adapter, '`${prospect} Finished Good`'), 'adapter fallback must use prospect-based finished-good names, not Catalog Product');
+assert(contains(adapter, 'industrySelectionFromRequestW468'), 'adapter must expose Industry Selection separately from record naming');
 assert(contains(runner, 'reusedRecordOverwriteTelemetryW457'), 'runner must emit reused-record overwrite telemetry');
 assert(contains(runner, 'cleanWorkOrderLineDescriptionsW457'), 'runner must clean reused Work Order line descriptions');
 assert(contains(runner, 'staleTermsDetectedAfterReload'), 'runner must reload-check stale Work Order line descriptions');
@@ -188,31 +138,6 @@ assert(!contains(runner, "record.create({ type: 'manufacturingrouting'"), 'runne
 assert(!contains(runner, 'findRoutingCopyTemplateW455'), 'runner must not keep the old global routing template-copy path');
 assert(contains(runner, 'No reusable routing exists with BOM'), 'runner must return the explicit correct-BOM seed/create nextFixHint');
 assert(contains(runner, "decision: 'reused-existing-routing-renamed-operations'"), 'runner must return reused routing success only from an accepted context');
-
-[
-  "return 'Blue Bottle'",
-  "'Coffee & Tea'",
-  "'Craft Matcha'",
-  "'NOLA'",
-  "'Kyoto Style Espresso'",
-  "'Vanilla Chicory Syrup'",
-  'Coffee Concentrate',
-  'Milk and Flavor Blend',
-  'Milk and Chicory Blend',
-  'Can and Case Packaging',
-  'routing_name:',
-  '`Routing - ${brandProduct} Batch`',
-  'Prepare Coffee Concentrate',
-  'Blend ${modifier}',
-  'QC and Release Finished Cases'
-].forEach((term) => {
-  assert(contains(adapter, term) || contains(runner, term), `Blue Bottle cold-brew naming fixture missing ${term}`);
-});
-assert(!contains(adapter, 'Blue Bottle Draft Latte'), 'Blue Bottle naming must stay cold-brew, not Draft Latte');
-assert(!contains(adapter, "? 'Cold Brew Coffee Variety Pack'"), 'Blue Bottle cold-brew naming must not collapse immediately to generic variety pack');
-assert(contains(adapter, 'penalized generic product term'), 'generic cold brew/variety pack terms must be penalized');
-assert(contains(adapter, 'concrete website product name'), 'concrete website product names must outrank generic terms');
-assert(contains(adapter, 'No website, resolver, product-list, page-text, or LLM naming advisory catalog candidate was available'), 'generic fallback must only be explicit no-candidate fallback');
 
 assert(contains(drawer, 'parseMaybeJsonObjectW455'), 'drawer must normalize object-or-string completed JSON');
 assert(contains(drawer, 'normalizeManufacturingRoutingUrlW456'), 'drawer must normalize stale manufacturing routing URLs');

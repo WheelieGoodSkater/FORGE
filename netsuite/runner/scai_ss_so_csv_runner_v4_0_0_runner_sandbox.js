@@ -52,9 +52,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v4.0.0-runner-sandbox-w465-product-evidence-wip-off';
+  const VERSION = 'v4.0.0-runner-sandbox-w468-precomputed-naming-pack-simple';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w465-deployed-product-evidence-wip-off-sidecar-truth';
+  const RELEASE_TRANCHE = 'w468-precomputed-naming-pack-simple-result-filename-safe';
+  const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
 
@@ -490,12 +491,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const names = normalizeProductFirstRecordNamesW466(namingPayload.payload, { prospect, website, signalText: signal.text, namingPayload });
+    const names = namingPayload.payload;
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: namingPayload.source || names._source || 'deterministic',
-      productFirstRecordNamingW466: names.productFirstRecordNamingW466 || null,
       signalLen: names._signalLen || 0,
       industry_category: names.industry_category || '',
+      industrySelection: names.industrySelection || null,
       namingFileId: namingPayload.fileId || namingFileId || null,
       namingPayloadFound: !!namingPayload.found,
       namingPayloadParsed: !!namingPayload.parsed,
@@ -503,33 +504,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingDiscoveryMode: namingPayload.discoveryMode || 'none',
       namingEvidenceSource: names.namingEvidenceSource || names._source || '',
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
-      catalogCandidates: names.catalogCandidates || [],
-      selectedCatalogCandidate: names.selectedCatalogCandidate || null,
-      selectedCatalogCandidateSource: names.selectedCatalogCandidateSource || '',
-      selectedCatalogCandidateReasons: names.selectedCatalogCandidateReasons || [],
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      genericCandidateRejectedReasons: names.genericCandidateRejectedReasons || [],
-      missingEvidence: names.missingEvidence || [],
-      productEvidenceConfidence: names.productEvidenceConfidence || names.namingConfidence || names.confidencePercent || null,
-      websiteCatalogEvidenceUsed: names.websiteCatalogEvidenceUsed === true,
-      llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
-      deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,
-      fallbackUsed: names.fallbackUsed === true,
-      productSignalsUsed: names.productSignalsUsed || [],
-      flavorSignalsUsed: names.flavorSignalsUsed || [],
-      packSignalsUsed: names.packSignalsUsed || [],
-      llmNamingAdvisoryUsed: names.llmNamingAdvisoryUsed === true,
-      websiteSignalsUsed: names.websiteSignalsUsed || [],
-      prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
-      fallbackReason: names.fallbackReason || '',
-      blockedWeakProductName: names.blockedWeakProductName || '',
-      blockedWeakProductNameReason: names.blockedWeakProductNameReason || '',
-      blockedWeakRecordName: names.blockedWeakRecordName || '',
-      namingAuthorityOrder: names.namingAuthorityOrderW467 || '',
-      selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
-      selectedVariantName: names.selectedVariantName || '',
-      selectedPackName: names.selectedPackName || ''
+      namingAuthorityOrder: 'precomputed naming pack -> prospect fallback',
+      selectedProductName: ''
     }) });
 
     // 4) Apply current-run identity + one-line sales/purchase descriptions
@@ -3459,6 +3437,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       out.operation_names_by_seq = out.operation_names_by_seq || deterministic.operation_names_by_seq;
       out._source = out._source || 'suitelet-precomputed';
       out._signalLen = out._signalLen || String(signalText || '').length;
+      out.industrySelection = out.industrySelection || deterministic.industrySelection;
+      out.industry_category = out.industry_category || out.industrySelection && out.industrySelection.label || '';
       return {
         found: true,
         parsed: true,
@@ -3514,79 +3494,59 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function generateNamingPack({ prospect, website, signalText }) {
     const clippedSignal = String(signalText || '').slice(0, 1200);
-    const evidence = `${prospect || ''} ${website || ''} ${clippedSignal || ''}`.toLowerCase();
-    const genericFallbackBlockedTerms = [
-      'Component A',
-      'Component B',
-      'Component C',
-      'Core Material Input',
-      'Primary Material Input',
-      'Machine Unit',
-      'Finished Good',
-      'Product 12-Count Case Pack',
-      'Build Product',
-      'Prepare Materials',
-      'Final Assembly Unit',
-      'Drinkware Product Line',
-      'Outdoor Cooking Product Line',
-      'Apparel & Accessories',
-      'Apparel and Footwear Style',
-      'Core Style Color-Size Matrix',
-      'Style / SKU Matrix',
-      'Dealer Durable Hardgoods',
-      'websiteResolverServiceV1',
-      'Needs Confirmation'
+    const cleanProspect = trimLen(str(prospect) || 'Demo Customer', 60);
+    const industrySelection = industrySelectionW468({ prospect: cleanProspect, website, signalText: clippedSignal });
+    return {
+      _source: 'deterministic-prospect-fallback',
+      _signalLen: clippedSignal.length,
+      namingEvidenceSource: 'prospect_fallback',
+      namingConfidence: 35,
+      confidencePercent: 35,
+      industrySelection,
+      industry_category: industrySelection.label || '',
+      hero_item_name: `${cleanProspect} Finished Good`,
+      assembly_name: `${cleanProspect} Assembly`,
+      component_names: [
+        `${cleanProspect} Component A`,
+        `${cleanProspect} Component B`,
+        `${cleanProspect} Component C`
+      ],
+      bom_name: `BOM - ${cleanProspect}`,
+      bom_revision_name: `Revision 1 - ${cleanProspect}`,
+      routing_name: `Routing - ${cleanProspect} Assembly`,
+      operation_names_by_seq: {
+        '10': `Prepare ${cleanProspect} Component A`,
+        '20': `Build ${cleanProspect} Assembly`,
+        '30': `QC and Release ${cleanProspect} Finished Good`
+      }
+    };
+  }
+
+  function industrySelectionW468(args) {
+    const text = `${args && args.prospect || ''} ${args && args.website || ''} ${args && args.signalText || ''}`.toLowerCase();
+    const rules = [
+      { pattern: /\b(cookware|kitchenware|dutch oven|enameled|cast iron|skillet|bakeware|cookware set)\b/, label: 'Kitchenware Dealer Hardgoods' },
+      { pattern: /\b(electronics|headphones|earbuds|speaker|soundbar|audio|watch|cycling computer|wearable|gps|running)\b/, label: 'Consumer Electronics Dealer Fulfillment' },
+      { pattern: /\b(outdoor|camp|bike|cycling|run|trail|sporting goods|dealer hardgoods)\b/, label: 'Outdoor Dealer Hardgoods' },
+      { pattern: /\b(food|beverage|snack|sauce|kombucha|soda|case pack|bottle|can)\b/, label: 'Food and Beverage' },
+      { pattern: /\b(apparel|footwear|style|color|size|fashion)\b/, label: 'Apparel and Footwear' },
+      { pattern: /\b(industrial|equipment|forklift|warehouse|distribution|branch|fulfillment|supply)\b/, label: 'Industrial Distribution' },
+      { pattern: /\b(manufacturing|assembly|production|work order|bom|wip)\b/, label: 'Light Manufacturing' }
     ];
-    const industrial = industrialEquipmentNamingPackW460({ prospect, website, evidence, genericFallbackBlockedTerms });
-    if (industrial) return industrial;
-    const hardgoods = durableHardgoodsNamingPackW462({ prospect, website, evidence, genericFallbackBlockedTerms });
-    if (hardgoods) return hardgoods;
-    if (/health[-\s]?ade|kombucha|ferment|organic tea|ginger lemon|beverage|bottle|case pack/.test(evidence)) {
-      return {
-        _source: 'website-product-evidence',
-        _signalLen: clippedSignal.length,
-        confidencePercent: 92,
-        industry_category: 'Food and Beverage',
-        primary_product_candidate: 'Kombucha Variety Pack',
-        alternate_product_candidates: ['Kombucha Case Pack', 'Ginger Lemon Kombucha', 'Variety Pack Beverage Case'],
-        evidence_terms: ['Health-Ade', 'kombucha', 'fermentation', 'ginger lemon', 'bottle', 'case pack'],
-        competitor_terms: [],
-        roi_basis_terms: ['line readiness', 'case availability', 'production proof'],
-        hero_item_name: 'Health-Ade Kombucha Variety Pack Case',
-        assembly_name: 'Health-Ade Kombucha Batch',
-        component_names: [
-          'Organic Tea and Sugar Fermentation Base',
-          'Ginger Lemon Flavor Blend',
-          'Bottle and Case Packaging'
-        ],
-        bom_name: 'BOM - Health-Ade Kombucha Variety Pack',
-        bom_revision_name: 'Revision 1 - Health-Ade Kombucha Variety Pack',
-        routing_name: 'Routing - Health-Ade Kombucha Batch',
-        operation_names_by_seq: {
-          '10': 'Brew and Ferment Kombucha Base',
-          '20': 'Flavor, Bottle, and Case Pack',
-          '30': 'QC and Release Finished Cases'
-        },
-        sales_descriptions: {
-          hero: 'Kombucha variety pack case for customer demand readiness.',
-          assembly: 'Kombucha batch for WIP line readiness.',
-          components: ['Organic tea and sugar fermentation base', 'Ginger lemon flavor blend', 'Bottle and case packaging']
-        },
-        purchase_descriptions: {
-          hero: 'Kombucha case supply proof item.',
-          assembly: 'Kombucha production batch planning item.',
-          components: ['Organic tea and sugar fermentation base', 'Ginger lemon flavor blend', 'Bottle and case packaging']
-        },
-        fallbackReason: '',
-        genericFallbackBlockedTerms
-      };
+    for (let i = 0; i < rules.length; i += 1) {
+      if (rules[i].pattern.test(text)) {
+        return {
+          label: rules[i].label,
+          source: 'website_signal_best_guess',
+          confidence: 'best_guess'
+        };
+      }
     }
-    return prospectFallbackNamingPackW467({
-      prospect,
-      signalLen: clippedSignal.length,
-      fallbackReason: 'No server naming file or strong product evidence was available.',
-      genericFallbackBlockedTerms
-    });
+    return {
+      label: 'General Commerce',
+      source: args && args.website ? 'website_signal_best_guess' : 'prospect_best_guess',
+      confidence: 'low'
+    };
   }
 
   function concreteHardgoodsProductFromEvidenceW463(evidence) {
@@ -4773,40 +4733,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingSource: namingPayload.source || names._source || 'deterministic',
       namingEvidenceSource: names.namingEvidenceSource || names._source || '',
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
-      catalogCandidates: names.catalogCandidates || [],
-      selectedCatalogCandidate: names.selectedCatalogCandidate || null,
-      selectedCatalogCandidateSource: names.selectedCatalogCandidateSource || '',
-      selectedCatalogCandidateReasons: names.selectedCatalogCandidateReasons || [],
+      industrySelection: names.industrySelection || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      genericCandidateRejectedReasons: names.genericCandidateRejectedReasons || [],
-      missingEvidence: names.missingEvidence || [],
-      productEvidenceConfidence: names.productEvidenceConfidence || names.namingConfidence || names.confidencePercent || null,
-      websiteCatalogEvidenceUsed: names.websiteCatalogEvidenceUsed === true,
-      llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
-      deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,
-      fallbackUsed: names.fallbackUsed === true,
-      fallbackReason: names.fallbackReason || '',
-      fallbackTruthW458: {
-        fallbackUsed: names.fallbackUsed === true,
-        fallbackReason: names.fallbackReason || '',
-        genericCatalogProductBlocked: /^catalog product$/i.test(String(names.selectedProductName || names.primary_product_candidate || '')) && names.fallbackUsed !== true,
-        blockedWeakProductName: names.blockedWeakProductName || '',
-        blockedWeakProductNameReason: names.blockedWeakProductNameReason || '',
-        blockedWeakRecordName: names.blockedWeakRecordName || ''
-      },
-      productSignalsUsed: names.productSignalsUsed || [],
-      flavorSignalsUsed: names.flavorSignalsUsed || [],
-      packSignalsUsed: names.packSignalsUsed || [],
-      llmNamingAdvisoryUsed: names.llmNamingAdvisoryUsed === true,
-      websiteSignalsUsed: names.websiteSignalsUsed || [],
-      prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
-      blockedWeakProductName: names.blockedWeakProductName || '',
-      blockedWeakProductNameReason: names.blockedWeakProductNameReason || '',
-      blockedWeakRecordName: names.blockedWeakRecordName || '',
-      selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
-      selectedVariantName: names.selectedVariantName || '',
-      selectedPackName: names.selectedPackName || '',
+      namingAuthorityOrder: 'precomputed naming pack -> prospect fallback',
       workOrderTelemetry: args.workOrderTelemetry || null,
       openLinkPreconditions: {
         realUrlsOnly: true,
@@ -4910,15 +4840,31 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const text = String(contents || '');
     const maxChars = 9000000;
     const body = text.length > maxChars ? text.slice(0, maxChars) : text;
-    const safeName = boundedFileNameW461(name || `idb_result_${Date.now()}.json`, 180);
-    const f = file.create({ name: safeName, fileType: file.Type.PLAINTEXT, contents: body, folder: Number(folderId) });
-    return { fileId: Number(f.save()), fileName: safeName };
+    const safeName = boundedFileNameW461(name || `idb_result_${Date.now()}.json`, RESULT_CAPTURE_FILENAME_LIMIT_W468);
+    try {
+      const f = file.create({ name: safeName, fileType: file.Type.PLAINTEXT, contents: body, folder: Number(folderId) });
+      return { fileId: Number(f.save()), fileName: safeName };
+    } catch (e) {
+      if (!isExceededMaxFieldLengthW468(e)) throw e;
+      const fallbackName = boundedFileNameW461(`idb_result_${shortHashW461(`${safeName}_${Date.now()}`)}.json`, 48);
+      log.error({
+        title: `Result capture filename retry [${VERSION}]`,
+        details: JSON.stringify({ originalName: safeName, fallbackName, message: e && (e.message || e.details) || String(e) })
+      });
+      const f = file.create({ name: fallbackName, fileType: file.Type.PLAINTEXT, contents: body, folder: Number(folderId) });
+      return { fileId: Number(f.save()), fileName: fallbackName };
+    }
   }
 
   function resultCaptureFileNameW453({ extId, buildAttemptId, status }) {
     const source = `${extId || 'idb'}_${buildAttemptId || ''}_${status || 'result'}`;
-    const stem = safeCode(source) || 'idb_result';
-    return boundedFileNameW461(`idb_result_capture_w453_${stem}_${shortHashW461(source)}.json`, 180);
+    const stem = trimLen(safeCode(extId || buildAttemptId || status || 'idb'), 36) || 'idb';
+    return boundedFileNameW461(`idb_result_${status || 'result'}_${stem}_${shortHashW461(source)}.json`, RESULT_CAPTURE_FILENAME_LIMIT_W468);
+  }
+
+  function isExceededMaxFieldLengthW468(e) {
+    const text = String(e && (e.name || e.code || e.message || e.details) || e || '');
+    return /EXCEEDED_MAX_FIELD_LENGTH|exceeded max field length|maximum.*field.*length|field.*maximum.*characters/i.test(text);
   }
 
   function boundedFileNameW461(name, maxLen) {
@@ -5188,32 +5134,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       evidenceTerms: Array.isArray(names.evidence_terms) ? names.evidence_terms : [],
       namingEvidenceSource: names.namingEvidenceSource || names._source || '',
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
-      catalogCandidates: names.catalogCandidates || [],
-      selectedCatalogCandidate: names.selectedCatalogCandidate || null,
-      selectedCatalogCandidateSource: names.selectedCatalogCandidateSource || '',
-      selectedCatalogCandidateReasons: names.selectedCatalogCandidateReasons || [],
+      industrySelection: names.industrySelection || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      genericCandidateRejectedReasons: names.genericCandidateRejectedReasons || [],
-      missingEvidence: names.missingEvidence || [],
-      productEvidenceConfidence: names.productEvidenceConfidence || names.namingConfidence || names.confidencePercent || null,
-      websiteCatalogEvidenceUsed: names.websiteCatalogEvidenceUsed === true,
-      llmCatalogInterpretationUsed: names.llmCatalogInterpretationUsed === true,
-      deterministicCatalogRankerUsed: names.deterministicCatalogRankerUsed === true,
-      fallbackUsed: names.fallbackUsed === true,
-      productSignalsUsed: names.productSignalsUsed || [],
-      flavorSignalsUsed: names.flavorSignalsUsed || [],
-      packSignalsUsed: names.packSignalsUsed || [],
-      llmNamingAdvisoryUsed: names.llmNamingAdvisoryUsed === true,
-      websiteSignalsUsed: names.websiteSignalsUsed || [],
-      prospectNameUsedAsFallbackOnly: names.prospectNameUsedAsFallbackOnly === true,
-      fallbackReason: names.fallbackReason || '',
-      blockedWeakProductName: names.blockedWeakProductName || '',
-      blockedWeakProductNameReason: names.blockedWeakProductNameReason || '',
-      blockedWeakRecordName: names.blockedWeakRecordName || '',
-      selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
-      selectedVariantName: names.selectedVariantName || '',
-      selectedPackName: names.selectedPackName || '',
+      namingAuthorityOrder: 'precomputed naming pack -> prospect fallback',
       nextCandidateHint: ''
     };
   }

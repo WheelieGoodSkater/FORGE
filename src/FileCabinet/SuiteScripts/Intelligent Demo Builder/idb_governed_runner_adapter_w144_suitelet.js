@@ -5,7 +5,8 @@
  * @NScriptType Suitelet
  */
 define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
-  const ADAPTER_VERSION = 'w465-governed-adapter-product-evidence-runtime-marker';
+  const ADAPTER_VERSION = 'w468-governed-adapter-precomputed-naming-pack-simple';
+  const NAMING_FILE_NAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
 
@@ -901,165 +902,152 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function buildServerPrecomputedNamingPack(request) {
     const prospect = compactText(request && request.prospect && request.prospect.name) || 'Demo Customer';
     const website = compactText(request && request.prospect && request.prospect.website);
-    const namingAuthority = request && request.namingAuthority || {};
-    const scenarioText = compactText([
+    const explicitPack = explicitNamingPackFromRequestW468(request);
+    const industrySelection = industrySelectionFromRequestW468(request, website);
+    const basePack = explicitPack || {};
+    const fallbackComponentNames = [
+      `${prospect} Component A`,
+      `${prospect} Component B`,
+      `${prospect} Component C`
+    ];
+    const componentNames = Array.isArray(basePack.component_names) && basePack.component_names.length === 3
+      ? basePack.component_names
+      : fallbackComponentNames;
+    const heroName = compactText(basePack.hero_item_name) || `${prospect} Finished Good`;
+    const assemblyName = compactText(basePack.assembly_name) || `${prospect} Assembly`;
+    return {
+      _source: explicitPack ? 'suitelet-precomputed-naming-pack' : 'suitelet-prospect-fallback-naming-pack',
+      namingEvidenceSource: explicitPack ? 'precomputed_naming_pack' : 'prospect_fallback',
+      namingConfidence: explicitPack ? 90 : 35,
+      confidencePercent: explicitPack ? 90 : 35,
+      industrySelection,
+      industry_category: industrySelection.label || '',
+      websiteEvidenceSource: website ? 'website_industry_best_guess' : 'none',
+      websiteEvidenceSourceUrls: evidenceSourceUrlsW459(request, website),
+      hero_item_name: trimTextW468(heroName, 60),
+      assembly_name: trimTextW468(assemblyName, 60),
+      component_names: componentNames.map(function(name) { return trimTextW468(compactText(name), 60); }),
+      bom_name: trimTextW468(compactText(basePack.bom_name) || `BOM - ${heroName}`, 80),
+      bom_revision_name: trimTextW468(compactText(basePack.bom_revision_name) || `Revision 1 - ${heroName}`, 80),
+      routing_name: trimTextW468(compactText(basePack.routing_name) || `Routing - ${assemblyName}`, 80),
+      operation_names_by_seq: basePack.operation_names_by_seq || {
+        '10': `Prepare ${componentNames[0]}`,
+        '20': `Build ${assemblyName}`,
+        '30': `QC and Release ${heroName}`
+      },
+      sales_descriptions: basePack.sales_descriptions || {
+        hero: `${heroName} finished good ready for sale.`,
+        assembly: `${assemblyName} buildable finished good for customer orders.`,
+        components: componentNames
+      },
+      purchase_descriptions: basePack.purchase_descriptions || {
+        hero: `Purchased inputs supporting ${heroName} production.`,
+        assembly: `Assembly supply inputs used to build ${assemblyName}.`,
+        components: componentNames
+      }
+    };
+  }
+
+  function explicitNamingPackFromRequestW468(request) {
+    const sources = [
+      request && request.precomputedNamingPack,
+      request && request.namingPack,
+      request && request.namingAuthority && request.namingAuthority.precomputedNamingPack,
+      request && request.namingAuthority && request.namingAuthority.namingPack,
+      request && request.demoPath && request.demoPath.namingPack
+    ].filter(Boolean);
+    for (let i = 0; i < sources.length; i += 1) {
+      const pack = normalizeExplicitNamingPackW468(sources[i]);
+      if (pack) return pack;
+    }
+    return null;
+  }
+
+  function normalizeExplicitNamingPackW468(source) {
+    const src = source || {};
+    const pack = {
+      hero_item_name: compactText(src.hero_item_name || src.heroItemName || src.hero || src.itemName),
+      assembly_name: compactText(src.assembly_name || src.assemblyName || src.assembly),
+      bom_name: compactText(src.bom_name || src.bomName || src.bom),
+      bom_revision_name: compactText(src.bom_revision_name || src.bomRevisionName || src.bomRevision),
+      routing_name: compactText(src.routing_name || src.routingName || src.routing),
+      component_names: Array.isArray(src.component_names) ? src.component_names : (Array.isArray(src.componentNames) ? src.componentNames : [])
+    };
+    const records = src.recordNames || src.records;
+    if ((!pack.hero_item_name || !pack.assembly_name || pack.component_names.length !== 3) && records) {
+      const extracted = explicitRecordNamesFromRecordsW468(records);
+      pack.hero_item_name = pack.hero_item_name || extracted.hero_item_name;
+      pack.assembly_name = pack.assembly_name || extracted.assembly_name;
+      pack.bom_name = pack.bom_name || extracted.bom_name;
+      pack.bom_revision_name = pack.bom_revision_name || extracted.bom_revision_name;
+      pack.routing_name = pack.routing_name || extracted.routing_name;
+      if (pack.component_names.length !== 3) pack.component_names = extracted.component_names;
+    }
+    pack.component_names = pack.component_names.map(compactText).filter(Boolean).slice(0, 3);
+    if (!pack.hero_item_name && !pack.assembly_name && pack.component_names.length !== 3) return null;
+    return pack;
+  }
+
+  function explicitRecordNamesFromRecordsW468(records) {
+    const list = Array.isArray(records)
+      ? records
+      : Object.keys(records || {}).map(function(key) {
+        const value = records[key];
+        if (value && typeof value === 'object') return Object.assign({ role: key }, value);
+        return { role: key, name: value };
+      });
+    const out = { component_names: [] };
+    list.forEach(function(record) {
+      const role = compactText(record && (record.role || record.type || record.label || record.key)).toLowerCase();
+      const name = compactText(record && (record.proposedName || record.name || record.currentProposedName || record.displayName || record.value));
+      if (!name) return;
+      if (!out.hero_item_name && /hero|proof|item|inventory/.test(role) && !/component/.test(role)) out.hero_item_name = name;
+      else if (!out.assembly_name && /assembly/.test(role)) out.assembly_name = name;
+      else if (!out.bom_revision_name && /bom.*revision|revision/.test(role)) out.bom_revision_name = name;
+      else if (!out.bom_name && /\bbom\b|bill of materials/.test(role)) out.bom_name = name;
+      else if (!out.routing_name && /routing/.test(role)) out.routing_name = name;
+      else if (/component/.test(role) && out.component_names.length < 3) out.component_names.push(name);
+    });
+    return out;
+  }
+
+  function industrySelectionFromRequestW468(request, website) {
+    const text = compactText([
+      website,
+      request && request.demoPath && request.demoPath.laneId,
+      request && request.demoPath && request.demoPath.laneName,
+      request && request.demoPath && request.demoPath.productFamily,
+      request && request.resolvedOperatingMode,
       request && request.storyInputs && request.storyInputs.buyerNeed,
       request && request.storyInputs && request.storyInputs.scObjective,
-      request && request.demoPath && request.demoPath.scenario,
-      request && request.demoPath && request.demoPath.laneId
-    ].join(' '));
-    const rankedCatalogCandidates = rankCatalogCandidatesW457(
-      buildCatalogCandidatesW457(request, website, namingAuthority),
-      { website, scenario: scenarioText, prospect }
-    );
-    const rejectedCatalogCandidates = rankedCatalogCandidates.rejectedCatalogCandidates || [];
-    const selectedCatalogCandidate = rankedCatalogCandidates[0] || null;
-    const fallbackUsed = !selectedCatalogCandidate;
-    const fallbackReason = fallbackUsed
-      ? (rejectedCatalogCandidates.length
-        ? 'Website/resolver extraction ran, but only generic lane, workflow, industry, or prospect-name labels were found; deterministic fallback used.'
-        : 'No website, resolver, product-list, page-text, or LLM naming advisory catalog candidate was available; deterministic fallback used.')
-      : '';
-    const websiteEvidenceSourceUrls = evidenceSourceUrlsW459(request, website);
-    const genericCandidateRejectedReasons = uniqueList([
-      request && request.productCandidate,
-      request && request.product,
-      request && request.demoPath && request.demoPath.productSeed,
-      request && request.namingAuthority && request.namingAuthority.productSeed
-    ].map(genericCatalogCandidateRejectedReasonW459).filter(Boolean));
-    const brand = brandFromWebsiteOrProspectW457(website, prospect);
-    const fallbackBase = compactText(prospect) || 'Demo Customer';
-    const catalogProduct = selectedCatalogCandidate ? selectedCatalogCandidate.name : `${fallbackBase} Finished Good`;
-    const product = catalogProduct;
-    const brandProduct = fallbackUsed
-      ? product
-      : (/^\s*$/i.test(brand) || new RegExp(`^${brand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(product)
-      ? product
-      : `${brand} ${product}`);
-    const productShape = fallbackUsed
-      ? {
-        components: [`${fallbackBase} Component A`, `${fallbackBase} Component B`, `${fallbackBase} Component C`],
-        operations: {
-          '10': `Prepare ${fallbackBase} Component A`,
-          '20': `Build ${fallbackBase} Assembly`,
-          '30': `QC and Release ${fallbackBase} Finished Good`
-        }
-      }
-      : namesForCatalogProductW457(brand, product);
-    const components = productShape.components;
-    const operations = productShape.operations;
-    const productSignalsUsed = evidenceSignalsW457(`${product} ${scenarioText}`.toLowerCase(), [
-      { pattern: /\bcoffee\b/g, label: 'coffee' },
-      { pattern: /\bespresso\b/g, label: 'espresso' },
-      { pattern: /\bmatcha\b/g, label: 'matcha' },
-      { pattern: /\bhojicha|hōjicha\b/g, label: 'hojicha' },
-      { pattern: /\bkombucha\b/g, label: 'kombucha' },
-      { pattern: /\bsoda\b/g, label: 'soda' },
-      { pattern: /\byogurt\b/g, label: 'yogurt' },
-      { pattern: /\bmac|pasta|penne\b/g, label: 'packaged pasta' },
-      { pattern: /\bstick|beef|turkey\b/g, label: 'meat snack' },
-      { pattern: /\bforklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series\b/g, label: 'industrial equipment' },
-      { pattern: /\bkaru|koda|volt|fyra|pizza oven|outdoor cooking\b/g, label: 'outdoor cooking hardgoods' },
-      { pattern: /\bironwood|timberline|pro series|woodridge|flat top grill|pellet grill\b/g, label: 'outdoor cooking hardgoods' },
-      { pattern: /\brambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware|good grips|pop containers|brew coffee maker|steel salad spinner|angled measuring cup|tot feeding\b/g, label: 'durable consumer hardgoods' }
-    ]);
-    const flavorSignalsUsed = uniqueList([product].concat((selectedCatalogCandidate && selectedCatalogCandidate.reasons || []).filter((reason) => /concrete/i.test(reason))));
-    const packSignalsUsed = ['Case'];
-    const llmCatalogInterpretationUsed = rankedCatalogCandidates.some((candidate) => candidate.source === 'llm_naming_advisory' || (candidate.sources || []).indexOf('llm_naming_advisory') !== -1);
-    const websiteCatalogEvidenceUsed = rankedCatalogCandidates.some((candidate) => /^website_|resolver_evidence/.test(candidate.source) || (candidate.sources || []).some((source) => /^website_|resolver_evidence/.test(source)));
-    const deterministicCatalogRankerUsed = true;
-    const namingEvidenceSource = fallbackUsed ? 'deterministic_fallback' : (llmCatalogInterpretationUsed ? 'website_catalog_plus_llm_advisory' : 'website_catalog_deterministic_ranker');
-    const namingConfidence = selectedCatalogCandidate ? selectedCatalogCandidate.confidence : 35;
-    return {
-      _source: namingEvidenceSource,
-      namingEvidenceSource,
-      namingConfidence,
-      confidencePercent: namingConfidence,
-      catalogCandidates: rankedCatalogCandidates,
-      selectedCatalogCandidate,
-      selectedCatalogCandidateSource: selectedCatalogCandidate && selectedCatalogCandidate.source || 'deterministic_fallback',
-      selectedCatalogCandidateReasons: selectedCatalogCandidate && selectedCatalogCandidate.reasons || [],
-      rejectedCatalogCandidates,
-      rejectedCatalogCandidateReasons: rejectedCatalogCandidates.map((candidate) => candidate.reason),
-      websiteEvidenceSource: websiteEvidenceSourceUrls.length ? 'request_website_evidence_payload' : 'none',
-      websiteEvidenceSourceUrls,
-      genericCandidateRejectedReasons: uniqueList(genericCandidateRejectedReasons.concat(rejectedCatalogCandidates.map((candidate) => candidate.reason))),
-      websiteCatalogEvidenceUsed,
-      llmCatalogInterpretationUsed,
-      deterministicCatalogRankerUsed,
-      fallbackUsed,
-      fallbackReason,
-      productSignalsUsed,
-      flavorSignalsUsed,
-      packSignalsUsed,
-      llmNamingAdvisoryUsed: llmCatalogInterpretationUsed,
-      websiteSignalsUsed: uniqueList(rankedCatalogCandidates.map((candidate) => candidate.name)),
-      prospectNameUsedAsFallbackOnly: true,
-      missingEvidence: fallbackReason ? ['website catalog product candidate', 'real public product/product-line evidence'] : [],
-      productEvidenceConfidence: namingConfidence,
-      selectedProductName: selectedCatalogCandidate ? product : null,
-      selectedVariantName: selectedCatalogCandidate ? product : null,
-      selectedPackName: 'Case',
-      industry_category: productCategoryW457(product) === 'industrial equipment'
-        ? 'Industrial Equipment'
-        : (productCategoryW457(product) === 'durable consumer hardgoods'
-          ? 'Dealer Hardgoods'
-          : (productCategoryW457(product) === 'outdoor cooking hardgoods'
-            || productCategoryW457(product) === 'outdoor fire pit hardgoods'
-            ? 'Outdoor Cooking Hardgoods'
-            : (productCategoryW457(product) === 'coffee gear hardgoods'
-              ? 'Dealer Hardgoods'
-              : (productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId))))),
-      primary_product_candidate: selectedCatalogCandidate ? product : null,
-      alternate_product_candidates: selectedCatalogCandidate ? rankedCatalogCandidates.slice(1, 7).map((candidate) => candidate.name) : [],
-      evidence_terms: uniqueList([brand, product, productCategoryW457(product)].concat(productSignalsUsed)),
-      competitor_terms: uniqueList(request && request.competitorTerms || []),
-      roi_basis_terms: uniqueList(['line readiness', 'case availability', 'production proof']),
-      hero_item_name: `${brandProduct} Case`,
-      assembly_name: `${brandProduct} Batch`,
-      component_names: components,
-      bom_name: `BOM - ${brandProduct}`,
-      bom_revision_name: `Revision 1 - ${brandProduct}`,
-      routing_name: `Routing - ${brandProduct} Batch`,
-      operation_names_by_seq: operations,
-      sales_descriptions: {
-        hero: `${brandProduct} sales-ready case for the demo run.`,
-        assembly: `${brandProduct} batch assembly for production readiness.`,
-        components
-      },
-      purchase_descriptions: {
-        hero: `${brandProduct} procurement and replenishment proof item.`,
-        assembly: `${brandProduct} production input planning.`,
-        components
-      },
-      genericFallbackBlockedTerms: [
-        'industrial supply',
-        'distribution',
-        'warehouse',
-        'lab',
-        'Products CPG',
-        'Catalog Product',
-        'Advisory Insufficient',
-        'Component A',
-        'Component B',
-        'Component C',
-        'Core Material Input',
-        'Primary Material Input',
-        'Machine Unit',
-        'Finished Good',
-        'Product 12-Count Case Pack',
-        'Build Product',
-        'Prepare Materials',
-        'Final Assembly Unit'
-      ]
-    };
+      request && request.namingAuthority && request.namingAuthority.evidence
+    ].join(' ')).toLowerCase();
+    const rules = [
+      { pattern: /\b(cookware|kitchenware|dutch oven|enameled|cast iron|skillet|bakeware|cookware set)\b/, label: 'Kitchenware Dealer Hardgoods' },
+      { pattern: /\b(electronics|headphones|earbuds|speaker|soundbar|audio|watch|cycling computer|wearable|gps|running)\b/, label: 'Consumer Electronics Dealer Fulfillment' },
+      { pattern: /\b(outdoor|camp|bike|cycling|run|trail|sporting goods|dealer hardgoods)\b/, label: 'Outdoor Dealer Hardgoods' },
+      { pattern: /\b(food|beverage|snack|sauce|kombucha|soda|case pack|bottle|can)\b/, label: 'Food and Beverage' },
+      { pattern: /\b(apparel|footwear|style|color|size|fashion)\b/, label: 'Apparel and Footwear' },
+      { pattern: /\b(industrial|equipment|forklift|warehouse|distribution|branch|fulfillment|supply)\b/, label: 'Industrial Distribution' },
+      { pattern: /\b(manufacturing|assembly|production|work order|bom|wip)\b/, label: 'Light Manufacturing' }
+    ];
+    for (let i = 0; i < rules.length; i += 1) {
+      if (rules[i].pattern.test(text)) return { label: rules[i].label, source: 'website_llm_best_guess', confidence: 'best_guess' };
+    }
+    return { label: 'General Commerce', source: website ? 'website_llm_best_guess' : 'prospect_best_guess', confidence: 'low' };
+  }
+
+  function trimTextW468(value, maxLen) {
+    const text = compactText(value);
+    const limit = Number(maxLen || 0);
+    return limit > 0 && text.length > limit ? text.slice(0, limit).trim() : text;
   }
 
   function createNamingPackFile(request, config, idempotencyToken) {
     const folderId = config.resultCaptureFolderId || config.folderId;
     if (!folderId) return { fileId: null, status: 'naming_folder_missing' };
     const namingPack = buildServerPrecomputedNamingPack(request);
-    const fileName = boundedFileNameW461(`scai_naming_${safeFileToken(idempotencyToken)}.json`, 180);
+    const fileName = boundedFileNameW461(`scai_naming_${safeFileToken(idempotencyToken)}.json`, NAMING_FILE_NAME_LIMIT_W468);
     const namingFile = file.create({
       name: fileName,
       fileType: file.Type.JSON,

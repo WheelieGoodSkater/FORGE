@@ -114,16 +114,14 @@ function main() {
       ]),
     'Sales Order CSV demand lines must reference the resolved hero/finished-good item key on every line.');
 
-  assertCase(results, 'w464-product-build-plan-exposes-selection-truth',
+  assertCase(results, 'w468-product-build-plan-exposes-naming-pack-truth',
     allPresent(buildPlan, [
       'primaryProductCandidate: names.primary_product_candidate || names.hero_item_name || args.prospect || \'\'',
-      'catalogCandidates: names.catalogCandidates || []',
-      'selectedCatalogCandidate: names.selectedCatalogCandidate || null',
-      'selectedProductName: names.selectedProductName || names.primary_product_candidate || \'\'',
-      'fallbackUsed: names.fallbackUsed === true',
-      'fallbackReason: names.fallbackReason || \'\''
+      'selectedProductReason: \'Applied by restored legacy runner naming-pack path.\'',
+      'industrySelection: names.industrySelection || null',
+      'namingAuthorityOrder: \'precomputed naming pack -> prospect fallback\''
     ]),
-    'Product Build Plan must expose selected product-line truth and explicit fallback truth.');
+    'Product Build Plan must expose naming-pack truth and industry selection without catalog/fallback selection telemetry.');
 
   assertCase(results, 'w464-package-script-registered',
     pkg.scripts && pkg.scripts['harness:runner-record-mapping-audit-w464'] === 'node archive/tools/run_w464_runner_record_mapping_audit_harness.js',

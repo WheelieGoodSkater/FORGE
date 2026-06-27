@@ -3550,10 +3550,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       brand = 'Stanley';
       product = 'Quencher H2.0 FlowState Tumbler';
       alternates = ['IceFlow Flip Straw Tumbler', 'Classic Legendary Bottle', 'AeroLight Transit Mug', 'Adventure Quencher Travel Tumbler'];
-    } else if (/\b(rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|tumbler|bottle|cooler|carryall|bucket|mug|drinkware)\b/.test(evidence)) {
+    } else if (/hydroflask\.com|hydroflask|hydro-flask/.test(domain)) {
+      brand = 'Hydro Flask';
+      product = 'Wide Mouth Bottle';
+      alternates = ['All Around Travel Tumbler', 'All Around Tumbler', 'Trail Series Bottle', 'Coffee Mug'];
+    } else if (/ooni\.com|ooni/.test(domain)) {
+      brand = 'Ooni';
+      product = 'Karu 2 Pro Multi-Fuel Pizza Oven';
+      alternates = ['Koda 16 Gas Powered Pizza Oven', 'Karu 12G Multi-Fuel Pizza Oven', 'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven'];
+    } else if (domain && /\b(rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|wide mouth|all around|trail series|karu|koda|volt|fyra|tumbler|bottle|cooler|carryall|bucket|mug|drinkware|pizza oven)\b/.test(evidence)) {
       brand = str(prospect).replace(/\b(fulfillment proof|proof|demo|v\d+)\b/ig, '').trim() || 'Dealer Hardgoods';
-      product = 'Drinkware Product Line';
-      alternates = ['Tumbler', 'Bottle', 'Cooler'];
+      product = /pizza oven|karu|koda|volt|fyra/.test(evidence) ? 'Outdoor Cooking Product Line' : 'Drinkware Product Line';
+      alternates = /pizza oven|karu|koda|volt|fyra/.test(evidence) ? ['Pizza Oven', 'Outdoor Cooking Oven'] : ['Tumbler', 'Bottle', 'Cooler'];
     }
     if (!product) return null;
     const base = brand && product.indexOf(brand) !== 0 ? `${brand} ${product}` : product;
@@ -3565,7 +3573,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         domain,
         confidence: index === 0 ? 90 : 82,
         wipSuitabilityScore: index === 0 ? 90 : 82,
-        reasons: ['public hardgoods website product-line resolver candidate', 'durable consumer hardgoods product noun', 'domain match']
+        reasons: ['public hardgoods website product-line resolver candidate', 'durable consumer hardgoods product noun', 'domain-bound match']
       };
     });
     return {
@@ -3606,17 +3614,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       hero_item_name: `${base} Case`,
       assembly_name: `${base} Fulfillment Batch`,
       component_names: [
-        `${product} Retail Case Inventory`,
-        `${product} Channel Replenishment Lot`,
-        `${product} Fulfillment Packaging`
+        /pizza oven|oven/i.test(product) ? `${product} Oven Body and Stone Kit` : `${product} Retail Case Inventory`,
+        /pizza oven|oven/i.test(product) ? `${product} Burner and Fuel System` : `${product} Channel Replenishment Lot`,
+        /pizza oven|oven/i.test(product) ? `${product} Retail Packaging` : `${product} Fulfillment Packaging`
       ],
       bom_name: `BOM - ${base}`,
       bom_revision_name: `Revision 1 - ${base}`,
       routing_name: `Routing - ${base} Fulfillment`,
       operation_names_by_seq: {
-        '10': `Receive ${product} Cases`,
-        '20': `Allocate ${product} Demand`,
-        '30': `Release ${product} Fulfillment`
+        '10': /pizza oven|oven/i.test(product) ? `Stage ${product} Oven Kits` : `Receive ${product} Cases`,
+        '20': /pizza oven|oven/i.test(product) ? `Assemble and Test ${product}` : `Allocate ${product} Demand`,
+        '30': /pizza oven|oven/i.test(product) ? `Pack and Release ${product}` : `Release ${product} Fulfillment`
       },
       sales_descriptions: {
         hero: `${base} case for retail demand and fulfillment readiness.`,

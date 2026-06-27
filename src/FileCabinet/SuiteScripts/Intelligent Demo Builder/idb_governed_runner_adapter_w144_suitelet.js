@@ -339,7 +339,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function addCatalogCandidateW457(candidates, rawName, opts) {
     const name = compactText(rawName).replace(/\s+\|\s+.*/, '').replace(/\s+-\s+Shop\b.*/i, '');
     if (!name || name.length < 3 || name.length > 80) return;
-    if (/^(home|shop|products|product|catalog|menu|about|learn|subscribe|account|cart|checkout|search|privacy|terms|contact|blog|recipes|locations)$/i.test(name)) return;
+    if (/^(home|shop|shop all|products|product|catalog|menu|about|learn|subscribe|account|cart|checkout|search|privacy|terms|contact|blog|recipes|locations|featured products|new arrivals|accessories|parts|services|solutions)$/i.test(name)) return;
     if (isGenericCatalogCandidateW459(name)) {
       if (!(opts && opts.allowGeneric)) return;
     }
@@ -357,7 +357,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   }
 
   function isGenericCatalogCandidateW459(value) {
-    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|catalog product|catalog|equipment|industrial equipment|warehouse equipment|outdoor gear|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good)$/i.test(compactText(value));
+    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|catalog product|product sku|catalog|equipment|industrial equipment|warehouse equipment|outdoor gear|outdoor cooking|dealer hardgoods sku|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof)$/i.test(compactText(value));
   }
 
   function genericCatalogCandidateRejectedReasonW459(value) {
@@ -408,7 +408,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       'Roadie Cooler', 'Hopper Soft Cooler', 'Camino Carryall',
       'LoadOut Bucket', 'Yonder Bottle', 'Quencher H2.0 FlowState Tumbler',
       'IceFlow Flip Straw Tumbler', 'Classic Legendary Bottle',
-      'AeroLight Transit Mug', 'Adventure Quencher Travel Tumbler'
+      'AeroLight Transit Mug', 'Adventure Quencher Travel Tumbler',
+      'Wide Mouth Bottle', 'All Around Travel Tumbler', 'All Around Tumbler',
+      'Trail Series Bottle', 'Coffee Mug', 'Karu 2 Pro Multi-Fuel Pizza Oven',
+      'Koda 16 Gas Powered Pizza Oven', 'Karu 12G Multi-Fuel Pizza Oven',
+      'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven'
     ];
     known.forEach((term) => {
       const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/o/g, '[oō]'), 'i');
@@ -420,6 +424,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       /\b((?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck)s?)\b/gi,
       /\b((?:Rambler|Tundra|Roadie|Hopper|Camino|LoadOut|Yonder)\s+(?:Tumbler|Bottle|Cooler|Soft Cooler|Carryall|Bucket|Mug|Drinkware)s?)\b/gi,
       /\b((?:Quencher H2\.0 FlowState|IceFlow Flip Straw|Classic Legendary|AeroLight Transit|Adventure Quencher)\s+(?:Tumbler|Bottle|Mug|Travel Tumbler)s?)\b/gi,
+      /\b((?:Wide Mouth|All Around|Trail Series|Coffee)\s+(?:Bottle|Travel Tumbler|Tumbler|Mug)s?)\b/gi,
+      /\b((?:Karu 2 Pro|Karu 12G|Koda 16|Volt 12|Fyra 12)\s+(?:Multi-Fuel|Gas Powered|Electric|Wood Pellet)?\s*(?:Pizza Oven|Oven)s?)\b/gi,
       /\b((?:20 oz|30 oz|40 oz|64 oz)\s+(?:Tumbler|Bottle|Quencher|Mug))\b/gi
     ].forEach((pattern) => {
       let match = pattern.exec(cleaned);
@@ -464,6 +470,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/stanley1913\.com|stanley/.test(domain)) {
       return ['Quencher H2.0 FlowState Tumbler', 'IceFlow Flip Straw Tumbler', 'Classic Legendary Bottle', 'AeroLight Transit Mug', 'Adventure Quencher Travel Tumbler'];
     }
+    if (/hydroflask\.com|hydroflask|hydro-flask/.test(domain)) {
+      return ['Wide Mouth Bottle', 'All Around Travel Tumbler', 'All Around Tumbler', 'Trail Series Bottle', 'Coffee Mug'];
+    }
+    if (/ooni\.com|ooni/.test(domain)) {
+      return ['Karu 2 Pro Multi-Fuel Pizza Oven', 'Koda 16 Gas Powered Pizza Oven', 'Karu 12G Multi-Fuel Pizza Oven', 'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven'];
+    }
     if (/crown\.com|crown/.test(domain)) {
       return ['Crown C-5 Series Forklift', 'Crown RC Series Stand-Up Rider Forklift', 'Crown RM Series Reach Truck', 'Crown SP Series Order Picker', 'Crown PE Series Pallet Truck'];
     }
@@ -498,6 +510,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       { path: 'request.websiteEvidenceV1', value: request && request.websiteEvidenceV1 },
       { path: 'request.websiteResolverOutput', value: request && request.websiteResolverOutput },
       { path: 'request.websiteEvidenceUx', value: request && request.websiteEvidenceUx },
+      { path: 'request.notes', value: request && request.notes },
+      { path: 'request.storyInputs', value: request && request.storyInputs },
+      { path: 'request.demoPath', value: request && request.demoPath },
       { path: 'request.finalNamingAdvisory', value: request && request.finalNamingAdvisory },
       { path: 'request.dccFinalNamingResult', value: request && request.dccFinalNamingResult },
       { path: 'request.namingAuthority', value: namingAuthority }
@@ -506,6 +521,16 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       traverseCatalogEvidenceW457(root.value, root.path, (text, path) => {
         if (!text) return;
         const source = sourceKindForEvidencePathW457(path);
+        if (/productNames?|productCardNames?|products?\[\d+\]\.(name|title)|items?\[\d+\]\.(name|title)|jsonLd.*\.name|offers?\.itemOffered\.name|h[12]Text|title|name/i.test(path || '')) {
+          addCatalogCandidateW457(candidates, text, {
+            source,
+            sourceUrl: website,
+            domain,
+            evidenceText: text,
+            confidence: source === 'llm_naming_advisory' ? 88 : 84,
+            reasons: [`structured product evidence from ${source}`]
+          });
+        }
         extractCatalogPhrasesFromTextW457(text).forEach((phrase) => addCatalogCandidateW457(candidates, phrase, {
           source,
           sourceUrl: website,
@@ -542,6 +567,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function rankCatalogCandidatesW457(candidates, context) {
     const scenario = compactText(context && context.scenario).toLowerCase();
     const website = compactText(context && context.website).toLowerCase();
+    const prospect = compactText(context && context.prospect).toLowerCase();
     return (candidates || []).map((candidate) => {
       const name = compactText(candidate.name);
       const lower = name.toLowerCase();
@@ -550,6 +576,14 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       if (isGenericCatalogCandidateW459(name) || /^(coffee|cold brew|variety pack|product|catalog product|case|batch|beverage|sauce|pasta)$/i.test(name)) {
         score -= 45;
         reasons.push('penalized generic product term');
+      }
+      if (prospect && lower === prospect) {
+        score -= 120;
+        reasons.push('rejected prospect name as product candidate');
+      }
+      if (prospect && prospect.indexOf(lower) !== -1 && !/\b(tumbler|bottle|cooler|mug|pizza oven|oven|forklift|truck|sauce|kombucha|soda|coffee|pasta|stick|series)\b/i.test(lower)) {
+        score -= 65;
+        reasons.push('penalized prospect fragment without product noun');
       }
       if (/\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef|marinara sauce|tomato basil sauce|arrabbiata sauce|vodka sauce|roasted garlic sauce|penne rigate|spaghetti)\b/i.test(name)) {
         score += 42;
@@ -567,7 +601,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         score += 38;
         reasons.push('concrete public hardgoods product-line name');
       }
-      if (/\b(tumbler|bottle|cooler|soft cooler|carryall|bucket|mug|drinkware|travel tumbler)\b/i.test(lower)) {
+      if (/\b(wide mouth|all around|trail series|coffee mug|karu 2 pro|koda 16|karu 12g|volt 12|fyra 12)\b/i.test(lower)) {
+        score += 38;
+        reasons.push('concrete public website product-line name');
+      }
+      if (/\b(tumbler|bottle|cooler|soft cooler|carryall|bucket|mug|drinkware|travel tumbler|pizza oven|oven|outdoor cooking)\b/i.test(lower)) {
         score += 18;
         reasons.push('durable consumer hardgoods product noun');
       }
@@ -587,6 +625,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         score += 20;
         reasons.push('fits dealer hardgoods fulfillment scenario');
       }
+      if (/manufactur|product build|bom|outdoor cooking|pizza oven|durable hardgoods/.test(`${scenario} ${website}`) && /\b(karu|koda|volt|fyra|pizza oven|oven)\b/i.test(lower)) {
+        score += 24;
+        reasons.push('fits durable hardgoods manufacturing scenario');
+      }
       if (candidate.source === 'llm_naming_advisory') {
         score += 10;
         reasons.push('LLM naming advisory interpreted catalog evidence');
@@ -597,12 +639,14 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       if (/hyster|crown/.test(website) && /\b(forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|truck|series)\b/i.test(lower)) score += 16;
       if (/yeti/.test(website) && /\b(rambler|tundra|roadie|hopper|camino|loadout|yonder|tumbler|bottle|cooler|carryall|bucket)\b/i.test(lower)) score += 18;
       if (/stanley1913|stanley/.test(website) && /\b(quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|tumbler|bottle|mug)\b/i.test(lower)) score += 18;
+      if (/hydroflask|hydro-flask/.test(website) && /\b(wide mouth|all around|trail series|tumbler|bottle|mug)\b/i.test(lower)) score += 18;
+      if (/ooni/.test(website) && /\b(karu|koda|volt|fyra|pizza oven|oven)\b/i.test(lower)) score += 18;
       return Object.assign({}, candidate, {
         confidence: Math.max(1, Math.min(99, Math.round(score))),
         wipSuitabilityScore: Math.max(1, Math.min(99, Math.round(score))),
         reasons: uniqueList(reasons)
       });
-    }).filter((candidate) => !isGenericCatalogCandidateW459(candidate.name))
+    }).filter((candidate) => !isGenericCatalogCandidateW459(candidate.name) && Number(candidate.wipSuitabilityScore || 0) > 20)
       .sort((a, b) => Number(b.wipSuitabilityScore || 0) - Number(a.wipSuitabilityScore || 0));
   }
 
@@ -619,7 +663,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/mac|penne|pasta/.test(lower)) return 'packaged pasta';
     if (/stick|beef|turkey/.test(lower)) return 'meat snack';
     if (/forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series/.test(lower)) return 'industrial equipment';
-    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|tumbler|bottle|cooler|carryall|bucket|mug|drinkware/.test(lower)) return 'durable consumer hardgoods';
+    if (/karu|koda|volt|fyra|pizza oven|outdoor cooking/.test(lower)) return 'outdoor cooking hardgoods';
+    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware/.test(lower)) return 'durable consumer hardgoods';
     return '';
   }
 
@@ -694,7 +739,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         operations: { '10': `Stage ${product} Subassemblies`, '20': `Assemble and Configure ${product}`, '30': `Inspect and Release ${product}` }
       };
     }
-    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|tumbler|bottle|cooler|carryall|bucket|mug|drinkware/.test(lower)) {
+    if (/karu|koda|volt|fyra|pizza oven|outdoor cooking/.test(lower)) {
+      return {
+        components: [`${product} Oven Body and Stone Kit`, `${product} Burner and Fuel System`, `${product} Retail Packaging`],
+        operations: { '10': `Stage ${product} Oven Kits`, '20': `Assemble and Test ${product}`, '30': `Pack and Release ${product}` }
+      };
+    }
+    if (/rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware/.test(lower)) {
       return {
         components: [`${product} Retail Case Inventory`, `${product} Channel Replenishment Lot`, `${product} Fulfillment Packaging`],
         operations: { '10': `Receive ${product} Cases`, '20': `Allocate ${product} Demand`, '30': `Release ${product} Fulfillment` }
@@ -718,7 +769,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     ].join(' '));
     const rankedCatalogCandidates = rankCatalogCandidatesW457(
       buildCatalogCandidatesW457(request, website, namingAuthority),
-      { website, scenario: scenarioText }
+      { website, scenario: scenarioText, prospect }
     );
     const selectedCatalogCandidate = rankedCatalogCandidates[0] || null;
     const fallbackUsed = !selectedCatalogCandidate;
@@ -751,8 +802,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       { pattern: /\byogurt\b/g, label: 'yogurt' },
       { pattern: /\bmac|pasta|penne\b/g, label: 'packaged pasta' },
       { pattern: /\bstick|beef|turkey\b/g, label: 'meat snack' },
-      { pattern: /\bforklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series\b/g, label: 'industrial equipment' }
-      , { pattern: /\brambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|tumbler|bottle|cooler|carryall|bucket|mug|drinkware\b/g, label: 'durable consumer hardgoods' }
+      { pattern: /\bforklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment|truck|series\b/g, label: 'industrial equipment' },
+      { pattern: /\bkaru|koda|volt|fyra|pizza oven|outdoor cooking\b/g, label: 'outdoor cooking hardgoods' },
+      { pattern: /\brambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|tumbler|bottle|cooler|carryall|bucket|mug|drinkware\b/g, label: 'durable consumer hardgoods' }
     ]);
     const flavorSignalsUsed = uniqueList([product].concat((selectedCatalogCandidate && selectedCatalogCandidate.reasons || []).filter((reason) => /concrete/i.test(reason))));
     const packSignalsUsed = ['Case'];
@@ -793,7 +845,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         ? 'Industrial Equipment'
         : (productCategoryW457(product) === 'durable consumer hardgoods'
           ? 'Dealer Hardgoods'
-          : (productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId))),
+          : (productCategoryW457(product) === 'outdoor cooking hardgoods'
+            ? 'Outdoor Cooking Hardgoods'
+            : (productCategoryW457(product) ? 'Food and Beverage' : compactText(request && request.demoPath && request.demoPath.laneId)))),
       primary_product_candidate: product,
       alternate_product_candidates: rankedCatalogCandidates.slice(1, 7).map((candidate) => candidate.name),
       evidence_terms: uniqueList([brand, product, productCategoryW457(product)].concat(productSignalsUsed)),

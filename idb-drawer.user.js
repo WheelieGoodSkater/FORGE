@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.66
+// @version      1.0.67
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.66';
-  const CURRENT_UX_BLOCK_W346 = 'W460';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.67';
+  const CURRENT_UX_BLOCK_W346 = 'W463';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1248,7 +1248,7 @@
 
   const INSTALLED_DRAWER_RUNTIME_MARKER_W332 = 'W332 post-import story polish active';
   const INSTALLED_DRAWER_VERSION_FINGERPRINT_W339 = 'W339 imported proof record UX active';
-  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W342 runner naming verification active';
+  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W463 result-capture export and website product naming active';
   const INSTALLED_DRAWER_COPY_FINGERPRINT_W339 = [
     'Use imported proof records',
     'Use returned NetSuite proof records',
@@ -1411,10 +1411,10 @@
 
   function installedDrawerCurrentBlockMarkerW342() {
     return {
-      schema: 'forge.installed-drawer-current-block-marker.w342.v1',
+      schema: 'forge.installed-drawer-current-block-marker.w463.v1',
       marker: INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342,
       active: true,
-      purpose: 'Current visible Trace marker for runner naming verification.',
+      purpose: 'Current visible Trace marker for W462/W463 result capture export and website product naming verification.',
       previousMarkersRetainedInExportOnly: true,
       writebackAuthorityChanged: false,
       validationChanged: false,
@@ -29907,6 +29907,13 @@
       sourceFileId: resultCaptureSourceW462.sourceFileId,
       sourceFileName: resultCaptureSourceW462.sourceFileName,
       resultCaptureCursor: resultCaptureSourceW462.resultCaptureCursor,
+      lookupStatus: resultCaptureSourceW462.lookupStatus,
+      lookupSource: resultCaptureSourceW462.lookupSource,
+      nonterminalStaleRejected: resultCaptureSourceW462.nonterminalStaleRejected,
+      terminalStaleFailure: resultCaptureSourceW462.terminalStaleFailure,
+      terminalNotFoundFailure: resultCaptureSourceW462.terminalNotFoundFailure,
+      latestRejectedFile: resultCaptureSourceW462.latestRejectedFile,
+      expectedProvenance: resultCaptureSourceW462.expectedProvenance,
       taskFolder: firstNonBlank(resultCaptureSourceW462.resultCaptureFolderId, runner.folderId, capture.resultCaptureFolderId),
       rawAppendix: {
         note: 'Raw keys and repeated arrays are appendix-only; use truthSummaryW448 and authoritativeWorkCenterRoutingW449 first for triage.',

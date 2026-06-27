@@ -19,9 +19,10 @@ const runner = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/scai_
 const adapter = read('src/FileCabinet/SuiteScripts/Intelligent Demo Builder/idb_governed_runner_adapter_w144_suitelet.js');
 const pkg = JSON.parse(read('package.json'));
 
-assert(contains(drawer, '// @version      1.0.66'), 'drawer @version must be 1.0.66');
-assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.66';"), 'drawer userscript constant must be 1.0.66');
-assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W460';"), 'drawer block marker must be W460');
+assert(contains(drawer, '// @version      1.0.67'), 'drawer @version must be 1.0.67');
+assert(contains(drawer, "const DRAWER_USERSCRIPT_VERSION = '1.0.67';"), 'drawer userscript constant must be 1.0.67');
+assert(contains(drawer, "const CURRENT_UX_BLOCK_W346 = 'W463';"), 'drawer block marker must move beyond W460');
+assert(contains(drawer, 'W463 result-capture export and website product naming active'), 'drawer installed marker must visibly identify the W463 sidecar/product block');
 
 assert(contains(adapter, 'createNamingPackFile(request, config, idempotencyToken)'), 'approved adapter must create a naming pack before runner submit');
 assert(contains(adapter, 'custscript_scai_runner_naming_file_id'), 'approved adapter must pass custscript_scai_runner_naming_file_id');
@@ -32,15 +33,21 @@ assert(contains(adapter, 'request.finalNamingAdvisory'), 'adapter must wire LLM/
 assert(contains(adapter, 'sourceKindForEvidencePathW457'), 'adapter must classify candidate evidence sources');
 assert(contains(adapter, "source === 'llm_naming_advisory'"), 'adapter must recognize LLM naming advisory candidates');
 assert(contains(adapter, 'domainCatalogCandidatesW457'), 'adapter must seed resolver catalog candidates when request evidence is sparse');
+assert(contains(adapter, 'structured product evidence from ${source}'), 'adapter must mine structured resolver/product/card/title evidence before free-text fallback');
 assert(contains(adapter, 'isGenericCatalogCandidateW459'), 'adapter must reject generic catalog/product labels before ranking');
+assert(contains(adapter, 'shop all') && contains(adapter, 'featured products') && contains(adapter, 'accessories') && contains(adapter, 'services'), 'adapter must reject generic nav/category labels as product candidates');
 assert(contains(adapter, 'Forklift Truck') && contains(adapter, 'Pallet Truck') && contains(adapter, 'Reach Truck') && contains(adapter, 'Order Picker'), 'adapter must extract industrial equipment website product candidates');
 assert(contains(adapter, 'Crown C-5 Series Forklift') && contains(adapter, 'Crown RC Series Stand-Up Rider Forklift'), 'adapter must seed concrete Crown product-line resolver candidates');
 assert(contains(adapter, 'manufacturable industrial equipment product-line noun'), 'adapter must score industrial equipment product-line nouns');
 assert(contains(adapter, 'Rambler 20 oz Tumbler') && contains(adapter, 'Tundra Cooler') && contains(adapter, 'Hopper Soft Cooler'), 'adapter must seed concrete YETI public product-line resolver candidates');
 assert(contains(adapter, 'Quencher H2.0 FlowState Tumbler') && contains(adapter, 'IceFlow Flip Straw Tumbler') && contains(adapter, 'Classic Legendary Bottle'), 'adapter must seed concrete Stanley public product-line resolver candidates');
+assert(contains(adapter, 'Wide Mouth Bottle') && contains(adapter, 'All Around Travel Tumbler') && contains(adapter, 'Trail Series Bottle'), 'adapter must seed concrete Hydro Flask public product-line resolver candidates');
+assert(contains(adapter, 'Karu 2 Pro Multi-Fuel Pizza Oven') && contains(adapter, 'Koda 16 Gas Powered Pizza Oven') && contains(adapter, 'Volt 12 Electric Pizza Oven'), 'adapter must seed concrete Ooni public product-line resolver candidates');
 assert(contains(adapter, 'concrete public hardgoods product-line name'), 'adapter must score public hardgoods product-line names above generic terms');
+assert(contains(adapter, 'concrete public website product-line name'), 'adapter must score non-fixture website product-line names above generic terms');
 assert(contains(adapter, 'durable consumer hardgoods product noun'), 'adapter must score hardgoods product nouns');
 assert(contains(adapter, 'fits dealer hardgoods fulfillment scenario'), 'adapter must rank dealer hardgoods website candidates for distribution/fulfillment runs');
+assert(contains(adapter, 'fits durable hardgoods manufacturing scenario'), 'adapter must rank Ooni/outdoor cooking product candidates for manufacturing runs');
 assert(contains(adapter, 'productEvidenceConfidence'), 'adapter must emit productEvidenceConfidence telemetry');
 assert(contains(adapter, 'websiteEvidenceSourceUrls'), 'adapter must emit websiteEvidenceSourceUrls');
 assert(contains(adapter, 'genericCandidateRejectedReasons'), 'adapter must emit genericCandidateRejectedReasons');
@@ -77,6 +84,8 @@ assert(contains(runner, 'genericCandidateRejectedReasons'), 'runner must pass th
 assert(contains(runner, 'productEvidenceConfidence'), 'runner must pass through productEvidenceConfidence telemetry');
 assert(contains(runner, 'industrialEquipmentNamingPackW460'), 'runner must preserve industrial product naming when naming file loading falls back');
 assert(contains(runner, 'durableHardgoodsNamingPackW462'), 'runner must preserve YETI/Stanley hardgoods naming if the naming file handoff is absent');
+assert(contains(runner, 'Hydro Flask') && contains(runner, 'Wide Mouth Bottle'), 'runner fallback must preserve Hydro Flask product-line naming if naming file handoff is absent');
+assert(contains(runner, 'Ooni') && contains(runner, 'Karu 2 Pro Multi-Fuel Pizza Oven'), 'runner fallback must preserve Ooni product-line naming if naming file handoff is absent');
 assert(contains(runner, 'domain-catalog-durable-hardgoods-w462'), 'runner hardgoods fallback must remain a website-domain catalog resolver, not a prospect-name fallback');
 assert(contains(runner, 'Catalog Product rejected: public website product-line candidate available'), 'runner must explicitly block Catalog Product when public hardgoods candidates exist');
 assert(contains(runner, 'waitForSalesOrderResolutionW460'), 'runner must wait briefly for Sales Order saved-search resolution after CSV import');
@@ -224,6 +233,10 @@ assert(contains(drawer, 'sourceFileId: resultCaptureSourceW462.sourceFileId'), '
 assert(contains(drawer, 'sourceFileName: resultCaptureSourceW462.sourceFileName'), 'drawer troubleshoot export must include completed result sourceFileName');
 assert(contains(drawer, 'resultCaptureStatusTrailW462'), 'drawer troubleshoot export must distinguish nonterminal stale rejection from terminal stale failure');
 assert(contains(drawer, 'nonterminalStaleRejected') && contains(drawer, 'terminalStaleFailure'), 'drawer export must distinguish nonterminal stale candidate rejection from terminal stale failure');
+assert(contains(drawer, 'lookupStatus: resultCaptureSourceW462.lookupStatus'), 'drawer troubleshoot export must include top-level result-capture lookupStatus');
+assert(contains(drawer, 'lookupSource: resultCaptureSourceW462.lookupSource'), 'drawer troubleshoot export must include top-level result-capture lookupSource');
+assert(contains(drawer, 'terminalNotFoundFailure: resultCaptureSourceW462.terminalNotFoundFailure'), 'drawer troubleshoot export must include top-level terminal not-found result-capture failure');
+assert(contains(drawer, 'expectedProvenance: resultCaptureSourceW462.expectedProvenance'), 'drawer troubleshoot export must include top-level expected provenance');
 assert(contains(drawer, 'Order -> Demand -> Buy Inputs -> Build Batch -> WIP Steps -> Finished Cases'), 'drawer must render compact WIP proof path copy instead of raw browser story text');
 assert(!contains(drawer, 'Planned Operation ${escapeHtml(Number(item.operationIndex || index) + 1)} ${escapeHtml(name)}'), 'drawer must not duplicate planned operation prefixes');
 assert(contains(drawer, 'Core records imported; review WIP diagnostic'), 'drawer ERP Story must truthfully describe WIP diagnostics');

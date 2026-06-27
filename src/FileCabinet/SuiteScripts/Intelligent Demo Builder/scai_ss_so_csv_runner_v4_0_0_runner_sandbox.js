@@ -52,9 +52,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v4.0.0-runner-sandbox-w468-old-runner-naming-transaction-return';
+  const VERSION = 'v4.0.0-runner-sandbox-w470-locked-naming-result-return';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w468-old-runner-naming-transaction-return';
+  const RELEASE_TRANCHE = 'w470-locked-naming-result-return';
   const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -506,9 +506,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      namingAuthorityOrder: 'old runner naming pack -> prospect fallback',
-      selectedProductName: '',
-      catalogCandidateAuthority: 'disabled_for_record_names'
+      namingAuthorityOrder: names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'server precomputed naming pack -> prospect fallback',
+      selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
+      selectedCatalogCandidate: names.selectedCatalogCandidate || null,
+      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'server_precomputed_naming_pack_preserved' : 'not_returned'
     }) });
 
     // 4) Apply current-run identity + one-line sales/purchase descriptions
@@ -3543,6 +3544,20 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (!noisyField && noisyRecordNameW468(value)) noisyField = `component_names[${index}]`;
     });
 
+    if (authoritativePackApplied && !noisyField && names.hero_item_name && names.assembly_name && components.length === 3) {
+      names.component_names = components.map(function(name) { return trimLen(name, 60); });
+      names.hero_item_name = trimLen(names.hero_item_name, 60);
+      names.assembly_name = trimLen(names.assembly_name, 60);
+      names.bom_name = trimLen(names.bom_name || `BOM - ${names.hero_item_name}`, 80);
+      names.bom_revision_name = trimLen(names.bom_revision_name || `Revision 1 - ${names.hero_item_name}`, 80);
+      names.routing_name = trimLen(names.routing_name || `Routing - ${names.assembly_name}`, 80);
+      names.operation_names_by_seq = names.operation_names_by_seq || fallback.operation_names_by_seq;
+      names.namingAuthorityOrderW468 = names.namingAuthorityOrderW468 || 'server precomputed naming pack -> prospect fallback';
+      names.namingAuthorityOrderW470 = names.namingAuthorityOrderW470 || 'server selected catalog naming pack -> runner preserve only -> prospect fallback';
+      names.runnerNamingOverrideBlockedW470 = true;
+      return names;
+    }
+
     if (!names.hero_item_name || !names.assembly_name || components.length !== 3 || noisyField) {
       const industrySelection = names.industrySelection || fallback.industrySelection || null;
       const websiteEvidenceSource = names.websiteEvidenceSource || fallback.websiteEvidenceSource || '';
@@ -3563,7 +3578,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         namingPayloadFound: !!namingPayload.found,
         namingPayloadParsed: !!namingPayload.parsed,
         namingPayloadApplied: !!namingPayload.applied,
-        namingAuthorityOrderW468: 'old runner naming pack -> prospect fallback',
+        namingAuthorityOrderW468: 'server precomputed naming pack -> prospect fallback',
+        namingAuthorityOrderW470: 'server selected catalog naming pack -> runner preserve only -> prospect fallback',
         selectedProductName: null,
         selectedCatalogCandidate: null,
         primary_product_candidate: null,
@@ -3579,7 +3595,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     names.bom_revision_name = trimLen(names.bom_revision_name || `Revision 1 - ${names.hero_item_name}`, 80);
     names.routing_name = trimLen(names.routing_name || `Routing - ${names.assembly_name}`, 80);
     names.operation_names_by_seq = names.operation_names_by_seq || fallback.operation_names_by_seq;
-    names.namingAuthorityOrderW468 = 'old runner naming pack -> prospect fallback';
+    names.namingAuthorityOrderW468 = 'server precomputed naming pack -> prospect fallback';
     names.selectedProductName = null;
     names.selectedCatalogCandidate = null;
     names.primary_product_candidate = null;

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.69
+// @version      1.0.70
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.69';
-  const CURRENT_UX_BLOCK_W346 = 'W466';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.70';
+  const CURRENT_UX_BLOCK_W346 = 'W470';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1248,7 +1248,7 @@
 
   const INSTALLED_DRAWER_RUNTIME_MARKER_W332 = 'W332 post-import story polish active';
   const INSTALLED_DRAWER_VERSION_FINGERPRINT_W339 = 'W339 imported proof record UX active';
-  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W466 current-run sidecar provenance and product-first record naming active';
+  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W470 locked naming authority and completed result return active';
   const INSTALLED_DRAWER_COPY_FINGERPRINT_W339 = [
     'Use imported proof records',
     'Use returned NetSuite proof records',
@@ -21412,17 +21412,37 @@
       {},
       runnerResult && runnerResult.resultCapture || {},
       {
+        status: 'completed_result_capture_ready',
+        finalGeneratedNamesReady: true,
+        finalGeneratedNamesJson: sidecarJson,
+        completedResultJson: sidecarJson,
+        generatedNamesJson: sidecarJson,
+        displayReadyRecords: patchedFinalNaming.displayReadyRecords,
         partialGeneratedNamesJson: sidecarJson,
         sidecarGeneratedNamesJson: sidecarJson,
         sidecarDisplayImported: true,
         sidecarDisplayImportedAt: nowIso()
       }
     );
+    const activeOpenLinksW470 = arrayValue(patchedFinalNaming.displayReadyRecords)
+      .filter((record) => record && record.safeToOpen === true).length;
     const patchedRunnerResult = Object.assign({}, runnerResult || {}, {
-      status: runnerResult && runnerResult.status || sidecarJson.status,
+      status: 'completed_result_imported',
+      rawStatus: runnerResult && runnerResult.status || sidecarJson.status,
       finalGeneratedNamesJsonReady: true,
+      finalGeneratedNamesJson: sidecarJson,
+      completedResultJson: sidecarJson,
       partialGeneratedNamesJson: sidecarJson,
       sidecarGeneratedNamesJson: sidecarJson,
+      resultImportGuard: Object.assign({}, runnerResult && runnerResult.resultImportGuard || {}, {
+        completedResultPresent: true,
+        completedResultAcceptedByW151: true,
+        completedResultStatus: 'sidecar_records_imported_for_display',
+        completedResultMessage: 'Completed runner sidecar imported and promoted to final generated names.',
+        importReady: true,
+        promotedSidecarResultW470: true
+      }),
+      activeOpenLinks: activeOpenLinksW470,
       resultCapture
     });
     return {

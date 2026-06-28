@@ -57,12 +57,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'w473-sidecar-website-product-detail-priority';
+  const VERSION = 'w474-website-product-authoritative-naming-graph';
   const RELEASE_TRAIN = 'sidecar-oldcore';
   const RELEASE_TRANCHE = 'w472-oldcore-roi-competitive-sidecar';
-  const SIDECAR_VERSION_W472 = 'W473';
+  const SIDECAR_VERSION_W472 = 'W474';
   const RUNNER_EXECUTION_CORE_W472 = 'old-runner-v1.12.13';
-  const ROI_COMPETITIVE_SIDECAR_VERSION_W472 = 'W473';
+  const ROI_COMPETITIVE_SIDECAR_VERSION_W472 = 'W474';
   const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -461,7 +461,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         }
       })
       : namingPayload;
-    const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 });
+    const names = enforceWebsiteProductAuthoritativeNamingW474(
+      enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 }),
+      { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 }
+    );
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: effectiveNamingPayloadW472.source || names._source || 'deterministic',
       signalLen: names._signalLen || 0,
@@ -3927,6 +3930,109 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return names;
   }
 
+  function enforceWebsiteProductAuthoritativeNamingW474(rawNames, context) {
+    const names = Object.assign({}, rawNames || {});
+    const candidates = collectStrongWebsiteProductAlternatesW472(names);
+    const selectedCandidate = names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
+      ? names.selectedCatalogCandidate.name
+      : names.selectedCatalogCandidate;
+    const selectedProduct = usableWebsiteProductExampleNameW472(names.selectedProductName || names.primary_product_candidate || selectedCandidate || names.hero_item_name);
+    const selectedWeakReason = weakProductNameReasonW467(selectedProduct) ||
+      genericWebsiteProductNameReasonW472(selectedProduct) ||
+      colorPatternOnlyProductNameReasonW472(selectedProduct);
+    if (selectedProduct && !selectedWeakReason && hasConcreteProductNounW472(selectedProduct)) {
+      candidates.unshift({
+        name: selectedProduct,
+        source: names.websiteEvidenceSource || 'selected_website_product_w474',
+        candidate: names.selectedCatalogCandidate || {
+          name: selectedProduct,
+          source: names.websiteEvidenceSource || 'selected_website_product_w474',
+          sourceUrl: Array.isArray(names.websiteEvidenceSourceUrls) ? names.websiteEvidenceSourceUrls[0] || '' : ''
+        }
+      });
+    }
+    const uniqueCandidates = [];
+    const seen = {};
+    candidates.forEach(function(candidate) {
+      const name = usableWebsiteProductExampleNameW472(candidate && candidate.name || '');
+      if (!name) return;
+      const weakReason = weakProductNameReasonW467(name) ||
+        genericWebsiteProductNameReasonW472(name) ||
+        colorPatternOnlyProductNameReasonW472(name);
+      if (weakReason || !hasConcreteProductNounW472(name)) return;
+      const key = name.toLowerCase();
+      if (seen[key]) return;
+      seen[key] = true;
+      uniqueCandidates.push(Object.assign({}, candidate, { name }));
+    });
+    if (!uniqueCandidates.length) {
+      const reason = selectedWeakReason ||
+        names.blockedWeakProductNameReason ||
+        'No concrete product names were discovered from website evidence; runner will not create generic product records.';
+      const error = new Error(`FORGE_WEBSITE_PRODUCT_NAMING_REQUIRED_W474: ${reason}`);
+      error.name = 'FORGE_WEBSITE_PRODUCT_NAMING_REQUIRED_W474';
+      error.details = JSON.stringify({
+        prospect: context && context.prospect || '',
+        website: context && context.website || '',
+        selectedProductName: names.selectedProductName || '',
+        hero_item_name: names.hero_item_name || '',
+        websiteEvidenceSource: names.websiteEvidenceSource || '',
+        websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
+        fallbackUsed: !!names.fallbackUsed,
+        fallbackReason: names.fallbackReason || '',
+        blockedWeakProductName: names.blockedWeakProductName || '',
+        blockedWeakProductNameReason: reason
+      });
+      throw error;
+    }
+    const primary = uniqueCandidates[0].name;
+    const componentNames = uniqueCandidates.map(function(candidate) { return candidate.name; }).slice(0, 3);
+    while (componentNames.length < 3) {
+      componentNames.push(componentNames.length === 1 ? `${primary} Related SKU` : `${primary} Fulfillment Support`);
+    }
+    const selected = uniqueCandidates[0].candidate && typeof uniqueCandidates[0].candidate === 'object'
+      ? Object.assign({}, uniqueCandidates[0].candidate, { name: primary })
+      : {
+        name: primary,
+        source: uniqueCandidates[0].source || 'website_product_authoritative_w474',
+        sourceUrl: Array.isArray(names.websiteEvidenceSourceUrls) ? names.websiteEvidenceSourceUrls[0] || '' : '',
+        confidence: names.namingConfidence || names.confidencePercent || 96,
+        reasons: ['selected as the authoritative website product for every created record name']
+      };
+    return Object.assign({}, names, {
+      hero_item_name: trimLen(primary, 60),
+      assembly_name: trimLen(`${primary} Assembly`, 60),
+      component_names: componentNames.map(function(name) { return trimLen(name, 60); }),
+      bom_name: trimLen(`BOM - ${primary}`, 80),
+      bom_revision_name: trimLen(`Revision 1 - ${primary}`, 80),
+      routing_name: trimLen(`Routing - ${primary}`, 80),
+      operation_names_by_seq: {
+        '10': `Prepare ${componentNames[0]}`,
+        '20': `Build ${primary}`,
+        '30': `Release ${primary}`
+      },
+      selectedProductName: primary,
+      primary_product_candidate: primary,
+      alternate_product_candidates: componentNames.slice(1),
+      selectedCatalogCandidate: selected,
+      selectedCatalogCandidateSource: selected.source || uniqueCandidates[0].source || 'website_product_authoritative_w474',
+      selectedCatalogCandidateReasons: selected.reasons || ['authoritative website product applied across all record names'],
+      catalogCandidates: uniqueCandidates.map(function(candidate) {
+        return candidate.candidate && typeof candidate.candidate === 'object'
+          ? Object.assign({}, candidate.candidate, { name: candidate.name })
+          : { name: candidate.name, source: candidate.source || 'website_product_authoritative_w474' };
+      }),
+      websiteProductExamplesW472: uniqueCandidates.map(function(candidate) { return candidate.name; }),
+      namingAuthorityOrderW474: 'website product evidence only -> hero, assembly, BOM, components, routing, work order, purchase/sales descriptions',
+      websiteProductAuthoritativeNamingW474: true,
+      namingPackPreserved: true,
+      runnerNamingOverrideBlockedW470: true,
+      namingPackAuthoritativeW470: true,
+      fallbackUsed: false,
+      fallbackReason: ''
+    });
+  }
+
   function noisyRecordNameW468(value) {
     const text = str(value).replace(/\s+/g, ' ');
     if (!text) return false;
@@ -3935,7 +4041,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       'catalog product',
       'products cpg',
       'website evidence',
+      'product availability sku',
       'product / sku',
+      'product sku',
+      'dealer hardgoods & channel fulfillment',
+      'building materials & contractor project fulfillment',
+      'contractor job order',
       'style / sku matrix',
       'needs confirmation',
       'dealer durable hardgoods',
@@ -5787,9 +5898,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const roiAudit = roiCompetitiveSidecar && roiCompetitiveSidecar.roiAudit || {};
     const competitive = roiCompetitiveSidecar && roiCompetitiveSidecar.competitive || {};
     const competitiveAdvisory = roiCompetitiveSidecar && roiCompetitiveSidecar.competitiveAdvisory || {};
+    const operatingStoryMode = operatingStoryModeW473(args);
+    const productPhrase = selectedProduct ? ` for ${selectedProduct}` : '';
     const quickStory = notes
-      ? `${firstNonBlankTextW453(args && args.prospect, 'The buyer')} is trying to prove ${summarizeOneLine(notes)}`
-      : `${firstNonBlankTextW453(args && args.prospect, 'The buyer')} needs a compact returned-record path before value or competitive claims are discussed.`;
+      ? `${firstNonBlankTextW453(args && args.prospect, 'The buyer')} is trying to prove ${toggleSafeBuyerStoryW473(summarizeOneLine(notes), operatingStoryMode)}${productPhrase}.`
+      : `${firstNonBlankTextW453(args && args.prospect, 'The buyer')} needs a compact ${operatingStoryLabelW473(operatingStoryMode).toLowerCase()} path${productPhrase} before value or competitive claims are discussed.`;
     const roiSummary = firstNonBlankTextW453(
       roiAudit.claim,
       roiCompetitiveSidecar && roiCompetitiveSidecar.valueReviewPacket && roiCompetitiveSidecar.valueReviewPacket.groundedRoiSummary,
@@ -5872,7 +5985,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       confirmed.notes,
       confirmed.agenda
     ].join(' '));
-    const channels = collectRoiChannelsW472({ confirmed, storyInputs, notes, websiteCategory, demoPath });
+    const operatingStoryMode = operatingStoryModeW473(args);
+    const channels = collectRoiChannelsW472({ confirmed, storyInputs, notes, websiteCategory, demoPath, operatingStoryMode });
     const painSignal = firstNonBlankTextW453(
       storyInputs.pain,
       storyInputs.buyerPain,
@@ -5895,12 +6009,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       confirmed.timeline,
       extractTimelineFromNotesW472(notes)
     );
-    const laneLabel = firstNonBlankTextW453(demoPath.scenario, demoPath.laneId, confirmed.resolvedOperatingMode, args && args.enableWip ? 'WIP manufacturing' : 'distribution replenishment');
-    const proofPath = args && args.enableWip
-      ? 'Sales Order, assembly, BOM, Work Order, and routing readiness'
-      : args && args.enableManufacturing
-        ? 'Sales Order, sellable item, assembly, BOM, and component readiness'
-        : 'Customer, Sales Order, and product availability records';
+    const laneLabel = firstNonBlankTextW453(demoPath.scenario, demoPath.laneId, confirmed.resolvedOperatingMode, operatingStoryLabelW473(operatingStoryMode));
+    const proofPath = proofPathForOperatingStoryModeW473(operatingStoryMode);
     const roiPoint = chooseRoiPointW472({
       selectedProduct,
       websiteCategory,
@@ -5910,8 +6020,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       decisionCriteria,
       timeline,
       proofPath,
-      enableWip: args && args.enableWip,
-      enableManufacturing: args && args.enableManufacturing,
+      operatingStoryMode,
+      enableWip: operatingStoryMode === 'wip',
+      enableManufacturing: operatingStoryMode !== 'distribution',
       buyerBaseline
     });
     const sourceBasis = uniqueTextValuesW472([
@@ -5936,8 +6047,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       ? `Use the returned NetSuite records to test whether ${firstNonBlankTextW453(args && args.prospect, 'the buyer')} can ${roiPoint.metricDirection.toLowerCase()} against the confirmed baseline.`
       : `Advisory only: use returned NetSuite records to frame ${roiPoint.metricDirection.toLowerCase()}; do not claim measured ROI until the buyer confirms a baseline.`;
     const competitiveContrast = competitor
-      ? `Compare NetSuite against ${competitor} only as buyer-supplied context; prove the same operating decision through returned records before making any win claim.`
-      : `Contrast NetSuite against disconnected planning, inventory, ecommerce, spreadsheet, or point-solution workflows without naming an incumbent as fact.`;
+      ? `Compare NetSuite against ${competitor} only as buyer-supplied context; prove the same ${operatingDecisionPhraseW473(operatingStoryMode)} through returned records before making any win claim.`
+      : `Contrast NetSuite against ${fallbackCompetitiveAlternativesW473(operatingStoryMode)} without naming an incumbent as fact.`;
     const guardrails = [
       'advisory_only',
       'no_measured_roi_claim_without_buyer_baseline',
@@ -6139,6 +6250,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       { re: /\b(field service|installer|installation|service team)\b/, label: 'field service' },
       { re: /\b(manufactur|production|factory|plant|work order|wip|assembly)\b/, label: 'production' }
     ].forEach(function(rule) {
+      if (rule.label === 'production' && options && options.operatingStoryMode === 'distribution') return;
       if (rule.re.test(source)) values.push(rule.label);
     });
     return uniqueTextValuesW472(values).slice(0, 5);
@@ -6174,7 +6286,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     ].join(' ')).toLowerCase();
     const reasonContext = `Chosen because the conversation points to ${painSignal} for ${selectedProduct} in ${websiteCategory}, with ${channelPhrase} and ${decisionCriteria} before ${timeline}.`;
 
-    if (options && options.enableWip || /\b(wip|work order|production|manufactur|assembly|bom|routing|component shortage|schedule|build)\b/.test(contextText)) {
+    const operatingStoryMode = options && options.operatingStoryMode || (options && options.enableWip ? 'wip' : (options && options.enableManufacturing ? 'manufacturing' : 'distribution'));
+    if (operatingStoryMode === 'wip') {
       return {
         schema: 'idb.w472-roi-point.v1',
         advisoryOnly: true,
@@ -6182,6 +6295,24 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         proofSignalLabel: 'WIP, component, and schedule-readiness proof',
         whyChosen: `${reasonContext} The returned assembly, BOM, Work Order, and routing context are the proof path for that operating risk.`,
         baselineNeededToMeasure: `Buyer-confirmed current work-order schedule misses, component shortage holds, rework events, and promise-date changes for ${selectedProduct}.`,
+        selectedProduct,
+        websiteCategory,
+        channels,
+        painSignal,
+        decisionCriteria,
+        timeline,
+        buyerBaselinePresent: !!(options && options.buyerBaseline)
+      };
+    }
+
+    if (operatingStoryMode === 'manufacturing') {
+      return {
+        schema: 'idb.w472-roi-point.v1',
+        advisoryOnly: true,
+        metricDirection: `Improve assembly and BOM readiness for ${selectedProduct}`,
+        proofSignalLabel: 'Assembly, BOM, component, and sales-order readiness proof',
+        whyChosen: `${reasonContext} The returned sales order, sellable item, assembly, BOM, and component context are the proof path for that readiness decision.`,
+        baselineNeededToMeasure: `Buyer-confirmed current assembly setup delays, BOM/component readiness gaps, material holds, and promise-date changes for ${selectedProduct}.`,
         selectedProduct,
         websiteCategory,
         channels,
@@ -6261,6 +6392,63 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       timeline,
       buyerBaselinePresent: !!(options && options.buyerBaseline)
     };
+  }
+
+  function operatingStoryModeW473(args) {
+    if (args && args.enableWip) return 'wip';
+    if (args && args.enableManufacturing) return 'manufacturing';
+    return 'distribution';
+  }
+
+  function operatingStoryLabelW473(mode) {
+    if (mode === 'wip') return 'WIP manufacturing';
+    if (mode === 'manufacturing') return 'assembly and BOM readiness';
+    return 'distribution replenishment';
+  }
+
+  function proofPathForOperatingStoryModeW473(mode) {
+    if (mode === 'wip') return 'Sales Order, assembly, BOM, Work Order, and routed WIP readiness';
+    if (mode === 'manufacturing') return 'Sales Order, sellable item, assembly, BOM, and component readiness';
+    return 'Customer, Sales Order, item availability, and replenishment records';
+  }
+
+  function operatingDecisionPhraseW473(mode) {
+    if (mode === 'wip') return 'routed WIP and work-order decision';
+    if (mode === 'manufacturing') return 'assembly and BOM readiness decision';
+    return 'distribution availability and replenishment decision';
+  }
+
+  function fallbackCompetitiveAlternativesW473(mode) {
+    if (mode === 'wip') return 'disconnected planning, shop-floor schedule, spreadsheet, or point-solution workflows';
+    if (mode === 'manufacturing') return 'disconnected BOM readiness, component planning, spreadsheet, or point-solution workflows';
+    return 'disconnected inventory, ecommerce, spreadsheet, allocation, or point-solution workflows';
+  }
+
+  function toggleSafeBuyerStoryW473(value, mode) {
+    let text = compactText(value);
+    if (!text) return text;
+    if (mode === 'wip') return text;
+    if (mode === 'manufacturing') {
+      return text
+        .replace(/\brouted\s+WIP\b/ig, 'assembly readiness')
+        .replace(/\bWIP\b/g, 'assembly readiness')
+        .replace(/\bwork[-\s]*orders?\b/ig, 'assembly readiness')
+        .replace(/\brouting\b/ig, 'BOM readiness');
+    }
+    return text
+      .replace(/\bcase[-\s]*packs?\b/ig, 'item availability')
+      .replace(/\bfinished[-\s]*cases?\b/ig, 'available items')
+      .replace(/\bbuild[-\s]*batches?\b/ig, 'replenishment readiness')
+      .replace(/\bfinished[-\s]*goods?\b/ig, 'available inventory')
+      .replace(/\bmanufactur(?:ing|e|ed)?\b/ig, 'distribution')
+      .replace(/\bproduction\b/ig, 'replenishment')
+      .replace(/\bassembly\b/ig, 'item')
+      .replace(/\bBOM\b/g, 'item')
+      .replace(/\bbill of materials\b/ig, 'item record')
+      .replace(/\brouted\s+WIP\b/ig, 'replenishment readiness')
+      .replace(/\bWIP\b/g, 'replenishment readiness')
+      .replace(/\bwork[-\s]*orders?\b/ig, 'sales order')
+      .replace(/\brouting\b/ig, 'fulfillment path');
   }
 
   function buildCompetitiveContextW472(notes, storyInputs, confirmed) {
@@ -6593,6 +6781,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     'lab',
     'products cpg',
     'catalog product',
+    'product availability sku',
+    'product / sku',
+    'product sku',
+    'dealer hardgoods & channel fulfillment',
+    'building materials & contractor project fulfillment',
+    'contractor job order',
     'advisory insufficient',
     'apparel & accessories',
     'apparel and footwear style',

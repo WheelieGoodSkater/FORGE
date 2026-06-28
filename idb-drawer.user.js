@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      2.0.1
+// @version      2.0.2
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -21,8 +21,8 @@
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
   const IN_FLIGHT_BUILD_STORAGE_KEY_W472 = 'idb.drawer.inFlightBuild.w472.v1';
-  const DRAWER_USERSCRIPT_VERSION = '2.0.1';
-  const CURRENT_UX_BLOCK_W346 = 'W473';
+  const DRAWER_USERSCRIPT_VERSION = '2.0.2';
+  const CURRENT_UX_BLOCK_W346 = 'W474';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1091,7 +1091,7 @@
   };
 
   const CONTRACT = {
-    product: { name: 'Intelligent Demo Builder', version: 'V2.0.1' },
+    product: { name: 'Intelligent Demo Builder', version: 'V2.0.2' },
     nonRegression: {
       noNewIndustries: false,
       apparelAccessoriesLaneAuthorized: true,
@@ -1249,7 +1249,7 @@
 
   const INSTALLED_DRAWER_RUNTIME_MARKER_W332 = 'W332 post-import story polish active';
   const INSTALLED_DRAWER_VERSION_FINGERPRINT_W339 = 'W339 imported proof record UX active';
-  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W471 locked naming authority and completed result return active';
+  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W474 website product authoritative naming and result file visibility active';
   const INSTALLED_DRAWER_COPY_FINGERPRINT_W339 = [
     'Use imported proof records',
     'Use returned NetSuite proof records',
@@ -15060,11 +15060,11 @@
     const hasReturnedObjects = arrayValue(objects).length > 0;
     const hasReturnedWipGraph = /\b(routing|wip|operation names|work center)\b/i.test(objectText);
     const hasReturnedManufacturingGraph = /\b(assembly|bom|bill of materials|bom revision|work\s*order|workorder)\b/i.test(objectText);
-    if (hasReturnedWipGraph) return 'wip';
-    if (hasReturnedManufacturingGraph) return 'manufacturing';
-    if (hasReturnedObjects) return 'distribution';
     if (toggles.enableWip) return 'wip';
     if (toggles.enableManufacturing) return 'manufacturing';
+    if (hasReturnedWipGraph && toggles.enableWip) return 'wip';
+    if (hasReturnedManufacturingGraph && toggles.enableManufacturing) return 'manufacturing';
+    if (hasReturnedObjects) return 'distribution';
     return 'distribution';
   }
 
@@ -15246,16 +15246,16 @@
       productDisplayName,
       industryNativeManufacturingW442: manufacturingTermsW442,
       distribution: {
-        itemName: productDisplayName,
+        itemName: productBaseName,
         proofName: `${productBaseName} Retail Replenishment`,
         supportName: `${productBaseName} Channel Supply`,
-        cockpitSubtitle: 'Retail case-pack replenishment readiness',
-        storyHeadline: `Prove replenishment readiness for ${productDisplayName}; then connect customer demand, allocation, case-pack availability, and fulfillment confidence.`,
+        cockpitSubtitle: 'Retail replenishment readiness',
+        storyHeadline: `Prove replenishment readiness for ${productBaseName}; then connect customer demand, allocation, item availability, and fulfillment confidence.`,
         proofMove: 'Move through Customer demand, Sales Order, Product SKU, replenishment flow, and channel supply support while staying in distribution and fulfillment scope.',
         roiClaim: `${customerName} can protect retail replenishment readiness.`,
-        competitiveQuestion: 'How do we know case-pack availability is current enough to trust?',
+        competitiveQuestion: 'How do we know item availability is current enough to trust?',
         competitiveWatchOut: 'If competitive pressure comes up, ask which replenishment or fulfillment workflow they trust today, then prove the same decision through returned records.',
-        supportPathLabel: 'Retail case-pack replenishment proof'
+        supportPathLabel: 'Retail replenishment proof'
       },
       manufacturing: {
         assemblyName: manufacturingTermsW442.industryNativeManufacturedItemName,
@@ -21297,7 +21297,7 @@
         schema: 'idb.w439-visible-product-narrative-contract.v1',
         selectedTriggersOwnStoryLanguage: true,
         currentCustomerAndWebsiteMustWinOverStaleImportedNames: true,
-        createNewItemOnlyVisibleStory: ['retail case-pack replenishment', 'case-pack availability', 'allocation', 'channel supply', 'fulfillment confidence'],
+        createNewItemOnlyVisibleStory: ['retail replenishment', 'item availability', 'allocation', 'channel supply', 'fulfillment confidence'],
         manufacturingVisibleStory: ['product-specific Finished Good', 'three product-specific components', 'BOM', 'BOM Revision', 'Work Order'],
         wipVisibleStory: ['product-specific Routing', 'industry/product operation names'],
         internalIdsRunTokensAndLaneCodesForbiddenInVisibleStory: true
@@ -26677,11 +26677,16 @@
     };
   }
 
-  function cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrative, diagnostics) {
+  function cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrative, diagnostics, state) {
     const eligibleObjects = arrayValue(objects).filter(linkSummaryEligibleW446);
     const recordCount = eligibleObjects.filter((item) => item && item.source === 'dcc_final').length;
     const openableCount = eligibleObjects.filter((item) => item && item.linkAuthority && item.linkAuthority.openable === true).length;
     const diagnosticCount = arrayValue(diagnostics).length;
+    const runner = state && state.integratedBuildRunnerResult || {};
+    const capture = runner.resultCapture || {};
+    const resultFileId = firstNonBlank(capture.sourceFileId, runner.sourceFileId, capture.fileId, runner.fileId);
+    const resultFileName = firstNonBlank(capture.sourceFileName, runner.sourceFileName, capture.fileName, runner.fileName);
+    const resultLookupStatus = firstNonBlank(capture.lookupStatus, runner.lookupStatus, capture.status, runner.status);
     const confidence = String(valueNarrative && valueNarrative.confidence || 'medium').toLowerCase();
     const dotFor = (tone) => `<span class="idb-w444-health-dot idb-w444-health-${escapeHtml(tone)}" aria-hidden="true"></span>`;
     const confidenceTone = confidence === 'high' ? 'green' : confidence === 'low' ? 'red' : 'yellow';
@@ -26698,6 +26703,7 @@
         </summary>
         <div class="idb-w444-health-detail">
           <div class="idb-chip-row">${renderBuildToggleReceiptChipsW440(toggleReceipt)}</div>
+          <div class="idb-copy">Result file: ${escapeHtml(resultFileId || 'not returned')}${resultFileName ? ` / ${escapeHtml(resultFileName)}` : ''}${resultLookupStatus ? ` / ${escapeHtml(resultLookupStatus)}` : ''}</div>
           <div class="idb-copy">Diagnostics: ${escapeHtml(diagnosticCount ? arrayValue(diagnostics).map((item) => firstNonBlank(item.label, item.name, item.reason)).join(' / ') : 'none returned')}</div>
           <div class="idb-copy">Proof status: ${escapeHtml(finalNavigation && finalNavigation.displayStatus || 'unknown')}</div>
         </div>
@@ -26719,12 +26725,12 @@
     ].join(' ');
     const activeMode = visibleNarrative && visibleNarrative.mode || '';
     const whyPresented = activeMode === 'distribution'
-      ? 'Presented because the returned records and selected toggles center on case-pack availability, replenishment confidence, customer demand, and fulfillment trust.'
+      ? 'Presented because the returned records and selected toggles center on item availability, replenishment confidence, customer demand, and fulfillment trust.'
       : /routing|wip|line capacity|work order status|operation/i.test(narrativeText)
       ? 'Presented because the returned records and selected toggles center on routed production readiness, work order execution, operation progress, and stale-routing truth.'
       : /production|batch|bom|ingredient|work order/i.test(narrativeText)
-        ? 'Presented because the returned records and selected toggles center on production batch readiness, input availability, BOM structure, and work order execution.'
-        : 'Presented because the returned records and selected toggles center on case-pack availability, replenishment confidence, customer demand, and fulfillment trust.';
+        ? 'Presented because the returned records and selected toggles center on assembly readiness, component availability, and BOM structure.'
+        : 'Presented because the returned records and selected toggles center on item availability, replenishment confidence, customer demand, and fulfillment trust.';
     const advisoryAlternatives = arrayValue(competitiveAdvisory && (competitiveAdvisory.likelyAlternatives || competitiveAdvisory.alternatives));
     const industryFallbackAlternatives = ['SAP Business One', 'Microsoft Dynamics', 'QuickBooks inventory add-ons', 'Fishbowl', 'Katana'];
     const baseAlternatives = uniqueValues(advisoryAlternatives.concat(['spreadsheets', 'disconnected MRP']));
@@ -26735,17 +26741,27 @@
         ? 'conversation_notes'
         : 'industry_fallback'
     }));
+    const roiMetricDirection = activeMode === 'wip'
+      ? 'Decrease routed WIP and customer-promise risk'
+      : (activeMode === 'manufacturing'
+        ? 'Improve assembly and BOM readiness'
+        : 'Increase fulfillment confidence');
+    const roiQuantifier = activeMode === 'wip'
+      ? 'Measure order misses, delay days, shortage holds, or manual schedule touches.'
+      : (activeMode === 'manufacturing'
+        ? 'Measure assembly setup delays, BOM or component readiness gaps, material holds, or promise-date changes.'
+        : 'Measure fill rate, late lines, stockout touches, or manual reconciliation.');
     return {
       roi: {
         source,
         confidencePercent,
-        sourceBasis: source === 'conversation_notes' ? 'Conversation notes matched the selected WIP/manufacturing proof path.' : 'Website/industry fallback selected because specific buyer evidence was limited.',
+        sourceBasis: source === 'conversation_notes' ? `Conversation notes shaped the selected ${activeMode || 'operating'} proof path.` : 'Website/industry fallback selected because specific buyer evidence was limited.',
         confidence,
         evidenceTerms,
         whyPresented,
-        metricDirection: /wip|routing|production|batch|ingredient|work order/i.test(narrativeText) ? 'Decrease customer-promise risk' : 'Increase fulfillment confidence',
-        quantifier: /wip|routing|production|batch|ingredient|work order/i.test(narrativeText) ? 'Measure order misses, delay days, shortage holds, or manual schedule touches.' : 'Measure fill rate, late lines, stockout touches, or manual reconciliation.',
-        proofSignalLabel: activeMode === 'distribution' ? 'Replenishment proof' : (activeMode === 'manufacturing' ? 'Production proof' : 'WIP proof'),
+        metricDirection: roiMetricDirection,
+        quantifier: roiQuantifier,
+        proofSignalLabel: activeMode === 'distribution' ? 'Replenishment proof' : (activeMode === 'manufacturing' ? 'Assembly and BOM proof' : 'WIP proof'),
         baselineNeeded: firstNonBlank(valueNarrative && valueNarrative.baselineNeeded, valueNarrative && valueNarrative.roiDetail, value && value.roiAudit && value.roiAudit.baselineNeeded, 'Buyer-confirmed baseline needed before any savings claim.'),
         unsupportedClaimCaution: firstNonBlank(valueNarrative && valueNarrative.unsupportedClaimCaution, 'Unsupported savings claims stay blocked until the buyer confirms a baseline.')
       },
@@ -26757,15 +26773,19 @@
         likelyAlternatives: alternatives,
         alternativeSourceTags,
         strongestAlternative: alternatives[0] || 'spreadsheets',
-        whyNetSuiteWins: firstNonBlank(valueNarrative && valueNarrative.competitiveWatchOut, competitiveAdvisory && competitiveAdvisory.runCue, activeMode === 'distribution' ? 'Prove demand, allocation, replenishment status, and fulfillment confidence in one path.' : 'Prove demand, supply, WIP routing, work order status, and finished output in one path.'),
+        whyNetSuiteWins: firstNonBlank(valueNarrative && valueNarrative.competitiveWatchOut, competitiveAdvisory && competitiveAdvisory.runCue, activeMode === 'distribution' ? 'Prove demand, allocation, replenishment status, and fulfillment confidence in one path.' : (activeMode === 'manufacturing' ? 'Prove demand, item, assembly, BOM, and component readiness in one path.' : 'Prove demand, supply, WIP routing, work order status, and finished output in one path.')),
         discoveryQuestions: [
           'Which planning signal is trusted today?',
           'Where does production or inventory truth get reconciled outside the system?',
           'What baseline would prove the current process is costing time, margin, or service reliability?'
         ],
-        disconnectedPlanningRisk: 'Risk: disconnected planning can make routing, inventory, and customer promise decisions look current when they are stale.',
+        disconnectedPlanningRisk: activeMode === 'distribution'
+          ? 'Risk: disconnected planning can make inventory, allocation, and customer promise decisions look current when they are stale.'
+          : (activeMode === 'manufacturing'
+            ? 'Risk: disconnected planning can make assembly, BOM, component, and customer promise decisions look current when they are stale.'
+            : 'Risk: disconnected planning can make routing, inventory, and customer promise decisions look current when they are stale.'),
         headline: `Beat ${alternatives[0] || 'QuickBooks plus spreadsheets'} with fresher proof`,
-        compactLine: activeMode === 'distribution' ? 'Prove demand, allocation, replenishment status, and fulfillment confidence in one path.' : 'Prove demand, supply, WIP routing, work order status, and finished output in one path.'
+        compactLine: activeMode === 'distribution' ? 'Prove demand, allocation, replenishment status, and fulfillment confidence in one path.' : (activeMode === 'manufacturing' ? 'Prove demand, item, assembly, BOM, and component readiness in one path.' : 'Prove demand, supply, WIP routing, work order status, and finished output in one path.')
       }
     };
   }
@@ -26921,17 +26941,25 @@
       buildPath: [assembly, bomRevision, routing, workOrder, finishedGood].filter(Boolean),
       demandDiagnostic,
       proofRail: visibleNarrative && visibleNarrative.mode === 'wip'
-        ? ['Order', 'Demand', 'Buy Inputs', 'Build Batch', 'WIP Steps', 'Finished Cases']
-        : ['Order', 'Demand', 'Buy Inputs', 'Build Batch', 'Finished Cases'],
+        ? ['Order', 'Demand', 'Buy Inputs', 'Build Batch', 'WIP Steps', 'Finished Output']
+        : (visibleNarrative && visibleNarrative.mode === 'manufacturing'
+          ? ['Order', 'Demand', 'Sellable Item', 'Assembly', 'BOM Ready']
+          : ['Customer', 'Sales Order', 'Item', 'Availability', 'Fulfillment']),
       components,
       hasWipDiagnostic,
       wipEnabled: visibleNarrative && visibleNarrative.mode === 'wip',
       recordCount: rows.length,
       diagnosticCount: arrayValue(diagnostics).length,
-      headline: 'Customer order to finished-case output',
+      headline: visibleNarrative && visibleNarrative.mode === 'wip'
+        ? 'Customer order to routed WIP output'
+        : (visibleNarrative && visibleNarrative.mode === 'manufacturing'
+          ? 'Customer order to assembly and BOM readiness'
+          : 'Customer order to item availability'),
       proof: visibleNarrative && visibleNarrative.mode === 'wip'
-        ? 'Order creates demand, demand drives inputs, production builds the batch through routed WIP steps, and finished cases are ready to sell.'
-        : 'Order creates demand, demand drives inputs, production builds the batch, and finished cases are ready to sell.',
+        ? 'Order creates demand, demand drives inputs, production builds through routed WIP steps, and finished output is ready to sell.'
+        : (visibleNarrative && visibleNarrative.mode === 'manufacturing'
+          ? 'Order creates demand, demand ties to the sellable item, and assembly, BOM, and component readiness support the promise.'
+          : 'Customer and sales order records prove the selected item, availability signal, and fulfillment confidence.'),
       readiness: components.length
         ? `Inputs: ${components.map((item) => consultantRunNavigationNameW334(item) || consultantRunNavigationDisplayW441(item, visibleNarrative)).filter(Boolean).slice(0, 3).join(' / ')}`
         : 'Readiness evidence appears as returned component, vendor, purchase, or diagnostic records.'
@@ -27152,6 +27180,16 @@
       ? renderWipRoutingFlowW449(cockpitSourceRowsW449, plannedOperationRowsW449, diagnosticRowsW449)
       : '';
     const erpBuildStoryW456 = renderErpBuildStoryW456(erpBuildStoryModelW456(model, visibleNarrative, cockpitSourceRowsW449, diagnosticRowsW449, detailModelW444, proofFlowCopy(storyLine), proofFlowCopy(proofLine)));
+    const proofPathHeadlineW473 = visibleNarrative.mode === 'wip'
+      ? 'Order to finished output through routed WIP'
+      : (visibleNarrative.mode === 'manufacturing'
+        ? 'Order to assembly and BOM readiness'
+        : 'Order to item availability and fulfillment');
+    const proofPathFlowW473 = visibleNarrative.mode === 'wip'
+      ? 'Order -> Demand -> Buy Inputs -> Build Batch -> WIP Steps -> Finished Output'
+      : (visibleNarrative.mode === 'manufacturing'
+        ? 'Order -> Demand -> Sellable Item -> Assembly -> BOM Ready'
+        : 'Customer -> Sales Order -> Item -> Availability -> Fulfillment');
     return `
       <div class="idb-card idb-accent idb-w415-demo-cockpit">
         <div class="idb-w415-cockpit-header">
@@ -27161,7 +27199,7 @@
             <div class="idb-w415-cockpit-subtitle">${escapeHtml(laneLabel)}</div>
           </div>
           <div class="idb-w415-cockpit-status-panel" aria-label="Post-run proof status">
-            ${cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrativeW443, diagnostics)}
+            ${cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrativeW443, diagnostics, state)}
           </div>
         </div>
         ${cockpitWorkflowVisualW443(visibleNarrative, workflowObjectsW447, toggleReceipt)}
@@ -27189,8 +27227,8 @@
         </div>
         <div class="idb-w415-cockpit-story">
           <div class="idb-status-key">Proof path</div>
-          <div class="idb-strong">${escapeHtml(visibleNarrative.mode === 'wip' ? 'Order to finished cases through routed WIP' : 'Order to finished-case output')}</div>
-          <div class="idb-copy">${escapeHtml(visibleNarrative.mode === 'wip' ? 'Order -> Demand -> Buy Inputs -> Build Batch -> WIP Steps -> Finished Cases' : 'Order -> Demand -> Buy Inputs -> Build Batch -> Finished Cases')}</div>
+          <div class="idb-strong">${escapeHtml(proofPathHeadlineW473)}</div>
+          <div class="idb-copy">${escapeHtml(proofPathFlowW473)}</div>
         </div>
         <div class="idb-w415-cockpit-grid">
           <div class="idb-w415-cockpit-panel idb-w415-roi-panel ${activeDetailW444 === 'roi' ? 'idb-w445-active-detail-card' : ''}">

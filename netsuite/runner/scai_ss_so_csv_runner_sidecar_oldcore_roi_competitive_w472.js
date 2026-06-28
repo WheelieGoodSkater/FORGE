@@ -57,12 +57,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'w474-website-product-authoritative-naming-graph';
+  const VERSION = 'w475-old-runner-naming-authority-only';
   const RELEASE_TRAIN = 'sidecar-oldcore';
-  const RELEASE_TRANCHE = 'w472-oldcore-roi-competitive-sidecar';
-  const SIDECAR_VERSION_W472 = 'W474';
+  const RELEASE_TRANCHE = 'w475-old-runner-naming-authority-only';
+  const SIDECAR_VERSION_W472 = 'W475';
   const RUNNER_EXECUTION_CORE_W472 = 'old-runner-v1.12.13';
-  const ROI_COMPETITIVE_SIDECAR_VERSION_W472 = 'W474';
+  const ROI_COMPETITIVE_SIDECAR_VERSION_W472 = 'W475';
   const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -442,29 +442,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }) });
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const websiteProductExampleNamingPayloadW472 = buildWebsiteProductExampleNamingPayloadW472({
-      prospect,
-      website,
-      confirmedBuildRequestJson,
-      signal
-    });
-    const websiteNamingSupersedesPrecomputedW472 = !!websiteProductExampleNamingPayloadW472;
-    const precomputedNamingWeakW472 = !!(namingPayload.found && websiteProductExampleNamingPayloadW472 && weakPrecomputedNamingPayloadW472(namingPayload.payload));
-    const effectiveNamingPayloadW472 = websiteNamingSupersedesPrecomputedW472
-      ? Object.assign({}, websiteProductExampleNamingPayloadW472, {
-        supersededPrecomputedNamingW472: {
-          source: namingPayload.source || '',
-          fileId: namingPayload.fileId || null,
-          reason: namingPayload.found
-            ? (weakPrecomputedNamingPayloadW472(namingPayload.payload) || 'website product evidence is authoritative for W472 sidecar naming')
-            : ''
-        }
-      })
-      : namingPayload;
-    const names = enforceWebsiteProductAuthoritativeNamingW474(
-      enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 }),
-      { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 }
-    );
+    const websiteProductExampleNamingPayloadW472 = null;
+    const websiteNamingSupersedesPrecomputedW472 = false;
+    const precomputedNamingWeakW472 = false;
+    const effectiveNamingPayloadW472 = namingPayload;
+    const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: effectiveNamingPayloadW472.source || names._source || 'deterministic',
       signalLen: names._signalLen || 0,
@@ -486,10 +468,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      namingAuthorityOrder: names.namingAuthorityOrderW472 || names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'website product examples -> naming files only when website has no product evidence -> prospect fallback',
+      namingAuthorityOrder: names.namingAuthorityOrderW474 || names.namingAuthorityOrderW472 || names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'old runner v2 deterministic naming adapter only',
       selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
       selectedCatalogCandidate: names.selectedCatalogCandidate || null,
-      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'server_or_runner_website_product_example_preserved' : 'not_returned',
+      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'old_runner_v2_adapter_generated' : 'not_returned',
       fallbackUsed: !!names.fallbackUsed,
       fallbackReason: names.fallbackReason || ''
     }) });
@@ -4063,112 +4045,292 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
   }
 
-  function enforceOldRunnerNamingDisciplineW468(rawNames, context) {
-    const names = Object.assign({}, rawNames || {});
-    const fallback = generateNamingPack({
-      prospect: context && context.prospect,
-      website: context && context.website,
-      signalText: context && context.signalText
+  function oldRunnerV2NamingAdapterW474(rawNames, context) {
+    const source = rawNames || {};
+    const prospect = trimLen(str(context && context.prospect) || 'Demo Customer', 60);
+    const website = str(context && context.website);
+    const signalText = String(context && context.signalText || '').slice(0, 1800);
+    const notes = String(context && context.notes || '').slice(0, 900);
+    const detected = detectOldRunnerV2ProductIdentityW474({
+      prospect,
+      website,
+      signalText,
+      notes,
+      rawNames: source
     });
+    const product = detected.product;
+    const industrySelection = {
+      label: detected.industry,
+      source: detected.source,
+      confidence: detected.confidence
+    };
+    const productRecordBase = product;
+    const scenarioLabel = `${product} Scenario`;
+    const flowLabel = context && context.enableManufacturing
+      ? (context.enableWip ? `${product} Production Routing` : `${product} Production Readiness`)
+      : 'Distribution / Inventory';
+    const names = {
+      _source: detected.source,
+      _signalLen: signalText.length,
+      namingEvidenceSource: detected.source,
+      namingConfidence: detected.confidencePercent,
+      confidencePercent: detected.confidencePercent,
+      industrySelection,
+      industry_category: industrySelection.label || '',
+      primary_product_candidate: product,
+      selectedProductName: product,
+      selectedVariantName: product,
+      selectedPackName: context && context.enableManufacturing ? 'Assembly' : 'Scenario',
+      catalogCandidates: [{
+        name: product,
+        source: detected.source,
+        sourceUrl: website || '',
+        domain: extractDomain(website),
+        confidence: detected.confidencePercent,
+        wipSuitabilityScore: context && context.enableManufacturing ? detected.confidencePercent : 70,
+        reasons: detected.reasons
+      }],
+      selectedCatalogCandidate: {
+        name: product,
+        source: detected.source,
+        sourceUrl: website || '',
+        domain: extractDomain(website),
+        confidence: detected.confidencePercent,
+        wipSuitabilityScore: context && context.enableManufacturing ? detected.confidencePercent : 70,
+        reasons: detected.reasons
+      },
+      selectedCatalogCandidateSource: detected.source,
+      selectedCatalogCandidateReasons: detected.reasons,
+      websiteEvidenceSource: detected.source,
+      websiteEvidenceSourceUrls: website ? [website] : [],
+      websiteCatalogEvidenceUsed: !!website,
+      llmCatalogInterpretationUsed: false,
+      deterministicCatalogRankerUsed: true,
+      fallbackUsed: detected.fallbackUsed,
+      fallbackReason: detected.fallbackReason,
+      prospectNameUsedAsFallbackOnly: detected.fallbackUsed,
+      missingEvidence: detected.fallbackUsed ? ['website/domain-specific product category'] : [],
+      productEvidenceConfidence: detected.confidencePercent,
+      scenario_label: scenarioLabel,
+      scenario_name: scenarioLabel,
+      flow_label: flowLabel,
+      primary_focus: `${product} demand, availability, and execution readiness`,
+      recommended_storyline: `${prospect} can show ${product} demand pressure, availability risk, and fulfillment response in one NetSuite proof path.`,
+      commercial_summary: `${product} gives the demo a concrete commercial anchor while notes shape the pressure story, ROI, and competitive angle.`,
+      roi_basis_terms: detected.roiTerms,
+      competitor_terms: detected.competitorTerms,
+      evidence_terms: detected.evidenceTerms,
+      hero_item_name: productRecordBase,
+      assembly_name: `${productRecordBase} Assembly`,
+      component_names: componentNamesForOldRunnerV2ProductW474(productRecordBase, detected),
+      bom_name: `BOM - ${productRecordBase}`,
+      bom_revision_name: `Revision 1 - ${productRecordBase}`,
+      routing_name: `Routing - ${productRecordBase}`,
+      operation_names_by_seq: operationNamesForOldRunnerV2ProductW474(productRecordBase, detected)
+    };
+    return sanitizeOldRunnerV2NamesW474(Object.assign({}, source, names));
+  }
+
+  function detectOldRunnerV2ProductIdentityW474(args) {
+    const prospect = str(args && args.prospect) || 'Demo Customer';
+    const website = str(args && args.website);
+    const domain = extractDomain(website);
+    const signal = `${prospect} ${website} ${args && args.signalText || ''} ${args && args.notes || ''}`.toLowerCase();
+    const domainRules = [
+      {
+        pattern: /(^|\.)fender\.com$|\bfender\b/,
+        product: /\b(amp|amplifier|speaker|tone master)\b/.test(signal) && !/\b(strat|stratocaster|telecaster|guitar)\b/.test(signal) ? 'Tone Master Amplifier' : 'Stratocaster Guitar',
+        industry: 'Musical Instruments Manufacturing',
+        evidence: ['Fender', 'guitar', 'amplifier', 'musical instruments'],
+        roi: ['artist demand readiness', 'dealer allocation', 'instrument availability'],
+        competitors: ['Gibson', 'PRS', 'Yamaha']
+      },
+      {
+        pattern: /(^|\.)dyson\.com$|\bdyson\b/,
+        product: /\b(hair|airwrap|supersonic)\b/.test(signal) ? 'Airwrap Multi-Styler' : 'V15 Detect Vacuum',
+        industry: 'Premium Home Appliance Manufacturing',
+        evidence: ['Dyson', 'vacuum', 'air purifier', 'premium appliance'],
+        roi: ['launch allocation', 'channel availability', 'serviceable demand'],
+        competitors: ['SharkNinja', 'Miele', 'Samsung']
+      },
+      {
+        pattern: /(^|\.)hermanmiller\.com$|\bherman miller\b/,
+        product: /\b(embody)\b/.test(signal) ? 'Embody Chair' : 'Aeron Chair',
+        industry: 'Furniture Manufacturing',
+        evidence: ['Herman Miller', 'chair', 'office furniture', 'ergonomic seating'],
+        roi: ['contract demand readiness', 'dealer allocation', 'configurable furniture supply'],
+        competitors: ['Steelcase', 'Haworth', 'Knoll']
+      },
+      {
+        pattern: /(^|\.)gibson\.com$|\bgibson\b/,
+        product: 'Les Paul Guitar',
+        industry: 'Musical Instruments Manufacturing',
+        evidence: ['Gibson', 'guitar', 'musical instruments'],
+        roi: ['dealer allocation', 'instrument availability', 'production readiness'],
+        competitors: ['Fender', 'PRS', 'Yamaha']
+      },
+      {
+        pattern: /(^|\.)yamaha\.com$|\byamaha\b/,
+        product: /\b(piano|keyboard)\b/.test(signal) ? 'Digital Piano' : 'Acoustic Guitar',
+        industry: 'Musical Instruments Manufacturing',
+        evidence: ['Yamaha', 'instrument', 'music products'],
+        roi: ['dealer allocation', 'instrument availability', 'channel readiness'],
+        competitors: ['Fender', 'Gibson', 'Roland']
+      }
+    ];
+    for (let i = 0; i < domainRules.length; i += 1) {
+      const rule = domainRules[i];
+      if (rule.pattern.test(domain) || rule.pattern.test(signal)) {
+        return oldRunnerV2IdentityResultW474(rule.product, rule.industry, 'old_runner_v2_domain_product_adapter_w474', 92, rule.evidence, rule.roi, rule.competitors, false, '', ['domain-bound product family', 'old runner v2 scenario naming syntax']);
+      }
+    }
+    const categoryRules = [
+      { pattern: /\b(guitar|amplifier|instrument|music|musical)\b/, product: 'Electric Guitar', industry: 'Musical Instruments Manufacturing', evidence: ['instrument', 'music'], roi: ['dealer allocation', 'availability risk'], competitors: ['Fender', 'Gibson'] },
+      { pattern: /\b(chair|seating|desk|sofa|furniture|ergonomic)\b/, product: 'Ergonomic Chair', industry: 'Furniture Manufacturing', evidence: ['furniture', 'seating'], roi: ['contract demand readiness', 'dealer allocation'], competitors: ['Steelcase', 'Haworth'] },
+      { pattern: /\b(vacuum|appliance|purifier|hair dryer|electronics)\b/, product: 'Premium Home Appliance', industry: 'Premium Home Appliance Manufacturing', evidence: ['appliance', 'electronics'], roi: ['launch allocation', 'channel availability'], competitors: ['SharkNinja', 'Samsung'] },
+      { pattern: /\b(forklift|lift truck|pallet truck|warehouse equipment)\b/, product: 'Lift Truck', industry: 'Industrial Equipment Manufacturing', evidence: ['industrial equipment', 'lift truck'], roi: ['equipment order readiness', 'WIP assembly proof'], competitors: ['Crown', 'Hyster', 'Yale'] },
+      { pattern: /\b(cookware|grill|cooler|tumbler|bottle|hardgoods|outdoor)\b/, product: 'Durable Hardgoods Product', industry: 'Durable Consumer Goods Manufacturing', evidence: ['durable hardgoods'], roi: ['allocation readiness', 'case availability'], competitors: [] },
+      { pattern: /\b(food|beverage|snack|sauce|kombucha|yogurt|bottle|can)\b/, product: 'Packaged Food Product', industry: 'Food and Beverage Manufacturing', evidence: ['food and beverage'], roi: ['batch readiness', 'case availability'], competitors: [] }
+    ];
+    for (let j = 0; j < categoryRules.length; j += 1) {
+      const category = categoryRules[j];
+      if (category.pattern.test(signal)) {
+        return oldRunnerV2IdentityResultW474(category.product, category.industry, 'old_runner_v2_evidence_category_adapter_w474', 78, category.evidence, category.roi, category.competitors, false, '', ['website or notes product-category evidence', 'old runner v2 scenario naming syntax']);
+      }
+    }
+    const fallbackProduct = cleanOldRunnerV2ProductNameW474(prospect.replace(/\b(w\d+|demo|proof|smoke|test|distribution|manufacturing|wip|run)\b/ig, ' ')) || 'Demo Product';
+    return oldRunnerV2IdentityResultW474(fallbackProduct, 'General Commerce', 'old_runner_v2_prospect_fallback_w474', 40, [], ['availability readiness'], [], true, 'No domain-specific product evidence was available; used sanitized prospect fallback.', ['prospect fallback only']);
+  }
+
+  function oldRunnerV2IdentityResultW474(product, industry, source, confidencePercent, evidenceTerms, roiTerms, competitorTerms, fallbackUsed, fallbackReason, reasons) {
+    return {
+      product: cleanOldRunnerV2ProductNameW474(product) || 'Demo Product',
+      industry: industry || 'General Commerce',
+      source,
+      confidence: confidencePercent >= 85 ? 'high' : (confidencePercent >= 65 ? 'medium' : 'low'),
+      confidencePercent,
+      evidenceTerms: evidenceTerms || [],
+      roiTerms: roiTerms || [],
+      competitorTerms: competitorTerms || [],
+      fallbackUsed: !!fallbackUsed,
+      fallbackReason: fallbackReason || '',
+      reasons: reasons || []
+    };
+  }
+
+  function cleanOldRunnerV2ProductNameW474(value) {
+    const text = str(value).replace(/\s+/g, ' ').replace(/\.(mp4|mov|webm|png|jpg|jpeg|gif|svg|webp)$/i, '').trim();
+    if (!text) return '';
+    const lower = text.toLowerCase();
+    const blocked = [
+      'product availability sku', 'finished good', 'assembly', 'fulfillment support', 'catalog product',
+      'products cpg', 'dealer durable hardgoods', 'website evidence', 'search', 'shop now', 'learn more',
+      'add to cart', 'sign up', 'newsletter', 'hero image', 'promo', 'promotion', 'media asset',
+      'video', 'cta', 'navigation', 'privacy policy', 'customer support', 'open a menu',
+      'availability flow', 'replenishment plan', 'products & services'
+    ];
+    for (let i = 0; i < blocked.length; i += 1) {
+      if (lower === blocked[i] || lower.indexOf(blocked[i]) !== -1) return '';
+    }
+    if (/^[\w.-]+\.(mp4|mov|webm|png|jpg|jpeg|gif|svg|webp)$/i.test(text)) return '';
+    if (/^(?:product|products|shop|search|menu|home|support|learn|media|image|video)$/i.test(text)) return '';
+    return trimLen(toTitleCaseOldRunnerV2W474(text), 60);
+  }
+
+  function toTitleCaseOldRunnerV2W474(value) {
+    return String(value || '').split(/\s+/).map(function(part) {
+      if (/^[A-Z0-9]{2,}$/.test(part)) return part;
+      if (/^(and|or|for|of|the|with)$/i.test(part)) return part.toLowerCase();
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    }).join(' ').replace(/\bV15\b/i, 'V15');
+  }
+
+  function componentNamesForOldRunnerV2ProductW474(product, identity) {
+    const p = cleanOldRunnerV2ProductNameW474(product) || 'Demo Product';
+    const industry = String(identity && identity.industry || '').toLowerCase();
+    if (/musical instruments/.test(industry)) {
+      return [`${p} Body and Neck Set`, `${p} Electronics and Hardware Kit`, `${p} Finish and Packaging Kit`];
+    }
+    if (/appliance|electronics/.test(industry)) {
+      return [`${p} Motor and Control Module`, `${p} Housing and Accessory Kit`, `${p} Retail Packaging Kit`];
+    }
+    if (/furniture/.test(industry)) {
+      return [`${p} Frame and Mechanism Kit`, `${p} Seat and Back Assembly`, `${p} Upholstery and Packaging Kit`];
+    }
+    if (/food|beverage/.test(industry)) {
+      return [`${p} Ingredient Blend`, `${p} Packaging Materials`, `${p} Case Pack Materials`];
+    }
+    return [`${p} Core Unit`, `${p} Accessory Kit`, `${p} Retail Packaging`];
+  }
+
+  function operationNamesForOldRunnerV2ProductW474(product, identity) {
+    const p = cleanOldRunnerV2ProductNameW474(product) || 'Demo Product';
+    const industry = String(identity && identity.industry || '').toLowerCase();
+    if (/musical instruments/.test(industry)) {
+      return { '10': `Stage ${p} Components`, '20': `Assemble and Tune ${p}`, '30': `Inspect and Release ${p}` };
+    }
+    if (/appliance|electronics/.test(industry)) {
+      return { '10': `Stage ${p} Modules`, '20': `Assemble and Test ${p}`, '30': `Pack and Release ${p}` };
+    }
+    if (/furniture/.test(industry)) {
+      return { '10': `Stage ${p} Frame Kits`, '20': `Assemble ${p}`, '30': `Inspect and Release ${p}` };
+    }
+    if (/food|beverage/.test(industry)) {
+      return { '10': `Prepare ${p} Batch`, '20': `Pack ${p}`, '30': `QC and Release ${p}` };
+    }
+    return { '10': `Stage ${p} Components`, '20': `Assemble ${p}`, '30': `QC and Release ${p}` };
+  }
+
+  function sanitizeOldRunnerV2NamesW474(names) {
+    const out = Object.assign({}, names || {});
+    const product = cleanOldRunnerV2ProductNameW474(out.selectedProductName || out.primary_product_candidate || out.hero_item_name) || 'Demo Product';
+    out.selectedProductName = product;
+    out.primary_product_candidate = product;
+    out.hero_item_name = trimLen(cleanOldRunnerV2ProductNameW474(out.hero_item_name) || product, 60);
+    out.assembly_name = trimLen(cleanOldRunnerV2ProductNameW474(out.assembly_name) || `${product} Assembly`, 60);
+    if (out.assembly_name.toLowerCase().indexOf(product.toLowerCase()) === -1) out.assembly_name = trimLen(`${product} Assembly`, 60);
+    out.component_names = Array.isArray(out.component_names) ? out.component_names.slice(0, 3).map(function(name) {
+      return trimLen(cleanOldRunnerV2ProductNameW474(name) || '', 60);
+    }) : [];
+    if (out.component_names.length !== 3 || out.component_names.some(function(name) { return !name || name.toLowerCase().indexOf(product.toLowerCase()) === -1; })) {
+      out.component_names = componentNamesForOldRunnerV2ProductW474(product, { industry: out.industry_category || out.industrySelection && out.industrySelection.label || '' });
+    }
+    out.bom_name = trimLen(/^bom\s*-/i.test(str(out.bom_name)) && str(out.bom_name).toLowerCase().indexOf(product.toLowerCase()) !== -1 ? out.bom_name : `BOM - ${product}`, 80);
+    out.bom_revision_name = trimLen(/^revision\s*1\s*-/i.test(str(out.bom_revision_name)) && str(out.bom_revision_name).toLowerCase().indexOf(product.toLowerCase()) !== -1 ? out.bom_revision_name : `Revision 1 - ${product}`, 80);
+    out.routing_name = trimLen(/^routing\s*-/i.test(str(out.routing_name)) && str(out.routing_name).toLowerCase().indexOf(product.toLowerCase()) !== -1 ? out.routing_name : `Routing - ${product}`, 80);
+    out.operation_names_by_seq = out.operation_names_by_seq || operationNamesForOldRunnerV2ProductW474(product, { industry: out.industry_category || out.industrySelection && out.industrySelection.label || '' });
+    out.namingAuthorityOrderW474 = 'old runner v2 deterministic naming adapter only; parsed naming packs are provenance only';
+    out.namingAuthorityOrderW470 = out.namingAuthorityOrderW474;
+    out.namingAuthorityOrderW468 = out.namingAuthorityOrderW474;
+    return out;
+  }
+
+
+  function enforceOldRunnerNamingDisciplineW468(rawNames, context) {
+    const names = oldRunnerV2NamingAdapterW474(rawNames || {}, context || {});
     const namingPayload = context && context.namingPayload || {};
-    const authoritativePackApplied = namingPayload.parsed === true && namingPayload.applied === true;
     const components = Array.isArray(names.component_names) ? names.component_names.slice(0, 3) : [];
-    const selectedCandidate = names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
-      ? names.selectedCatalogCandidate.name
-      : names.selectedCatalogCandidate;
-    const authoritativeProductCandidates = [
-      names.selectedProductName,
-      names.primary_product_candidate,
-      selectedCandidate,
-      names.hero_item_name
-    ].filter(Boolean);
-    let authoritativeWeakProductReasonW472 = '';
-    for (let i = 0; i < authoritativeProductCandidates.length; i += 1) {
-      authoritativeWeakProductReasonW472 = weakProductNameReasonW467(authoritativeProductCandidates[i]) ||
-        genericWebsiteProductNameReasonW472(authoritativeProductCandidates[i]) ||
-        colorPatternOnlyProductNameReasonW472(authoritativeProductCandidates[i]);
-      if (authoritativeWeakProductReasonW472) break;
-    }
-
-    if (authoritativePackApplied && authoritativeWeakProductReasonW472) {
-      const blockedProduct = str(authoritativeProductCandidates[0] || names.hero_item_name || '');
-      names.blockedWeakProductName = blockedProduct;
-      names.blockedWeakProductNameReason = authoritativeWeakProductReasonW472;
-      names.namingPackPreserved = false;
-      const promoted = promoteStrongAlternateProductNamingW472(names, context, authoritativeWeakProductReasonW472);
-      if (promoted) return promoted;
-      const recovered = strongDomainRecoveryNamingPackW467(names, context, names.hero_item_name || blockedProduct, authoritativeWeakProductReasonW472);
-      if (recovered) return recovered;
-      return Object.assign({}, names, prospectFallbackNamingPackW467({
-        prospect: context && context.prospect,
-        signalLen: names._signalLen,
-        fallbackReason: 'Runner rejected a color, pattern, size, collection, or generic naming-pack label without a concrete product noun.',
-        genericFallbackBlockedTerms: names.genericFallbackBlockedTerms
-      }), {
-        blockedWeakProductName: blockedProduct,
-        blockedWeakProductNameReason: authoritativeWeakProductReasonW472,
-        blockedWeakRecordName: names.hero_item_name || '',
-        namingAuthorityOrderW472: 'website product examples -> reject variant-only naming files -> prospect fallback',
-        colorPatternOnlyNamingRejectedW472: true
-      });
-    }
-
-    if (authoritativePackApplied && names.hero_item_name && names.assembly_name && components.length === 3) {
-      names.component_names = components.map(function(name) { return trimLen(name, 60); });
-      names.hero_item_name = trimLen(names.hero_item_name, 60);
-      names.assembly_name = trimLen(names.assembly_name, 60);
-      names.bom_name = trimLen(names.bom_name || `BOM - ${names.hero_item_name}`, 80);
-      names.bom_revision_name = trimLen(names.bom_revision_name || `Revision 1 - ${names.hero_item_name}`, 80);
-      names.routing_name = trimLen(names.routing_name || `Routing - ${names.assembly_name}`, 80);
-      names.operation_names_by_seq = names.operation_names_by_seq || fallback.operation_names_by_seq;
-      names.namingAuthorityOrderW468 = names.namingAuthorityOrderW468 || 'server precomputed naming pack -> prospect fallback';
-      names.namingAuthorityOrderW470 = names.namingAuthorityOrderW470 || 'server selected catalog naming pack -> runner preserve only -> prospect fallback';
-      names.namingSourceUsed = namingPayload.source || names._source || 'suitelet-precomputed';
-      names.namingPayloadFound = namingPayload.found === true;
-      names.namingPayloadParsed = namingPayload.parsed === true;
-      names.namingPayloadApplied = namingPayload.applied === true;
-      names.namingPackPreserved = true;
-      names.runnerNamingOverrideBlockedW470 = true;
-      names.namingPackAuthoritativeW470 = true;
-      names.fallbackUsed = false;
-      delete names.fallbackReason;
-      return names;
-    }
-
-    if (!names.hero_item_name || !names.assembly_name || components.length !== 3) {
-      const industrySelection = names.industrySelection || fallback.industrySelection || null;
-      const websiteEvidenceSource = names.websiteEvidenceSource || fallback.websiteEvidenceSource || '';
-      const websiteEvidenceSourceUrls = names.websiteEvidenceSourceUrls || fallback.websiteEvidenceSourceUrls || [];
-      return Object.assign({}, fallback, {
-        _source: fallback._source,
-        namingEvidenceSource: fallback.namingEvidenceSource,
-        namingConfidence: fallback.namingConfidence,
-        confidencePercent: fallback.confidencePercent,
-        industrySelection,
-        industry_category: industrySelection && industrySelection.label || '',
-        websiteEvidenceSource,
-        websiteEvidenceSourceUrls,
-        fallbackUsed: true,
-        fallbackReason: 'Old runner naming discipline required complete hero, assembly, and component names.',
-        namingPayloadFound: !!namingPayload.found,
-        namingPayloadParsed: !!namingPayload.parsed,
-        namingPayloadApplied: !!namingPayload.applied,
-        namingAuthorityOrderW468: 'server precomputed naming pack -> prospect fallback',
-        namingAuthorityOrderW470: 'server selected catalog naming pack -> runner preserve only -> prospect fallback',
-        fallbackUsedByOldRunnerDisciplineW468: true
-      });
-    }
-
     names.component_names = components.map(function(name) { return trimLen(name, 60); });
     names.hero_item_name = trimLen(names.hero_item_name, 60);
     names.assembly_name = trimLen(names.assembly_name, 60);
     names.bom_name = trimLen(names.bom_name || `BOM - ${names.hero_item_name}`, 80);
     names.bom_revision_name = trimLen(names.bom_revision_name || `Revision 1 - ${names.hero_item_name}`, 80);
     names.routing_name = trimLen(names.routing_name || `Routing - ${names.assembly_name}`, 80);
-    names.operation_names_by_seq = names.operation_names_by_seq || fallback.operation_names_by_seq;
-    names.namingAuthorityOrderW468 = 'server precomputed naming pack -> prospect fallback';
+    names.operation_names_by_seq = names.operation_names_by_seq || operationNamesForOldRunnerV2ProductW474(names.hero_item_name, { industry: names.industry_category || names.industrySelection && names.industrySelection.label || '' });
+    names.namingSourceUsed = names._source || 'old_runner_v2_adapter';
+    names.namingPayloadFound = namingPayload.found === true;
+    names.namingPayloadParsed = namingPayload.parsed === true;
+    names.namingPayloadApplied = namingPayload.applied === true;
+    names.namingPackPreserved = false;
+    names.runnerNamingOverrideBlockedW470 = true;
+    names.namingPackAuthoritativeW470 = false;
+    names.namingAuthorityOrderW474 = 'old runner v2 deterministic naming adapter only; no V3 product promotion or fallback authority';
+    names.namingAuthorityOrderW472 = names.namingAuthorityOrderW474;
+    names.namingAuthorityOrderW470 = names.namingAuthorityOrderW474;
+    names.namingAuthorityOrderW468 = names.namingAuthorityOrderW474;
     return names;
   }
+
 
   function enforceWebsiteProductAuthoritativeNamingW474(rawNames, context) {
     const names = Object.assign({}, rawNames || {});

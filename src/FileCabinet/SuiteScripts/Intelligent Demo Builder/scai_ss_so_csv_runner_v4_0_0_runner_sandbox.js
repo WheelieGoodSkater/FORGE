@@ -490,8 +490,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const signal = websiteSignalResult.signal || { domain: extractDomain(website), text: `Domain: ${extractDomain(website) || ''}. Infer industry from the company name and notes.` };
     log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
 
-    const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const names = enforceOldRunnerNamingDisciplineW468(namingPayload.payload, { prospect, website, signalText: signal.text, namingPayload });
+    const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text, notes });
+    const names = enforceOldRunnerNamingDisciplineW468(namingPayload.payload, { prospect, website, signalText: signal.text, notes, namingPayload, enableManufacturing: finalEnableManufacturing, enableWip: effectiveEnableWip });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: namingPayload.source || names._source || 'deterministic',
       signalLen: names._signalLen || 0,
@@ -3238,8 +3238,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // Precomputed naming payload + deterministic fallback
   // ----------------------------
-  function loadPrecomputedNamingPack({ fileId, extId, prospect, website, signalText }) {
-    const deterministic = generateNamingPack({ prospect, website, signalText });
+  function loadPrecomputedNamingPack({ fileId, extId, prospect, website, signalText, notes }) {
+    const deterministic = generateNamingPack({ prospect, website, signalText, notes });
     let candidateFileId = toIntOrNull(fileId);
     let discoveryMode = candidateFileId ? 'direct-param' : 'discover-by-extid';
 
@@ -3263,19 +3263,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       const f = file.load({ id: Number(candidateFileId) });
       const raw = String(f.getContents() || '{}');
       const parsed = safeJsonParse(raw) || {};
-      const out = Object.assign({}, deterministic, parsed || {});
-      if (!Array.isArray(out.component_names) || out.component_names.length !== 3) out.component_names = deterministic.component_names;
-      out.hero_item_name = trimLen(out.hero_item_name, 60);
-      out.assembly_name = trimLen(out.assembly_name, 60);
-      out.component_names = out.component_names.map(n => trimLen(n, 60));
-      out.bom_name = trimLen(out.bom_name, 80);
-      out.bom_revision_name = trimLen(out.bom_revision_name, 80);
-      out.routing_name = trimLen(out.routing_name || deterministic.routing_name, 80);
-      out.operation_names_by_seq = out.operation_names_by_seq || deterministic.operation_names_by_seq;
+      const out = oldRunnerV2NamingAdapterW474(Object.assign({}, deterministic, parsed || {}), {
+        prospect,
+        website,
+        signalText,
+        notes
+      });
       out._source = out._source || 'suitelet-precomputed';
       out._signalLen = out._signalLen || String(signalText || '').length;
-      out.industrySelection = out.industrySelection || deterministic.industrySelection;
-      out.industry_category = out.industry_category || out.industrySelection && out.industrySelection.label || '';
       return {
         found: true,
         parsed: true,
@@ -3329,38 +3324,278 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
   }
 
-  function generateNamingPack({ prospect, website, signalText }) {
+  function generateNamingPack({ prospect, website, signalText, notes }) {
     const clippedSignal = String(signalText || '').slice(0, 1200);
-    const cleanProspect = trimLen(str(prospect) || 'Demo Customer', 60);
-    const industrySelection = industrySelectionW468({ prospect: cleanProspect, website, signalText: clippedSignal });
-    return {
-      _source: 'deterministic-prospect-fallback',
-      _signalLen: clippedSignal.length,
-      namingEvidenceSource: 'prospect_fallback',
-      namingConfidence: 35,
-      confidencePercent: 35,
+    return oldRunnerV2NamingAdapterW474(null, { prospect, website, signalText: clippedSignal, notes });
+  }
+
+  function oldRunnerV2NamingAdapterW474(rawNames, context) {
+    const source = rawNames || {};
+    const prospect = trimLen(str(context && context.prospect) || 'Demo Customer', 60);
+    const website = str(context && context.website);
+    const signalText = String(context && context.signalText || '').slice(0, 1800);
+    const notes = String(context && context.notes || '').slice(0, 900);
+    const detected = detectOldRunnerV2ProductIdentityW474({
+      prospect,
+      website,
+      signalText,
+      notes,
+      rawNames: source
+    });
+    const product = detected.product;
+    const industrySelection = {
+      label: detected.industry,
+      source: detected.source,
+      confidence: detected.confidence
+    };
+    const productRecordBase = product;
+    const scenarioLabel = `${product} Scenario`;
+    const flowLabel = context && context.enableManufacturing
+      ? (context.enableWip ? `${product} Production Routing` : `${product} Production Readiness`)
+      : 'Distribution / Inventory';
+    const names = {
+      _source: detected.source,
+      _signalLen: signalText.length,
+      namingEvidenceSource: detected.source,
+      namingConfidence: detected.confidencePercent,
+      confidencePercent: detected.confidencePercent,
       industrySelection,
       industry_category: industrySelection.label || '',
-      hero_item_name: `${cleanProspect} Finished Good`,
-      assembly_name: `${cleanProspect} Assembly`,
-      component_names: [
-        `${cleanProspect} Component A`,
-        `${cleanProspect} Component B`,
-        `${cleanProspect} Component C`
-      ],
-      bom_name: `BOM - ${cleanProspect}`,
-      bom_revision_name: `Revision 1 - ${cleanProspect}`,
-      routing_name: `Routing - ${cleanProspect} Assembly`,
-      operation_names_by_seq: {
-        '10': `Prepare ${cleanProspect} Component A`,
-        '20': `Build ${cleanProspect} Assembly`,
-        '30': `QC and Release ${cleanProspect} Finished Good`
+      primary_product_candidate: product,
+      selectedProductName: product,
+      selectedVariantName: product,
+      selectedPackName: context && context.enableManufacturing ? 'Assembly' : 'Scenario',
+      catalogCandidates: [{
+        name: product,
+        source: detected.source,
+        sourceUrl: website || '',
+        domain: extractDomain(website),
+        confidence: detected.confidencePercent,
+        wipSuitabilityScore: context && context.enableManufacturing ? detected.confidencePercent : 70,
+        reasons: detected.reasons
+      }],
+      selectedCatalogCandidate: {
+        name: product,
+        source: detected.source,
+        sourceUrl: website || '',
+        domain: extractDomain(website),
+        confidence: detected.confidencePercent,
+        wipSuitabilityScore: context && context.enableManufacturing ? detected.confidencePercent : 70,
+        reasons: detected.reasons
+      },
+      selectedCatalogCandidateSource: detected.source,
+      selectedCatalogCandidateReasons: detected.reasons,
+      websiteEvidenceSource: detected.source,
+      websiteEvidenceSourceUrls: website ? [website] : [],
+      websiteCatalogEvidenceUsed: !!website,
+      llmCatalogInterpretationUsed: false,
+      deterministicCatalogRankerUsed: true,
+      fallbackUsed: detected.fallbackUsed,
+      fallbackReason: detected.fallbackReason,
+      prospectNameUsedAsFallbackOnly: detected.fallbackUsed,
+      missingEvidence: detected.fallbackUsed ? ['website/domain-specific product category'] : [],
+      productEvidenceConfidence: detected.confidencePercent,
+      scenario_label: scenarioLabel,
+      scenario_name: scenarioLabel,
+      flow_label: flowLabel,
+      primary_focus: `${product} demand, availability, and execution readiness`,
+      recommended_storyline: `${prospect} can show ${product} demand pressure, availability risk, and fulfillment response in one NetSuite proof path.`,
+      commercial_summary: `${product} gives the demo a concrete commercial anchor while notes shape the pressure story, ROI, and competitive angle.`,
+      roi_basis_terms: detected.roiTerms,
+      competitor_terms: detected.competitorTerms,
+      evidence_terms: detected.evidenceTerms,
+      hero_item_name: productRecordBase,
+      assembly_name: `${productRecordBase} Assembly`,
+      component_names: componentNamesForOldRunnerV2ProductW474(productRecordBase, detected),
+      bom_name: `BOM - ${productRecordBase}`,
+      bom_revision_name: `Revision 1 - ${productRecordBase}`,
+      routing_name: `Routing - ${productRecordBase}`,
+      operation_names_by_seq: operationNamesForOldRunnerV2ProductW474(productRecordBase, detected)
+    };
+    return sanitizeOldRunnerV2NamesW474(Object.assign({}, source, names));
+  }
+
+  function detectOldRunnerV2ProductIdentityW474(args) {
+    const prospect = str(args && args.prospect) || 'Demo Customer';
+    const website = str(args && args.website);
+    const domain = extractDomain(website);
+    const signal = `${prospect} ${website} ${args && args.signalText || ''} ${args && args.notes || ''}`.toLowerCase();
+    const raw = args && args.rawNames || {};
+    const selected = str(raw.selectedProductName || raw.primary_product_candidate || (raw.selectedCatalogCandidate && raw.selectedCatalogCandidate.name) || '');
+    const selectedClean = cleanOldRunnerV2ProductNameW474(selected);
+    const domainRules = [
+      {
+        pattern: /(^|\.)fender\.com$|\bfender\b/,
+        product: /\b(amp|amplifier|speaker|tone master)\b/.test(signal) && !/\b(strat|stratocaster|telecaster|guitar)\b/.test(signal) ? 'Tone Master Amplifier' : 'Stratocaster Guitar',
+        industry: 'Musical Instruments Manufacturing',
+        evidence: ['Fender', 'guitar', 'amplifier', 'musical instruments'],
+        roi: ['artist demand readiness', 'dealer allocation', 'instrument availability'],
+        competitors: ['Gibson', 'PRS', 'Yamaha']
+      },
+      {
+        pattern: /(^|\.)dyson\.com$|\bdyson\b/,
+        product: /\b(hair|airwrap|supersonic)\b/.test(signal) ? 'Airwrap Multi-Styler' : 'V15 Detect Vacuum',
+        industry: 'Premium Home Appliance Manufacturing',
+        evidence: ['Dyson', 'vacuum', 'air purifier', 'premium appliance'],
+        roi: ['launch allocation', 'channel availability', 'serviceable demand'],
+        competitors: ['SharkNinja', 'Miele', 'Samsung']
+      },
+      {
+        pattern: /(^|\.)hermanmiller\.com$|\bherman miller\b/,
+        product: /\b(embody)\b/.test(signal) ? 'Embody Chair' : 'Aeron Chair',
+        industry: 'Furniture Manufacturing',
+        evidence: ['Herman Miller', 'chair', 'office furniture', 'ergonomic seating'],
+        roi: ['contract demand readiness', 'dealer allocation', 'configurable furniture supply'],
+        competitors: ['Steelcase', 'Haworth', 'Knoll']
+      },
+      {
+        pattern: /(^|\.)gibson\.com$|\bgibson\b/,
+        product: 'Les Paul Guitar',
+        industry: 'Musical Instruments Manufacturing',
+        evidence: ['Gibson', 'guitar', 'musical instruments'],
+        roi: ['dealer allocation', 'instrument availability', 'production readiness'],
+        competitors: ['Fender', 'PRS', 'Yamaha']
+      },
+      {
+        pattern: /(^|\.)yamaha\.com$|\byamaha\b/,
+        product: /\b(piano|keyboard)\b/.test(signal) ? 'Digital Piano' : 'Acoustic Guitar',
+        industry: 'Musical Instruments Manufacturing',
+        evidence: ['Yamaha', 'instrument', 'music products'],
+        roi: ['dealer allocation', 'instrument availability', 'channel readiness'],
+        competitors: ['Fender', 'Gibson', 'Roland']
       }
+    ];
+    for (let i = 0; i < domainRules.length; i += 1) {
+      const rule = domainRules[i];
+      if (rule.pattern.test(domain) || rule.pattern.test(signal)) {
+        return oldRunnerV2IdentityResultW474(rule.product, rule.industry, 'old_runner_v2_domain_product_adapter_w474', 92, rule.evidence, rule.roi, rule.competitors, false, '', ['domain-bound product family', 'old runner v2 scenario naming syntax']);
+      }
+    }
+    const categoryRules = [
+      { pattern: /\b(guitar|amplifier|instrument|music|musical)\b/, product: 'Electric Guitar', industry: 'Musical Instruments Manufacturing', evidence: ['instrument', 'music'], roi: ['dealer allocation', 'availability risk'], competitors: ['Fender', 'Gibson'] },
+      { pattern: /\b(chair|seating|desk|sofa|furniture|ergonomic)\b/, product: 'Ergonomic Chair', industry: 'Furniture Manufacturing', evidence: ['furniture', 'seating'], roi: ['contract demand readiness', 'dealer allocation'], competitors: ['Steelcase', 'Haworth'] },
+      { pattern: /\b(vacuum|appliance|purifier|hair dryer|electronics)\b/, product: 'Premium Home Appliance', industry: 'Premium Home Appliance Manufacturing', evidence: ['appliance', 'electronics'], roi: ['launch allocation', 'channel availability'], competitors: ['SharkNinja', 'Samsung'] },
+      { pattern: /\b(forklift|lift truck|pallet truck|warehouse equipment)\b/, product: 'Lift Truck', industry: 'Industrial Equipment Manufacturing', evidence: ['industrial equipment', 'lift truck'], roi: ['equipment order readiness', 'WIP assembly proof'], competitors: ['Crown', 'Hyster', 'Yale'] },
+      { pattern: /\b(cookware|grill|cooler|tumbler|bottle|hardgoods|outdoor)\b/, product: 'Durable Hardgoods Product', industry: 'Durable Consumer Goods Manufacturing', evidence: ['durable hardgoods'], roi: ['allocation readiness', 'case availability'], competitors: [] },
+      { pattern: /\b(food|beverage|snack|sauce|kombucha|yogurt|bottle|can)\b/, product: 'Packaged Food Product', industry: 'Food and Beverage Manufacturing', evidence: ['food and beverage'], roi: ['batch readiness', 'case availability'], competitors: [] }
+    ];
+    for (let j = 0; j < categoryRules.length; j += 1) {
+      const category = categoryRules[j];
+      if (category.pattern.test(signal)) {
+        return oldRunnerV2IdentityResultW474(category.product, category.industry, 'old_runner_v2_evidence_category_adapter_w474', 78, category.evidence, category.roi, category.competitors, false, '', ['website or notes product-category evidence', 'old runner v2 scenario naming syntax']);
+      }
+    }
+    if (selectedClean) {
+      return oldRunnerV2IdentityResultW474(selectedClean, industrySelectionW468({ prospect, website, signalText: signal }).label || 'General Commerce', 'old_runner_v2_preserved_clean_pack_w474', 70, [selectedClean], ['availability readiness'], [], false, '', ['clean precomputed product noun preserved']);
+    }
+    const fallbackProduct = cleanOldRunnerV2ProductNameW474(prospect.replace(/\b(w\d+|demo|proof|smoke|test|distribution|manufacturing|wip|run)\b/ig, ' ')) || 'Demo Product';
+    return oldRunnerV2IdentityResultW474(fallbackProduct, 'General Commerce', 'old_runner_v2_prospect_fallback_w474', 40, [], ['availability readiness'], [], true, 'No domain-specific product evidence was available; used sanitized prospect fallback.', ['prospect fallback only']);
+  }
+
+  function oldRunnerV2IdentityResultW474(product, industry, source, confidencePercent, evidenceTerms, roiTerms, competitorTerms, fallbackUsed, fallbackReason, reasons) {
+    return {
+      product: cleanOldRunnerV2ProductNameW474(product) || 'Demo Product',
+      industry: industry || 'General Commerce',
+      source,
+      confidence: confidencePercent >= 85 ? 'high' : (confidencePercent >= 65 ? 'medium' : 'low'),
+      confidencePercent,
+      evidenceTerms: evidenceTerms || [],
+      roiTerms: roiTerms || [],
+      competitorTerms: competitorTerms || [],
+      fallbackUsed: !!fallbackUsed,
+      fallbackReason: fallbackReason || '',
+      reasons: reasons || []
     };
   }
 
+  function cleanOldRunnerV2ProductNameW474(value) {
+    const text = str(value).replace(/\s+/g, ' ').replace(/\.(mp4|mov|webm|png|jpg|jpeg|gif|svg|webp)$/i, '').trim();
+    if (!text) return '';
+    const lower = text.toLowerCase();
+    const blocked = [
+      'product availability sku', 'finished good', 'assembly', 'fulfillment support', 'catalog product',
+      'products cpg', 'dealer durable hardgoods', 'website evidence', 'search', 'shop now', 'learn more',
+      'add to cart', 'sign up', 'newsletter', 'hero image', 'promo', 'promotion', 'media asset',
+      'video', 'cta', 'navigation', 'privacy policy', 'customer support'
+    ];
+    for (let i = 0; i < blocked.length; i += 1) {
+      if (lower === blocked[i] || lower.indexOf(blocked[i]) !== -1) return '';
+    }
+    if (/^[\w.-]+\.(mp4|mov|webm|png|jpg|jpeg|gif|svg|webp)$/i.test(text)) return '';
+    if (/^(?:product|products|shop|search|menu|home|support|learn|media|image|video)$/i.test(text)) return '';
+    return trimLen(toTitleCaseOldRunnerV2W474(text), 60);
+  }
+
+  function toTitleCaseOldRunnerV2W474(value) {
+    return String(value || '').split(/\s+/).map(function(part) {
+      if (/^[A-Z0-9]{2,}$/.test(part)) return part;
+      if (/^(and|or|for|of|the|with)$/i.test(part)) return part.toLowerCase();
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    }).join(' ').replace(/\bV15\b/i, 'V15');
+  }
+
+  function componentNamesForOldRunnerV2ProductW474(product, identity) {
+    const p = cleanOldRunnerV2ProductNameW474(product) || 'Demo Product';
+    const industry = String(identity && identity.industry || '').toLowerCase();
+    if (/musical instruments/.test(industry)) {
+      return [`${p} Body and Neck Set`, `${p} Electronics and Hardware Kit`, `${p} Finish and Packaging Kit`];
+    }
+    if (/appliance|electronics/.test(industry)) {
+      return [`${p} Motor and Control Module`, `${p} Housing and Accessory Kit`, `${p} Retail Packaging Kit`];
+    }
+    if (/furniture/.test(industry)) {
+      return [`${p} Frame and Mechanism Kit`, `${p} Seat and Back Assembly`, `${p} Upholstery and Packaging Kit`];
+    }
+    if (/food|beverage/.test(industry)) {
+      return [`${p} Ingredient Blend`, `${p} Packaging Materials`, `${p} Case Pack Materials`];
+    }
+    return [`${p} Core Unit`, `${p} Accessory Kit`, `${p} Retail Packaging`];
+  }
+
+  function operationNamesForOldRunnerV2ProductW474(product, identity) {
+    const p = cleanOldRunnerV2ProductNameW474(product) || 'Demo Product';
+    const industry = String(identity && identity.industry || '').toLowerCase();
+    if (/musical instruments/.test(industry)) {
+      return { '10': `Stage ${p} Components`, '20': `Assemble and Tune ${p}`, '30': `Inspect and Release ${p}` };
+    }
+    if (/appliance|electronics/.test(industry)) {
+      return { '10': `Stage ${p} Modules`, '20': `Assemble and Test ${p}`, '30': `Pack and Release ${p}` };
+    }
+    if (/furniture/.test(industry)) {
+      return { '10': `Stage ${p} Frame Kits`, '20': `Assemble ${p}`, '30': `Inspect and Release ${p}` };
+    }
+    if (/food|beverage/.test(industry)) {
+      return { '10': `Prepare ${p} Batch`, '20': `Pack ${p}`, '30': `QC and Release ${p}` };
+    }
+    return { '10': `Stage ${p} Components`, '20': `Assemble ${p}`, '30': `QC and Release ${p}` };
+  }
+
+  function sanitizeOldRunnerV2NamesW474(names) {
+    const out = Object.assign({}, names || {});
+    const product = cleanOldRunnerV2ProductNameW474(out.selectedProductName || out.primary_product_candidate || out.hero_item_name) || 'Demo Product';
+    out.selectedProductName = product;
+    out.primary_product_candidate = product;
+    out.hero_item_name = trimLen(cleanOldRunnerV2ProductNameW474(out.hero_item_name) || product, 60);
+    out.assembly_name = trimLen(cleanOldRunnerV2ProductNameW474(out.assembly_name) || `${product} Assembly`, 60);
+    if (out.assembly_name.toLowerCase().indexOf(product.toLowerCase()) === -1) out.assembly_name = trimLen(`${product} Assembly`, 60);
+    out.component_names = Array.isArray(out.component_names) ? out.component_names.slice(0, 3).map(function(name) {
+      return trimLen(cleanOldRunnerV2ProductNameW474(name) || '', 60);
+    }) : [];
+    if (out.component_names.length !== 3 || out.component_names.some(function(name) { return !name || name.toLowerCase().indexOf(product.toLowerCase()) === -1; })) {
+      out.component_names = componentNamesForOldRunnerV2ProductW474(product, { industry: out.industry_category || out.industrySelection && out.industrySelection.label || '' });
+    }
+    out.bom_name = trimLen(/^bom\s*-/i.test(str(out.bom_name)) && str(out.bom_name).toLowerCase().indexOf(product.toLowerCase()) !== -1 ? out.bom_name : `BOM - ${product}`, 80);
+    out.bom_revision_name = trimLen(/^revision\s*1\s*-/i.test(str(out.bom_revision_name)) && str(out.bom_revision_name).toLowerCase().indexOf(product.toLowerCase()) !== -1 ? out.bom_revision_name : `Revision 1 - ${product}`, 80);
+    out.routing_name = trimLen(/^routing\s*-/i.test(str(out.routing_name)) && str(out.routing_name).toLowerCase().indexOf(product.toLowerCase()) !== -1 ? out.routing_name : `Routing - ${product}`, 80);
+    out.operation_names_by_seq = out.operation_names_by_seq || operationNamesForOldRunnerV2ProductW474(product, { industry: out.industry_category || out.industrySelection && out.industrySelection.label || '' });
+    out.namingAuthorityOrderW474 = 'old runner v2 deterministic naming adapter -> clean precomputed pack metadata only';
+    out.namingAuthorityOrderW470 = out.namingAuthorityOrderW474;
+    out.namingAuthorityOrderW468 = out.namingAuthorityOrderW474;
+    return out;
+  }
+
   function enforceOldRunnerNamingDisciplineW468(rawNames, context) {
-    const names = Object.assign({}, rawNames || {});
+    const names = oldRunnerV2NamingAdapterW474(rawNames || {}, context || {});
     const fallback = generateNamingPack({
       prospect: context && context.prospect,
       website: context && context.website,
@@ -5729,6 +5964,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     __W432_TEST_HOOKS__: {
       productBuildPlanW432,
       industryNativeManufacturingNamingW442
+    },
+    __W474_TEST_HOOKS__: {
+      generateNamingPack,
+      oldRunnerV2NamingAdapterW474,
+      cleanOldRunnerV2ProductNameW474
     }
   };
 });

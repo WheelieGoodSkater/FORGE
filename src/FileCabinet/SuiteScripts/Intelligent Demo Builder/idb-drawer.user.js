@@ -1625,7 +1625,7 @@
     {
       categoryId: 'apparel_footwear_accessories',
       laneId: 'apparel_accessories',
-      patterns: /apparel|accessor|fashion|footwear|shoe|sneaker|boot|boots|workwear|western wear|outdoor gear|shirt|hoodie|jacket|pants|hat|style|size|color|collection|outfit|wear|retail partner|ecommerce/i,
+      patterns: /apparel|fashion|footwear|shoe|sneaker|boot|boots|workwear|western wear|shirt|hoodie|jacket|pants|hat|style|size|color|collection|outfit|wear|retail partner|ecommerce/i,
       evidence: 'website/category tokens show apparel, footwear, accessories, style, size, or color signals',
       product: 'Core Style Color-Size Matrix',
       productFamily: 'Apparel and Footwear Style',
@@ -1939,6 +1939,50 @@
       updatedAt: nowIso(),
       expiresAt: Date.now() + ACTIVE_SESSION_TTL_MS
     }));
+  }
+
+  function compactRunnerResultForStorageW472(result) {
+    if (!result || typeof result !== 'object') return result;
+    const compact = Object.assign({}, result);
+    const capture = result.resultCapture && typeof result.resultCapture === 'object'
+      ? Object.assign({}, result.resultCapture)
+      : result.resultCapture;
+    [
+      'finalGeneratedNamesJson',
+      'completedResultJson',
+      'generatedNamesJson',
+      'sidecarGeneratedNamesJson',
+      'partialGeneratedNamesJson',
+      'roiCompetitiveDetailModelW444',
+      'competitiveAdvisoryModelW362',
+      'valueReviewPacket'
+    ].forEach((key) => {
+      delete compact[key];
+      if (capture && typeof capture === 'object') delete capture[key];
+    });
+    if (capture && typeof capture === 'object') {
+      compact.resultCapture = capture;
+    }
+    if (Array.isArray(compact.displayReadyRecords)) compact.displayReadyRecords = compact.displayReadyRecords.slice(0, 24);
+    if (Array.isArray(compact.recordsArray)) compact.recordsArray = compact.recordsArray.slice(0, 24);
+    if (Array.isArray(compact.displayRecords)) compact.displayRecords = compact.displayRecords.slice(0, 24);
+    compact.storageCompactedW472 = true;
+    return compact;
+  }
+
+  function compactStateForStorageW472(state) {
+    const compact = Object.assign({}, state || {});
+    compact.integratedBuildRunnerResult = compactRunnerResultForStorageW472(compact.integratedBuildRunnerResult);
+    if (compact.dccFinalNamingResult && JSON.stringify(compact.dccFinalNamingResult).length > 250000) {
+      compact.dccFinalNamingResult = Object.assign({}, compact.dccFinalNamingResult, {
+        finalGeneratedNamesJson: null,
+        completedResultJson: null,
+        generatedNamesJson: null,
+        sidecarGeneratedNamesJson: null,
+        storageCompactedW472: true
+      });
+    }
+    return compact;
   }
 
   function lastRunSnapshotW446(state, finalNavigation, productModel, toggleReceipt, diagnostics, detailModel, valueNarrative) {
@@ -2592,8 +2636,10 @@
       arrayValue(extracted.productCategoryTerms).join(' '),
       intake && intake.websiteEvidence
     ].join(' ');
-    const family = /\b(kettle|grinder|coffee gear|mug|drinkware|scale|french press)\b/i.test(text)
-      ? 'Coffee gear hardgoods'
+    const family = /\b(drinkware|water bottle|wide mouth bottle|bottle|tumbler|traveler|travel mug|camp cup|camp mug|straw cup|wine tumbler|growler|can chiller|carafe)\b/i.test(text)
+      ? 'Drinkware Dealer Hardgoods'
+      : /\b(kettle|grinder|coffee gear|mug|scale|french press)\b/i.test(text)
+        ? 'Coffee gear hardgoods'
       : /\b(fire pit|fire pits|smokeless fire|outdoor cooking|pizza oven|griddle)\b/i.test(text)
         ? 'Outdoor fire pit hardgoods'
         : /\b(chip|chips|snack|pretzel|popcorn)\b/i.test(text)
@@ -2622,6 +2668,23 @@
 
   function isGenericProductSeedW424(value) {
     return !value || /^(finished good|finished good variety pack|product\s*\/\s*sku|product availability sku|inventory\s*\/\s*fulfillment|packaged food and beverage|proof item)$/i.test(String(value || '').trim());
+  }
+
+  function usableWebsiteProductExampleW472(value) {
+    const text = compactText(String(value || '')).replace(/\s+\|\s+.*$/, '').trim();
+    if (!text || text.length < 3 || text.length > 80) return false;
+    if (/https?:\/\/|@|^\$?\d+(?:\.\d{2})?$/.test(text)) return false;
+    if (/sorry|no products|sold out|add to cart|quick view|view all|shop all|learn more|subscribe|account|login|cart|checkout|privacy|terms/i.test(text)) return false;
+    if (/^(home|shop|products?|collections?|accessories|clothing|apparel|sale|new arrivals|best sellers|all|search|menu)$/i.test(text)) return false;
+    return true;
+  }
+
+  function trustedWebsiteProductExamplesW472(websiteProductCandidates) {
+    const source = websiteProductCandidates || {};
+    return uniqueValues([source.productSeed].concat(arrayValue(source.productCandidates)))
+      .map((value) => compactText(String(value || ''), 80))
+      .filter(usableWebsiteProductExampleW472)
+      .slice(0, 3);
   }
 
   function applyWebsiteProductEvidenceW424(profile, evidence, intake) {
@@ -6843,6 +6906,7 @@
     const websiteEvidenceV1 = state && state.websiteEvidenceV1 || null;
     const websiteEvidenceUx = websiteEvidenceUxModel(state, lane);
     const websiteProductCandidates = websiteProductEvidenceCandidatesW424(websiteEvidenceV1, intake);
+    const trustedProductExamples = trustedWebsiteProductExamplesW472(websiteProductCandidates);
     const productionIntake = buildPacket.productionConsultantIntake || productionConsultantIntakeV1(state, lane, namingEvidence);
     const operatingMode = resolveBuildOperatingModeW214(state, lane, pageContext, recommendation, {
       source: 'confirmed_build_request'
@@ -6925,6 +6989,7 @@
         websiteEvidenceV1,
         websiteEvidenceUx,
         productNamingEvidence: namingEvidence,
+        trustedWebsiteProductExamplesW472: trustedProductExamples,
         productCandidates: websiteProductCandidates.productCandidates || [],
         productSeed: websiteProductCandidates.productSeed || namingEvidence.productSeed || '',
         productFamily: websiteProductCandidates.productFamily || namingEvidence.productFamily || '',
@@ -6936,6 +7001,7 @@
         productSeed: websiteProductCandidates.productSeed || namingEvidence.productSeed || '',
         productFamily: websiteProductCandidates.productFamily || namingEvidence.productFamily || '',
         demandMoment: websiteProductCandidates.demandMoment || namingEvidence.demandMoment || '',
+        trustedWebsiteProductExamplesW472: trustedProductExamples,
         productCandidates: websiteProductCandidates.productCandidates || [],
         authority: namingEvidence.authority || '',
         source: namingEvidence.source || '',
@@ -6945,6 +7011,7 @@
         schema: 'idb.request_grounded_product_evidence_payload.v1',
         websiteOwnedFields: ['productSeed', 'productFamily', 'demandMoment', 'productCandidates'],
         notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach'],
+        trustedWebsiteProductExamplesW472: trustedProductExamples,
         productCandidates: websiteProductCandidates.productCandidates || [],
         selectedProductSeed: websiteProductCandidates.productSeed || namingEvidence.productSeed || '',
         selectedProductFamily: websiteProductCandidates.productFamily || namingEvidence.productFamily || ''
@@ -23522,7 +23589,15 @@
   }
 
   function saveState(state) {
-    writeJson(STORAGE_KEY, state);
+    try {
+      writeJson(STORAGE_KEY, state);
+    } catch (error) {
+      if (!/quota|exceed/i.test(String(error && (error.name || error.message) || error))) throw error;
+      try {
+        window.localStorage.removeItem(TRACE_KEY);
+      } catch (cleanupError) {}
+      writeJson(STORAGE_KEY, compactStateForStorageW472(state));
+    }
   }
 
   function drawerWidthContractW444() {

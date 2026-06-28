@@ -499,17 +499,27 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const names = enforceOldRunnerNamingDisciplineW468(namingPayload.payload, { prospect, website, signalText: signal.text, namingPayload });
+    const websiteProductExampleNamingPayloadW472 = namingPayload.found
+      ? null
+      : buildWebsiteProductExampleNamingPayloadW472({
+        prospect,
+        website,
+        confirmedBuildRequestJson,
+        signal
+      });
+    const effectiveNamingPayloadW472 = websiteProductExampleNamingPayloadW472 || namingPayload;
+    const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
-      source: namingPayload.source || names._source || 'deterministic',
+      source: effectiveNamingPayloadW472.source || names._source || 'deterministic',
       signalLen: names._signalLen || 0,
       industry_category: names.industry_category || '',
       industrySelection: names.industrySelection || null,
-      namingFileId: namingPayload.fileId || namingFileId || null,
-      namingPayloadFound: !!namingPayload.found,
-      namingPayloadParsed: !!namingPayload.parsed,
-      namingPayloadApplied: !!namingPayload.applied,
-      namingDiscoveryMode: namingPayload.discoveryMode || 'none',
+      namingFileId: effectiveNamingPayloadW472.fileId || namingFileId || null,
+      namingPayloadFound: !!effectiveNamingPayloadW472.found,
+      namingPayloadParsed: !!effectiveNamingPayloadW472.parsed,
+      namingPayloadApplied: !!effectiveNamingPayloadW472.applied,
+      namingDiscoveryMode: effectiveNamingPayloadW472.discoveryMode || 'none',
+      websiteProductExampleFallbackAppliedW472: !!websiteProductExampleNamingPayloadW472,
       namingEvidenceSource: names.namingEvidenceSource || names._source || '',
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
@@ -517,7 +527,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingAuthorityOrder: names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'server precomputed naming pack -> prospect fallback',
       selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
       selectedCatalogCandidate: names.selectedCatalogCandidate || null,
-      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'server_precomputed_naming_pack_preserved' : 'not_returned'
+      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'server_or_runner_website_product_example_preserved' : 'not_returned'
     }) });
 
     // 4) Apply current-run identity + one-line sales/purchase descriptions
@@ -687,7 +697,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         locationId,
         ids,
         names,
-        namingPayload,
+        namingPayload: effectiveNamingPayloadW472,
         enableManufacturing: finalEnableManufacturing,
         enableWip: effectiveEnableWip,
         woId,
@@ -726,8 +736,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         chosenCenters: routingResult && routingResult.chosen ? routingResult.chosen.centers : [],
         chosenTemplates: routingResult && routingResult.chosen ? routingResult.chosen.templates : [],
         namingFileId: namingFileId || null,
-        namingSourceUsed: namingPayload.source || names._source || 'deterministic',
-        namingPayloadFound: !!namingPayload.found,
+        namingSourceUsed: effectiveNamingPayloadW472.source || names._source || 'deterministic',
+        namingPayloadFound: !!effectiveNamingPayloadW472.found,
         idbRunnerResultCapture,
         customerIdentityTelemetryW457,
         reusedRecordOverwriteTelemetryW457
@@ -3083,8 +3093,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     let bestText = extractSignalText(first.html, domain);
     let bestLen = bestText.length;
-
-    if (bestLen >= 500) return { domain, text: bestText };
+    let productExamples = extractWebsiteProductExamplesW472(first.html, domain, first.finalUrl);
+    let productExampleSourceUrls = productExamples.map(function(example) { return example.sourceUrl; }).filter(Boolean);
 
     const candidates = pickHighSignalLinks(first.html, domain, 8);
     const topToTry = candidates.slice(0, 3);
@@ -3094,19 +3104,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       try {
         const r = fetchHtmlWithRedirects(u, 4);
         const t = extractSignalText(r.html, domain);
+        const examples = extractWebsiteProductExamplesW472(r.html, domain, r.finalUrl);
+        productExamples = mergeWebsiteProductExamplesW472(productExamples, examples).slice(0, 3);
+        productExampleSourceUrls = uniqueTextValuesW472(productExampleSourceUrls.concat(examples.map(function(example) { return example.sourceUrl; }).filter(Boolean))).slice(0, 6);
         if (t.length > bestLen) {
           bestLen = t.length;
           bestText = t;
         }
-        if (bestLen >= 900) break;
+        if (bestLen >= 900 && productExamples.length >= 3) break;
       } catch (e) {}
     }
 
     if (!bestText || bestText.length < 150) {
-      return { domain, text: `Domain: ${domain}. Infer industry from the domain name.` };
+      return { domain, text: `Domain: ${domain}. Infer industry from the domain name.`, productExamples, productExampleSourceUrls };
     }
 
-    return { domain, text: bestText };
+    return { domain, text: bestText, productExamples, productExampleSourceUrls };
   }
 
   function fetchHtmlWithRedirects(url, maxHops) {
@@ -3233,6 +3246,81 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       .sort((a,b) => b.score - a.score)
       .slice(0, limit)
       .map(x => x.url);
+  }
+
+  function mergeWebsiteProductExamplesW472(left, right) {
+    const seen = {};
+    const out = [];
+    (left || []).concat(right || []).forEach(function(example) {
+      const name = usableWebsiteProductExampleNameW472(example && example.name || example);
+      if (!name) return;
+      const key = name.toLowerCase();
+      if (seen[key]) return;
+      seen[key] = true;
+      out.push(Object.assign({}, example && typeof example === 'object' ? example : {}, { name }));
+    });
+    return out;
+  }
+
+  function extractWebsiteProductExamplesW472(html, domain, sourceUrl) {
+    const raw = String(html || '');
+    const examples = [];
+    function push(name, source, url) {
+      const cleaned = usableWebsiteProductExampleNameW472(name);
+      if (!cleaned) return;
+      examples.push({
+        name: cleaned,
+        source: source || 'website_html',
+        sourceUrl: url || sourceUrl || '',
+        domain: domain || '',
+        confidence: source === 'json_ld_product' ? 96 : source === 'product_link_text' ? 90 : 82,
+        reasons: ['concrete product example extracted from fetched website']
+      });
+    }
+
+    const jsonNameRe = /"name"\s*:\s*"([^"]{3,100})"/gi;
+    let match;
+    while ((match = jsonNameRe.exec(raw)) !== null && examples.length < 30) {
+      const nearby = raw.slice(Math.max(0, match.index - 300), Math.min(raw.length, match.index + 300));
+      if (/"@type"\s*:\s*"?Product"?|product|variant|sku/i.test(nearby)) push(match[1], 'json_ld_product', sourceUrl);
+    }
+
+    const attrRe = /\b(?:data-product-title|data-product-name|aria-label|title|alt)=["']([^"']{3,100})["']/gi;
+    while ((match = attrRe.exec(raw)) !== null && examples.length < 40) {
+      const nearby = raw.slice(Math.max(0, match.index - 220), Math.min(raw.length, match.index + 220));
+      if (/product|card|grid|item|sku|variant|\/products?\//i.test(nearby)) push(match[1], 'product_attribute', sourceUrl);
+    }
+
+    const linkRe = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
+    while ((match = linkRe.exec(raw)) !== null && examples.length < 60) {
+      const attrs = String(match[1] || '');
+      const href = (attrs.match(/\bhref=["']([^"']+)["']/i) || [,''])[1];
+      const text = compactText(stripHtml(match[2] || ''));
+      if (!/\/products?\//i.test(href || '') && !/product|card|grid|item|sku/i.test(attrs)) continue;
+      let abs = href || sourceUrl || '';
+      if (href && !/^https?:\/\//i.test(href)) abs = `https://${domain}${href.charAt(0) === '/' ? '' : '/'}${href}`;
+      push(text, 'product_link_text', normalizeUrl(abs || sourceUrl || ''));
+    }
+
+    return mergeWebsiteProductExamplesW472([], examples)
+      .sort(function(a, b) { return Number(b.confidence || 0) - Number(a.confidence || 0); })
+      .slice(0, 3);
+  }
+
+  function usableWebsiteProductExampleNameW472(value) {
+    let text = compactText(value)
+      .replace(/\\u0026/g, '&')
+      .replace(/&amp;/g, '&')
+      .replace(/\s+\|\s+.*/, '')
+      .replace(/\s+-\s+(?:Shop|NHS Skate Direct|Official Site).*$/i, '')
+      .replace(/\b(?:Add to Cart|Quick View|Sold Out|Sale|New)\b/ig, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!text || text.length < 3 || text.length > 80) return '';
+    if (/https?:\/\/|@|^\$?\d+(?:\.\d{2})?$/.test(text)) return '';
+    if (/sorry|no products|view all|shop all|learn more|subscribe|account|login|cart|checkout|privacy|terms/i.test(text)) return '';
+    if (/^(home|shop|products?|collections?|accessories|clothing|apparel|sale|new arrivals|best sellers|all|search|menu|size chart|gift card)$/i.test(text)) return '';
+    return text;
   }
 
   function normalizeUrl(u) {
@@ -3367,6 +3455,99 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  function requestProductExamplesW472(request) {
+    const examples = [];
+    function push(value, source) {
+      const name = usableWebsiteProductExampleNameW472(value);
+      if (!name) return;
+      examples.push({
+        name,
+        source: source || 'confirmed_request_product_evidence',
+        confidence: source === 'trusted_website_product_examples_w472' ? 98 : 92,
+        reasons: ['concrete product example carried by sidecar request']
+      });
+    }
+    function pushArray(values, source) {
+      (Array.isArray(values) ? values : [values]).forEach(function(value) { push(value, source); });
+    }
+    const websiteEvidence = request && request.websiteEvidence || {};
+    const productEvidence = request && request.productEvidence || {};
+    const grounded = request && request.groundedProductEvidence || {};
+    pushArray(websiteEvidence.trustedWebsiteProductExamplesW472, 'trusted_website_product_examples_w472');
+    pushArray(productEvidence.trustedWebsiteProductExamplesW472, 'trusted_website_product_examples_w472');
+    pushArray(grounded.trustedWebsiteProductExamplesW472, 'trusted_website_product_examples_w472');
+    pushArray(websiteEvidence.productCandidates, 'website_product_candidates');
+    pushArray(productEvidence.productCandidates, 'website_product_candidates');
+    pushArray(grounded.productCandidates, 'website_product_candidates');
+    push(productEvidence.productSeed || websiteEvidence.productSeed || grounded.selectedProductSeed, 'website_product_seed');
+    const evidenceV1 = request && (request.websiteEvidenceV1 || request.websiteResolverOutput || websiteEvidence.websiteEvidenceV1) || {};
+    const extracted = evidenceV1.extractedEvidence || {};
+    pushArray(extracted.productNames, 'website_extracted_product_names');
+    pushArray(extracted.productCardNames, 'website_extracted_product_cards');
+    pushArray(extracted.products, 'website_extracted_products');
+    pushArray(evidenceV1.signals && evidenceV1.signals.productNames, 'website_signal_product_names');
+    return mergeWebsiteProductExamplesW472([], examples).slice(0, 3);
+  }
+
+  function buildWebsiteProductExampleNamingPayloadW472(args) {
+    const requestExamples = requestProductExamplesW472(args && args.confirmedBuildRequestJson);
+    const signalExamples = args && args.signal && Array.isArray(args.signal.productExamples) ? args.signal.productExamples : [];
+    const examples = mergeWebsiteProductExamplesW472(requestExamples, signalExamples).slice(0, 3);
+    if (!examples.length) return null;
+    const primary = examples[0].name;
+    const componentNames = examples.map(function(example) { return example.name; });
+    while (componentNames.length < 3) {
+      componentNames.push(componentNames.length === 1 ? `${primary} Related SKU` : `${primary} Fulfillment Support`);
+    }
+    const payload = {
+      _source: 'runner-website-product-examples-naming-pack-w472',
+      _signalLen: String(args && args.signal && args.signal.text || '').length,
+      namingEvidenceSource: 'trusted_website_product_examples_w472',
+      namingConfidence: 96,
+      confidencePercent: 96,
+      industrySelection: {
+        label: 'Website Product Evidence',
+        source: 'trusted_website_product_examples_w472',
+        confidence: 'high'
+      },
+      industry_category: 'Website Product Evidence',
+      websiteEvidenceSource: 'trusted_website_product_examples_w472',
+      websiteEvidenceSourceUrls: uniqueTextValuesW472(
+        (args && args.signal && args.signal.productExampleSourceUrls || [])
+          .concat(args && args.website ? [args.website] : [])
+      ).slice(0, 6),
+      hero_item_name: primary,
+      assembly_name: `${primary} Availability Flow`,
+      component_names: componentNames.slice(0, 3),
+      bom_name: `${primary} Availability Plan`,
+      bom_revision_name: `${primary} Replenishment Plan`,
+      routing_name: `${primary} Fulfillment Flow`,
+      operation_names_by_seq: {
+        '10': `Prepare ${componentNames[0]}`,
+        '20': `Allocate ${primary} Demand`,
+        '30': `Release ${primary}`
+      },
+      selectedProductName: primary,
+      primary_product_candidate: primary,
+      alternate_product_candidates: examples.slice(1).map(function(example) { return example.name; }),
+      selectedCatalogCandidate: examples[0],
+      selectedCatalogCandidateSource: examples[0].source || 'trusted_website_product_examples_w472',
+      selectedCatalogCandidateReasons: examples[0].reasons || [],
+      catalogCandidates: examples,
+      websiteProductExamplesW472: examples.map(function(example) { return example.name; }),
+      namingAuthorityOrderW472: 'website product examples -> preserved naming pack -> prospect fallback'
+    };
+    return {
+      found: true,
+      parsed: true,
+      applied: true,
+      fileId: null,
+      discoveryMode: 'runner-website-product-examples-w472',
+      source: payload._source,
+      payload
+    };
+  }
+
   function enforceOldRunnerNamingDisciplineW468(rawNames, context) {
     const names = Object.assign({}, rawNames || {});
     const fallback = generateNamingPack({
@@ -3465,7 +3646,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       { pattern: /\b(cookware|kitchenware|dutch oven|enameled|cast iron|skillet|bakeware|cookware set)\b/, label: 'Kitchenware Dealer Hardgoods' },
       { pattern: /\b(electronics|headphones|earbuds|speaker|soundbar|audio|watch|cycling computer|wearable|gps|running)\b/, label: 'Consumer Electronics Dealer Fulfillment' },
       { pattern: /\b(outdoor|camp|bike|cycling|run|trail|sporting goods|dealer hardgoods)\b/, label: 'Outdoor Dealer Hardgoods' },
-      { pattern: /\b(food|beverage|snack|sauce|kombucha|soda|case pack|bottle|can)\b/, label: 'Food and Beverage' },
+      { pattern: /\b(food|beverage|snack|sauce|kombucha|soda|case pack|can)\b/, label: 'Food and Beverage' },
       { pattern: /\b(apparel|footwear|style|color|size|fashion)\b/, label: 'Apparel and Footwear' },
       { pattern: /\b(industrial|equipment|forklift|warehouse|distribution|branch|fulfillment|supply)\b/, label: 'Industrial Distribution' },
       { pattern: /\b(manufacturing|assembly|production|work order|bom|wip)\b/, label: 'Light Manufacturing' }
@@ -3495,6 +3676,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       { name: 'Hopper Soft Cooler', pattern: /\bhopper\b.*\bsoft cooler\b|\bhopper\b.*\bcooler\b/ },
       { name: 'Quencher H2.0 FlowState Tumbler', pattern: /\bquencher\b|\bflowstate\b/ },
       { name: 'Wide Mouth Bottle', pattern: /\bwide mouth\b.*\bbottle\b/ },
+      { name: 'Flip Traveler', pattern: /\bflip traveler\b|\btraveler\b.*\b(mug|cup|lid)\b/ },
+      { name: 'All Day Straw Cup', pattern: /\ball day straw cup\b|\bstraw cup\b/ },
+      { name: 'Camp Cup', pattern: /\bcamp cup\b|\bcamp mug\b/ },
+      { name: 'Wine Tumbler', pattern: /\bwine tumbler\b/ },
+      { name: 'Growler', pattern: /\bgrowler\b/ },
+      { name: 'Can Chiller', pattern: /\bcan chiller\b/ },
       { name: 'Karu 2 Pro Multi-Fuel Pizza Oven', pattern: /\bkaru 2 pro\b/ },
       { name: 'Koda 16 Gas Powered Pizza Oven', pattern: /\bkoda 16\b/ },
       { name: 'Stagg EKG Electric Kettle', pattern: /\bstagg ekg\b/ },

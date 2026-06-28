@@ -996,27 +996,125 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     };
   }
 
+  function usableWebsiteProductExampleW472(value, context) {
+    const text = compactText(value).replace(/\s+\|\s+.*/, '').replace(/\s+-\s+Shop\b.*/i, '');
+    if (!text || text.length < 3 || text.length > 80) return '';
+    if (/https?:\/\/|@|^\$?\d+(?:\.\d{2})?$/.test(text)) return '';
+    if (/sorry|no products|sold out|add to cart|quick view|view all|shop all|learn more|subscribe|account|login|cart|checkout|privacy|terms/i.test(text)) return '';
+    if (/^(home|shop|products?|collections?|accessories|clothing|apparel|sale|new arrivals|best sellers|all|search|menu)$/i.test(text)) return '';
+    const prospect = compactText(context && context.prospect).toLowerCase();
+    const lower = text.toLowerCase();
+    if (prospect && lower === prospect) return '';
+    if (isGenericCatalogCandidateW459(text)) return '';
+    return text;
+  }
+
+  function websiteProductExamplePriorityW472(path) {
+    const key = String(path || '');
+    if (/trustedWebsiteProductExamplesW472/i.test(key)) return 100;
+    if (/productNames?|productCardNames?|productCandidates|productSeed|selectedProduct|primaryProductCandidate/i.test(key)) return 92;
+    if (/products?\[\d+\]\.(name|title)|items?\[\d+\]\.(name|title)|variants?\[\d+\]\.(name|title)|jsonLd.*\.name|offers?\.itemOffered\.name/i.test(key)) return 88;
+    if (/anchorText|navigationLabels|headings|title|name/i.test(key)) return 62;
+    return 0;
+  }
+
+  function websiteProductExamplesFromRequestW472(request, website, prospect) {
+    const candidates = [];
+    const roots = [
+      { path: 'request.websiteEvidence', value: request && request.websiteEvidence },
+      { path: 'request.productEvidence', value: request && request.productEvidence },
+      { path: 'request.groundedProductEvidence', value: request && request.groundedProductEvidence },
+      { path: 'request.websiteEvidenceV1', value: request && request.websiteEvidenceV1 },
+      { path: 'request.websiteResolverOutput', value: request && request.websiteResolverOutput }
+    ];
+    roots.forEach(function(root) {
+      traverseCatalogEvidenceW457(root.value, root.path, function(text, path) {
+        const priority = websiteProductExamplePriorityW472(path);
+        if (!priority) return;
+        const cleaned = usableWebsiteProductExampleW472(text, { prospect });
+        if (!cleaned) return;
+        candidates.push({
+          name: cleaned,
+          source: /trustedWebsiteProductExamplesW472/i.test(path) ? 'trusted_website_product_examples_w472' : sourceKindForEvidencePathW457(path),
+          sourceUrl: website,
+          confidence: priority,
+          wipSuitabilityScore: priority,
+          reasons: ['concrete product example extracted from website evidence']
+        });
+      }, 0);
+    });
+    const seen = {};
+    return candidates
+      .sort(function(a, b) { return Number(b.confidence || 0) - Number(a.confidence || 0); })
+      .filter(function(candidate) {
+        const key = candidate.name.toLowerCase();
+        if (seen[key]) return false;
+        seen[key] = true;
+        return true;
+      })
+      .slice(0, 3);
+  }
+
+  function websiteProductExamplesNamingPackW472(request, website, prospect) {
+    const examples = websiteProductExamplesFromRequestW472(request, website, prospect);
+    if (!examples.length) return null;
+    const primary = examples[0].name;
+    const toggles = normalizeSelectedToggles(request);
+    const manufacturing = toggles.enableManufacturing === true || toggles.enableWip === true;
+    const componentNames = examples.map(function(candidate) { return candidate.name; });
+    while (componentNames.length < 3) {
+      componentNames.push(componentNames.length === 1 ? `${primary} Related SKU` : `${primary} Fulfillment Support`);
+    }
+    const assemblyName = manufacturing ? `${primary} Assembly` : `${primary} Availability Flow`;
+    return {
+      hero_item_name: primary,
+      assembly_name: assemblyName,
+      component_names: componentNames.slice(0, 3),
+      bom_name: manufacturing ? `BOM - ${primary}` : `${primary} Availability Plan`,
+      bom_revision_name: manufacturing ? `Revision 1 - ${primary}` : `${primary} Replenishment Plan`,
+      routing_name: manufacturing ? `Routing - ${primary}` : `${primary} Fulfillment Flow`,
+      operation_names_by_seq: {
+        '10': `Prepare ${componentNames[0]}`,
+        '20': manufacturing ? `Build ${assemblyName}` : `Allocate ${primary} Demand`,
+        '30': `Release ${primary}`
+      },
+      selectedProductName: primary,
+      primary_product_candidate: primary,
+      alternate_product_candidates: examples.slice(1).map(function(candidate) { return candidate.name; }),
+      selectedCatalogCandidate: examples[0],
+      selectedCatalogCandidateSource: examples[0].source || 'trusted_website_product_examples_w472',
+      selectedCatalogCandidateReasons: examples[0].reasons || [],
+      catalogCandidates: examples,
+      websiteProductExamplesW472: examples.map(function(candidate) { return candidate.name; }),
+      websiteEvidenceSource: 'trusted_website_product_examples_w472',
+      websiteEvidenceSourceUrls: evidenceSourceUrlsW459(request, website),
+      namingEvidenceSource: 'trusted_website_product_examples_w472',
+      namingAuthorityOrderW472: 'website product examples -> preserved naming pack -> prospect fallback'
+    };
+  }
+
   function buildServerPrecomputedNamingPack(request) {
     const prospect = compactText(request && request.prospect && request.prospect.name) || 'Demo Customer';
     const website = compactText(request && request.prospect && request.prospect.website);
     const explicitPack = explicitNamingPackFromRequestW468(request);
     const industrySelection = industrySelectionFromRequestW468(request, website);
     const basePack = explicitPack || {};
-    const catalogSelected = Object.keys(basePack).length
+    const websiteProductExamplesPack = Object.keys(basePack).length ? null : websiteProductExamplesNamingPackW472(request, website, prospect);
+    const catalogSelected = Object.keys(basePack).length || websiteProductExamplesPack
       ? { pack: null, selected: { catalogCandidates: [], rejectedCatalogCandidates: [] } }
       : buildCatalogSelectedNamingPackW470(request, website, prospect);
-    const selectedPack = catalogSelected.pack || {};
+    const selectedPack = websiteProductExamplesPack || catalogSelected.pack || {};
     const effectivePack = Object.keys(basePack).length ? basePack : selectedPack;
     const selectedCandidate = selectedPack.selectedCatalogCandidate || null;
     const source = Object.keys(basePack).length
       ? 'suitelet-precomputed-naming-pack'
-      : (Object.keys(selectedPack).length ? 'suitelet-selected-catalog-naming-pack' : 'suitelet-prospect-fallback-naming-pack');
+      : (websiteProductExamplesPack ? 'suitelet-website-product-examples-naming-pack-w472' : (Object.keys(selectedPack).length ? 'suitelet-selected-catalog-naming-pack' : 'suitelet-prospect-fallback-naming-pack'));
     const namingEvidenceSource = Object.keys(basePack).length
       ? 'precomputed_naming_pack'
-      : (Object.keys(selectedPack).length ? 'selected_catalog_candidate' : 'prospect_fallback');
+      : (websiteProductExamplesPack ? 'trusted_website_product_examples_w472' : (Object.keys(selectedPack).length ? 'selected_catalog_candidate' : 'prospect_fallback'));
     const confidence = Object.keys(basePack).length
       ? 90
-      : (Object.keys(selectedPack).length ? Number(selectedCandidate && selectedCandidate.confidence || 84) : 35);
+      : (websiteProductExamplesPack ? 96 : (Object.keys(selectedPack).length ? Number(selectedCandidate && selectedCandidate.confidence || 84) : 35));
     const fallbackComponentNames = [
       `${prospect} Component A`,
       `${prospect} Component B`,
@@ -1189,7 +1287,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       { pattern: /\b(cookware|kitchenware|dutch oven|enameled|cast iron|skillet|bakeware|cookware set)\b/, label: 'Kitchenware Dealer Hardgoods' },
       { pattern: /\b(electronics|headphones|earbuds|speaker|soundbar|audio|watch|cycling computer|wearable|gps|running)\b/, label: 'Consumer Electronics Dealer Fulfillment' },
       { pattern: /\b(outdoor|camp|bike|cycling|run|trail|sporting goods|dealer hardgoods)\b/, label: 'Outdoor Dealer Hardgoods' },
-      { pattern: /\b(food|beverage|snack|sauce|kombucha|soda|case pack|bottle|can)\b/, label: 'Food and Beverage' },
+      { pattern: /\b(food|beverage|snack|sauce|kombucha|soda|case pack|can)\b/, label: 'Food and Beverage' },
       { pattern: /\b(apparel|footwear|style|color|size|fashion)\b/, label: 'Apparel and Footwear' },
       { pattern: /\b(industrial|equipment|forklift|warehouse|distribution|branch|fulfillment|supply)\b/, label: 'Industrial Distribution' },
       { pattern: /\b(manufacturing|assembly|production|work order|bom|wip)\b/, label: 'Light Manufacturing' }
@@ -1274,6 +1372,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       prospect: request.prospect || {},
       demoPath: request.demoPath || {},
       storyInputs: request.storyInputs || {},
+      websiteEvidence: request.websiteEvidence || null,
+      productEvidence: request.productEvidence || null,
+      groundedProductEvidence: request.groundedProductEvidence || null,
+      websiteEvidenceV1: request.websiteEvidenceV1 || null,
+      websiteResolverOutput: request.websiteResolverOutput || null,
+      websiteEvidenceUx: request.websiteEvidenceUx || null,
       resolvedOperatingMode: request.resolvedOperatingMode || '',
       modeConfidence: request.modeConfidence || '',
       selectedToggles: toggles,
@@ -1484,12 +1588,14 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW320', safeToken.slice(0, 48));
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455Short', safeToken.slice(0, 36));
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455ResultStem', `IDB-${safeToken}`.slice(0, 40));
+      pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW472ResultStem36', `IDB-${safeToken}`.slice(0, 36));
     }
     if (expected && expected.sourceRequestId) {
       const safeSourceRequest = safeFileToken(expected.sourceRequestId);
       pushUniqueSearchToken(searchTokens, seen, 'sourceRequestId', expected.sourceRequestId);
       pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW455', safeSourceRequest.slice(0, 48));
       pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW455ResultStem', `IDB-${safeSourceRequest}`.slice(0, 40));
+      pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW472ResultStem36', `IDB-${safeSourceRequest}`.slice(0, 36));
     }
     if (expected && expected.runnerExternalId) {
       const safeRunnerExtId = safeFileToken(expected.runnerExternalId);
@@ -2219,7 +2325,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const checkedFileIds = {};
     for (let tokenIndex = 0; tokenIndex < searchTokens.length; tokenIndex += 1) {
       const searchToken = searchTokens[tokenIndex];
-      const filters = [['folder', 'anyof', config.resultCaptureFolderId], 'AND', ['name', 'contains', searchToken.token]];
+      const filters = [['folder', 'anyof', config.resultCaptureFolderId], 'AND', ['name', 'contains', 'idb_result'], 'AND', ['name', 'contains', searchToken.token]];
       const modifiedColumn = searchModule.createColumn && searchModule.Sort
         ? searchModule.createColumn({ name: 'modified', sort: searchModule.Sort.DESC })
         : 'modified';

@@ -7,6 +7,7 @@ const vm = require('vm');
 
 const {
   assertCase,
+  loadHooks,
   printResults,
   root
 } = require('./lib/forge_harness_fixtures');
@@ -59,6 +60,7 @@ function main() {
   const oldRunner = fs.readFileSync(oldRunnerPath, 'utf8');
   const pkg = JSON.parse(readRel('package.json'));
   const adapterTest = loadAdapterTest();
+  const hooks = loadHooks({ fetchMessage: 'live fetch disabled in W472 harness' });
 
   const oldCoreFunctions = [
     'function loadPrecomputedNamingPack',
@@ -272,6 +274,52 @@ function main() {
       requestJson.roiCompetitiveDetailModelW444 &&
       requestJson.valueReviewPacket,
     JSON.stringify({ params, requestJson }, null, 2));
+
+  const nhsState = Object.assign(hooks.defaultState(), {
+    selectedLaneId: 'dealer_hardgoods',
+    laneSelectionSource: 'website_evidence',
+    intake: {
+      customer: 'NHS Skate Direct Independent Trucks Smoke',
+      website: 'https://nhsskatedirect.com/collections/independent-trucks-clothing-and-accessories',
+      notes: 'Skate shop buyer needs product-specific availability and replenishment proof.',
+      websiteEvidence: 'Website evidence includes concrete product examples from the page/site.'
+    },
+    websiteEvidenceV1: {
+      schema: 'idb.website-evidence.v1',
+      domain: 'nhsskatedirect.com',
+      fetchStatus: 'captured',
+      confidence: { state: 'recommended', score: 0.88 },
+      sourceUrls: ['https://nhsskatedirect.com/collections/independent-trucks-clothing-and-accessories'],
+      extractedEvidence: {
+        pageTitle: 'Independent Trucks clothing and accessories',
+        metaDescription: 'Independent Trucks skateboard hardware, trucks, and accessories.',
+        productNames: ['Independent Trucks Stage 11 Standard', 'Chris Joslin Pro Titanium Trucks', 'Independent Trucks Inverted Kingpin'],
+        productCategoryTerms: ['skateboard trucks', 'hardware', 'accessories']
+      },
+      signals: {
+        laneCandidates: [{ laneId: 'dealer_hardgoods', score: 0.88, evidence: ['skateboard trucks', 'hardware'] }]
+      }
+    }
+  });
+  hooks.ensureWebsiteEvidenceRuntime(nhsState);
+  const nhsLane = hooks.getLane(nhsState);
+  const nhsPage = { title: 'NetSuite Home', url: 'https://td3021666.app.netsuite.com/app/center/card.nl', pageType: 'NetSuite page', confidence: 'low' };
+  const nhsRecommendation = hooks.recommendMove(nhsLane, nhsPage);
+  nhsState.acceptedPacket = hooks.buildAcceptedPacketContext(nhsState, nhsLane, nhsPage, nhsRecommendation);
+  const nhsRequest = hooks.confirmedBuildRequestJsonV1(nhsState, nhsLane, nhsPage, nhsRecommendation);
+  const nhsPack = adapterTest.buildServerPrecomputedNamingPack(nhsRequest);
+
+  assertCase(results, 'w472-website-product-examples-become-item-names',
+    nhsRequest.websiteEvidence &&
+      nhsRequest.websiteEvidence.trustedWebsiteProductExamplesW472 &&
+      nhsRequest.websiteEvidence.trustedWebsiteProductExamplesW472.length === 3 &&
+      nhsPack &&
+      nhsPack._source === 'suitelet-website-product-examples-naming-pack-w472' &&
+      nhsPack.hero_item_name === 'Independent Trucks Stage 11 Standard' &&
+      nhsPack.component_names.indexOf('Chris Joslin Pro Titanium Trucks') !== -1 &&
+      nhsPack.component_names.indexOf('Independent Trucks Inverted Kingpin') !== -1 &&
+      !/apparel|style matrix|resolver limited|website resolver service/i.test(JSON.stringify(nhsPack)),
+    JSON.stringify({ trusted: nhsRequest.websiteEvidence && nhsRequest.websiteEvidence.trustedWebsiteProductExamplesW472, nhsPack }, null, 2));
 
   assertCase(results, 'w472-existing-harness-scripts-retained',
     pkg.scripts['harness:restore-old-runner-naming-creation-w450'] === 'node archive/tools/run_w450_restore_old_runner_naming_creation_harness.js' &&

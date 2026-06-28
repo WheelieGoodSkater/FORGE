@@ -7,8 +7,8 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const mirrorDir = path.join(root, 'src', 'FileCabinet', 'SuiteScripts', 'Intelligent Demo Builder');
 
-const EXPECTED_DRAWER_VERSION = '1.0.72';
-const EXPECTED_VISIBLE_MARKER = 'Drawer 1.0.72 / W472';
+const EXPECTED_DRAWER_VERSION = '2.0.1';
+const EXPECTED_VISIBLE_MARKER = 'Drawer 2.0.1 / W473';
 const RAW_USERSCRIPT_URL = 'https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js';
 
 const TARGETS = [
@@ -125,10 +125,10 @@ function drawerMetadataChecks(rootText, mirrorText) {
     {
       id: 'visible_w346_marker',
       pass: rootText.includes(`const DRAWER_USERSCRIPT_VERSION = '${EXPECTED_DRAWER_VERSION}';`) &&
-        rootText.includes("const CURRENT_UX_BLOCK_W346 = 'W472';") &&
+        rootText.includes("const CURRENT_UX_BLOCK_W346 = 'W473';") &&
         rootText.includes('return `Drawer ${DRAWER_USERSCRIPT_VERSION} / ${CURRENT_UX_BLOCK_W346}`;') &&
         mirrorText.includes(`const DRAWER_USERSCRIPT_VERSION = '${EXPECTED_DRAWER_VERSION}';`) &&
-        mirrorText.includes("const CURRENT_UX_BLOCK_W346 = 'W472';") &&
+        mirrorText.includes("const CURRENT_UX_BLOCK_W346 = 'W473';") &&
         mirrorText.includes('return `Drawer ${DRAWER_USERSCRIPT_VERSION} / ${CURRENT_UX_BLOCK_W346}`;'),
       expected: EXPECTED_VISIBLE_MARKER
     },

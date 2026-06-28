@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      2.0.0
+// @version      2.0.1
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -21,7 +21,7 @@
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
   const IN_FLIGHT_BUILD_STORAGE_KEY_W472 = 'idb.drawer.inFlightBuild.w472.v1';
-  const DRAWER_USERSCRIPT_VERSION = '2.0.0';
+  const DRAWER_USERSCRIPT_VERSION = '2.0.1';
   const CURRENT_UX_BLOCK_W346 = 'W473';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
@@ -1091,7 +1091,7 @@
   };
 
   const CONTRACT = {
-    product: { name: 'Intelligent Demo Builder', version: 'V2.0.0' },
+    product: { name: 'Intelligent Demo Builder', version: 'V2.0.1' },
     nonRegression: {
       noNewIndustries: false,
       apparelAccessoriesLaneAuthorized: true,
@@ -27398,7 +27398,7 @@
     const labels = {
       enter_request: {
         title: 'Enter the FORGE request',
-        copy: 'Add customer name, website, messy notes, and build toggles. One Build records action prepares the path and starts the approved build.',
+        copy: 'Add customer name, website, buyer notes, and build toggles. FORGE uses the entered website to discover the item before starting the approved build.',
         next: readiness.tone === 'ready' ? 'Build records' : 'Complete customer, website, and notes'
       },
       confirm_path: {
@@ -27940,11 +27940,11 @@
             <input class="idb-input" data-idb-intake="website" value="${escapeHtml(intake.website)}" placeholder="https://example.com">
           </label>
           <label class="idb-label">Conversation Notes
-            <textarea class="idb-textarea" data-idb-intake="notes" placeholder="Who is the buyer, what is breaking, what should the demo prove, and what decision are they trying to make?">${escapeHtml(intake.notes)}</textarea>
+            <textarea class="idb-textarea" data-idb-intake="notes" placeholder="Buyer, business pressure, proof goal, timing, and competitive context. FORGE will discover items from the website.">${escapeHtml(intake.notes)}</textarea>
           </label>
           <div class="idb-w418-run-options" aria-label="FORGE run options">
             <div class="idb-status-key">Run options</div>
-            <div class="idb-copy">Choose what FORGE should include before the build path is prepared.</div>
+            <div class="idb-copy">Choose what FORGE should create. Item selection comes from the entered website.</div>
             ${renderToggleControls(state, lane)}
           </div>
           <details class="idb-technical-details idb-w355-operator-website-evidence">
@@ -28743,6 +28743,8 @@
             ${showPollButton ? `<button class="idb-secondary" data-idb-build-return-action="check_runner_result">${escapeHtml(pollButtonLabel)}</button>` : ''}
             ${showImportButton ? '<button class="idb-primary" data-idb-build-return-action="import_completed_runner_result">Finish build</button>' : ''}
             ${actions.showContinueToRun ? '<button class="idb-secondary" data-idb-view="run">Continue to Run</button>' : ''}
+            ${w262BuildUx.stateFacts.runnerTaskCaptured || w262BuildUx.stateFacts.completedResultReady ? '<button class="idb-secondary" type="button" data-idb-w444-clear-run="keep">Clear build result and run again</button>' : ''}
+            ${w262BuildUx.stateFacts.runnerTaskCaptured || w262BuildUx.stateFacts.completedResultReady ? '<button class="idb-secondary" type="button" data-idb-w445-start-new-run>Clear and start new build</button>' : ''}
             ${actions.showContinueToRun ? '<span class="idb-mini-chip">Smoke can continue</span>' : ''}
             ${oneClickBuild.automation && oneClickBuild.automation.showAskAdminMessage && !w262BuildUx.stateFacts.runnerTaskCaptured ? '<span class="idb-mini-chip">Build failed, ask admin</span>' : ''}
           </div>

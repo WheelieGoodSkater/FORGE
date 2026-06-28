@@ -206,9 +206,9 @@ function main() {
   );
 
   assertCase(results, 'w428-drawer-marker-updated',
-    /@version\s+1\.0\.56/.test(drawer) &&
-      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.56';") &&
-      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W448';"),
+    /@version\s+1\.0\.72/.test(drawer) &&
+      drawer.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.72';") &&
+      drawer.includes("const CURRENT_UX_BLOCK_W346 = 'W472';"),
     'Drawer should identify the current install marker while preserving the refresh auto-import repair patch.');
 
   assertCase(results, 'w427-filecabinet-drawer-synced',
@@ -224,8 +224,59 @@ function main() {
   assertCase(results, 'w427-refresh-auto-import-code-present',
     drawer.includes('idbPollsCompletedResultAndImportsFinalUrlsV1(') &&
       drawer.includes('completed_runner_result_auto_imported_on_refresh') &&
-      drawer.includes('completed_runner_result_auto_import_blocked_on_refresh'),
+      drawer.includes('completed_runner_result_auto_import_blocked_on_refresh') &&
+      drawer.includes('idb.drawer.inFlightBuild.w472.v1') &&
+      drawer.includes('restoreInFlightBuildSnapshotW472(state)'),
     'Refresh should auto-import a W151-valid completed result.');
+
+  const darnInFlightState = motionState(hooks, {
+    selectedLaneId: 'products_cpg',
+    intake: {
+      customer: 'Darn Tough W472 Dealer Sock Allocation Smoke 20260628163936',
+      website: 'https://darntough.com/products/mens-merino-wool-hiker-boot-midweight-hiking-socks',
+      notes: 'Wholesale operations lead preparing fall hiking sock allocation.'
+    },
+    integratedBuildRunnerResult: {
+      schema: 'idb.approved-server-adapter-result-envelope.v1',
+      status: 'queued_result_capture_pending',
+      queueSubmitted: true,
+      runnerTaskId: 'SCHEDSCRIPT_472_DARN_TOUGH',
+      idempotencyToken: 'idb-build-darn-tough-w472-dealer-sock-allocation-smoke-202-products-cpg',
+      sourceRequestId: 'idb-build-darn-tough-w472-dealer-sock-allocation-smoke-202-products-cpg',
+      buildAttemptId: 'attempt-darn-tough-w472-refresh-restore',
+      submittedAt: '2026-06-28T16:39:36.000Z',
+      confirmedBuildRequest: originalConfirmedRequest,
+      resultCapture: {
+        status: 'pending_runner_completion',
+        runnerTaskId: 'SCHEDSCRIPT_472_DARN_TOUGH',
+        idempotencyToken: 'idb-build-darn-tough-w472-dealer-sock-allocation-smoke-202-products-cpg',
+        sourceRequestId: 'idb-build-darn-tough-w472-dealer-sock-allocation-smoke-202-products-cpg',
+        buildAttemptId: 'attempt-darn-tough-w472-refresh-restore',
+        submittedAt: '2026-06-28T16:39:36.000Z',
+        confirmedBuildRequest: originalConfirmedRequest
+      },
+      finalGeneratedNamesJson: null,
+      activeOpenLinks: 0
+    }
+  });
+  const inFlightSnapshot = hooks.writeInFlightBuildSnapshotW472(darnInFlightState, 'harness_w472_refresh_restore');
+  const blankAfterNetSuiteRefresh = hooks.defaultState();
+  blankAfterNetSuiteRefresh.open = true;
+  const restoreMarker = hooks.restoreInFlightBuildSnapshotW472(blankAfterNetSuiteRefresh);
+  const nonBlankNewRequest = hooks.defaultState();
+  nonBlankNewRequest.intake.customer = 'Fresh Prospect Should Not Be Overwritten';
+  const blockedRestore = hooks.restoreInFlightBuildSnapshotW472(nonBlankNewRequest);
+
+  assertCase(results, 'w472-refresh-restores-inflight-runner-identity-from-blank-active-session',
+    inFlightSnapshot &&
+      restoreMarker &&
+      restoreMarker.status === 'in_flight_build_restored_for_refresh_polling' &&
+      blankAfterNetSuiteRefresh.integratedBuildRunnerResult &&
+      blankAfterNetSuiteRefresh.integratedBuildRunnerResult.runnerTaskId === 'SCHEDSCRIPT_472_DARN_TOUGH' &&
+      /Darn Tough W472/.test(blankAfterNetSuiteRefresh.intake.customer) &&
+      hooks.activeStateBlankForInFlightRestoreW472(nonBlankNewRequest) === false &&
+      blockedRestore === null,
+    JSON.stringify({ inFlightSnapshot, restoreMarker, restoredIntake: blankAfterNetSuiteRefresh.intake, blockedRestore }, null, 2));
 
   assertCase(results, 'w427-auto-import-uses-existing-w151-guard',
     importFlow.status === 'completed_result_imported_final_urls_ready' &&
@@ -293,6 +344,14 @@ function main() {
       resultCapture: {
         status: 'pending_transaction_resolution',
         partialGeneratedNamesJson: Object.assign({}, kettleSidecarResult, {
+          currentRunIdentityChecksW457: {
+            expectedProspect: 'Motion Industries',
+            customer: {
+              expectedProspect: 'Motion Industries',
+              actualName: 'Motion Industries Customer Account',
+              status: 'current_run_identity_verified'
+            }
+          },
           records: [
             {
               role: 'branch_or_product_sku',

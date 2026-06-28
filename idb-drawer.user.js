@@ -20,6 +20,7 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
+  const IN_FLIGHT_BUILD_STORAGE_KEY_W472 = 'idb.drawer.inFlightBuild.w472.v1';
   const DRAWER_USERSCRIPT_VERSION = '1.0.72';
   const CURRENT_UX_BLOCK_W346 = 'W472';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
@@ -2028,6 +2029,110 @@
     return readJson(LAST_RUN_STORAGE_KEY_W446, null);
   }
 
+  function runnerTaskIdFromResultW472(result) {
+    const runner = result || {};
+    const capture = runner.resultCapture || {};
+    return firstNonBlank(runner.runnerTaskId, runner.taskId, capture.runnerTaskId, capture.taskId);
+  }
+
+  function clearInFlightBuildSnapshotW472() {
+    try {
+      window.localStorage.removeItem(IN_FLIGHT_BUILD_STORAGE_KEY_W472);
+    } catch (err) {
+      // Ignore storage restrictions; the active session remains authoritative.
+    }
+  }
+
+  function inFlightBuildSnapshotW472(state, source) {
+    const runner = state && state.integratedBuildRunnerResult || null;
+    const runnerTaskId = runnerTaskIdFromResultW472(runner);
+    if (!runnerTaskId) return null;
+    const intake = normalizedIntake(state || {});
+    return {
+      schema: 'idb.w472-in-flight-build-refresh-snapshot.v1',
+      savedAt: nowIso(),
+      source: source || 'save_state',
+      selectedLaneId: state && state.selectedLaneId || 'products_cpg',
+      selectedActionId: state && state.selectedActionId || 'prove',
+      intake,
+      toggles: state && state.toggles || {},
+      currentToggles: state && state.currentToggles || {},
+      acceptedPacket: state && state.acceptedPacket || null,
+      briefPrepared: state && state.briefPrepared === true,
+      activeView: state && state.activeView || 'review',
+      pageContext: state && state.pageContext || null,
+      websiteEvidenceV1: state && state.websiteEvidenceV1 || null,
+      integratedBuildAdapterConfig: state && state.integratedBuildAdapterConfig || null,
+      integratedBuildOperatorApproval: state && state.integratedBuildOperatorApproval || null,
+      integratedBuildAttemptProvenance: state && state.integratedBuildAttemptProvenance || null,
+      integratedBuildRunnerResult: compactRunnerResultForStorageW472(runner),
+      runnerTaskId,
+      idempotencyToken: firstNonBlank(runner.idempotencyToken, runner.sourceRequestId, runner.resultCapture && runner.resultCapture.idempotencyToken),
+      buildAttemptId: firstNonBlank(runner.buildAttemptId, runner.resultCapture && runner.resultCapture.buildAttemptId),
+      submittedAt: firstNonBlank(runner.submittedAt, runner.resultCapture && runner.resultCapture.submittedAt),
+      noDrawerWrites: true,
+      noDrawerTransactionWrites: true
+    };
+  }
+
+  function writeInFlightBuildSnapshotW472(state, source) {
+    if (state && state.dccFinalNamingResult && state.dccFinalNamingResult.finalNamesImported === true) {
+      clearInFlightBuildSnapshotW472();
+      return null;
+    }
+    const snapshot = inFlightBuildSnapshotW472(state, source);
+    if (!snapshot) return null;
+    writeJson(IN_FLIGHT_BUILD_STORAGE_KEY_W472, snapshot);
+    return snapshot;
+  }
+
+  function readInFlightBuildSnapshotW472() {
+    return readJson(IN_FLIGHT_BUILD_STORAGE_KEY_W472, null);
+  }
+
+  function activeStateBlankForInFlightRestoreW472(state) {
+    const intake = normalizedIntake(state || {});
+    return !runnerTaskIdFromResultW472(state && state.integratedBuildRunnerResult) &&
+      !(state && state.dccFinalNamingResult) &&
+      !firstNonBlank(intake.customer, intake.website, intake.notes, state && state.customerName);
+  }
+
+  function restoreInFlightBuildSnapshotW472(state) {
+    const snapshot = readInFlightBuildSnapshotW472();
+    if (!snapshot || snapshot.schema !== 'idb.w472-in-flight-build-refresh-snapshot.v1') return null;
+    if (!runnerTaskIdFromResultW472(snapshot.integratedBuildRunnerResult)) return null;
+    if (!activeStateBlankForInFlightRestoreW472(state)) return null;
+    const restored = {
+      selectedLaneId: snapshot.selectedLaneId || state.selectedLaneId,
+      selectedActionId: snapshot.selectedActionId || state.selectedActionId,
+      laneSelectionSource: 'restored_in_flight_build_w472',
+      intake: snapshot.intake || state.intake,
+      toggles: snapshot.toggles || state.toggles,
+      currentToggles: snapshot.currentToggles || state.currentToggles,
+      acceptedPacket: snapshot.acceptedPacket || state.acceptedPacket,
+      briefPrepared: snapshot.briefPrepared === true || state.briefPrepared === true,
+      activeView: snapshot.activeView || 'review',
+      pageContext: snapshot.pageContext || state.pageContext,
+      websiteEvidenceV1: snapshot.websiteEvidenceV1 || state.websiteEvidenceV1,
+      integratedBuildAdapterConfig: snapshot.integratedBuildAdapterConfig || state.integratedBuildAdapterConfig,
+      integratedBuildOperatorApproval: snapshot.integratedBuildOperatorApproval || state.integratedBuildOperatorApproval,
+      integratedBuildAttemptProvenance: snapshot.integratedBuildAttemptProvenance || state.integratedBuildAttemptProvenance,
+      integratedBuildRunnerResult: snapshot.integratedBuildRunnerResult,
+      w472InFlightBuildRestore: {
+        schema: 'idb.w472-in-flight-build-refresh-restore.v1',
+        status: 'in_flight_build_restored_for_refresh_polling',
+        restoredAt: nowIso(),
+        snapshotSavedAt: snapshot.savedAt || '',
+        runnerTaskId: snapshot.runnerTaskId || '',
+        idempotencyToken: snapshot.idempotencyToken || '',
+        noDrawerWrites: true,
+        noDrawerTransactionWrites: true
+      }
+    };
+    Object.assign(state, restored);
+    return state.w472InFlightBuildRestore;
+  }
+
   function restoreLastRunSnapshotW446(state) {
     const snapshot = readLastRunSnapshotW446();
     if (!snapshot) {
@@ -2294,6 +2399,7 @@
     try {
       window.localStorage.removeItem(STORAGE_KEY);
       window.localStorage.removeItem(TRACE_KEY);
+      clearInFlightBuildSnapshotW472();
       clearLegacyPersistentState();
     } catch (err) {
       // Ignore storage restrictions; a redraw will still reset the in-memory state.
@@ -23661,12 +23767,15 @@
   function saveState(state) {
     try {
       writeJson(STORAGE_KEY, state);
+      writeInFlightBuildSnapshotW472(state, 'save_state');
     } catch (error) {
       if (!/quota|exceed/i.test(String(error && (error.name || error.message) || error))) throw error;
       try {
         window.localStorage.removeItem(TRACE_KEY);
       } catch (cleanupError) {}
-      writeJson(STORAGE_KEY, compactStateForStorageW472(state));
+      const compact = compactStateForStorageW472(state);
+      writeJson(STORAGE_KEY, compact);
+      writeInFlightBuildSnapshotW472(compact, 'save_state_compacted');
     }
   }
 
@@ -31990,10 +32099,12 @@
   function init() {
     resetInjectedShellNodes();
     clearLegacyPersistentState();
-    if (isNetSuiteAuthBoundary()) {
+    const authBoundary = isNetSuiteAuthBoundary();
+    if (authBoundary) {
       clearActiveSessionStorage();
     }
     const state = Object.assign(defaultState(), readJson(STORAGE_KEY, {}));
+    if (!authBoundary) restoreInFlightBuildSnapshotW472(state);
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.setAttribute(SHELL_ATTR, 'style');
@@ -32044,6 +32155,7 @@
       }
       if (event.key !== STORAGE_KEY || !event.newValue) return;
       Object.assign(state, defaultState(), readJson(STORAGE_KEY, {}));
+      restoreInFlightBuildSnapshotW472(state);
       draw(drawer, state);
       if (state.open) drawer.classList.add('idb-open');
       applyWorkspaceFit(state.open);
@@ -32320,6 +32432,11 @@
       lastRunSnapshotW446,
       readLastRunSnapshotW446,
       restoreLastRunSnapshotW446,
+      inFlightBuildSnapshotW472,
+      writeInFlightBuildSnapshotW472,
+      readInFlightBuildSnapshotW472,
+      restoreInFlightBuildSnapshotW472,
+      activeStateBlankForInFlightRestoreW472,
       w444TroubleshootExportPayload,
       drawerSafePollExceptionResultW464,
       drawerWidthContractW444,

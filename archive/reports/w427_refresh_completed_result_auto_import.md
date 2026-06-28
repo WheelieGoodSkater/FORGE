@@ -13,10 +13,11 @@ W428 repairs the simplified consultant flow after a runner task completes. Refre
 ## Pass/Fail
 | Gate | Result |
 | --- | --- |
-| w428-drawer-marker-updated | FAIL |
+| w428-drawer-marker-updated | PASS |
 | w427-filecabinet-drawer-synced | PASS |
 | w427-submitted-confirmed-request-is-preserved | PASS |
 | w427-refresh-auto-import-code-present | PASS |
+| w472-refresh-restores-inflight-runner-identity-from-blank-active-session | PASS |
 | w427-auto-import-uses-existing-w151-guard | PASS |
 | w427-auto-import-preserves-open-link-authority | PASS |
 | w428-refresh-auto-import-trusts-completed-poll-result | PASS |

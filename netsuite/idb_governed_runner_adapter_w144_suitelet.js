@@ -5,7 +5,7 @@
  * @NScriptType Suitelet
  */
 define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
-  const ADAPTER_VERSION = 'w473-governed-adapter-completed-result-alias-return';
+  const ADAPTER_VERSION = 'w474-governed-adapter-short-token-result-return';
   const SIDECAR_RUNNER_VERSION_W472 = 'W472';
   const DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W472 = 'customscript_scai_ss_runner_sidecar_w472';
   const DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W472 = 'customdeploy_scai_ss_runner_sidecar_w472';
@@ -1035,6 +1035,17 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function websiteProductExamplesFromRequestW472(request, website, prospect) {
     const candidates = [];
+    const urlProductName = productNameFromWebsiteUrlW473(website);
+    if (urlProductName) {
+      candidates.push({
+        name: urlProductName,
+        source: 'website_product_url_slug_w473',
+        sourceUrl: website,
+        confidence: 99,
+        wipSuitabilityScore: 99,
+        reasons: ['product detail URL slug promoted when website resolver returns thin product text']
+      });
+    }
     const roots = [
       { path: 'request.websiteEvidence', value: request && request.websiteEvidence },
       { path: 'request.productEvidence', value: request && request.productEvidence },
@@ -1068,6 +1079,36 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         return true;
       })
       .slice(0, 3);
+  }
+
+  function productNameFromWebsiteUrlW473(website) {
+    const value = String(website || '').trim();
+    if (!value) return '';
+    const match = value.match(/^https?:\/\/[^/]+\/(.+?)(?:[?#].*)?$/i);
+    if (!match) return '';
+    const segments = match[1].split('/').map(function(segment) {
+      return decodeURIComponent(String(segment || '')).trim();
+    }).filter(Boolean);
+    if (!segments.length) return '';
+    const productIndex = segments.findIndex(function(segment) {
+      return /^(product|products|shop|p)$/i.test(segment);
+    });
+    const slug = productIndex >= 0 && segments[productIndex + 1]
+      ? segments[productIndex + 1]
+      : segments[segments.length - 1];
+    const cleaned = slug
+      .replace(/\.(html?|aspx?)$/i, '')
+      .replace(/[-_]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!cleaned || cleaned.length < 4) return '';
+    if (/^(product|products|collections?|category|shop|all|search)$/i.test(cleaned)) return '';
+    const titled = titleCaseEvidencePhraseW457(cleaned)
+      .replace(/\bOz\b/g, 'oz')
+      .replace(/\bWith\b/g, 'with')
+      .replace(/\bAnd\b/g, 'and')
+      .replace(/\bFor\b/g, 'for');
+    return usableWebsiteProductExampleW472(titled, {});
   }
 
   function websiteProductExamplesNamingPackW472(request, website, prospect) {
@@ -1617,6 +1658,24 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     }
   }
 
+  function pushRequestWordSearchTokensW473(tokens, seen, source, value) {
+    const words = String(value || '')
+      .replace(/^IDB-/i, '')
+      .split(/[^A-Za-z0-9]+/)
+      .map(function(word) { return word.trim().toLowerCase(); })
+      .filter(function(word) {
+        return word.length >= 4 &&
+          !/^(idb|build|record|return|smoke|dealer|hardgoods|apparel|accessories|products|product|wip|mfg|manufacturing|202\d+)$/.test(word);
+      });
+    const pairs = [];
+    for (let i = 0; i < words.length - 1; i += 1) {
+      pairs.push(`${words[i]}-${words[i + 1]}`);
+    }
+    words.concat(pairs).slice(0, 8).forEach(function(token, index) {
+      pushUniqueSearchToken(tokens, seen, `${source}RequestWordW473_${index}`, token);
+    });
+  }
+
   function resultCaptureFileSearchTokensW320(expected) {
     const searchTokens = [];
     const seen = {};
@@ -1640,7 +1699,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455Short', safeToken.slice(0, 36));
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455ResultStem', `IDB-${safeToken}`.slice(0, 40));
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW472ResultStem36', `IDB-${safeToken}`.slice(0, 36));
+      pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW473ResultStem32', `IDB-${safeToken}`.slice(0, 32));
+      pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW473ResultStem48', `IDB-${safeToken}`.slice(0, 48));
       pushRunnerResultCaptureStemTokensW472(searchTokens, seen, 'safeIdempotency', idempotencyToken);
+      pushRequestWordSearchTokensW473(searchTokens, seen, 'idempotencyToken', idempotencyToken);
     }
     if (expected && expected.sourceRequestId) {
       const safeSourceRequest = safeFileToken(expected.sourceRequestId);
@@ -1648,7 +1710,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW455', safeSourceRequest.slice(0, 48));
       pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW455ResultStem', `IDB-${safeSourceRequest}`.slice(0, 40));
       pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW472ResultStem36', `IDB-${safeSourceRequest}`.slice(0, 36));
+      pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW473ResultStem32', `IDB-${safeSourceRequest}`.slice(0, 32));
+      pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW473ResultStem48', `IDB-${safeSourceRequest}`.slice(0, 48));
       pushRunnerResultCaptureStemTokensW472(searchTokens, seen, 'safeSourceRequestId', expected.sourceRequestId);
+      pushRequestWordSearchTokensW473(searchTokens, seen, 'sourceRequestId', expected.sourceRequestId);
     }
     if (expected && expected.runnerExternalId) {
       const safeRunnerExtId = safeFileToken(expected.runnerExternalId);
@@ -1694,10 +1759,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (expected.runnerTaskId && actual.runnerTaskId && actual.runnerTaskId !== expected.runnerTaskId && !currentRunRunnerTaskSwitchAllowedW472(expected, actual)) {
       reasons.push('runnerTaskId_mismatch');
     }
-    if (expected.buildAttemptId && actual.buildAttemptId !== expected.buildAttemptId) {
+    if (expected.buildAttemptId && actual.buildAttemptId !== expected.buildAttemptId && !currentRunExtIdAliasAllowedW473(expected, actual)) {
       reasons.push(actual.buildAttemptId ? 'buildAttemptId_mismatch' : 'buildAttemptId_missing');
     }
-    if (expected.sourceRequestId && actual.sourceRequestId && actual.sourceRequestId !== expected.sourceRequestId) {
+    if (expected.sourceRequestId && actual.sourceRequestId && !sameIdbRequestTokenW472(actual.sourceRequestId, expected.sourceRequestId)) {
       reasons.push('sourceRequestId_mismatch');
     }
     if (expected.idempotencyToken && actual.idempotencyToken && !sameIdbRequestTokenW472(actual.idempotencyToken, expected.idempotencyToken)) {
@@ -1717,7 +1782,19 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     };
     const a = normalize(left);
     const b = normalize(right);
-    return !!a && !!b && a === b;
+    return !!a && !!b && (a === b || a.indexOf(b) !== -1 || b.indexOf(a) !== -1);
+  }
+
+  function currentRunExtIdAliasAllowedW473(expected, actual) {
+    const expectedToken = String(expected && (expected.idempotencyToken || expected.sourceRequestId) || '').trim();
+    if (!expectedToken) return false;
+    return [
+      actual && actual.buildAttemptId,
+      actual && actual.sourceRequestId,
+      actual && actual.idempotencyToken
+    ].some(function(value) {
+      return sameIdbRequestTokenW472(value, expectedToken);
+    });
   }
 
   function currentRunRunnerTaskSwitchAllowedW472(expected, actual) {
@@ -2398,6 +2475,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (!searchModule || !fileModule) return { found: false, reason: 'file/search modules unavailable' };
     const searchTokens = resultCaptureFileSearchTokensW320(expected);
     const staleCandidates = [];
+    const recentCandidatesW473 = [];
     const checkedFileIds = {};
     for (let tokenIndex = 0; tokenIndex < searchTokens.length; tokenIndex += 1) {
       const searchToken = searchTokens[tokenIndex];
@@ -2497,6 +2575,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       if (!fileId || checkedFileIds[fileId]) continue;
       checkedFileIds[fileId] = true;
       const fileName = match.getValue && match.getValue({ name: 'name' }) || match.name || '';
+      recentCandidatesW473.push({ fileId, fileName: String(fileName || '') });
       const captureFile = fileModule.load({ id: fileId });
       const contents = captureFile.getContents();
       let parsed = null;
@@ -2534,6 +2613,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       expected,
       staleRejected: staleCandidates.length > 0,
       latestRejectedFile: staleCandidates.length ? staleCandidates[0] : null,
+      recentCandidatesW473,
+      searchTokensW473: searchTokens.map(function(entry) { return entry.source + ':' + entry.token; }).slice(0, 30),
       staleCandidates
     };
   }
@@ -2604,6 +2685,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
           expectedProvenance: found.expected || lookupProvenance,
           resultCaptureFolderId: config.resultCaptureFolderId || '',
           latestRejectedFile: found.latestRejectedFile || null,
+          recentCandidatesW473: found.recentCandidatesW473 || [],
+          searchTokensW473: found.searchTokensW473 || [],
           staleRejected: found.staleRejected === true,
           staleCandidates: found.staleCandidates || []
         },

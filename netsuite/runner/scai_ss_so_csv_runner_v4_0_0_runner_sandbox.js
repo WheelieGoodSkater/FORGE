@@ -3545,9 +3545,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       names.operation_names_by_seq = names.operation_names_by_seq || fallback.operation_names_by_seq;
       names.namingAuthorityOrderW468 = names.namingAuthorityOrderW468 || 'server precomputed naming pack -> prospect fallback';
       names.namingAuthorityOrderW470 = names.namingAuthorityOrderW470 || 'server selected catalog naming pack -> runner preserve only -> prospect fallback';
+      names.namingSourceUsed = namingPayload.source || names._source || 'suitelet-precomputed';
+      names.namingPayloadFound = namingPayload.found === true;
+      names.namingPayloadParsed = namingPayload.parsed === true;
+      names.namingPayloadApplied = namingPayload.applied === true;
+      names.namingPackPreserved = true;
       names.runnerNamingOverrideBlockedW470 = true;
       names.namingPackAuthoritativeW470 = true;
       names.fallbackUsed = false;
+      delete names.fallbackReason;
       return names;
     }
 
@@ -5676,7 +5682,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (!recovered || recovered.fallbackUsed === true || !recoveredProduct || weakProductNameReasonW467(recoveredProduct)) return null;
     return Object.assign({}, names, recovered, {
       blockedWeakProductName: names.blockedWeakProductName || str(names.selectedProductName || names.primary_product_candidate || ''),
-      blockedWeakProductNameReason: names.blockedWeakProductNameReason || weakReason || 'weak product naming blocked',
+      blockedWeakProductNameReason: names.blockedWeakProductNameReason || weakReason || 'non-product resolver text ignored',
       blockedWeakRecordName: weakRecordName || names.blockedWeakRecordName || '',
       namingAuthorityOrderW467: 'validated naming pack -> deterministic domain recovery -> prospect fallback',
       productFirstRecordNamingW466: {
@@ -5696,7 +5702,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           bom_name: recovered.bom_name || '',
           bom_revision_name: recovered.bom_revision_name || ''
         },
-        policy: 'weak-precomputed-record-name-recovered-by-domain-product-resolver'
+        policy: 'resolver-text-record-name-recovered-by-domain-product-resolver'
       }
     });
   }
@@ -5705,6 +5711,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const names = Object.assign({}, rawNames || {});
     const namingPayload = context && context.namingPayload || {};
     const authoritativePackApplied = namingPayload.parsed === true && namingPayload.applied === true;
+    if (authoritativePackApplied) {
+      names.namingAuthorityOrderW467 = 'validated naming pack -> preserve applied old-runner pack -> prospect fallback';
+      names.namingSourceUsed = namingPayload.source || names._source || 'suitelet-precomputed';
+      names.namingPayloadFound = namingPayload.found === true;
+      names.namingPayloadParsed = namingPayload.parsed === true;
+      names.namingPayloadApplied = namingPayload.applied === true;
+      names.namingPackPreserved = true;
+      names.fallbackUsed = false;
+      delete names.fallbackReason;
+      names.productFirstRecordNamingW466 = names.productFirstRecordNamingW466 || {
+        applied: false,
+        policy: 'authoritative-precomputed-naming-pack-preserved'
+      };
+      return names;
+    }
     const selectedCandidate = names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
       ? names.selectedCatalogCandidate.name
       : names.selectedCatalogCandidate;
@@ -5724,7 +5745,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     if (weakProductReason || weakRecordName) {
-      const recovered = strongDomainRecoveryNamingPackW467(names, context, weakRecordName, weakProductReason || 'weak record name blocked');
+      const recovered = strongDomainRecoveryNamingPackW467(names, context, weakRecordName, weakProductReason || 'resolver record text ignored');
       if (recovered) return recovered;
     }
 
@@ -5732,11 +5753,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return Object.assign({}, names, prospectFallbackNamingPackW467({
         prospect: context && context.prospect,
         signalLen: names._signalLen,
-        fallbackReason: `Weak record naming "${weakRecordName}" was blocked; prospect-based deterministic fallback used.`,
+        fallbackReason: 'Old-runner deterministic naming used because no preserved naming pack was available.',
         genericFallbackBlockedTerms: names.genericFallbackBlockedTerms
       }), {
         blockedWeakProductName: names.blockedWeakProductName || product || '',
-        blockedWeakProductNameReason: names.blockedWeakProductNameReason || 'weak record name blocked',
+        blockedWeakProductNameReason: names.blockedWeakProductNameReason || 'resolver record text ignored',
         blockedWeakRecordName: weakRecordName,
         namingAuthorityOrderW467: 'validated naming pack -> validated product evidence -> prospect fallback'
       });
@@ -5746,22 +5767,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return Object.assign({}, names, prospectFallbackNamingPackW467({
         prospect: context && context.prospect,
         signalLen: names._signalLen,
-        fallbackReason: `Weak product naming "${product}" was blocked; prospect-based deterministic fallback used.`,
+        fallbackReason: 'Old-runner deterministic naming used because no preserved naming pack was available.',
         genericFallbackBlockedTerms: names.genericFallbackBlockedTerms
       }), {
         blockedWeakProductName: product,
         blockedWeakProductNameReason: weakProductReason,
         namingAuthorityOrderW467: 'validated naming pack -> validated product evidence -> prospect fallback'
       });
-    }
-
-    if (authoritativePackApplied) {
-      names.namingAuthorityOrderW467 = 'validated naming pack -> validated product evidence -> prospect fallback';
-      names.productFirstRecordNamingW466 = names.productFirstRecordNamingW466 || {
-        applied: false,
-        policy: 'authoritative-precomputed-naming-pack-preserved'
-      };
-      return names;
     }
 
     if (!product || weakProductReason || /^catalog product$/i.test(product) || names.fallbackUsed === true) {

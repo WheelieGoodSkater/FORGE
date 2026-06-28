@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.70';
-  const CURRENT_UX_BLOCK_W346 = 'W470';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.71';
+  const CURRENT_UX_BLOCK_W346 = 'W471';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1248,7 +1248,7 @@
 
   const INSTALLED_DRAWER_RUNTIME_MARKER_W332 = 'W332 post-import story polish active';
   const INSTALLED_DRAWER_VERSION_FINGERPRINT_W339 = 'W339 imported proof record UX active';
-  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W470 locked naming authority and completed result return active';
+  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W471 locked naming authority and completed result return active';
   const INSTALLED_DRAWER_COPY_FINGERPRINT_W339 = [
     'Use imported proof records',
     'Use returned NetSuite proof records',
@@ -14302,6 +14302,79 @@
     return canonicalRoleFromSnapshotW244(rawRole, mode, rawRole);
   }
 
+  function terminalRunnerResultDisplayRecordsW471(payload, resultCapture) {
+    const source = payload || {};
+    const capture = resultCapture || {};
+    const candidates = [
+      source.displayReadyRecords,
+      source.recordsArray,
+      source.displayRecords,
+      capture.displayReadyRecords,
+      capture.recordsArray,
+      capture.displayRecords,
+      source.finalGeneratedNamesJson,
+      source.completedResultJson,
+      source.generatedNamesJson,
+      source.sidecarGeneratedNamesJson,
+      capture.finalGeneratedNamesJson,
+      capture.completedResultJson,
+      capture.generatedNamesJson,
+      capture.sidecarGeneratedNamesJson
+    ].map(parseMaybeJsonObjectW455).filter(Boolean);
+    const out = [];
+    candidates.forEach((candidate) => {
+      if (Array.isArray(candidate)) {
+        candidate.forEach((record) => out.push(record));
+        return;
+      }
+      if (!(candidate && typeof candidate === 'object')) return;
+      ['displayReadyRecords', 'recordsArray', 'displayRecords'].forEach((key) => {
+        if (Array.isArray(candidate[key])) candidate[key].forEach((record) => out.push(record));
+      });
+      const keyed = parseMaybeJsonObjectW455(candidate.records || candidate.createdRecords || {});
+      if (keyed && typeof keyed === 'object' && !Array.isArray(keyed)) {
+        Object.keys(keyed).forEach((key) => {
+          const value = keyed[key];
+          if (Array.isArray(value)) value.forEach((record) => out.push(Object.assign({ outputRole: key }, record || {})));
+          else if (value && typeof value === 'object') out.push(Object.assign({ outputRole: key }, value));
+        });
+      }
+    });
+    return out.filter((record) => record && typeof record === 'object' && !isOperationLinkRecordW455(record));
+  }
+
+  function terminalDisplayRecordRoleW471(record) {
+    const text = `${record && (record.canonicalRole || record.role || record.outputRole || record.recordRole || record.type || record.recordType || record.label) || ''}`.toLowerCase();
+    if (/sales[_\s-]*order|salesorder|demo transaction|transaction/.test(text)) return 'sales_order';
+    if (/customer|prospect/.test(text)) return 'customer';
+    if (/hero|sellable|product[_\s-]*sku|item|inventory/.test(text) && !/component|assembly/.test(text)) return 'hero_item';
+    if (/assembly/.test(text)) return 'assembly';
+    if (/bom[_\s-]*revision|bomrevision|revision/.test(text)) return 'bom_revision';
+    if (/\bbom\b|bill of materials/.test(text)) return 'bom';
+    if (/routing|manufacturingrouting/.test(text)) return 'routing';
+    if (/work[_\s-]*order|workorder/.test(text)) return 'work_order';
+    if (/component|supporting|ingredient/.test(text)) return 'component_item';
+    return firstNonBlank(record && record.role, record && record.canonicalRole, record && record.outputRole, 'returned_record');
+  }
+
+  function terminalDisplayRecordsAsDccObjectsW471(payload, resultCapture, displayPayload) {
+    const seen = {};
+    return terminalRunnerResultDisplayRecordsW471(payload, resultCapture)
+      .map((record, index) => {
+        const role = terminalDisplayRecordRoleW471(record);
+        const label = firstNonBlank(record.consultantLabel, record.displayLabel, record.label, role);
+        return normalizeDccFinalObjectWithProductPlanW435(role, label, record, displayPayload || payload || {}, index);
+      })
+      .filter((record) => record && record.source === 'dcc_final')
+      .filter((record) => {
+        const type = inferNetSuiteRecordTypeW245(record);
+        const key = [type || record.recordType || record.role || '', record.id || '', absoluteNetSuiteRecordUrl(record.url || '')].join('|');
+        if (seen[key]) return false;
+        seen[key] = true;
+        return true;
+      });
+  }
+
   function displayReadyRecordsFromFinalNamingW245(finalNaming, state, lane, pageContext, recommendation, payload) {
     const resolver = resolveBuildOperatingModeW214(state, lane, pageContext, recommendation, { payload });
     const mode = firstNonBlank(finalNaming && finalNaming.resolvedOperatingMode, resolver && resolver.resolvedOperatingMode);
@@ -14317,7 +14390,8 @@
         const consultantRecordLabel = lanePackAwareRecordLabelW250(canonicalRole, mode, lanePack, rawRole);
         const plannedOperation = isPlannedOperationRowW449(linked) || /^operation\d+$/i.test(String(linked.role || linked.outputRole || ''));
         const diagnosticRow = isDiagnosticRowW449(linked);
-        const key = [canonicalRole, linked.name, linked.id, linked.url].join('|');
+        const recordType = inferNetSuiteRecordTypeW245(linked);
+        const key = [recordType || canonicalRole, linked.id || '', absoluteNetSuiteRecordUrl(linked.url || '')].join('|') || [canonicalRole, linked.name, linked.id, linked.url].join('|');
         if (seen[key]) return null;
         seen[key] = true;
         return Object.assign({}, linked, {
@@ -14326,7 +14400,7 @@
           legacyDisplayRole: linked.role || rawRole,
           consultantLabel: consultantRecordLabel,
           recordName: linked.name,
-          recordType: inferNetSuiteRecordTypeW245(linked),
+          recordType,
           internalId: linked.id,
           supportedOpenUrl: plannedOperation || diagnosticRow ? '' : (linked.linkAuthority && linked.linkAuthority.openable ? linked.linkAuthority.url : ''),
           linkAuthorityStatus: plannedOperation ? 'planned_operation_not_record_link' : diagnosticRow ? 'diagnostic_only' : (linked.linkAuthority && linked.linkAuthority.status || 'unknown'),
@@ -15462,6 +15536,10 @@
     if (payload.routing || records.routing || semanticRouting.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('routing', 'Routing', payload.routing || records.routing || byRole('routing') || semanticRouting, displayPayload, 0));
     if (payload.workCenter || records.workCenter || records.work_center || semanticWorkCenter.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('work_center', 'Work Center', payload.workCenter || records.workCenter || records.work_center || byRole('work_center') || semanticWorkCenter, displayPayload, 0));
     if (payload.wipObject || records.wipObject || records.wip_object || semanticWipObject.name) displayObjects.push(normalizeDccFinalObjectWithProductPlanW435('wip_object', 'WIP object', payload.wipObject || records.wipObject || records.wip_object || byRole('wip_object') || semanticWipObject, displayPayload, 0));
+    const terminalDisplayObjectsW471 = terminalDisplayRecordsAsDccObjectsW471(payload, resultCapture, displayPayload);
+    if (terminalDisplayObjectsW471.length) {
+      displayObjects = terminalDisplayObjectsW471.concat(displayObjects);
+    }
     displayObjects = enrichDisplayObjectsWithWipTruthW444(displayObjects, displayPayload, records, resultCapture, state, lane);
     const returnedCount = displayObjects.concat(componentItems, locationPlanningRecords).filter((item) => item.source === 'dcc_final').length;
     const warnings = arrayValue(payload.warnings || payload.warning).map((item) => String(item));
@@ -16298,7 +16376,8 @@
   function finalNamingRecordsForSemanticGuardW214(finalNaming) {
     return arrayValue(finalNaming && finalNaming.displayObjects)
       .concat(arrayValue(finalNaming && finalNaming.componentItems))
-      .concat(arrayValue(finalNaming && finalNaming.locationPlanningRecords));
+      .concat(arrayValue(finalNaming && finalNaming.locationPlanningRecords))
+      .concat(arrayValue(finalNaming && finalNaming.displayReadyRecords));
   }
 
   function recordLooksLikeWipDetailW214(record) {

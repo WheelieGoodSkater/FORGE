@@ -211,7 +211,8 @@
     "harness:website-product-wip-sidecar-hardening-w464": "node archive/tools/run_w464_website_product_wip_sidecar_hardening_harness.js",
     "harness:drawer-sidecar-truth-poll-recovery-w464": "node archive/tools/run_w464_drawer_sidecar_truth_poll_recovery_harness.js",
     "harness:catalog-candidate-ranking-w464": "node archive/tools/run_w464_catalog_candidate_ranking_harness.js",
-    "harness:website-product-evidence-pipeline-w463": "node archive/tools/run_w463_website_product_evidence_pipeline_harness.js"
+    "harness:website-product-evidence-pipeline-w463": "node archive/tools/run_w463_website_product_evidence_pipeline_harness.js",
+    "harness:locked-naming-returned-links-w471": "node archive/tools/run_w471_locked_naming_returned_links_harness.js"
   },
   "keywords": [
     "netsuite",

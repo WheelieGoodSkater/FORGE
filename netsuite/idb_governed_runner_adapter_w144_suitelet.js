@@ -363,7 +363,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function isGenericCatalogCandidateW459(value) {
     const name = compactText(value);
-    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|products cpg|catalog product|advisory insufficient|product\s*\/?\s*sku|product sku|contractor job order|dealer channel availability|dealer channel availability sku|catalog|equipment|industrial equipment|industrial supply|industrial equipment manufacturing|distribution|warehouse|warehouse equipment|lab|outdoor gear|outdoor cooking|coffee gear|coffee equipment|kettles|grinders|fire pit|fire pits|smokeless fire pits|drinkware product line|outdoor cooking product line|outdoor product line|dealer hardgoods sku|dealer durable hardgoods|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof|wip line-flow readiness|advisory supported|supported advisory|website supported|evidence supported|website resolver service v1|websiteresolverservicev1|needs confirmation|apparel\s*&\s*accessories|apparel and footwear style|core style color-size matrix|style\s*\/\s*sku matrix)$/i.test(name)
+    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|products cpg|catalog product|advisory insufficient|product\s*\/?\s*sku|product sku|contractor job order|dealer channel availability|dealer channel availability sku|catalog|equipment|industrial equipment|industrial supply|industrial equipment manufacturing|distribution|warehouse|warehouse equipment|lab|outdoor gear|outdoor cooking|coffee gear|coffee equipment|kettles|grinders|fire pit|fire pits|smokeless fire pits|drinkware product line|outdoor cooking product line|outdoor product line|dealer hardgoods sku|dealer durable hardgoods|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof|wip line-flow readiness|advisory supported|supported advisory|website supported|evidence supported|website resolver service v1|websiteresolverservicev1|public website fetch is resolver-limited|resolver limited|needs confirmation|apparel\s*&\s*accessories|apparel and footwear style|core style color-size matrix|style\s*\/\s*sku matrix)$/i.test(name)
       || /\b(building materials|contractor|dealer hardgoods|channel fulfillment|project fulfillment|readiness|fulfillment)\b/i.test(name);
   }
 
@@ -394,7 +394,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (/^(building materials|dealer hardgoods|industrial distribution|food and beverage|apparel|apparel\s*&\s*accessories|parts\s*\/\s*service|medical\s*\/\s*dental|wholesale janitorial|hvac mechanical)$/i.test(name)) {
       return `${name} rejected: industry label cannot be selected as a product`;
     }
-    if (/^(apparel and footwear style|core style color-size matrix|style\s*\/\s*sku matrix|dealer durable hardgoods|needs confirmation|websiteresolverservicev1|website resolver service v1)$/i.test(name)) {
+    if (/^(apparel and footwear style|core style color-size matrix|style\s*\/\s*sku matrix|dealer durable hardgoods|needs confirmation|websiteresolverservicev1|website resolver service v1|public website fetch is resolver-limited|resolver limited)$/i.test(name)) {
       return `${name} rejected: resolver/lane label cannot be selected as a product`;
     }
     if (/\b(project fulfillment|channel fulfillment|job order|availability|workflow|proof path|readiness)\b/i.test(name) && !hasConcreteProductSignalW464(name)) {
@@ -1206,6 +1206,15 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const folderId = config.resultCaptureFolderId || config.folderId;
     if (!folderId) return { fileId: null, status: 'naming_folder_missing' };
     const namingPack = buildServerPrecomputedNamingPack(request);
+    if (!namingPack || namingPack._source === 'suitelet-prospect-fallback-naming-pack') {
+      return {
+        fileId: null,
+        status: 'clean_naming_pack_omitted_runner_deterministic_fallback',
+        namingPack: null,
+        fallbackUsed: true,
+        reason: 'No clean explicit or catalog naming pack was available; runner will use old-runner deterministic naming.'
+      };
+    }
     const fileName = boundedFileNameW461(`scai_naming_${safeFileToken(idempotencyToken)}.json`, NAMING_FILE_NAME_LIMIT_W468);
     const namingFile = file.create({
       name: fileName,
@@ -2549,7 +2558,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (!errors.length && queueGate.canSubmit) {
       try {
         namingPackHandoff = createNamingPackFile(request, config, idempotencyToken);
-        if (!namingPackHandoff.fileId) errors.push('server naming pack file was not created before runner submit.');
+        if (!namingPackHandoff.fileId && namingPackHandoff.status !== 'clean_naming_pack_omitted_runner_deterministic_fallback') errors.push('server naming pack file was not created before runner submit.');
       } catch (namingError) {
         namingPackHandoff = {
           fileId: null,

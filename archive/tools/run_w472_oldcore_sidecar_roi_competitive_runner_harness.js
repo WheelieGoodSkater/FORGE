@@ -169,9 +169,12 @@ function main() {
       'productExampleCountW472',
       'productExampleNamesW472',
       'productNameSpecificityScoreW472',
+      'weakPrecomputedNamingPayloadW472',
+      'precomputedNamingSupersededByWebsiteProductsW472',
       "website product examples -> preserved naming pack -> prospect fallback"
     ]) &&
       /push\(handleName, 'product_url_handle'/.test(runner) &&
+      !/namingPayload\.found\s*\?\s*null/.test(runner) &&
       !/oru kayak portable folding lightweight recreational kayak for beginners/i.test(runner),
     'Runner should generically extract product names from /products/<handle> URLs without site-specific shortcuts.');
 
@@ -344,6 +347,27 @@ function main() {
       nhsPack.component_names.indexOf('Independent Trucks Inverted Kingpin') !== -1 &&
       !/apparel|style matrix|resolver limited|website resolver service/i.test(JSON.stringify(nhsPack)),
     JSON.stringify({ trusted: nhsRequest.websiteEvidence && nhsRequest.websiteEvidence.trustedWebsiteProductExamplesW472, nhsPack }, null, 2));
+
+  const weakCategoryRequest = {
+    website: 'https://www.stasherbag.com/collections/best-sellers',
+    prospect: { name: 'Stasher W472 Weak Category Guard' },
+    selectedToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+    websiteEvidence: {
+      trustedWebsiteProductExamplesW472: ['footwear', 'Sandwich Bag', 'Snack Bag', 'Stand-Up Mid Bag']
+    },
+    productEvidence: {
+      trustedWebsiteProductExamplesW472: ['footwear']
+    }
+  };
+  const weakCategoryPack = adapterTest.buildServerPrecomputedNamingPack(weakCategoryRequest);
+
+  assertCase(results, 'w472-weak-category-labels-do-not-become-product-names',
+    weakCategoryPack &&
+      weakCategoryPack.hero_item_name === 'Sandwich Bag' &&
+      weakCategoryPack.component_names.indexOf('Snack Bag') !== -1 &&
+      weakCategoryPack.component_names.indexOf('Stand-Up Mid Bag') !== -1 &&
+      !/footwear|apparel|style matrix|resolver limited/i.test(JSON.stringify(weakCategoryPack)),
+    JSON.stringify({ weakCategoryPack }, null, 2));
 
   assertCase(results, 'w472-existing-harness-scripts-retained',
     pkg.scripts['harness:restore-old-runner-naming-creation-w450'] === 'node archive/tools/run_w450_restore_old_runner_naming_creation_harness.js' &&

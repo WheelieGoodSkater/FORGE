@@ -442,15 +442,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }) });
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const websiteProductExampleNamingPayloadW472 = namingPayload.found
-      ? null
-      : buildWebsiteProductExampleNamingPayloadW472({
-        prospect,
-        website,
-        confirmedBuildRequestJson,
-        signal
-      });
-    const effectiveNamingPayloadW472 = websiteProductExampleNamingPayloadW472 || namingPayload;
+    const websiteProductExampleNamingPayloadW472 = buildWebsiteProductExampleNamingPayloadW472({
+      prospect,
+      website,
+      confirmedBuildRequestJson,
+      signal
+    });
+    const precomputedNamingWeakW472 = !!(namingPayload.found && websiteProductExampleNamingPayloadW472 && weakPrecomputedNamingPayloadW472(namingPayload.payload));
+    const effectiveNamingPayloadW472 = precomputedNamingWeakW472
+      ? Object.assign({}, websiteProductExampleNamingPayloadW472, {
+        supersededPrecomputedNamingW472: {
+          source: namingPayload.source || '',
+          fileId: namingPayload.fileId || null,
+          reason: weakPrecomputedNamingPayloadW472(namingPayload.payload)
+        }
+      })
+      : (namingPayload.found ? namingPayload : (websiteProductExampleNamingPayloadW472 || namingPayload));
     const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: effectiveNamingPayloadW472.source || names._source || 'deterministic',
@@ -463,6 +470,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingPayloadApplied: !!effectiveNamingPayloadW472.applied,
       namingDiscoveryMode: effectiveNamingPayloadW472.discoveryMode || 'none',
       websiteProductExampleFallbackAppliedW472: !!websiteProductExampleNamingPayloadW472,
+      precomputedNamingSupersededByWebsiteProductsW472: !!precomputedNamingWeakW472,
+      precomputedNamingSupersededReasonW472: precomputedNamingWeakW472 ? weakPrecomputedNamingPayloadW472(namingPayload.payload) : '',
       namingEvidenceSource: names.namingEvidenceSource || names._source || '',
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
@@ -3396,6 +3405,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (/https?:\/\/|@|^\$?\d+(?:\.\d{2})?$/.test(text)) return '';
     if (/sorry|no products|view all|shop all|learn more|subscribe|account|login|cart|checkout|privacy|terms|gift card|gift certificate/i.test(text)) return '';
     if (/^(home|shop|products?|collections?|accessories|clothing|apparel|sale|new arrivals|best sellers|all|search|menu|size chart|gift card)$/i.test(text)) return '';
+    if (genericWebsiteProductNameReasonW472(text)) return '';
     return text;
   }
 
@@ -3622,6 +3632,30 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       source: payload._source,
       payload
     };
+  }
+
+  function weakPrecomputedNamingPayloadW472(payload) {
+    const names = payload || {};
+    const candidates = [
+      names.selectedProductName,
+      names.primary_product_candidate,
+      names.selectedCatalogCandidate && names.selectedCatalogCandidate.name,
+      names.hero_item_name
+    ].filter(Boolean);
+    for (let i = 0; i < candidates.length; i++) {
+      const reason = weakProductNameReasonW467(candidates[i]) || genericWebsiteProductNameReasonW472(candidates[i]);
+      if (reason) return reason;
+    }
+    return '';
+  }
+
+  function genericWebsiteProductNameReasonW472(value) {
+    const text = compactText(value);
+    if (!text) return 'empty product name';
+    if (/^(footwear|apparel|clothing|fashion|style|styles|bags?|bowls?|accessories|products?|product|catalog|collection|collections|best sellers|new arrivals)$/i.test(text)) {
+      return `${text} rejected: generic website category label, not a concrete product`;
+    }
+    return '';
   }
 
   function enforceOldRunnerNamingDisciplineW468(rawNames, context) {

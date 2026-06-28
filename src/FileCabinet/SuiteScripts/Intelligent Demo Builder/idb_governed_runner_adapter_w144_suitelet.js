@@ -1591,6 +1591,23 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     tokens.push({ source, token: normalized });
   }
 
+  function runnerResultCaptureStemW472(value) {
+    const safe = String(value || '').replace(/[^A-Za-z0-9_\-]/g, '_').slice(0, 40).trim();
+    return safe.length <= 36 ? safe : safe.slice(0, 36).trim();
+  }
+
+  function pushRunnerResultCaptureStemTokensW472(tokens, seen, source, value) {
+    const raw = String(value || '').trim();
+    if (!raw) return;
+    pushUniqueSearchToken(tokens, seen, `${source}RunnerResultStemW472`, runnerResultCaptureStemW472(raw));
+    if (!/^IDB-/i.test(raw)) {
+      pushUniqueSearchToken(tokens, seen, `${source}RunnerResultStemW472Prefixed`, runnerResultCaptureStemW472(`IDB-${raw}`));
+    }
+    if (/^IDB-/.test(raw)) {
+      pushUniqueSearchToken(tokens, seen, `${source}RunnerResultStemW472Unprefixed`, runnerResultCaptureStemW472(raw.replace(/^IDB-/, '')));
+    }
+  }
+
   function resultCaptureFileSearchTokensW320(expected) {
     const searchTokens = [];
     const seen = {};
@@ -1604,6 +1621,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       pushUniqueSearchToken(searchTokens, seen, 'safeBuildAttemptId', safeAttempt);
       pushUniqueSearchToken(searchTokens, seen, 'safeBuildAttemptIdFileTokenW320', safeAttempt.slice(0, 56));
       pushUniqueSearchToken(searchTokens, seen, 'safeBuildAttemptIdFileTokenW455Short', safeAttempt.slice(0, 36));
+      pushRunnerResultCaptureStemTokensW472(searchTokens, seen, 'safeBuildAttemptId', buildAttemptId);
     }
     if (idempotencyToken) {
       pushUniqueSearchToken(searchTokens, seen, 'idempotencyToken', idempotencyToken);
@@ -1613,6 +1631,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455Short', safeToken.slice(0, 36));
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW455ResultStem', `IDB-${safeToken}`.slice(0, 40));
       pushUniqueSearchToken(searchTokens, seen, 'safeIdempotencyFileTokenW472ResultStem36', `IDB-${safeToken}`.slice(0, 36));
+      pushRunnerResultCaptureStemTokensW472(searchTokens, seen, 'safeIdempotency', idempotencyToken);
     }
     if (expected && expected.sourceRequestId) {
       const safeSourceRequest = safeFileToken(expected.sourceRequestId);
@@ -1620,12 +1639,14 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW455', safeSourceRequest.slice(0, 48));
       pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW455ResultStem', `IDB-${safeSourceRequest}`.slice(0, 40));
       pushUniqueSearchToken(searchTokens, seen, 'safeSourceRequestIdFileTokenW472ResultStem36', `IDB-${safeSourceRequest}`.slice(0, 36));
+      pushRunnerResultCaptureStemTokensW472(searchTokens, seen, 'safeSourceRequestId', expected.sourceRequestId);
     }
     if (expected && expected.runnerExternalId) {
       const safeRunnerExtId = safeFileToken(expected.runnerExternalId);
       pushUniqueSearchToken(searchTokens, seen, 'runnerExternalId', expected.runnerExternalId);
       pushUniqueSearchToken(searchTokens, seen, 'safeRunnerExternalIdFileTokenW455', safeRunnerExtId.slice(0, 48));
       pushUniqueSearchToken(searchTokens, seen, 'safeRunnerExternalIdFileTokenW455Short', safeRunnerExtId.slice(0, 40));
+      pushRunnerResultCaptureStemTokensW472(searchTokens, seen, 'safeRunnerExternalId', expected.runnerExternalId);
     }
     return searchTokens;
   }
@@ -1670,7 +1691,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (expected.sourceRequestId && actual.sourceRequestId && actual.sourceRequestId !== expected.sourceRequestId) {
       reasons.push('sourceRequestId_mismatch');
     }
-    if (expected.idempotencyToken && actual.idempotencyToken && actual.idempotencyToken !== expected.idempotencyToken) {
+    if (expected.idempotencyToken && actual.idempotencyToken && !sameIdbRequestTokenW472(actual.idempotencyToken, expected.idempotencyToken)) {
       reasons.push('idempotencyToken_mismatch');
     }
     return {
@@ -1679,6 +1700,15 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       expected,
       actual
     };
+  }
+
+  function sameIdbRequestTokenW472(left, right) {
+    const normalize = function(value) {
+      return String(value || '').trim().replace(/^IDB-/, '');
+    };
+    const a = normalize(left);
+    const b = normalize(right);
+    return !!a && !!b && a === b;
   }
 
   function timestampFromResultCaptureFileName(fileName) {
@@ -2428,6 +2458,53 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
           provenance: matchResult.actual
         };
       }
+    }
+    const broadFilters = [['folder', 'anyof', config.resultCaptureFolderId], 'AND', ['name', 'contains', 'idb_result']];
+    const broadModifiedColumn = searchModule.createColumn && searchModule.Sort
+      ? searchModule.createColumn({ name: 'modified', sort: searchModule.Sort.DESC })
+      : 'modified';
+    const broadCaptureSearch = searchModule.create({
+      type: 'file',
+      filters: broadFilters,
+      columns: ['internalid', 'name', broadModifiedColumn]
+    });
+    const broadMatches = broadCaptureSearch.run().getRange({ start: 0, end: 50 }) || [];
+    for (let broadIndex = 0; broadIndex < broadMatches.length; broadIndex += 1) {
+      const match = broadMatches[broadIndex];
+      const fileId = String(match.id || match.getValue && match.getValue({ name: 'internalid' }) || '');
+      if (!fileId || checkedFileIds[fileId]) continue;
+      checkedFileIds[fileId] = true;
+      const fileName = match.getValue && match.getValue({ name: 'name' }) || match.name || '';
+      const captureFile = fileModule.load({ id: fileId });
+      const contents = captureFile.getContents();
+      let parsed = null;
+      try {
+        parsed = JSON.parse(contents || '{}');
+      } catch (e) {
+        staleCandidates.push({ fileId, fileName: String(fileName || captureFile.name || ''), lookupSource: 'currentRunProvenanceBroadScanW472', reason: 'invalid_json' });
+        continue;
+      }
+      const matchResult = resultCaptureMatchesCurrentAttempt(parsed, expected);
+      if (!matchResult.matches) {
+        staleCandidates.push({
+          fileId,
+          fileName: String(fileName || captureFile.name || ''),
+          lookupSource: 'currentRunProvenanceBroadScanW472',
+          mismatchReason: matchResult.reasons.join(',') || 'provenance_mismatch',
+          reasons: matchResult.reasons,
+          expected: matchResult.expected,
+          actual: matchResult.actual
+        });
+        continue;
+      }
+      return {
+        found: true,
+        fileId,
+        fileName: String(fileName || captureFile.name || ''),
+        contents,
+        lookupSource: 'currentRunProvenanceBroadScanW472',
+        provenance: matchResult.actual
+      };
     }
     return {
       found: false,

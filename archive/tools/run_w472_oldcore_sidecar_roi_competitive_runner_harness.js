@@ -28,6 +28,59 @@ function allPresent(source, needles) {
   return needles.every((needle) => source.includes(needle));
 }
 
+function runnerResultStemFixtureW472(value) {
+  const safe = String(value || '').replace(/[^A-Za-z0-9_\-]/g, '_').slice(0, 40).trim();
+  return safe.length <= 36 ? safe : safe.slice(0, 36).trim();
+}
+
+function fakeResultCaptureModulesW472(files, observedSearchTokens) {
+  const byId = {};
+  files.forEach((item) => {
+    byId[String(item.id)] = item;
+  });
+  return {
+    search: {
+      Sort: { DESC: 'DESC' },
+      createColumn(opts) { return opts && opts.name || 'modified'; },
+      create(opts) {
+        const contains = (opts.filters || []).filter((part) => Array.isArray(part) && part[0] === 'name' && part[1] === 'contains');
+        const token = contains.length ? String(contains[contains.length - 1][2] || '') : '';
+        observedSearchTokens.push(token);
+        const matches = files.filter((item) => item.name.indexOf('idb_result') !== -1 && item.name.indexOf(token) !== -1);
+        return {
+          run() {
+            return {
+              getRange() {
+                return matches.map((item) => ({
+                  id: String(item.id),
+                  name: item.name,
+                  getValue(column) {
+                    if (column && column.name === 'internalid') return String(item.id);
+                    if (column && column.name === 'name') return item.name;
+                    return item.name;
+                  }
+                }));
+              }
+            };
+          }
+        };
+      }
+    },
+    file: {
+      load(opts) {
+        const item = byId[String(opts.id)];
+        if (!item) throw new Error(`Missing fake file ${opts.id}`);
+        return {
+          name: item.name,
+          getContents() {
+            return item.contents;
+          }
+        };
+      }
+    }
+  };
+}
+
 function loadAdapterTest() {
   const source = readRel(adapterRel);
   let moduleValue = null;
@@ -620,6 +673,105 @@ function main() {
   assertCase(results, 'w472-product-page-url-handle-can-seed-product-name',
     runnerTest.productNameFromProductUrlW472('https://www.baggu.com/products/medium-nylon-crescent-bag-pink-stripe') === 'Medium Nylon Crescent Bag Pink Stripe',
     'Exact product-page URLs should seed a concrete product name even when collection HTML is noisy.');
+
+  const plainPeakToken = 'idb-build-peak-design-w472-wholesale-backpack-smoke-628159-dealer-hardgoods-dealerhardgoods';
+  const runnerPeakExtId = `IDB-${plainPeakToken}`;
+  const runnerPeakStem = runnerResultStemFixtureW472(runnerPeakExtId);
+  const peakRunnerTaskId = 'SCHEDSCRIPT_0168677b771a16030614030005117750570102071016016c1443054b_878b1c762dc3ece245a11fc874aab6dd469c9075';
+  const peakBuildAttemptId = 'attempt-idb-build-peak-design-w472-wholesale-backpack-smoke-628159-dealer-hardgo-1782661466353';
+  const peakCapturePayload = {
+    schema: 'idb.runner-result-capture.w472.oldcore-roi-competitive.v1',
+    status: 'completed',
+    runnerTaskId: peakRunnerTaskId,
+    idempotencyToken: runnerPeakExtId,
+    sourceRequestId: plainPeakToken,
+    buildAttemptId: peakBuildAttemptId,
+    submittedAt: '2026-06-28T15:44:26.353Z',
+    finalGeneratedNamesJson: {
+      status: 'completed',
+      generatedRecordOwner: 'governed_runner_internal_build_engine',
+      records: {
+        customer: { type: 'customer', name: 'Peak Design W472 Wholesale Backpack Smoke 628159', internalId: '101' },
+        salesOrder: { type: 'salesorder', name: 'Sales Order - Peak Design W472 Wholesale Backpack Smoke 628159', internalId: '202' },
+        heroItem: { type: 'inventoryitem', name: 'Everyday Backpack 20L', internalId: '303' }
+      }
+    }
+  };
+  const peakSearchTokens = [];
+  const peakModules = fakeResultCaptureModulesW472([
+    {
+      id: '472001',
+      name: `idb_result_completed_${runnerPeakStem}_abcd1234.json`,
+      contents: JSON.stringify(peakCapturePayload)
+    }
+  ], peakSearchTokens);
+  const peakPoll = adapterTest.buildResultCapturePollEnvelope({
+    runnerTaskId: peakRunnerTaskId,
+    idempotencyToken: plainPeakToken,
+    sourceRequestId: plainPeakToken,
+    buildAttemptId: peakBuildAttemptId,
+    submittedAt: '2026-06-28T15:44:26.353Z',
+    resultCaptureCursor: `pending:${peakRunnerTaskId}:attempt:6`,
+    maxPollAttempts: 12,
+    expectedResultSchema: 'idb.completed-runner-result-json.v1',
+    confirmedRequest: {
+      requestId: plainPeakToken,
+      idempotencyToken: plainPeakToken,
+      buildAttemptId: peakBuildAttemptId,
+      submittedAt: '2026-06-28T15:44:26.353Z'
+    }
+  }, { resultCaptureFolderId: '300' }, peakModules, []);
+
+  assertCase(results, 'w472-adapter-finds-prefixed-bounded-runner-result-capture',
+    peakPoll &&
+      peakPoll.status === 'completed_runner_result_ready' &&
+      peakPoll.resultCapture &&
+      peakPoll.resultCapture.sourceFileName === `idb_result_completed_${runnerPeakStem}_abcd1234.json` &&
+      /safeIdempotency.*W472/.test(peakPoll.resultCapture.lookupSource) &&
+      peakSearchTokens.indexOf(runnerPeakStem) !== -1 &&
+      peakPoll.finalGeneratedNamesJson &&
+      peakPoll.finalGeneratedNamesJson.records &&
+      peakPoll.finalGeneratedNamesJson.records.heroItem.name === 'Everyday Backpack 20L',
+    JSON.stringify({ status: peakPoll && peakPoll.status, lookupSource: peakPoll && peakPoll.resultCapture && peakPoll.resultCapture.lookupSource, sourceFileName: peakPoll && peakPoll.resultCapture && peakPoll.resultCapture.sourceFileName, peakSearchTokens }, null, 2));
+
+  const broadSearchTokens = [];
+  const broadModules = fakeResultCaptureModulesW472([
+    {
+      id: '472002',
+      name: 'idb_result_completed_runtime_hash_only_abcd1234.json',
+      contents: JSON.stringify(peakCapturePayload)
+    },
+    {
+      id: '472003',
+      name: 'idb_result_completed_runtime_hash_only_stale.json',
+      contents: JSON.stringify(Object.assign({}, peakCapturePayload, {
+        buildAttemptId: 'attempt-stale-w472',
+        runnerTaskId: 'stale-task-w472'
+      }))
+    }
+  ], broadSearchTokens);
+  const broadPoll = adapterTest.buildResultCapturePollEnvelope({
+    runnerTaskId: peakRunnerTaskId,
+    idempotencyToken: plainPeakToken,
+    sourceRequestId: plainPeakToken,
+    buildAttemptId: peakBuildAttemptId,
+    submittedAt: '2026-06-28T15:44:26.353Z',
+    resultCaptureCursor: `pending:${peakRunnerTaskId}:attempt:6`,
+    maxPollAttempts: 12,
+    expectedResultSchema: 'idb.completed-runner-result-json.v1'
+  }, { resultCaptureFolderId: '300' }, broadModules, []);
+
+  assertCase(results, 'w472-adapter-broad-scan-recovers-current-completed-capture',
+    broadPoll &&
+      broadPoll.status === 'completed_runner_result_ready' &&
+      broadPoll.resultCapture &&
+      broadPoll.resultCapture.lookupSource === 'currentRunProvenanceBroadScanW472' &&
+      broadPoll.resultCapture.sourceFileName === 'idb_result_completed_runtime_hash_only_abcd1234.json' &&
+      broadSearchTokens.indexOf('idb_result') !== -1 &&
+      broadPoll.finalGeneratedNamesJson &&
+      broadPoll.finalGeneratedNamesJson.records &&
+      broadPoll.finalGeneratedNamesJson.records.heroItem.name === 'Everyday Backpack 20L',
+    JSON.stringify({ status: broadPoll && broadPoll.status, lookupSource: broadPoll && broadPoll.resultCapture && broadPoll.resultCapture.lookupSource, sourceFileName: broadPoll && broadPoll.resultCapture && broadPoll.resultCapture.sourceFileName, broadSearchTokens }, null, 2));
 
   assertCase(results, 'w472-full-product-name-preferred-over-variant-label',
     allPresent(adapter, [

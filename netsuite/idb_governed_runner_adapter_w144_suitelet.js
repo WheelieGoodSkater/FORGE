@@ -1089,7 +1089,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       websiteEvidenceSource: 'trusted_website_product_examples_w472',
       websiteEvidenceSourceUrls: evidenceSourceUrlsW459(request, website),
       namingEvidenceSource: 'trusted_website_product_examples_w472',
-      namingAuthorityOrderW472: 'website product examples -> preserved naming pack -> prospect fallback'
+      namingAuthorityOrderW472: 'website product examples -> naming files only when website has no product evidence -> prospect fallback'
     };
   }
 
@@ -1099,20 +1099,26 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const explicitPack = explicitNamingPackFromRequestW468(request);
     const industrySelection = industrySelectionFromRequestW468(request, website);
     const basePack = explicitPack || {};
-    const websiteProductExamplesPack = Object.keys(basePack).length ? null : websiteProductExamplesNamingPackW472(request, website, prospect);
+    const websiteProductExamplesPack = websiteProductExamplesNamingPackW472(request, website, prospect);
     const catalogSelected = Object.keys(basePack).length || websiteProductExamplesPack
       ? { pack: null, selected: { catalogCandidates: [], rejectedCatalogCandidates: [] } }
       : buildCatalogSelectedNamingPackW470(request, website, prospect);
     const selectedPack = websiteProductExamplesPack || catalogSelected.pack || {};
-    const effectivePack = Object.keys(basePack).length ? basePack : selectedPack;
+    const effectivePack = websiteProductExamplesPack || (Object.keys(basePack).length ? basePack : selectedPack);
     const selectedCandidate = selectedPack.selectedCatalogCandidate || null;
-    const source = Object.keys(basePack).length
+    const source = websiteProductExamplesPack
+      ? 'suitelet-website-product-examples-naming-pack-w472'
+      : Object.keys(basePack).length
       ? 'suitelet-precomputed-naming-pack'
       : (websiteProductExamplesPack ? 'suitelet-website-product-examples-naming-pack-w472' : (Object.keys(selectedPack).length ? 'suitelet-selected-catalog-naming-pack' : 'suitelet-prospect-fallback-naming-pack'));
-    const namingEvidenceSource = Object.keys(basePack).length
+    const namingEvidenceSource = websiteProductExamplesPack
+      ? 'trusted_website_product_examples_w472'
+      : Object.keys(basePack).length
       ? 'precomputed_naming_pack'
       : (websiteProductExamplesPack ? 'trusted_website_product_examples_w472' : (Object.keys(selectedPack).length ? 'selected_catalog_candidate' : 'prospect_fallback'));
-    const confidence = Object.keys(basePack).length
+    const confidence = websiteProductExamplesPack
+      ? 96
+      : Object.keys(basePack).length
       ? 90
       : (websiteProductExamplesPack ? 96 : (Object.keys(selectedPack).length ? Number(selectedCandidate && selectedCandidate.confidence || 84) : 35));
     const fallbackComponentNames = [
@@ -1164,10 +1170,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       rejectedCatalogCandidates: effectivePack.rejectedCatalogCandidates || catalogSelected.selected.rejectedCatalogCandidates || [],
       namingAuthorityOrderW468: 'server precomputed naming pack -> prospect fallback',
       namingAuthorityOrderW470: 'server selected catalog naming pack -> runner preserve only -> prospect fallback',
+      namingAuthorityOrderW472: 'website product examples -> naming files only when website has no product evidence -> prospect fallback',
+      websiteNamingSupersedesAllPacksW472: !!websiteProductExamplesPack,
+      supersededExplicitNamingPackW472: !!(websiteProductExamplesPack && Object.keys(basePack).length),
       namingAuthorityLockedW470: !!Object.keys(effectivePack).length,
       noisyExplicitNamingPackRejected: false
     };
-    if (Object.keys(basePack).length && !effectivePack.selectedCatalogCandidate) {
+    if (!websiteProductExamplesPack && Object.keys(basePack).length && !effectivePack.selectedCatalogCandidate) {
       delete result.selectedProductName;
       delete result.primary_product_candidate;
       delete result.selectedCatalogCandidate;

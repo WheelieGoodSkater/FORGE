@@ -171,7 +171,8 @@ function main() {
       'productNameSpecificityScoreW472',
       'weakPrecomputedNamingPayloadW472',
       'precomputedNamingSupersededByWebsiteProductsW472',
-      "website product examples -> preserved naming pack -> prospect fallback"
+      'websiteNamingSupersedesAllPacksW472',
+      "website product examples -> naming files only when website has no product evidence -> prospect fallback"
     ]) &&
       /push\(handleName, 'product_url_handle'/.test(runner) &&
       !/namingPayload\.found\s*\?\s*null/.test(runner) &&
@@ -351,6 +352,11 @@ function main() {
   const weakCategoryRequest = {
     website: 'https://www.stasherbag.com/collections/best-sellers',
     prospect: { name: 'Stasher W472 Weak Category Guard' },
+    precomputedNamingPack: {
+      hero_item_name: 'Legacy Naming File Product',
+      assembly_name: 'Legacy Naming File Assembly',
+      component_names: ['Legacy Component A', 'Legacy Component B', 'Legacy Component C']
+    },
     selectedToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
     websiteEvidence: {
       trustedWebsiteProductExamplesW472: ['footwear', 'Sandwich Bag', 'Snack Bag', 'Stand-Up Mid Bag']
@@ -366,7 +372,9 @@ function main() {
       weakCategoryPack.hero_item_name === 'Sandwich Bag' &&
       weakCategoryPack.component_names.indexOf('Snack Bag') !== -1 &&
       weakCategoryPack.component_names.indexOf('Stand-Up Mid Bag') !== -1 &&
-      !/footwear|apparel|style matrix|resolver limited/i.test(JSON.stringify(weakCategoryPack)),
+      weakCategoryPack.websiteNamingSupersedesAllPacksW472 === true &&
+      weakCategoryPack.supersededExplicitNamingPackW472 === true &&
+      !/footwear|apparel|style matrix|resolver limited|Legacy Naming File/i.test(JSON.stringify(weakCategoryPack)),
     JSON.stringify({ weakCategoryPack }, null, 2));
 
   assertCase(results, 'w472-existing-harness-scripts-retained',

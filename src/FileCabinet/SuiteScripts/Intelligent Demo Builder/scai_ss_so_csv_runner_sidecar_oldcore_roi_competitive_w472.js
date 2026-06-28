@@ -448,16 +448,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       confirmedBuildRequestJson,
       signal
     });
+    const websiteNamingSupersedesPrecomputedW472 = !!websiteProductExampleNamingPayloadW472;
     const precomputedNamingWeakW472 = !!(namingPayload.found && websiteProductExampleNamingPayloadW472 && weakPrecomputedNamingPayloadW472(namingPayload.payload));
-    const effectiveNamingPayloadW472 = precomputedNamingWeakW472
+    const effectiveNamingPayloadW472 = websiteNamingSupersedesPrecomputedW472
       ? Object.assign({}, websiteProductExampleNamingPayloadW472, {
         supersededPrecomputedNamingW472: {
           source: namingPayload.source || '',
           fileId: namingPayload.fileId || null,
-          reason: weakPrecomputedNamingPayloadW472(namingPayload.payload)
+          reason: namingPayload.found
+            ? (weakPrecomputedNamingPayloadW472(namingPayload.payload) || 'website product evidence is authoritative for W472 sidecar naming')
+            : ''
         }
       })
-      : (namingPayload.found ? namingPayload : (websiteProductExampleNamingPayloadW472 || namingPayload));
+      : namingPayload;
     const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: effectiveNamingPayloadW472.source || names._source || 'deterministic',
@@ -470,13 +473,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingPayloadApplied: !!effectiveNamingPayloadW472.applied,
       namingDiscoveryMode: effectiveNamingPayloadW472.discoveryMode || 'none',
       websiteProductExampleFallbackAppliedW472: !!websiteProductExampleNamingPayloadW472,
-      precomputedNamingSupersededByWebsiteProductsW472: !!precomputedNamingWeakW472,
-      precomputedNamingSupersededReasonW472: precomputedNamingWeakW472 ? weakPrecomputedNamingPayloadW472(namingPayload.payload) : '',
+      websiteNamingSupersedesAllPacksW472: !!websiteNamingSupersedesPrecomputedW472,
+      precomputedNamingSupersededByWebsiteProductsW472: !!(websiteNamingSupersedesPrecomputedW472 && namingPayload.found),
+      precomputedNamingSupersededReasonW472: websiteNamingSupersedesPrecomputedW472 && namingPayload.found
+        ? (weakPrecomputedNamingPayloadW472(namingPayload.payload) || 'website product evidence is authoritative for W472 sidecar naming')
+        : '',
+      precomputedNamingWasWeakW472: !!precomputedNamingWeakW472,
       namingEvidenceSource: names.namingEvidenceSource || names._source || '',
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      namingAuthorityOrder: names.namingAuthorityOrderW472 || names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'website product examples -> preserved naming pack -> prospect fallback',
+      namingAuthorityOrder: names.namingAuthorityOrderW472 || names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'website product examples -> naming files only when website has no product evidence -> prospect fallback',
       selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
       selectedCatalogCandidate: names.selectedCatalogCandidate || null,
       catalogCandidateAuthority: names.selectedCatalogCandidate ? 'server_or_runner_website_product_example_preserved' : 'not_returned',
@@ -3621,7 +3628,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       selectedCatalogCandidateReasons: examples[0].reasons || [],
       catalogCandidates: examples,
       websiteProductExamplesW472: examples.map(function(example) { return example.name; }),
-      namingAuthorityOrderW472: 'website product examples -> preserved naming pack -> prospect fallback'
+      namingAuthorityOrderW472: 'website product examples -> naming files only when website has no product evidence -> prospect fallback'
     };
     return {
       found: true,

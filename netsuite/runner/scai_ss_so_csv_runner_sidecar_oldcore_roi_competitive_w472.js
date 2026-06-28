@@ -3355,11 +3355,20 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     return mergeWebsiteProductExamplesW472([], examples)
       .sort(function(a, b) {
-        const scoreA = Number(a.confidence || 0) + productNameSpecificityScoreW472(a.name);
-        const scoreB = Number(b.confidence || 0) + productNameSpecificityScoreW472(b.name);
+        const scoreA = Number(a.confidence || 0) + productSourcePriorityW472(a.source) + productNameSpecificityScoreW472(a.name);
+        const scoreB = Number(b.confidence || 0) + productSourcePriorityW472(b.source) + productNameSpecificityScoreW472(b.name);
         return scoreB - scoreA;
       })
       .slice(0, 3);
+  }
+
+  function productSourcePriorityW472(source) {
+    const key = String(source || '').toLowerCase();
+    if (key === 'product_url_handle') return 24;
+    if (key === 'json_ld_product') return 14;
+    if (key === 'product_attribute') return 8;
+    if (key === 'product_link_text') return 4;
+    return 0;
   }
 
   function productNameFromProductUrlW472(url) {
@@ -3666,7 +3675,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function genericWebsiteProductNameReasonW472(value) {
     const text = compactText(value);
     if (!text) return 'empty product name';
-    if (/^(coffee|cold brew|beverage|drinkware|coolers?|bags?|bag|case|case pack|pack|batch|footwear|apparel|clothing|fashion|style|styles|bowls?|accessories|products?|product|catalog|collection|collections|best sellers|new arrivals|core style color-size matrix|style\s*\/\s*sku matrix)$/i.test(text)) {
+    if (/^(coffee|cold brew|beverage|drinkware|coolers?|bags?|bag|bags\s*&\s*packs?|packs?|travel bags?|slings?\s*&\s*crossbody bags?|backpacks?|duffels?|totes?|wallets?|blankets?|case|case pack|pack|batch|footwear|apparel|clothing|fashion|style|styles|bowls?|accessories|products?|product|catalog|collection|collections|best sellers|new arrivals|core style color-size matrix|style\s*\/\s*sku matrix)$/i.test(text)) {
       return `${text} rejected: generic website category label, not a concrete product`;
     }
     return '';

@@ -671,13 +671,50 @@ function main() {
     JSON.stringify({ liveBagguRunnerPack }, null, 2));
 
   assertCase(results, 'w472-product-page-url-handle-can-seed-product-name',
-    runnerTest.productNameFromProductUrlW472('https://www.baggu.com/products/medium-nylon-crescent-bag-pink-stripe') === 'Medium Nylon Crescent Bag Pink Stripe',
+    runnerTest.productNameFromProductUrlW472('https://www.baggu.com/products/medium-nylon-crescent-bag-pink-stripe') === 'Medium Nylon Crescent Bag Pink Stripe' &&
+      runnerTest.productNameFromProductUrlW472('https://topodesigns.com/products/global-travel-bag-30l') === 'Global Travel Bag 30L',
     'Exact product-page URLs should seed a concrete product name even when collection HTML is noisy.');
+
+  const topoCategoryLeakPack = adapterTest.buildServerPrecomputedNamingPack({
+    website: 'https://topodesigns.com/products/global-travel-bag-30l',
+    prospect: { name: 'Topo Designs W472 Category Leak Guard', website: 'https://topodesigns.com/products/global-travel-bag-30l' },
+    selectedToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+    websiteEvidence: {
+      trustedWebsiteProductExamplesW472: [
+        'Bags & Packs',
+        'Global Travel Bag 30L',
+        'Travel Bags',
+        'Slings & Crossbody Bags'
+      ],
+      productCardNames: ['Bags & Packs', 'Global Travel Bag 30L']
+    },
+    productEvidence: {
+      trustedWebsiteProductExamplesW472: ['Bags & Packs', 'Global Travel Bag 30L']
+    }
+  });
+
+  assertCase(results, 'w472-topo-category-labels-rejected-before-product-selection',
+    topoCategoryLeakPack &&
+      topoCategoryLeakPack.hero_item_name === 'Global Travel Bag 30L' &&
+      topoCategoryLeakPack.selectedProductName === 'Global Travel Bag 30L' &&
+      topoCategoryLeakPack.websiteNamingSupersedesAllPacksW472 === true &&
+      !/Bags & Packs|Travel Bags|Slings & Crossbody Bags/i.test(JSON.stringify({
+        hero: topoCategoryLeakPack.hero_item_name,
+        selected: topoCategoryLeakPack.selectedProductName,
+        components: topoCategoryLeakPack.component_names,
+        candidates: topoCategoryLeakPack.catalogCandidates
+      })) &&
+      runnerTest.genericWebsiteProductNameReasonW472('Bags & Packs') &&
+      runnerTest.genericWebsiteProductNameReasonW472('Travel Bags') &&
+      runnerTest.genericWebsiteProductNameReasonW472('Slings & Crossbody Bags') &&
+      !runnerTest.genericWebsiteProductNameReasonW472('Global Travel Bag 30L'),
+    JSON.stringify({ topoCategoryLeakPack }, null, 2));
 
   const plainPeakToken = 'idb-build-peak-design-w472-wholesale-backpack-smoke-628159-dealer-hardgoods-dealerhardgoods';
   const runnerPeakExtId = `IDB-${plainPeakToken}`;
   const runnerPeakStem = runnerResultStemFixtureW472(runnerPeakExtId);
   const peakRunnerTaskId = 'SCHEDSCRIPT_0168677b771a16030614030005117750570102071016016c1443054b_878b1c762dc3ece245a11fc874aab6dd469c9075';
+  const peakCsvTaskId = 'CSVIMPORT_0368677b771a16030614030005117750570102061816016c1443054b_2296544d6f2b11d17ca9caf6cd170f5c97108bee';
   const peakBuildAttemptId = 'attempt-idb-build-peak-design-w472-wholesale-backpack-smoke-628159-dealer-hardgo-1782661466353';
   const peakCapturePayload = {
     schema: 'idb.runner-result-capture.w472.oldcore-roi-competitive.v1',
@@ -739,7 +776,11 @@ function main() {
     {
       id: '472002',
       name: 'idb_result_completed_runtime_hash_only_abcd1234.json',
-      contents: JSON.stringify(peakCapturePayload)
+      contents: JSON.stringify(Object.assign({}, peakCapturePayload, {
+        runnerTaskId: peakCsvTaskId,
+        taskId: peakCsvTaskId,
+        queueTaskId: peakCsvTaskId
+      }))
     },
     {
       id: '472003',
@@ -773,10 +814,22 @@ function main() {
       broadPoll.finalGeneratedNamesJson.records.heroItem.name === 'Everyday Backpack 20L',
     JSON.stringify({ status: broadPoll && broadPoll.status, lookupSource: broadPoll && broadPoll.resultCapture && broadPoll.resultCapture.lookupSource, sourceFileName: broadPoll && broadPoll.resultCapture && broadPoll.resultCapture.sourceFileName, broadSearchTokens }, null, 2));
 
+  assertCase(results, 'w472-adapter-accepts-csvimport-taskid-after-scheduled-runner-completes',
+    broadPoll &&
+      broadPoll.status === 'completed_runner_result_ready' &&
+      broadPoll.resultCapture &&
+      broadPoll.resultCapture.runnerTaskId === peakRunnerTaskId &&
+      broadPoll.resultCapture.finalGeneratedNamesJson &&
+      broadPoll.resultCapture.finalGeneratedNamesJson.records &&
+      broadPoll.resultCapture.finalGeneratedNamesJson.records.heroItem.name === 'Everyday Backpack 20L',
+    JSON.stringify({ status: broadPoll && broadPoll.status, resultCapture: broadPoll && broadPoll.resultCapture }, null, 2));
+
   assertCase(results, 'w472-full-product-name-preferred-over-variant-label',
     allPresent(adapter, [
       'colorPatternOnlyProductNameReasonW472',
-      'hasConcreteProductSignalW464'
+      'hasConcreteProductSignalW464',
+      'bags\\s*&\\s*packs?',
+      'currentRunRunnerTaskSwitchAllowedW472'
     ]) &&
       /color, pattern, size, or collection label lacks a product noun/.test(adapter) &&
       /const cleaned = usableWebsiteProductExampleW472\(text, \{ prospect \}\);/.test(adapter),

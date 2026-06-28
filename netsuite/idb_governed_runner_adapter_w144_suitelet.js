@@ -367,7 +367,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function isGenericCatalogCandidateW459(value) {
     const name = compactText(value);
-    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|case|case pack|pack|batch|product|products|products cpg|catalog product|advisory insufficient|product\s*\/?\s*sku|product sku|contractor job order|dealer channel availability|dealer channel availability sku|catalog|equipment|industrial equipment|industrial supply|industrial equipment manufacturing|distribution|warehouse|warehouse equipment|lab|outdoor gear|outdoor cooking|coffee gear|coffee equipment|kettles|grinders|fire pit|fire pits|smokeless fire pits|drinkware product line|outdoor cooking product line|outdoor product line|dealer hardgoods sku|dealer durable hardgoods|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof|wip line-flow readiness|advisory supported|supported advisory|website supported|evidence supported|website resolver service v1|websiteresolverservicev1|public website fetch is resolver-limited|resolver limited|needs confirmation|apparel|clothing|footwear|fashion|style|styles|apparel\s*&\s*accessories|apparel and footwear style|core style color-size matrix|style\s*\/\s*sku matrix)$/i.test(name)
+    return /^(coffee|cold brew|beverage|drinkware|cooler|coolers|bags|bag|bags\s*&\s*packs?|packs?|travel bags?|slings?\s*&\s*crossbody bags?|backpacks?|duffels?|totes?|wallets?|blankets?|case|case pack|pack|batch|product|products|products cpg|catalog product|advisory insufficient|product\s*\/?\s*sku|product sku|contractor job order|dealer channel availability|dealer channel availability sku|catalog|equipment|industrial equipment|industrial supply|industrial equipment manufacturing|distribution|warehouse|warehouse equipment|lab|outdoor gear|outdoor cooking|coffee gear|coffee equipment|kettles|grinders|fire pit|fire pits|smokeless fire pits|drinkware product line|outdoor cooking product line|outdoor product line|dealer hardgoods sku|dealer durable hardgoods|durable hardgoods|sku|item|product case|variety pack|cold brew coffee batch|milk and flavor blend|assembly|finished good|finished goods|proof|manufacturing proof|fulfillment proof|wip line-flow readiness|advisory supported|supported advisory|website supported|evidence supported|website resolver service v1|websiteresolverservicev1|public website fetch is resolver-limited|resolver limited|needs confirmation|apparel|clothing|footwear|fashion|style|styles|apparel\s*&\s*accessories|apparel and footwear style|core style color-size matrix|style\s*\/\s*sku matrix)$/i.test(name)
       || /\b(building materials|contractor|dealer hardgoods|channel fulfillment|project fulfillment|readiness|fulfillment)\b/i.test(name);
   }
 
@@ -1682,7 +1682,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const expected = resultCaptureLookupProvenance(lookup);
     const actual = captureProvenanceFromJson(parsed);
     const reasons = [];
-    if (expected.runnerTaskId && actual.runnerTaskId && actual.runnerTaskId !== expected.runnerTaskId) {
+    if (expected.runnerTaskId && actual.runnerTaskId && actual.runnerTaskId !== expected.runnerTaskId && !currentRunRunnerTaskSwitchAllowedW472(expected, actual)) {
       reasons.push('runnerTaskId_mismatch');
     }
     if (expected.buildAttemptId && actual.buildAttemptId !== expected.buildAttemptId) {
@@ -1709,6 +1709,19 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const a = normalize(left);
     const b = normalize(right);
     return !!a && !!b && a === b;
+  }
+
+  function currentRunRunnerTaskSwitchAllowedW472(expected, actual) {
+    const expectedTask = String(expected && expected.runnerTaskId || '').trim();
+    const actualTask = String(actual && actual.runnerTaskId || '').trim();
+    if (!expectedTask || !actualTask || expectedTask === actualTask) return false;
+    const expectedScheduled = /^SCHEDSCRIPT_/i.test(expectedTask);
+    const actualCsvImport = /^CSVIMPORT_/i.test(actualTask);
+    if (!expectedScheduled || !actualCsvImport) return false;
+    const buildMatches = !!(expected.buildAttemptId && actual.buildAttemptId && actual.buildAttemptId === expected.buildAttemptId);
+    const sourceMatches = !expected.sourceRequestId || !actual.sourceRequestId || sameIdbRequestTokenW472(actual.sourceRequestId, expected.sourceRequestId);
+    const idempotencyMatches = !expected.idempotencyToken || !actual.idempotencyToken || sameIdbRequestTokenW472(actual.idempotencyToken, expected.idempotencyToken);
+    return buildMatches && sourceMatches && idempotencyMatches;
   }
 
   function timestampFromResultCaptureFileName(fileName) {

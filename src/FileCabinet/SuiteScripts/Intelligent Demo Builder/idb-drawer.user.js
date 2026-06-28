@@ -2676,6 +2676,7 @@
     if (/https?:\/\/|@|^\$?\d+(?:\.\d{2})?$/.test(text)) return false;
     if (/sorry|no products|sold out|add to cart|quick view|view all|shop all|learn more|subscribe|account|login|cart|checkout|privacy|terms/i.test(text)) return false;
     if (/^(home|shop|products?|collections?|accessories|clothing|apparel|sale|new arrivals|best sellers|all|search|menu)$/i.test(text)) return false;
+    if (/^(bags?\s*&\s*packs?|travel bags?|slings?\s*&\s*crossbody bags?|backpacks?|duffels?|totes?|wallets?|blankets?|coolers?|drinkware|footwear|apparel|clothing|fashion|styles?|products?|catalog|collection|collections)$/i.test(text)) return false;
     return true;
   }
 

@@ -139,6 +139,7 @@ function main() {
       'discoverNamingFileIdByExtId',
       'scai_naming_',
       'applyNamingToAnchors',
+      '// 1) Resolve website-grounded naming before any records are created.',
       'authoritative-precomputed-naming-pack-preserved',
       'delete names.fallbackReason;',
       'function weakProductNameReasonW467',
@@ -150,6 +151,29 @@ function main() {
       adapter.includes('website resolver service v1') &&
       !/Resolver Limited['"].*(hero_item_name|assembly_name)|Website Resolver Service V1['"].*(hero_item_name|assembly_name)/.test(runner),
     'Naming pack loading/discovery/application should remain authoritative and meta resolver text should be rejected.');
+
+  const namingBeforeCreate =
+    runner.indexOf('// 1) Resolve website-grounded naming before any records are created.') > -1 &&
+    runner.indexOf('// 1) Resolve website-grounded naming before any records are created.') < runner.indexOf('const ids = ensureDemoRecords({') &&
+    runner.includes('passedHeroItemId,\n      names') &&
+    runner.indexOf('freshHeroBaseNameW472(names, prospect)') > -1;
+
+  assertCase(results, 'w472-website-naming-resolves-before-record-creation',
+    namingBeforeCreate,
+    'Runner should compute website/product naming before old-core record creation and pass names into fresh hero creation.');
+
+  assertCase(results, 'w472-product-url-handles-feed-naming',
+    allPresent(runner, [
+      'function productNameFromProductUrlW472',
+      "source: 'product_url_handle'",
+      'productExampleCountW472',
+      'productExampleNamesW472',
+      'productNameSpecificityScoreW472',
+      "website product examples -> preserved naming pack -> prospect fallback"
+    ]) &&
+      /push\(handleName, 'product_url_handle'/.test(runner) &&
+      !/oru kayak portable folding lightweight recreational kayak for beginners/i.test(runner),
+    'Runner should generically extract product names from /products/<handle> URLs without site-specific shortcuts.');
 
   assertCase(results, 'w472-accepts-v3-and-old-param-aliases',
     allPresent(runner, paramAliases),

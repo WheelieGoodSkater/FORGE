@@ -427,7 +427,55 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       })
     });
 
-    // 1) Ensure hero / manufacturing records based on mode flags
+    // 1) Resolve website-grounded naming before any records are created.
+    // The old core creates reliably; W472 feeds it names before and after creation.
+    const websiteSignalResult = safeGetWebsiteSignal({ website: website, prospect: prospect, extId: extId });
+    const signal = websiteSignalResult.signal || { domain: extractDomain(website), text: `Domain: ${extractDomain(website) || ''}. Infer industry from the company name and notes.` };
+    log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({
+      status: websiteSignalResult.status,
+      domain: signal.domain,
+      len: (signal.text || '').length,
+      errorName: websiteSignalResult.errorName || '',
+      fallbackUsed: !!websiteSignalResult.fallbackUsed,
+      productExampleCountW472: Array.isArray(signal.productExamples) ? signal.productExamples.length : 0,
+      productExampleNamesW472: Array.isArray(signal.productExamples) ? signal.productExamples.map(function(example) { return example && example.name || ''; }).filter(Boolean).slice(0, 5) : []
+    }) });
+
+    const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
+    const websiteProductExampleNamingPayloadW472 = namingPayload.found
+      ? null
+      : buildWebsiteProductExampleNamingPayloadW472({
+        prospect,
+        website,
+        confirmedBuildRequestJson,
+        signal
+      });
+    const effectiveNamingPayloadW472 = websiteProductExampleNamingPayloadW472 || namingPayload;
+    const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 });
+    log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
+      source: effectiveNamingPayloadW472.source || names._source || 'deterministic',
+      signalLen: names._signalLen || 0,
+      industry_category: names.industry_category || '',
+      industrySelection: names.industrySelection || null,
+      namingFileId: effectiveNamingPayloadW472.fileId || namingFileId || null,
+      namingPayloadFound: !!effectiveNamingPayloadW472.found,
+      namingPayloadParsed: !!effectiveNamingPayloadW472.parsed,
+      namingPayloadApplied: !!effectiveNamingPayloadW472.applied,
+      namingDiscoveryMode: effectiveNamingPayloadW472.discoveryMode || 'none',
+      websiteProductExampleFallbackAppliedW472: !!websiteProductExampleNamingPayloadW472,
+      namingEvidenceSource: names.namingEvidenceSource || names._source || '',
+      namingConfidence: names.namingConfidence || names.confidencePercent || null,
+      websiteEvidenceSource: names.websiteEvidenceSource || '',
+      websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
+      namingAuthorityOrder: names.namingAuthorityOrderW472 || names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'website product examples -> preserved naming pack -> prospect fallback',
+      selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
+      selectedCatalogCandidate: names.selectedCatalogCandidate || null,
+      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'server_or_runner_website_product_example_preserved' : 'not_returned',
+      fallbackUsed: !!names.fallbackUsed,
+      fallbackReason: names.fallbackReason || ''
+    }) });
+
+    // 2) Ensure hero / manufacturing records based on mode flags
     log.audit({
       title: `Manufacturing final gate [${VERSION}]`,
       details: JSON.stringify({
@@ -474,11 +522,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       enableManufacturing: finalEnableManufacturing,
       extId,
       prospect,
-      passedHeroItemId
+      passedHeroItemId,
+      names
     });
     log.audit({ title: `Demo records ensured [${VERSION}]`, details: JSON.stringify(ids) });
 
-    // 2) Planning auto-calc OFF for Hero + Components (when present)
+    // 3) Planning auto-calc OFF for Hero + Components (when present)
     if (finalEnableManufacturing && ids.comp1Id && ids.comp2Id && ids.comp3Id) {
       forcePlanningAutoCalcOffForItems({
         vendorId: mustFindByExternalId('vendor', ANCHORS.vendor),
@@ -492,43 +541,6 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         compIds: []
       }));
     }
-
-    // 3) Website signal + naming pack (industry-agnostic fallback)
-    const websiteSignalResult = safeGetWebsiteSignal({ website: website, prospect: prospect, extId: extId });
-    const signal = websiteSignalResult.signal || { domain: extractDomain(website), text: `Domain: ${extractDomain(website) || ''}. Infer industry from the company name and notes.` };
-    log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
-
-    const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const websiteProductExampleNamingPayloadW472 = namingPayload.found
-      ? null
-      : buildWebsiteProductExampleNamingPayloadW472({
-        prospect,
-        website,
-        confirmedBuildRequestJson,
-        signal
-      });
-    const effectiveNamingPayloadW472 = websiteProductExampleNamingPayloadW472 || namingPayload;
-    const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 });
-    log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
-      source: effectiveNamingPayloadW472.source || names._source || 'deterministic',
-      signalLen: names._signalLen || 0,
-      industry_category: names.industry_category || '',
-      industrySelection: names.industrySelection || null,
-      namingFileId: effectiveNamingPayloadW472.fileId || namingFileId || null,
-      namingPayloadFound: !!effectiveNamingPayloadW472.found,
-      namingPayloadParsed: !!effectiveNamingPayloadW472.parsed,
-      namingPayloadApplied: !!effectiveNamingPayloadW472.applied,
-      namingDiscoveryMode: effectiveNamingPayloadW472.discoveryMode || 'none',
-      websiteProductExampleFallbackAppliedW472: !!websiteProductExampleNamingPayloadW472,
-      namingEvidenceSource: names.namingEvidenceSource || names._source || '',
-      namingConfidence: names.namingConfidence || names.confidencePercent || null,
-      websiteEvidenceSource: names.websiteEvidenceSource || '',
-      websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      namingAuthorityOrder: names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'server precomputed naming pack -> prospect fallback',
-      selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
-      selectedCatalogCandidate: names.selectedCatalogCandidate || null,
-      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'server_or_runner_website_product_example_preserved' : 'not_returned'
-    }) });
 
     // 4) Apply current-run identity + one-line sales/purchase descriptions
     const customerIdentityTelemetryW457 = ensureCustomerCurrentRunIdentityW457({
@@ -2168,9 +2180,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // Demo record mode resolution
   // ----------------------------
-  function ensureDemoRecords({ subsidiaryId, locationId, createNewHeroItem, enableManufacturing: finalEnableManufacturing, extId, prospect, passedHeroItemId }) {
+  function ensureDemoRecords({ subsidiaryId, locationId, createNewHeroItem, enableManufacturing: finalEnableManufacturing, extId, prospect, passedHeroItemId, names }) {
     const heroItem = createNewHeroItem
-      ? getOrCreateFreshHeroItem({ subsidiaryId, locationId, extId, prospect, passedHeroItemId })
+      ? getOrCreateFreshHeroItem({ subsidiaryId, locationId, extId, prospect, passedHeroItemId, names })
       : getExistingHeroItem();
 
     log.audit({
@@ -2220,9 +2232,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function getOrCreateFreshHeroItem({ subsidiaryId, locationId, extId, prospect, passedHeroItemId }) {
+  function getOrCreateFreshHeroItem({ subsidiaryId, locationId, extId, prospect, passedHeroItemId, names }) {
     if (passedHeroItemId) {
-      const adopted = adoptFreshHeroItem({ itemId: Number(passedHeroItemId), subsidiaryId, locationId, extId, prospect });
+      const adopted = adoptFreshHeroItem({ itemId: Number(passedHeroItemId), subsidiaryId, locationId, extId, prospect, names });
       log.audit({
         title: `Runner hero mode [${VERSION}]`,
         details: JSON.stringify({
@@ -2235,7 +2247,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return adopted;
     }
 
-    const created = createFreshHeroItem({ subsidiaryId, locationId, extId, prospect });
+    const created = createFreshHeroItem({ subsidiaryId, locationId, extId, prospect, names });
     log.audit({
       title: `Runner hero mode [${VERSION}]`,
       details: JSON.stringify({
@@ -2248,10 +2260,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return created;
   }
 
-  function adoptFreshHeroItem({ itemId, subsidiaryId, locationId, extId, prospect }) {
+  function adoptFreshHeroItem({ itemId, subsidiaryId, locationId, extId, prospect, names }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
     const externalId = `SCAI_HERO_${safeRecordExternalCodeW455(extId || itemId)}`;
-    const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
+    const differentiated = buildDifferentiatedNames(freshHeroBaseNameW472(names, prospect), extId);
 
     safeTry(() => record.submitFields({
       type: 'inventoryitem',
@@ -2295,10 +2307,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return { id: Number(itemId), externalId, csvKey: externalId };
   }
 
-  function createFreshHeroItem({ subsidiaryId, locationId, extId, prospect }) {
+  function createFreshHeroItem({ subsidiaryId, locationId, extId, prospect, names }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
     const externalId = `SCAI_HERO_${safeRecordExternalCodeW455(extId || new Date().getTime())}`;
-    const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
+    const differentiated = buildDifferentiatedNames(freshHeroBaseNameW472(names, prospect), extId);
 
     let clonedFromAnchor = false;
 
@@ -2404,6 +2416,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
 
     return { id, externalId, csvKey: externalId };
+  }
+
+  function freshHeroBaseNameW472(names, prospect) {
+    const product = names && (names.hero_item_name || names.selectedProductName || names.primary_product_candidate);
+    return trimLen(str(product || prospect || 'Demo Hero'), 60);
   }
 
 
@@ -3097,6 +3114,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     let productExampleSourceUrls = productExamples.map(function(example) { return example.sourceUrl; }).filter(Boolean);
 
     const candidates = pickHighSignalLinks(first.html, domain, 8);
+    productExamples = mergeWebsiteProductExamplesW472(productExamples, candidates.map(function(url) {
+      const name = productNameFromProductUrlW472(url);
+      return name ? {
+        name,
+        source: 'product_url_handle',
+        sourceUrl: url,
+        domain,
+        confidence: 87,
+        reasons: ['concrete product example extracted from product URL']
+      } : null;
+    }).filter(Boolean)).slice(0, 3);
+    productExampleSourceUrls = uniqueTextValuesW472(productExampleSourceUrls.concat(productExamples.map(function(example) { return example.sourceUrl; }).filter(Boolean))).slice(0, 6);
     const topToTry = candidates.slice(0, 3);
 
     for (let i = 0; i < topToTry.length; i++) {
@@ -3299,12 +3328,59 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (!/\/products?\//i.test(href || '') && !/product|card|grid|item|sku/i.test(attrs)) continue;
       let abs = href || sourceUrl || '';
       if (href && !/^https?:\/\//i.test(href)) abs = `https://${domain}${href.charAt(0) === '/' ? '' : '/'}${href}`;
-      push(text, 'product_link_text', normalizeUrl(abs || sourceUrl || ''));
+      const normalized = normalizeUrl(abs || sourceUrl || '');
+      push(text, 'product_link_text', normalized);
+      const handleName = productNameFromProductUrlW472(normalized || href);
+      if (handleName) push(handleName, 'product_url_handle', normalized);
     }
 
     return mergeWebsiteProductExamplesW472([], examples)
-      .sort(function(a, b) { return Number(b.confidence || 0) - Number(a.confidence || 0); })
+      .sort(function(a, b) {
+        const scoreA = Number(a.confidence || 0) + productNameSpecificityScoreW472(a.name);
+        const scoreB = Number(b.confidence || 0) + productNameSpecificityScoreW472(b.name);
+        return scoreB - scoreA;
+      })
       .slice(0, 3);
+  }
+
+  function productNameFromProductUrlW472(url) {
+    const raw = String(url || '');
+    const match = raw.match(/\/products?\/([^?#/]+)/i);
+    if (!match) return '';
+    let handle = decodeURIComponent(match[1] || '')
+      .replace(/\.(?:html?|aspx?)$/i, '')
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    handle = titleCaseProductNameW472(handle);
+    return usableWebsiteProductExampleNameW472(handle);
+  }
+
+  function titleCaseProductNameW472(value) {
+    return String(value || '')
+      .split(/\s+/)
+      .map(function(word) {
+        if (/^(lt|st|xt|tt|xl|xs|sku|gps|usb|led)$/i.test(word)) return word.toUpperCase();
+        if (/^\d/.test(word)) return word.toUpperCase();
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join(' ')
+      .replace(/\bAnd\b/g, 'and')
+      .trim();
+  }
+
+  function productNameSpecificityScoreW472(value) {
+    const text = String(value || '').trim();
+    if (!text) return -100;
+    let score = 0;
+    if (/\b[A-Z]{2,}\b/.test(text)) score += 4;
+    if (/\b\d+\b/.test(text)) score += 3;
+    if (/\b(Sport|LT|ST|XT|TT|Pro|Standard|Edition|Tandem)\b/i.test(text)) score += 4;
+    if (text.split(/\s+/).length >= 2) score += 2;
+    if (/^(Lake|Inlet|Beach)$/i.test(text)) score += 1;
+    if (/\b(Gift Card|Gift Certificate|Replacement Part|Accessory|Accessories|Bundle|Bundles)\b/i.test(text)) score -= 20;
+    if (text.length > 55) score -= 8;
+    return score;
   }
 
   function usableWebsiteProductExampleNameW472(value) {
@@ -3318,7 +3394,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       .trim();
     if (!text || text.length < 3 || text.length > 80) return '';
     if (/https?:\/\/|@|^\$?\d+(?:\.\d{2})?$/.test(text)) return '';
-    if (/sorry|no products|view all|shop all|learn more|subscribe|account|login|cart|checkout|privacy|terms/i.test(text)) return '';
+    if (/sorry|no products|view all|shop all|learn more|subscribe|account|login|cart|checkout|privacy|terms|gift card|gift certificate/i.test(text)) return '';
     if (/^(home|shop|products?|collections?|accessories|clothing|apparel|sale|new arrivals|best sellers|all|search|menu|size chart|gift card)$/i.test(text)) return '';
     return text;
   }

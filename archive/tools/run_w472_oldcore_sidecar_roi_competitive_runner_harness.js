@@ -563,13 +563,13 @@ function main() {
     nhsRequest.websiteEvidence &&
       nhsRequest.websiteEvidence.trustedWebsiteProductExamplesW472 &&
       nhsRequest.websiteEvidence.trustedWebsiteProductExamplesW472.length === 3 &&
-      nhsPack &&
-      nhsPack._source === 'suitelet-website-product-examples-naming-pack-w472' &&
-      nhsPack.hero_item_name === 'Independent Trucks Stage 11 Standard' &&
-      nhsPack.component_names.indexOf('Chris Joslin Pro Titanium Trucks') !== -1 &&
-      nhsPack.component_names.indexOf('Independent Trucks Inverted Kingpin') !== -1 &&
-      !/apparel|style matrix|resolver limited|website resolver service/i.test(JSON.stringify(nhsPack)),
-    JSON.stringify({ trusted: nhsRequest.websiteEvidence && nhsRequest.websiteEvidence.trustedWebsiteProductExamplesW472, nhsPack }, null, 2));
+	      nhsPack &&
+	      nhsPack._source === 'suitelet-website-product-examples-naming-pack-w472' &&
+	      nhsPack.hero_item_name === 'Independent Trucks Stage 11 Standard' &&
+	      nhsPack.component_names.indexOf('Truck Set') !== -1 &&
+	      nhsPack.component_names.indexOf('Wheel and Bearing Set') !== -1 &&
+	      !/apparel|style matrix|resolver limited|website resolver service/i.test(JSON.stringify(nhsPack)),
+	    JSON.stringify({ trusted: nhsRequest.websiteEvidence && nhsRequest.websiteEvidence.trustedWebsiteProductExamplesW472, nhsPack }, null, 2));
 
   const weakCategoryRequest = {
     website: 'https://www.stasherbag.com/collections/best-sellers',
@@ -589,12 +589,12 @@ function main() {
   };
   const weakCategoryPack = adapterTest.buildServerPrecomputedNamingPack(weakCategoryRequest);
 
-  assertCase(results, 'w472-weak-category-labels-do-not-become-product-names',
-    weakCategoryPack &&
-      weakCategoryPack.hero_item_name === 'Sandwich Bag' &&
-      weakCategoryPack.component_names.indexOf('Snack Bag') !== -1 &&
-      weakCategoryPack.component_names.indexOf('Stand-Up Mid Bag') !== -1 &&
-      weakCategoryPack.websiteNamingSupersedesAllPacksW472 === true &&
+	  assertCase(results, 'w472-weak-category-labels-do-not-become-product-names',
+	    weakCategoryPack &&
+	      weakCategoryPack.hero_item_name === 'Sandwich Bag' &&
+	      weakCategoryPack.component_names.indexOf('Sandwich Bag Core Assembly') !== -1 &&
+	      weakCategoryPack.component_names.indexOf('Sandwich Bag Retail Packaging') !== -1 &&
+	      weakCategoryPack.websiteNamingSupersedesAllPacksW472 === true &&
       weakCategoryPack.supersededExplicitNamingPackW472 === true &&
       !/footwear|apparel|style matrix|resolver limited|Legacy Naming File/i.test(JSON.stringify(weakCategoryPack)),
     JSON.stringify({ weakCategoryPack }, null, 2));
@@ -622,12 +622,12 @@ function main() {
   };
   const bagguPack = adapterTest.buildServerPrecomputedNamingPack(bagguVariantRequest);
 
-  assertCase(results, 'w472-baggu-color-pattern-only-rejected',
-    bagguPack &&
-      bagguPack.hero_item_name === 'Medium Nylon Crescent Bag - Pink Stripe' &&
-      bagguPack.selectedProductName === 'Medium Nylon Crescent Bag - Pink Stripe' &&
-      bagguPack.component_names.indexOf('Small Nylon Crescent Bag - Black') !== -1 &&
-      bagguPack.websiteNamingSupersedesAllPacksW472 === true &&
+	  assertCase(results, 'w472-baggu-color-pattern-only-rejected',
+	    bagguPack &&
+	      bagguPack.hero_item_name === 'Medium Nylon Crescent Bag - Pink Stripe' &&
+	      bagguPack.selectedProductName === 'Medium Nylon Crescent Bag - Pink Stripe' &&
+	      bagguPack.component_names.indexOf('Medium Nylon Crescent Bag - Pink Stripe Retail Packaging') !== -1 &&
+	      bagguPack.websiteNamingSupersedesAllPacksW472 === true &&
       bagguPack.component_names.indexOf('Pink Stripe') === -1 &&
       !bagguPack.catalogCandidates.some((candidate) => candidate && candidate.name === 'Pink Stripe'),
     JSON.stringify({ bagguPack }, null, 2));
@@ -660,15 +660,15 @@ function main() {
     namingPayload: { found: true, parsed: true, applied: true, source: 'suitelet-precomputed' }
   });
 
-  assertCase(results, 'w472-live-baggu-generic-primary-promotes-full-alternate',
+	  assertCase(results, 'w472-live-baggu-generic-primary-promotes-full-alternate',
     liveBagguRunnerPack &&
       liveBagguRunnerPack.productAlternatePromotedW472 === true &&
       liveBagguRunnerPack.namingPackCorrectedByWebsiteAlternateW472 === true &&
-      liveBagguRunnerPack.selectedProductName === 'Medium Nylon Crescent Bag in Piscine' &&
-      liveBagguRunnerPack.hero_item_name === 'Medium Nylon Crescent Bag in Piscine' &&
-      liveBagguRunnerPack.component_names.indexOf('Nylon Bowler Bag in Coffee') !== -1 &&
-      !/^Coffee$/i.test(liveBagguRunnerPack.hero_item_name),
-    JSON.stringify({ liveBagguRunnerPack }, null, 2));
+	      liveBagguRunnerPack.selectedProductName === 'Medium Nylon Crescent Bag in Piscine' &&
+	      liveBagguRunnerPack.hero_item_name === 'Medium Nylon Crescent Bag in Piscine' &&
+	      liveBagguRunnerPack.component_names.indexOf('Medium Nylon Crescent Bag in Piscine Retail Packaging') !== -1 &&
+	      !/^Coffee$/i.test(liveBagguRunnerPack.hero_item_name),
+	    JSON.stringify({ liveBagguRunnerPack }, null, 2));
 
   assertCase(results, 'w472-product-page-url-handle-can-seed-product-name',
     runnerTest.productNameFromProductUrlW472('https://www.baggu.com/products/medium-nylon-crescent-bag-pink-stripe') === 'Medium Nylon Crescent Bag Pink Stripe' &&
@@ -693,7 +693,7 @@ function main() {
     }
   });
 
-  assertCase(results, 'w472-topo-category-labels-rejected-before-product-selection',
+	  assertCase(results, 'w472-topo-category-labels-rejected-before-product-selection',
     topoCategoryLeakPack &&
       topoCategoryLeakPack.hero_item_name === 'Global Travel Bag 30L' &&
       topoCategoryLeakPack.selectedProductName === 'Global Travel Bag 30L' &&
@@ -708,7 +708,106 @@ function main() {
       runnerTest.genericWebsiteProductNameReasonW472('Travel Bags') &&
       runnerTest.genericWebsiteProductNameReasonW472('Slings & Crossbody Bags') &&
       !runnerTest.genericWebsiteProductNameReasonW472('Global Travel Bag 30L'),
-    JSON.stringify({ topoCategoryLeakPack }, null, 2));
+	    JSON.stringify({ topoCategoryLeakPack }, null, 2));
+
+	  const rejectedNoisyCandidatesW474 = [
+	    'SHOP NOW',
+	    'Shop 10% off P Line',
+	    'Help me choose',
+	    'Take a test ride',
+	    'Search for DEMEYERE'
+	  ];
+	  assertCase(results, 'w474-cta-promo-nav-helper-candidates-rejected',
+	    rejectedNoisyCandidatesW474.every((value) => runnerTest.rejectedWebsiteCandidateReasonW474(value)),
+	    JSON.stringify(rejectedNoisyCandidatesW474.map((value) => [value, runnerTest.rejectedWebsiteCandidateReasonW474(value)]), null, 2));
+
+	  assertCase(results, 'w474-casio-domain-mismatch-rejects-pet-treats',
+	    runnerTest.candidateProductMatchesWebsiteDomainW474('Pet Treats Variety Pack', 'https://www.casio.com/us/') === false &&
+	      runnerTest.candidateProductMatchesWebsiteDomainW474('G-SHOCK Watch', 'https://www.casio.com/us/') === true,
+	    'Casio website/domain should not accept stale pet/food products.');
+
+	  const componentExpectationsW474 = [
+	    ['Insulated Water Bottle 20OZ Rise Classic Arch Loop Cap', 'Drinkware Distribution', ['Bottle Body', 'Cap Assembly', 'Gasket Seal']],
+	    ['8-pc Knife Block Set Natural', 'Cutlery Manufacturing', ['Knife Block', 'Chef Knife', 'Honing Steel']],
+	    ['P Line Folding Bike', 'Bicycle Manufacturing', ['Frame Assembly', 'Wheelset', 'Drivetrain Kit']],
+	    ['Trail Running Shoe', 'Footwear Manufacturing', ['Upper Assembly', 'Outsole', 'Footbed Insole']],
+	    ['Complete Skateboard', 'Skateboard Manufacturing', ['Deck', 'Truck Set', 'Wheel and Bearing Set']]
+	  ];
+	  assertCase(results, 'w474-nllm-component-naming-from-product-and-industry',
+	    componentExpectationsW474.every(([product, chip, expected]) => {
+	      const model = runnerTest.productSpecificComponentNamesW474({ product, industryChip: chip, website: 'https://example.com' });
+	      return model.nllmComponentNamesUsed === true &&
+	        model.nllmComponentNamePromptVersion === 'w474-product-industry-components-v1' &&
+	        expected.every((name) => model.componentNames.indexOf(name) !== -1) &&
+	        !/shop now|help me choose|take a test ride|search for/i.test(JSON.stringify(model.componentNames));
+	    }),
+	    JSON.stringify(componentExpectationsW474.map(([product, chip]) => runnerTest.productSpecificComponentNamesW474({ product, industryChip: chip, website: 'https://example.com' })), null, 2));
+
+	  const industryChipCasesW474 = [
+	    ['https://www.kleankanteen.com/', 'Insulated Water Bottle', 'Drinkware Distribution'],
+	    ['https://www.casio.com/us/', 'G-SHOCK Watch', 'Consumer Electronics Distribution'],
+	    ['https://www.zwilling.com/us/', '8-pc Knife Block Set Natural', 'Cutlery Manufacturing'],
+	    ['https://www.brompton.com/', 'P Line Folding Bike', 'Bicycle Manufacturing']
+	  ];
+	  assertCase(results, 'w474-industry-chip-selection-from-website-domain',
+	    industryChipCasesW474.every(([website, product, expected]) => {
+	      const chip = runnerTest.selectIndustryChipW474({ website, product, prospect: '', signalText: '' });
+	      return chip.selectedIndustryChip === expected && /website_domain|website_product/.test(chip.industryChipSource);
+	    }),
+	    JSON.stringify(industryChipCasesW474.map(([website, product]) => runnerTest.selectIndustryChipW474({ website, product, prospect: '', signalText: '' })), null, 2));
+
+	  const casioRejectedPackW474 = (() => {
+	    try {
+	      return runnerTest.enforceWebsiteProductAuthoritativeNamingW474({
+	        hero_item_name: 'Pet Treats Variety Pack',
+	        assembly_name: 'Pet Treats Variety Pack Assembly',
+	        component_names: ['SHOP NOW', 'Help me choose', 'Search for DEMEYERE'],
+	        selectedProductName: 'Pet Treats Variety Pack',
+	        selectedCatalogCandidate: { name: 'Pet Treats Variety Pack', source: 'stale_sidecar' },
+	        catalogCandidates: [{ name: 'Pet Treats Variety Pack', source: 'stale_sidecar' }]
+	      }, {
+	        prospect: 'Casio W474 Distribution',
+	        website: 'https://www.casio.com/us/',
+	        signalText: '',
+	        namingPayload: { found: true, parsed: true, applied: true, source: 'suitelet-precomputed' }
+	      });
+	    } catch (e) {
+	      return { errorName: e.name, errorMessage: e.message };
+	    }
+	  })();
+	  assertCase(results, 'w474-casio-authoritative-pass-cannot-select-pet-treats',
+	    casioRejectedPackW474.errorName === 'FORGE_WEBSITE_PRODUCT_NAMING_REQUIRED_W474',
+	    JSON.stringify(casioRejectedPackW474, null, 2));
+
+	  assertCase(results, 'w474-wip-diagnostic-fields-are-surfaced',
+	    [
+	      'routingDecision: result.decision',
+	      'attachResult: result.attachResult',
+	      'failureStage: failure.failureStage',
+	      'errorName: failure.errorName',
+	      'errorMessage: failure.errorMessage',
+	      'assemblyId: Number(failure.assemblyId',
+	      'bomId: Number(failure.bomId',
+	      'bomRevId: Number(failure.bomRevId',
+	      'workOrderId: Number(failure.workOrderId',
+	      'routingId: Number(failure.routingId',
+	      "failureStage: 'routing_billofmaterials_field_set'"
+	    ].every((needle) => runner.includes(needle)),
+	    'Routing diagnostic rows must expose exact WIP failure fields.');
+
+	  assertCase(results, 'w474-drawer-renders-industry-chip-and-link-diagnostics',
+	    [
+	      'function industryChipModelW474',
+	      'function renderIndustryChipW474',
+	      'idb-w474-industry-chip',
+	      'idb-w474-cockpit-chip-row',
+	      'Link mismatch: returned',
+	      'WIP links: Routing',
+	      'Work Order',
+	      'Clear build result and run again',
+	      'Clear and start new build'
+	    ].every((needle) => drawer.includes(needle)),
+	    'Drawer should show the industry chip, returned/open-link mismatch, WIP routing/work-order status, and recovery actions.');
 
   const plainPeakToken = 'idb-build-peak-design-w472-wholesale-backpack-smoke-628159-dealer-hardgoods-dealerhardgoods';
   const runnerPeakExtId = `IDB-${plainPeakToken}`;

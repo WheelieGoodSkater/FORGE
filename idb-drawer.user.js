@@ -25311,7 +25311,14 @@
         background: #fbf5df;
         box-shadow: inset 3px 0 0 #8a6f18;
       }
-      .idb-chip-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+	      .idb-chip-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+	      .idb-w474-industry-chip {
+	        max-width: 220px;
+	        overflow: hidden;
+	        text-overflow: ellipsis;
+	        white-space: nowrap;
+	      }
+	      .idb-w474-cockpit-chip-row { margin-top: 4px; }
       .idb-chip {
         border: 1px solid #cfe2c3;
         background: #f1f8ed;
@@ -26581,7 +26588,7 @@
     `;
   }
 
-  function productCandidateModelW444(state, finalNavigation) {
+	  function productCandidateModelW444(state, finalNavigation) {
     const records = arrayValue(finalNavigation && finalNavigation.reviewObjects).concat(arrayValue(finalNavigation && finalNavigation.scriptPivotObjects));
     const runner = state && state.integratedBuildRunnerResult || {};
     const sidecar = runner.sidecarGeneratedNamesJson || runner.finalGeneratedNamesJson || runner.partialGeneratedNamesJson || {};
@@ -26674,10 +26681,40 @@
       rejectedFallbackReason: firstNonBlank(advisoryProduct.rejectedFallbackReason, plan.rejectedFallbackReason, plan.evidence && plan.evidence.rejectedFallbackReason, fallbackReason, blockedTerms.length ? 'Generic fallback terms blocked because website, notes, or category evidence exists.' : ''),
       fallbackBlockedGenericTerms: blockedTerms,
       nextCandidateHint: firstNonBlank(plan.nextCandidateHint, alternates[0] ? `Use fresh candidate next run: ${alternates[0]}` : 'Use fresh candidate next run from current website evidence.')
-    };
-  }
+	    };
+	  }
 
-  function cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrative, diagnostics, state) {
+	  function industryChipModelW474(state, finalNavigation, valueNarrative) {
+	    const runner = state && state.integratedBuildRunnerResult || {};
+	    const sidecar = runner.sidecarGeneratedNamesJson || runner.finalGeneratedNamesJson || runner.partialGeneratedNamesJson || {};
+	    const capture = runner.resultCapture || {};
+	    const records = arrayValue(finalNavigation && finalNavigation.reviewObjects).concat(arrayValue(finalNavigation && finalNavigation.scriptPivotObjects));
+	    const recordChip = records.map((record) => firstNonBlank(record && record.selectedIndustryChip, record && record.industryChip, record && record.industry_category)).find(Boolean);
+	    const chip = firstNonBlank(
+	      sidecar.selectedIndustryChip,
+	      sidecar.industryChip,
+	      capture.selectedIndustryChip,
+	      capture.industryChip,
+	      valueNarrative && valueNarrative.selectedIndustryChip,
+	      recordChip
+	    );
+	    if (!chip) return null;
+	    return {
+	      chip,
+	      source: firstNonBlank(sidecar.industryChipSource, capture.industryChipSource, valueNarrative && valueNarrative.industryChipSource, 'website/domain evidence'),
+	      evidence: firstNonBlank(sidecar.industryChipEvidence, capture.industryChipEvidence, valueNarrative && valueNarrative.industryChipEvidence, ''),
+	      confidence: firstNonBlank(sidecar.industryChipConfidence, capture.industryChipConfidence, valueNarrative && valueNarrative.industryChipConfidence, '')
+	    };
+	  }
+
+	  function renderIndustryChipW474(model, opts) {
+	    if (!model || !model.chip) return '';
+	    const title = [model.source, model.evidence, model.confidence].filter(Boolean).join(' / ');
+	    const label = opts && opts.compact ? model.chip : `Industry: ${model.chip}`;
+	    return `<span class="idb-mini-chip idb-w474-industry-chip" title="${escapeHtml(title || 'Website/domain industry context')}">${escapeHtml(label)}</span>`;
+	  }
+
+	  function cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrative, diagnostics, state) {
     const eligibleObjects = arrayValue(objects).filter(linkSummaryEligibleW446);
     const recordCount = eligibleObjects.filter((item) => item && item.source === 'dcc_final').length;
     const openableCount = eligibleObjects.filter((item) => item && item.linkAuthority && item.linkAuthority.openable === true).length;
@@ -26686,7 +26723,14 @@
     const capture = runner.resultCapture || {};
     const resultFileId = firstNonBlank(capture.sourceFileId, runner.sourceFileId, capture.fileId, runner.fileId);
     const resultFileName = firstNonBlank(capture.sourceFileName, runner.sourceFileName, capture.fileName, runner.fileName);
-    const resultLookupStatus = firstNonBlank(capture.lookupStatus, runner.lookupStatus, capture.status, runner.status);
+	    const resultLookupStatus = firstNonBlank(capture.lookupStatus, runner.lookupStatus, capture.status, runner.status);
+	    const industryChipW474 = industryChipModelW474(state, finalNavigation, valueNarrative);
+	    const returnedCountW474 = Number(firstNonBlank(capture.returnedCount, runner.returnedCount, finalNavigation && finalNavigation.returnedCount, recordCount)) || 0;
+	    const realMissingUrlCountW474 = Number(firstNonBlank(capture.realMissingUrlCount, runner.realMissingUrlCount, finalNavigation && finalNavigation.realMissingUrlCount, Math.max(0, returnedCountW474 - openableCount))) || 0;
+	    const linkMismatchW474 = returnedCountW474 && returnedCountW474 !== openableCount;
+	    const wipRequestedW474 = !!(toggleReceipt && toggleReceipt.enableWip);
+	    const routingMissingW474 = wipRequestedW474 && !eligibleObjects.some((item) => /manufacturingrouting/i.test(`${item && (item.recordType || item.type) || ''}`) && item.linkAuthority && item.linkAuthority.openable === true);
+	    const workOrderMissingW474 = wipRequestedW474 && !eligibleObjects.some((item) => /workorder/i.test(`${item && (item.recordType || item.type) || ''}`) && item.linkAuthority && item.linkAuthority.openable === true);
     const confidence = String(valueNarrative && valueNarrative.confidence || 'medium').toLowerCase();
     const dotFor = (tone) => `<span class="idb-w444-health-dot idb-w444-health-${escapeHtml(tone)}" aria-hidden="true"></span>`;
     const confidenceTone = confidence === 'high' ? 'green' : confidence === 'low' ? 'red' : 'yellow';
@@ -26702,9 +26746,11 @@
           <span>${dotFor(diagnosticsTone)} Diagnostics ${escapeHtml(diagnosticCount)}</span>
         </summary>
         <div class="idb-w444-health-detail">
-          <div class="idb-chip-row">${renderBuildToggleReceiptChipsW440(toggleReceipt)}</div>
-          <div class="idb-copy">Result file: ${escapeHtml(resultFileId || 'not returned')}${resultFileName ? ` / ${escapeHtml(resultFileName)}` : ''}${resultLookupStatus ? ` / ${escapeHtml(resultLookupStatus)}` : ''}</div>
-          <div class="idb-copy">Diagnostics: ${escapeHtml(diagnosticCount ? arrayValue(diagnostics).map((item) => firstNonBlank(item.label, item.name, item.reason)).join(' / ') : 'none returned')}</div>
+	          <div class="idb-chip-row">${renderIndustryChipW474(industryChipW474)}${renderBuildToggleReceiptChipsW440(toggleReceipt)}</div>
+	          <div class="idb-copy">Result file: ${escapeHtml(resultFileId || 'not returned')}${resultFileName ? ` / ${escapeHtml(resultFileName)}` : ''}${resultLookupStatus ? ` / ${escapeHtml(resultLookupStatus)}` : ''}</div>
+	          ${linkMismatchW474 ? `<div class="idb-copy">Link mismatch: returned ${escapeHtml(returnedCountW474)} / open links ${escapeHtml(openableCount)} / missing URLs ${escapeHtml(realMissingUrlCountW474)}</div>` : ''}
+	          ${wipRequestedW474 ? `<div class="idb-copy">WIP links: Routing ${escapeHtml(routingMissingW474 ? 'missing' : 'returned')} / Work Order ${escapeHtml(workOrderMissingW474 ? 'missing' : 'returned')}</div>` : ''}
+	          <div class="idb-copy">Diagnostics: ${escapeHtml(diagnosticCount ? arrayValue(diagnostics).map((item) => firstNonBlank(item.label, item.name, item.reason)).join(' / ') : 'none returned')}</div>
           <div class="idb-copy">Proof status: ${escapeHtml(finalNavigation && finalNavigation.displayStatus || 'unknown')}</div>
         </div>
       </details>
@@ -27089,9 +27135,10 @@
     const toggleReceipt = selectedBuildToggleReceiptW440(state, lane, finalNavigation);
     const valueNarrativeW443 = cockpitValueNarrativeW443(state, lane, visibleNarrative, websiteEvidence, finalNavigation);
     const diagnostics = objects.filter((item) => /diagnostic/i.test(`${item && (item.role || item.label || item.recordType || item.type) || ''}`));
-    const productModelW444 = productCandidateModelW444(state, finalNavigation);
-    const detailModelW444 = roiCompetitiveDetailModelW444(valueNarrativeW443, competitiveAdvisory, value, visibleNarrative);
-    const activeDetailW444 = state.w444CockpitDetail === 'competitive' ? 'competitive' : 'roi';
+	    const productModelW444 = productCandidateModelW444(state, finalNavigation);
+	    const detailModelW444 = roiCompetitiveDetailModelW444(valueNarrativeW443, competitiveAdvisory, value, visibleNarrative);
+	    const industryChipW474 = industryChipModelW474(state, finalNavigation, valueNarrativeW443);
+	    const activeDetailW444 = state.w444CockpitDetail === 'competitive' ? 'competitive' : 'roi';
     const lastRunReceipt = lastRunReceiptW444(state, finalNavigation, productModelW444, toggleReceipt, diagnostics);
     const previousLastRunSnapshotW446 = readLastRunSnapshotW446();
     const currentLastRunSnapshotW446 = lastRunSnapshotW446(state, finalNavigation, productModelW444, toggleReceipt, diagnostics, detailModelW444, valueNarrativeW443);
@@ -27194,10 +27241,11 @@
       <div class="idb-card idb-accent idb-w415-demo-cockpit">
         <div class="idb-w415-cockpit-header">
           <div class="idb-w415-cockpit-heading">
-            <div class="idb-section-title">Demo Cockpit</div>
-            <div class="idb-w415-cockpit-title">${escapeHtml(prospect)}</div>
-            <div class="idb-w415-cockpit-subtitle">${escapeHtml(laneLabel)}</div>
-          </div>
+	            <div class="idb-section-title">Demo Cockpit</div>
+	            <div class="idb-w415-cockpit-title">${escapeHtml(prospect)}</div>
+	            <div class="idb-w415-cockpit-subtitle">${escapeHtml(laneLabel)}</div>
+	            <div class="idb-chip-row idb-w474-cockpit-chip-row">${renderIndustryChipW474(industryChipW474, { compact: true })}</div>
+	          </div>
           <div class="idb-w415-cockpit-status-panel" aria-label="Post-run proof status">
             ${cockpitHealthPanelW444(objects, finalNavigation, toggleReceipt, valueNarrativeW443, diagnostics, state)}
           </div>

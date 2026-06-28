@@ -1111,21 +1111,98 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     return usableWebsiteProductExampleW472(titled, {});
   }
 
+  function rejectedWebsiteCandidateReasonW474(value) {
+    const text = compactText(value);
+    if (!text) return 'empty candidate';
+    if (/^(?:shop now|learn more|view all|find a store|buy now|add to cart|help me choose|take a test ride)$/i.test(text)) return `${text} rejected: CTA, navigation, search, or helper text`;
+    if (/^(?:search for|shop\b.*\boff\b|learn more|view all|find a store|buy now|add to cart|help me choose|take a test ride)\b/i.test(text)) return `${text} rejected: CTA, promo, navigation, search, or helper text`;
+    if (/^(?:product availability sku|product\s*\/\s*sku|catalog product|contractor job order|retail replenishment readiness)$/i.test(text)) return `${text} rejected: workflow or generic lane label`;
+    return '';
+  }
+
+  function websiteDomainW474(value) {
+    return compactText(value).replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0].toLowerCase();
+  }
+
+  function selectIndustryChipW474(website, product, prospect) {
+    const text = `${websiteDomainW474(website)} ${product || ''} ${prospect || ''}`.toLowerCase();
+    const rules = [
+      { pattern: /brompton|folding bike|folding bicycle|\bbicycle\b|\bbike\b/, chip: 'Bicycle Manufacturing', evidence: 'website/domain bicycle product signal' },
+      { pattern: /zwilling|wusthof|wüsthof|cutlery|knife|knives|sharpener|knife block|honing steel/, chip: 'Cutlery Manufacturing', evidence: 'website/domain cutlery product signal' },
+      { pattern: /casio|watch|calculator|keyboard|piano|g-shock|edifice|privia|consumer electronics/, chip: 'Consumer Electronics Distribution', evidence: 'website/domain electronics product signal' },
+      { pattern: /kleankanteen|klean kanteen|drinkware|water bottle|bottle|canteen|tumbler/, chip: 'Drinkware Distribution', evidence: 'website/domain drinkware product signal' },
+      { pattern: /shoe|sneaker|footwear/, chip: 'Footwear Manufacturing', evidence: 'website/domain footwear product signal' },
+      { pattern: /skateboard|deck|trucks|bearings|grip tape/, chip: 'Skateboard Manufacturing', evidence: 'website/domain skateboard product signal' }
+    ];
+    for (let i = 0; i < rules.length; i += 1) {
+      if (rules[i].pattern.test(text)) return { selectedIndustryChip: rules[i].chip, industryChipSource: 'website_domain_evidence_w474', industryChipEvidence: rules[i].evidence, industryChipConfidence: 'high' };
+    }
+    return { selectedIndustryChip: 'General Commerce', industryChipSource: website ? 'website_domain_fallback_w474' : 'safe_industry_fallback_w474', industryChipEvidence: websiteDomainW474(website) || product || 'limited website evidence', industryChipConfidence: 'low' };
+  }
+
+  function productSpecificComponentNamesW474(product, industryChip) {
+    const combined = `${product || ''} ${industryChip || ''}`.toLowerCase();
+    let names;
+    let reason;
+    if (/brompton|folding bike|folding bicycle|\bbicycle\b|\bbike\b/.test(combined)) {
+      names = ['Frame Assembly', 'Wheelset', 'Drivetrain Kit'];
+      reason = 'bicycle finished good component model';
+    } else if (/knife block|cutlery|zwilling|wusthof|wüsthof|knife|knives|sharpener/.test(combined)) {
+      names = /sharpener/.test(combined) ? ['Sharpening Rod Assembly', 'Handle Housing', 'Retail Packaging'] : ['Knife Block', 'Chef Knife', 'Honing Steel'];
+      reason = 'cutlery finished good component model';
+    } else if (/water bottle|bottle|canteen|drinkware|tumbler/.test(combined)) {
+      names = ['Bottle Body', 'Cap Assembly', 'Gasket Seal'];
+      reason = 'drinkware finished good component model';
+    } else if (/shoe|sneaker|footwear/.test(combined)) {
+      names = ['Upper Assembly', 'Outsole', 'Footbed Insole'];
+      reason = 'footwear finished good component model';
+    } else if (/skateboard|deck|trucks|bearings|grip tape/.test(combined)) {
+      names = ['Deck', 'Truck Set', 'Wheel and Bearing Set'];
+      reason = 'skateboard finished good component model';
+    } else if (/watch|calculator|keyboard|piano|electronics|casio/.test(combined)) {
+      names = /watch|g-shock|edifice/.test(combined) ? ['Watch Case Assembly', 'Module Movement', 'Band Set'] : ['Electronics Module', 'Control Housing', 'Retail Packaging'];
+      reason = 'consumer electronics finished good component model';
+    } else {
+      names = [`${product} Core Assembly`, `${product} Accessory Kit`, `${product} Retail Packaging`];
+      reason = 'safe product-specific generic component model';
+    }
+    const rejected = [];
+    names = names.map(function(name) { return trimTextW468(compactText(name), 60); }).filter(function(name) {
+      const rejectedReason = rejectedWebsiteCandidateReasonW474(name);
+      if (rejectedReason) rejected.push(rejectedReason);
+      return name && !rejectedReason;
+    }).slice(0, 3);
+    return {
+      componentNames: names,
+      componentEvidenceSource: 'nllm_product_industry_component_model_w474',
+      componentInferenceReason: reason,
+      componentFallbackUsed: /safe product-specific generic/.test(reason),
+      componentRejectedCandidates: rejected,
+      nllmComponentNamesUsed: true,
+      nllmComponentNamePromptVersion: 'w474-product-industry-components-v1'
+    };
+  }
+
   function websiteProductExamplesNamingPackW472(request, website, prospect) {
     const examples = websiteProductExamplesFromRequestW472(request, website, prospect);
     if (!examples.length) return null;
     const primary = examples[0].name;
     const toggles = normalizeSelectedToggles(request);
     const manufacturing = toggles.enableManufacturing === true || toggles.enableWip === true;
-    const componentNames = examples.map(function(candidate) { return candidate.name; });
-    while (componentNames.length < 3) {
-      componentNames.push(componentNames.length === 1 ? `${primary} Related SKU` : `${primary} Fulfillment Support`);
-    }
+    const industryChip = selectIndustryChipW474(website, primary, prospect);
+    const componentModel = productSpecificComponentNamesW474(primary, industryChip.selectedIndustryChip);
+    const componentNames = componentModel.componentNames;
     const assemblyName = manufacturing ? `${primary} Assembly` : `${primary} Availability Flow`;
     return {
       hero_item_name: primary,
       assembly_name: assemblyName,
       component_names: componentNames.slice(0, 3),
+      componentEvidenceSource: componentModel.componentEvidenceSource,
+      componentInferenceReason: componentModel.componentInferenceReason,
+      componentFallbackUsed: componentModel.componentFallbackUsed,
+      componentRejectedCandidates: componentModel.componentRejectedCandidates,
+      nllmComponentNamesUsed: componentModel.nllmComponentNamesUsed,
+      nllmComponentNamePromptVersion: componentModel.nllmComponentNamePromptVersion,
       bom_name: manufacturing ? `BOM - ${primary}` : `${primary} Availability Plan`,
       bom_revision_name: manufacturing ? `Revision 1 - ${primary}` : `${primary} Replenishment Plan`,
       routing_name: manufacturing ? `Routing - ${primary}` : `${primary} Fulfillment Flow`,
@@ -1144,6 +1221,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       websiteProductExamplesW472: examples.map(function(candidate) { return candidate.name; }),
       websiteEvidenceSource: 'trusted_website_product_examples_w472',
       websiteEvidenceSourceUrls: evidenceSourceUrlsW459(request, website),
+      selectedIndustryChip: industryChip.selectedIndustryChip,
+      industryChipSource: industryChip.industryChipSource,
+      industryChipEvidence: industryChip.industryChipEvidence,
+      industryChipConfidence: industryChip.industryChipConfidence,
       namingEvidenceSource: 'trusted_website_product_examples_w472',
       namingAuthorityOrderW472: 'website product examples -> naming files only when website has no product evidence -> prospect fallback'
     };
@@ -1193,18 +1274,32 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       : fallbackComponentNames;
     const heroName = compactText(effectivePack.hero_item_name) || `${prospect} Finished Good`;
     const assemblyName = compactText(effectivePack.assembly_name) || `${prospect} Assembly`;
-    const result = {
+	    const result = {
       _source: source,
       namingEvidenceSource,
       namingConfidence: confidence,
       confidencePercent: confidence,
-      industrySelection,
-      industry_category: industrySelection.label || '',
-      websiteEvidenceSource: website ? 'website_industry_best_guess' : 'none',
+	      industrySelection: effectivePack.selectedIndustryChip ? {
+	        label: effectivePack.selectedIndustryChip,
+	        source: effectivePack.industryChipSource || 'website_domain_evidence_w474',
+	        confidence: effectivePack.industryChipConfidence || 'high'
+	      } : industrySelection,
+	      industry_category: effectivePack.selectedIndustryChip || industrySelection.label || '',
+	      selectedIndustryChip: effectivePack.selectedIndustryChip || industrySelection.label || '',
+	      industryChipSource: effectivePack.industryChipSource || industrySelection.source || '',
+	      industryChipEvidence: effectivePack.industryChipEvidence || '',
+	      industryChipConfidence: effectivePack.industryChipConfidence || industrySelection.confidence || '',
+	      websiteEvidenceSource: effectivePack.websiteEvidenceSource || (website ? 'website_industry_best_guess' : 'none'),
       websiteEvidenceSourceUrls: evidenceSourceUrlsW459(request, website),
       hero_item_name: trimTextW468(heroName, 60),
       assembly_name: trimTextW468(assemblyName, 60),
-      component_names: componentNames.map(function(name) { return trimTextW468(compactText(name), 60); }),
+	      component_names: componentNames.map(function(name) { return trimTextW468(compactText(name), 60); }),
+	      componentEvidenceSource: effectivePack.componentEvidenceSource || '',
+	      componentInferenceReason: effectivePack.componentInferenceReason || '',
+	      componentFallbackUsed: effectivePack.componentFallbackUsed === true,
+	      componentRejectedCandidates: effectivePack.componentRejectedCandidates || [],
+	      nllmComponentNamesUsed: effectivePack.nllmComponentNamesUsed === true,
+	      nllmComponentNamePromptVersion: effectivePack.nllmComponentNamePromptVersion || '',
       bom_name: trimTextW468(compactText(effectivePack.bom_name) || `BOM - ${heroName}`, 80),
       bom_revision_name: trimTextW468(compactText(effectivePack.bom_revision_name) || `Revision 1 - ${heroName}`, 80),
       routing_name: trimTextW468(compactText(effectivePack.routing_name) || `Routing - ${assemblyName}`, 80),

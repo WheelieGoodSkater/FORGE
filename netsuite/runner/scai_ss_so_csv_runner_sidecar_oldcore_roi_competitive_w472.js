@@ -57,12 +57,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'w472-sidecar-oldcore-roi-competitive';
+  const VERSION = 'w473-sidecar-website-product-detail-priority';
   const RELEASE_TRAIN = 'sidecar-oldcore';
   const RELEASE_TRANCHE = 'w472-oldcore-roi-competitive-sidecar';
-  const SIDECAR_VERSION_W472 = 'W472';
+  const SIDECAR_VERSION_W472 = 'W473';
   const RUNNER_EXECUTION_CORE_W472 = 'old-runner-v1.12.13';
-  const ROI_COMPETITIVE_SIDECAR_VERSION_W472 = 'W472';
+  const ROI_COMPETITIVE_SIDECAR_VERSION_W472 = 'W473';
   const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -3307,6 +3307,38 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return out;
   }
 
+  function websiteProductDetailEvidenceScoreW473(example) {
+    const item = example && typeof example === 'object' ? example : {};
+    const url = String(item.sourceUrl || item.url || item.href || item.candidateUrl || '').toLowerCase();
+    const source = String(item.source || '').toLowerCase();
+    const name = usableWebsiteProductExampleNameW472(item.name || example) || '';
+    let score = Number(item.confidence || 0) + productSourcePriorityW472(source) + productNameSpecificityScoreW472(name);
+    if (/\/products?\//i.test(url)) score += 90;
+    if (/\/product\//i.test(url)) score += 90;
+    if (/\/(?:collections?|categories?|water-bottles|shop|pages?)\//i.test(url)) score -= 35;
+    if (/product_url_handle|json_ld_product/i.test(source)) score += 20;
+    if (/product_link_text|product_attribute/i.test(source) && /\/products?\//i.test(url)) score += 20;
+    if (/category|collection|menu|nav/i.test(source)) score -= 25;
+    if (genericWebsiteProductNameReasonW472(name) || colorPatternOnlyProductNameReasonW472(name)) score -= 120;
+    return score;
+  }
+
+  function rankWebsiteProductExamplesW473(examples) {
+    return mergeWebsiteProductExamplesW472([], examples || [])
+      .map(function(example, index) {
+        return Object.assign({}, example, { originalEvidenceIndexW473: index });
+      })
+      .sort(function(a, b) {
+        const delta = websiteProductDetailEvidenceScoreW473(b) - websiteProductDetailEvidenceScoreW473(a);
+        return delta || Number(a.originalEvidenceIndexW473 || 0) - Number(b.originalEvidenceIndexW473 || 0);
+      })
+      .map(function(example) {
+        const cleaned = Object.assign({}, example);
+        delete cleaned.originalEvidenceIndexW473;
+        return cleaned;
+      });
+  }
+
   function extractWebsiteProductExamplesW472(html, domain, sourceUrl) {
     const raw = String(html || '');
     const examples = [];
@@ -3353,12 +3385,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const sourceHandleName = productNameFromProductUrlW472(sourceUrl);
     if (sourceHandleName) push(sourceHandleName, 'product_url_handle', sourceUrl);
 
-    return mergeWebsiteProductExamplesW472([], examples)
-      .sort(function(a, b) {
-        const scoreA = Number(a.confidence || 0) + productSourcePriorityW472(a.source) + productNameSpecificityScoreW472(a.name);
-        const scoreB = Number(b.confidence || 0) + productSourcePriorityW472(b.source) + productNameSpecificityScoreW472(b.name);
-        return scoreB - scoreA;
-      })
+    return rankWebsiteProductExamplesW473(examples)
       .slice(0, 3);
   }
 
@@ -3567,13 +3594,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function requestProductExamplesW472(request) {
     const examples = [];
     function push(value, source) {
-      const name = usableWebsiteProductExampleNameW472(value);
+      const raw = value && typeof value === 'object' ? value : {};
+      const name = usableWebsiteProductExampleNameW472(raw.name || raw.title || raw.productName || value);
       if (!name) return;
       examples.push({
         name,
-        source: source || 'confirmed_request_product_evidence',
+        source: source || raw.source || 'confirmed_request_product_evidence',
+        sourceUrl: raw.sourceUrl || raw.url || raw.href || raw.candidateUrl || '',
+        domain: raw.domain || '',
         confidence: source === 'trusted_website_product_examples_w472' ? 98 : 92,
-        reasons: ['concrete product example carried by sidecar request']
+        reasons: (Array.isArray(raw.reasons) ? raw.reasons : []).concat(['concrete product example carried by sidecar request'])
       });
     }
     function pushArray(values, source) {
@@ -3595,13 +3625,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     pushArray(extracted.productCardNames, 'website_extracted_product_cards');
     pushArray(extracted.products, 'website_extracted_products');
     pushArray(evidenceV1.signals && evidenceV1.signals.productNames, 'website_signal_product_names');
-    return mergeWebsiteProductExamplesW472([], examples).slice(0, 3);
+    return rankWebsiteProductExamplesW473(examples).slice(0, 3);
   }
 
   function buildWebsiteProductExampleNamingPayloadW472(args) {
     const requestExamples = requestProductExamplesW472(args && args.confirmedBuildRequestJson);
     const signalExamples = args && args.signal && Array.isArray(args.signal.productExamples) ? args.signal.productExamples : [];
-    const examples = mergeWebsiteProductExamplesW472(requestExamples, signalExamples).slice(0, 3);
+    const examples = rankWebsiteProductExamplesW473(requestExamples.concat(signalExamples)).slice(0, 3);
     if (!examples.length) return null;
     const primary = examples[0].name;
     const componentNames = examples.map(function(example) { return example.name; });
@@ -3682,7 +3712,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function hasConcreteProductNounW472(value) {
-    return /\b(backpack|pack|bag|bags|tote|duffel|crossbody|pouch|sling|wallet|strap|bottle|cup|cups|mug|tumbler|canteen|blanket|quilt|puffy|jacket|fleece|shirt|tee|pant|short|sock|hat|cap|hoodie|sweater|vest|case|case pack|sku|item|assembly|kit|set|bundle|truck|forklift|watch|computer|oven|grill|cooler|bucket|kettle|grinder|press|scale|tripod|camera|clip|sauce|pasta|kombucha|soda|yogurt|coffee|syrup|mac|stick|dutch oven|cookware|salad spinner|measuring cup|container|containers)\b/i.test(compactText(value));
+    return /\b(backpack|pack|bag|bags|tote|duffel|crossbody|pouch|sling|wallet|strap|bottle|wide mouth|cup|cups|mug|tumbler|canteen|blanket|quilt|puffy|jacket|fleece|shirt|tee|pant|short|sock|hat|cap|hoodie|sweater|vest|case|case pack|sku|item|assembly|kit|set|bundle|truck|forklift|watch|computer|oven|grill|cooler|bucket|kettle|grinder|press|scale|tripod|camera|clip|sauce|pasta|kombucha|soda|yogurt|coffee|syrup|mac|stick|dutch oven|cookware|salad spinner|measuring cup|container|containers)\b/i.test(compactText(value));
   }
 
   function colorPatternOnlyProductNameReasonW472(value) {
@@ -6910,7 +6940,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 	      enforceOldRunnerNamingDisciplineW468,
 	      promoteStrongAlternateProductNamingW472,
 	      genericWebsiteProductNameReasonW472,
-	      productNameFromProductUrlW472
+	      productNameFromProductUrlW472,
+	      rankWebsiteProductExamplesW473,
+	      buildWebsiteProductExampleNamingPayloadW472
 	    },
     __W432_TEST_HOOKS__: {
       productBuildPlanW432,

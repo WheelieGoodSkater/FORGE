@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.72
+// @version      1.0.73
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -21,8 +21,8 @@
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
   const IN_FLIGHT_BUILD_STORAGE_KEY_W472 = 'idb.drawer.inFlightBuild.w472.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.72';
-  const CURRENT_UX_BLOCK_W346 = 'W472';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.73';
+  const CURRENT_UX_BLOCK_W346 = 'W473';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -7841,11 +7841,17 @@
         status: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT ? 'not_started_no_submit' : captureStatus,
         runnerTaskId: normalizedRunnerTaskId || resultCapture.runnerTaskId || '',
         finalGeneratedNamesReady: hasCompletedResultJson && normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.COMPLETED_RESULT_AWAITING_W151_IMPORT,
-        finalGeneratedNamesJson: hasCompletedResultJson ? completedResultJson : null
+        finalGeneratedNamesJson: hasCompletedResultJson ? completedResultJson : null,
+        completedResultJson: hasCompletedResultJson ? completedResultJson : null,
+        generatedNamesJson: hasCompletedResultJson ? completedResultJson : null,
+        sidecarGeneratedNamesJson: hasCompletedResultJson ? completedResultJson : null
       }),
       pollAttempted: opts.pollAttempted === true,
       finalGeneratedNamesJsonReady: hasCompletedResultJson && normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.COMPLETED_RESULT_AWAITING_W151_IMPORT,
       finalGeneratedNamesJson: hasCompletedResultJson ? completedResultJson : null,
+      completedResultJson: hasCompletedResultJson ? completedResultJson : null,
+      generatedNamesJson: hasCompletedResultJson ? completedResultJson : null,
+      sidecarGeneratedNamesJson: hasCompletedResultJson ? completedResultJson : null,
       importGuard: 'W151 completed runner result JSON guard owns final generated names import before drawer navigation links become active.',
       activeOpenLinks: 0,
       visualTestingBlocked: true,

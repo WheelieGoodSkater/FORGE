@@ -5,7 +5,7 @@
  * @NScriptType Suitelet
  */
 define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
-  const ADAPTER_VERSION = 'w470-governed-adapter-locked-naming-result-return';
+  const ADAPTER_VERSION = 'w473-governed-adapter-completed-result-alias-return';
   const SIDECAR_RUNNER_VERSION_W472 = 'W472';
   const DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W472 = 'customscript_scai_ss_runner_sidecar_w472';
   const DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W472 = 'customdeploy_scai_ss_runner_sidecar_w472';
@@ -1120,7 +1120,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       : buildCatalogSelectedNamingPackW470(request, website, prospect);
     const selectedPack = websiteProductExamplesPack || catalogSelected.pack || {};
     const effectivePack = websiteProductExamplesPack || (Object.keys(basePack).length ? basePack : selectedPack);
-    const selectedCandidate = selectedPack.selectedCatalogCandidate || null;
+    const rankedCatalogCandidates = (effectivePack.selectedCatalogCandidate
+      ? [effectivePack.selectedCatalogCandidate].concat(effectivePack.catalogCandidates || [])
+      : (effectivePack.catalogCandidates || catalogSelected.selected.catalogCandidates || []));
+    const selectedCatalogCandidate = rankedCatalogCandidates[0] || null;
+    const fallbackUsed = !selectedCatalogCandidate;
+    const product = compactText(effectivePack.selectedProductName || effectivePack.primary_product_candidate || selectedCatalogCandidate && selectedCatalogCandidate.name || '');
+    const fallbackReason = fallbackUsed ? 'No ranked website catalog candidate exists.' : '';
     const source = websiteProductExamplesPack
       ? 'suitelet-website-product-examples-naming-pack-w472'
       : Object.keys(basePack).length
@@ -1135,7 +1141,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       ? 96
       : Object.keys(basePack).length
       ? 90
-      : (websiteProductExamplesPack ? 96 : (Object.keys(selectedPack).length ? Number(selectedCandidate && selectedCandidate.confidence || 84) : 35));
+      : (websiteProductExamplesPack ? 96 : (Object.keys(selectedPack).length ? Number(selectedCatalogCandidate && selectedCatalogCandidate.confidence || 84) : 35));
     const fallbackComponentNames = [
       `${prospect} Component A`,
       `${prospect} Component B`,
@@ -1176,13 +1182,16 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         assembly: `Assembly supply inputs used to build ${assemblyName}.`,
         components: componentNames
       },
-      selectedProductName: effectivePack.selectedProductName || null,
-      primary_product_candidate: effectivePack.primary_product_candidate || null,
-      selectedCatalogCandidate: effectivePack.selectedCatalogCandidate || null,
+      selectedProductName: selectedCatalogCandidate ? product : null,
+      primary_product_candidate: selectedCatalogCandidate ? product : null,
+      selectedCatalogCandidate,
       selectedCatalogCandidateSource: effectivePack.selectedCatalogCandidateSource || '',
       selectedCatalogCandidateReasons: effectivePack.selectedCatalogCandidateReasons || [],
       catalogCandidates: effectivePack.catalogCandidates || catalogSelected.selected.catalogCandidates || [],
       rejectedCatalogCandidates: effectivePack.rejectedCatalogCandidates || catalogSelected.selected.rejectedCatalogCandidates || [],
+      fallbackUsed,
+      fallbackReason,
+      missingEvidence: fallbackReason ? ['website catalog product candidate', 'real public product/product-line evidence'] : [],
       namingAuthorityOrderW468: 'server precomputed naming pack -> prospect fallback',
       namingAuthorityOrderW470: 'server selected catalog naming pack -> runner preserve only -> prospect fallback',
       namingAuthorityOrderW472: 'website product examples -> naming files only when website has no product evidence -> prospect fallback',
@@ -2635,10 +2644,16 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
             lookupSource: found.lookupSource || '',
             finalGeneratedNamesReady: true,
             finalGeneratedNamesJson: promoted.completed,
+            completedResultJson: promoted.completed,
+            generatedNamesJson: promoted.completed,
+            sidecarGeneratedNamesJson: promoted.completed,
             runnerLaneVocabularyPolicy: promoted.completed.runnerLaneVocabularyPolicy || null,
             transactionResolution: promoted.transactionResolution
           },
           finalGeneratedNamesJson: promoted.completed,
+          completedResultJson: promoted.completed,
+          generatedNamesJson: promoted.completed,
+          sidecarGeneratedNamesJson: promoted.completed,
           runnerLaneVocabularyPolicy: promoted.completed.runnerLaneVocabularyPolicy || null,
           finalGeneratedNamesJsonReady: true,
           activeOpenLinks: activeOpenLinksFromCompletedPayloadW470(promoted.completed),
@@ -2709,9 +2724,15 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
           lookupSource: found.lookupSource || '',
           salesOrderPromotionW458,
           finalGeneratedNamesReady: true,
-          finalGeneratedNamesJson: keyedCompletedW455.payload
+          finalGeneratedNamesJson: keyedCompletedW455.payload,
+          completedResultJson: keyedCompletedW455.payload,
+          generatedNamesJson: keyedCompletedW455.payload,
+          sidecarGeneratedNamesJson: keyedCompletedW455.payload
         }),
         finalGeneratedNamesJson: keyedCompletedW455.payload,
+        completedResultJson: keyedCompletedW455.payload,
+        generatedNamesJson: keyedCompletedW455.payload,
+        sidecarGeneratedNamesJson: keyedCompletedW455.payload,
         finalGeneratedNamesJsonReady: true,
         activeOpenLinks: activeOpenLinksFromCompletedPayloadW470(keyedCompletedW455.payload),
         generatedRecordOwner: 'governed_runner_internal_build_engine'
@@ -2744,9 +2765,15 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         sourceFileName: found.fileName,
         lookupSource: found.lookupSource || '',
         finalGeneratedNamesReady: true,
-        finalGeneratedNamesJson: normalized.completed
+        finalGeneratedNamesJson: normalized.completed,
+        completedResultJson: normalized.completed,
+        generatedNamesJson: normalized.completed,
+        sidecarGeneratedNamesJson: normalized.completed
       },
       finalGeneratedNamesJson: normalized.completed,
+      completedResultJson: normalized.completed,
+      generatedNamesJson: normalized.completed,
+      sidecarGeneratedNamesJson: normalized.completed,
       finalGeneratedNamesJsonReady: true,
       activeOpenLinks: activeOpenLinksFromCompletedPayloadW470(normalized.completed),
       generatedRecordOwner: 'governed_runner_internal_build_engine'

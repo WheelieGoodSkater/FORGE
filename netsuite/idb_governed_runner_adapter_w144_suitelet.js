@@ -6,6 +6,9 @@
  */
 define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
   const ADAPTER_VERSION = 'w470-governed-adapter-locked-naming-result-return';
+  const SIDECAR_RUNNER_VERSION_W472 = 'W472';
+  const DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W472 = 'customscript_scai_ss_runner_sidecar_w472';
+  const DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W472 = 'customdeploy_scai_ss_runner_sidecar_w472';
   const NAMING_FILE_NAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -162,8 +165,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       governedSandboxWriteEnabled: flag(getParam(currentScript, PARAMS.governedSandboxWriteEnabled) || getParam(currentScript, PARAMS.governedSandboxWriteEnabledShort)),
       queueSubmitEnabled: flag(getParam(currentScript, PARAMS.queueSubmitEnabled)),
       sandboxAccountAllowlist: splitCsv(getParam(currentScript, PARAMS.sandboxAccountAllowlist)),
-      runnerScriptId: getParam(currentScript, PARAMS.runnerScriptId),
-      runnerDeployId: getParam(currentScript, PARAMS.runnerDeployId),
+      runnerScriptId: getParam(currentScript, PARAMS.runnerScriptId) || DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W472,
+      runnerDeployId: getParam(currentScript, PARAMS.runnerDeployId) || DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W472,
+      configuredSidecarRunnerVersion: SIDECAR_RUNNER_VERSION_W472,
       mappingId: getParam(currentScript, PARAMS.mappingId),
       folderId: getParam(currentScript, PARAMS.folderId),
       subsidiaryId: getParam(currentScript, PARAMS.subsidiaryId),
@@ -1278,6 +1282,20 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       optionalRecordRoles: request.optionalRecordRoles || [],
       invalidRecordRoles: request.invalidRecordRoles || [],
       resultValidationExpectations: request.resultValidationExpectations || {},
+      roiCompetitiveReview: request.roiCompetitiveReview || null,
+      roiCompetitiveSourceBasis: request.roiCompetitiveSourceBasis || null,
+      roiAudit: request.roiAudit || null,
+      competitive: request.competitive || null,
+      competitiveAdvisory: request.competitiveAdvisory || null,
+      roiCompetitiveDetailModelW444: request.roiCompetitiveDetailModelW444 || null,
+      competitiveAdvisoryModelW362: request.competitiveAdvisoryModelW362 || null,
+      valueReviewPacket: request.valueReviewPacket || request.roiCompetitiveReview || null,
+      selectedProduct: request.selectedProduct || request.selectedProductName || '',
+      selectedProductName: request.selectedProductName || request.selectedProduct || '',
+      competitor: request.competitor || request.incumbent || '',
+      incumbent: request.incumbent || request.competitor || '',
+      decisionCriteria: request.decisionCriteria || '',
+      timeline: request.timeline || request.timelineUrgency || '',
       requiredRecords: request.requiredRecords || [],
       canonicalRuntimeContract: {
         schema: 'forge.runtime-contract.v1',

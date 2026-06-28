@@ -1,5 +1,10 @@
 /**
- * SCAI SO CSV Runner v4.0.0 sandbox
+ * SCAI SO CSV Runner sidecar old-core ROI/competitive W472
+ *
+ * W472
+ * - Adds a new FORGE sidecar-only scheduled runner that preserves the old v1.12.13 execution core.
+ * - Keeps naming-pack authority and record creation mechanics from the restored old runner path.
+ * - Emits a bumped v3 sidecar result envelope with guarded ROI and competitive advisory payloads.
  *
  * W455
  * - Accepts browser-proven precomputed naming packs from the approved server adapter.
@@ -52,9 +57,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v4.0.0-runner-sandbox-w455-browser-proven-naming-routing-import';
-  const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w455-browser-proven-naming-routing-import';
+  const VERSION = 'w472-sidecar-oldcore-roi-competitive';
+  const RELEASE_TRAIN = 'sidecar-oldcore';
+  const RELEASE_TRANCHE = 'w472-oldcore-roi-competitive-sidecar';
+  const SIDECAR_VERSION_W472 = 'W472';
+  const RUNNER_EXECUTION_CORE_W472 = 'old-runner-v1.12.13';
+  const ROI_COMPETITIVE_SIDECAR_VERSION_W472 = 'W472';
   const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -4710,8 +4718,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     const generatedRecordOwner = 'governed_runner_internal_build_engine';
+    const roiCompetitiveSidecarW472 = buildRoiCompetitiveSidecarW472(args, records);
     const payload = {
-      schema: 'idb.runner-generated-names-result.w453.v1',
+      schema: 'forge.completed-runner-result.v3',
+      legacyGeneratedNamesSchema: 'idb.runner-generated-names-result.w453.v1',
+      sidecarVersion: SIDECAR_VERSION_W472,
+      runnerExecutionCore: RUNNER_EXECUTION_CORE_W472,
+      roiCompetitiveSidecarVersion: ROI_COMPETITIVE_SIDECAR_VERSION_W472,
       status: args.enableWip && !args.routingId ? 'completed_with_wip_diagnostic' : 'completed',
       runStatus: args.enableWip && !args.routingId ? 'completed_with_wip_diagnostic' : 'completed',
       generatedRecordOwner,
@@ -4819,6 +4832,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
       namingAuthorityOrder: 'precomputed naming pack -> prospect fallback',
+      roiCompetitiveReview: roiCompetitiveSidecarW472.roiCompetitiveReview,
+      roiCompetitiveSourceBasis: roiCompetitiveSidecarW472.roiCompetitiveSourceBasis,
+      roiAudit: roiCompetitiveSidecarW472.roiAudit,
+      competitive: roiCompetitiveSidecarW472.competitive,
+      competitiveAdvisory: roiCompetitiveSidecarW472.competitiveAdvisory,
+      roiCompetitiveDetailModelW444: roiCompetitiveSidecarW472.roiCompetitiveDetailModelW444,
+      competitiveAdvisoryModelW362: roiCompetitiveSidecarW472.competitiveAdvisoryModelW362,
+      valueReviewPacket: roiCompetitiveSidecarW472.valueReviewPacket,
       workOrderTelemetry: args.workOrderTelemetry || null,
       openLinkPreconditions: {
         realUrlsOnly: true,
@@ -4835,7 +4856,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     payload.displayRecords = displayReadyRecords;
 
     const resultCapture = {
-      schema: 'idb.runner-result-capture.w453.v1',
+      schema: 'idb.runner-result-capture.w472.oldcore-roi-competitive.v1',
+      completedResultSchema: 'forge.completed-runner-result.v3',
+      sidecarVersion: SIDECAR_VERSION_W472,
+      runnerExecutionCore: RUNNER_EXECUTION_CORE_W472,
+      roiCompetitiveSidecarVersion: ROI_COMPETITIVE_SIDECAR_VERSION_W472,
       status: payload.status,
       runnerStatus: payload.status,
       taskStatus: payload.status,
@@ -4860,6 +4885,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       routingOperations,
       workOrderTelemetry: args.workOrderTelemetry || null,
       transactionResolution: payload.transactionResolution,
+      roiCompetitiveReview: roiCompetitiveSidecarW472.roiCompetitiveReview,
+      roiCompetitiveSourceBasis: roiCompetitiveSidecarW472.roiCompetitiveSourceBasis,
+      roiAudit: roiCompetitiveSidecarW472.roiAudit,
+      competitive: roiCompetitiveSidecarW472.competitive,
+      competitiveAdvisory: roiCompetitiveSidecarW472.competitiveAdvisory,
+      roiCompetitiveDetailModelW444: roiCompetitiveSidecarW472.roiCompetitiveDetailModelW444,
+      competitiveAdvisoryModelW362: roiCompetitiveSidecarW472.competitiveAdvisoryModelW362,
+      valueReviewPacket: roiCompetitiveSidecarW472.valueReviewPacket,
       realMissingUrls: computeRealMissingUrlsW453(records),
       plannedOrDiagnosticRows: Object.keys(records).filter(function(key) {
         const rec = records[key];
@@ -4889,7 +4922,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const extId = str(args && args.extId) || `IDB-error-${Date.now()}`;
     const error = args && args.error || {};
     const payload = {
-      schema: 'idb.runner-result-capture.w453.error.v1',
+      schema: 'idb.runner-result-capture.w472.oldcore-roi-competitive.error.v1',
+      sidecarVersion: SIDECAR_VERSION_W472,
+      runnerExecutionCore: RUNNER_EXECUTION_CORE_W472,
+      roiCompetitiveSidecarVersion: ROI_COMPETITIVE_SIDECAR_VERSION_W472,
       status: 'error',
       runnerStatus: 'error',
       taskStatus: 'error',
@@ -5222,6 +5258,222 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingAuthorityOrder: 'precomputed naming pack -> prospect fallback',
       nextCandidateHint: ''
     };
+  }
+
+  function buildRoiCompetitiveSidecarW472(args, records) {
+    const confirmed = args && args.confirmedBuildRequestJson || {};
+    const names = args && args.names || {};
+    const demoPath = confirmed.demoPath || {};
+    const storyInputs = confirmed.storyInputs || {};
+    const selectedProduct = firstNonBlankTextW453(
+      confirmed.selectedProduct,
+      confirmed.selectedProductName,
+      names.selectedProductName,
+      names.primary_product_candidate,
+      names.hero_item_name,
+      args && args.prospect
+    );
+    const buyerBaseline = firstNonBlankTextW453(
+      storyInputs.buyerBaseline,
+      storyInputs.baseline,
+      confirmed.buyerBaseline,
+      confirmed.roiBaseline
+    );
+    const notes = compactText([args && args.notes, args && args.agenda, storyInputs.buyerNeed, storyInputs.scObjective].join(' '));
+    const competitor = firstNonBlankTextW453(
+      storyInputs.competitor,
+      storyInputs.incumbent,
+      confirmed.competitor,
+      confirmed.incumbent,
+      extractCompetitorFromNotesW472(notes)
+    );
+    const decisionCriteria = firstNonBlankTextW453(
+      storyInputs.decisionCriteria,
+      confirmed.decisionCriteria,
+      extractDecisionCriteriaFromNotesW472(notes)
+    );
+    const timeline = firstNonBlankTextW453(
+      storyInputs.timelineUrgency,
+      storyInputs.timeline,
+      confirmed.timeline,
+      extractTimelineFromNotesW472(notes)
+    );
+    const laneLabel = firstNonBlankTextW453(demoPath.scenario, demoPath.laneId, confirmed.resolvedOperatingMode, args && args.enableWip ? 'WIP manufacturing' : 'distribution replenishment');
+    const proofPath = args && args.enableWip
+      ? 'Sales Order, assembly, BOM, Work Order, and routing readiness'
+      : args && args.enableManufacturing
+        ? 'Sales Order, sellable item, assembly, BOM, and component readiness'
+        : 'Customer, Sales Order, and product availability records';
+    const sourceBasis = uniqueTextValuesW472([
+      confirmed.roiCompetitiveReview ? 'drawer_roiCompetitiveReview_preserved' : '',
+      confirmed.roiCompetitiveSourceBasis ? 'drawer_roiCompetitiveSourceBasis_preserved' : '',
+      confirmed.roiAudit ? 'drawer_roiAudit_preserved' : '',
+      confirmed.competitive || confirmed.competitiveAdvisory ? 'drawer_competitive_context_preserved' : '',
+      notes ? 'conversation_notes' : '',
+      args && args.website ? 'prospect_website' : '',
+      selectedProduct ? 'selected_product_or_naming_pack' : '',
+      competitor ? 'competitor_or_incumbent_context' : '',
+      decisionCriteria ? 'decision_criteria' : '',
+      timeline ? 'timeline_or_urgency' : ''
+    ]);
+    const confidence = sourceBasis.length >= 5 ? 'medium_high' : sourceBasis.length >= 3 ? 'medium' : 'low';
+    const baselineNeeded = buyerBaseline || 'Buyer-confirmed current delay, expedite cost, miss rate, stockout rate, manual reconciliation time, or margin risk baseline.';
+    const roiClaim = buyerBaseline
+      ? `Use the returned NetSuite records to test whether ${firstNonBlankTextW453(args && args.prospect, 'the buyer')} can reduce risk around ${selectedProduct || 'the selected product'} against the confirmed baseline.`
+      : `Advisory only: use returned NetSuite records to frame risk around ${selectedProduct || 'the selected product'}; do not claim measured ROI until the buyer confirms a baseline.`;
+    const competitiveContrast = competitor
+      ? `Compare NetSuite against ${competitor} only as buyer-confirmed context; prove the same operating decision through returned records.`
+      : `Contrast NetSuite against disconnected planning, inventory, ecommerce, spreadsheet, or point-solution workflows without naming an incumbent as fact.`;
+    const guardrails = [
+      'advisory_only',
+      'no_measured_roi_claim_without_buyer_baseline',
+      'no_named_competitor_claim_without_buyer_source',
+      'prove_with_returned_records_from_sidecar_result'
+    ];
+    const fallbackValueReview = {
+      schema: 'idb.w472-runner-sidecar-value-review.v1',
+      source: confirmed.roiCompetitiveReview ? 'drawer_context_preserved' : 'runner_deterministic_advisory',
+      customer: args && args.prospect || '',
+      product: selectedProduct,
+      lane: laneLabel,
+      proofPath,
+      pain: notes || 'Buyer pain not supplied; keep value framing discovery-led.',
+      objective: firstNonBlankTextW453(storyInputs.scObjective, demoPath.scenario, `Prove ${proofPath}.`),
+      decisionCriteria: decisionCriteria || 'Confirm what operating signal the buyer needs to trust.',
+      timeline: timeline || 'Timeline not confirmed.',
+      roiThesis: roiClaim,
+      groundedRoiSummary: roiClaim,
+      groundedCompetitiveSummary: competitiveContrast,
+      competitiveReview: [
+        competitiveContrast,
+        `Source basis - ${sourceBasis.join(', ') || 'runner fallback'}.`,
+        `Confidence - ${confidence}.`,
+        'Guardrail - no unsupported savings or competitor claims.'
+      ],
+      valueAgenda: [
+        `Open with ${firstNonBlankTextW453(args && args.prospect, 'the prospect')}'s stated risk.`,
+        `Show ${proofPath}.`,
+        `Tie the proof to ${decisionCriteria || 'the buyer decision criteria'}.`,
+        `Ask for ${baselineNeeded}.`
+      ],
+      sourceBasis,
+      confidence,
+      guardrails
+    };
+    const roiAudit = Object.assign({
+      schema: 'idb.w472-runner-roi-audit.v1',
+      advisoryOnly: true,
+      claim: roiClaim,
+      metricProxy: args && args.enableWip ? 'production promise risk and schedule confidence' : 'fulfillment confidence and replenishment risk',
+      baselineNeeded,
+      buyerBaselinePresent: !!buyerBaseline,
+      confidence,
+      sourceBasis,
+      proofStep: `Open the returned ${proofPath} records before discussing value.`,
+      caution: buyerBaseline ? 'Keep quantified language tied to the buyer-confirmed baseline.' : 'Do not claim measured ROI, savings, or improvement percentages.'
+    }, confirmed.roiAudit && typeof confirmed.roiAudit === 'object' ? confirmed.roiAudit : {});
+    const competitive = Object.assign({
+      schema: 'idb.w472-runner-competitive.v1',
+      advisoryOnly: true,
+      namedCompetitor: competitor || '',
+      verifiedState: competitor ? 'buyer_context_unverified_by_runner' : 'likely_competitive_pressure',
+      competitorSafeContrast: competitiveContrast,
+      sourceBasis,
+      confidence,
+      industryWinThemes: [
+        `NetSuite proof path: ${proofPath}.`,
+        'Keep the comparison on workflow trust and operating signal freshness.'
+      ],
+      objectionCopy: [
+        'Ask which workflow the buyer trusts today, then prove the same decision through returned records.'
+      ]
+    }, confirmed.competitive && typeof confirmed.competitive === 'object' ? confirmed.competitive : {});
+    const competitiveAdvisory = Object.assign({
+      schema: 'idb.w362-consultant-safe-competitive-intelligence.v1',
+      sidecarSchema: 'idb.w472-runner-competitive-advisory.v1',
+      status: 'advisory_competitive_ready',
+      advisoryOnly: true,
+      authorityLabel: competitor ? 'Buyer-supplied competitor context; verify before claiming' : 'Advisory prep only',
+      headline: competitor ? 'Named competitive context' : 'Likely competitive pressure',
+      runCue: 'If competitive pressure comes up, ask which workflow they trust today, then prove the same decision through returned records.',
+      sourceBasis,
+      alternatives: competitor ? [competitor, 'spreadsheets', 'disconnected planning'] : ['spreadsheets', 'disconnected planning', 'inventory add-ons'],
+      guardrails
+    }, confirmed.competitiveAdvisory && typeof confirmed.competitiveAdvisory === 'object' ? confirmed.competitiveAdvisory : {});
+    const detailModel = Object.assign({
+      schema: 'idb.w472-runner-roi-competitive-detail-model.v1',
+      roi: {
+        source: confirmed.roiCompetitiveSourceBasis ? 'drawer_context' : 'runner_deterministic_advisory',
+        confidence,
+        sourceBasis: sourceBasis.join(', '),
+        metricDirection: args && args.enableWip ? 'Decrease customer-promise risk' : 'Increase fulfillment confidence',
+        quantifier: baselineNeeded,
+        proofSignalLabel: args && args.enableWip ? 'WIP proof' : 'Availability proof',
+        baselineNeeded,
+        unsupportedClaimCaution: roiAudit.caution
+      },
+      competitive: {
+        source: competitive.verifiedState,
+        confidence,
+        sourceBasis: sourceBasis.join(', '),
+        strongestAlternative: competitor || 'spreadsheets',
+        whyNetSuiteWins: competitive.competitorSafeContrast,
+        discoveryQuestions: [
+          'Which operating signal is trusted today?',
+          'Where is the same decision reconciled outside NetSuite?',
+          'What baseline would prove the current process is costing time, margin, or service reliability?'
+        ],
+        headline: competitor ? `Compare against ${competitor} with returned-record proof` : 'Handle competitive pressure with returned-record proof'
+      }
+    }, confirmed.roiCompetitiveDetailModelW444 && typeof confirmed.roiCompetitiveDetailModelW444 === 'object' ? confirmed.roiCompetitiveDetailModelW444 : {});
+    return {
+      schema: 'idb.w472-runner-roi-competitive-sidecar.v1',
+      roiCompetitiveReview: confirmed.roiCompetitiveReview || fallbackValueReview,
+      roiCompetitiveSourceBasis: confirmed.roiCompetitiveSourceBasis || detailModel,
+      roiAudit,
+      competitive,
+      competitiveAdvisory,
+      roiCompetitiveDetailModelW444: detailModel,
+      competitiveAdvisoryModelW362: competitiveAdvisory,
+      valueReviewPacket: confirmed.valueReviewPacket || confirmed.roiCompetitiveReview || fallbackValueReview,
+      sourceBasis,
+      confidence,
+      guardrails,
+      recordContext: {
+        displayReadyRecordCount: displayReadyRecordsFromKeyedRecordsW455(records).length,
+        keyedRecordRoles: Object.keys(records || {})
+      }
+    };
+  }
+
+  function extractCompetitorFromNotesW472(notes) {
+    const text = String(notes || '');
+    const match = text.match(/\b(?:competitor|incumbent|currently using|current system|against)\s*[:\-]?\s*([A-Za-z0-9 &.+-]{2,60})/i);
+    return match ? compactText(match[1]).replace(/[.;,].*$/, '') : '';
+  }
+
+  function extractDecisionCriteriaFromNotesW472(notes) {
+    const text = String(notes || '');
+    const match = text.match(/\b(?:decision criteria|criteria|must prove|needs? to prove)\s*[:\-]?\s*([^.;]{8,160})/i);
+    return match ? compactText(match[1]) : '';
+  }
+
+  function extractTimelineFromNotesW472(notes) {
+    const text = String(notes || '');
+    const match = text.match(/\b(?:timeline|go-live|decision|next event|by)\s*[:\-]?\s*([^.;]{4,120})/i);
+    return match ? compactText(match[1]) : '';
+  }
+
+  function uniqueTextValuesW472(values) {
+    const seen = {};
+    const out = [];
+    (values || []).forEach(function(value) {
+      const text = compactText(value);
+      if (!text || seen[text]) return;
+      seen[text] = true;
+      out.push(text);
+    });
+    return out;
   }
 
   function computeRealMissingUrlsW453(records) {

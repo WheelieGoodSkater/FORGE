@@ -35,6 +35,14 @@ const TARGETS = [
     mirrorPath: path.join(mirrorDir, 'scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js'),
     downloadArgs: ['runner-download', 'runner'],
     updatePath: 'SuiteCloud Deploy Project is required to update NetSuite runtime/File Cabinet.'
+  },
+  {
+    id: 'sidecar-runner-w472',
+    label: 'W472 sidecar old-core ROI/competitive Scheduled Script',
+    rootPath: path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js'),
+    mirrorPath: path.join(mirrorDir, 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js'),
+    downloadArgs: ['sidecar-runner-w472-download', 'sidecar-runner-w472'],
+    updatePath: 'SuiteCloud Deploy Project is required to create/update the W472 scheduled script File Cabinet file.'
   }
 ];
 

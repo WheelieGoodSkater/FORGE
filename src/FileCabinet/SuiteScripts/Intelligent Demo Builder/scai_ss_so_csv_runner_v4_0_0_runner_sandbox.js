@@ -52,9 +52,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v4.0.0-runner-sandbox-w470-locked-naming-result-return';
+  const VERSION = 'v4.0.0-runner-sandbox-w455-browser-proven-naming-routing-import';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w470-locked-naming-result-return';
+  const RELEASE_TRANCHE = 'w455-browser-proven-naming-routing-import';
   const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -814,312 +814,147 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     const routingName = trimLen((names && names.routing_name) ? names.routing_name : `SCAI Routing - ${prospect} - BOM ${bomId}`, 80).slice(0, 60);
     const routingMemo = `SCAI Demo Reset: ${extId} | ${prospect} | WIP routing`;
-    const assemblyBomProof = verifyAssemblyBomContextW455({ assemblyId, bomId });
-    const assemblyRoutingState = inspectAssemblyRoutingStateW455({ assemblyId, extId, expectedRoutingName: routingName });
-    const routingDiscovery = discoverReusableRoutingContextW455({
-      assemblyId,
-      bomId,
-      subsidiaryId: subs,
-      extId,
-      preferredName: routingName,
-      assemblyBomProof,
-      assemblyRoutingState
-    });
-    const existingRoutingId = routingDiscovery.acceptedRoutingId || null;
+    const discoveredAssemblyRoutingId = findManagedAssemblyRoutingId({ assemblyId, extId });
+    const searchedRoutingId = discoveredAssemblyRoutingId ? null : findManagedRoutingIdByBom({ bomId, subsidiaryId: subs, extId, preferredName: routingName });
+    const existingRoutingId = discoveredAssemblyRoutingId || searchedRoutingId || null;
 
     log.audit({
       title: `WIP managed routing decision [${VERSION}]`,
       details: JSON.stringify({
         assemblyId: Number(assemblyId),
         existingRoutingId,
-        assemblyBomProof,
-        staleRoutingDetected: assemblyRoutingState.staleRoutingDetected,
-        staleRoutingName: assemblyRoutingState.staleRoutingName || '',
-        staleRoutingId: assemblyRoutingState.staleRoutingId || null,
-        routingDiscovery,
-        createNew: false,
-        routingTemplateSearchDisabled: true,
-        routingPolicy: 'reuse_assembly_attached_or_bom_matched_routing_no_global_template'
+        discoveredAssemblyRoutingId,
+        searchedRoutingId,
+        createNew: !existingRoutingId
       })
-	    });
-  	
-    const reusableRoutingId = existingRoutingId;
-    if (reusableRoutingId) {
-      return reuseExistingRoutingContextW455({
-        routingId: Number(reusableRoutingId),
-        routingName,
-        routingMemo,
-        assemblyId,
-        bomId,
-        opNames,
-        centers: [c1, c2, c3],
-        templates: [t1, t2, t3],
-        assemblyBomProof,
-        assemblyRoutingState,
+    });
+
+    // Step 4: Reuse existing managed routing when possible; only create+attach if none exists
+    const routing = existingRoutingId
+      ? record.load({ type: 'manufacturingrouting', id: Number(existingRoutingId), isDynamic: true })
+      : record.create({ type: 'manufacturingrouting', isDynamic: true });
+
+    routing.setValue({ fieldId: 'subsidiary', value: subs });
+    routing.setValue({ fieldId: 'billofmaterials', value: Number(bomId) });
+
+    // "location" is multi-select; pass array if we have one
+    if (loc) safeTry(() => routing.setValue({ fieldId: 'location', value: [loc] }));
+
+    const routingHeaderFields = safeTryReturn(() => routing.getFields()) || [];
+    const routingDefaultField = firstExisting(routingHeaderFields, ['default', 'isdefault', 'masterdefault']);
+
+    routing.setValue({ fieldId: 'name', value: routingName });
+    if (routingDefaultField) {
+      routing.setValue({ fieldId: routingDefaultField, value: true });
+    }
+    safeTry(() => routing.setValue({ fieldId: 'memo', value: routingMemo }));
+
+    log.audit({
+      title: `Routing header default field resolution [${VERSION}]`,
+      details: JSON.stringify({ routingDefaultField, routingHeaderFields })
+    });
+
+    const stepSublist = 'routingstep';
+    clearRoutingSteps(routing, stepSublist);
+
+    function resolveRoutingStepFieldIds(routingRec, sublistId) {
+      const fields = safeTryReturn(() => routingRec.getSublistFields({ sublistId })) || [];
+
+      const setupCandidates = ['setuptimemin', 'setuptime', 'setuptimeminutes'];
+      const runRateCandidates = ['runrate', 'runratemin', 'runrateperunit'];
+
+      const setupField = firstExisting(fields, setupCandidates);
+      const runRateField = firstExisting(fields, runRateCandidates);
+
+      log.audit({
+        title: `Routing step field resolution [${VERSION}]`,
+        details: JSON.stringify({ sublistId, setupField, runRateField, fields })
+      });
+
+      return { setupField, runRateField };
+    }
+
+    const stepFieldIds = resolveRoutingStepFieldIds(routing, stepSublist);
+
+    function addStep(seq, opName, centerId, templateId) {
+      routing.selectNewLine({ sublistId: stepSublist });
+
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(seq) });
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(opName).slice(0, 60) });
+
+      // LIST fields must be set AFTER subsidiary is chosen (we already did)
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingworkcenter', value: Number(centerId) });
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'manufacturingcosttemplate', value: Number(templateId) });
+
+      if (!stepFieldIds.setupField) throw new Error('Could not resolve routing step setup-time field ID');
+      if (!stepFieldIds.runRateField) throw new Error('Could not resolve routing step run-rate field ID');
+
+      // Mandatory float fields: keep demo-safe decimal values low and deterministic
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.setupField, value: 0.5 });
+      routing.setCurrentSublistValue({ sublistId: stepSublist, fieldId: stepFieldIds.runRateField, value: 1.0 });
+
+      log.audit({
+        title: `Routing step values before commit [${VERSION}]`,
+        details: JSON.stringify({
+          seq,
+          opName,
+          centerId: Number(centerId),
+          templateId: Number(templateId),
+          setupField: stepFieldIds.setupField,
+          setupValue: 0.5,
+          runRateField: stepFieldIds.runRateField,
+          runRateValue: 1.0
+        })
+      });
+
+      routing.commitLine({ sublistId: stepSublist });
+    }
+
+    addStep(10, opNames.op10 || 'Blending',    c1.id, t1.id);
+    addStep(20, opNames.op20 || 'Dispensing',  c2.id, t2.id);
+    addStep(30, opNames.op30 || 'Packaging',   c3.id, t3.id);
+
+    const routingId = Number(routing.save({ enableSourcing: true, ignoreMandatoryFields: false }));
+
+    log.audit({
+      title: existingRoutingId ? `Routing reused+updated [${VERSION}]` : `Routing created [${VERSION}]`,
+      details: JSON.stringify({
+        routingId,
         existingRoutingId,
-        routingDiscovery,
-        source: routingDiscovery.acceptedRoutingSource || 'bom-matched-routing'
+        chosen: {
+          centers: [c1, c2, c3],
+          templates: [t1, t2, t3],
+          ops: opNames
+        }
+      })
+    });
+
+    // Step 5: Only attach when the assembly has no existing managed routing
+    let attachResult = 'not-attempted';
+    if (!existingRoutingId) {
+      attachResult = attachRoutingToAssemblySafe({ assemblyId, routingId });
+    } else {
+      attachResult = 'skipped-reused-existing-routing';
+      log.audit({
+        title: `Assembly routing attach skipped (reused existing routing) [${VERSION}]`,
+        details: JSON.stringify({ assemblyId: Number(assemblyId), routingId })
       });
     }
 
-    return routingDiagnosticW455({
-      assemblyId,
-      bomId,
-      subsidiaryId: subs,
-      locationId: loc,
-      routingName,
-      assemblyBomProof,
-      assemblyRoutingState,
-      opNames,
-      centers: [c1, c2, c3],
-      templates: [t1, t2, t3],
-      routingDiscovery,
-      failureStage: 'no_assembly_attached_routing_available',
-      errorName: 'ROUTING_TEMPLATE_REUSE_BLOCKED',
-      errorMessage: `No reusable routing exists with BOM ${bomId}; create/seed one correct-BOM routing template or enable a dedicated correct-BOM routing creation path.`
-    });
-	  }
-
-  function routingDiagnosticW455({ assemblyId, bomId, subsidiaryId, locationId, routingName, assemblyBomProof, assemblyRoutingState, opNames, centers, templates, routingDiscovery, failureStage, errorName, errorMessage }) {
-    const operationRows = [
-      buildRoutingOperationRowW453(1, 10, opNames && opNames.op10 || 'Operation 10', centers && centers[0], templates && templates[0]),
-      buildRoutingOperationRowW453(2, 20, opNames && opNames.op20 || 'Operation 20', centers && centers[1], templates && templates[1]),
-      buildRoutingOperationRowW453(3, 30, opNames && opNames.op30 || 'Operation 30', centers && centers[2], templates && templates[2])
-    ].map(function(row) {
-      row.accepted = false;
-      row.rejected = false;
-      row.plannedOnly = true;
-      row.linkAuthority = { status: 'planned_operation_not_record_link', openable: false, url: '' };
-      return row;
-    });
     return {
-      status: 'failed_best_effort',
-      decision: 'assembly-routing-required-diagnostic',
-      attachResult: 'not-attached-template-reuse-blocked',
-      routingId: null,
-      routing: null,
-      routingUrl: '',
-      routingName,
-      name: routingName,
-      existingRoutingId: null,
-      copiedFromRoutingTemplateId: null,
-      assemblyBomProof,
-      routingBomFieldSkippedBecauseAssemblyBomVerified: false,
-      rejectedBomFieldError: null,
-      routingHeaderTelemetry: {
-        assemblyBomProof,
-        billofmaterials: { attempted: false, skippedBecauseAssemblyBomVerified: false, errorName: '', errorMessage: '' },
-        headerFieldsAccepted: [],
-        headerFieldsRejected: []
-      },
-      attachDefaultVerification: {
-        assemblyId: Number(assemblyId || 0),
-        routingId: 0,
-        expectedRoutingName: routingName || '',
-        attached: false,
-        defaulted: false,
-        actualRoutingName: '',
-        staleRoutingDetected: assemblyRoutingState && assemblyRoutingState.staleRoutingDetected === true,
-        staleRoutingId: assemblyRoutingState && assemblyRoutingState.staleRoutingId || null,
-        staleRoutingName: assemblyRoutingState && assemblyRoutingState.staleRoutingName || '',
-        routings: assemblyRoutingState && assemblyRoutingState.routings || []
-      },
-      staleRoutingDetected: assemblyRoutingState && assemblyRoutingState.staleRoutingDetected === true,
-      staleRoutingName: assemblyRoutingState && assemblyRoutingState.staleRoutingName || '',
-      staleRoutingId: assemblyRoutingState && assemblyRoutingState.staleRoutingId || null,
-      supersedeResult: 'blocked-template-routing-context-wrong-bom',
-      routingDiscoveryMode: routingDiscovery && routingDiscovery.routingDiscoveryMode || 'none',
-      routingCandidatesInspected: routingDiscovery && routingDiscovery.routingCandidatesInspected || 0,
-      routingCandidatesRejected: routingDiscovery && routingDiscovery.routingCandidatesRejected || [],
-      acceptedRoutingId: null,
-      acceptedRoutingBomId: null,
-      acceptedRoutingName: '',
-      acceptedRoutingSource: '',
-      routingDiscovery,
-      operationRows,
-      routingOperations: operationRows,
-      chosen: { centers, templates, ops: opNames },
-      routingFailure: {
-        status: 'failed_best_effort',
-        failureStage,
-        errorName,
-        errorMessage,
-        assemblyId: Number(assemblyId || 0),
-        bomId: Number(bomId || 0),
-        subsidiaryId: Number(subsidiaryId || 0),
-        locationId: Number(locationId || 0),
-        assemblyBomProof,
-        assemblyRoutingState,
-        routingDiscovery,
-        nextFixHint: `No reusable routing exists with BOM ${bomId}; create/seed one correct-BOM routing template or enable a dedicated correct-BOM routing creation path.`
-      }
-    };
-  }
-
-  function reuseExistingRoutingContextW455({ routingId, routingName, routingMemo, assemblyId, bomId, opNames, centers, templates, assemblyBomProof, assemblyRoutingState, existingRoutingId, routingDiscovery, source }) {
-    const routingRec = record.load({ type: 'manufacturingrouting', id: Number(routingId), isDynamic: true });
-    const stepSublist = 'routingstep';
-    const preSaveBomId = Number(safeTryReturn(() => routingRec.getValue({ fieldId: 'billofmaterials' })) || 0);
-    if (Number(preSaveBomId) !== Number(bomId)) {
-      throw new Error(`Exact BOM routing guard rejected routing ${routingId}; expected BOM ${bomId} but found ${preSaveBomId || 'blank'}.`);
-    }
-    const lineCount = Number(safeTryReturn(() => routingRec.getLineCount({ sublistId: stepSublist })) || 0);
-    const planned = [
-      { index: 1, seq: 10, name: opNames.op10 || 'Operation 10', center: centers[0], template: templates[0] },
-      { index: 2, seq: 20, name: opNames.op20 || 'Operation 20', center: centers[1], template: templates[1] },
-      { index: 3, seq: 30, name: opNames.op30 || 'Operation 30', center: centers[2], template: templates[2] }
-    ];
-    const operationRows = planned.map(function(plan, idx) {
-      let accepted = false;
-      let errorName = '';
-      let errorMessage = '';
-      if (idx < lineCount) {
-        accepted = safeTryReturn(function() {
-          routingRec.selectLine({ sublistId: stepSublist, line: idx });
-          safeTry(() => routingRec.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationsequence', value: String(plan.seq) }));
-          routingRec.setCurrentSublistValue({ sublistId: stepSublist, fieldId: 'operationname', value: String(plan.name).slice(0, 60) });
-          routingRec.commitLine({ sublistId: stepSublist });
-          return true;
-        }) === true;
-        if (!accepted) {
-          errorName = 'ROUTING_OPERATION_RENAME_SKIPPED';
-          errorMessage = 'Existing routing operation line could not be renamed; routing context was left intact.';
-        }
-      } else {
-        errorName = 'ROUTING_OPERATION_LINE_NOT_EXPOSED';
-        errorMessage = 'Existing routing did not expose this operation line for editing; routing context was left intact.';
-      }
-      const row = buildRoutingOperationRowW453(plan.index, plan.seq, plan.name, plan.center, plan.template);
-      row.accepted = accepted;
-      row.rejected = !accepted;
-      row.plannedOnly = !accepted;
-      row.errorName = errorName;
-      row.errorMessage = errorMessage;
-      return row;
-    });
-    const acceptedOperationRenames = operationRows.filter(function(row) { return row && row.accepted === true; });
-    let saveResult = null;
-    let routeSaveSkippedReason = '';
-    const headerFieldsAccepted = [];
-    const headerFieldsRejected = [];
-    const nameAccepted = safeTryReturn(() => {
-      routingRec.setValue({ fieldId: 'name', value: routingName });
-      return true;
-    }) === true;
-    if (nameAccepted) headerFieldsAccepted.push('name');
-    else headerFieldsRejected.push({ fieldId: 'name', reason: 'routing_name_rename_rejected' });
-    const memoAccepted = safeTryReturn(() => {
-      routingRec.setValue({ fieldId: 'memo', value: routingMemo });
-      return true;
-    }) === true;
-    if (memoAccepted) headerFieldsAccepted.push('memo');
-    else headerFieldsRejected.push({ fieldId: 'memo', reason: 'routing_memo_rename_rejected' });
-    if (acceptedOperationRenames.length || headerFieldsAccepted.length) {
-      saveResult = safeTryReturn(() => Number(routingRec.save({ enableSourcing: true, ignoreMandatoryFields: true }))) || Number(routingId);
-    } else {
-      routeSaveSkippedReason = 'no_header_or_operation_rename_accepted';
-    }
-    const postSaveVerification = verifyRoutingBomAndOperationsW456({
-      routingId: Number(routingId),
-      expectedBomId: Number(bomId),
-      expectedOperationNames: planned.map(function(plan) { return plan.name; })
-    });
-    let attachResult = 'not-attempted';
-    if (source === 'assembly-attached-routing' || source === 'managed-routing' || source === 'assembly-default-routing' || source === 'assembly-first-routing') {
-      attachResult = 'reused-existing-assembly-routing';
-    } else {
-      attachResult = attachRoutingToAssemblySafe({ assemblyId, routingId: Number(routingId) });
-    }
-    const verification = verifyAssemblyRoutingDefaultW455({ assemblyId, routingId: Number(routingId), expectedRoutingName: routingName });
-    log.audit({
-      title: `Routing reused with product operation labels W455 [${VERSION}]`,
-      details: JSON.stringify({
-        routingId: Number(routingId),
-        saveResult,
-        routeSaveSkippedReason,
-        source,
-        lineCount,
-        routingName,
-        operationRows,
-        assemblyBomProof,
-        postSaveVerification,
-        routingDiscovery,
-        headerFieldsAccepted,
-        headerFieldsRejected
-      })
-    });
-    const acceptedRoutingSubsidiaryMismatch = routingDiscovery && routingDiscovery.acceptedRoutingSubsidiaryMismatch === true;
-    const attachAttempted = !(source === 'assembly-attached-routing' || source === 'managed-routing' || source === 'assembly-default-routing' || source === 'assembly-first-routing');
-    return {
-      status: verification.defaulted ? 'defaulted' : 'reused',
-      routingId: Number(routingId),
-      routing: {
-        id: String(routingId),
-        internalId: String(routingId),
-        url: recordUrlW453('manufacturingrouting', Number(routingId)),
-        name: routingName,
-        status: verification.defaulted ? 'defaulted' : 'reused'
-      },
-      routingUrl: recordUrlW453('manufacturingrouting', Number(routingId)),
-      routingName,
-      name: routingName,
-      existingRoutingId: existingRoutingId ? Number(existingRoutingId) : Number(routingId),
-      copiedFromRoutingTemplateId: null,
-      decision: 'reused-existing-routing-renamed-operations',
+      routingId,
+      existingRoutingId: existingRoutingId ? Number(existingRoutingId) : null,
+      decision: existingRoutingId ? 'reused-existing-routing' : 'created-new-routing',
       attachResult,
-      assemblyBomProof,
-      acceptedRoutingId: routingDiscovery && routingDiscovery.acceptedRoutingId || Number(routingId),
-      acceptedRoutingBomId: routingDiscovery && routingDiscovery.acceptedRoutingBomId || Number(bomId),
-      acceptedRoutingName: routingDiscovery && routingDiscovery.acceptedRoutingName || routingName,
-      acceptedRoutingSource: routingDiscovery && routingDiscovery.acceptedRoutingSource || source,
-      acceptedRoutingHadStaleName: routingDiscovery && routingDiscovery.acceptedRoutingHadStaleName === true,
-      acceptedRoutingSubsidiaryMismatch,
-      acceptedRoutingSubsidiaryId: routingDiscovery && routingDiscovery.acceptedRoutingSubsidiaryId || null,
-      acceptedRoutingExpectedSubsidiaryId: routingDiscovery && routingDiscovery.acceptedRoutingExpectedSubsidiaryId || null,
-      acceptedRoutingSubsidiaryMismatchSeverity: acceptedRoutingSubsidiaryMismatch ? 'attach_or_wo_warning' : '',
-      routingDiscoveryMode: routingDiscovery && routingDiscovery.routingDiscoveryMode || source,
-      routingCandidatesInspected: routingDiscovery && routingDiscovery.routingCandidatesInspected || 0,
-      routingCandidatesRejected: routingDiscovery && routingDiscovery.routingCandidatesRejected || [],
-      routingDiscovery,
-      routingBomFieldSkippedBecauseAssemblyBomVerified: false,
-      rejectedBomFieldError: null,
-      routingHeaderTelemetry: {
-        assemblyBomProof,
-        billofmaterials: { attempted: false, skippedBecauseAssemblyBomVerified: false, errorName: '', errorMessage: '' },
-        headerFieldsAccepted,
-        headerFieldsRejected
-      },
-      routingLocationClearedForOperationRetry: false,
-      attachDefaultVerification: verification,
-      attachAttempted,
-      assemblyDefaultVerified: verification.defaulted === true,
-      routingOpenable: true,
-      routingBomVerified: postSaveVerification && postSaveVerification.bomVerified === true,
-      routingBomVerificationW456: postSaveVerification,
-      routingLineEditDiagnosticW456: {
-        status: acceptedOperationRenames.length ? 'operation_labels_updated_or_partially_updated' : 'operation_line_edit_not_exposed_header_rename_only',
-        acceptedCount: acceptedOperationRenames.length,
-        lineCount,
-        saveResult,
-        routeSaveSkippedReason,
-        postSaveVerification
-      },
-      staleRoutingDetected: assemblyRoutingState && assemblyRoutingState.staleRoutingDetected === true,
-      staleRoutingName: assemblyRoutingState && assemblyRoutingState.staleRoutingName || '',
-      staleRoutingId: assemblyRoutingState && assemblyRoutingState.staleRoutingId || null,
-      supersedeResult: 'reused-valid-routing-context',
-      operationRows,
-      routingOperations: operationRows,
       chosen: {
-        centers,
-        templates,
-        ops: opNames,
-        reusedRoutingId: Number(routingId),
-        reuseSource: source,
-        copiedFromRoutingTemplateId: null
+        centers: [c1, c2, c3],
+        templates: [t1, t2, t3],
+        ops: opNames
       }
     };
   }
+
+
 
   function attachRoutingToAssemblySafe({ assemblyId, routingId }) {
     try {
@@ -3049,7 +2884,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           rejectedLocationId: Number(locationId || 0),
           errorName: e && e.name || '',
           errorMessage: e && e.message || String(e || ''),
-          itemBodyLocationPolicy: 'old-runner-location-first-clear-body-location-on-invalid-sub'
+          itemBodyLocationPolicy: 'old-runner-location-first-clear-copied-body-location-on-invalid-sub'
         })
       });
       return Number(buildRecord(false).save({ enableSourcing: true, ignoreMandatoryFields: true }));
@@ -5296,9 +5131,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (Array.isArray(fromResult) && fromResult.length) return fromResult.slice(0, 3);
     const opNames = resolveRoutingNames({ prospect: '', signalText: '', names: names || {} });
     return [
-      buildRoutingOperationRowW453(1, 10, opNames.op10 || 'Operation 10', null, null),
-      buildRoutingOperationRowW453(2, 20, opNames.op20 || 'Operation 20', null, null),
-      buildRoutingOperationRowW453(3, 30, opNames.op30 || 'Operation 30', null, null)
+      buildRoutingOperationRowW453(1, 10, opNames.op10 || 'Blending', null, null),
+      buildRoutingOperationRowW453(2, 20, opNames.op20 || 'Dispensing', null, null),
+      buildRoutingOperationRowW453(3, 30, opNames.op30 || 'Packaging', null, null)
     ].map(function(op) {
       op.plannedOnly = true;
       op.linkAuthority = { status: 'planned_operation_not_record_link', openable: false, url: '' };

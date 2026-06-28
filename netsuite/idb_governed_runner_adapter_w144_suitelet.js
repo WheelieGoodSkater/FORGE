@@ -1587,7 +1587,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (tokenSource.indexOf('safeIdempotency') === -1 && tokenSource.indexOf('safeBuildAttempt') === -1 && tokenSource.indexOf('safeRunnerExternalId') === -1) return false;
     const token = String(searchToken && searchToken.token || '').trim();
     if (!token || String(fileName || '').indexOf(token) === -1) return false;
-    if (!/^idb_result_capture_/i.test(String(fileName || ''))) return false;
+    if (!/^idb_result_(?:capture_|completed_|completed_with_wip_diagnostic_)/i.test(String(fileName || ''))) return false;
     const keyed = completedKeyedResultCaptureW455(parsed);
     if (!keyed.ready) return false;
     const reasons = matchResult && matchResult.reasons || [];

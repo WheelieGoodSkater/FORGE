@@ -49,6 +49,30 @@ function loadAdapterTest() {
   return moduleValue._test;
 }
 
+function loadRunnerTest() {
+  const source = readRel(runnerRel);
+  let moduleValue = null;
+  const stub = {};
+  const sandbox = {
+    console,
+    define(deps, factory) {
+      moduleValue = factory(
+        { getCurrentScript: () => ({ getParameter: () => '' }) },
+        { audit() {}, error() {}, debug() {} },
+        stub,
+        stub,
+        stub,
+        stub,
+        stub
+      );
+    }
+  };
+  vm.createContext(sandbox);
+  vm.runInContext(source, sandbox, { filename: runnerRel });
+  if (!moduleValue || !moduleValue._test) throw new Error('runner did not expose _test');
+  return moduleValue._test;
+}
+
 function main() {
   const results = [];
   const runner = readRel(runnerRel);
@@ -60,6 +84,7 @@ function main() {
   const oldRunner = fs.readFileSync(oldRunnerPath, 'utf8');
   const pkg = JSON.parse(readRel('package.json'));
   const adapterTest = loadAdapterTest();
+  const runnerTest = loadRunnerTest();
   const hooks = loadHooks({ fetchMessage: 'live fetch disabled in W472 harness' });
 
   const oldCoreFunctions = [
@@ -169,6 +194,8 @@ function main() {
       'productExampleCountW472',
       'productExampleNamesW472',
       'productNameSpecificityScoreW472',
+      'colorPatternOnlyProductNameReasonW472',
+      'hasConcreteProductNounW472',
       'weakPrecomputedNamingPayloadW472',
       'precomputedNamingSupersededByWebsiteProductsW472',
       'websiteNamingSupersedesAllPacksW472',
@@ -205,6 +232,9 @@ function main() {
   assertCase(results, 'w472-roi-competitive-sidecar-payload',
     allPresent(runner, [
       'function buildRoiCompetitiveSidecarW472',
+      'function chooseRoiPointW472',
+      'function collectRoiChannelsW472',
+      'function extractPainSignalFromNotesW472',
       'roiCompetitiveReview',
       'roiCompetitiveSourceBasis',
       'roiAudit',
@@ -213,11 +243,138 @@ function main() {
       'roiCompetitiveDetailModelW444',
       'competitiveAdvisoryModelW362',
       'valueReviewPacket',
+      'completedStoryboardW472',
+      'consultantCompletedStoryboardW472',
+      'buildCompletedStoryboardW472',
       'no_measured_roi_claim_without_buyer_baseline',
+      'baselineNeededToMeasure',
+      'whyChosen',
       'no_named_competitor_claim_without_buyer_source',
       'advisory_only'
     ]),
     'W472 sidecar should preserve or synthesize claim-safe ROI and competitive advisory payloads.');
+
+  const competitiveNotes = 'Competitors: Patagonia/Osprey/REI. Incumbents include Hydro Flask/Stanley/YETI. Alternatives like Pendleton/Therm-a-Rest and Ekster/Bellroy. Decision criteria: prove replenishment confidence before the seasonal launch.';
+  const extractedCompetitors = runnerTest.extractCompetitorsFromNotesW472(competitiveNotes);
+  const competitiveSidecar = runnerTest.buildRoiCompetitiveSidecarW472({
+    prospect: 'Outdoor Brand Competitive Proof',
+    website: 'https://example.com',
+    notes: competitiveNotes,
+    agenda: 'Frame competitive intelligence as advisory only.',
+    enableManufacturing: false,
+    enableWip: false,
+    confirmedBuildRequestJson: {
+      storyInputs: {
+        buyerNeed: competitiveNotes,
+        scObjective: 'Show returned-record proof for availability and replenishment decisions.',
+        competitor: 'stale structured fallback should come after notes'
+      },
+      competitive: {
+        legacyUnsafeCopy: 'Beat dealer portals with a generic win claim.'
+      },
+      competitiveAdvisory: {
+        legacyUnsafeCue: 'Beat dealer portals before the buyer confirms the incumbent.'
+      }
+    },
+    names: {
+      hero_item_name: 'Trail Hydration Bottle'
+    }
+  }, {
+    customer: { role: 'customer', label: 'Customer' },
+    salesOrder: { role: 'salesOrder', label: 'Sales Order' },
+    heroItem: { role: 'heroItem', label: 'Hero Item' }
+  });
+
+  assertCase(results, 'w472-competitive-notes-competitors-first',
+    allPresent(JSON.stringify(extractedCompetitors), ['Patagonia', 'Osprey', 'REI', 'Hydro Flask', 'Stanley', 'YETI', 'Pendleton', 'Therm-a-Rest', 'Ekster', 'Bellroy']) &&
+      competitiveSidecar.competitive.namedCompetitors[0] === 'Patagonia' &&
+      competitiveSidecar.competitive.namedCompetitors.indexOf('stale structured fallback should come after notes') > -1 &&
+      competitiveSidecar.competitive.sourceBasis.indexOf('explicit_competitors_from_notes') > -1 &&
+      competitiveSidecar.competitive.competitiveSourceBasis.indexOf('explicit competitors/incumbents in notes') > -1,
+    JSON.stringify({ extractedCompetitors, competitive: competitiveSidecar.competitive }, null, 2));
+
+  assertCase(results, 'w472-competitive-advisory-is-framing-not-win-claim',
+    competitiveSidecar.competitiveAdvisory.advisoryOnly === true &&
+      competitiveSidecar.competitiveAdvisory.llmStyleCompetitiveIntelligence &&
+      competitiveSidecar.competitiveAdvisory.llmStyleCompetitiveIntelligence.status === 'advisory_only' &&
+      competitiveSidecar.competitiveAdvisory.guardrails.indexOf('no_named_competitor_claim_without_buyer_source') > -1 &&
+      competitiveSidecar.competitive.confidence === 'medium_high' &&
+      !/Beat dealer portals/i.test(JSON.stringify(competitiveSidecar)),
+    JSON.stringify(competitiveSidecar, null, 2));
+
+  const ecommerceRoi = runnerTest.buildRoiCompetitiveSidecarW472({
+    prospect: 'Summit Trail Supply',
+    website: 'https://example-trail.example/products/ultralight-daypack',
+    notes: 'Buyer says ecommerce and retail stores see backorders and order promise exceptions on the Ultralight Daypack. Decision criteria: prove available-to-promise trust by launch. Timeline: fall launch.',
+    agenda: 'Frame channel availability risk without quantified ROI claims.',
+    enableManufacturing: false,
+    enableWip: false,
+    names: {
+      hero_item_name: 'Ultralight Daypack',
+      selectedProductName: 'Ultralight Daypack',
+      industry_category: 'Outdoor Gear'
+    },
+    confirmedBuildRequestJson: {
+      demoPath: { laneId: 'dealer_hardgoods', scenario: 'Channel availability proof' },
+      storyInputs: {
+        buyerNeed: 'Reduce backorder surprises across ecommerce and retail stores.',
+        channels: ['ecommerce', 'retail stores'],
+        decisionCriteria: 'available-to-promise trust by launch',
+        timeline: 'fall launch'
+      }
+    }
+  }, {});
+  const ecommerceRoiJson = JSON.stringify(ecommerceRoi);
+
+  assertCase(results, 'w472-roi-varies-for-channel-order-promise-pain',
+    ecommerceRoi.roiAudit &&
+      ecommerceRoi.roiAudit.advisoryOnly === true &&
+      ecommerceRoi.roiAudit.metricDirection === 'Reduce order-promise exception risk for Ultralight Daypack' &&
+      /ecommerce/.test(ecommerceRoiJson) &&
+      /retail stores/.test(ecommerceRoiJson) &&
+      /Outdoor Gear/.test(ecommerceRoiJson) &&
+      /fall launch/.test(ecommerceRoiJson) &&
+      /Buyer-confirmed current order-promise exceptions/.test(ecommerceRoi.roiAudit.baselineNeededToMeasure || '') &&
+      !/Increase fulfillment confidence/.test(ecommerceRoiJson) &&
+      !/\b\d+\s*%/.test(ecommerceRoi.roiAudit.claim),
+    JSON.stringify(ecommerceRoi, null, 2));
+
+  const wipRoi = runnerTest.buildRoiCompetitiveSidecarW472({
+    prospect: 'Metro Mixer Works',
+    website: 'https://example-mixer.example/products/commercial-spiral-mixer',
+    notes: 'Operations team has component shortage holds and work order schedule misses for Commercial Spiral Mixer dealer orders. Must prove schedule readiness before Q4 dealer rollout.',
+    agenda: 'Keep value advisory; ask for baseline before measurement.',
+    enableManufacturing: true,
+    enableWip: true,
+    names: {
+      hero_item_name: 'Commercial Spiral Mixer',
+      selectedProductName: 'Commercial Spiral Mixer',
+      industry_category: 'Foodservice Equipment'
+    },
+    confirmedBuildRequestJson: {
+      demoPath: { laneId: 'industrial_equipment', scenario: 'WIP schedule proof' },
+      storyInputs: {
+        buyerNeed: 'Reduce schedule misses on dealer orders.',
+        channels: ['dealer/distribution'],
+        decisionCriteria: 'schedule readiness',
+        timeline: 'Q4 dealer rollout'
+      }
+    }
+  }, {});
+  const wipRoiJson = JSON.stringify(wipRoi);
+
+  assertCase(results, 'w472-roi-varies-for-wip-product-schedule-pain',
+    wipRoi.roiAudit &&
+      wipRoi.roiAudit.advisoryOnly === true &&
+      wipRoi.roiAudit.metricDirection === 'Reduce production promise risk for Commercial Spiral Mixer' &&
+      /Foodservice Equipment/.test(wipRoiJson) &&
+      /dealer\/distribution/.test(wipRoiJson) &&
+      /Q4 dealer rollout/.test(wipRoiJson) &&
+      /work-order schedule misses/.test(wipRoi.roiAudit.baselineNeededToMeasure || '') &&
+      wipRoi.roiAudit.metricDirection !== ecommerceRoi.roiAudit.metricDirection &&
+      !/Increase fulfillment confidence/.test(wipRoiJson) &&
+      !/\b\d+\s*%/.test(wipRoi.roiAudit.claim),
+    JSON.stringify(wipRoi, null, 2));
 
   assertCase(results, 'w472-result-payload-keyed-records-and-display-arrays',
     allPresent(runner, [
@@ -240,6 +397,18 @@ function main() {
     drawer === cabinetDrawer &&
       !/N\/record|record\.create|record\.submitFields|nlapiSubmitRecord|task\.create|N\/task/.test(drawer),
     'Drawer should remain advisory/queue-only with no direct SuiteScript write signatures.');
+
+  assertCase(results, 'w472-completed-storyboard-import-rendered-by-drawer',
+    allPresent(drawer, [
+      'completedStoryboardW472',
+      'consultantCompletedStoryboardW472',
+      'renderCompletedStoryboardW472',
+      'Completed story',
+      'Product:',
+      'ROI:',
+      'Competitive:'
+    ]),
+    'Drawer should preserve and render compact consultant storyboard fields from completed sidecar payloads.');
 
   const config = adapterTest.resolveRunnerConfig({
     getParameter({ name }) {
@@ -376,6 +545,90 @@ function main() {
       weakCategoryPack.supersededExplicitNamingPackW472 === true &&
       !/footwear|apparel|style matrix|resolver limited|Legacy Naming File/i.test(JSON.stringify(weakCategoryPack)),
     JSON.stringify({ weakCategoryPack }, null, 2));
+
+  const bagguVariantRequest = {
+    website: 'https://www.baggu.com/collections/bags',
+    prospect: { name: 'Baggu W472 Pink Stripe Guard', website: 'https://www.baggu.com/collections/bags' },
+    selectedToggles: { createNewHeroItem: true, enableManufacturing: false, enableWip: false },
+    precomputedNamingPack: {
+      hero_item_name: 'Pink Stripe',
+      assembly_name: 'Pink Stripe Availability Flow',
+      component_names: ['Pink Stripe', 'Small', 'Reusable Bag']
+    },
+    websiteEvidence: {
+      trustedWebsiteProductExamplesW472: [
+        'Pink Stripe',
+        'Medium Nylon Crescent Bag - Pink Stripe',
+        'Small Nylon Crescent Bag - Black'
+      ],
+      productCardNames: ['Medium Nylon Crescent Bag - Pink Stripe']
+    },
+    productEvidence: {
+      trustedWebsiteProductExamplesW472: ['Pink Stripe']
+    }
+  };
+  const bagguPack = adapterTest.buildServerPrecomputedNamingPack(bagguVariantRequest);
+
+  assertCase(results, 'w472-baggu-color-pattern-only-rejected',
+    bagguPack &&
+      bagguPack.hero_item_name === 'Medium Nylon Crescent Bag - Pink Stripe' &&
+      bagguPack.selectedProductName === 'Medium Nylon Crescent Bag - Pink Stripe' &&
+      bagguPack.component_names.indexOf('Small Nylon Crescent Bag - Black') !== -1 &&
+      bagguPack.websiteNamingSupersedesAllPacksW472 === true &&
+      bagguPack.component_names.indexOf('Pink Stripe') === -1 &&
+      !bagguPack.catalogCandidates.some((candidate) => candidate && candidate.name === 'Pink Stripe'),
+    JSON.stringify({ bagguPack }, null, 2));
+
+  const liveBagguRunnerPack = runnerTest.enforceOldRunnerNamingDisciplineW468({
+    _source: 'suitelet-precomputed',
+    _signalLen: 1200,
+    namingEvidenceSource: 'llm_website_product_evidence',
+    namingConfidence: 96,
+    hero_item_name: 'Coffee',
+    assembly_name: 'Coffee Availability Flow',
+    component_names: ['Coffee', 'Medium Nylon Crescent Bag in Piscine', 'Nylon Bowler Bag in Coffee'],
+    selectedProductName: 'Coffee',
+    primary_product_candidate: 'Coffee',
+    alternate_product_candidates: ['Medium Nylon Crescent Bag in Piscine', 'Nylon Bowler Bag in Coffee'],
+    websiteProductExamplesW472: ['Coffee', 'Medium Nylon Crescent Bag in Piscine', 'Nylon Bowler Bag in Coffee'],
+    catalogCandidates: [
+      { name: 'Coffee', source: 'llm_website_product_evidence' },
+      { name: 'Medium Nylon Crescent Bag in Piscine', source: 'product_link_text' },
+      { name: 'Nylon Bowler Bag in Coffee', source: 'product_url_handle' }
+    ],
+    websiteEvidenceSourceUrls: [
+      'https://www.baggu.com/collections/bags',
+      'https://www.baggu.com/products/nylon-bowler-bag-coffee'
+    ]
+  }, {
+    prospect: 'Baggu W472 Live Pink Stripe Guard',
+    website: 'https://www.baggu.com/collections/bags',
+    signalText: 'Baggu collection with product cards.',
+    namingPayload: { found: true, parsed: true, applied: true, source: 'suitelet-precomputed' }
+  });
+
+  assertCase(results, 'w472-live-baggu-generic-primary-promotes-full-alternate',
+    liveBagguRunnerPack &&
+      liveBagguRunnerPack.productAlternatePromotedW472 === true &&
+      liveBagguRunnerPack.namingPackCorrectedByWebsiteAlternateW472 === true &&
+      liveBagguRunnerPack.selectedProductName === 'Medium Nylon Crescent Bag in Piscine' &&
+      liveBagguRunnerPack.hero_item_name === 'Medium Nylon Crescent Bag in Piscine' &&
+      liveBagguRunnerPack.component_names.indexOf('Nylon Bowler Bag in Coffee') !== -1 &&
+      !/^Coffee$/i.test(liveBagguRunnerPack.hero_item_name),
+    JSON.stringify({ liveBagguRunnerPack }, null, 2));
+
+  assertCase(results, 'w472-product-page-url-handle-can-seed-product-name',
+    runnerTest.productNameFromProductUrlW472('https://www.baggu.com/products/medium-nylon-crescent-bag-pink-stripe') === 'Medium Nylon Crescent Bag Pink Stripe',
+    'Exact product-page URLs should seed a concrete product name even when collection HTML is noisy.');
+
+  assertCase(results, 'w472-full-product-name-preferred-over-variant-label',
+    allPresent(adapter, [
+      'colorPatternOnlyProductNameReasonW472',
+      'hasConcreteProductSignalW464'
+    ]) &&
+      /color, pattern, size, or collection label lacks a product noun/.test(adapter) &&
+      /const cleaned = usableWebsiteProductExampleW472\(text, \{ prospect \}\);/.test(adapter),
+    'Adapter website examples should reject naked variant labels and preserve full product-card names with product nouns.');
 
   assertCase(results, 'w472-existing-harness-scripts-retained',
     pkg.scripts['harness:restore-old-runner-naming-creation-w450'] === 'node archive/tools/run_w450_restore_old_runner_naming_creation_harness.js' &&

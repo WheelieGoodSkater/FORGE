@@ -11420,7 +11420,7 @@
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
       },
       body: requestEnvelope.bodyFormEncoded
-    }, 30000).then((response) => response.text().then((text) => {
+    }, 90000).then((response) => response.text().then((text) => {
       let parsed = null;
       try {
         parsed = text ? JSON.parse(text) : {};
@@ -11961,7 +11961,7 @@
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
       },
       body: requestEnvelope.bodyFormEncoded
-    }, 30000).then((response) => response.text().then((text) => {
+    }, 60000).then((response) => response.text().then((text) => {
       let parsed = null;
       try {
         parsed = text ? JSON.parse(text) : {};
@@ -15628,6 +15628,13 @@
         agenda: firstNonBlank(payload.generatedAgenda, generated.agenda, payload.agenda)
       },
       productBuildPlanW432: displayPayload.productBuildPlanW432 || null,
+      completedStoryboardW472: payload.completedStoryboardW472 || payload.consultantCompletedStoryboardW472 || resultCapture.completedStoryboardW472 || resultCapture.consultantCompletedStoryboardW472 || null,
+      consultantCompletedStoryboardW472: payload.consultantCompletedStoryboardW472 || payload.completedStoryboardW472 || resultCapture.consultantCompletedStoryboardW472 || resultCapture.completedStoryboardW472 || null,
+      roiCompetitiveReview: payload.roiCompetitiveReview || resultCapture.roiCompetitiveReview || null,
+      roiCompetitiveSourceBasis: payload.roiCompetitiveSourceBasis || resultCapture.roiCompetitiveSourceBasis || null,
+      roiAudit: payload.roiAudit || resultCapture.roiAudit || null,
+      competitive: payload.competitive || resultCapture.competitive || null,
+      competitiveAdvisory: payload.competitiveAdvisory || resultCapture.competitiveAdvisory || null,
       displayObjects,
       componentItems,
       locationPlanningRecords,
@@ -28959,6 +28966,30 @@
     `;
   }
 
+  function renderCompletedStoryboardW472(storyboard) {
+    if (!storyboard || typeof storyboard !== 'object') return '';
+    const pathRows = arrayValue(storyboard.createdTransactionPath).slice(0, 3).map((step) => {
+      const label = firstNonBlank(step && step.role, step && step.label, 'Record');
+      const name = firstNonBlank(step && step.name, step && step.recordName, 'Returned record');
+      return `<li><strong>${escapeHtml(label)}:</strong> ${escapeHtml(name)}</li>`;
+    }).join('');
+    const product = storyboard.selectedWebsiteProduct || {};
+    const alternates = arrayValue(product.alternates).slice(0, 3);
+    const sourceBasis = arrayValue(storyboard.competitive && storyboard.competitive.sourceBasis).slice(0, 3).join(', ');
+    const guardrails = arrayValue(storyboard.competitive && storyboard.competitive.guardrails).slice(0, 3).join(', ');
+    return `
+      <div class="idb-run-action-card idb-w472-completed-storyboard">
+        <div class="idb-status-key">Completed story</div>
+        <div class="idb-strong">${escapeHtml(storyboard.buyerProblemStory || 'Use the returned records to ground the buyer story.')}</div>
+        <ul class="idb-tight-list">${pathRows}</ul>
+        <div class="idb-copy"><strong>Product:</strong> ${escapeHtml(product.name || 'Selected website product not returned')}${alternates.length ? escapeHtml(`; alternates: ${alternates.join(', ')}`) : ''}</div>
+        <div class="idb-copy"><strong>ROI:</strong> ${escapeHtml(storyboard.roi && storyboard.roi.summary || 'Advisory only; confirm baseline before value claims.')}</div>
+        <div class="idb-copy"><strong>Competitive:</strong> ${escapeHtml(storyboard.competitive && storyboard.competitive.summary || 'Advisory only; confirm incumbent context before claims.')}</div>
+        ${sourceBasis || guardrails ? `<div class="idb-detail-line">${escapeHtml([sourceBasis ? `Basis: ${sourceBasis}` : '', guardrails ? `Guardrails: ${guardrails}` : ''].filter(Boolean).join(' / '))}</div>` : ''}
+      </div>
+    `;
+  }
+
   function renderDccHandoffOperatorReview(state, lane, page, recommendation) {
     const handoffPacket = dccRunnerHandoffPacketV1(state, lane, page, recommendation);
     const buildPacket = idbBuildPacketV1(state, lane, page, recommendation);
@@ -28982,6 +29013,7 @@
     const consultantStorySurfaceHtml = finalNamesImported && w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
       ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: reviewResolverLimited, advisoryWebsiteEvidence: reviewAdvisory, activeLaneStoryPolishW373: reviewStoryContractW373 })
       : '';
+    const completedStoryboardHtml = finalNamesImported ? renderCompletedStoryboardW472(finalNaming.completedStoryboardW472 || finalNaming.consultantCompletedStoryboardW472) : '';
     const preparedObjects = preparedRecords.map((record) => consultantRunNavigationDisplayW334(record));
     const finalRecordRows = preparedRecords.map((record) => `
       <li>
@@ -29094,6 +29126,7 @@
         </div>
         ${renderIntegratedBuildRunnerReturnStatus(state, lane, page, recommendation)}
         ${importRecoverySurfaceHtml}
+        ${completedStoryboardHtml}
         ${consultantStorySurfaceHtml}
         <div class="idb-run-action-card idb-w114-build-summary">
           <div class="idb-status-key">${escapeHtml(buildSummaryKey)}</div>
@@ -30885,10 +30918,22 @@
       if (transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.statePatch && transportResult.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult) {
         state.integratedBuildRunnerResult = transportResult.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult;
       } else if (adapterPayload && (adapterPayload.error || adapterPayload.status === 'adapter_error')) {
+        const recoverableRunnerTaskIdW472 = firstNonBlank(
+          adapterPayload.runnerTaskId,
+          adapterPayload.resultCapture && adapterPayload.resultCapture.runnerTaskId
+        );
         state.integratedBuildRunnerResult = Object.assign({}, adapterPayload, {
-          status: adapterPayload.status || 'adapter_error',
-          runnerTaskId: null,
-          resultCapture: Object.assign({ status: 'adapter_error' }, adapterPayload.resultCapture || {}),
+          status: recoverableRunnerTaskIdW472 ? 'queued_result_capture_pending' : (adapterPayload.status || 'adapter_error'),
+          runnerTaskId: recoverableRunnerTaskIdW472 || null,
+          queueSubmitted: !!recoverableRunnerTaskIdW472,
+          resultCapture: Object.assign(
+            { status: recoverableRunnerTaskIdW472 ? 'pending_runner_completion' : 'adapter_error' },
+            adapterPayload.resultCapture || {},
+            {
+              status: recoverableRunnerTaskIdW472 ? 'pending_runner_completion' : (adapterPayload.resultCapture && adapterPayload.resultCapture.status || 'adapter_error'),
+              runnerTaskId: recoverableRunnerTaskIdW472 || null
+            }
+          ),
           finalGeneratedNamesJson: null,
           activeOpenLinks: 0
         });

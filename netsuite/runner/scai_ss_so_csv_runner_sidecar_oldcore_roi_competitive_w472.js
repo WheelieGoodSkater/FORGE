@@ -3350,6 +3350,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (handleName) push(handleName, 'product_url_handle', normalized);
     }
 
+    const sourceHandleName = productNameFromProductUrlW472(sourceUrl);
+    if (sourceHandleName) push(sourceHandleName, 'product_url_handle', sourceUrl);
+
     return mergeWebsiteProductExamplesW472([], examples)
       .sort(function(a, b) {
         const scoreA = Number(a.confidence || 0) + productNameSpecificityScoreW472(a.name);
@@ -3389,6 +3392,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const text = String(value || '').trim();
     if (!text) return -100;
     let score = 0;
+    const colorPatternReason = colorPatternOnlyProductNameReasonW472(text);
+    if (colorPatternReason) score -= 80;
+    if (hasConcreteProductNounW472(text)) score += 18;
     if (/\b[A-Z]{2,}\b/.test(text)) score += 4;
     if (/\b\d+\b/.test(text)) score += 3;
     if (/\b(Sport|LT|ST|XT|TT|Pro|Standard|Edition|Tandem)\b/i.test(text)) score += 4;
@@ -3413,6 +3419,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (/sorry|no products|view all|shop all|learn more|subscribe|account|login|cart|checkout|privacy|terms|gift card|gift certificate/i.test(text)) return '';
     if (/^(home|shop|products?|collections?|accessories|clothing|apparel|sale|new arrivals|best sellers|all|search|menu|size chart|gift card)$/i.test(text)) return '';
     if (genericWebsiteProductNameReasonW472(text)) return '';
+    if (colorPatternOnlyProductNameReasonW472(text)) return '';
     return text;
   }
 
@@ -3659,10 +3666,119 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function genericWebsiteProductNameReasonW472(value) {
     const text = compactText(value);
     if (!text) return 'empty product name';
-    if (/^(footwear|apparel|clothing|fashion|style|styles|bags?|bowls?|accessories|products?|product|catalog|collection|collections|best sellers|new arrivals)$/i.test(text)) {
+    if (/^(coffee|cold brew|beverage|drinkware|coolers?|bags?|bag|case|case pack|pack|batch|footwear|apparel|clothing|fashion|style|styles|bowls?|accessories|products?|product|catalog|collection|collections|best sellers|new arrivals|core style color-size matrix|style\s*\/\s*sku matrix)$/i.test(text)) {
       return `${text} rejected: generic website category label, not a concrete product`;
     }
     return '';
+  }
+
+  function hasConcreteProductNounW472(value) {
+    return /\b(backpack|pack|bag|bags|tote|duffel|crossbody|pouch|sling|wallet|strap|bottle|cup|cups|mug|tumbler|canteen|blanket|quilt|puffy|jacket|fleece|shirt|tee|pant|short|sock|hat|cap|hoodie|sweater|vest|case|case pack|sku|item|assembly|kit|set|bundle|truck|forklift|watch|computer|oven|grill|cooler|bucket|kettle|grinder|press|scale|tripod|camera|clip|sauce|pasta|kombucha|soda|yogurt|coffee|syrup|mac|stick|dutch oven|cookware|salad spinner|measuring cup|container|containers)\b/i.test(compactText(value));
+  }
+
+  function colorPatternOnlyProductNameReasonW472(value) {
+    const text = compactText(value);
+    if (!text || hasConcreteProductNounW472(text)) return '';
+    const normalized = text.toLowerCase();
+    const tokens = normalized.split(/[\s/,+&-]+/).filter(Boolean);
+    const hasColorOrPattern = /\b(black|white|pink|red|orange|yellow|green|blue|purple|brown|tan|beige|cream|gray|grey|olive|navy|ivory|charcoal|matte|stripe|striped|dot|dotted|plaid|check|checked|floral|camo|fade|dusk|ombre|print|pattern|color|colour|del dia|del día)\b/i.test(text);
+    const hasSizeOnly = /^(?:xs|s|m|l|xl|xxl|small|medium|large|one size|1-person|2-person|16l|32oz|64oz|\d+\s*(?:oz|l|ml|person|pack))$/i.test(text);
+    if ((hasColorOrPattern && tokens.length <= 5) || hasSizeOnly) {
+      return `${text} rejected: color, pattern, size, or collection label lacks a product noun`;
+    }
+    return '';
+  }
+
+  function collectStrongWebsiteProductAlternatesW472(names) {
+    const out = [];
+    const seen = {};
+    function add(value, source, original) {
+      const name = usableWebsiteProductExampleNameW472(value && value.name || value);
+      if (!name) return;
+      const weakReason = weakProductNameReasonW467(name) ||
+        genericWebsiteProductNameReasonW472(name) ||
+        colorPatternOnlyProductNameReasonW472(name);
+      if (weakReason || !hasConcreteProductNounW472(name)) return;
+      const key = name.toLowerCase();
+      if (seen[key]) return;
+      seen[key] = true;
+      out.push({
+        name,
+        source: source || value && value.source || '',
+        candidate: original || value
+      });
+    }
+    const selectedCatalogCandidate = names && names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
+      ? names.selectedCatalogCandidate
+      : null;
+    if (selectedCatalogCandidate) add(selectedCatalogCandidate.name, selectedCatalogCandidate.source || 'selected_catalog_candidate', selectedCatalogCandidate);
+    (Array.isArray(names && names.catalogCandidates) ? names.catalogCandidates : []).forEach(function(candidate) {
+      add(candidate && candidate.name || candidate, candidate && candidate.source || 'catalog_candidate', candidate);
+    });
+    (Array.isArray(names && names.websiteProductExamplesW472) ? names.websiteProductExamplesW472 : []).forEach(function(value) {
+      add(value, 'website_product_examples_w472');
+    });
+    (Array.isArray(names && names.alternate_product_candidates) ? names.alternate_product_candidates : []).forEach(function(value) {
+      add(value, 'alternate_product_candidate');
+    });
+    (Array.isArray(names && names.component_names) ? names.component_names : []).forEach(function(value) {
+      add(value, 'component_name');
+    });
+    return out;
+  }
+
+  function promoteStrongAlternateProductNamingW472(rawNames, context, blockedReason) {
+    const names = Object.assign({}, rawNames || {});
+    const candidates = collectStrongWebsiteProductAlternatesW472(names);
+    if (!candidates.length) return null;
+    const primary = candidates[0].name;
+    const componentNames = [];
+    candidates.forEach(function(candidate) {
+      if (componentNames.length < 3 && componentNames.indexOf(candidate.name) === -1) componentNames.push(candidate.name);
+    });
+    while (componentNames.length < 3) {
+      componentNames.push(componentNames.length === 1 ? `${primary} Related SKU` : `${primary} Fulfillment Support`);
+    }
+    const selectedCandidate = candidates[0].candidate && typeof candidates[0].candidate === 'object'
+      ? candidates[0].candidate
+      : {
+        name: primary,
+        source: candidates[0].source || 'promoted_website_alternate_w472',
+        sourceUrl: Array.isArray(names.websiteEvidenceSourceUrls) ? names.websiteEvidenceSourceUrls[0] || '' : '',
+        confidence: names.namingConfidence || names.confidencePercent || 92,
+        reasons: ['promoted because selected naming-pack product was generic, color-only, or variant-only']
+      };
+    return Object.assign({}, names, {
+      hero_item_name: trimLen(primary, 60),
+      assembly_name: trimLen(`${primary} Availability Flow`, 60),
+      component_names: componentNames.slice(0, 3).map(function(name) { return trimLen(name, 60); }),
+      bom_name: trimLen(`${primary} Availability Plan`, 80),
+      bom_revision_name: trimLen(`${primary} Replenishment Plan`, 80),
+      routing_name: trimLen(`${primary} Fulfillment Flow`, 80),
+      operation_names_by_seq: {
+        '10': `Prepare ${componentNames[0]}`,
+        '20': `Allocate ${primary} Demand`,
+        '30': `Release ${primary}`
+      },
+      selectedProductName: primary,
+      primary_product_candidate: primary,
+      alternate_product_candidates: componentNames.slice(1),
+      selectedCatalogCandidate: selectedCandidate,
+      selectedCatalogCandidateSource: selectedCandidate.source || candidates[0].source || 'promoted_website_alternate_w472',
+      selectedCatalogCandidateReasons: selectedCandidate.reasons || ['promoted because selected naming-pack product was generic, color-only, or variant-only'],
+      catalogCandidates: candidates.map(function(candidate) {
+        return candidate.candidate && typeof candidate.candidate === 'object'
+          ? Object.assign({}, candidate.candidate, { name: candidate.name })
+          : { name: candidate.name, source: candidate.source || 'promoted_website_alternate_w472' };
+      }),
+      websiteProductExamplesW472: candidates.map(function(candidate) { return candidate.name; }),
+      namingPackPreserved: false,
+      namingPackCorrectedByWebsiteAlternateW472: true,
+      productAlternatePromotedW472: true,
+      productAlternatePromotionReasonW472: blockedReason || 'selected naming-pack product lacked a concrete product noun',
+      namingAuthorityOrderW472: 'website product examples -> promote full product alternate before fallback',
+      fallbackUsed: false
+    });
   }
 
   function enforceOldRunnerNamingDisciplineW468(rawNames, context) {
@@ -3675,6 +3791,45 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const namingPayload = context && context.namingPayload || {};
     const authoritativePackApplied = namingPayload.parsed === true && namingPayload.applied === true;
     const components = Array.isArray(names.component_names) ? names.component_names.slice(0, 3) : [];
+    const selectedCandidate = names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
+      ? names.selectedCatalogCandidate.name
+      : names.selectedCatalogCandidate;
+    const authoritativeProductCandidates = [
+      names.selectedProductName,
+      names.primary_product_candidate,
+      selectedCandidate,
+      names.hero_item_name
+    ].filter(Boolean);
+    let authoritativeWeakProductReasonW472 = '';
+    for (let i = 0; i < authoritativeProductCandidates.length; i += 1) {
+      authoritativeWeakProductReasonW472 = weakProductNameReasonW467(authoritativeProductCandidates[i]) ||
+        genericWebsiteProductNameReasonW472(authoritativeProductCandidates[i]) ||
+        colorPatternOnlyProductNameReasonW472(authoritativeProductCandidates[i]);
+      if (authoritativeWeakProductReasonW472) break;
+    }
+
+    if (authoritativePackApplied && authoritativeWeakProductReasonW472) {
+      const blockedProduct = str(authoritativeProductCandidates[0] || names.hero_item_name || '');
+      names.blockedWeakProductName = blockedProduct;
+      names.blockedWeakProductNameReason = authoritativeWeakProductReasonW472;
+      names.namingPackPreserved = false;
+      const promoted = promoteStrongAlternateProductNamingW472(names, context, authoritativeWeakProductReasonW472);
+      if (promoted) return promoted;
+      const recovered = strongDomainRecoveryNamingPackW467(names, context, names.hero_item_name || blockedProduct, authoritativeWeakProductReasonW472);
+      if (recovered) return recovered;
+      return Object.assign({}, names, prospectFallbackNamingPackW467({
+        prospect: context && context.prospect,
+        signalLen: names._signalLen,
+        fallbackReason: 'Runner rejected a color, pattern, size, collection, or generic naming-pack label without a concrete product noun.',
+        genericFallbackBlockedTerms: names.genericFallbackBlockedTerms
+      }), {
+        blockedWeakProductName: blockedProduct,
+        blockedWeakProductNameReason: authoritativeWeakProductReasonW472,
+        blockedWeakRecordName: names.hero_item_name || '',
+        namingAuthorityOrderW472: 'website product examples -> reject variant-only naming files -> prospect fallback',
+        colorPatternOnlyNamingRejectedW472: true
+      });
+    }
 
     if (authoritativePackApplied && names.hero_item_name && names.assembly_name && components.length === 3) {
       names.component_names = components.map(function(name) { return trimLen(name, 60); });
@@ -5023,6 +5178,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     const generatedRecordOwner = 'governed_runner_internal_build_engine';
     const roiCompetitiveSidecarW472 = buildRoiCompetitiveSidecarW472(args, records);
+    const completedStoryboardW472 = buildCompletedStoryboardW472(args, records, roiCompetitiveSidecarW472);
     const payload = {
       schema: 'forge.completed-runner-result.v3',
       legacyGeneratedNamesSchema: 'idb.runner-generated-names-result.w453.v1',
@@ -5144,6 +5300,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       roiCompetitiveDetailModelW444: roiCompetitiveSidecarW472.roiCompetitiveDetailModelW444,
       competitiveAdvisoryModelW362: roiCompetitiveSidecarW472.competitiveAdvisoryModelW362,
       valueReviewPacket: roiCompetitiveSidecarW472.valueReviewPacket,
+      completedStoryboardW472,
+      consultantCompletedStoryboardW472: completedStoryboardW472,
       workOrderTelemetry: args.workOrderTelemetry || null,
       openLinkPreconditions: {
         realUrlsOnly: true,
@@ -5197,6 +5355,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       roiCompetitiveDetailModelW444: roiCompetitiveSidecarW472.roiCompetitiveDetailModelW444,
       competitiveAdvisoryModelW362: roiCompetitiveSidecarW472.competitiveAdvisoryModelW362,
       valueReviewPacket: roiCompetitiveSidecarW472.valueReviewPacket,
+      completedStoryboardW472,
+      consultantCompletedStoryboardW472: completedStoryboardW472,
       realMissingUrls: computeRealMissingUrlsW453(records),
       plannedOrDiagnosticRows: Object.keys(records).filter(function(key) {
         const rec = records[key];
@@ -5564,11 +5724,81 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  function buildCompletedStoryboardW472(args, records, roiCompetitiveSidecar) {
+    const confirmed = args && args.confirmedBuildRequestJson || {};
+    const storyInputs = confirmed.storyInputs || {};
+    const names = args && args.names || {};
+    const notes = compactText([args && args.notes, args && args.agenda, storyInputs.buyerNeed, storyInputs.scObjective].join(' '));
+    const selectedProduct = firstNonBlankTextW453(
+      confirmed.selectedProduct,
+      confirmed.selectedProductName,
+      names.selectedProductName,
+      names.primary_product_candidate,
+      names.hero_item_name
+    );
+    const alternates = uniqueTextValuesW472(
+      []
+        .concat(Array.isArray(names.alternate_product_candidates) ? names.alternate_product_candidates : [])
+        .concat(Array.isArray(names.websiteProductExamplesW472) ? names.websiteProductExamplesW472.slice(1) : [])
+        .concat(Array.isArray(names.catalogCandidates) ? names.catalogCandidates.map(function(candidate) { return candidate && candidate.name || ''; }) : [])
+    ).filter(function(value) { return value && value !== selectedProduct; }).slice(0, 4);
+    const customerRecord = records && records.customer || {};
+    const salesOrderRecord = records && (records.salesOrder || records.demoTransaction) || {};
+    const itemRecord = records && (records.heroItem || records.assembly) || {};
+    const roiAudit = roiCompetitiveSidecar && roiCompetitiveSidecar.roiAudit || {};
+    const competitive = roiCompetitiveSidecar && roiCompetitiveSidecar.competitive || {};
+    const competitiveAdvisory = roiCompetitiveSidecar && roiCompetitiveSidecar.competitiveAdvisory || {};
+    const quickStory = notes
+      ? `${firstNonBlankTextW453(args && args.prospect, 'The buyer')} is trying to prove ${summarizeOneLine(notes)}`
+      : `${firstNonBlankTextW453(args && args.prospect, 'The buyer')} needs a compact returned-record path before value or competitive claims are discussed.`;
+    const roiSummary = firstNonBlankTextW453(
+      roiAudit.claim,
+      roiCompetitiveSidecar && roiCompetitiveSidecar.valueReviewPacket && roiCompetitiveSidecar.valueReviewPacket.groundedRoiSummary,
+      'Advisory only: discuss value after opening the returned records and confirming the buyer baseline.'
+    );
+    const competitiveSummary = firstNonBlankTextW453(
+      competitive.competitorSafeContrast,
+      competitiveAdvisory.runCue,
+      'Advisory only: ask which incumbent workflow the buyer trusts before making a competitive claim.'
+    );
+    return {
+      schema: 'idb.w472-completed-consultant-storyboard.v1',
+      status: 'completed_storyboard_ready',
+      compact: true,
+      buyerProblemStory: quickStory,
+      createdTransactionPath: [
+        { role: 'Customer', name: customerRecord.name || customerRecord.recordName || `${args && args.prospect || 'Customer'} Customer Account`, internalId: customerRecord.internalId || customerRecord.id || '', url: customerRecord.url || '' },
+        { role: 'Sales Order', name: salesOrderRecord.name || salesOrderRecord.recordName || 'Sales Order pending resolution', internalId: salesOrderRecord.internalId || salesOrderRecord.id || '', url: salesOrderRecord.url || '' },
+        { role: 'Item', name: itemRecord.name || itemRecord.recordName || selectedProduct || 'Selected item', internalId: itemRecord.internalId || itemRecord.id || '', url: itemRecord.url || '' }
+      ],
+      selectedWebsiteProduct: {
+        name: selectedProduct || '',
+        source: names.namingEvidenceSource || names.websiteEvidenceSource || names._source || '',
+        sourceUrls: names.websiteEvidenceSourceUrls || [],
+        alternates
+      },
+      roi: {
+        summary: roiSummary,
+        whyChosen: roiAudit.whyChosen || roiCompetitiveSidecar && roiCompetitiveSidecar.roiCompetitiveDetailModelW444 && roiCompetitiveSidecar.roiCompetitiveDetailModelW444.roi && roiCompetitiveSidecar.roiCompetitiveDetailModelW444.roi.whyChosen || '',
+        baselineNeeded: roiAudit.baselineNeeded || ''
+      },
+      competitive: {
+        summary: competitiveSummary,
+        namedCompetitor: competitive.namedCompetitor || '',
+        sourceBasis: competitive.sourceBasis || competitiveAdvisory.sourceBasis || [],
+        confidence: competitive.confidence || competitiveAdvisory.confidence || '',
+        guardrails: competitive.guardrails || competitiveAdvisory.guardrails || roiCompetitiveSidecar && roiCompetitiveSidecar.guardrails || []
+      },
+      displayOrder: ['buyerProblemStory', 'createdTransactionPath', 'selectedWebsiteProduct', 'roi', 'competitive']
+    };
+  }
+
   function buildRoiCompetitiveSidecarW472(args, records) {
     const confirmed = args && args.confirmedBuildRequestJson || {};
     const names = args && args.names || {};
     const demoPath = confirmed.demoPath || {};
     const storyInputs = confirmed.storyInputs || {};
+    const websiteEvidence = confirmed.websiteEvidence || confirmed.websiteEvidenceV1 || confirmed.websiteResolverOutput || {};
     const selectedProduct = firstNonBlankTextW453(
       confirmed.selectedProduct,
       confirmed.selectedProductName,
@@ -5577,20 +5807,44 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       names.hero_item_name,
       args && args.prospect
     );
+    const websiteCategory = firstNonBlankTextW453(
+      names.industry_category,
+      names.industrySelection && names.industrySelection.label,
+      confirmed.websiteCategory,
+      confirmed.category,
+      websiteEvidence.category,
+      websiteEvidence.productCategory,
+      demoPath.category,
+      demoPath.laneLabel,
+      demoPath.laneId
+    );
     const buyerBaseline = firstNonBlankTextW453(
       storyInputs.buyerBaseline,
       storyInputs.baseline,
       confirmed.buyerBaseline,
       confirmed.roiBaseline
     );
-    const notes = compactText([args && args.notes, args && args.agenda, storyInputs.buyerNeed, storyInputs.scObjective].join(' '));
-    const competitor = firstNonBlankTextW453(
-      storyInputs.competitor,
-      storyInputs.incumbent,
-      confirmed.competitor,
-      confirmed.incumbent,
-      extractCompetitorFromNotesW472(notes)
+    const notes = compactText([
+      args && args.notes,
+      args && args.agenda,
+      storyInputs.buyerNeed,
+      storyInputs.pain,
+      storyInputs.scObjective,
+      confirmed.notes,
+      confirmed.agenda
+    ].join(' '));
+    const channels = collectRoiChannelsW472({ confirmed, storyInputs, notes, websiteCategory, demoPath });
+    const painSignal = firstNonBlankTextW453(
+      storyInputs.pain,
+      storyInputs.buyerPain,
+      confirmed.pain,
+      confirmed.buyerPain,
+      extractPainSignalFromNotesW472(notes),
+      storyInputs.buyerNeed
     );
+    const competitiveContext = buildCompetitiveContextW472(notes, storyInputs, confirmed);
+    const competitors = competitiveContext.competitors;
+    const competitor = competitors.join(', ');
     const decisionCriteria = firstNonBlankTextW453(
       storyInputs.decisionCriteria,
       confirmed.decisionCriteria,
@@ -5608,6 +5862,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       : args && args.enableManufacturing
         ? 'Sales Order, sellable item, assembly, BOM, and component readiness'
         : 'Customer, Sales Order, and product availability records';
+    const roiPoint = chooseRoiPointW472({
+      selectedProduct,
+      websiteCategory,
+      channels,
+      painSignal,
+      notes,
+      decisionCriteria,
+      timeline,
+      proofPath,
+      enableWip: args && args.enableWip,
+      enableManufacturing: args && args.enableManufacturing,
+      buyerBaseline
+    });
     const sourceBasis = uniqueTextValuesW472([
       confirmed.roiCompetitiveReview ? 'drawer_roiCompetitiveReview_preserved' : '',
       confirmed.roiCompetitiveSourceBasis ? 'drawer_roiCompetitiveSourceBasis_preserved' : '',
@@ -5615,18 +5882,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       confirmed.competitive || confirmed.competitiveAdvisory ? 'drawer_competitive_context_preserved' : '',
       notes ? 'conversation_notes' : '',
       args && args.website ? 'prospect_website' : '',
+      websiteCategory ? 'website_category' : '',
       selectedProduct ? 'selected_product_or_naming_pack' : '',
-      competitor ? 'competitor_or_incumbent_context' : '',
+      channels.length ? 'channel_context' : '',
+      painSignal ? 'pain_signal' : '',
+      competitiveContext.notesSource ? 'explicit_competitors_from_notes' : '',
+      competitor && !competitiveContext.notesSource ? 'competitor_or_incumbent_context' : '',
       decisionCriteria ? 'decision_criteria' : '',
       timeline ? 'timeline_or_urgency' : ''
     ]);
-    const confidence = sourceBasis.length >= 5 ? 'medium_high' : sourceBasis.length >= 3 ? 'medium' : 'low';
-    const baselineNeeded = buyerBaseline || 'Buyer-confirmed current delay, expedite cost, miss rate, stockout rate, manual reconciliation time, or margin risk baseline.';
+    const confidence = competitiveContext.notesSource && sourceBasis.length >= 4 ? 'medium_high' : sourceBasis.length >= 5 ? 'medium_high' : sourceBasis.length >= 3 ? 'medium' : 'low';
+    const baselineNeeded = buyerBaseline || roiPoint.baselineNeededToMeasure;
     const roiClaim = buyerBaseline
-      ? `Use the returned NetSuite records to test whether ${firstNonBlankTextW453(args && args.prospect, 'the buyer')} can reduce risk around ${selectedProduct || 'the selected product'} against the confirmed baseline.`
-      : `Advisory only: use returned NetSuite records to frame risk around ${selectedProduct || 'the selected product'}; do not claim measured ROI until the buyer confirms a baseline.`;
+      ? `Use the returned NetSuite records to test whether ${firstNonBlankTextW453(args && args.prospect, 'the buyer')} can ${roiPoint.metricDirection.toLowerCase()} against the confirmed baseline.`
+      : `Advisory only: use returned NetSuite records to frame ${roiPoint.metricDirection.toLowerCase()}; do not claim measured ROI until the buyer confirms a baseline.`;
     const competitiveContrast = competitor
-      ? `Compare NetSuite against ${competitor} only as buyer-confirmed context; prove the same operating decision through returned records.`
+      ? `Compare NetSuite against ${competitor} only as buyer-supplied context; prove the same operating decision through returned records before making any win claim.`
       : `Contrast NetSuite against disconnected planning, inventory, ecommerce, spreadsheet, or point-solution workflows without naming an incumbent as fact.`;
     const guardrails = [
       'advisory_only',
@@ -5641,12 +5912,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       product: selectedProduct,
       lane: laneLabel,
       proofPath,
-      pain: notes || 'Buyer pain not supplied; keep value framing discovery-led.',
+      websiteCategory,
+      channels,
+      pain: painSignal || notes || 'Buyer pain not supplied; keep value framing discovery-led.',
       objective: firstNonBlankTextW453(storyInputs.scObjective, demoPath.scenario, `Prove ${proofPath}.`),
       decisionCriteria: decisionCriteria || 'Confirm what operating signal the buyer needs to trust.',
       timeline: timeline || 'Timeline not confirmed.',
+      roiPoint,
       roiThesis: roiClaim,
       groundedRoiSummary: roiClaim,
+      groundedRoiReason: roiPoint.whyChosen,
+      baselineNeededToMeasure: baselineNeeded,
       groundedCompetitiveSummary: competitiveContrast,
       competitiveReview: [
         competitiveContrast,
@@ -5661,6 +5937,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         `Ask for ${baselineNeeded}.`
       ],
       sourceBasis,
+      competitiveSourceBasis: competitiveContext.sourceBasis,
       confidence,
       guardrails
     };
@@ -5668,22 +5945,33 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       schema: 'idb.w472-runner-roi-audit.v1',
       advisoryOnly: true,
       claim: roiClaim,
-      metricProxy: args && args.enableWip ? 'production promise risk and schedule confidence' : 'fulfillment confidence and replenishment risk',
+      metricDirection: roiPoint.metricDirection,
+      metricProxy: roiPoint.proofSignalLabel,
+      roiPoint,
+      whyChosen: roiPoint.whyChosen,
       baselineNeeded,
+      baselineNeededToMeasure: baselineNeeded,
       buyerBaselinePresent: !!buyerBaseline,
       confidence,
       sourceBasis,
       proofStep: `Open the returned ${proofPath} records before discussing value.`,
       caution: buyerBaseline ? 'Keep quantified language tied to the buyer-confirmed baseline.' : 'Do not claim measured ROI, savings, or improvement percentages.'
     }, confirmed.roiAudit && typeof confirmed.roiAudit === 'object' ? confirmed.roiAudit : {});
-    const competitive = Object.assign({
+    const confirmedCompetitive = confirmed.competitive && typeof confirmed.competitive === 'object' ? confirmed.competitive : {};
+    const competitive = sanitizeCompetitiveObjectW472(Object.assign({}, confirmedCompetitive, {
       schema: 'idb.w472-runner-competitive.v1',
       advisoryOnly: true,
       namedCompetitor: competitor || '',
+      namedCompetitors: competitors,
+      explicitCompetitors: competitors,
+      incumbentContext: competitor || '',
       verifiedState: competitor ? 'buyer_context_unverified_by_runner' : 'likely_competitive_pressure',
       competitorSafeContrast: competitiveContrast,
       sourceBasis,
+      competitiveSourceBasis: competitiveContext.sourceBasis,
+      sourceBasisDetail: competitiveContext.sourceBasisDetail,
       confidence,
+      guardrails,
       industryWinThemes: [
         `NetSuite proof path: ${proofPath}.`,
         'Keep the comparison on workflow trust and operating signal freshness.'
@@ -5691,8 +5979,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       objectionCopy: [
         'Ask which workflow the buyer trusts today, then prove the same decision through returned records.'
       ]
-    }, confirmed.competitive && typeof confirmed.competitive === 'object' ? confirmed.competitive : {});
-    const competitiveAdvisory = Object.assign({
+    }), competitiveContext);
+    const advisoryAlternatives = uniqueTextValuesW472(competitors.concat(
+      competitiveContext.dealerPortalRelevant ? ['dealer portals'] : [],
+      ['spreadsheets', 'disconnected planning', 'inventory add-ons']
+    ));
+    const llmStyleCompetitiveIntelligence = {
+      status: 'advisory_only',
+      framing: competitor
+        ? `LLM-style prep only: anticipate ${competitor} questions, but anchor every contrast in buyer notes and returned NetSuite records.`
+        : 'LLM-style prep only: anticipate common alternatives, but do not name an incumbent until the buyer supplies one.',
+      sourceBasis: competitiveContext.sourceBasis,
+      confidence,
+      guardrails
+    };
+    const confirmedCompetitiveAdvisory = confirmed.competitiveAdvisory && typeof confirmed.competitiveAdvisory === 'object' ? confirmed.competitiveAdvisory : {};
+    const competitiveAdvisory = sanitizeCompetitiveObjectW472(Object.assign({}, confirmedCompetitiveAdvisory, {
       schema: 'idb.w362-consultant-safe-competitive-intelligence.v1',
       sidecarSchema: 'idb.w472-runner-competitive-advisory.v1',
       status: 'advisory_competitive_ready',
@@ -5701,19 +6003,30 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       headline: competitor ? 'Named competitive context' : 'Likely competitive pressure',
       runCue: 'If competitive pressure comes up, ask which workflow they trust today, then prove the same decision through returned records.',
       sourceBasis,
-      alternatives: competitor ? [competitor, 'spreadsheets', 'disconnected planning'] : ['spreadsheets', 'disconnected planning', 'inventory add-ons'],
+      competitiveSourceBasis: competitiveContext.sourceBasis,
+      sourceBasisDetail: competitiveContext.sourceBasisDetail,
+      alternatives: advisoryAlternatives,
+      llmStyleCompetitiveIntelligence,
       guardrails
-    }, confirmed.competitiveAdvisory && typeof confirmed.competitiveAdvisory === 'object' ? confirmed.competitiveAdvisory : {});
+    }), competitiveContext);
     const detailModel = Object.assign({
       schema: 'idb.w472-runner-roi-competitive-detail-model.v1',
       roi: {
         source: confirmed.roiCompetitiveSourceBasis ? 'drawer_context' : 'runner_deterministic_advisory',
         confidence,
         sourceBasis: sourceBasis.join(', '),
-        metricDirection: args && args.enableWip ? 'Decrease customer-promise risk' : 'Increase fulfillment confidence',
+        metricDirection: roiPoint.metricDirection,
         quantifier: baselineNeeded,
-        proofSignalLabel: args && args.enableWip ? 'WIP proof' : 'Availability proof',
+        proofSignalLabel: roiPoint.proofSignalLabel,
+        selectedProduct,
+        websiteCategory,
+        channels,
+        painSignal,
+        decisionCriteria,
+        timeline,
+        whyChosen: roiPoint.whyChosen,
         baselineNeeded,
+        baselineNeededToMeasure: baselineNeeded,
         unsupportedClaimCaution: roiAudit.caution
       },
       competitive: {
@@ -5721,6 +6034,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         confidence,
         sourceBasis: sourceBasis.join(', '),
         strongestAlternative: competitor || 'spreadsheets',
+        explicitCompetitors: competitors,
         whyNetSuiteWins: competitive.competitorSafeContrast,
         discoveryQuestions: [
           'Which operating signal is trusted today?',
@@ -5750,10 +6064,289 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function extractCompetitorFromNotesW472(notes) {
+  function collectRoiChannelsW472(options) {
+    const confirmed = options && options.confirmed || {};
+    const storyInputs = options && options.storyInputs || {};
+    const demoPath = options && options.demoPath || {};
+    const values = [];
+    const push = function(value) {
+      if (Array.isArray(value)) {
+        value.forEach(push);
+        return;
+      }
+      const text = compactText(value);
+      if (text) values.push(text);
+    };
+    push(storyInputs.channels);
+    push(storyInputs.channel);
+    push(storyInputs.salesChannels);
+    push(confirmed.channels);
+    push(confirmed.channel);
+    push(confirmed.salesChannels);
+    push(demoPath.channel);
+    push(demoPath.channels);
+
+    const source = compactText([
+      options && options.notes,
+      options && options.websiteCategory,
+      demoPath.laneId,
+      demoPath.scenario
+    ].join(' ')).toLowerCase();
+    [
+      { re: /\b(e-?commerce|web\s*store|online|dtc|direct[- ]to[- ]consumer)\b/, label: 'ecommerce' },
+      { re: /\b(retail|store|stores|shop)\b/, label: 'retail stores' },
+      { re: /\b(dealer|dealers|wholesale|distributor|distribution|branch|branches)\b/, label: 'dealer/distribution' },
+      { re: /\b(marketplace|amazon|walmart marketplace|target marketplace)\b/, label: 'marketplace' },
+      { re: /\b(field service|installer|installation|service team)\b/, label: 'field service' },
+      { re: /\b(manufactur|production|factory|plant|work order|wip|assembly)\b/, label: 'production' }
+    ].forEach(function(rule) {
+      if (rule.re.test(source)) values.push(rule.label);
+    });
+    return uniqueTextValuesW472(values).slice(0, 5);
+  }
+
+  function extractPainSignalFromNotesW472(notes) {
+    const text = compactText(notes);
+    if (!text) return '';
+    const sentences = text.split(/[.!?;]\s+/);
+    const painRe = /\b(stockout|backorder|availability|allocation|fulfill|promise|expedite|shortage|schedule|wip|work order|component|quality|inspection|return|manual|spreadsheet|reconcil|delay|miss|risk|margin|service)\b/i;
+    for (let i = 0; i < sentences.length; i++) {
+      if (painRe.test(sentences[i])) return summarizeOneLine(sentences[i]);
+    }
+    return summarizeOneLine(text);
+  }
+
+  function chooseRoiPointW472(options) {
+    const selectedProduct = firstNonBlankTextW453(options && options.selectedProduct, 'the selected product');
+    const websiteCategory = firstNonBlankTextW453(options && options.websiteCategory, 'the selected category');
+    const channels = options && options.channels || [];
+    const channelPhrase = channels.length ? channels.join(', ') : 'the buyer channels';
+    const painSignal = firstNonBlankTextW453(options && options.painSignal, 'the stated operating pain');
+    const decisionCriteria = firstNonBlankTextW453(options && options.decisionCriteria, 'the buyer decision criteria');
+    const timeline = firstNonBlankTextW453(options && options.timeline, 'the decision timeline');
+    const contextText = compactText([
+      selectedProduct,
+      websiteCategory,
+      channelPhrase,
+      painSignal,
+      decisionCriteria,
+      timeline,
+      options && options.notes
+    ].join(' ')).toLowerCase();
+    const reasonContext = `Chosen because the conversation points to ${painSignal} for ${selectedProduct} in ${websiteCategory}, with ${channelPhrase} and ${decisionCriteria} before ${timeline}.`;
+
+    if (options && options.enableWip || /\b(wip|work order|production|manufactur|assembly|bom|routing|component shortage|schedule|build)\b/.test(contextText)) {
+      return {
+        schema: 'idb.w472-roi-point.v1',
+        advisoryOnly: true,
+        metricDirection: `Reduce production promise risk for ${selectedProduct}`,
+        proofSignalLabel: 'WIP, component, and schedule-readiness proof',
+        whyChosen: `${reasonContext} The returned assembly, BOM, Work Order, and routing context are the proof path for that operating risk.`,
+        baselineNeededToMeasure: `Buyer-confirmed current work-order schedule misses, component shortage holds, rework events, and promise-date changes for ${selectedProduct}.`,
+        selectedProduct,
+        websiteCategory,
+        channels,
+        painSignal,
+        decisionCriteria,
+        timeline,
+        buyerBaselinePresent: !!(options && options.buyerBaseline)
+      };
+    }
+
+    if (/\b(quality|inspection|defect|return|claim|compliance|release hold|hold)\b/.test(contextText)) {
+      return {
+        schema: 'idb.w472-roi-point.v1',
+        advisoryOnly: true,
+        metricDirection: `Reduce release and quality exception risk for ${selectedProduct}`,
+        proofSignalLabel: 'Quality hold, release, and order-readiness proof',
+        whyChosen: `${reasonContext} The ROI point is quality/release confidence because the pain is about exception handling before the product can be promised.`,
+        baselineNeededToMeasure: `Buyer-confirmed current inspection holds, release delays, return or claim volume, and manual quality review time for ${selectedProduct}.`,
+        selectedProduct,
+        websiteCategory,
+        channels,
+        painSignal,
+        decisionCriteria,
+        timeline,
+        buyerBaselinePresent: !!(options && options.buyerBaseline)
+      };
+    }
+
+    if (/\b(e-?commerce|online|dtc|direct[- ]to[- ]consumer|marketplace|backorder|cart|web\s*store|order promise|promise date)\b/.test(contextText)) {
+      return {
+        schema: 'idb.w472-roi-point.v1',
+        advisoryOnly: true,
+        metricDirection: `Reduce order-promise exception risk for ${selectedProduct}`,
+        proofSignalLabel: 'Channel availability and sales-order promise proof',
+        whyChosen: `${reasonContext} The ROI point is order-promise risk because the notes and channel context center on availability decisions customers see before or after checkout.`,
+        baselineNeededToMeasure: `Buyer-confirmed current order-promise exceptions, backorder count, cancellation count, and reconciliation time for ${selectedProduct} by channel.`,
+        selectedProduct,
+        websiteCategory,
+        channels,
+        painSignal,
+        decisionCriteria,
+        timeline,
+        buyerBaselinePresent: !!(options && options.buyerBaseline)
+      };
+    }
+
+    if (/\b(dealer|wholesale|distributor|distribution|branch|allocation|replenish|stockout|available-to-promise|availability)\b/.test(contextText)) {
+      return {
+        schema: 'idb.w472-roi-point.v1',
+        advisoryOnly: true,
+        metricDirection: `Improve allocation readiness for ${selectedProduct}`,
+        proofSignalLabel: 'Dealer, branch, and replenishment-readiness proof',
+        whyChosen: `${reasonContext} The ROI point is allocation readiness because the likely buyer decision is whether the same product availability signal can be trusted across channels.`,
+        baselineNeededToMeasure: `Buyer-confirmed current allocation disputes, stockout events, dealer or branch replenishment gaps, and manual exception handling time for ${selectedProduct}.`,
+        selectedProduct,
+        websiteCategory,
+        channels,
+        painSignal,
+        decisionCriteria,
+        timeline,
+        buyerBaselinePresent: !!(options && options.buyerBaseline)
+      };
+    }
+
+    return {
+      schema: 'idb.w472-roi-point.v1',
+      advisoryOnly: true,
+      metricDirection: `Clarify operating risk for ${selectedProduct}`,
+      proofSignalLabel: 'Returned-record operating proof',
+      whyChosen: `${reasonContext} The source context did not prove a narrower measured ROI lane, so the point stays discovery-led and advisory.`,
+      baselineNeededToMeasure: `Buyer-confirmed current delay, exception count, manual reconciliation time, service miss, or margin-risk baseline for ${selectedProduct}.`,
+      selectedProduct,
+      websiteCategory,
+      channels,
+      painSignal,
+      decisionCriteria,
+      timeline,
+      buyerBaselinePresent: !!(options && options.buyerBaseline)
+    };
+  }
+
+  function buildCompetitiveContextW472(notes, storyInputs, confirmed) {
+    const noteContext = extractCompetitorsFromNotesW472(notes);
+    const structuredCompetitors = competitorsFromStructuredFieldsW472(storyInputs, confirmed);
+    const competitors = uniqueTextValuesW472((noteContext.competitors || []).concat(structuredCompetitors));
+    const notesSource = noteContext.competitors && noteContext.competitors.length ? 'conversation_notes' : '';
+    const structuredSource = structuredCompetitors.length ? 'confirmed_request_fields' : '';
+    const sourceBasis = uniqueTextValuesW472([
+      notesSource ? 'explicit competitors/incumbents in notes' : '',
+      structuredSource ? 'structured competitor/incumbent fields' : '',
+      competitors.length ? 'buyer supplied competitive context, unverified by runner' : 'runner advisory fallback',
+      'returned NetSuite record proof required before claims'
+    ]);
+    return {
+      competitors,
+      notesSource,
+      structuredSource,
+      sourceBasis,
+      sourceBasisDetail: {
+        notesEvidence: noteContext.rawEvidence || '',
+        notesCompetitors: noteContext.competitors || [],
+        structuredCompetitors,
+        precedence: 'conversation notes first, then structured request fields, then advisory fallback'
+      },
+      dealerPortalRelevant: competitors.some(function(name) { return /dealer\s+portals?/i.test(name); })
+    };
+  }
+
+  function competitorsFromStructuredFieldsW472(storyInputs, confirmed) {
+    const values = [];
+    [
+      storyInputs && storyInputs.competitors,
+      storyInputs && storyInputs.competitor,
+      storyInputs && storyInputs.incumbents,
+      storyInputs && storyInputs.incumbent,
+      storyInputs && storyInputs.currentSystem,
+      storyInputs && storyInputs.currentWorkflow,
+      confirmed && confirmed.competitors,
+      confirmed && confirmed.competitor,
+      confirmed && confirmed.incumbents,
+      confirmed && confirmed.incumbent,
+      confirmed && confirmed.currentSystem,
+      confirmed && confirmed.currentWorkflow
+    ].forEach(function(value) {
+      competitorTokensFromValueW472(value).forEach(function(token) { values.push(token); });
+    });
+    return uniqueTextValuesW472(values);
+  }
+
+  function extractCompetitorsFromNotesW472(notes) {
     const text = String(notes || '');
-    const match = text.match(/\b(?:competitor|incumbent|currently using|current system|against)\s*[:\-]?\s*([A-Za-z0-9 &.+-]{2,60})/i);
-    return match ? compactText(match[1]).replace(/[.;,].*$/, '') : '';
+    const competitors = [];
+    const evidence = [];
+    const patterns = [
+      /\b(?:competitors?|incumbents?|alternatives?)\s*(?:are|is|include|includes|like|maybe|:|-)?\s*([^.;\n]{2,180})/ig,
+      /\b(?:currently using|current system|current workflow|replacing|replace|against|versus|vs\.?)\s*(?:are|is|include|includes|like|maybe|:|-)?\s*([^.;\n]{2,180})/ig
+    ];
+    patterns.forEach(function(pattern) {
+      let match;
+      while ((match = pattern.exec(text)) !== null) {
+        const segment = compactText(match[1]);
+        if (!segment) continue;
+        evidence.push(segment);
+        competitorTokensFromValueW472(segment).forEach(function(token) { competitors.push(token); });
+      }
+    });
+    return {
+      competitors: uniqueTextValuesW472(competitors),
+      rawEvidence: uniqueTextValuesW472(evidence).join(' | ')
+    };
+  }
+
+  function extractCompetitorFromNotesW472(notes) {
+    const context = extractCompetitorsFromNotesW472(notes);
+    return (context.competitors || []).join(', ');
+  }
+
+  function competitorTokensFromValueW472(value) {
+    const rawValues = Array.isArray(value) ? value : [value];
+    const out = [];
+    rawValues.forEach(function(raw) {
+      String(raw || '').split(/\s*(?:\/|,|;|\bvs\.?\b|\bversus\b|\bor\b|\band\b)\s*/i).forEach(function(part) {
+        const cleaned = cleanCompetitorTokenW472(part);
+        if (cleaned) out.push(cleaned);
+      });
+    });
+    return uniqueTextValuesW472(out);
+  }
+
+  function cleanCompetitorTokenW472(value) {
+    let token = compactText(value)
+      .replace(/^[\s"']+|[\s"']+$/g, '')
+      .replace(/^(?:maybe|like|including|include|includes|are|is|the|a|an)\s+/i, '')
+      .replace(/\b(?:not sure|unclear|unknown|maybe)\b.*$/i, '')
+      .replace(/\s+(?:today|right now|currently)$/i, '')
+      .replace(/[()]+/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    token = token.replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g, '').trim();
+    if (!token || token.length < 2 || token.length > 60) return '';
+    if (/^(?:none|n\/a|na|unknown|not sure|unclear|competitor|incumbent|alternatives?)$/i.test(token)) return '';
+    if (/^(?:workflow|workflows|system|systems|process|processes)$/i.test(token)) return '';
+    return token;
+  }
+
+  function sanitizeCompetitiveObjectW472(value, competitiveContext) {
+    const dealerPortalRelevant = competitiveContext && competitiveContext.dealerPortalRelevant;
+    if (typeof value === 'string') {
+      if (!dealerPortalRelevant && /beat\s+dealer\s+portals?/i.test(value)) {
+        return value.replace(/beat\s+dealer\s+portals?/ig, 'Use returned-record proof against the buyer-confirmed incumbent');
+      }
+      return value;
+    }
+    if (Array.isArray(value)) {
+      return value.map(function(item) { return sanitizeCompetitiveObjectW472(item, competitiveContext); });
+    }
+    if (value && typeof value === 'object') {
+      const out = {};
+      Object.keys(value).forEach(function(key) {
+        out[key] = sanitizeCompetitiveObjectW472(value[key], competitiveContext);
+      });
+      return out;
+    }
+    return value;
   }
 
   function extractDecisionCriteriaFromNotesW472(notes) {
@@ -6102,7 +6695,30 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const names = Object.assign({}, rawNames || {});
     const namingPayload = context && context.namingPayload || {};
     const authoritativePackApplied = namingPayload.parsed === true && namingPayload.applied === true;
+    const selectedCandidate = names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
+      ? names.selectedCatalogCandidate.name
+      : names.selectedCatalogCandidate;
+    const product = str(names.selectedProductName || names.primary_product_candidate || selectedCandidate || '');
+    const weakProductReason = weakProductNameReasonW467(product) || genericWebsiteProductNameReasonW472(product) || colorPatternOnlyProductNameReasonW472(product);
     if (authoritativePackApplied) {
+      if (weakProductReason) {
+        names.blockedWeakProductName = product;
+        names.blockedWeakProductNameReason = weakProductReason;
+        names.namingPackPreserved = false;
+        names.colorPatternOnlyNamingRejectedW472 = !!colorPatternOnlyProductNameReasonW472(product);
+        const promoted = promoteStrongAlternateProductNamingW472(names, context, weakProductReason);
+        if (promoted) return promoted;
+        return Object.assign({}, names, prospectFallbackNamingPackW467({
+          prospect: context && context.prospect,
+          signalLen: names._signalLen,
+          fallbackReason: 'Runner rejected a naming-pack product label without a concrete product noun.',
+          genericFallbackBlockedTerms: names.genericFallbackBlockedTerms
+        }), {
+          blockedWeakProductName: product,
+          blockedWeakProductNameReason: weakProductReason,
+          namingAuthorityOrderW472: 'website product examples -> reject variant-only naming files -> prospect fallback'
+        });
+      }
       names.namingAuthorityOrderW467 = 'validated naming pack -> preserve applied old-runner pack -> prospect fallback';
       names.namingSourceUsed = namingPayload.source || names._source || 'suitelet-precomputed';
       names.namingPayloadFound = namingPayload.found === true;
@@ -6117,11 +6733,6 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       };
       return names;
     }
-    const selectedCandidate = names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
-      ? names.selectedCatalogCandidate.name
-      : names.selectedCatalogCandidate;
-    const product = str(names.selectedProductName || names.primary_product_candidate || selectedCandidate || '');
-    const weakProductReason = weakProductNameReasonW467(product);
     const weakRecordName = firstWeakRecordNameW467(names);
 
     if (weakProductReason) {
@@ -6280,11 +6891,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     safeTry(() => rec.setValue({ fieldId: 'location', value: '' }));
   }
 
-  return {
-    execute,
+	  return {
+	    execute,
+	    _test: {
+	      buildRoiCompetitiveSidecarW472,
+	      buildCompetitiveContextW472,
+	      extractCompetitorsFromNotesW472,
+	      extractCompetitorFromNotesW472,
+	      enforceOldRunnerNamingDisciplineW468,
+	      promoteStrongAlternateProductNamingW472,
+	      genericWebsiteProductNameReasonW472,
+	      productNameFromProductUrlW472
+	    },
     __W432_TEST_HOOKS__: {
       productBuildPlanW432,
-      industryNativeManufacturingNamingW442
+      industryNativeManufacturingNamingW442,
+      buildRoiCompetitiveSidecarW472
     }
   };
 });

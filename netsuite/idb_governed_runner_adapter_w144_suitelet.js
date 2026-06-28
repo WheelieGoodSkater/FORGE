@@ -379,7 +379,19 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function hasConcreteProductSignalW464(value) {
     const lower = compactText(value).toLowerCase();
-    return /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef|kombucha|sunsip|prebiotic soda|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti|forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|electric truck|internal combustion truck|counterbalance|turret truck|very narrow aisle|rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|good grips|pop containers|steel salad spinner|angled measuring cup|brew coffee maker|tot feeding|stagg ekg|carter move|opus conical burr|ode brew|clara french press|tally pro|everyday backpack|travel tripod|capture camera clip|slide lite|camera strap|tech pouch|camera bag|travel bag|camera accessory|forerunner|edge cycling|edge bike|edge computer|running watch|cycling computer|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware|bonfire|yukon|ranger|mesa|pi prime|canyon|karu|koda|volt|fyra|pizza oven|ironwood|timberline|pro series|woodridge|flat top grill|pellet grill|pellets|insulated tumbler|sport canteen|cold cup|lunch bag|commuter cup|stemless cup|tumbler|canteen|bottle|cooler|carryall|bucket|mug|cup|kettle|grinder|french press|scale|fire pit|stove|sauce|pasta|coffee|espresso|matcha|hojicha|syrup|series)\b/i.test(lower);
+    return /\b(nola|craft matcha|craft hojicha|craft hōjicha|kyoto style espresso|vanilla chicory syrup|our summer blend|ginger lemon|pink lady apple|pomegranate|strawberry lemon|cheddy mac|original beef|kombucha|sunsip|prebiotic soda|marinara|tomato basil|arrabbiata|vodka sauce|roasted garlic|penne rigate|spaghetti|forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|electric truck|internal combustion truck|counterbalance|turret truck|very narrow aisle|rambler|tundra|roadie|hopper|camino|loadout|yonder|quencher|flowstate|iceflow|classic legendary|aerolight|adventure quencher|wide mouth|all around|trail series|good grips|pop containers|steel salad spinner|angled measuring cup|brew coffee maker|tot feeding|stagg ekg|carter move|opus conical burr|ode brew|clara french press|tally pro|everyday backpack|tasra|backpack|travel tripod|capture camera clip|slide lite|camera strap|tech pouch|camera bag|travel bag|camera accessory|forerunner|edge cycling|edge bike|edge computer|running watch|cycling computer|signature dutch oven|dutch oven|enameled cast iron|cast iron cookware|cookware set|cookware|bonfire|yukon|ranger|mesa|pi prime|canyon|karu|koda|volt|fyra|pizza oven|ironwood|timberline|pro series|woodridge|flat top grill|pellet grill|pellets|insulated tumbler|sport canteen|cold cup|lunch bag|commuter cup|stemless cup|tumbler|canteen|bottle|cooler|carryall|bucket|mug|cup|kettle|grinder|french press|scale|fire pit|stove|wallet|strap|blanket|puffy|bag|bags|tote|duffel|crossbody|pouch|sling|case|sku|sauce|pasta|coffee|espresso|matcha|hojicha|syrup|series)\b/i.test(lower);
+  }
+
+  function colorPatternOnlyProductNameReasonW472(value) {
+    const text = compactText(value);
+    if (!text || hasConcreteProductSignalW464(text)) return '';
+    const tokens = text.toLowerCase().split(/[\s/,+&-]+/).filter(Boolean);
+    const hasColorOrPattern = /\b(black|white|pink|red|orange|yellow|green|blue|purple|brown|tan|beige|cream|gray|grey|olive|navy|ivory|charcoal|matte|stripe|striped|dot|dotted|plaid|check|checked|floral|camo|fade|dusk|ombre|print|pattern|color|colour|del dia|del día)\b/i.test(text);
+    const hasSizeOnly = /^(?:xs|s|m|l|xl|xxl|small|medium|large|one size|1-person|2-person|16l|32oz|64oz|\d+\s*(?:oz|l|ml|person|pack))$/i.test(text);
+    if ((hasColorOrPattern && tokens.length <= 5) || hasSizeOnly) {
+      return `${text} rejected: color, pattern, size, or collection label lacks a product noun`;
+    }
+    return '';
   }
 
   function selectedCatalogCandidateRejectedReasonW464(value, context) {
@@ -389,6 +401,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const lower = name.toLowerCase();
     const genericReason = genericCatalogCandidateRejectedReasonW459(name);
     if (genericReason) return genericReason;
+    const colorPatternReason = colorPatternOnlyProductNameReasonW472(name);
+    if (colorPatternReason) return colorPatternReason;
     if (/^(building materials\s*&\s*contractor project fulfillment|dealer hardgoods\s*&\s*channel fulfillment|contractor job order|dealer channel availability)$/i.test(name)) {
       return `${name} rejected: lane/workflow label cannot be selected as a product`;
     }
@@ -1006,6 +1020,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const lower = text.toLowerCase();
     if (prospect && lower === prospect) return '';
     if (isGenericCatalogCandidateW459(text)) return '';
+    if (colorPatternOnlyProductNameReasonW472(text)) return '';
     return text;
   }
 

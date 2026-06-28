@@ -115,6 +115,45 @@ function main() {
   );
   const freshState = Object.assign({}, recoveredState, freshPoll.statePatch || {});
   const freshTroubleshoot = hooks.w444TroubleshootExportPayload(freshState);
+  const retryableTimeoutEnvelope = {
+    schema: 'idb.approved-server-adapter-result-envelope.v1',
+    status: 'result_capture_poll_request_timeout',
+    queueSubmitted: true,
+    runnerTaskId: expectedProvenance.runnerTaskId,
+    resultCapture: {
+      status: 'result_capture_poll_request_timeout',
+      error: true,
+      retryable: true,
+      runnerTaskId: expectedProvenance.runnerTaskId
+    },
+    error: true,
+    retryable: true,
+    errorMessage: 'Approved adapter request timed out in the drawer.',
+    finalGeneratedNamesJson: null,
+    activeOpenLinks: 0
+  };
+  const retryableTimeoutNormalized = hooks.normalizeApprovedServerAdapterTransportResponseV1(
+    retryableTimeoutEnvelope,
+    { pollAttempted: true, runnerTaskId: expectedProvenance.runnerTaskId }
+  );
+  const retryableTimeoutTroubleshoot = hooks.w444TroubleshootExportPayload(motionState(hooks, {
+    integratedBuildRunnerResult: retryableTimeoutEnvelope
+  }));
+  const completedWithEmbeddedError = Object.assign({}, freshResponse, {
+    status: 'adapter_error',
+    error: true,
+    resultCapture: Object.assign({}, freshResponse.resultCapture || freshResponse.payload && freshResponse.payload.resultCapture || {}, {
+      status: 'completed',
+      error: true,
+      runnerTaskId: expectedProvenance.runnerTaskId,
+      finalGeneratedNamesJson: completedResult
+    }),
+    finalGeneratedNamesJson: completedResult
+  });
+  const completedWithEmbeddedErrorNormalized = hooks.normalizeApprovedServerAdapterTransportResponseV1(
+    completedWithEmbeddedError,
+    { pollAttempted: true, runnerTaskId: expectedProvenance.runnerTaskId }
+  );
   const staleReturnedRecordState = motionState(hooks, {
     intake: {
       customer: 'Traeger W466 Real Naming Manufacturing WIP Off 20260627162719',
@@ -145,6 +184,45 @@ function main() {
       sidecarGeneratedNamesJson: staleReturnedRecords
     },
     { source: 'w464-current-wrapper-old-returned-records' }
+  );
+  const abbreviatedCurrentRunState = motionState(hooks, {
+    intake: {
+      customer: 'Baggu W472 Consultant Click Pink Stripe 379294',
+      website: 'https://www.baggu.com/products/medium-nylon-crescent-bag-pink-stripe',
+      notes: 'Pink Stripe demand spikes; use the full website product, not a color-only item.'
+    }
+  });
+  const abbreviatedCurrentRunContext = motionContext(hooks, abbreviatedCurrentRunState);
+  const abbreviatedCurrentRunResult = completedMotionResult({ prefix: '472', salesOrderName: 'SO379294' });
+  abbreviatedCurrentRunResult.prospect = 'Baggu W472 Consultant Click Pink Stripe 379294';
+  abbreviatedCurrentRunResult.customerName = 'Baggu W472 Consultant Click Pink Stripe 379294';
+  abbreviatedCurrentRunResult.currentRunIdentityChecksW457 = {
+    expectedProspect: 'Baggu W472 Consultant Click Pink Stripe 379294',
+    customer: {
+      expectedProspect: 'Baggu W472 Consultant Click Pink Stripe 379294',
+      expectedName: 'Baggu W472 Consultant Click Pink Stripe 379294 Customer Account',
+      actualName: 'Baggu W472 Consultant Click Pink Stripe 379294 Customer Account'
+    }
+  };
+  abbreviatedCurrentRunResult.records[0].name = 'Baggu Customer Account';
+  abbreviatedCurrentRunResult.records[1].name = 'SO379294';
+  abbreviatedCurrentRunResult.records[2].name = 'SCAI - Medium Nylon Crescent Bag Pink Stripe';
+  abbreviatedCurrentRunResult.records[3].name = 'Medium Nylon Crescent Bag Pink Stripe Availability SKU';
+  const abbreviatedCurrentRunImport = hooks.commitRunnerSidecarDisplayResultW431(
+    abbreviatedCurrentRunState,
+    abbreviatedCurrentRunContext.lane,
+    abbreviatedCurrentRunContext.page,
+    abbreviatedCurrentRunContext.recommendation,
+    {
+      status: 'completed_runner_result_ready',
+      resultCapture: {
+        sourceFileId: '65798',
+        sourceFileName: 'idb_result_completed_IDB-idb-build-baggu-w472-consultant-_62320e88.json',
+        lookupStatus: 'completed_result_capture_ready'
+      },
+      sidecarGeneratedNamesJson: abbreviatedCurrentRunResult
+    },
+    { source: 'w472-current-identity-abbreviated-returned-records' }
   );
 
   assertCase(results, 'w464-root-and-filecabinet-drawer-synced',
@@ -189,13 +267,38 @@ function main() {
       freshTroubleshoot.expectedProvenance === expectedProvenance,
     JSON.stringify({ pollStatus: freshPoll.status, guard: freshPoll.resultImportGuard, capture: freshTroubleshoot.resultCaptureSourceW462 }));
 
+  assertCase(results, 'w472-retryable-poll-timeout-keeps-refresh-path-not-forge-error',
+    retryableTimeoutNormalized.status === 'polling_pending' &&
+      retryableTimeoutNormalized.runnerTaskId === expectedProvenance.runnerTaskId &&
+      retryableTimeoutTroubleshoot.runnerErrorTruthW451.terminal === false,
+    JSON.stringify({ normalized: retryableTimeoutNormalized, runnerError: retryableTimeoutTroubleshoot.runnerErrorTruthW451 }, null, 2));
+
+  assertCase(results, 'w472-completed-result-wins-over-embedded-adapter-error-flag',
+    completedWithEmbeddedErrorNormalized.status === 'completed_result_awaiting_w151_import' &&
+      completedWithEmbeddedErrorNormalized.finalGeneratedNamesJsonReady === true &&
+      completedWithEmbeddedErrorNormalized.finalGeneratedNamesJson,
+    JSON.stringify(completedWithEmbeddedErrorNormalized, null, 2));
+
   assertCase(results, 'w464-current-wrapper-stale-returned-records-rejected',
     staleReturnedRecordImport.imported === false &&
       staleReturnedRecordImport.status === 'sidecar_current_run_provenance_mismatch_rejected' &&
       staleReturnedRecordImport.currentRunProvenanceW466 &&
-      staleReturnedRecordImport.currentRunProvenanceW466.reason === 'current_prospect_not_found_in_returned_records' &&
+      staleReturnedRecordImport.currentRunProvenanceW466.reason === 'returned_records_contain_prior_run_timestamp' &&
       /20260627162217/.test(staleReturnedRecordImport.currentRunProvenanceW466.returnedNames.join(' ')),
     JSON.stringify(staleReturnedRecordImport.currentRunProvenanceW466));
+
+  assertCase(results, 'w472-current-identity-allows-abbreviated-returned-record-names',
+    abbreviatedCurrentRunImport.imported === true &&
+      abbreviatedCurrentRunImport.status === 'sidecar_records_imported_for_display' &&
+      abbreviatedCurrentRunImport.statePatch &&
+      abbreviatedCurrentRunImport.statePatch.dccFinalNamingResult &&
+      abbreviatedCurrentRunImport.statePatch.dccFinalNamingResult.finalNamesImported === true &&
+      abbreviatedCurrentRunImport.statePatch.dccFinalNamingResult.displayReadyRecords.some((record) => /Medium Nylon Crescent Bag Pink Stripe/i.test(record.recordName || record.name || '')),
+    JSON.stringify({
+      status: abbreviatedCurrentRunImport.status,
+      provenance: abbreviatedCurrentRunImport.currentRunProvenanceW466,
+      records: abbreviatedCurrentRunImport.statePatch && abbreviatedCurrentRunImport.statePatch.dccFinalNamingResult && abbreviatedCurrentRunImport.statePatch.dccFinalNamingResult.displayReadyRecords
+    }, null, 2));
 
   printResults('w464_drawer_sidecar_truth_poll_recovery_harness', results);
 }

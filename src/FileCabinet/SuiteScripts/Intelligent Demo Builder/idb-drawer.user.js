@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      1.0.71
+// @version      1.0.72
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -20,8 +20,8 @@
   const STORAGE_KEY = 'idb.drawer.activeSession.state.v1';
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
-  const DRAWER_USERSCRIPT_VERSION = '1.0.71';
-  const CURRENT_UX_BLOCK_W346 = 'W471';
+  const DRAWER_USERSCRIPT_VERSION = '1.0.72';
+  const CURRENT_UX_BLOCK_W346 = 'W472';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -7674,17 +7674,6 @@
       nestedResult.queue && nestedResult.queue.taskId,
       nestedCapture.taskId
     );
-    const isRunnerBusy = rawStatus === 'runner_busy_inprogress' ||
-      result.retryable === true && (result.status === 'runner_busy_inprogress' || resultCapture.status === 'runner_busy_inprogress');
-    const isResultCaptureTerminalDiagnostic = rawStatus === 'result_capture_not_found_after_wait' ||
-      rawStatus === 'stale_result_capture_rejected_after_wait' ||
-      resultCapture.terminalStatus === 'result_capture_not_found_after_wait' ||
-      resultCapture.terminalStatus === 'stale_result_capture_rejected_after_wait';
-    const hasError = !isRunnerBusy && !isResultCaptureTerminalDiagnostic && (result.error === true ||
-      resultCapture.error === true ||
-      nestedResult.error === true ||
-      nestedCapture.error === true ||
-      /error|failed|rejected|exception/i.test(rawStatus));
     const completedResult = connectedBuildCompletedJsonFromTransportW285(result, resultCapture, nestedResult, nestedCapture);
     const completedResultJson = completedResult.value;
     const hasCompletedResultJson = completedResult.ready;
@@ -7694,6 +7683,27 @@
       nestedResult.queueSubmitted === true ||
       nestedResult.queued === true ||
       nestedCapture.queueSubmitted === true;
+    const isRunnerBusy = rawStatus === 'runner_busy_inprogress' ||
+      result.retryable === true && (result.status === 'runner_busy_inprogress' || resultCapture.status === 'runner_busy_inprogress');
+    const isResultCaptureTerminalDiagnostic = rawStatus === 'result_capture_not_found_after_wait' ||
+      rawStatus === 'stale_result_capture_rejected_after_wait' ||
+      resultCapture.terminalStatus === 'result_capture_not_found_after_wait' ||
+      resultCapture.terminalStatus === 'stale_result_capture_rejected_after_wait';
+    const isRecoverableRunnerPollIssue = !!normalizedRunnerTaskId &&
+      !hasCompletedResultJson &&
+      !isRunnerBusy &&
+      !isResultCaptureTerminalDiagnostic &&
+      (result.retryable === true || resultCapture.retryable === true || nestedResult.retryable === true || nestedCapture.retryable === true || opts.pollAttempted === true) &&
+      /timeout|poll_request_timeout|adapter_submit_request_timeout|adapter_error|request failed|abort/i.test(String(rawStatus || ''));
+    const hasError = !hasCompletedResultJson &&
+      !isRecoverableRunnerPollIssue &&
+      !isRunnerBusy &&
+      !isResultCaptureTerminalDiagnostic &&
+      (result.error === true ||
+        resultCapture.error === true ||
+        nestedResult.error === true ||
+        nestedCapture.error === true ||
+        /error|failed|rejected|exception/i.test(rawStatus));
     const captureStatus = firstNonBlank(resultCapture.status, nestedCapture.status, opts.resultCaptureStatus, normalizedRunnerTaskId ? 'pending_runner_completion' : 'not_started_no_submit');
     const normalizedStatus = hasError
       ? CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE
@@ -7716,7 +7726,7 @@
       rawStatus,
       retryable: result.retryable === true || resultCapture.retryable === true,
       retryAfterMs: result.retryAfterMs || resultCapture.retryAfterMs || null,
-      queueSubmitted: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE ? false : queueSubmitted,
+      queueSubmitted: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.ADAPTER_TRANSPORT_ERROR_DRAWER_SAFE ? false : (queueSubmitted || isRecoverableRunnerPollIssue),
       terminalDiagnostic: isResultCaptureTerminalDiagnostic === true,
       runnerTaskId: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT || normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.RUNNER_BUSY_INPROGRESS ? null : normalizedRunnerTaskId,
       resultCaptureStatus: normalizedStatus === CONNECTED_BUILD_TRANSPORT_NORMALIZATION_STATUSES_W285.FALSE_FLAG_NO_SUBMIT ? 'not_started_no_submit' : captureStatus,
@@ -21478,6 +21488,43 @@
       .filter((item) => item && item.source === 'dcc_final' && (firstNonBlank(item.name, item.recordName) || firstNonBlank(item.id, item.internalId) || firstNonBlank(item.url, item.supportedOpenUrl)));
   }
 
+  function currentRunIdentityTextW472(sidecarJson) {
+    const identity = sidecarJson && sidecarJson.currentRunIdentityChecksW457 || {};
+    const customer = identity.customer || {};
+    const salesOrder = identity.salesOrder || {};
+    return [
+      identity.expectedProspect,
+      identity.expectedWebsite,
+      customer.expectedProspect,
+      customer.expectedName,
+      customer.actualName,
+      customer.memo,
+      salesOrder.expectedExternalId,
+      salesOrder.matchedExternalId,
+      salesOrder.matchedTranid,
+      sidecarJson && sidecarJson.extId,
+      sidecarJson && sidecarJson.idempotencyToken,
+      sidecarJson && sidecarJson.sourceRequestId,
+      sidecarJson && sidecarJson.buildAttemptId
+    ].filter(Boolean).join(' ');
+  }
+
+  function longNumericTokensW472(value) {
+    const seen = {};
+    return (String(value || '').match(/\d{8,}/g) || []).filter((token) => {
+      if (seen[token]) return false;
+      seen[token] = true;
+      return true;
+    });
+  }
+
+  function returnedRecordsConflictWithExpectedRunW472(expectedProspect, returnedText) {
+    const expectedLongTokens = longNumericTokensW472(expectedProspect);
+    if (!expectedLongTokens.length) return false;
+    const returnedLongTokens = longNumericTokensW472(returnedText);
+    return returnedLongTokens.some((token) => expectedLongTokens.indexOf(token) === -1);
+  }
+
   function runnerSidecarMatchesCurrentRunW466(state, sidecarJson, finalNaming) {
     const intake = normalizedIntake(state || {});
     const expectedProspect = firstNonBlank(intake.customer, state && state.customerName);
@@ -21491,21 +21538,36 @@
       sidecarJson && sidecarJson.customer && sidecarJson.customer.name,
       sidecarJson && sidecarJson.customer && sidecarJson.customer.recordName
     ].join(' ');
+    const identityText = currentRunIdentityTextW472(sidecarJson);
     const returnedText = returnedRecords.map((item) => firstNonBlank(item.name, item.recordName, item.customerName, item.label)).join(' ');
     const sidecarToken = String(sidecarText || '').replace(/[^a-z0-9]+/gi, '').toLowerCase();
+    const identityToken = String(identityText || '').replace(/[^a-z0-9]+/gi, '').toLowerCase();
     const returnedToken = String(returnedText || '').replace(/[^a-z0-9]+/gi, '').toLowerCase();
-    const matches = returnedRecords.length
-      ? returnedToken.indexOf(expectedToken) !== -1
-      : sidecarToken.indexOf(expectedToken) !== -1;
+    const returnedHasExpected = returnedToken.indexOf(expectedToken) !== -1;
+    const sidecarHasExpected = sidecarToken.indexOf(expectedToken) !== -1;
+    const identityHasExpected = identityToken.indexOf(expectedToken) !== -1;
+    const returnedRunConflict = returnedRecordsConflictWithExpectedRunW472(expectedProspect, returnedText);
+    const matches = returnedRunConflict
+      ? false
+      : returnedRecords.length
+        ? (returnedHasExpected || identityHasExpected)
+        : (sidecarHasExpected || identityHasExpected);
+    const reason = matches
+      ? (returnedRecords.length
+        ? (returnedHasExpected ? 'current_prospect_matched_returned_records' : 'current_prospect_matched_identity_with_abbreviated_returned_records')
+        : (sidecarHasExpected ? 'current_prospect_matched_sidecar' : 'current_prospect_matched_identity'))
+      : returnedRunConflict
+        ? 'returned_records_contain_prior_run_timestamp'
+        : (returnedRecords.length ? 'current_prospect_not_found_in_returned_records' : 'current_prospect_not_found_in_sidecar');
     return {
       matches,
-      reason: matches
-        ? (returnedRecords.length ? 'current_prospect_matched_returned_records' : 'current_prospect_matched_sidecar')
-        : (returnedRecords.length ? 'current_prospect_not_found_in_returned_records' : 'current_prospect_not_found_in_sidecar'),
+      reason,
       expectedProspect,
       expectedToken,
       sidecarToken,
+      identityToken,
       returnedToken,
+      returnedRunConflict,
       returnedNames: returnedRecords.map((item) => firstNonBlank(item.name, item.recordName)).filter(Boolean).slice(0, 8),
       sidecarProspect: firstNonBlank(sidecarJson && sidecarJson.prospect, sidecarJson && sidecarJson.customerName)
     };
@@ -27173,15 +27235,22 @@
       capture.failureReason,
       capture.statusMessage
     );
-    const terminal = runner.error === true ||
-      capture.error === true ||
-      /\berror\b|failed|failure|aborted|sss_file_content_size_exceeded|scheduled_script_failed|runner_failed|adapter_error/.test(statusText);
+    const hasCompletedResult = !!(runner.finalGeneratedNamesJson || capture.finalGeneratedNamesJson || runner.completedResultJson || capture.completedResultJson);
+    const runnerTaskId = firstNonBlank(runner.runnerTaskId, capture.runnerTaskId, capture.taskId);
+    const recoverablePollIssue = !!runnerTaskId &&
+      !hasCompletedResult &&
+      (runner.retryable === true || capture.retryable === true || /timeout|polling_pending|pending_runner_completion|poll_request_timeout|adapter_submit_request_timeout/.test(statusText));
+    const terminal = !hasCompletedResult &&
+      !recoverablePollIssue &&
+      (runner.error === true ||
+        capture.error === true ||
+        /\berror\b|failed|failure|aborted|sss_file_content_size_exceeded|scheduled_script_failed|runner_failed|adapter_error/.test(statusText));
     return {
       schema: 'idb.w451.runner-error-truth.v1',
       terminal,
       statusText,
       message: message || (terminal ? 'The runner reported an error before FORGE received completed records.' : ''),
-      runnerTaskId: firstNonBlank(runner.runnerTaskId, capture.runnerTaskId, capture.taskId),
+      runnerTaskId,
       extId: firstNonBlank(runner.idempotencyToken, capture.idempotencyToken, capture.extId)
     };
   }

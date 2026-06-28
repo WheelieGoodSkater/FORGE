@@ -52,9 +52,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v4.0.0-runner-sandbox-w455-browser-proven-naming-routing-import';
+  const VERSION = 'v4.0.0-runner-sandbox-w475-old-runner-naming-authority-only';
   const RELEASE_TRAIN = 'v4.0.0';
-  const RELEASE_TRANCHE = 'w455-browser-proven-naming-routing-import';
+  const RELEASE_TRANCHE = 'w475-old-runner-naming-authority-only';
   const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -506,10 +506,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      namingAuthorityOrder: names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'server precomputed naming pack -> prospect fallback',
+      namingAuthorityOrder: names.namingAuthorityOrderW474 || names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'old runner v2 deterministic naming adapter only',
       selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
       selectedCatalogCandidate: names.selectedCatalogCandidate || null,
-      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'server_precomputed_naming_pack_preserved' : 'not_returned'
+      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'old_runner_v2_adapter_generated' : 'not_returned'
     }) });
 
     // 4) Apply current-run identity + one-line sales/purchase descriptions
@@ -2804,7 +2804,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const comp2Id = ensureInventoryItemByExternalId(ANCHORS.comp2, `SCAI - Component 2`, subsidiaryId, locationId);
     const comp3Id = ensureInventoryItemByExternalId(ANCHORS.comp3, `SCAI - Component 3`, subsidiaryId, locationId);
 
-    const assemblyId = ensureAssemblyItemByExternalId(ANCHORS.assembly, `SCAI - Finished Good`, subsidiaryId, locationId);
+    const assemblyId = ensureAssemblyItemByExternalId(ANCHORS.assembly, `SCAI - Demo Assembly`, subsidiaryId, locationId);
 
     const bomId = ensureBomByExternalId(ANCHORS.bom, `SCAI BOM`, subsidiaryId);
     const bomRevId = ensureBomRevisionByExternalId(ANCHORS.bomrev, bomId, `SCAI BOM Revision`);
@@ -3263,13 +3263,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       const f = file.load({ id: Number(candidateFileId) });
       const raw = String(f.getContents() || '{}');
       const parsed = safeJsonParse(raw) || {};
-      const out = oldRunnerV2NamingAdapterW474(Object.assign({}, deterministic, parsed || {}), {
+      const out = oldRunnerV2NamingAdapterW474(parsed || {}, {
         prospect,
         website,
         signalText,
         notes
       });
-      out._source = out._source || 'suitelet-precomputed';
+      out._source = out._source || 'old_runner_v2_adapter_from_precomputed_metadata';
       out._signalLen = out._signalLen || String(signalText || '').length;
       return {
         found: true,
@@ -3420,9 +3420,6 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const website = str(args && args.website);
     const domain = extractDomain(website);
     const signal = `${prospect} ${website} ${args && args.signalText || ''} ${args && args.notes || ''}`.toLowerCase();
-    const raw = args && args.rawNames || {};
-    const selected = str(raw.selectedProductName || raw.primary_product_candidate || (raw.selectedCatalogCandidate && raw.selectedCatalogCandidate.name) || '');
-    const selectedClean = cleanOldRunnerV2ProductNameW474(selected);
     const domainRules = [
       {
         pattern: /(^|\.)fender\.com$|\bfender\b/,
@@ -3485,9 +3482,6 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         return oldRunnerV2IdentityResultW474(category.product, category.industry, 'old_runner_v2_evidence_category_adapter_w474', 78, category.evidence, category.roi, category.competitors, false, '', ['website or notes product-category evidence', 'old runner v2 scenario naming syntax']);
       }
     }
-    if (selectedClean) {
-      return oldRunnerV2IdentityResultW474(selectedClean, industrySelectionW468({ prospect, website, signalText: signal }).label || 'General Commerce', 'old_runner_v2_preserved_clean_pack_w474', 70, [selectedClean], ['availability readiness'], [], false, '', ['clean precomputed product noun preserved']);
-    }
     const fallbackProduct = cleanOldRunnerV2ProductNameW474(prospect.replace(/\b(w\d+|demo|proof|smoke|test|distribution|manufacturing|wip|run)\b/ig, ' ')) || 'Demo Product';
     return oldRunnerV2IdentityResultW474(fallbackProduct, 'General Commerce', 'old_runner_v2_prospect_fallback_w474', 40, [], ['availability readiness'], [], true, 'No domain-specific product evidence was available; used sanitized prospect fallback.', ['prospect fallback only']);
   }
@@ -3516,7 +3510,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       'product availability sku', 'finished good', 'assembly', 'fulfillment support', 'catalog product',
       'products cpg', 'dealer durable hardgoods', 'website evidence', 'search', 'shop now', 'learn more',
       'add to cart', 'sign up', 'newsletter', 'hero image', 'promo', 'promotion', 'media asset',
-      'video', 'cta', 'navigation', 'privacy policy', 'customer support'
+      'video', 'cta', 'navigation', 'privacy policy', 'customer support', 'open a menu',
+      'availability flow', 'replenishment plan', 'products & services'
     ];
     for (let i = 0; i < blocked.length; i += 1) {
       if (lower === blocked[i] || lower.indexOf(blocked[i]) !== -1) return '';
@@ -3588,7 +3583,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     out.bom_revision_name = trimLen(/^revision\s*1\s*-/i.test(str(out.bom_revision_name)) && str(out.bom_revision_name).toLowerCase().indexOf(product.toLowerCase()) !== -1 ? out.bom_revision_name : `Revision 1 - ${product}`, 80);
     out.routing_name = trimLen(/^routing\s*-/i.test(str(out.routing_name)) && str(out.routing_name).toLowerCase().indexOf(product.toLowerCase()) !== -1 ? out.routing_name : `Routing - ${product}`, 80);
     out.operation_names_by_seq = out.operation_names_by_seq || operationNamesForOldRunnerV2ProductW474(product, { industry: out.industry_category || out.industrySelection && out.industrySelection.label || '' });
-    out.namingAuthorityOrderW474 = 'old runner v2 deterministic naming adapter -> clean precomputed pack metadata only';
+    out.namingAuthorityOrderW474 = 'old runner v2 deterministic naming adapter only; parsed naming packs are provenance only';
     out.namingAuthorityOrderW470 = out.namingAuthorityOrderW474;
     out.namingAuthorityOrderW468 = out.namingAuthorityOrderW474;
     return out;
@@ -3596,417 +3591,26 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function enforceOldRunnerNamingDisciplineW468(rawNames, context) {
     const names = oldRunnerV2NamingAdapterW474(rawNames || {}, context || {});
-    const fallback = generateNamingPack({
-      prospect: context && context.prospect,
-      website: context && context.website,
-      signalText: context && context.signalText
-    });
     const namingPayload = context && context.namingPayload || {};
-    const authoritativePackApplied = namingPayload.parsed === true && namingPayload.applied === true;
     const components = Array.isArray(names.component_names) ? names.component_names.slice(0, 3) : [];
-
-    if (authoritativePackApplied && names.hero_item_name && names.assembly_name && components.length === 3) {
-      names.component_names = components.map(function(name) { return trimLen(name, 60); });
-      names.hero_item_name = trimLen(names.hero_item_name, 60);
-      names.assembly_name = trimLen(names.assembly_name, 60);
-      names.bom_name = trimLen(names.bom_name || `BOM - ${names.hero_item_name}`, 80);
-      names.bom_revision_name = trimLen(names.bom_revision_name || `Revision 1 - ${names.hero_item_name}`, 80);
-      names.routing_name = trimLen(names.routing_name || `Routing - ${names.assembly_name}`, 80);
-      names.operation_names_by_seq = names.operation_names_by_seq || fallback.operation_names_by_seq;
-      names.namingAuthorityOrderW468 = names.namingAuthorityOrderW468 || 'server precomputed naming pack -> prospect fallback';
-      names.namingAuthorityOrderW470 = names.namingAuthorityOrderW470 || 'server selected catalog naming pack -> runner preserve only -> prospect fallback';
-      names.namingSourceUsed = namingPayload.source || names._source || 'suitelet-precomputed';
-      names.namingPayloadFound = namingPayload.found === true;
-      names.namingPayloadParsed = namingPayload.parsed === true;
-      names.namingPayloadApplied = namingPayload.applied === true;
-      names.namingPackPreserved = true;
-      names.runnerNamingOverrideBlockedW470 = true;
-      names.namingPackAuthoritativeW470 = true;
-      names.fallbackUsed = false;
-      delete names.fallbackReason;
-      return names;
-    }
-
-    if (!names.hero_item_name || !names.assembly_name || components.length !== 3) {
-      const industrySelection = names.industrySelection || fallback.industrySelection || null;
-      const websiteEvidenceSource = names.websiteEvidenceSource || fallback.websiteEvidenceSource || '';
-      const websiteEvidenceSourceUrls = names.websiteEvidenceSourceUrls || fallback.websiteEvidenceSourceUrls || [];
-      return Object.assign({}, fallback, {
-        _source: fallback._source,
-        namingEvidenceSource: fallback.namingEvidenceSource,
-        namingConfidence: fallback.namingConfidence,
-        confidencePercent: fallback.confidencePercent,
-        industrySelection,
-        industry_category: industrySelection && industrySelection.label || '',
-        websiteEvidenceSource,
-        websiteEvidenceSourceUrls,
-        fallbackUsed: true,
-        fallbackReason: 'Old runner naming discipline required complete hero, assembly, and component names.',
-        namingPayloadFound: !!namingPayload.found,
-        namingPayloadParsed: !!namingPayload.parsed,
-        namingPayloadApplied: !!namingPayload.applied,
-        namingAuthorityOrderW468: 'server precomputed naming pack -> prospect fallback',
-        namingAuthorityOrderW470: 'server selected catalog naming pack -> runner preserve only -> prospect fallback',
-        fallbackUsedByOldRunnerDisciplineW468: true
-      });
-    }
-
     names.component_names = components.map(function(name) { return trimLen(name, 60); });
     names.hero_item_name = trimLen(names.hero_item_name, 60);
     names.assembly_name = trimLen(names.assembly_name, 60);
     names.bom_name = trimLen(names.bom_name || `BOM - ${names.hero_item_name}`, 80);
     names.bom_revision_name = trimLen(names.bom_revision_name || `Revision 1 - ${names.hero_item_name}`, 80);
     names.routing_name = trimLen(names.routing_name || `Routing - ${names.assembly_name}`, 80);
-    names.operation_names_by_seq = names.operation_names_by_seq || fallback.operation_names_by_seq;
-    names.namingAuthorityOrderW468 = 'server precomputed naming pack -> prospect fallback';
+    names.operation_names_by_seq = names.operation_names_by_seq || operationNamesForOldRunnerV2ProductW474(names.hero_item_name, { industry: names.industry_category || names.industrySelection && names.industrySelection.label || '' });
+    names.namingSourceUsed = names._source || 'old_runner_v2_adapter';
+    names.namingPayloadFound = namingPayload.found === true;
+    names.namingPayloadParsed = namingPayload.parsed === true;
+    names.namingPayloadApplied = namingPayload.applied === true;
+    names.namingPackPreserved = false;
+    names.runnerNamingOverrideBlockedW470 = true;
+    names.namingPackAuthoritativeW470 = false;
+    names.namingAuthorityOrderW474 = 'old runner v2 deterministic naming adapter only; no V3 product promotion or fallback authority';
+    names.namingAuthorityOrderW470 = names.namingAuthorityOrderW474;
+    names.namingAuthorityOrderW468 = names.namingAuthorityOrderW474;
     return names;
-  }
-
-  function noisyRecordNameW468(value) {
-    const text = str(value).replace(/\s+/g, ' ');
-    if (!text) return false;
-    const lower = text.toLowerCase();
-    const blocked = [
-      'catalog product',
-      'products cpg',
-      'website evidence',
-      'product / sku',
-      'style / sku matrix',
-      'needs confirmation',
-      'dealer durable hardgoods',
-      'apparel & accessories',
-      'apparel and footwear style',
-      'core style color-size matrix',
-      'websiteresolverservicev1'
-    ];
-    for (let i = 0; i < blocked.length; i += 1) {
-      if (lower.indexOf(blocked[i]) !== -1) return true;
-    }
-    if (/^(?:SCAI\s*-\s*)?Assembly(?:\s*-\s*[A-Z0-9]{3,})?$/i.test(text)) return true;
-    return false;
-  }
-
-  function industrySelectionW468(args) {
-    const text = `${args && args.prospect || ''} ${args && args.website || ''} ${args && args.signalText || ''}`.toLowerCase();
-    const rules = [
-      { pattern: /\b(cookware|kitchenware|dutch oven|enameled|cast iron|skillet|bakeware|cookware set)\b/, label: 'Kitchenware Dealer Hardgoods' },
-      { pattern: /\b(electronics|headphones|earbuds|speaker|soundbar|audio|watch|cycling computer|wearable|gps|running)\b/, label: 'Consumer Electronics Dealer Fulfillment' },
-      { pattern: /\b(outdoor|camp|bike|cycling|run|trail|sporting goods|dealer hardgoods)\b/, label: 'Outdoor Dealer Hardgoods' },
-      { pattern: /\b(food|beverage|snack|sauce|kombucha|soda|case pack|bottle|can)\b/, label: 'Food and Beverage' },
-      { pattern: /\b(apparel|footwear|style|color|size|fashion)\b/, label: 'Apparel and Footwear' },
-      { pattern: /\b(industrial|equipment|forklift|warehouse|distribution|branch|fulfillment|supply)\b/, label: 'Industrial Distribution' },
-      { pattern: /\b(manufacturing|assembly|production|work order|bom|wip)\b/, label: 'Light Manufacturing' }
-    ];
-    for (let i = 0; i < rules.length; i += 1) {
-      if (rules[i].pattern.test(text)) {
-        return {
-          label: rules[i].label,
-          source: 'website_signal_best_guess',
-          confidence: 'best_guess'
-        };
-      }
-    }
-    return {
-      label: 'General Commerce',
-      source: args && args.website ? 'website_signal_best_guess' : 'prospect_best_guess',
-      confidence: 'low'
-    };
-  }
-
-  function concreteHardgoodsProductFromEvidenceW463(evidence) {
-    const text = String(evidence || '').toLowerCase();
-    const candidates = [
-      { name: 'Rambler 20 oz Tumbler', pattern: /\brambler\b.*\btumbler\b|\brambler 20 oz\b/ },
-      { name: 'Tundra Cooler', pattern: /\btundra\b.*\bcooler\b/ },
-      { name: 'Roadie Cooler', pattern: /\broadie\b.*\bcooler\b/ },
-      { name: 'Hopper Soft Cooler', pattern: /\bhopper\b.*\bsoft cooler\b|\bhopper\b.*\bcooler\b/ },
-      { name: 'Quencher H2.0 FlowState Tumbler', pattern: /\bquencher\b|\bflowstate\b/ },
-      { name: 'Wide Mouth Bottle', pattern: /\bwide mouth\b.*\bbottle\b/ },
-      { name: 'Karu 2 Pro Multi-Fuel Pizza Oven', pattern: /\bkaru 2 pro\b/ },
-      { name: 'Koda 16 Gas Powered Pizza Oven', pattern: /\bkoda 16\b/ },
-      { name: 'Stagg EKG Electric Kettle', pattern: /\bstagg ekg\b/ },
-      { name: 'Carter Move Mug', pattern: /\bcarter move\b/ },
-      { name: 'Opus Conical Burr Grinder', pattern: /\bopus\b.*\bgrinder\b|\bopus conical burr\b/ },
-      { name: 'Ode Brew Grinder', pattern: /\bode brew\b|\bode\b.*\bgrinder\b/ },
-      { name: 'Clara French Press', pattern: /\bclara\b.*\bfrench press\b/ },
-      { name: 'Tally Pro Precision Scale', pattern: /\btally pro\b|\bprecision scale\b/ },
-      { name: 'Good Grips', pattern: /\bgood grips\b/ },
-      { name: 'POP Containers', pattern: /\bpop containers?\b/ },
-      { name: 'Brew Coffee Maker', pattern: /\bbrew coffee maker\b/ },
-      { name: 'Steel Salad Spinner', pattern: /\bsteel salad spinner\b|\bsalad spinner\b/ },
-      { name: 'Angled Measuring Cup', pattern: /\bangled measuring cup\b/ },
-      { name: 'Forerunner Running Watch', pattern: /\bforerunner\b.*\b(running watch|watch|gps|smartwatch)\b|\bforerunner\s*\d{2,4}\b/ },
-      { name: 'Edge Cycling Computer', pattern: /\bedge\b.*\b(cycling computer|bike computer|computer)\b|\bedge\s*\d{2,4}\b/ },
-      { name: 'Signature Dutch Oven', pattern: /\bsignature\b.*\bdutch oven\b|\bdutch oven\b/ },
-      { name: 'Enameled Cast Iron Cookware', pattern: /\benameled cast iron\b|\bcast iron cookware\b/ },
-      { name: 'Cookware Set', pattern: /\bcookware set\b/ },
-      { name: 'Ironwood Pellet Grill', pattern: /\bironwood\b/ },
-      { name: 'Timberline Pellet Grill', pattern: /\btimberline\b/ },
-      { name: 'Pro Series Pellet Grill', pattern: /\bpro series\b/ },
-      { name: 'Woodridge Pellet Grill', pattern: /\bwoodridge\b/ },
-      { name: 'Flat Top Grill', pattern: /\bflat top grill\b|\bflat top\b/ },
-      { name: 'Bonfire Fire Pit', pattern: /\bbonfire\b/ },
-      { name: 'Yukon Fire Pit', pattern: /\byukon\b/ },
-      { name: 'Ranger Fire Pit', pattern: /\branger\b/ },
-      { name: 'Mesa Tabletop Fire Pit', pattern: /\bmesa\b/ },
-      { name: 'Pi Prime Pizza Oven', pattern: /\bpi prime\b/ },
-      { name: 'Canyon Fire Pit', pattern: /\bcanyon\b/ }
-    ];
-    for (let i = 0; i < candidates.length; i += 1) {
-      if (candidates[i].pattern.test(text)) return candidates[i].name;
-    }
-    return '';
-  }
-
-  function durableHardgoodsNamingPackW462({ prospect, website, evidence, genericFallbackBlockedTerms }) {
-    const domain = String(website || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0].toLowerCase();
-    let brand = '';
-    let product = '';
-    let alternates = [];
-    if (/garmin\.com|garmin/.test(domain) || /\bgarmin\b/.test(evidence)) {
-      brand = 'Garmin';
-      product = /edge\b.*\b(cycling|bike|computer)|\bedge\s*\d{2,4}\b/.test(evidence) && !/\bforerunner\b/.test(evidence)
-        ? 'Edge Cycling Computer'
-        : 'Forerunner Running Watch';
-      alternates = ['Edge Cycling Computer', 'Forerunner 265 Running Watch', 'Edge 1040 Cycling Computer'];
-    } else if (/lecreuset\.com|le-creuset|le creuset/.test(domain) || /\ble creuset\b/.test(evidence)) {
-      brand = 'Le Creuset';
-      product = 'Signature Dutch Oven';
-      alternates = ['Enameled Cast Iron Cookware', 'Cast Iron Cookware', 'Cookware Set'];
-    } else if (/yeti\.com|yeti/.test(domain) || /\byeti\b/.test(evidence)) {
-      brand = 'YETI';
-      product = 'Rambler 20 oz Tumbler';
-      alternates = ['Tundra Cooler', 'Roadie Cooler', 'Hopper Soft Cooler', 'Camino Carryall', 'LoadOut Bucket', 'Yonder Bottle'];
-    } else if (/stanley1913\.com|stanley/.test(domain) || /\bstanley\b/.test(evidence)) {
-      brand = 'Stanley';
-      product = 'Quencher H2.0 FlowState Tumbler';
-      alternates = ['IceFlow Flip Straw Tumbler', 'Classic Legendary Bottle', 'AeroLight Transit Mug', 'Adventure Quencher Travel Tumbler'];
-    } else if (/hydroflask\.com|hydroflask|hydro-flask/.test(domain)) {
-      brand = 'Hydro Flask';
-      product = 'Wide Mouth Bottle';
-      alternates = ['All Around Travel Tumbler', 'All Around Tumbler', 'Trail Series Bottle', 'Coffee Mug'];
-    } else if (/ooni\.com|ooni/.test(domain)) {
-      brand = 'Ooni';
-      product = 'Karu 2 Pro Multi-Fuel Pizza Oven';
-      alternates = ['Koda 16 Gas Powered Pizza Oven', 'Karu 12G Multi-Fuel Pizza Oven', 'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven'];
-    } else if (/fellowproducts\.com|fellowproducts|fellow/.test(domain)) {
-      brand = 'Fellow';
-      product = 'Stagg EKG Electric Kettle';
-      alternates = ['Stagg EKG Pro', 'Carter Move Mug', 'Opus Conical Burr Grinder', 'Ode Brew Grinder', 'Clara French Press'];
-    } else if (/oxo\.com|oxo/.test(domain)) {
-      brand = 'OXO';
-      product = 'Good Grips';
-      alternates = ['POP Containers', 'Brew Coffee Maker', 'Steel Salad Spinner', 'Angled Measuring Cup', 'Tot Feeding Products'];
-    } else if (/traeger\.com|traeger/.test(domain)) {
-      brand = 'Traeger';
-      product = 'Ironwood Pellet Grill';
-      alternates = ['Timberline Pellet Grill', 'Pro Series Pellet Grill', 'Woodridge Pellet Grill', 'Flat Top Grill'];
-    } else if (/solostove\.com|solo-stove|solo stove/.test(domain)) {
-      brand = 'Solo Stove';
-      product = 'Bonfire Fire Pit';
-      alternates = ['Yukon Fire Pit', 'Ranger Fire Pit', 'Mesa Tabletop Fire Pit', 'Pi Prime Pizza Oven', 'Canyon Fire Pit'];
-    } else if (domain) {
-      const concreteProduct = concreteHardgoodsProductFromEvidenceW463(evidence);
-      if (concreteProduct) {
-        brand = str(prospect).replace(/\b(fulfillment proof|proof|demo|v\d+)\b/ig, '').trim();
-        product = concreteProduct;
-        alternates = [];
-      }
-    }
-    if (!product) return null;
-    const base = brand && product.indexOf(brand) !== 0 ? `${brand} ${product}` : product;
-    const candidates = [product].concat(alternates).map(function(name, index) {
-      return {
-        name,
-        source: 'domain_catalog_resolver',
-        sourceUrl: website || '',
-        domain,
-        confidence: index === 0 ? 90 : 82,
-        wipSuitabilityScore: index === 0 ? 90 : 82,
-        reasons: ['public hardgoods website product-line resolver candidate', 'durable consumer hardgoods product noun', 'domain-bound match']
-      };
-    });
-    return {
-      _source: 'domain-catalog-durable-hardgoods-w462',
-      _signalLen: String(evidence || '').length,
-      namingEvidenceSource: 'domain_catalog_deterministic_ranker',
-      namingConfidence: 90,
-      confidencePercent: 90,
-      industry_category: 'Dealer Hardgoods',
-      primary_product_candidate: product,
-      selectedProductName: product,
-      selectedVariantName: product,
-      selectedPackName: 'Case',
-      alternate_product_candidates: alternates,
-      catalogCandidates: candidates,
-      selectedCatalogCandidate: candidates[0],
-      selectedCatalogCandidateSource: 'domain_catalog_resolver',
-      selectedCatalogCandidateReasons: candidates[0].reasons,
-      websiteEvidenceSource: 'domain_catalog_resolver',
-      websiteEvidenceSourceUrls: website ? [website] : [],
-      genericCandidateRejectedReasons: ['Catalog Product rejected: public website product-line candidate available'],
-      missingEvidence: [],
-      productEvidenceConfidence: 90,
-      websiteCatalogEvidenceUsed: true,
-      llmCatalogInterpretationUsed: false,
-      deterministicCatalogRankerUsed: true,
-      fallbackUsed: false,
-      fallbackReason: '',
-      productSignalsUsed: ['durable consumer hardgoods', 'drinkware', 'retail fulfillment'],
-      flavorSignalsUsed: [product],
-      packSignalsUsed: ['Case'],
-      llmNamingAdvisoryUsed: false,
-      websiteSignalsUsed: [product].concat(alternates),
-      prospectNameUsedAsFallbackOnly: true,
-      evidence_terms: [brand, product, 'dealer hardgoods', 'drinkware', 'fulfillment'].filter(Boolean),
-      competitor_terms: [],
-      roi_basis_terms: ['allocation readiness', 'case availability', 'fulfillment proof'],
-      hero_item_name: `${base} Case`,
-      assembly_name: `${base} Fulfillment Batch`,
-      component_names: [
-        /karu|koda|volt|fyra|pizza oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `${product} Body and Heat Shield Kit` : `${product} Retail Case Inventory`,
-        /karu|koda|volt|fyra|pizza oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `${product} Fuel and Airflow System` : `${product} Channel Replenishment Lot`,
-        /pizza oven|oven|pellet grill|flat top|grill/i.test(product) ? `${product} Retail Packaging` : `${product} Fulfillment Packaging`
-      ],
-      bom_name: `BOM - ${base}`,
-      bom_revision_name: `Revision 1 - ${base}`,
-      routing_name: `Routing - ${base} Fulfillment`,
-      operation_names_by_seq: {
-        '10': /karu|koda|volt|fyra|pizza oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `Stage ${product} Kits` : `Receive ${product} Cases`,
-        '20': /karu|koda|volt|fyra|pizza oven|bonfire|yukon|ranger|mesa|fire pit|pellet grill|flat top|grill/i.test(product) ? `Assemble and Test ${product}` : `Allocate ${product} Demand`,
-        '30': /pizza oven|oven|pellet grill|flat top|grill/i.test(product) ? `Pack and Release ${product}` : `Release ${product} Fulfillment`
-      },
-      sales_descriptions: {
-        hero: `${base} case for retail demand and fulfillment readiness.`,
-        assembly: `${base} fulfillment batch for allocation proof.`,
-        components: ['Retail case inventory', 'Channel replenishment lot', 'Fulfillment packaging']
-      },
-      purchase_descriptions: {
-        hero: `${base} case supply proof item.`,
-        assembly: `${base} fulfillment planning item.`,
-        components: ['Retail case inventory', 'Channel replenishment lot', 'Fulfillment packaging']
-      },
-      fallbackReason: '',
-      genericFallbackBlockedTerms
-    };
-  }
-
-  function industrialEquipmentNamingPackW460({ prospect, website, evidence, genericFallbackBlockedTerms }) {
-    const domain = String(website || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0].toLowerCase();
-    let brand = '';
-    let product = '';
-    let alternates = [];
-    if (/crown\.com|crown/.test(domain) || /\bcrown equipment\b/.test(evidence)) {
-      brand = 'Crown';
-      product = 'RC Series Stand-Up Rider Forklift';
-      alternates = ['RM Series Reach Truck', 'SP Series Order Picker', 'PE Series Pallet Truck', 'C-5 Series Forklift'];
-    } else if (/hyster\.com|hyster/.test(domain) || /\bhyster\b/.test(evidence)) {
-      brand = 'Hyster';
-      product = 'A Series Lift Truck';
-      alternates = ['J Series Electric Forklift', 'Reach Truck', 'Pallet Truck'];
-    } else if (/yale\.com|yale/.test(domain) || /\byale\b/.test(evidence)) {
-      brand = 'Yale';
-      product = 'ERP Series Electric Lift Truck';
-      alternates = ['GP Series Internal Combustion Truck', 'Reach Truck', 'Order Picker', 'Pallet Truck'];
-    } else if (/toyotaforklift\.com|toyota/.test(domain) || /\btoyota\b/.test(evidence)) {
-      brand = 'Toyota';
-      product = 'Core Electric Forklift';
-      alternates = ['Internal Combustion Forklift', 'Reach Truck', 'Order Picker', 'Pallet Jack'];
-    } else if (/\b(forklift|lift truck|pallet truck|reach truck|order picker|tow tractor|warehouse equipment)\b/.test(evidence)) {
-      brand = str(prospect).replace(/\b(wip proof|proof|demo|v\d+)\b/ig, '').trim() || 'Industrial Equipment';
-      product = 'Lift Truck';
-      alternates = ['Forklift Truck', 'Reach Truck', 'Pallet Truck', 'Order Picker'];
-    }
-    if (!product) return null;
-    const base = brand && product.indexOf(brand) !== 0 ? `${brand} ${product}` : product;
-    return {
-      _source: 'domain-catalog-industrial-equipment-w460',
-      _signalLen: String(evidence || '').length,
-      namingEvidenceSource: 'domain_catalog_deterministic_ranker',
-      namingConfidence: 88,
-      confidencePercent: 88,
-      industry_category: 'Industrial Equipment',
-      primary_product_candidate: product,
-      selectedProductName: product,
-      selectedVariantName: product,
-      selectedPackName: 'Configured Unit',
-      alternate_product_candidates: alternates,
-      catalogCandidates: [product].concat(alternates).map(function(name, index) {
-        return {
-          name,
-          source: 'domain_catalog_resolver',
-          sourceUrl: website || '',
-          domain,
-          confidence: index === 0 ? 88 : 78,
-          wipSuitabilityScore: index === 0 ? 88 : 78,
-          reasons: ['public industrial equipment product-line resolver candidate', 'manufacturable equipment noun', 'domain match']
-        };
-      }),
-      selectedCatalogCandidate: {
-        name: product,
-        source: 'domain_catalog_resolver',
-        sourceUrl: website || '',
-        domain,
-        confidence: 88,
-        wipSuitabilityScore: 88,
-        reasons: ['public industrial equipment product-line resolver candidate', 'manufacturable equipment noun', 'domain match']
-      },
-      selectedCatalogCandidateSource: 'domain_catalog_resolver',
-      selectedCatalogCandidateReasons: ['public industrial equipment product-line resolver candidate', 'manufacturable equipment noun', 'domain match'],
-      websiteEvidenceSource: 'domain_catalog_resolver',
-      websiteEvidenceSourceUrls: website ? [website] : [],
-      genericCandidateRejectedReasons: [],
-      missingEvidence: [],
-      productEvidenceConfidence: 88,
-      websiteCatalogEvidenceUsed: true,
-      llmCatalogInterpretationUsed: false,
-      deterministicCatalogRankerUsed: true,
-      fallbackUsed: false,
-      fallbackReason: '',
-      productSignalsUsed: ['industrial equipment', 'lift truck', 'forklift', 'WIP assembly'],
-      flavorSignalsUsed: [product],
-      packSignalsUsed: ['Configured Unit'],
-      llmNamingAdvisoryUsed: false,
-      websiteSignalsUsed: [product].concat(alternates),
-      prospectNameUsedAsFallbackOnly: true,
-      evidence_terms: [brand, product, 'industrial equipment', 'forklift', 'lift truck'].filter(Boolean),
-      competitor_terms: [],
-      roi_basis_terms: ['customer promise risk', 'equipment order readiness', 'WIP assembly proof'],
-      hero_item_name: `${base} Configured Unit`,
-      assembly_name: `${base} Final Assembly`,
-      component_names: [
-        `${product} Chassis and Mast Subassembly`,
-        `${product} Powertrain and Controls Kit`,
-        `${product} Forks and Safety Hardware`
-      ],
-      bom_name: `BOM - ${base}`,
-      bom_revision_name: `Revision 1 - ${base}`,
-      routing_name: `Routing - ${base} Final Assembly`,
-      operation_names_by_seq: {
-        '10': `Stage ${product} Subassemblies`,
-        '20': `Assemble and Configure ${product}`,
-        '30': `Inspect and Release ${product}`
-      },
-      sales_descriptions: {
-        hero: `${base} configured unit for dealer/customer demand readiness.`,
-        assembly: `${base} final assembly for routed WIP execution.`,
-        components: [
-          `${product} chassis and mast subassembly used in ${base} final assembly.`,
-          `${product} powertrain and controls kit used in ${base} final assembly.`,
-          `${product} forks and safety hardware used in ${base} final assembly.`
-        ]
-      },
-      purchase_descriptions: {
-        hero: `${base} dealer readiness proof item.`,
-        assembly: `${base} production assembly planning item.`,
-        components: [
-          `${product} chassis and mast subassembly`,
-          `${product} powertrain and controls kit`,
-          `${product} forks and safety hardware`
-        ]
-      },
-      genericFallbackBlockedTerms
-    };
   }
 
   function productBuildPlanW432(input) {
@@ -4863,7 +4467,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       role: 'hero_item',
       type: 'inventoryitem',
       label: args.enableManufacturing ? 'Sellable item' : 'Hero item',
-      name: names.hero_item_name || `${args.prospect} Finished Good`,
+      name: names.hero_item_name || oldRunnerV2NamingAdapterW474(null, args).hero_item_name,
       id: ids.heroItemId
     });
 
@@ -5630,284 +5234,6 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       itemIdName: `${itemBase} - ${suffix}`,
       suffix
     };
-  }
-
-  const WEAK_PRODUCT_NAME_BLOCKLIST_W467 = [
-    'industrial supply',
-    'distribution',
-    'warehouse',
-    'assembly',
-    'lab',
-    'products cpg',
-    'catalog product',
-    'advisory insufficient',
-    'apparel & accessories',
-    'apparel and footwear style',
-    'core style color-size matrix',
-    'style / sku matrix',
-    'dealer durable hardgoods',
-    'websiteresolverservicev1',
-    'needs confirmation'
-  ];
-
-  function weakProductNameReasonW467(value) {
-    const name = str(value).replace(/\s+/g, ' ');
-    if (!name) return '';
-    const lower = name.toLowerCase();
-    if (WEAK_PRODUCT_NAME_BLOCKLIST_W467.indexOf(lower) !== -1) {
-      return `${name} rejected: generic lane/category/workflow label cannot drive record naming`;
-    }
-    return '';
-  }
-
-  function firstWeakRecordNameW467(names) {
-    const componentNames = Array.isArray(names && names.component_names) ? names.component_names : [];
-    const values = [
-      names && names.hero_item_name,
-      names && names.assembly_name,
-      names && names.bom_name,
-      names && names.bom_revision_name,
-      names && names.routing_name
-    ].concat(componentNames);
-    for (let i = 0; i < values.length; i += 1) {
-      const value = str(values[i]);
-      if (!value) continue;
-      for (let j = 0; j < WEAK_PRODUCT_NAME_BLOCKLIST_W467.length; j += 1) {
-        const term = WEAK_PRODUCT_NAME_BLOCKLIST_W467[j];
-        if (term === 'assembly') {
-          if (/^(?:SCAI\s*-\s*)?Assembly(?:\s*-\s*[A-Z0-9]{3,})?$/i.test(value)) return value;
-          continue;
-        }
-        const pattern = new RegExp(`(^|[^A-Za-z0-9])${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^A-Za-z0-9]|$)`, 'i');
-        if (pattern.test(value)) return value;
-      }
-    }
-    return '';
-  }
-
-  function prospectFallbackNamingPackW467(args) {
-    const prospect = str(args && args.prospect) || 'Demo Customer';
-    const genericFallbackBlockedTerms = args && args.genericFallbackBlockedTerms || WEAK_PRODUCT_NAME_BLOCKLIST_W467.slice(0);
-    return {
-      _source: 'deterministic-fallback',
-      _signalLen: Number(args && args.signalLen || 0) || 0,
-      industry_category: '',
-      confidencePercent: 35,
-      namingConfidence: 35,
-      namingEvidenceSource: 'deterministic_fallback',
-      productEvidenceConfidence: 35,
-      primary_product_candidate: null,
-      selectedProductName: null,
-      selectedVariantName: null,
-      selectedPackName: 'Case',
-      selectedCatalogCandidate: null,
-      catalogCandidates: [],
-      alternate_product_candidates: [],
-      evidence_terms: [],
-      competitor_terms: [],
-      roi_basis_terms: [],
-      hero_item_name: `${prospect} Finished Good`,
-      assembly_name: `${prospect} Assembly`,
-      component_names: [
-        `${prospect} Component A`,
-        `${prospect} Component B`,
-        `${prospect} Component C`
-      ],
-      bom_name: `BOM - ${prospect}`,
-      bom_revision_name: `Revision 1 - ${prospect}`,
-      routing_name: `Routing - ${prospect} Assembly`,
-      operation_names_by_seq: {
-        '10': `Prepare ${prospect} Component A`,
-        '20': `Build ${prospect} Assembly`,
-        '30': `QC and Release ${prospect} Finished Good`
-      },
-      fallbackUsed: true,
-      fallbackReason: args && args.fallbackReason || 'No server naming file or strong product evidence was available.',
-      prospectNameUsedAsFallbackOnly: true,
-      missingEvidence: ['website catalog product candidate', 'real public product/product-line evidence'],
-      genericFallbackBlockedTerms
-    };
-  }
-
-  function websiteFromNamingPackW467(names) {
-    const urls = Array.isArray(names && names.websiteEvidenceSourceUrls) ? names.websiteEvidenceSourceUrls : [];
-    return str(urls[0] || names && names.website || names && names.sourceUrl || '');
-  }
-
-  function strongDomainRecoveryNamingPackW467(names, context, weakRecordName, weakReason) {
-    const prospect = str(context && context.prospect);
-    const website = str(context && context.website) || websiteFromNamingPackW467(names);
-    const signalText = str(context && context.signalText) || [
-      names && names.selectedProductName,
-      names && names.primary_product_candidate,
-      names && names.flavorSignalsUsed,
-      names && names.websiteSignalsUsed,
-      names && names.evidence_terms
-    ].map(function(value) {
-      if (Array.isArray(value)) return value.join(' ');
-      return str(value);
-    }).join(' ');
-    const recovered = generateNamingPack({ prospect, website, signalText });
-    const recoveredProduct = str(recovered && (recovered.selectedProductName || recovered.primary_product_candidate));
-    if (!recovered || recovered.fallbackUsed === true || !recoveredProduct || weakProductNameReasonW467(recoveredProduct)) return null;
-    return Object.assign({}, names, recovered, {
-      blockedWeakProductName: names.blockedWeakProductName || str(names.selectedProductName || names.primary_product_candidate || ''),
-      blockedWeakProductNameReason: names.blockedWeakProductNameReason || weakReason || 'non-product resolver text ignored',
-      blockedWeakRecordName: weakRecordName || names.blockedWeakRecordName || '',
-      namingAuthorityOrderW467: 'validated naming pack -> deterministic domain recovery -> prospect fallback',
-      productFirstRecordNamingW466: {
-        applied: true,
-        selectedProductName: recoveredProduct,
-        before: {
-          hero_item_name: names.hero_item_name || '',
-          assembly_name: names.assembly_name || '',
-          component_names: names.component_names || [],
-          bom_name: names.bom_name || '',
-          bom_revision_name: names.bom_revision_name || ''
-        },
-        after: {
-          hero_item_name: recovered.hero_item_name || '',
-          assembly_name: recovered.assembly_name || '',
-          component_names: recovered.component_names || [],
-          bom_name: recovered.bom_name || '',
-          bom_revision_name: recovered.bom_revision_name || ''
-        },
-        policy: 'resolver-text-record-name-recovered-by-domain-product-resolver'
-      }
-    });
-  }
-
-  function normalizeProductFirstRecordNamesW466(rawNames, context) {
-    const names = Object.assign({}, rawNames || {});
-    const namingPayload = context && context.namingPayload || {};
-    const authoritativePackApplied = namingPayload.parsed === true && namingPayload.applied === true;
-    if (authoritativePackApplied) {
-      names.namingAuthorityOrderW467 = 'validated naming pack -> preserve applied old-runner pack -> prospect fallback';
-      names.namingSourceUsed = namingPayload.source || names._source || 'suitelet-precomputed';
-      names.namingPayloadFound = namingPayload.found === true;
-      names.namingPayloadParsed = namingPayload.parsed === true;
-      names.namingPayloadApplied = namingPayload.applied === true;
-      names.namingPackPreserved = true;
-      names.fallbackUsed = false;
-      delete names.fallbackReason;
-      names.productFirstRecordNamingW466 = names.productFirstRecordNamingW466 || {
-        applied: false,
-        policy: 'authoritative-precomputed-naming-pack-preserved'
-      };
-      return names;
-    }
-    const selectedCandidate = names.selectedCatalogCandidate && typeof names.selectedCatalogCandidate === 'object'
-      ? names.selectedCatalogCandidate.name
-      : names.selectedCatalogCandidate;
-    const product = str(names.selectedProductName || names.primary_product_candidate || selectedCandidate || '');
-    const weakProductReason = weakProductNameReasonW467(product);
-    const weakRecordName = firstWeakRecordNameW467(names);
-
-    if (weakProductReason) {
-      names.blockedWeakProductName = product;
-      names.blockedWeakProductNameReason = weakProductReason;
-      if (str(names.selectedProductName).toLowerCase() === product.toLowerCase()) names.selectedProductName = null;
-      if (str(names.primary_product_candidate).toLowerCase() === product.toLowerCase()) names.primary_product_candidate = null;
-      if (str(selectedCandidate).toLowerCase() === product.toLowerCase()) {
-        names.selectedCatalogCandidateBlockedW467 = names.selectedCatalogCandidate || product;
-        names.selectedCatalogCandidate = null;
-      }
-    }
-
-    if (weakProductReason || weakRecordName) {
-      const recovered = strongDomainRecoveryNamingPackW467(names, context, weakRecordName, weakProductReason || 'resolver record text ignored');
-      if (recovered) return recovered;
-    }
-
-    if (weakRecordName) {
-      return Object.assign({}, names, prospectFallbackNamingPackW467({
-        prospect: context && context.prospect,
-        signalLen: names._signalLen,
-        fallbackReason: 'Old-runner deterministic naming used because no preserved naming pack was available.',
-        genericFallbackBlockedTerms: names.genericFallbackBlockedTerms
-      }), {
-        blockedWeakProductName: names.blockedWeakProductName || product || '',
-        blockedWeakProductNameReason: names.blockedWeakProductNameReason || 'resolver record text ignored',
-        blockedWeakRecordName: weakRecordName,
-        namingAuthorityOrderW467: 'validated naming pack -> validated product evidence -> prospect fallback'
-      });
-    }
-
-    if (weakProductReason) {
-      return Object.assign({}, names, prospectFallbackNamingPackW467({
-        prospect: context && context.prospect,
-        signalLen: names._signalLen,
-        fallbackReason: 'Old-runner deterministic naming used because no preserved naming pack was available.',
-        genericFallbackBlockedTerms: names.genericFallbackBlockedTerms
-      }), {
-        blockedWeakProductName: product,
-        blockedWeakProductNameReason: weakProductReason,
-        namingAuthorityOrderW467: 'validated naming pack -> validated product evidence -> prospect fallback'
-      });
-    }
-
-    if (!product || weakProductReason || /^catalog product$/i.test(product) || names.fallbackUsed === true) {
-      names.namingAuthorityOrderW467 = 'validated naming pack -> validated product evidence -> prospect fallback';
-      return names;
-    }
-
-    const prospect = str(context && context.prospect || '');
-    const prospectCore = trimLen(prospect
-      .replace(/\bW\d+\b/ig, '')
-      .replace(/\bReal Naming\b/ig, '')
-      .replace(/\bDistribution\b/ig, '')
-      .replace(/\bManufacturing\b/ig, '')
-      .replace(/\bWIP Off\b/ig, '')
-      .replace(/\b\d{6,}\w*\b/g, '')
-      .replace(/\s+/g, ' ')
-      .trim(), 28);
-    const brandPrefix = prospectCore && product.toLowerCase().indexOf(prospectCore.toLowerCase()) === -1
-      ? `${prospectCore} `
-      : '';
-    const productCase = `${brandPrefix}${product} Case`;
-    const productAssembly = `${brandPrefix}${product} Assembly`;
-    const productBom = `${brandPrefix}${product}`;
-    const productComponentNames = [
-      `${product} Core Unit`,
-      `${product} Accessory Kit`,
-      `${product} Retail Packaging`
-    ];
-
-    function hasFullProduct(value) {
-      return String(value || '').toLowerCase().indexOf(product.toLowerCase()) !== -1;
-    }
-
-    const before = {
-      hero_item_name: names.hero_item_name || '',
-      assembly_name: names.assembly_name || '',
-      component_names: names.component_names || [],
-      bom_name: names.bom_name || '',
-      bom_revision_name: names.bom_revision_name || ''
-    };
-
-    if (!hasFullProduct(names.hero_item_name)) names.hero_item_name = productCase;
-    if (!hasFullProduct(names.assembly_name)) names.assembly_name = productAssembly;
-    if (!Array.isArray(names.component_names) || !names.component_names.length || names.component_names.some(function(name) { return !hasFullProduct(name); })) {
-      names.component_names = productComponentNames;
-    }
-    if (!hasFullProduct(names.bom_name)) names.bom_name = `BOM - ${productBom}`;
-    if (!hasFullProduct(names.bom_revision_name)) names.bom_revision_name = `Revision 1 - ${productBom}`;
-    if (!hasFullProduct(names.routing_name)) names.routing_name = `Routing - ${productBom}`;
-
-    names.productFirstRecordNamingW466 = {
-      applied: true,
-      selectedProductName: product,
-      before,
-      after: {
-        hero_item_name: names.hero_item_name || '',
-        assembly_name: names.assembly_name || '',
-        component_names: names.component_names || [],
-        bom_name: names.bom_name || '',
-        bom_revision_name: names.bom_revision_name || ''
-      },
-      policy: 'selected-public-product-visible-before-prospect-truncation'
-    };
-    return names;
   }
 
   function trimLen(s, n) { const t = String(s || '').trim(); return t.length <= n ? t : t.slice(0, n).trim(); }

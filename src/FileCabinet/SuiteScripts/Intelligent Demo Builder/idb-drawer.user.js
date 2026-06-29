@@ -27397,6 +27397,34 @@
     return state;
   }
 
+  function forceVisibleBuildTogglesForSubmitW483(root, state, targetLaneId) {
+    if (!root || !state || typeof root.querySelectorAll !== 'function') return state;
+    const patch = {};
+    Array.prototype.slice.call(root.querySelectorAll('[data-idb-toggle]') || []).forEach((field) => {
+      const key = field && field.getAttribute && field.getAttribute('data-idb-toggle');
+      if (!key) return;
+      patch[key] = field.checked === true;
+    });
+    if (!Object.keys(patch).length) return state;
+    if (patch.enableWip === true) patch.enableManufacturing = true;
+    const lane = getLane(state);
+    const laneIds = [targetLaneId, lane && lane.id, state.selectedLaneId].filter(Boolean)
+      .filter((laneId, index, list) => list.indexOf(laneId) === index);
+    state.toggles = state.toggles || {};
+    laneIds.forEach((laneId) => {
+      const laneForId = (CONTRACT.lanes || []).find((candidate) => candidate.id === laneId) || lane;
+      state.toggles[laneId] = Object.assign({}, resolvedToggles(state, laneForId), patch);
+      if (state.toggles[laneId].enableWip === true) state.toggles[laneId].enableManufacturing = true;
+    });
+    state.currentToggles = Object.assign({}, state.currentToggles || {}, patch);
+    state.submitTimeTogglesW483 = Object.assign({
+      schema: 'idb.w483-submit-time-visible-toggle-authority.v1',
+      source: 'visible_dom_before_build_submit',
+      selectedLaneId: targetLaneId || state.selectedLaneId || ''
+    }, patch);
+    return state;
+  }
+
   function updateBuildDemoPlanAction(root, state) {
     const buildPlan = root.querySelector('[data-idb-build-demo-plan], [data-idb-one-click-build-records]');
     if (!buildPlan) return;
@@ -30960,6 +30988,7 @@
       const pageContext = currentPageContext();
       syncIntakeFromVisibleFields(root, state);
       syncBuildTogglesFromVisibleFieldsW440(root, state, selectedLaneId || state.selectedLaneId);
+      forceVisibleBuildTogglesForSubmitW483(root, state, selectedLaneId || state.selectedLaneId);
       state.briefPrepared = true;
       state.setupEditMode = false;
       state.pageContext = pageContext;
@@ -30979,6 +31008,7 @@
       state.lanePickerOpen = false;
       state.activeView = 'review';
       const lane = getLane(state);
+      forceVisibleBuildTogglesForSubmitW483(root, state, lane.id);
       const recommendation = recommendMove(lane, pageContext);
       state.selectedMoveIndex = recommendation.moveIndex;
       state.acceptedPacket = buildAcceptedPacketContext(state, lane, pageContext, recommendation);
@@ -31021,6 +31051,7 @@
       const pageContext = opts.pageContext || currentPageContext();
       const lane = opts.lane || getLane(state);
       syncBuildTogglesFromVisibleFieldsW440(root, state, lane.id);
+      forceVisibleBuildTogglesForSubmitW483(root, state, lane.id);
       const recommendation = opts.recommendation || recommendMove(lane, pageContext);
       if (opts.source === 'one_click_build_records_w419' && setupReadiness(state).tone === 'ready' && !websiteSignalNeedsReview(state)) {
         state.selectedLaneId = lane.id;
@@ -32412,6 +32443,7 @@
       industryAwareInputLabelW443,
       selectedBuildToggleReceiptW440,
       syncBuildTogglesFromVisibleFieldsW440,
+      forceVisibleBuildTogglesForSubmitW483,
       productBuildPlanMatchesPayloadContextW437,
       verifiedRecordLinkAuthorityV1,
       finalGeneratedNamesNavigationIntegrationV1,

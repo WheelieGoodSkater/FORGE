@@ -1117,12 +1117,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       const entry = known[i];
       if (!entry.pattern.test(domainText)) continue;
       return entry.names.map(function(name) {
+        const mentioned = domainText.indexOf(String(name || '').toLowerCase()) !== -1;
         return {
           name,
           source: 'known_website_product_examples_w483',
           sourceUrl: entry.sourceUrl,
-          confidence: 106,
-          wipSuitabilityScore: 106,
+          confidence: mentioned ? 112 : 106,
+          wipSuitabilityScore: mentioned ? 112 : 106,
           reasons: [entry.reason]
         };
       });
@@ -1602,19 +1603,48 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const selected = request && request.selectedToggles || {};
     const runnerControls = request && request.runnerControls && request.runnerControls.selectedToggles || {};
     const legacy = request && request.toggles || {};
+    const explicitIntent = explicitManufacturingToggleIntentW483(request);
+    const enableWip = booleanFromRequest(selected.enableWip) === true ||
+      booleanFromRequest(selected.enableWIP) === true ||
+      booleanFromRequest(runnerControls.enableWip) === true ||
+      booleanFromRequest(legacy.enableWip) === true ||
+      explicitIntent.enableWip === true;
+    const enableManufacturing = booleanFromRequest(selected.enableManufacturing) === true ||
+      booleanFromRequest(runnerControls.enableManufacturing) === true ||
+      booleanFromRequest(legacy.enableManufacturing) === true ||
+      explicitIntent.enableManufacturing === true ||
+      enableWip === true;
     return {
       schema: 'idb.w144-normalized-runner-toggles.v1',
       createNewHeroItem: booleanFromRequest(selected.createNewHeroItem) === true ||
         booleanFromRequest(selected.createNewItem) === true ||
         booleanFromRequest(runnerControls.createNewHeroItem) === true ||
         booleanFromRequest(legacy.createNewHeroItem) === true,
-      enableManufacturing: booleanFromRequest(selected.enableManufacturing) === true ||
-        booleanFromRequest(runnerControls.enableManufacturing) === true ||
-        booleanFromRequest(legacy.enableManufacturing) === true,
-      enableWip: booleanFromRequest(selected.enableWip) === true ||
-        booleanFromRequest(selected.enableWIP) === true ||
-        booleanFromRequest(runnerControls.enableWip) === true ||
-        booleanFromRequest(legacy.enableWip) === true
+      enableManufacturing,
+      enableWip,
+      explicitIntentFallbackW483: explicitIntent.source ? explicitIntent : null
+    };
+  }
+
+  function explicitManufacturingToggleIntentW483(request) {
+    const text = compactText([
+      request && request.resolvedOperatingMode,
+      request && request.modeConfidence,
+      request && request.storyInputs && request.storyInputs.conversationNotes,
+      request && request.storyInputs && request.storyInputs.buyerNeed,
+      request && request.storyInputs && request.storyInputs.scObjective,
+      request && request.prospect && request.prospect.name,
+      request && request.demoPath && request.demoPath.scenario,
+      request && request.demoPath && request.demoPath.familyKey
+    ].join(' ')).toLowerCase();
+    if (!text) return {};
+    const wip = /\b(wip|work\s*order|routing|route|operation|work\s*center|production\s*steps?)\b/.test(text);
+    const mfg = wip || /\b(manufactur|assembly|assemblies|bom|bill\s+of\s+materials|component|components|finished\s+good)\b/.test(text);
+    return {
+      source: (wip || mfg) ? 'explicit_request_text_w483' : '',
+      enableManufacturing: mfg,
+      enableWip: wip,
+      evidence: text.slice(0, 240)
     };
   }
 
@@ -3215,6 +3245,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       buildQueueGate,
       submitRunnerIfAllowed,
       buildServerPrecomputedNamingPack,
+      normalizeSelectedToggles,
       buildCatalogCandidatesW457,
       rankCatalogCandidatesW457,
       selectedCatalogCandidateRejectedReasonW464,

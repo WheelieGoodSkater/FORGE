@@ -447,16 +447,25 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     // 6) Manufacturing-only setup
     let woId = null;
     if (finalEnableManufacturing && ids.assemblyId && ids.bomId) {
-      attachBomToAssembly({ assemblyId: ids.assemblyId, bomId: ids.bomId });
-
-      woId = createWorkOrder({
-        assemblyId: ids.assemblyId,
-        subsidiaryId,
-        locationId,
-        quantity: 10,
-        memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded`
+      const bomAttachResult = safeManufacturingStepW483('BOM attach to assembly', () => {
+        attachBomToAssembly({ assemblyId: ids.assemblyId, bomId: ids.bomId });
+        return { assemblyId: ids.assemblyId, bomId: ids.bomId };
       });
-      log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId }) });
+
+      if (bomAttachResult.ok) {
+        const workOrderResult = safeManufacturingStepW483('Work Order seed', () => {
+          const id = createWorkOrder({
+            assemblyId: ids.assemblyId,
+            subsidiaryId,
+            locationId,
+            quantity: 10,
+            memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded`
+          });
+          return { woId: id, extId };
+        });
+        woId = workOrderResult.ok && workOrderResult.value ? Number(workOrderResult.value.woId || 0) || null : null;
+        if (woId) log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId }) });
+      }
     } else {
       log.audit({ title: `Manufacturing flow disabled [${VERSION}]`, details: JSON.stringify({ enableManufacturing: finalEnableManufacturing, extId, heroItemId: ids.heroItemId }) });
     }
@@ -1914,6 +1923,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // Work Order seed (includes start + end dates)
   // ----------------------------
+  function safeManufacturingStepW483(label, fn) {
+    log.audit({ title: `${label} START [${VERSION}]`, details: JSON.stringify({ label }) });
+    try {
+      const value = fn();
+      log.audit({ title: `${label} COMPLETE [${VERSION}]`, details: JSON.stringify(value || {}) });
+      return { ok: true, value: value || null };
+    } catch (e) {
+      const message = String(e && (e.message || e.details || e.name) || e || 'Manufacturing step failed');
+      log.error({
+        title: `${label} FAILED [${VERSION}]`,
+        details: JSON.stringify({ label, name: String(e && (e.name || e.id) || 'ERROR'), message })
+      });
+      return { ok: false, error: message };
+    }
+  }
+
   function createWorkOrder({ assemblyId, subsidiaryId, locationId, quantity, memo }) {
     const wo = record.create({ type: 'workorder', isDynamic: false });
 
@@ -1941,7 +1966,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     safeTry(() => wo.setValue({ fieldId: 'startdate', value: start }));
     safeTry(() => wo.setValue({ fieldId: 'enddate', value: end }));
 
-    return Number(wo.save({ enableSourcing: true, ignoreMandatoryFields: false }));
+    return Number(wo.save({ enableSourcing: true, ignoreMandatoryFields: true }));
   }
 
   // ----------------------------
@@ -2029,7 +2054,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function adoptFreshHeroItem({ itemId, subsidiaryId, locationId, extId, prospect }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
-    const externalId = `SCAI_HERO_${safeCode(extId || itemId)}`;
+    const externalId = `SCAI_HERO_${safeExternalIdTokenW483(extId || itemId)}`;
     const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
 
     safeTry(() => record.submitFields({
@@ -2076,7 +2101,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function createFreshHeroItem({ subsidiaryId, locationId, extId, prospect }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
-    const externalId = `SCAI_HERO_${safeCode(extId || new Date().getTime())}`;
+    const externalId = `SCAI_HERO_${safeExternalIdTokenW483(extId || new Date().getTime())}`;
     const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
 
     let rec = null;
@@ -2534,6 +2559,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function safeCode(s) {
     return String(s || '').replace(/[^A-Za-z0-9_\-]/g, '_').slice(0, 40);
+  }
+
+  function safeExternalIdTokenW483(s) {
+    const clean = String(s || '').replace(/[^A-Za-z0-9_\-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
+    if (!clean) return String(new Date().getTime());
+    if (clean.length <= 70) return clean;
+    const head = clean.slice(0, 38).replace(/_+$/g, '');
+    const tail = clean.slice(-28).replace(/^_+/g, '');
+    return `${head}_${tail}`.slice(0, 70);
   }
 
   // ----------------------------

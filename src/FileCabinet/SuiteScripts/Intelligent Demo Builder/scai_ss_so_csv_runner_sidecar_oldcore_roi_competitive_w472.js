@@ -57,12 +57,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'w475-old-runner-naming-authority-only';
+  const VERSION = 'w479-v3-shell-old-runner-core';
   const RELEASE_TRAIN = 'sidecar-oldcore';
-  const RELEASE_TRANCHE = 'w475-old-runner-naming-authority-only';
-  const SIDECAR_VERSION_W472 = 'W475';
+  const RELEASE_TRANCHE = 'w479-v3-shell-old-runner-core';
+  const SIDECAR_VERSION_W472 = 'W479';
   const RUNNER_EXECUTION_CORE_W472 = 'old-runner-v1.12.13';
-  const ROI_COMPETITIVE_SIDECAR_VERSION_W472 = 'W475';
+  const ROI_COMPETITIVE_SIDECAR_VERSION_W472 = 'W479';
   const RESULT_CAPTURE_FILENAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -446,9 +446,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const websiteNamingSupersedesPrecomputedW472 = false;
     const precomputedNamingWeakW472 = false;
     const effectiveNamingPayloadW472 = namingPayload;
-    const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, { prospect, website, signalText: signal.text, namingPayload: effectiveNamingPayloadW472 });
+    const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, {
+      prospect,
+      website,
+      notes,
+      agenda,
+      signalText: signal.text,
+      namingPayload: effectiveNamingPayloadW472,
+      enableManufacturing: finalEnableManufacturing,
+      enableWip: effectiveEnableWip
+    });
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
-      source: effectiveNamingPayloadW472.source || names._source || 'deterministic',
+      source: names._source || effectiveNamingPayloadW472.source || 'deterministic',
       signalLen: names._signalLen || 0,
       industry_category: names.industry_category || '',
       industrySelection: names.industrySelection || null,
@@ -755,7 +764,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         chosenCenters: routingResult && routingResult.chosen ? routingResult.chosen.centers : [],
         chosenTemplates: routingResult && routingResult.chosen ? routingResult.chosen.templates : [],
         namingFileId: namingFileId || null,
-        namingSourceUsed: effectiveNamingPayloadW472.source || names._source || 'deterministic',
+        namingSourceUsed: names._source || effectiveNamingPayloadW472.source || 'deterministic',
         namingPayloadFound: !!effectiveNamingPayloadW472.found,
         idbRunnerResultCapture,
         customerIdentityTelemetryW457,
@@ -3714,97 +3723,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function buildWebsiteProductExampleNamingPayloadW472(args) {
-    const requestExamples = requestProductExamplesW472(args && args.confirmedBuildRequestJson);
-    const signalExamples = args && args.signal && Array.isArray(args.signal.productExamples) ? args.signal.productExamples : [];
-    const rejectedCandidates = arrayValue(requestExamples && requestExamples.rejectedCandidatesW474);
-    const examples = rankWebsiteProductExamplesW473(requestExamples.concat(signalExamples).filter(function(candidate) {
-      const rejectReason = rejectedWebsiteCandidateReasonW474(candidate && candidate.name || candidate);
-      if (rejectReason) {
-        rejectedCandidates.push(rejectReason);
-        return false;
-      }
-      if (!candidateDomainMatchesWebsiteW474(candidate, args && args.website)) {
-        rejectedCandidates.push(`${candidate && candidate.name || candidate} rejected: candidate domain does not match submitted website`);
-        return false;
-      }
-      if (!candidateProductMatchesWebsiteDomainW474(candidate && candidate.name || candidate, args && args.website)) {
-        rejectedCandidates.push(`${candidate && candidate.name || candidate} rejected: product does not match submitted website/domain category`);
-        return false;
-      }
-      return true;
-    })).slice(0, 3);
-    if (!examples.length) return null;
-    const primary = examples[0].name;
-    const selectedIndustryChip = selectIndustryChipW474({
-      website: args && args.website,
-      product: primary,
-      prospect: args && args.prospect,
-      signalText: args && args.signal && args.signal.text || ''
-    });
-    const componentModel = productSpecificComponentNamesW474({
-      product: primary,
-      industryChip: selectedIndustryChip.selectedIndustryChip,
-      website: args && args.website,
-      source: 'website_product_examples'
-    });
-    const componentNames = componentModel.componentNames;
-    const payload = {
-      _source: 'runner-website-product-examples-naming-pack-w472',
-      _signalLen: String(args && args.signal && args.signal.text || '').length,
-      namingEvidenceSource: 'trusted_website_product_examples_w472',
-      namingConfidence: 96,
-      confidencePercent: 96,
-      industrySelection: {
-        label: selectedIndustryChip.selectedIndustryChip,
-        source: selectedIndustryChip.industryChipSource,
-        confidence: selectedIndustryChip.industryChipConfidence
-      },
-      industry_category: selectedIndustryChip.selectedIndustryChip,
-      selectedIndustryChip: selectedIndustryChip.selectedIndustryChip,
-      industryChipSource: selectedIndustryChip.industryChipSource,
-      industryChipEvidence: selectedIndustryChip.industryChipEvidence,
-      industryChipConfidence: selectedIndustryChip.industryChipConfidence,
-      websiteEvidenceSource: 'trusted_website_product_examples_w472',
-      websiteEvidenceSourceUrls: uniqueTextValuesW472(
-        (args && args.signal && args.signal.productExampleSourceUrls || [])
-          .concat(args && args.website ? [args.website] : [])
-      ).slice(0, 6),
-      hero_item_name: primary,
-      assembly_name: `${primary} Availability Flow`,
-      component_names: componentNames.slice(0, 3),
-      componentEvidenceSource: componentModel.componentEvidenceSource,
-      componentInferenceReason: componentModel.componentInferenceReason,
-      componentFallbackUsed: componentModel.componentFallbackUsed,
-      componentRejectedCandidates: uniqueTextValuesW472(rejectedCandidates.concat(componentModel.componentRejectedCandidates || [])).slice(0, 12),
-      nllmComponentNamesUsed: componentModel.nllmComponentNamesUsed,
-      nllmComponentNamePromptVersion: componentModel.nllmComponentNamePromptVersion,
-      bom_name: `${primary} Availability Plan`,
-      bom_revision_name: `${primary} Replenishment Plan`,
-      routing_name: `${primary} Fulfillment Flow`,
-      operation_names_by_seq: {
-        '10': `Prepare ${componentNames[0]}`,
-        '20': `Allocate ${primary} Demand`,
-        '30': `Release ${primary}`
-      },
-      selectedProductName: primary,
-      primary_product_candidate: primary,
-      alternate_product_candidates: examples.slice(1).map(function(example) { return example.name; }),
-      selectedCatalogCandidate: examples[0],
-      selectedCatalogCandidateSource: examples[0].source || 'trusted_website_product_examples_w472',
-      selectedCatalogCandidateReasons: examples[0].reasons || [],
-      catalogCandidates: examples,
-      websiteProductExamplesW472: examples.map(function(example) { return example.name; }),
-      namingAuthorityOrderW472: 'website product examples -> naming files only when website has no product evidence -> prospect fallback'
-    };
-    return {
-      found: true,
-      parsed: true,
-      applied: true,
-      fileId: null,
-      discoveryMode: 'runner-website-product-examples-w472',
-      source: payload._source,
-      payload
-    };
+    // Disabled by W479: V3 website-product promotion is provenance only.
+    // The old-runner core owns all product, industry, and scenario identity.
+    return null;
   }
 
   function weakPrecomputedNamingPayloadW472(payload) {
@@ -4176,6 +4097,30 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         evidence: ['Yamaha', 'instrument', 'music products'],
         roi: ['dealer allocation', 'instrument availability', 'channel readiness'],
         competitors: ['Fender', 'Gibson', 'Roland']
+      },
+      {
+        pattern: /(^|\.)yeti\.com$|\byeti\b/,
+        product: /\b(cooler|tundra|roadie|hopper|hard cooler)\b/.test(signal) ? 'Tundra Hard Cooler' : 'Rambler Tumbler',
+        industry: 'Durable Consumer Goods Manufacturing',
+        evidence: ['YETI', 'cooler', 'drinkware', 'outdoor hardgoods'],
+        roi: ['launch allocation', 'retail availability', 'stockout reduction'],
+        competitors: ['Stanley', 'Hydro Flask', 'Igloo']
+      },
+      {
+        pattern: /(^|\.)stanley1913\.com$|\bstanley\b/,
+        product: 'Quencher Tumbler',
+        industry: 'Durable Consumer Goods Manufacturing',
+        evidence: ['Stanley', 'drinkware', 'tumbler'],
+        roi: ['launch allocation', 'retail availability'],
+        competitors: ['YETI', 'Hydro Flask']
+      },
+      {
+        pattern: /(^|\.)hydroflask\.com$|\bhydro\s*flask\b/,
+        product: 'Wide Mouth Bottle',
+        industry: 'Durable Consumer Goods Manufacturing',
+        evidence: ['Hydro Flask', 'bottle', 'drinkware'],
+        roi: ['launch allocation', 'retail availability'],
+        competitors: ['YETI', 'Stanley']
       }
     ];
     for (let i = 0; i < domainRules.length; i += 1) {
@@ -4189,8 +4134,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       { pattern: /\b(chair|seating|desk|sofa|furniture|ergonomic)\b/, product: 'Ergonomic Chair', industry: 'Furniture Manufacturing', evidence: ['furniture', 'seating'], roi: ['contract demand readiness', 'dealer allocation'], competitors: ['Steelcase', 'Haworth'] },
       { pattern: /\b(vacuum|appliance|purifier|hair dryer|electronics)\b/, product: 'Premium Home Appliance', industry: 'Premium Home Appliance Manufacturing', evidence: ['appliance', 'electronics'], roi: ['launch allocation', 'channel availability'], competitors: ['SharkNinja', 'Samsung'] },
       { pattern: /\b(forklift|lift truck|pallet truck|warehouse equipment)\b/, product: 'Lift Truck', industry: 'Industrial Equipment Manufacturing', evidence: ['industrial equipment', 'lift truck'], roi: ['equipment order readiness', 'WIP assembly proof'], competitors: ['Crown', 'Hyster', 'Yale'] },
-      { pattern: /\b(cookware|grill|cooler|tumbler|bottle|hardgoods|outdoor)\b/, product: 'Durable Hardgoods Product', industry: 'Durable Consumer Goods Manufacturing', evidence: ['durable hardgoods'], roi: ['allocation readiness', 'case availability'], competitors: [] },
-      { pattern: /\b(food|beverage|snack|sauce|kombucha|yogurt|bottle|can)\b/, product: 'Packaged Food Product', industry: 'Food and Beverage Manufacturing', evidence: ['food and beverage'], roi: ['batch readiness', 'case availability'], competitors: [] }
+      { pattern: /\b(cookware|grill|cooler|tumbler|drinkware|bottle|hardgoods|outdoor|carryall|tote|bucket)\b/, product: 'Durable Hardgoods Product', industry: 'Durable Consumer Goods Manufacturing', evidence: ['durable hardgoods'], roi: ['allocation readiness', 'retail availability'], competitors: [] },
+      { pattern: /\b(food|snack|sauce|kombucha|yogurt|ingredient|recipe|flavor|edible|bakery|dairy)\b/, product: 'Packaged Food Product', industry: 'Food and Beverage Manufacturing', evidence: ['food and beverage'], roi: ['batch readiness', 'case availability'], competitors: [] }
     ];
     for (let j = 0; j < categoryRules.length; j += 1) {
       const category = categoryRules[j];
@@ -4260,6 +4205,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (/food|beverage/.test(industry)) {
       return [`${p} Ingredient Blend`, `${p} Packaging Materials`, `${p} Case Pack Materials`];
     }
+    if (/durable consumer goods|hardgoods|outdoor/.test(industry)) {
+      return [`${p} Shell and Body Kit`, `${p} Lid and Hardware Kit`, `${p} Retail Packaging Kit`];
+    }
     return [`${p} Core Unit`, `${p} Accessory Kit`, `${p} Retail Packaging`];
   }
 
@@ -4277,6 +4225,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
     if (/food|beverage/.test(industry)) {
       return { '10': `Prepare ${p} Batch`, '20': `Pack ${p}`, '30': `QC and Release ${p}` };
+    }
+    if (/durable consumer goods|hardgoods|outdoor/.test(industry)) {
+      return { '10': `Stage ${p} Kits`, '20': `Assemble ${p}`, '30': `Inspect and Release ${p}` };
     }
     return { '10': `Stage ${p} Components`, '20': `Assemble ${p}`, '30': `QC and Release ${p}` };
   }
@@ -5920,7 +5871,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingPayloadFound: !!namingPayload.found,
       namingPayloadParsed: !!namingPayload.parsed,
       namingPayloadApplied: !!namingPayload.applied,
-      namingSource: namingPayload.source || names._source || 'deterministic',
+      namingSource: names._source || namingPayload.source || 'deterministic',
       namingEvidenceSource: names.namingEvidenceSource || names._source || '',
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
       industrySelection: names.industrySelection || null,
@@ -7450,7 +7401,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         });
       }
       names.namingAuthorityOrderW467 = 'validated naming pack -> preserve applied old-runner pack -> prospect fallback';
-      names.namingSourceUsed = namingPayload.source || names._source || 'suitelet-precomputed';
+      names.namingSourceUsed = names._source || namingPayload.source || 'suitelet-precomputed';
       names.namingPayloadFound = namingPayload.found === true;
       names.namingPayloadParsed = namingPayload.parsed === true;
       names.namingPayloadApplied = namingPayload.applied === true;

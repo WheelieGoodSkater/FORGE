@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      2.0.3-w475
+// @version      2.0.6-w478
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -21,8 +21,8 @@
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
   const IN_FLIGHT_BUILD_STORAGE_KEY_W472 = 'idb.drawer.inFlightBuild.w472.v1';
-  const DRAWER_USERSCRIPT_VERSION = '2.0.3-w475';
-  const CURRENT_UX_BLOCK_W346 = 'W475';
+  const DRAWER_USERSCRIPT_VERSION = '2.0.6-w478';
+  const CURRENT_UX_BLOCK_W346 = 'W478';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1091,7 +1091,7 @@
   };
 
   const CONTRACT = {
-    product: { name: 'Intelligent Demo Builder', version: 'V2.0.3-w475' },
+    product: { name: 'Intelligent Demo Builder', version: 'V2.0.6-w478' },
     nonRegression: {
       noNewIndustries: false,
       apparelAccessoriesLaneAuthorized: true,
@@ -27383,11 +27383,18 @@
   function updateBuildDemoPlanAction(root, state) {
     const buildPlan = root.querySelector('[data-idb-build-demo-plan], [data-idb-one-click-build-records]');
     if (!buildPlan) return;
+    syncIntakeFromVisibleFields(root, state);
     const pageContext = currentPageContext();
     const lane = getLane(state);
+    syncBuildTogglesFromVisibleFieldsW440(root, state, lane.id);
     const recommendation = recommendMove(lane, pageContext);
     const flow = oneActionIntakeFlowModel(state, lane, pageContext, recommendation);
-    buildPlan.disabled = !!flow.primaryDisabled;
+    if (!buildPlan.hasAttribute('data-idb-one-click-build-records')) {
+      buildPlan.disabled = !!flow.primaryDisabled;
+    } else {
+      buildPlan.disabled = false;
+      buildPlan.setAttribute('data-idb-submit-disabled', flow.primaryDisabled ? 'true' : 'false');
+    }
     buildPlan.setAttribute('aria-disabled', flow.primaryDisabled ? 'true' : 'false');
   }
 
@@ -27949,13 +27956,14 @@
       const productionIntake = productionConsultantIntakeV1(state, lane, naming);
       const requestSignal = consultantVisibleCopyW346(productionIntake.requiredInputs.conversationNotes, 180);
       const contextCaptured = productionIntake.consultantFacingRequiredInputs.length - productionIntake.missing.length;
+      const oneClickDisabled = !!intakeGuide.needsContext;
       const primaryAction = authority.confirmedLaneId
         ? `
           <button class="idb-primary" data-idb-view="run">Run demo</button>
           <button class="idb-secondary" data-idb-view="review">Build records</button>
           <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
         `
-        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext ? 'disabled' : ''}>Build records</button>`;
+        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${oneClickDisabled ? 'true' : 'false'}" aria-disabled="${oneClickDisabled ? 'true' : 'false'}">Build records</button>`;
       return `
         <div class="idb-card idb-accent idb-compact idb-w98-request-summary">
           <div class="idb-section-title">Request summary</div>
@@ -28088,8 +28096,8 @@
                 <button class="idb-secondary" data-idb-view="review">Build records</button>
                 <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
               `
-              : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${intakeGuide.needsContext ? 'disabled' : ''}>Build records</button>`
-            : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" ${flow.primaryDisabled ? 'disabled' : ''}>Build records</button>`}
+              : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${intakeGuide.needsContext ? 'true' : 'false'}" aria-disabled="${intakeGuide.needsContext ? 'true' : 'false'}">Build records</button>`
+            : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${flow.primaryDisabled ? 'true' : 'false'}" aria-disabled="${flow.primaryDisabled ? 'true' : 'false'}">Build records</button>`}
           ${briefPrepared ? '<button class="idb-secondary" data-idb-edit-setup>Edit request</button>' : '<span class="idb-mini-chip">Draft autosaved</span>'}
           <button class="idb-secondary" data-idb-toggle-lanes>Change lane manually</button>
         </div>
@@ -31108,7 +31116,13 @@
         draw(root, state);
         return null;
       }
-      const laneId = selectedLaneId || state.selectedLaneId;
+      const websiteLaneRecommendation = suggestedLaneFromIntake(state);
+      const websiteConfidence = websiteConfidenceModel(state);
+      const websiteRecommendedLaneId = websiteLaneRecommendation && websiteLaneRecommendation.lane &&
+        [WEBSITE_CONFIDENCE_STATE.RECOMMENDED, WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION].indexOf(websiteConfidence.state) >= 0
+        ? websiteLaneRecommendation.lane.id
+        : '';
+      const laneId = websiteRecommendedLaneId || selectedLaneId || state.selectedLaneId;
       state.selectedLaneId = laneId;
       state.laneSelectionSource = 'consultant_confirmed';
       state.selectedMoveIndex = 0;
@@ -31158,6 +31172,19 @@
       const lane = opts.lane || getLane(state);
       syncBuildTogglesFromVisibleFieldsW440(root, state, lane.id);
       const recommendation = opts.recommendation || recommendMove(lane, pageContext);
+      if (opts.source === 'one_click_build_records_w419' && setupReadiness(state).tone === 'ready' && !websiteSignalNeedsReview(state)) {
+        state.selectedLaneId = lane.id;
+        state.laneSelectionSource = 'consultant_confirmed';
+        state.briefPrepared = true;
+        state.acceptedPacket = buildAcceptedPacketContext(state, lane, pageContext, recommendation);
+        trace('w476_one_click_submit_resealed_accepted_packet', {
+          selectedLaneId: lane.id,
+          packetId: state.acceptedPacket && state.acceptedPacket.packetId,
+          source: opts.source,
+          writeAuthority: 'approved_server_adapter_only',
+          noDrawerTransactionWrites: true
+        });
+      }
       const preflightRequest = confirmedBuildRequestJsonV1(state, lane, pageContext, recommendation);
       state.lastSubmittedBuildToggleReceiptW440 = selectedBuildToggleReceiptW440(state, lane, preflightRequest);
       saveState(state);
@@ -31232,6 +31259,28 @@
     };
     root.querySelectorAll('[data-idb-one-click-build-records]').forEach((button) => {
       button.addEventListener('click', async () => {
+        syncIntakeFromVisibleFields(root, state);
+        updateBuildDemoPlanAction(root, state);
+        if (button.getAttribute('data-idb-submit-disabled') === 'true') {
+          trace('w475_build_records_click_blocked_action_disabled', {
+            source: 'one_click_build_records_w475_submit_guard',
+            noDrawerWrites: true
+          });
+          saveState(state);
+          draw(root, state);
+          return;
+        }
+        const readiness = setupReadiness(state);
+        if (readiness.tone !== 'ready') {
+          trace('w475_build_records_click_blocked_missing_intake', {
+            missing: readiness.missing,
+            source: 'one_click_build_records_w475_submit_guard',
+            noDrawerWrites: true
+          });
+          saveState(state);
+          draw(root, state);
+          return;
+        }
         const selectedLaneId = button.getAttribute('data-idb-one-click-build-records') || state.selectedLaneId;
         const prepared = prepareOneClickBuildRecordsPath(selectedLaneId);
         if (!prepared) return;

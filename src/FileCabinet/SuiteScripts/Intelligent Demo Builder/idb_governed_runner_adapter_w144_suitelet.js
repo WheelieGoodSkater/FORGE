@@ -5,10 +5,10 @@
  * @NScriptType Suitelet
  */
 define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
-  const ADAPTER_VERSION = 'w474-governed-adapter-short-token-result-return';
-  const SIDECAR_RUNNER_VERSION_W472 = 'W472';
-  const DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W482 = 'customscript_scai_ss_runner_simple_w482';
-  const DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W482 = 'customdeploy_scai_ss_runner_simple_w482';
+  const ADAPTER_VERSION = 'w485-result-prefix-return-import';
+  const SIDECAR_RUNNER_VERSION_W483 = 'W483';
+  const DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W483 = 'customscript_scai_w483_clean';
+  const DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W483 = 'customdeploy_scai_w483_clean';
   const NAMING_FILE_NAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -37,23 +37,23 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   };
 
   const RUNNER_PARAM_MAP = {
-    prospect: 'custscript_w482_prospect',
-    website: 'custscript_w482_website',
-    notes: 'custscript_w482_notes',
-    agenda: 'custscript_w482_agenda',
-    extId: 'custscript_w482_extid',
-    mappingId: 'custscript_w482_mapping',
-    folderId: 'custscript_w482_folder',
-    subsidiaryId: 'custscript_w482_subsidiary',
-    locationId: 'custscript_w482_location',
-    workCenterSearchId: 'custscript_w482_wc_search',
-    enableWip: 'custscript_w482_enable_wip',
-    enableManufacturing: 'custscript_w482_enable_mfg',
-    createNewHero: 'custscript_w482_create_hero',
-    heroItem: 'custscript_w482_hero_item',
-    namingFileId: 'custscript_w482_naming_file',
-    resultCaptureFolderId: 'custscript_w482_result_folder',
-    confirmedBuildRequestJson: 'custscript_w482_req_json'
+    prospect: 'custscript_w483_prospect',
+    website: 'custscript_w483_website',
+    notes: 'custscript_w483_notes',
+    agenda: 'custscript_w483_agenda',
+    extId: 'custscript_w483_extid',
+    mappingId: 'custscript_w483_mapping',
+    folderId: 'custscript_w483_folder',
+    subsidiaryId: 'custscript_w483_subsidiary',
+    locationId: 'custscript_w483_location',
+    workCenterSearchId: 'custscript_w483_wc_search',
+    enableWip: 'custscript_w483_enable_wip',
+    enableManufacturing: 'custscript_w483_enable_mfg',
+    createNewHero: 'custscript_w483_create_hero',
+    heroItem: 'custscript_w483_hero_item',
+    namingFileId: 'custscript_w483_naming_file',
+    resultCaptureFolderId: 'custscript_w483_result_folder',
+    confirmedBuildRequestJson: 'custscript_w483_req_json'
   };
 
   function onRequest(context) {
@@ -165,9 +165,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       governedSandboxWriteEnabled: flag(getParam(currentScript, PARAMS.governedSandboxWriteEnabled) || getParam(currentScript, PARAMS.governedSandboxWriteEnabledShort)),
       queueSubmitEnabled: flag(getParam(currentScript, PARAMS.queueSubmitEnabled)),
       sandboxAccountAllowlist: splitCsv(getParam(currentScript, PARAMS.sandboxAccountAllowlist)),
-      runnerScriptId: getParam(currentScript, PARAMS.runnerScriptId) || DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W482,
-      runnerDeployId: getParam(currentScript, PARAMS.runnerDeployId) || DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W482,
-      configuredSidecarRunnerVersion: SIDECAR_RUNNER_VERSION_W472,
+      runnerScriptId: normalizeRunnerScriptIdW484(getParam(currentScript, PARAMS.runnerScriptId)),
+      runnerDeployId: normalizeRunnerDeployIdW484(getParam(currentScript, PARAMS.runnerDeployId)),
+      configuredSidecarRunnerVersion: SIDECAR_RUNNER_VERSION_W483,
       mappingId: getParam(currentScript, PARAMS.mappingId),
       folderId: getParam(currentScript, PARAMS.folderId),
       subsidiaryId: getParam(currentScript, PARAMS.subsidiaryId),
@@ -182,6 +182,24 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       .split(',')
       .map((item) => item.trim())
       .filter(Boolean);
+  }
+
+  function normalizeRunnerScriptIdW484(value) {
+    const text = String(value || '').trim();
+    if (!text) return DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W483;
+    if (/^customscript_ss_demo_commcenter_runner$|^customscript_scai_ss_runner_simple_w482$|^customscript_scai_ss_runner_sidecar_/i.test(text)) {
+      return DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W483;
+    }
+    return text;
+  }
+
+  function normalizeRunnerDeployIdW484(value) {
+    const text = String(value || '').trim();
+    if (!text) return DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W483;
+    if (/^customdeploy_ss_demo_commcenter_runner$|^customdeploy_deploy_commcenter_runner$|^customdeploy_scai_ss_runner_simple_w482$|^customdeploy_scai_ss_runner_sidecar_/i.test(text)) {
+      return DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W483;
+    }
+    return text;
   }
 
   function validateConfirmedRequest(request) {
@@ -1975,7 +1993,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (tokenSource.indexOf('safeIdempotency') === -1 && tokenSource.indexOf('safeBuildAttempt') === -1 && tokenSource.indexOf('safeRunnerExternalId') === -1) return false;
     const token = String(searchToken && searchToken.token || '').trim();
     if (!token || String(fileName || '').indexOf(token) === -1) return false;
-    if (!/^idb_result_(?:capture_|completed_|completed_with_wip_diagnostic_)/i.test(String(fileName || ''))) return false;
+    if (!/^(?:idb_result_(?:capture_|completed_|completed_with_wip_diagnostic_)|idb_runner_sidecar_(?:completed_|completed_with_wip_diagnostic_))/i.test(String(fileName || ''))) return false;
     const keyed = completedKeyedResultCaptureW455(parsed);
     if (!keyed.ready) return false;
     const reasons = matchResult && matchResult.reasons || [];
@@ -1990,6 +2008,14 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       return reason === 'runnerTaskId_mismatch' || reason === 'sourceRequestId_mismatch';
     });
     return !hardMismatch;
+  }
+
+  function resultCaptureNamePrefixFilterW485() {
+    return [
+      ['name', 'contains', 'idb_result'],
+      'OR',
+      ['name', 'contains', 'idb_runner_sidecar']
+    ];
   }
 
   function buildNetSuiteRecordUrl(type, id) {
@@ -2608,7 +2634,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const checkedFileIds = {};
     for (let tokenIndex = 0; tokenIndex < searchTokens.length; tokenIndex += 1) {
       const searchToken = searchTokens[tokenIndex];
-      const filters = [['folder', 'anyof', config.resultCaptureFolderId], 'AND', ['name', 'contains', 'idb_result'], 'AND', ['name', 'contains', searchToken.token]];
+      const filters = [
+        ['folder', 'anyof', config.resultCaptureFolderId],
+        'AND',
+        resultCaptureNamePrefixFilterW485(),
+        'AND',
+        ['name', 'contains', searchToken.token]
+      ];
       const modifiedColumn = searchModule.createColumn && searchModule.Sort
         ? searchModule.createColumn({ name: 'modified', sort: searchModule.Sort.DESC })
         : 'modified';
@@ -2688,7 +2720,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         };
       }
     }
-    const broadFilters = [['folder', 'anyof', config.resultCaptureFolderId], 'AND', ['name', 'contains', 'idb_result']];
+    const broadFilters = [
+      ['folder', 'anyof', config.resultCaptureFolderId],
+      'AND',
+      resultCaptureNamePrefixFilterW485()
+    ];
     const broadModifiedColumn = searchModule.createColumn && searchModule.Sort
       ? searchModule.createColumn({ name: 'modified', sort: searchModule.Sort.DESC })
       : 'modified';

@@ -1,6 +1,6 @@
 {
   "name": "forge",
-  "version": "2.0.6-w483",
+  "version": "2.0.7-w485",
   "private": true,
   "description": "Tampermonkey right-side NetSuite drawer for consultant-led demo creation.",
   "scripts": {

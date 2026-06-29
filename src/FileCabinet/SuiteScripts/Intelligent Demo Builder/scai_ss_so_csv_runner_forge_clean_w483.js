@@ -1066,7 +1066,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const attempt = safeCodeW483(args && args.buildAttemptId || '').slice(0, 48);
     const status = safeCodeW483(args && args.status || 'result');
     const stem = attempt || extId || status || 'idb';
-    return boundedFileNameW483(`idb_runner_sidecar_${status}_${stem}_${extId}.json`, RESULT_CAPTURE_FILENAME_LIMIT_W483);
+    return boundedFileNameW483(`idb_result_${status}_${stem}_${extId}.json`, RESULT_CAPTURE_FILENAME_LIMIT_W483);
   }
 
   function boundedFileNameW483(name, maxLen) {

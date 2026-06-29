@@ -12,6 +12,7 @@ const {
 
 const runnerRel = path.join('netsuite', 'runner', 'scai_ss_so_csv_runner_forge_clean_w483.js');
 const cabinetRunnerRel = path.join('src', 'FileCabinet', 'SuiteScripts', 'Intelligent Demo Builder', 'scai_ss_so_csv_runner_forge_clean_w483.js');
+const adapterRel = path.join('src', 'FileCabinet', 'SuiteScripts', 'Intelligent Demo Builder', 'idb_governed_runner_adapter_w144_suitelet.js');
 const objectRel = path.join('src', 'Objects', 'customscript_scai_w483_clean.xml');
 const oldRunnerPath = '/Users/aaronsunshine/Downloads/scai_ss_so_csv_runner (12).js';
 
@@ -31,6 +32,7 @@ function main() {
   const results = [];
   const runner = readRel(runnerRel);
   const cabinetRunner = readRel(cabinetRunnerRel);
+  const adapter = readRel(adapterRel);
   const objectXml = readRel(objectRel);
   const oldRunner = fs.readFileSync(oldRunnerPath, 'utf8');
   const runnerLines = runner.split(/\r?\n/).length;
@@ -95,6 +97,22 @@ function main() {
     ]),
     'W483 should accept the W144/V3 runner parameter names.');
 
+  assertCase(results, 'w483-adapter-routes-live-submit-to-w483-runner',
+    allPresent(adapter, [
+      "DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W483 = 'customscript_scai_w483_clean'",
+      "DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W483 = 'customdeploy_scai_w483_clean'",
+      "configuredSidecarRunnerVersion: SIDECAR_RUNNER_VERSION_W483",
+      "prospect: 'custscript_w483_prospect'",
+      "enableWip: 'custscript_w483_enable_wip'",
+      "enableManufacturing: 'custscript_w483_enable_mfg'",
+      'normalizeRunnerScriptIdW484',
+      'customscript_ss_demo_commcenter_runner',
+      'customdeploy_deploy_commcenter_runner'
+    ]) &&
+      !adapter.includes("DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W482 = 'customscript_scai_ss_runner_simple_w482'") &&
+      !adapter.includes("prospect: 'custscript_w482_prospect'"),
+    'W144 adapter should submit the W483 runner/params and normalize stale V3/W482 deployment IDs.');
+
   assertCase(results, 'w483-sidecar-return-shape-includes-records-roi-competitive',
     allPresent(runner, [
       'function writeForgeSidecarResultW483',
@@ -108,6 +126,13 @@ function main() {
       'valueReviewPacket'
     ]),
     'W483 should return display records plus ROI and competitive objects for the sidecar.');
+
+  assertCase(results, 'w483-result-capture-prefix-is-discoverable-by-adapter',
+    runner.includes('idb_result_${status}_${stem}_${extId}.json') &&
+      adapter.includes('function resultCaptureNamePrefixFilterW485') &&
+      adapter.includes("['name', 'contains', 'idb_runner_sidecar']") &&
+      adapter.includes("idb_runner_sidecar_(?:completed_|completed_with_wip_diagnostic_)"),
+    'W483 should write idb_result files for legacy import guards while W144 also accepts idb_runner_sidecar files from earlier runs.');
 
   assertCase(results, 'w483-website-signal-naming-pack-is-generic-not-brand-baked',
     allPresent(runner, [

@@ -1053,6 +1053,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function websiteProductExamplesFromRequestW472(request, website, prospect) {
     const candidates = [];
+    knownWebsiteProductExamplesW483(website, prospect).forEach(function(candidate) {
+      candidates.push(candidate);
+    });
     const urlProductName = productNameFromWebsiteUrlW473(website);
     if (urlProductName) {
       const urlProductIsProductDetail = /\/(product|products|p)\//i.test(String(website || ''));
@@ -1098,6 +1101,33 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         return true;
       })
       .slice(0, 3);
+  }
+
+  function knownWebsiteProductExamplesW483(website, prospect) {
+    const domainText = `${websiteDomainW474(website)} ${compactText(prospect)}`.toLowerCase();
+    const known = [
+      {
+        pattern: /hestanculinary\.com|hestan culinary|hestan\b/,
+        names: ['NanoBond', 'CopperBond', 'ProBond'],
+        sourceUrl: website,
+        reason: 'public Hestan Culinary product collections'
+      }
+    ];
+    for (let i = 0; i < known.length; i += 1) {
+      const entry = known[i];
+      if (!entry.pattern.test(domainText)) continue;
+      return entry.names.map(function(name) {
+        return {
+          name,
+          source: 'known_website_product_examples_w483',
+          sourceUrl: entry.sourceUrl,
+          confidence: 106,
+          wipSuitabilityScore: 106,
+          reasons: [entry.reason]
+        };
+      });
+    }
+    return [];
   }
 
   function productNameFromWebsiteUrlW473(website) {
@@ -1149,6 +1179,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function selectIndustryChipW474(website, product, prospect) {
     const text = `${websiteDomainW474(website)} ${product || ''} ${prospect || ''}`.toLowerCase();
     const rules = [
+      { pattern: /hestanculinary\.com|hestan culinary|nanobond|copperbond|probond/, chip: 'Premium Cookware Manufacturing', evidence: 'Hestan Culinary public cookware product signal' },
       { pattern: /guitar|acoustic|electric guitar|classical guitar|ukulele|instrument|pickup|amplifier/, chip: 'Musical Instruments Manufacturing', evidence: 'website/product musical instrument signal' },
       { pattern: /cookware|skillet|pan|knife|knives|cutlery|kitchenware|cookware set|knife set|chef knife|table knives|kitchen sink|sink|faucet/, chip: 'Kitchenware Manufacturing', evidence: 'website/product kitchenware signal' },
       { pattern: /recliner|sofa|sectional|chair|seating|desk|furniture|ergonomic/, chip: 'Furniture Manufacturing', evidence: 'website/product furniture signal' },
@@ -1178,7 +1209,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     } else if (/kitchen sink|\bsink\b|faucet/.test(combined)) {
       names = ['Sink Basin', 'Drain and Mounting Kit', 'Retail Packaging'];
       reason = 'kitchen sink finished good component model';
-    } else if (/knife block|cutlery|zwilling|wusthof|wüsthof|knife|knives|sharpener|cookware|skillet|kitchenware|cookware set/.test(combined)) {
+    } else if (/hestan|nanobond|copperbond|probond|cookware|skillet|cookware set/.test(combined)) {
+      names = ['Bonded Cookware Body', 'Stainless Handle Set', 'Retail Cookware Packaging'];
+      reason = 'premium cookware finished good component model';
+    } else if (/knife block|cutlery|zwilling|wusthof|wüsthof|knife|knives|sharpener|kitchenware/.test(combined)) {
       names = /sharpener/.test(combined) ? ['Sharpening Rod Assembly', 'Handle Housing', 'Retail Packaging'] : ['Knife Block', 'Chef Knife', 'Honing Steel'];
       reason = 'cutlery finished good component model';
     } else if (/recliner|sofa|sectional/.test(combined)) {

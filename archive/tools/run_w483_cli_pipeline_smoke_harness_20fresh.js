@@ -240,6 +240,19 @@ function main() {
       competitors: 'Linde, Raymond'
     },
     {
+      slug: 'hestan',
+      prospect: 'Hestan Culinary',
+      website: 'https://hestanculinary.com',
+      mode: 'distribution',
+      signalText: 'Premium cookware collections including NanoBond, CopperBond, ProBond, skillets, saucepans, and cookware sets.',
+      notes: 'Premium cookware distributors need replenishment proof for bonded cookware lines before a seasonal channel push.',
+      agenda: 'Show cookware product records, ROI, and competitive advisory.',
+      expectedProduct: 'NanoBond',
+      expectedIndustry: 'Premium Cookware Manufacturing',
+      productEvidence: ['NanoBond', 'CopperBond', 'ProBond'],
+      competitors: 'All-Clad, Made In'
+    },
+    {
       slug: 'all-clad',
       prospect: 'All-Clad',
       website: 'https://www.all-clad.com',

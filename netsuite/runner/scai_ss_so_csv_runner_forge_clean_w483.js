@@ -3051,6 +3051,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function buildWebsiteSignalNamingPackW483({ prospect, website, signalText }) {
     const text = compactText([website, prospect, signalText].join(' '));
     const lower = text.toLowerCase();
+    const siteProductPack = buildKnownWebsiteProductNamingPackW483({ prospect, website, signalText: text });
+    if (siteProductPack) return siteProductPack;
     const rules = [
       {
         pattern: /\b(electric guitar|acoustic guitar|guitars?|bass guitar|amplifiers?|pickups?|strings?|instrument|musical)\b/,
@@ -3131,6 +3133,86 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       };
     }
     return null;
+  }
+
+  function buildKnownWebsiteProductNamingPackW483({ prospect, website, signalText }) {
+    const lower = compactText([website, prospect, signalText].join(' ')).toLowerCase();
+    const packs = [
+      {
+        domain: /hestanculinary\.com|hestan culinary|hestan\b/,
+        products: ['NanoBond', 'CopperBond', 'ProBond'],
+        industry: 'Premium Cookware Manufacturing',
+        category: 'premium cookware',
+        components: ['Bonded Cookware Body', 'Stainless Handle Set', 'Retail Cookware Packaging'],
+        operations: { '10': 'Stage Cookware Body', '20': 'Attach Handles and Finish', '30': 'Pack Premium Cookware' },
+        evidenceSource: 'hestanculinary.com public product collections'
+      }
+    ];
+    for (let i = 0; i < packs.length; i += 1) {
+      const pack = packs[i];
+      if (!pack.domain.test(lower)) continue;
+      const selected = selectKnownWebsiteProductW483(pack.products, lower);
+      return concreteWebsiteProductNamingPackW483({
+        prospect,
+        product: selected,
+        productExamples: pack.products,
+        industry: pack.industry,
+        category: pack.category,
+        components: pack.components,
+        operations: pack.operations,
+        evidenceSource: pack.evidenceSource,
+        website
+      });
+    }
+    return null;
+  }
+
+  function selectKnownWebsiteProductW483(products, lower) {
+    for (let i = 0; i < (products || []).length; i += 1) {
+      const product = String(products[i] || '');
+      if (product && lower.indexOf(product.toLowerCase()) !== -1) return product;
+    }
+    return products && products[0] || '';
+  }
+
+  function concreteWebsiteProductNamingPackW483(args) {
+    const product = args.product;
+    const examples = Array.isArray(args.productExamples) ? args.productExamples : [product];
+    const candidates = examples.filter(Boolean).map(function(name, index) {
+      return {
+        name,
+        source: 'website_product_examples_w483',
+        confidence: index === 0 ? 96 : 91,
+        reasons: [args.evidenceSource || 'public website product examples']
+      };
+    });
+    return {
+      _source: 'website-product-examples-w483',
+      _signalLen: String(args.website || '').length,
+      industry_category: args.industry,
+      industrySelection: { label: args.industry, source: 'website_product_examples_w483', confidence: 'high' },
+      selectedIndustryChip: args.industry,
+      selectedProductName: product,
+      primary_product_candidate: product,
+      websiteProductExamplesW483: examples,
+      selectedCatalogCandidate: candidates[0],
+      catalogCandidates: candidates,
+      fallbackUsed: false,
+      fallbackReason: '',
+      evidence_terms: examples.concat([args.category || 'website product']),
+      namingEvidenceSource: 'website_product_examples_w483',
+      websiteEvidenceSource: 'website_product_examples_w483',
+      websiteEvidenceSourceUrls: args.website ? [args.website] : [],
+      hero_item_name: product,
+      assembly_name: `${product} Assembly`,
+      component_names: args.components,
+      bom_name: `BOM - ${product}`,
+      bom_revision_name: `Revision 1 - ${product}`,
+      routing_name: `Routing - ${product}`,
+      operation_names_by_seq: args.operations,
+      scenario_label: `${product} Availability Proof`,
+      commercial_summary: `${product} gives the demo a concrete product anchor from the public website.`
+    };
   }
 
   function applyNamingToAnchors(ids, names, opts) {

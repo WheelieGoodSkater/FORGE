@@ -118,7 +118,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       createsRecords: false,
       queueSubmitted: false,
       runnerTaskId: null,
-      generatedRecordOwner: 'governed_dcc_runner_internal_build_engine',
+      generatedRecordOwner: 'governed_runner_internal_build_engine',
       idempotencyToken: '',
       resultCapture: {
         schema: 'idb.runner-result-capture.v1',
@@ -2787,7 +2787,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         },
         finalGeneratedNamesJson: null,
         activeOpenLinks: 0,
-        generatedRecordOwner: 'governed_dcc_runner_internal_build_engine'
+        generatedRecordOwner: 'governed_runner_internal_build_engine'
       };
     }
     let parsed;
@@ -2982,7 +2982,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       },
       finalGeneratedNamesJson: null,
       activeOpenLinks: 0,
-      generatedRecordOwner: 'governed_dcc_runner_internal_build_engine'
+      generatedRecordOwner: 'governed_runner_internal_build_engine'
     };
   }
 
@@ -3042,7 +3042,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       createsRecords: false,
       queueSubmitted: queueSubmit.queueSubmitted,
       runnerTaskId: queueSubmit.runnerTaskId,
-      generatedRecordOwner: 'governed_dcc_runner_internal_build_engine',
+      generatedRecordOwner: 'governed_runner_internal_build_engine',
       sourceRequestId: request && request.requestId ? String(request.requestId) : '',
       buildAttemptId: request && (request.buildAttemptId || request.buildAttemptProvenance && request.buildAttemptProvenance.buildAttemptId) ? String(request.buildAttemptId || request.buildAttemptProvenance.buildAttemptId) : '',
       submittedAt: request && (request.submittedAt || request.buildAttemptProvenance && request.buildAttemptProvenance.submittedAt) ? String(request.submittedAt || request.buildAttemptProvenance.submittedAt) : '',
@@ -3064,7 +3064,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         schema: 'idb.internal-build-engine.real-record-result.v1',
         runStatus: queueSubmit.queueSubmitted ? 'queued_result_capture_pending' : 'dry_run_validated_not_submitted',
         prospect: request && request.prospect ? String(request.prospect.name || '') : '',
-        generatedRecordOwner: 'governed_dcc_runner_internal_build_engine',
+        generatedRecordOwner: 'governed_runner_internal_build_engine',
         recordExistenceStatus: queueSubmit.queueSubmitted ? 'pending_runner_completion' : 'not_created_dry_run',
         warnings: ['No record ids or URLs are returned by W144. Drawer Open links remain unavailable until result capture returns real NetSuite URLs.'],
         errors: [],

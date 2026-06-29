@@ -442,45 +442,24 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }) });
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const websiteProductExampleNamingPayloadW472 = null;
-    const websiteNamingSupersedesPrecomputedW472 = false;
-    const precomputedNamingWeakW472 = false;
-    const effectiveNamingPayloadW472 = namingPayload;
-    const names = enforceOldRunnerNamingDisciplineW468(effectiveNamingPayloadW472.payload, {
-      prospect,
-      website,
-      notes,
-      agenda,
-      signalText: signal.text,
-      namingPayload: effectiveNamingPayloadW472,
-      enableManufacturing: finalEnableManufacturing,
-      enableWip: effectiveEnableWip
-    });
+    const names = namingPayload.payload;
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
-      source: names._source || effectiveNamingPayloadW472.source || 'deterministic',
+      source: namingPayload.source || names._source || 'deterministic',
       signalLen: names._signalLen || 0,
       industry_category: names.industry_category || '',
       industrySelection: names.industrySelection || null,
-      namingFileId: effectiveNamingPayloadW472.fileId || namingFileId || null,
-      namingPayloadFound: !!effectiveNamingPayloadW472.found,
-      namingPayloadParsed: !!effectiveNamingPayloadW472.parsed,
-      namingPayloadApplied: !!effectiveNamingPayloadW472.applied,
-      namingDiscoveryMode: effectiveNamingPayloadW472.discoveryMode || 'none',
-      websiteProductExampleFallbackAppliedW472: !!websiteProductExampleNamingPayloadW472,
-      websiteNamingSupersedesAllPacksW472: !!websiteNamingSupersedesPrecomputedW472,
-      precomputedNamingSupersededByWebsiteProductsW472: !!(websiteNamingSupersedesPrecomputedW472 && namingPayload.found),
-      precomputedNamingSupersededReasonW472: websiteNamingSupersedesPrecomputedW472 && namingPayload.found
-        ? (weakPrecomputedNamingPayloadW472(namingPayload.payload) || 'website product evidence is authoritative for W472 sidecar naming')
-        : '',
-      precomputedNamingWasWeakW472: !!precomputedNamingWeakW472,
+      namingFileId: namingPayload.fileId || namingFileId || null,
+      namingPayloadFound: !!namingPayload.found,
+      namingPayloadParsed: !!namingPayload.parsed,
+      namingPayloadApplied: !!namingPayload.applied,
+      namingDiscoveryMode: namingPayload.discoveryMode || 'none',
       namingEvidenceSource: names.namingEvidenceSource || names._source || '',
       namingConfidence: names.namingConfidence || names.confidencePercent || null,
       websiteEvidenceSource: names.websiteEvidenceSource || '',
       websiteEvidenceSourceUrls: names.websiteEvidenceSourceUrls || [],
-      namingAuthorityOrder: names.namingAuthorityOrderW474 || names.namingAuthorityOrderW472 || names.namingAuthorityOrderW470 || names.namingAuthorityOrderW468 || 'old runner v2 deterministic naming adapter only',
+      namingAuthorityOrder: 'precomputed naming pack -> deterministic naming pack',
       selectedProductName: names.selectedProductName || names.primary_product_candidate || '',
       selectedCatalogCandidate: names.selectedCatalogCandidate || null,
-      catalogCandidateAuthority: names.selectedCatalogCandidate ? 'old_runner_v2_adapter_generated' : 'not_returned',
       fallbackUsed: !!names.fallbackUsed,
       fallbackReason: names.fallbackReason || ''
     }) });
@@ -725,7 +704,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         locationId,
         ids,
         names,
-        namingPayload: effectiveNamingPayloadW472,
+        namingPayload,
         enableManufacturing: finalEnableManufacturing,
         enableWip: effectiveEnableWip,
         woId,
@@ -764,8 +743,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         chosenCenters: routingResult && routingResult.chosen ? routingResult.chosen.centers : [],
         chosenTemplates: routingResult && routingResult.chosen ? routingResult.chosen.templates : [],
         namingFileId: namingFileId || null,
-        namingSourceUsed: names._source || effectiveNamingPayloadW472.source || 'deterministic',
-        namingPayloadFound: !!effectiveNamingPayloadW472.found,
+        namingSourceUsed: namingPayload.source || names._source || 'deterministic',
+        namingPayloadFound: !!namingPayload.found,
         idbRunnerResultCapture,
         customerIdentityTelemetryW457,
         reusedRecordOverwriteTelemetryW457

@@ -7931,7 +7931,7 @@
       w245NormalizationStatus: firstNonBlank(source.w245NormalizationStatus, w245.status),
       generatedRecordOwner: owner,
       governedRunnerOwnerValid: completedResultImportEligibilityBoolW289(source.governedRunnerOwnerValid) ||
-        owner === 'governed_runner_internal_build_engine',
+        isApprovedRunnerResultOwnerW479(owner),
       finishBuildCtaEligible: completedResultImportEligibilityBoolW289(source.finishBuildCtaEligible),
       openLinkPreconditions: {
         realUrlsOnly: completedResultImportEligibilityBoolW289(openLinks.realUrlsOnly),
@@ -8355,7 +8355,7 @@
     const handoffPacket = opts.handoffPacket || dccRunnerHandoffPacketV1(state, lane, pageContext, recommendation);
     const handoffGuard = validateDccFinalNamingImportPayload(handoffPacket, state, lane, pageContext, recommendation);
     const generatedRecordOwner = firstNonBlank(completedRunnerResultJson && completedRunnerResultJson.generatedRecordOwner, completedRunnerResultJson && completedRunnerResultJson.recordOwner);
-    const ownerValid = generatedRecordOwner === 'governed_runner_internal_build_engine';
+    const ownerValid = isApprovedRunnerResultOwnerW479(generatedRecordOwner);
     const guardedImportObjects = completedGuard.valid && completedGuard.finalNaming
       ? completedGuard.finalNaming.displayObjects.concat(completedGuard.finalNaming.componentItems, completedGuard.finalNaming.locationPlanningRecords).filter((record) => record && record.source === 'dcc_final').map(applyRecordLinkAuthority)
       : [];
@@ -8912,7 +8912,7 @@
         consultantConfirmationRequired: requestFacts.confirmedBuildRequest === true,
         stateAuthorityAndHandoffParityPreserved: confirmedRequest.stateAuthority && confirmedRequest.stateAuthority.handoffParityStatus === 'matched',
         idempotencyPreserved: requestFacts.idempotencyToken === true,
-        internalRunnerOwnership: completedResultJson && completedResultJson.generatedRecordOwner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnership: completedResultJson && isApprovedRunnerResultOwnerW479(completedResultJson.generatedRecordOwner),
         rollbackByDisablingServerFlags: true,
         noActiveOpenLinksWithoutRealUrls: true,
         noActiveOpenLinksBeforeImport: true,
@@ -9371,7 +9371,7 @@
         consultantConfirmationRequired: retryUi.noRegression && retryUi.noRegression.consultantConfirmationRequired === true,
         stateAuthorityAndHandoffParityPreserved: retryUi.noRegression && retryUi.noRegression.stateAuthorityAndHandoffParityPreserved === true,
         idempotencyPreserved: !!idempotencyToken,
-        internalRunnerOwnership: correctedCompletedResultJson && correctedCompletedResultJson.generatedRecordOwner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnership: correctedCompletedResultJson && isApprovedRunnerResultOwnerW479(correctedCompletedResultJson.generatedRecordOwner),
         rollbackByDisablingServerFlags: true,
         noActiveOpenLinksWithoutRealUrls: true,
         noLiveInvocation: true
@@ -10582,7 +10582,7 @@
     const owner = firstNonBlank(completedResultJson && completedResultJson.generatedRecordOwner, completedResultJson && completedResultJson.recordOwner);
     const importReady = normalized.finalGeneratedNamesJsonReady === true &&
       completedGuard.valid === true &&
-      owner === 'governed_runner_internal_build_engine';
+      isApprovedRunnerResultOwnerW479(owner);
     const finalNamesAfter = state && state.dccFinalNamingResult ? JSON.stringify(state.dccFinalNamingResult) : '';
     const status = adapterErrorFromW174 || normalized.status === 'adapter_transport_error_drawer_safe'
       ? 'poll_stopped_adapter_error_operator_evidence_required'
@@ -10610,7 +10610,7 @@
         completedResultAcceptedByW151: completedGuard.valid === true,
         completedResultStatus: completedGuard.status,
         generatedRecordOwner: owner,
-        internalRunnerOwnerValid: owner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnerValid: isApprovedRunnerResultOwnerW479(owner),
         handoffStatus: handoffGuard.status,
         handoffRejected: handoffGuard.valid === false && handoffGuard.status === 'handoff_packet_rejected',
         importReady,
@@ -10683,7 +10683,7 @@
         consultantConfirmationRequired: true,
         stateAuthorityAndHandoffParityPreserved: true,
         idempotencyPreserved: !!firstNonBlank(opts.idempotencyToken, w174Evidence.idempotencyToken),
-        internalRunnerOwnership: importReady ? owner === 'governed_runner_internal_build_engine' : true,
+        internalRunnerOwnership: importReady ? isApprovedRunnerResultOwnerW479(owner) : true,
         rollbackByDisablingServerFlags: true,
         w151CompletedResultImportGuardPreserved: completedGuard.schema === 'idb.runner-result-import-guard.v1',
         noActiveOpenLinksWithoutRealUrls: true,
@@ -10709,7 +10709,7 @@
     const w175ImportReady = !!(pollImportGate && pollImportGate.importGate && pollImportGate.importGate.importReady === true);
     const commitAllowed = w175ImportReady &&
       completedGuard.valid === true &&
-      owner === 'governed_runner_internal_build_engine';
+      isApprovedRunnerResultOwnerW479(owner);
     const committedState = Object.assign({}, state || {}, {
       dccFinalNamingResult: commitAllowed ? committedFinalNaming : state && state.dccFinalNamingResult || null,
       integratedBuildRunnerResult: state && state.integratedBuildRunnerResult || null
@@ -10760,7 +10760,7 @@
         completedResultStatus: completedGuard.status,
         completedResultAccepted: completedGuard.valid === true,
         generatedRecordOwner: owner,
-        internalRunnerOwnerValid: owner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnerValid: isApprovedRunnerResultOwnerW479(owner),
         w175ImportReady,
         pendingImportReady: pendingGate && pendingGate.importGate ? pendingGate.importGate.importReady === true : false,
         adapterErrorImportReady: adapterErrorGate && adapterErrorGate.importGate ? adapterErrorGate.importGate.importReady === true : false
@@ -10828,7 +10828,7 @@
         consultantConfirmationRequired: true,
         stateAuthorityAndHandoffParityPreserved: true,
         idempotencyPreserved: true,
-        internalRunnerOwnership: owner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnership: isApprovedRunnerResultOwnerW479(owner),
         rollbackByDisablingServerFlags: true,
         w151CompletedResultImportGuardPreserved: completedGuard.schema === 'idb.runner-result-import-guard.v1',
         noActiveOpenLinksWithoutRealUrls: afterOpenable.length === supportedOpenLinks.length,
@@ -11742,7 +11742,7 @@
     const completedResultPresent = !!completedResultJson;
     const completedResultW151Valid = normalized.finalGeneratedNamesJsonReady === true &&
       completedGuard.valid === true &&
-      owner === 'governed_runner_internal_build_engine';
+      isApprovedRunnerResultOwnerW479(owner);
     const statePatch = {};
     if (runnerTaskId && (requestSent || completedResultPresent || normalized.status === 'polling_pending')) {
       statePatch.integratedBuildRunnerResult = Object.assign({}, adapterResult, normalized, {
@@ -11773,7 +11773,7 @@
           completedResultStatus: completedGuard.status,
           completedResultMessage: completedGuard.message,
           generatedRecordOwner: owner || '',
-          internalRunnerOwnerValid: owner === 'governed_runner_internal_build_engine',
+          internalRunnerOwnerValid: isApprovedRunnerResultOwnerW479(owner),
           importReady: completedResultW151Valid
         },
         activeOpenLinks: 0
@@ -11837,7 +11837,7 @@
         completedResultStatus: completedGuard.status,
         completedResultMessage: completedGuard.message,
         generatedRecordOwner: owner || '',
-        internalRunnerOwnerValid: owner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnerValid: isApprovedRunnerResultOwnerW479(owner),
         importReady: completedResultW151Valid,
         stateMutationAllowedInThisBlock: false,
         activeOpenLinksBeforeImport: 0
@@ -11915,7 +11915,7 @@
       opts.actionId === 'import_completed_runner_result';
     const pollControl = {
       schema: 'idb.approved-server-adapter-result-poll-control-implementation.v1',
-      status: completedGuard.valid === true && owner === 'governed_runner_internal_build_engine'
+      status: completedGuard.valid === true && isApprovedRunnerResultOwnerW479(owner)
         ? 'poll_control_completed_result_ready_for_w151_import'
         : pollResult.status === 'w190_adapter_error_drawer_safe'
           ? 'poll_control_adapter_error_stopped'
@@ -11928,7 +11928,7 @@
         requestSent: pollResult.requestSent === true
       },
       resultImportGuard: {
-        importReady: completedGuard.valid === true && owner === 'governed_runner_internal_build_engine',
+        importReady: completedGuard.valid === true && isApprovedRunnerResultOwnerW479(owner),
         completedResultAcceptedByW151: completedGuard.valid === true,
         generatedRecordOwner: owner,
         activeOpenLinksBeforeImport: 0
@@ -11968,7 +11968,7 @@
       schema: 'idb.w193-poll-completed-result-import-final-urls.v1',
       status: importCommit.commitAllowed
         ? 'completed_result_imported_final_urls_ready'
-        : completedGuard.valid === true && owner === 'governed_runner_internal_build_engine'
+        : completedGuard.valid === true && isApprovedRunnerResultOwnerW479(owner)
           ? 'completed_result_ready_waiting_for_import_choice'
           : pollResult.status || 'completed_result_not_ready',
       goal: 'Use W190 poll control against W191/W192 result capture, then import W151-valid completed JSON into IDB.',
@@ -11986,7 +11986,7 @@
         completedResultAcceptedByW151: completedGuard.valid === true,
         completedResultStatus: completedGuard.status,
         generatedRecordOwner: owner,
-        internalRunnerOwnerValid: owner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnerValid: isApprovedRunnerResultOwnerW479(owner),
         operatorImportChosen: importChosen,
         commitAllowed: importCommit.commitAllowed === true
       },
@@ -12022,7 +12022,7 @@
         consultantConfirmationRequired: true,
         stateAuthorityAndHandoffParityPreserved: true,
         idempotencyPreserved: true,
-        internalRunnerOwnership: owner ? owner === 'governed_runner_internal_build_engine' : true,
+        internalRunnerOwnership: owner ? isApprovedRunnerResultOwnerW479(owner) : true,
         noActiveOpenLinksWithoutRealUrls: verifiedOpenLinks.every((record) => verifiedRecordLinkAuthorityV1(record).openable === true)
       },
       visualTestingDecision: {
@@ -12047,7 +12047,7 @@
       controlGuard.completedResultAcceptedByW151 === true ||
       controlGuard.completedResultStatus === 'completed_runner_result_accepted';
     const localReady = localGuard.valid === true &&
-      (!owner || owner === 'governed_runner_internal_build_engine');
+      (!owner || isApprovedRunnerResultOwnerW479(owner));
     return {
       schema: 'forge.w428.refresh-completed-result-auto-import-readiness.v1',
       ready: !!completedResultJson && localReady === true && (pollReady || controlReady || localReady),
@@ -13425,7 +13425,7 @@
     const owner = firstNonBlank(completedResultJson && completedResultJson.generatedRecordOwner, completedResultJson && completedResultJson.recordOwner);
     const accepted = pollControl.status === 'poll_control_completed_result_ready_for_w151_import' &&
       completedGuard.valid === true &&
-      owner === 'governed_runner_internal_build_engine';
+      isApprovedRunnerResultOwnerW479(owner);
     const blockedReason = pollControl.status === 'poll_control_adapter_error_stopped'
       ? 'adapter_error_requires_operator_evidence'
       : pollControl.status === 'poll_control_completed_result_rejected_by_w151'
@@ -13513,7 +13513,7 @@
         completedResultAcceptedByW151: completedGuard.valid === true,
         completedResultStatus: completedGuard.status,
         generatedRecordOwner: owner,
-        internalRunnerOwnerValid: owner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnerValid: isApprovedRunnerResultOwnerW479(owner),
         importReadyRecordCount,
         stateMutationAllowedBeforeOperatorImport: false
       },
@@ -13592,7 +13592,7 @@
         consultantConfirmationRequired: true,
         stateAuthorityAndHandoffParityPreserved: true,
         idempotencyPreserved: true,
-        internalRunnerOwnership: owner ? owner === 'governed_runner_internal_build_engine' : true,
+        internalRunnerOwnership: owner ? isApprovedRunnerResultOwnerW479(owner) : true,
         rollbackByDisablingServerFlags: true,
         noActiveOpenLinksWithoutRealUrls: true,
         w151CompletedResultImportGuardPreserved: completedGuard.schema === 'idb.runner-result-import-guard.v1'
@@ -13685,7 +13685,7 @@
       commitPreviewReady &&
       commitSurface.commitAllowed === true &&
       completedGuard.valid === true &&
-      owner === 'governed_runner_internal_build_engine';
+      isApprovedRunnerResultOwnerW479(owner);
     const blockedReason = operatorChoseImport !== true
       ? 'operator_import_choice_required'
       : ctaReady !== true
@@ -13730,7 +13730,7 @@
         w151CompletedResultAccepted: completedGuard.valid === true,
         handoffJsonRejected: handoffGuard.valid === false,
         generatedRecordOwner: owner,
-        internalRunnerOwnerValid: owner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnerValid: isApprovedRunnerResultOwnerW479(owner),
         commitSurfaceSchema: commitSurface.schema,
         commitTarget: 'state.dccFinalNamingResult',
         drawerCreatesRecords: false,
@@ -13821,7 +13821,7 @@
         consultantConfirmationRequired: true,
         stateAuthorityAndHandoffParityPreserved: true,
         idempotencyPreserved: true,
-        internalRunnerOwnership: owner === 'governed_runner_internal_build_engine' || !commitAllowed,
+        internalRunnerOwnership: isApprovedRunnerResultOwnerW479(owner) || !commitAllowed,
         rollbackByDisablingServerFlags: true,
         w151CompletedResultImportGuardPreserved: completedGuard.schema === 'idb.runner-result-import-guard.v1',
         noActiveOpenLinksWithoutRealUrls: true
@@ -13877,7 +13877,7 @@
       importCtaWiring.importCta &&
       importCtaWiring.importCta.enabled === true &&
       completedGuard.valid === true &&
-      owner === 'governed_runner_internal_build_engine';
+      isApprovedRunnerResultOwnerW479(owner);
     const blockedReason = ctaReady
       ? ''
       : pollHandoff.status === 'runner_task_poll_handoff_stopped_adapter_error'
@@ -13938,7 +13938,7 @@
         completedResultAcceptedByW151: completedGuard.valid === true,
         completedResultStatus: completedGuard.status,
         generatedRecordOwner: owner,
-        internalRunnerOwnerValid: owner === 'governed_runner_internal_build_engine',
+        internalRunnerOwnerValid: isApprovedRunnerResultOwnerW479(owner),
         handoffJsonRejected: handoffGuard.valid === false,
         malformedCompletedRejected: malformedGuard.valid === false,
         stateMutationAllowedBeforeOperatorImport: false,
@@ -14001,7 +14001,7 @@
           pollHandoff.pollControl.pollRequest &&
           pollHandoff.pollControl.pollRequest.envelope &&
           pollHandoff.pollControl.pollRequest.envelope.idempotencyToken),
-        internalRunnerOwnership: owner ? owner === 'governed_runner_internal_build_engine' : true,
+        internalRunnerOwnership: owner ? isApprovedRunnerResultOwnerW479(owner) : true,
         rollbackByDisablingServerFlags: true,
         w151CompletedResultImportGuardPreserved: completedGuard.schema === 'idb.runner-result-import-guard.v1',
         noActiveOpenLinksWithoutRealUrls: true,
@@ -14029,7 +14029,7 @@
       ctaModel.importCta &&
       ctaModel.importCta.enabled === true &&
       completedGuard.valid === true &&
-      owner === 'governed_runner_internal_build_engine';
+      isApprovedRunnerResultOwnerW479(owner);
     const syntheticImportCtaWiring = {
       schema: 'idb.completed-poll-result-import-cta-wiring.v1',
       status: ctaReady ? 'completed_poll_result_import_cta_ready' : 'completed_poll_result_import_cta_blocked',
@@ -14061,7 +14061,7 @@
       operatorChoseImport &&
       commitFlow.commitAllowed === true &&
       completedGuard.valid === true &&
-      owner === 'governed_runner_internal_build_engine';
+      isApprovedRunnerResultOwnerW479(owner);
     const committedState = commitAllowed && commitFlow.statePatch && commitFlow.statePatch.dccFinalNamingResult
       ? Object.assign({}, state || {}, { dccFinalNamingResult: commitFlow.statePatch.dccFinalNamingResult })
       : Object.assign({}, state || {});
@@ -14183,7 +14183,7 @@
         consultantConfirmationRequired: true,
         stateAuthorityAndHandoffParityPreserved: true,
         idempotencyPreserved: true,
-        internalRunnerOwnership: owner === 'governed_runner_internal_build_engine' || !commitAllowed,
+        internalRunnerOwnership: isApprovedRunnerResultOwnerW479(owner) || !commitAllowed,
         rollbackByDisablingServerFlags: true,
         w151CompletedResultImportGuardPreserved: completedGuard.schema === 'idb.runner-result-import-guard.v1',
         noActiveOpenLinksWithoutRealUrls: true
@@ -17921,6 +17921,12 @@
     };
   }
 
+  function isApprovedRunnerResultOwnerW479(owner) {
+    const normalized = String(owner || '').trim();
+    return normalized === 'governed_runner_internal_build_engine' ||
+      normalized === 'governed_dcc_runner_internal_build_engine';
+  }
+
   function revalidateCompletedRunnerResultImportFromSavedStateW237(state, lane, pageContext, recommendation) {
     const runnerResult = state && state.integratedBuildRunnerResult || null;
     if (!runnerResult || state && state.dccFinalNamingResult && state.dccFinalNamingResult.finalNamesImported) {
@@ -17934,7 +17940,7 @@
     }
     const completedGuard = validateDccFinalNamingImportPayload(completedResultJson, state, lane, pageContext, recommendation);
     const owner = firstNonBlank(completedResultJson && completedResultJson.generatedRecordOwner, completedResultJson && completedResultJson.recordOwner);
-    const ownerValid = owner === 'governed_runner_internal_build_engine';
+    const ownerValid = isApprovedRunnerResultOwnerW479(owner);
     if (completedGuard.valid !== true || !ownerValid) {
       const previousGuard = runnerResult.resultImportGuard || {};
       runnerResult.resultImportGuard = Object.assign({}, previousGuard, {

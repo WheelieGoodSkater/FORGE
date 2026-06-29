@@ -135,6 +135,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function execute() {
+    try {
+      return executeMain();
+    } catch (e) {
+      captureRunnerErrorW483(e);
+      throw e;
+    }
+  }
+
+  function executeMain() {
     const s = runtime.getCurrentScript();
 
     const prospect = str(getScriptParamAny(s, ['custscript_w483_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
@@ -256,7 +265,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         passedHeroItemId = inferredFreshHeroItemId;
         handshakeAction = 'fresh-mode-fallback-to-inferred';
       } else {
-        throw new Error('Fresh hero mode requires custscript_scai_runner_hero_item (or recoverable inferred hero item).');
+        passedHeroItemId = null;
+        handshakeAction = 'fresh-mode-runner-will-create';
       }
       effectiveCreateNewHeroItem = true;
     }
@@ -595,6 +605,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       runnerExecutionCore: RUNNER_EXECUTION_CORE_W483,
       status,
       runStatus: status,
+      partialResultState: status === 'completed_with_wip_diagnostic' ? 'partial_result_missing_wip_detail' : '',
       generatedRecordOwner: 'governed_runner_internal_build_engine',
       recordOwner: 'governed_runner_internal_build_engine',
       extId,
@@ -665,6 +676,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       status,
       runnerStatus: status,
       taskStatus: status,
+      partialResultState: status === 'completed_with_wip_diagnostic' ? 'partial_result_missing_wip_detail' : '',
       idempotencyToken: extId,
       sourceRequestId,
       buildAttemptId,
@@ -704,6 +716,65 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       runnerTaskId: resultCapture.runnerTaskId,
       returnedCount: displayReadyRecords.length
     };
+  }
+
+  function captureRunnerErrorW483(error) {
+    const s = runtime.getCurrentScript();
+    const prospect = str(getScriptParamAny(s, ['custscript_w483_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
+    const website = str(getScriptParamAny(s, ['custscript_w483_website', 'custscript_v3_runner_website', 'custscript_scai_so_runner_website']));
+    const extId = str(getScriptParamAny(s, ['custscript_w483_extid', 'custscript_v3_runner_extid', 'custscript_scai_so_runner_extid']));
+    const folderId = toIntOrNull(getScriptParamAny(s, ['custscript_w483_result_folder', 'custscript_v3_runner_result_capture_folder', 'custscript_idb_result_capture_folder_id']));
+    const confirmed = safeJsonParse(getScriptParamAny(s, ['custscript_w483_req_json', 'custscript_v3_runner_idb_request_json'])) || {};
+    const message = String(error && (error.message || error.name) || error || 'Unknown runner error');
+    const name = String(error && (error.name || error.id) || 'RUNNER_ERROR');
+    const buildAttemptId = firstNonBlankTextW483(confirmed.buildAttemptId, confirmed.buildAttempt && confirmed.buildAttempt.id);
+    const sourceRequestId = firstNonBlankTextW483(confirmed.requestId, confirmed.sourceRequestId, confirmed.idempotencyToken);
+    const submittedAt = firstNonBlankTextW483(confirmed.submittedAt, new Date().toISOString());
+    const result = {
+      schema: 'forge.w483.runner-result.v1',
+      status: 'completed_with_wip_diagnostic',
+      runStatus: 'completed_with_wip_diagnostic',
+      partialResultState: 'partial_result_failed_before_records',
+      generatedRecordOwner: 'governed_runner_internal_build_engine',
+      recordOwner: 'governed_runner_internal_build_engine',
+      sourceRequestId,
+      buildAttemptId,
+      idempotencyToken: firstNonBlankTextW483(confirmed.idempotencyToken, sourceRequestId, extId),
+      submittedAt,
+      prospect,
+      website,
+      extId,
+      sidecarVersion: SIDECAR_VERSION_W483,
+      runnerExecutionCore: RUNNER_EXECUTION_CORE_W483,
+      error: {
+        name,
+        message,
+        stack: String(error && error.stack || '').slice(0, 4000)
+      },
+      records: {
+        routingDiagnostic: {
+          role: 'runner_error_diagnostic',
+          type: 'diagnostic',
+          id: '',
+          name: `Runner failed before returned records: ${name}`,
+          status: 'diagnostic',
+          message
+        }
+      },
+      displayReadyRecords: [],
+      recordsArray: [],
+      warnings: [message]
+    };
+    log.error({
+      title: `Runner ERROR captured [${VERSION}]`,
+      details: JSON.stringify({ name, message, extId, sourceRequestId, buildAttemptId, folderId })
+    });
+    if (!folderId) return null;
+    return saveTextArtifactW483({
+      folderId,
+      name: resultCaptureFileNameW483({ extId, buildAttemptId, status: 'completed_with_wip_diagnostic' }),
+      contents: JSON.stringify(result, null, 2)
+    });
   }
 
   function buildReturnedRecordsW483(args) {
@@ -2021,10 +2092,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     rec.setValue({ fieldId: 'externalid', value: externalId });
     rec.setValue({ fieldId: 'itemid', value: differentiated.itemIdName });
     safeTry(() => rec.setValue({ fieldId: 'displayname', value: differentiated.displayName }));
+    safeTry(() => rec.setValue({ fieldId: 'location', value: '' }));
+    safeTry(() => rec.setValue({ fieldId: 'location', value: null }));
 
     try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
     catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
-    if (locationId) safeTry(() => rec.setValue({ fieldId: 'location', value: Number(locationId) }));
 
     const id = Number(rec.save({ enableSourcing: true, ignoreMandatoryFields: true }));
 

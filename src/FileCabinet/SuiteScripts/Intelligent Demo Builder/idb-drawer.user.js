@@ -17893,6 +17893,21 @@
     const runStatus = String(finalNaming.runStatus || '').toLowerCase();
     const completedStatus = /complete|completed|success|run_complete/.test(runStatus);
     const namingGuard = completedRunnerResultNamingGuardW211(finalNaming, state, lane, payload);
+    const explicitCompletedPartial = completedStatus &&
+      namingGuard.valid &&
+      payloadHasExplicitPartialResultW214(payload, finalNaming) &&
+      semanticGuard.status === 'mode_record_contract_partial';
+    if (explicitCompletedPartial) {
+      return {
+        schema: 'idb.runner-result-import-guard.v1',
+        valid: true,
+        status: 'partial_runner_result_accepted',
+        message: 'Completed runner result accepted as an explicit partial. Use returned records and diagnostics only; missing Open links remain blocked.',
+        finalNaming,
+        namingGuard,
+        semanticGuard
+      };
+    }
     if (missing.length || blocked.length || !completedStatus || !namingGuard.valid || !semanticGuard.valid) {
       const guardStatus = !namingGuard.valid ? 'toggle_vocabulary_guardrail_failed' : (!semanticGuard.valid ? semanticGuard.status : 'completed_runner_result_required');
       return {

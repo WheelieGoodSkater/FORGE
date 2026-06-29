@@ -441,7 +441,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       productExampleNamesW472: Array.isArray(signal.productExamples) ? signal.productExamples.map(function(example) { return example && example.name || ''; }).filter(Boolean).slice(0, 5) : []
     }) });
 
-    const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
+    const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, notes, agenda, signalText: signal.text, confirmedBuildRequestJson });
     const names = namingPayload.payload;
     log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({
       source: namingPayload.source || names._source || 'deterministic',
@@ -668,7 +668,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     // 9) Seed SOs via CSV import
-    const soCsv = buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey: ids.heroItemCsvKey || ids.heroItemExternalId || ANCHORS.heroItem });
+    const soCsv = buildSoCsv({ extId, prospect, website, notes, agenda, locationId, itemKey: ids.heroItemCsvKey || ids.heroItemExternalId || ANCHORS.heroItem });
     const soFileId = saveCsvToFileCabinet({ folderId: soFolderId, filename: boundedFileNameW461(`scai_so_${extId}.csv`, 180), contents: soCsv });
     const soTaskId = submitCsvImport({ mappingId: soMappingId, fileId: soFileId });
     const salesOrderLookupW458 = waitForSalesOrderResolutionW460({
@@ -3536,8 +3536,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // Precomputed naming payload + deterministic fallback
   // ----------------------------
-  function loadPrecomputedNamingPack({ fileId, extId, prospect, website, signalText }) {
-    const deterministic = generateNamingPack({ prospect, website, signalText });
+  function loadPrecomputedNamingPack({ fileId, extId, prospect, website, notes, agenda, signalText, confirmedBuildRequestJson }) {
+    const deterministic = generateNamingPack({
+      prospect,
+      website,
+      notes,
+      agenda,
+      extId,
+      confirmedBuildRequestJson,
+      signalText
+    });
     let candidateFileId = toIntOrNull(fileId);
     let discoveryMode = candidateFileId ? 'direct-param' : 'discover-by-extid';
 
@@ -3627,10 +3635,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
   }
 
-  function generateNamingPack({ prospect, website, signalText }) {
+  function generateNamingPack({ prospect, website, signalText, notes, agenda, extId, confirmedBuildRequestJson }) {
     const clippedSignal = String(signalText || '').slice(0, 1200);
     const cleanProspect = trimLen(str(prospect) || 'Demo Customer', 60);
-    const industrySelection = industrySelectionW468({ prospect: cleanProspect, website, signalText: clippedSignal });
+    const opts = confirmedBuildRequestJson || {};
+    const fallbackText = [
+      cleanProspect,
+      website,
+      opts && opts.notes,
+      opts && opts.agenda,
+      notes,
+      agenda,
+      extId,
+      confirmedBuildRequestJson && JSON.stringify(confirmedBuildRequestJson)
+    ].filter(Boolean).join(' ');
+    const industrySelection = industrySelectionW468({ prospect: cleanProspect, website, signalText: clippedSignal || fallbackText });
     return {
       _source: 'deterministic-prospect-fallback',
       _signalLen: clippedSignal.length,
@@ -4222,6 +4241,53 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return { '10': `Stage ${p} Kits`, '20': `Assemble ${p}`, '30': `Inspect and Release ${p}` };
     }
     return { '10': `Stage ${p} Components`, '20': `Assemble ${p}`, '30': `QC and Release ${p}` };
+  }
+
+  function idbNameHasPolicyForbiddenTerm(value, modeKey) {
+    if (modeKey !== 'distribution_replenishment') return false;
+    return /\b(finished\s*\/?\s*assembly|formula|ingredient|component item|work order|routing|wip|bom|assembly)\b/i.test(str(value));
+  }
+
+  function idbDistributionProofNounW341(text) {
+    const source = str(text).toLowerCase();
+    if (/\bbreakers?\b|circuit breaker/.test(source)) return 'Breaker';
+    if (/\bpanels?\b|panelboard/.test(source)) return 'Panel';
+    if (/\bconduit\b/.test(source)) return 'Conduit';
+    if (/\bfittings?\b|connector/.test(source)) return 'Fitting';
+    if (/\bwire\b|cable/.test(source)) return 'Wire';
+    if (/\bdisconnects?\b|switch/.test(source)) return 'Disconnect';
+    if (/\bchairs?\b|seating/.test(source)) return 'Chair';
+    if (/\bbottles?\b|drinkware|canteen/.test(source)) return 'Bottle';
+    if (/\bbags?\b|packs?\b|totes?\b|backpacks?\b/.test(source)) return 'Bag';
+    return 'Item';
+  }
+
+  function idbDistributionProofNamesW341(args) {
+    const names = args && args.names || {};
+    const text = [
+      args && args.prospect,
+      args && args.website,
+      args && args.notes,
+      args && args.agenda,
+      names.selectedProductName,
+      names.primary_product_candidate,
+      names.hero_item_name
+    ].filter(Boolean).join(' ');
+    const prefix = trimLen(str(args && args.prospect || '').replace(/\b(inc|llc|co|company|supply|industrial|distribution)\b\.?/ig, '').trim() || 'Demo', 34);
+    const proofNoun = idbDistributionProofNounW341(text);
+    const proofNames = {
+      schema: 'idb.runner-prospect-specific-proof-names.w341.v1',
+      hero: trimLen(`${prefix} ${proofNoun} Availability SKU`, 60),
+      matrix: trimLen(`${prefix} Branch Availability / Replenishment Flow`, 60),
+      component: trimLen(`${prefix} Safe Substitute Fulfillment Support SKU`, 60)
+    };
+    proofNames.heroItemName = proofNames.hero;
+    proofNames.matrixItemName = proofNames.matrix;
+    proofNames.componentItemName = proofNames.component;
+    ['hero', 'matrix', 'component'].forEach(function(key) {
+      if (idbNameHasPolicyForbiddenTerm(proofNames[key], 'distribution_replenishment')) proofNames[key] = '';
+    });
+    return proofNames;
   }
 
   function sanitizeOldRunnerV2NamesW474(names) {
@@ -5255,9 +5321,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return telemetry;
   }
 
-  function buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey }) {
-    const memoBase = `SCAI Demo Reset: ${prospect}${website ? ` (${extractDomain(website)})` : ''}`;
-    const memo = agenda ? memoBase + ' - ' + summarizeOneLine(agenda) : memoBase;
+  function buildSoCsv({ extId, prospect, website, notes, agenda, locationId, itemKey }) {
+    const memo = recordSafeDemoContextMemo({ prospect, website, notes, agenda });
 
     const today = new Date();
     const d1 = fmtDate(today);
@@ -5301,6 +5366,26 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const f = file.load({ id: Number(fileId) });
     const t = task.create({ taskType: task.TaskType.CSV_IMPORT, mappingId: Number(mappingId), importFile: f });
     return t.submit();
+  }
+
+  function recordFieldSafeText(value, maxLen) {
+    return trimLen(String(value || '')
+      .replace(/[\r\n\t]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim(), maxLen || 240);
+  }
+
+  function recordSafeDemoContextMemo({ prospect, website, notes, agenda }) {
+    const raw = `${notes || ''} ${agenda || ''}`;
+    const buyer = recordFieldSafeText(prospect || 'Buyer not supplied', 72);
+    const domain = recordFieldSafeText(extractDomain(website) || website || 'website not supplied', 60);
+    const painMatch = raw.match(/\b(?:need|needs|pain|pressure|challenge|blocked|risk|urgent|delay|shortage|backorder)[^.!?]{0,90}/i);
+    const proofMatch = raw.match(/\b(?:proof|prove|demo|show|validate|confirm)[^.!?]{0,90}/i);
+    const valueMatch = raw.match(/\b(?:roi|value|margin|revenue|save|savings|growth|availability|replenishment|promise)[^.!?]{0,90}/i);
+    const pain = recordFieldSafeText(painMatch && painMatch[0] || raw || 'Discovery context pending', 80);
+    const proof = recordFieldSafeText(proofMatch && proofMatch[0] || 'Record build and order flow', 72);
+    const value = recordFieldSafeText(valueMatch && valueMatch[0] || 'Availability and execution confidence', 72);
+    return recordFieldSafeText(`Buyer: ${buyer} | Site: ${domain} | Pain: ${pain} | Proof: ${proof} | Value: ${value}`, 300);
   }
 
   function waitForSalesOrderResolutionW460(options) {
@@ -5690,11 +5775,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       soTaskId: args.soTaskId
     });
     if (resolvedSalesOrderW458) records.salesOrder = resolvedSalesOrderW458;
+    const laneVocabularyPolicy = runnerLaneVocabularyPolicyW453(args);
+    const distributionProofNamesW341 = !args.enableManufacturing && !args.enableWip
+      ? laneVocabularyPolicy && laneVocabularyPolicy.prospectSpecificProofNames || idbDistributionProofNamesW341(args)
+      : null;
     records.heroItem = normalizeIdbRecordW453({
       role: 'hero_item',
       type: 'inventoryitem',
       label: args.enableManufacturing ? 'Sellable item' : 'Hero item',
-      name: names.hero_item_name || `${args.prospect} Finished Good`,
+      name: distributionProofNamesW341 && distributionProofNamesW341.hero || names.hero_item_name || `${args.prospect} Finished Good`,
       id: ids.heroItemId
     });
 
@@ -5726,11 +5815,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         { id: ids.comp2Id, name: names.component_names && names.component_names[1] },
         { id: ids.comp3Id, name: names.component_names && names.component_names[2] }
       ].forEach(function(component, index) {
+        const roleSpecificGeneratedItemName = component.name || `${args.prospect} Component ${index + 1}`;
+        const policyProofName = laneVocabularyPolicy && laneVocabularyPolicy.modeKey === 'distribution_replenishment' && laneVocabularyPolicy.prospectSpecificProofNames && laneVocabularyPolicy.prospectSpecificProofNames.componentItemName;
+        const componentName = policyProofName || roleSpecificGeneratedItemName;
         const item = normalizeIdbRecordW453({
           role: 'component_item',
           type: 'inventoryitem',
           label: `Component item ${index + 1}`,
-          name: component.name || `${args.prospect} Component ${index + 1}`,
+          name: componentName,
           id: component.id
         });
         item.componentIndex = index;
@@ -5796,6 +5888,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       prospect: args.prospect,
       customerName: args.prospect,
       website: args.website,
+      notes: args.notes,
+      agenda: args.agenda,
       notesDigest: summarizeOneLine(args.notes || args.agenda || ''),
       enableManufacturing: !!args.enableManufacturing,
       enableWip: !!args.enableWip,
@@ -5804,7 +5898,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         enableManufacturing: !!args.enableManufacturing,
         enableWip: !!args.enableWip
       },
-      resolvedOperatingMode: args.enableWip ? 'wip_manufacturing' : (args.enableManufacturing ? 'discrete_manufacturing' : 'distribution_replenishment'),
+      resolvedOperatingMode: resolvedOperatingModeW320(args),
       records,
       customer: records.customer,
       demoTransaction: records.demoTransaction,
@@ -5878,7 +5972,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       },
       reusedRecordOverwriteTelemetryW457: args.reusedRecordOverwriteTelemetryW457 || null,
       productBuildPlanW432: buildProductBuildPlanFromNamesW453(args),
-      runnerLaneVocabularyPolicy: runnerLaneVocabularyPolicyW453(args),
+      runnerLaneVocabularyPolicy: laneVocabularyPolicy,
       namingFileId: namingPayload.fileId || null,
       namingDiscoveryMode: namingPayload.discoveryMode || '',
       namingPayloadFound: !!namingPayload.found,
@@ -6038,9 +6132,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function resultCaptureFileNameW453({ extId, buildAttemptId, status }) {
+    return resultCaptureFileNameW320({ extId, buildAttemptId, status });
+  }
+
+  function resultCaptureFileNameW320({ extId, buildAttemptId, status }) {
+    const safeAttempt = safeCode(buildAttemptId || '').slice(0, 56);
+    const safeToken = safeCode(extId || '').slice(0, 48);
     const source = `${extId || 'idb'}_${buildAttemptId || ''}_${status || 'result'}`;
-    const stem = trimLen(safeCode(extId || buildAttemptId || status || 'idb'), 36) || 'idb';
-    return boundedFileNameW461(`idb_result_${status || 'result'}_${stem}_${shortHashW461(source)}.json`, RESULT_CAPTURE_FILENAME_LIMIT_W468);
+    const stem = safeAttempt || safeToken || safeCode(status || 'result') || 'idb';
+    return boundedFileNameW461(trimLen(`idb_runner_sidecar_${status || 'result'}_${stem}_${safeToken}_${shortHashW461(source)}.json`, 180), RESULT_CAPTURE_FILENAME_LIMIT_W468);
   }
 
   function isExceededMaxFieldLengthW468(e) {
@@ -6305,14 +6405,38 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function runnerLaneVocabularyPolicyW453(args) {
+    const modeKey = resolvedOperatingModeW320(args);
+    const proofNames = modeKey === 'distribution_replenishment'
+      ? idbDistributionProofNamesW341(args)
+      : null;
     return {
       schema: 'idb.runner-lane-vocabulary-policy.w453.v1',
-      mode: args.enableWip ? 'wip_manufacturing' : (args.enableManufacturing ? 'discrete_manufacturing' : 'distribution_replenishment'),
+      mode: modeKey,
+      modeKey,
       finalResultRoleLabels: {
         heroItem: args.enableManufacturing ? 'Sellable item' : 'Hero item',
         componentItem: args.enableManufacturing ? 'Ingredient / component item' : 'Component item'
-      }
+      },
+      prospectSpecificProofNames: proofNames,
+      prospectSpecificProofNamingMarker: proofNames ? {
+        schema: 'idb.runner-prospect-specific-proof-naming-marker.w341.v1',
+        marker: 'W341 prospect-specific proof naming active',
+        active: true,
+        modeKey,
+        proofNames,
+        traceTitle: 'IDB W341 prospect proof naming marker'
+      } : null
     };
+  }
+
+  function resolvedOperatingModeW320(args) {
+    const enableManufacturing = !!(args && args.enableManufacturing);
+    const enableWip = !!(args && args.enableWip);
+    let modeKey = args && args.resolvedOperatingMode || '';
+    if (!modeKey && enableWip) modeKey = 'wip_manufacturing';
+    if (!modeKey && enableManufacturing) modeKey = 'discrete_manufacturing';
+    if (!modeKey && !enableManufacturing && !enableWip) modeKey = 'distribution_replenishment';
+    return modeKey || 'distribution_replenishment';
   }
 
   function buildProductBuildPlanFromNamesW453(args) {

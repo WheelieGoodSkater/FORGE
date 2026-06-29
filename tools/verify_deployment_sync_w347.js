@@ -7,8 +7,8 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const mirrorDir = path.join(root, 'src', 'FileCabinet', 'SuiteScripts', 'Intelligent Demo Builder');
 
-const EXPECTED_DRAWER_VERSION = '2.0.1';
-const EXPECTED_VISIBLE_MARKER = 'Drawer 2.0.1 / W473';
+const EXPECTED_DRAWER_VERSION = '2.0.6-w482';
+const EXPECTED_VISIBLE_MARKER = 'Drawer 2.0.6-w482 / W482';
 const RAW_USERSCRIPT_URL = 'https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js';
 
 const TARGETS = [
@@ -43,6 +43,22 @@ const TARGETS = [
     mirrorPath: path.join(mirrorDir, 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js'),
     downloadArgs: ['sidecar-runner-w472-download', 'sidecar-runner-w472'],
     updatePath: 'SuiteCloud Deploy Project is required to create/update the W472 scheduled script File Cabinet file.'
+  },
+  {
+    id: 'sidecar-runner-w482',
+    label: 'W482 old-core simple sidecar Scheduled Script',
+    rootPath: path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_oldcore_simple_sidecar_w482.js'),
+    mirrorPath: path.join(mirrorDir, 'scai_ss_so_csv_runner_oldcore_simple_sidecar_w482.js'),
+    downloadArgs: ['sidecar-runner-w482-download', 'sidecar-runner-w482'],
+    updatePath: 'SuiteCloud Deploy Project is required to create/update the W482 scheduled script File Cabinet file.'
+  },
+  {
+    id: 'sidecar-runner-w483',
+    label: 'W483 FORGE clean Scheduled Script',
+    rootPath: path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_forge_clean_w483.js'),
+    mirrorPath: path.join(mirrorDir, 'scai_ss_so_csv_runner_forge_clean_w483.js'),
+    downloadArgs: ['sidecar-runner-w483-download', 'sidecar-runner-w483'],
+    updatePath: 'SuiteCloud Deploy Project is required to create/update the W483 scheduled script File Cabinet file.'
   }
 ];
 
@@ -125,10 +141,10 @@ function drawerMetadataChecks(rootText, mirrorText) {
     {
       id: 'visible_w346_marker',
       pass: rootText.includes(`const DRAWER_USERSCRIPT_VERSION = '${EXPECTED_DRAWER_VERSION}';`) &&
-        rootText.includes("const CURRENT_UX_BLOCK_W346 = 'W473';") &&
+        rootText.includes("const CURRENT_UX_BLOCK_W346 = 'W482';") &&
         rootText.includes('return `Drawer ${DRAWER_USERSCRIPT_VERSION} / ${CURRENT_UX_BLOCK_W346}`;') &&
         mirrorText.includes(`const DRAWER_USERSCRIPT_VERSION = '${EXPECTED_DRAWER_VERSION}';`) &&
-        mirrorText.includes("const CURRENT_UX_BLOCK_W346 = 'W473';") &&
+        mirrorText.includes("const CURRENT_UX_BLOCK_W346 = 'W482';") &&
         mirrorText.includes('return `Drawer ${DRAWER_USERSCRIPT_VERSION} / ${CURRENT_UX_BLOCK_W346}`;'),
       expected: EXPECTED_VISIBLE_MARKER
     },

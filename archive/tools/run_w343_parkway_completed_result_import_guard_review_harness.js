@@ -25,7 +25,7 @@ function main() {
   const hooks = loadHooks();
   const userscript = read(userscriptPath);
   const adapter = readRepoFile('netsuite', 'idb_governed_runner_adapter_w144_suitelet.js');
-  const runner = readRepoFile('netsuite', 'runner', 'scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js');
+  const runner = readRepoFile('netsuite', 'runner', 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js');
   const report = readArchiveText('reports', 'w343_parkway_completed_result_import_guard_review.md');
   const trace = readJson('/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1780088384303.json');
   const result = trace.state && trace.state.integratedBuildRunnerResult || {};

@@ -7,8 +7,8 @@
 define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
   const ADAPTER_VERSION = 'w474-governed-adapter-short-token-result-return';
   const SIDECAR_RUNNER_VERSION_W472 = 'W472';
-  const DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W472 = 'customscript_scai_ss_runner_sidecar_w472';
-  const DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W472 = 'customdeploy_scai_ss_runner_sidecar_w472';
+  const DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W482 = 'customscript_scai_ss_runner_simple_w482';
+  const DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W482 = 'customdeploy_scai_ss_runner_simple_w482';
   const NAMING_FILE_NAME_LIMIT_W468 = 96;
   const SALES_ORDER_LOOKUP_SEARCH_ID_W458 = 'customsearch_wms_atlas_bill_lookup_2';
   const SALES_ORDER_LOOKUP_SEARCH_INTERNAL_ID_W458 = '5006';
@@ -37,23 +37,23 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   };
 
   const RUNNER_PARAM_MAP = {
-    prospect: 'custscript_v3_runner_prospect',
-    website: 'custscript_v3_runner_website',
-    notes: 'custscript_v3_runner_notes',
-    agenda: 'custscript_v3_runner_agenda',
-    extId: 'custscript_v3_runner_extid',
-    mappingId: 'custscript_v3_runner_mapping',
-    folderId: 'custscript_v3_runner_folder',
-    subsidiaryId: 'custscript_v3_runner_subsidiary',
-    locationId: 'custscript_v3_runner_location',
-    workCenterSearchId: 'custscript_v3_runner_wc_search',
-    enableWip: 'custscript_v3_runner_enable_wip',
-    enableManufacturing: 'custscript_v3_runner_enable_mfg',
-    createNewHero: 'custscript_v3_runner_create_new_hero',
-    heroItem: 'custscript_v3_runner_hero_item',
-    namingFileId: 'custscript_scai_runner_naming_file_id',
-    resultCaptureFolderId: 'custscript_v3_runner_result_capture_folder',
-    confirmedBuildRequestJson: 'custscript_v3_runner_idb_request_json'
+    prospect: 'custscript_w482_prospect',
+    website: 'custscript_w482_website',
+    notes: 'custscript_w482_notes',
+    agenda: 'custscript_w482_agenda',
+    extId: 'custscript_w482_extid',
+    mappingId: 'custscript_w482_mapping',
+    folderId: 'custscript_w482_folder',
+    subsidiaryId: 'custscript_w482_subsidiary',
+    locationId: 'custscript_w482_location',
+    workCenterSearchId: 'custscript_w482_wc_search',
+    enableWip: 'custscript_w482_enable_wip',
+    enableManufacturing: 'custscript_w482_enable_mfg',
+    createNewHero: 'custscript_w482_create_hero',
+    heroItem: 'custscript_w482_hero_item',
+    namingFileId: 'custscript_w482_naming_file',
+    resultCaptureFolderId: 'custscript_w482_result_folder',
+    confirmedBuildRequestJson: 'custscript_w482_req_json'
   };
 
   function onRequest(context) {
@@ -165,8 +165,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       governedSandboxWriteEnabled: flag(getParam(currentScript, PARAMS.governedSandboxWriteEnabled) || getParam(currentScript, PARAMS.governedSandboxWriteEnabledShort)),
       queueSubmitEnabled: flag(getParam(currentScript, PARAMS.queueSubmitEnabled)),
       sandboxAccountAllowlist: splitCsv(getParam(currentScript, PARAMS.sandboxAccountAllowlist)),
-      runnerScriptId: getParam(currentScript, PARAMS.runnerScriptId) || DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W472,
-      runnerDeployId: getParam(currentScript, PARAMS.runnerDeployId) || DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W472,
+      runnerScriptId: getParam(currentScript, PARAMS.runnerScriptId) || DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W482,
+      runnerDeployId: getParam(currentScript, PARAMS.runnerDeployId) || DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W482,
       configuredSidecarRunnerVersion: SIDECAR_RUNNER_VERSION_W472,
       mappingId: getParam(currentScript, PARAMS.mappingId),
       folderId: getParam(currentScript, PARAMS.folderId),
@@ -1037,12 +1037,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const candidates = [];
     const urlProductName = productNameFromWebsiteUrlW473(website);
     if (urlProductName) {
+      const urlProductIsProductDetail = /\/(product|products|p)\//i.test(String(website || ''));
       candidates.push({
         name: urlProductName,
         source: 'website_product_url_slug_w473',
         sourceUrl: website,
-        confidence: 99,
-        wipSuitabilityScore: 99,
+        confidence: urlProductIsProductDetail ? 104 : 99,
+        wipSuitabilityScore: urlProductIsProductDetail ? 104 : 99,
         reasons: ['product detail URL slug promoted when website resolver returns thin product text']
       });
     }
@@ -1093,9 +1094,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const productIndex = segments.findIndex(function(segment) {
       return /^(product|products|shop|p)$/i.test(segment);
     });
-    const slug = productIndex >= 0 && segments[productIndex + 1]
-      ? segments[productIndex + 1]
-      : segments[segments.length - 1];
+    const tailSegments = productIndex >= 0 ? segments.slice(productIndex + 1) : segments;
+    const slug = tailSegments.slice().reverse().find(function(segment) {
+      return !/^(product|products|collections?|category|categories|shop|all|search|seating|office chairs?|office furniture|furniture)$/i.test(segment);
+    }) || tailSegments[tailSegments.length - 1] || segments[segments.length - 1];
     const cleaned = slug
       .replace(/\.(html?|aspx?)$/i, '')
       .replace(/[-_]+/g, ' ')
@@ -1107,7 +1109,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       .replace(/\bOz\b/g, 'oz')
       .replace(/\bWith\b/g, 'with')
       .replace(/\bAnd\b/g, 'and')
-      .replace(/\bFor\b/g, 'for');
+      .replace(/\bFor\b/g, 'for')
+      .replace(/\b(\d+)l\b/g, '$1L')
+      .replace(/\bAeron Chairs\b/g, 'Aeron Chair');
     return usableWebsiteProductExampleW472(titled, {});
   }
 
@@ -1127,6 +1131,12 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function selectIndustryChipW474(website, product, prospect) {
     const text = `${websiteDomainW474(website)} ${product || ''} ${prospect || ''}`.toLowerCase();
     const rules = [
+      { pattern: /guitar|acoustic|electric guitar|classical guitar|ukulele|instrument|pickup|amplifier/, chip: 'Musical Instruments Manufacturing', evidence: 'website/product musical instrument signal' },
+      { pattern: /cookware|skillet|pan|knife|knives|cutlery|kitchenware|cookware set|knife set|chef knife|table knives|kitchen sink|sink|faucet/, chip: 'Kitchenware Manufacturing', evidence: 'website/product kitchenware signal' },
+      { pattern: /recliner|sofa|sectional|chair|seating|desk|furniture|ergonomic/, chip: 'Furniture Manufacturing', evidence: 'website/product furniture signal' },
+      { pattern: /vacuum|\bvac\b|wet dry vac|carpet cleaner|steam cleaner|dishwasher|blender|appliance|air purifier|hair dryer|iron|steamer|laundry|kitchen appliance/, chip: 'Premium Home Appliance Manufacturing', evidence: 'website/product appliance signal' },
+      { pattern: /forklift|lift truck|pallet truck|reach truck|warehouse equipment|industrial equipment|automated guided vehicle/, chip: 'Industrial Equipment Manufacturing', evidence: 'website/product industrial equipment signal' },
+      { pattern: /cooler|ice chest|drinkware|bottle|tumbler|outdoor hardgoods|durable outdoor|power tool|cordless tool|drill|saw|impact driver|driver-drill/, chip: 'Durable Consumer Goods Manufacturing', evidence: 'website/product durable hardgoods signal' },
       { pattern: /brompton|folding bike|folding bicycle|\bbicycle\b|\bbike\b/, chip: 'Bicycle Manufacturing', evidence: 'website/domain bicycle product signal' },
       { pattern: /zwilling|wusthof|wüsthof|cutlery|knife|knives|sharpener|knife block|honing steel/, chip: 'Cutlery Manufacturing', evidence: 'website/domain cutlery product signal' },
       { pattern: /casio|watch|calculator|keyboard|piano|g-shock|edifice|privia|consumer electronics/, chip: 'Consumer Electronics Distribution', evidence: 'website/domain electronics product signal' },
@@ -1144,12 +1154,36 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const combined = `${product || ''} ${industryChip || ''}`.toLowerCase();
     let names;
     let reason;
-    if (/brompton|folding bike|folding bicycle|\bbicycle\b|\bbike\b/.test(combined)) {
-      names = ['Frame Assembly', 'Wheelset', 'Drivetrain Kit'];
-      reason = 'bicycle finished good component model';
-    } else if (/knife block|cutlery|zwilling|wusthof|wüsthof|knife|knives|sharpener/.test(combined)) {
+    if (/guitar|ukulele|instrument|pickup|amplifier/.test(combined)) {
+      names = ['Instrument Body', 'Neck Assembly', 'Electronics and Hardware Kit'];
+      reason = 'musical instrument finished good component model';
+    } else if (/kitchen sink|\bsink\b|faucet/.test(combined)) {
+      names = ['Sink Basin', 'Drain and Mounting Kit', 'Retail Packaging'];
+      reason = 'kitchen sink finished good component model';
+    } else if (/knife block|cutlery|zwilling|wusthof|wüsthof|knife|knives|sharpener|cookware|skillet|kitchenware|cookware set/.test(combined)) {
       names = /sharpener/.test(combined) ? ['Sharpening Rod Assembly', 'Handle Housing', 'Retail Packaging'] : ['Knife Block', 'Chef Knife', 'Honing Steel'];
       reason = 'cutlery finished good component model';
+    } else if (/recliner|sofa|sectional/.test(combined)) {
+      names = ['Frame Assembly', 'Cushion Set', 'Upholstery and Hardware Kit'];
+      reason = 'residential seating finished good component model';
+    } else if (/chair|seating|desk|furniture/.test(combined)) {
+      names = ['Furniture Frame', 'Seat and Surface Assembly', 'Hardware Kit'];
+      reason = 'furniture finished good component model';
+    } else if (/vacuum|\bvac\b|carpet cleaner|steam cleaner|dishwasher|blender|appliance|purifier|dryer|iron|steamer|laundry/.test(combined)) {
+      names = ['Motor Assembly', 'Control Housing', 'Retail Packaging'];
+      reason = 'premium appliance finished good component model';
+    } else if (/forklift|lift truck|pallet truck|reach truck|industrial equipment|automated guided vehicle/.test(combined)) {
+      names = ['Chassis Assembly', 'Lift System Assembly', 'Powertrain Kit'];
+      reason = 'industrial equipment finished good component model';
+    } else if (/power tool|cordless tool|drill|saw|impact driver|driver-drill/.test(combined)) {
+      names = ['Tool Body', 'Motor and Battery Interface', 'Retail Packaging'];
+      reason = 'power tool finished good component model';
+    } else if (/cooler|ice chest|drinkware|bottle|tumbler|outdoor hardgoods/.test(combined)) {
+      names = ['Product Body', 'Accessory Kit', 'Retail Packaging'];
+      reason = 'durable hardgoods finished good component model';
+    } else if (/brompton|folding bike|folding bicycle|\bbicycle\b|\bbike\b/.test(combined)) {
+      names = ['Frame Assembly', 'Wheelset', 'Drivetrain Kit'];
+      reason = 'bicycle finished good component model';
     } else if (/water bottle|bottle|canteen|drinkware|tumbler/.test(combined)) {
       names = ['Bottle Body', 'Cap Assembly', 'Gasket Seal'];
       reason = 'drinkware finished good component model';

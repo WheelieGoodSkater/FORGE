@@ -23,6 +23,14 @@ const files = [
   {
     source: path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js'),
     target: path.join(targetDir, 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js')
+  },
+  {
+    source: path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_oldcore_simple_sidecar_w482.js'),
+    target: path.join(targetDir, 'scai_ss_so_csv_runner_oldcore_simple_sidecar_w482.js')
+  },
+  {
+    source: path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_forge_clean_w483.js'),
+    target: path.join(targetDir, 'scai_ss_so_csv_runner_forge_clean_w483.js')
   }
 ];
 

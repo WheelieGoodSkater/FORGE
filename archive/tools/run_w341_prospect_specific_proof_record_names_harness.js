@@ -29,7 +29,7 @@ function main() {
   const results = [];
   const packageJson = JSON.parse(readRepoFile('package.json'));
   const userscript = read(userscriptPath);
-  const runner = readRepoFile('netsuite', 'runner', 'scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js');
+  const runner = readRepoFile('netsuite', 'runner', 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js');
   const adapter = readRepoFile('netsuite', 'idb_governed_runner_adapter_w144_suitelet.js');
   const lanePacks = readRepoFile('src', 'contracts', 'lanePacks.js');
   const report = readArchiveText('reports', 'w341_prospect_specific_proof_record_names.md');

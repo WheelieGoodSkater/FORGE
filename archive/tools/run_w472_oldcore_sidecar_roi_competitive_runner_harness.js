@@ -589,7 +589,7 @@ function main() {
   };
   const weakCategoryPack = adapterTest.buildServerPrecomputedNamingPack(weakCategoryRequest);
 
-	  assertCase(results, 'w472-weak-category-labels-do-not-become-product-names',
+  assertCase(results, 'w472-weak-category-labels-do-not-become-product-names',
 	    weakCategoryPack &&
 	      weakCategoryPack.hero_item_name === 'Sandwich Bag' &&
 	      weakCategoryPack.component_names.indexOf('Sandwich Bag Core Assembly') !== -1 &&
@@ -598,6 +598,36 @@ function main() {
       weakCategoryPack.supersededExplicitNamingPackW472 === true &&
       !/footwear|apparel|style matrix|resolver limited|Legacy Naming File/i.test(JSON.stringify(weakCategoryPack)),
     JSON.stringify({ weakCategoryPack }, null, 2));
+
+  const hermanMillerProductUrlRequest = {
+    website: 'https://www.hermanmiller.com/products/seating/office-chairs/aeron-chairs/',
+    prospect: {
+      name: 'Herman Miller W481 Manufacturing Smoke',
+      website: 'https://www.hermanmiller.com/products/seating/office-chairs/aeron-chairs/'
+    },
+    selectedToggles: { createNewHeroItem: true, enableManufacturing: true, enableWip: false },
+    websiteEvidence: {
+      trustedWebsiteProductExamplesW472: ['ESD Seating', 'Office Chairs', 'Side Chairs']
+    },
+    productEvidence: {
+      trustedWebsiteProductExamplesW472: ['ESD Seating', 'Office Chairs', 'Side Chairs']
+    }
+  };
+  const hermanMillerProductUrlPack = adapterTest.buildServerPrecomputedNamingPack(hermanMillerProductUrlRequest);
+
+  assertCase(results, 'w481-product-url-beats-generic-herman-miller-category-labels',
+    hermanMillerProductUrlPack &&
+      hermanMillerProductUrlPack.hero_item_name === 'Aeron Chair' &&
+      hermanMillerProductUrlPack.assembly_name === 'Aeron Chair Assembly' &&
+      hermanMillerProductUrlPack.component_names.indexOf('Aeron Chair Core Assembly') !== -1 &&
+      hermanMillerProductUrlPack.selectedProductName === 'Aeron Chair' &&
+      hermanMillerProductUrlPack.selectedCatalogCandidateSource === 'website_product_url_slug_w473' &&
+      !/SCAI - Seating|^Seating$|Office Chairs|Side Chairs/.test(JSON.stringify({
+        hero: hermanMillerProductUrlPack.hero_item_name,
+        assembly: hermanMillerProductUrlPack.assembly_name,
+        components: hermanMillerProductUrlPack.component_names
+      })),
+    JSON.stringify({ hermanMillerProductUrlPack }, null, 2));
 
   const bagguVariantRequest = {
     website: 'https://www.baggu.com/collections/bags',

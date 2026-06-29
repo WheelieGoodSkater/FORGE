@@ -9,7 +9,7 @@ The active install/runtime surface is intentionally small:
 - `idb-drawer.user.js` - Tampermonkey drawer userscript.
 - `assets/` - FORGE brand assets used by the drawer.
 - `netsuite/idb_governed_runner_adapter_w144_suitelet.js` - approved governed runner adapter Suitelet.
-- `netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js` - governed DCC runner script used to create demo records.
+- `netsuite/runner/scai_ss_so_csv_runner_oldcore_simple_sidecar_w482.js` - W482 scheduled runner that keeps the old runner naming/creation flow and returns compact sidecar records, ROI, and competitive objects.
 - `src/contracts/` - runtime contract modules used by the drawer and compatibility checks.
 - `INSTALL.md` - install and deployment notes.
 
@@ -27,7 +27,7 @@ This checks the active userscript, NetSuite scripts, and contract modules for Ja
 
 1. Install or update `idb-drawer.user.js` in Tampermonkey.
 2. Upload/deploy `netsuite/idb_governed_runner_adapter_w144_suitelet.js` as the approved adapter.
-3. Upload/deploy `netsuite/runner/scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js` as the governed runner.
+3. Deploy the SuiteCloud project so `customscript_scai_ss_runner_simple_w482` / `customdeploy_scai_ss_runner_simple_w482` points at `netsuite/runner/scai_ss_so_csv_runner_oldcore_simple_sidecar_w482.js`.
 4. Configure the drawer admin/debug setup with your account-specific Suitelet URL and NetSuite script parameters.
 
 FORGE preserves the no-drawer-write boundary: the drawer does not create records, does not write transactions, and does not invoke SuiteScript outside the approved adapter path. The governed runner owns generated records.

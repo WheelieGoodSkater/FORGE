@@ -97,8 +97,8 @@ function main() {
   const weakLanguageLeak = graybarSurfaceText.match(/\bweak lane evidence\b|\bwebsite appears weak\b|\bpublic website appears weak\b/i);
 
   assertCase(results, 'w353-userscript-version-and-marker-advance',
-    /@version\s+1\.0\.12/.test(userscript) &&
-      hooks.drawerDisplayVersionW346() === 'Drawer 1.0.12 / W365' &&
+    /@version\s+2\.0\.6-w481/.test(userscript) &&
+      hooks.drawerDisplayVersionW346() === 'Drawer 2.0.6-w481 / W481' &&
       /isResolverLimitedWebsiteEvidenceW353/.test(userscript),
     JSON.stringify({ marker: hooks.drawerDisplayVersionW346() }));
 

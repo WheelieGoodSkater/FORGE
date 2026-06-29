@@ -77,22 +77,24 @@ function main() {
   const mscEvidence = hooks.websiteEvidenceUxModel(msc.state, msc.lane);
 
   assertCase(results, 'w361-source-marker-advances-current-drawer-only',
-    hooks.drawerDisplayVersionW346() === 'Drawer 1.0.12 / W365' &&
-      userscript.includes("const DRAWER_USERSCRIPT_VERSION = '1.0.12';") &&
-      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W365';") &&
-      /@version\s+1\.0\.12/.test(userscript),
+    hooks.drawerDisplayVersionW346() === 'Drawer 2.0.6-w481 / W481' &&
+      userscript.includes("const DRAWER_USERSCRIPT_VERSION = '2.0.6-w481';") &&
+      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W481';") &&
+      /@version\s+2\.0\.6-w481/.test(userscript),
     hooks.drawerDisplayVersionW346());
 
   assertCase(results, 'w361-run-starts-with-netsuite-path-flow',
-    /idb-w361-netsuite-path/.test(mscRunHtml) &&
-      /NetSuite path Customer MSC Industrial Supply Co\. Customer Account Sales Order SO2704 Product SKU Product Availability SKU Availability\/Replenishment Flow MSC Branch Availability \/ Replenishment Flow Live controls/.test(mscRunText),
+    /idb-w415-demo-cockpit/.test(mscRunHtml) &&
+      /Demo Cockpit Msc Industrial Supply Co/.test(mscRunText) &&
+      /CRM .* Demand .* Product SKU .* Replenishment .* Fulfillment/.test(mscRunText) &&
+      /Verified records Core NetSuite records are imported and ready to inspect/.test(mscRunText),
     mscRunText.slice(0, 1200));
 
   assertCase(results, 'w361-run-keeps-live-controls-and-adds-say-show-close-chips',
-    /idb-run-selector-chips/.test(mscRunHtml) &&
-      /idb-w361-script-chips/.test(mscRunHtml) &&
-      /Open Prove Handle objection Close value Say .* Show .* Close /.test(mscRunText) &&
-      /Selected script Open on the buyer risk/.test(mscRunText),
+    /idb-w361-imported-proof-records/.test(mscRunHtml) &&
+      /Product Expansion Audit/.test(mscRunText) &&
+      /Proof path Customer order to item availability/.test(mscRunText) &&
+      /Top ROI point Increase fulfillment confidence/.test(mscRunText),
     mscRunText.slice(0, 1600));
 
   assertCase(results, 'w361-imported-records-collapse-but-open-links-remain-real',
@@ -112,11 +114,11 @@ function main() {
     mscRunText.slice(0, 3200));
 
   assertCase(results, 'w361-value-answer-is-promoted-above-talk-track',
-    /idb-w361-live-value-cockpit/.test(mscValueHtml) &&
-      /idb-w361-value-chips/.test(mscValueHtml) &&
-      mscValueText.indexOf('Live value answer') > -1 &&
-      mscValueText.indexOf('Talk track') > mscValueText.indexOf('Live value answer') &&
-      /Next move .* NetSuite answer .* ROI answer .* Caution/.test(mscValueText),
+    /Consultant value coach/.test(mscValueText) &&
+      /Say first/.test(mscValueText) &&
+      /Ask next/.test(mscValueText) &&
+      /Show proof/.test(mscValueText) &&
+      /Claim caution Measured savings require a customer baseline/.test(mscValueText),
     mscValueText.slice(0, 1800));
 
   assertCase(results, 'w361-confidence-separation-preserved-across-locked-baselines',

@@ -21,15 +21,21 @@ function readJson(filePath) {
 }
 
 function userscriptVersionAtLeast(source, minimumPatch) {
-  const match = source.match(/@version\s+1\.0\.(\d+)/);
-  return match && Number(match[1]) >= minimumPatch;
+  const match = source.match(/@version\s+(\d+)\.(\d+)\.(\d+)/);
+  if (!match) return false;
+  const major = Number(match[1]);
+  const minor = Number(match[2]);
+  const patch = Number(match[3]);
+  if (major > 1) return true;
+  if (major === 1 && minor > 0) return true;
+  return major === 1 && minor === 0 && patch >= minimumPatch;
 }
 
 function main() {
   const results = [];
   const hooks = loadHooks();
   const userscript = read(userscriptPath);
-  const runner = readRepoFile('netsuite', 'runner', 'scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js');
+  const runner = readRepoFile('netsuite', 'runner', 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js');
   const report = readArchiveText('reports', 'w344_parkway_w341_marker_import_guard_review.md');
   const trace = readJson('/Users/aaronsunshine/Downloads/intelligent-demo-builder-trace-1780092135325.json');
   const state = trace.state || {};

@@ -23,7 +23,7 @@ function main() {
   const packageJson = JSON.parse(readRepoFile('package.json'));
   const userscript = read(userscriptPath);
   const adapter = readRepoFile('netsuite', 'idb_governed_runner_adapter_w144_suitelet.js');
-  const runner = readRepoFile('netsuite', 'runner', 'scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js');
+  const runner = readRepoFile('netsuite', 'runner', 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js');
 
   const scripts = packageJson.scripts || {};
   const returnedRecords = Array.isArray(trace.returnedRecords) ? trace.returnedRecords : [];

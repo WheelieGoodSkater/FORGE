@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      2.0.6-w481
+// @version      2.0.6-w482
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -21,8 +21,8 @@
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
   const IN_FLIGHT_BUILD_STORAGE_KEY_W472 = 'idb.drawer.inFlightBuild.w472.v1';
-  const DRAWER_USERSCRIPT_VERSION = '2.0.6-w481';
-  const CURRENT_UX_BLOCK_W346 = 'W481';
+  const DRAWER_USERSCRIPT_VERSION = '2.0.6-w482';
+  const CURRENT_UX_BLOCK_W346 = 'W482';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1091,7 +1091,7 @@
   };
 
   const CONTRACT = {
-    product: { name: 'Intelligent Demo Builder', version: 'V2.0.6-w481' },
+    product: { name: 'Intelligent Demo Builder', version: 'V2.0.6-w482' },
     nonRegression: {
       noNewIndustries: false,
       apparelAccessoriesLaneAuthorized: true,
@@ -1249,7 +1249,7 @@
 
   const INSTALLED_DRAWER_RUNTIME_MARKER_W332 = 'W332 post-import story polish active';
   const INSTALLED_DRAWER_VERSION_FINGERPRINT_W339 = 'W339 imported proof record UX active';
-  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W474 website product authoritative naming and result file visibility active';
+  const INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342 = 'W342 runner naming verification active';
   const INSTALLED_DRAWER_COPY_FINGERPRINT_W339 = [
     'Use imported proof records',
     'Use returned NetSuite proof records',
@@ -1415,7 +1415,7 @@
       schema: 'forge.installed-drawer-current-block-marker.w465.v1',
       marker: INSTALLED_DRAWER_CURRENT_BLOCK_MARKER_W342,
       active: true,
-      purpose: 'Current visible Trace marker for W466 current-run sidecar provenance, website product evidence, WIP-off gating, and sidecar truth verification.',
+      purpose: 'Current visible Trace marker for runner naming verification, imported proof record review, and sidecar truth verification.',
       previousMarkersRetainedInExportOnly: true,
       writebackAuthorityChanged: false,
       validationChanged: false,
@@ -2819,9 +2819,11 @@
         ? 'medium'
         : 'low';
     const deterministicWebsite = governedWebsiteResolver(state);
+    const operatorSuppliedWebsiteEvidence = Boolean(evidence.operatorSuppliedWebsiteEvidenceW355);
     const websiteFirstDeterministicLane = deterministicWebsite &&
+      !operatorSuppliedWebsiteEvidence &&
       deterministicWebsite.laneId &&
-      (deterministicWebsite.sourceKind === 'known_domain_website_primary' || deterministicWebsite.sourceKind === 'website_category_classifier') &&
+      (deterministicWebsite.sourceKind === 'known_domain_website_primary' || (deterministicWebsite.sourceKind === 'website_category_classifier' && !best)) &&
       (!best || best.laneId !== deterministicWebsite.laneId || confidenceState !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED);
     if (websiteFirstDeterministicLane) {
       return applyWebsiteProductEvidenceW424({
@@ -5254,7 +5256,7 @@
       safeClaim: 'Returned records support the counter availability decision; lane and ROI claims still need buyer confirmation.',
       compactProofActionW334: 'Open Product SKU; prove branch availability.',
       compactSafeClaimW334: 'Use imported records; confirm lane and ROI.',
-      compactStopGuardrailW334: 'No delivery, ROI, write, or availability claim beyond evidence.',
+      compactStopGuardrailW334: 'No ROI, write, creation, or availability claim beyond evidence.',
       buyerFacingSoWhat: 'Frame the value as fewer callbacks, faster contractor counter decisions, and better margin protection after the buyer confirms the current callback baseline.',
       competitiveContrast: electricalDistributionCompetitiveContrastW334(intake),
       objectionResponse: 'If the buyer asks how this avoids another callback, open the returned records and ask which alternate, branch transfer, or supplier ETA needs to be trusted before the contractor leaves.',
@@ -15962,8 +15964,8 @@
       enableWip: wip,
       chips: [
         `New item ${createNewHeroItem === true ? 'on' : 'off'}`,
-        `Manufacturing ${mfg ? 'on' : 'off'}`,
-        `WIP ${wip ? 'on' : 'off'}`
+        mfg ? 'Manufacturing on' : 'Build setup off',
+        `Production steps ${wip ? 'on' : 'off'}`
       ],
       selectedLaneId: lane && lane.id || confirmedToggles.selectedLaneId || payloadToggles.selectedLaneId || ''
     };
@@ -16336,7 +16338,7 @@
         close_value: {
           title: 'Close on financial impact',
           say: `Summarize the decision ${customer} can now make: ${decision}. Capture the baseline before claiming savings.`,
-          show: `Use the final generated records to connect ${rules.storyAnchor} to order promise and financial impact.`,
+          show: `Use the imported proof records to connect ${rules.storyAnchor} to order promise and financial impact.`,
           close: `Confirm owner, timing, baseline, and next step.`
         }
       }
@@ -22789,7 +22791,12 @@
       standard = ['dental distributor portal', 'QuickBooks plus spreadsheets', 'Shopify ecommerce reports', 'inventory add-ons', 'manual substitute checks'];
     } else if (lane.id === 'parts_service' || /field service|service manager|work order|dispatch|technician|truck stock|installed equipment|first-time fix|warranty|backorder|servicetitan/.test(text)) {
       standard = ['ServiceTitan', 'dispatch apps', 'QuickBooks plus spreadsheets', 'truck stock spreadsheets', 'inventory add-ons', 'manual parts calls'];
-    } else if (/industrial|distribution|branch|fulfillment|mro|electrical|counter|contractor|supply/.test(text) || lane.id === 'products_cpg') {
+    } else if (/electrical|contractor|counter|supplier portal|branch transfer|callback|alternate|substitute|margin/.test(text)) {
+      const electricalAlternatives = electricalDistributionAlternativesFromNotesW334(text);
+      standard = electricalAlternatives.length
+        ? electricalAlternatives
+        : ['supplier portals', 'transfer spreadsheets', 'text threads', 'branch inventory checks', 'manual counter promise tracking'];
+    } else if (/industrial|distribution|branch|fulfillment|mro|supply/.test(text) || lane.id === 'products_cpg') {
       standard = ['Grainger', 'Fastenal', 'MSC Industrial', 'Graybar', 'supplier portals', 'branch inventory spreadsheets'];
     } else if (/manufactur|assembly|bom|wip|production/.test(text)) {
       standard = ['Microsoft Dynamics 365', 'SAP Business One', 'Odoo', 'manufacturing point solutions', 'spreadsheets'];
@@ -22808,6 +22815,8 @@
     const competitive = packet.competitive || competitiveIntelligenceV3Model(state, lane, packet.story || {});
     const evidence = websiteEvidenceUxModel(state, lane);
     const alternatives = standardCompetitiveAlternativesW362(state, lane, competitive);
+    const intake = normalizedIntake(state);
+    const electricalPressure = /electrical|contractor|counter|supplier portal|branch transfer|callback|alternate|substitute|margin/i.test(`${intake.customer || ''} ${intake.website || ''} ${intake.notes || ''} ${lane && lane.name || ''}`);
     const publicEvidenceStrong = evidence && evidence.confidence && evidence.confidence.state === WEBSITE_CONFIDENCE_STATE.RECOMMENDED && evidence.confidence.scoreLabel === 'high';
     const sourceLabel = publicEvidenceStrong ? 'Public evidence plus advisory context' : 'N/LLM advisory from lane, URL/domain, and request language';
     const authorityLabel = competitive.namedCompetitor ? 'Verify named competitor before claiming' : 'Advisory prep only';
@@ -22830,7 +22839,7 @@
       : industrialEquipmentPolish.active
         ? industrialEquipmentPolish.netsuiteContrast
       : `Use ${lane.proofAnchor} to keep availability, promise, fulfillment, and financial impact in one NetSuite path.`;
-    const competitorText = alternatives.slice(0, 4).join(', ');
+    const competitorText = alternatives.slice(0, electricalPressure ? 5 : 4).join(', ');
     return {
       schema: 'idb.w362-consultant-safe-competitive-intelligence.v1',
       status: 'advisory_competitive_ready',
@@ -26430,6 +26439,10 @@
     objects.forEach((item) => {
       if (selected.length < 4 && !selected.includes(item)) selected.push(item);
     });
+    const aliasSummary = ['Product SKU', 'Availability/Replenishment Flow', 'Supporting SKU']
+      .filter((label) => objects.some((item) => consultantRunNavigationLabelW332(item).indexOf(label) >= 0 || label.indexOf(consultantRunNavigationLabelW332(item)) >= 0))
+      .join(', ')
+      .replace(/, Supporting SKU$/, ', and Supporting SKU');
     const renderPathNode = (item, index) => {
       const authority = item && item.linkAuthority ? item.linkAuthority : verifiedRecordLinkAuthorityV1(item);
       const label = consultantRunNavigationLabelW332(item);
@@ -26457,6 +26470,7 @@
     };
     return `
       <div class="idb-w361-path-flow idb-w361-netsuite-path" aria-label="NetSuite path flow">
+        ${aliasSummary ? `<div class="idb-copy idb-w336-proof-alias-summary">Proof aliases: ${escapeHtml(aliasSummary)}</div>` : ''}
         ${selected.slice(0, 4).map(renderPathNode).join('')}
       </div>
     `;
@@ -26555,8 +26569,9 @@
   }
 
   function renderW361ImportedProofRecords(finalNavigation) {
-    if (!(finalNavigation && finalNavigation.runCanUseImportedFinalNames)) return '';
+    if (!(finalNavigation && (finalNavigation.runCanUseImportedFinalNames || finalNavigation.proofReviewAvailable))) return '';
     const objects = arrayValue(finalNavigation.scriptPivotObjects);
+    if (!objects.length) return '';
     return `
       <details class="idb-technical-details idb-w116-final-navigation idb-w361-imported-proof-records">
         <summary>Use imported proof records (${escapeHtml(objects.length)})</summary>
@@ -27166,6 +27181,11 @@
       if (visibleNarrative.mode === 'wip' && hasBomRevisionW449 && isStandaloneBomRowW449(item)) return false;
       return true;
     }).slice(0, recordRowLimitW455);
+    const proofAliasSummaryW336 = ['Product SKU', 'Availability/Replenishment Flow', 'Supporting SKU']
+      .filter((label) => primaryRecordRowsW449.some((item) => consultantRunNavigationLabelW441(item, visibleNarrative) === label || consultantRunNavigationLabelW332(item) === label))
+      .join(', ')
+      .replace(/, Supporting SKU$/, ', and Supporting SKU');
+    const importedRecordsSummaryW346 = consultantFinalPivotsSummaryW336(finalNavigation);
     const renderRecordRowW442 = (item) => {
       const label = item && item.plannedOnly && /operation/i.test(`${item.role || ''} ${item.label || ''}`)
         ? firstNonBlank(item.label, `Planned Operation ${Number(item.operationIndex || 0) + 1}`)
@@ -27255,6 +27275,8 @@
         ${wipFlowComponentW449}
         ${erpBuildStoryW456}
         <div class="idb-w415-cockpit-records" aria-label="Open records">
+          ${importedRecordsSummaryW346 ? `<div class="idb-copy idb-w346-imported-records-summary">${escapeHtml(importedRecordsSummaryW346)}</div>` : ''}
+          ${proofAliasSummaryW336 ? `<div class="idb-copy idb-w336-proof-alias-summary">Proof aliases: ${escapeHtml(proofAliasSummaryW336)}</div>` : ''}
           ${groupedRows}
         </div>
         <div class="idb-w415-cockpit-story">
@@ -27933,12 +27955,9 @@
               <div class="idb-copy">Name, website, and conversation notes drive the build request.</div>
             </div>
           </div>
-          <div class="idb-chip-row">
-            <span class="idb-mini-chip">${escapeHtml(flow.statusLabel)}</span>
-            <span class="idb-mini-chip">${escapeHtml(consultantLabel(intakeGuide.confidenceModel.state))}</span>
-          </div>
         <div class="idb-actions">
           ${primaryAction}
+          <button class="idb-secondary" type="button" data-idb-w445-start-new-run>Clear/New Run</button>
         </div>
         </div>
       `;
@@ -27979,60 +27998,14 @@
             <div class="idb-copy">Choose what FORGE should create. Item selection comes from the entered website.</div>
             ${renderToggleControls(state, lane)}
           </div>
-          <details class="idb-technical-details idb-w355-operator-website-evidence">
-            <summary>Optional website/category evidence</summary>
-            <div class="idb-copy">Paste public homepage, category, product, title, or meta text when the resolver is limited. This can improve website confidence only; it cannot create records, validate Open links, or write transactions.</div>
-            <label class="idb-label">Website/category evidence
-              <textarea class="idb-textarea" data-idb-intake="websiteEvidence" placeholder="Paste public website/category text, not conversation notes">${escapeHtml(intake.websiteEvidence)}</textarea>
-            </label>
-          </details>
-          <details class="idb-technical-details idb-w200-admin-debug-intake">
-            <summary>Admin/debug: legacy intake fields</summary>
-            <div class="idb-copy">These fields are retained for trace compatibility only. Production IDB infers proof, objective, and decision context from the three required inputs.</div>
-            <div class="idb-form-grid">
-              <label class="idb-label">Requested proof
-                <textarea class="idb-textarea" data-idb-intake="scObjective" placeholder="Debug override only">${escapeHtml(intake.scObjective)}</textarea>
-              </label>
-              <label class="idb-label">Decision criteria
-                <textarea class="idb-textarea" data-idb-intake="decisionCriteria" placeholder="Debug override only">${escapeHtml(intake.decisionCriteria)}</textarea>
-              </label>
-              <label class="idb-label">Timeline / urgency
-                <input class="idb-input" data-idb-intake="timelineUrgency" value="${escapeHtml(intake.timelineUrgency)}" placeholder="Example: internal review in 2-4 weeks">
-              </label>
-              <label class="idb-label">Competitor / incumbent
-                <input class="idb-input" data-idb-intake="competitor" value="${escapeHtml(intake.competitor)}" placeholder="Spreadsheets, legacy ERP, point solution, etc.">
-              </label>
-            </div>
-          </details>
         </div>
-        ${briefPrepared ? `
-          <div class="idb-lane-recommendation" data-idb-lane-recommendation>
-            <div class="idb-status-key">Recommended lane</div>
-            <div class="idb-lane-recommend-title" data-idb-lane-recommend-title>${escapeHtml(intakeGuide.headline)}</div>
-            <div class="idb-copy" data-idb-lane-recommend-reason>${escapeHtml(intakeGuide.reason)}</div>
-            <div class="idb-chip-row" data-idb-lane-recommend-evidence>
-              <span class="idb-mini-chip">${escapeHtml(consultantLabel(intakeGuide.confidenceModel.state))}</span>
-              ${intakeGuide.evidence.length ? intakeGuide.evidence.map((item) => `<span class="idb-mini-chip">${escapeHtml(consultantLabel(item))}</span>`).join('') : '<span class="idb-mini-chip">Review input</span>'}
-            </div>
-          </div>
-          <div class="idb-lane-recommendation">
-            <div class="idb-status-key">Website naming cue</div>
-            <div class="idb-lane-recommend-title">${escapeHtml(naming.productSeed)}</div>
-            <div class="idb-copy">${escapeHtml(naming.evidence)}</div>
-            <div class="idb-chip-row">
-              <span class="idb-mini-chip">${escapeHtml(consultantLabel(naming.confidence))}</span>
-              <span class="idb-mini-chip">${escapeHtml(naming.productFamily)}</span>
-            </div>
-            ${evidenceBridge.nllmAdvisoryRecommended ? `<div class="idb-copy">${escapeHtml(evidenceBridge.evidencePrompt)}</div>` : ''}
-          </div>
-        ` : ''}
         <div class="idb-actions">
           ${briefPrepared
             ? stateAuthorityModel(state).confirmedLaneId
               ? `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(lane.id)}" data-idb-submit-disabled="${intakeGuide.needsContext ? 'true' : 'false'}" aria-disabled="${intakeGuide.needsContext ? 'true' : 'false'}">Build Records</button>`
               : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${intakeGuide.needsContext ? 'true' : 'false'}" aria-disabled="${intakeGuide.needsContext ? 'true' : 'false'}">Build Records</button>`
             : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${flow.primaryDisabled ? 'true' : 'false'}" aria-disabled="${flow.primaryDisabled ? 'true' : 'false'}">Build Records</button>`}
-          ${briefPrepared ? '<span class="idb-mini-chip">Request saved</span>' : '<span class="idb-mini-chip">Draft autosaved</span>'}
+          <button class="idb-secondary" type="button" data-idb-w445-start-new-run>Clear/New Run</button>
         </div>
       </div>
     `;
@@ -29079,21 +29052,22 @@
         <div class="idb-status-strip idb-w258-first-glance-cta idb-w413-proof-cta-rows">
           <div class="idb-status-cell">
             <div class="idb-status-key">Proof action</div>
-            <div class="idb-copy">${escapeHtml(compactText(storyCopy(proofAction), 155))}</div>
+            <div class="idb-copy">${escapeHtml(compactText(storyCopy(proofAction), 118))}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Safe claim</div>
-            <div class="idb-copy">${escapeHtml(compactText(storyCopy(safeClaim), 155))}</div>
+            <div class="idb-copy">${escapeHtml(compactText(storyCopy(safeClaim), 118))}</div>
           </div>
           <div class="idb-status-cell">
             <div class="idb-status-key">Stop</div>
-            <div class="idb-copy">${escapeHtml(compactText(storyCopy(stopGuardrail), 165))}</div>
+            <div class="idb-copy">${escapeHtml(compactText(storyCopy(stopGuardrail), 118))}</div>
           </div>
         </div>
         <div class="idb-chip-row idb-w255-first-glance">
           <span class="idb-mini-chip">Evidence confidence: ${escapeHtml(confidence)}</span>
           <span class="idb-mini-chip">Receipt: ${escapeHtml(storyCopy(receiptSummary))}</span>
           <span class="idb-mini-chip">Next: ${escapeHtml(storyCopy(nextAction))}</span>
+          <span class="idb-mini-chip">Open the returned record and prove only what the receipt supports</span>
           ${laneSupportCleanupActive ? '<span class="idb-mini-chip">Lane-consistent support</span>' : ''}
         </div>
         <details class="idb-technical-details idb-w256-live-demo-script">
@@ -29708,11 +29682,48 @@
     const w216ReviewRun = finalNavigation.runCanUseImportedFinalNames && finalNaming.finalNamesImported
       ? consultantPartialResultReviewRunModelW216V1(state.dccFinalNamingResult, state, lane, page, recommendation)
       : null;
-    const consultantStorySurfaceHtml = w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
-      ? renderConsultantStorySurfaceW248(w216ReviewRun.consultantRun.consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory, compactAudit: true, activeLaneStoryPolishW373: storyContractW373 })
+    const fallbackConsultantStorySurface = !w216ReviewRun && finalNaming.finalNamesImported
+      ? consultantStorySurfaceFromLanePackW247(state, null, state.dccFinalNamingResult)
+      : null;
+    const consultantStorySurface = w216ReviewRun && w216ReviewRun.consultantRun && w216ReviewRun.consultantRun.consultantStorySurface
+      ? w216ReviewRun.consultantRun.consultantStorySurface
+      : fallbackConsultantStorySurface;
+    const consultantStorySurfaceHtml = consultantStorySurface
+      ? renderConsultantStorySurfaceW248(consultantStorySurface, { resolverLimitedWebsiteEvidence: resolverLimited, advisoryWebsiteEvidence: advisory, compactAudit: true, activeLaneStoryPolishW373: storyContractW373 })
       : '';
+    const resolverLimitedRunEvidenceHtml = resolverLimited ? `
+      <div class="idb-run-action-card idb-w353-resolver-limited">
+        <div class="idb-status-key">Website read</div>
+        <div class="idb-strong">Resolver limited</div>
+        <div class="idb-copy">${escapeHtml(resolverLimitedCopyW353(websiteEvidence))}</div>
+        ${advisorySupported ? `<div class="idb-copy"><strong>${escapeHtml(advisory.visualLabel)}:</strong> N/LLM: advisory only; advisory inference supports the lane, but it is not public website proof. Confirm public evidence before ROI claims.</div>` : ''}
+      </div>
+    ` : '';
+    const publicReadProofHtml = !resolverLimited && websiteEvidence.confidence && websiteEvidence.confidence.state === WEBSITE_CONFIDENCE_STATE.RECOMMENDED ? `
+      <div class="idb-run-action-card idb-w359-public-read-proof">
+        <div class="idb-status-key">Website read</div>
+        <div class="idb-strong">Open Product SKU, then prove branch availability</div>
+        <div class="idb-copy">Evidence confidence: ${escapeHtml(consultantLabel(websiteEvidence.confidence.scoreLabel || 'unknown'))}. N/LLM: advisory only; review-only story shaping supports the talk track.</div>
+        <div class="idb-copy">No delivery, ROI, write, or availability claim beyond evidence.</div>
+      </div>
+    ` : '';
+    const advisoryMediumProofHtml = !resolverLimited && websiteEvidence.confidence && websiteEvidence.confidence.state === WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION && advisorySupported ? `
+      <div class="idb-run-action-card idb-w360-advisory-medium-proof">
+        <div class="idb-status-key">Website read</div>
+        <div class="idb-strong">Open Product SKU, then prove branch availability</div>
+        <div class="idb-copy">Evidence confidence: Low. N/LLM: advisory only; ${escapeHtml(advisory.visualLabel)} supports story shaping, but confirm public evidence before ROI claims.</div>
+        <div class="idb-copy">No ROI, write, creation, or availability claim beyond evidence.</div>
+      </div>
+    ` : '';
     if (!finalNavigation.runCanUseImportedFinalNames && finalNavigation.proofReviewAvailable) {
-      return renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory });
+      return `
+        ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
+        ${useVisibleNarrativeOnlyW439 ? '' : consultantStorySurfaceHtml}
+        ${renderW361ImportedProofRecords(finalNavigation)}
+        ${resolverLimitedRunEvidenceHtml}
+        ${publicReadProofHtml}
+        ${advisoryMediumProofHtml}
+      `;
     }
     if (!finalNavigation.runCanUseImportedFinalNames) {
       const waitingForLinks = buildStatus && buildStatus.automation && buildStatus.automation.runnerTaskCaptured;
@@ -29738,7 +29749,14 @@
         </details>
       `;
     }
-    return renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory });
+    return `
+      ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
+      ${useVisibleNarrativeOnlyW439 ? '' : consultantStorySurfaceHtml}
+      ${renderW361ImportedProofRecords(finalNavigation)}
+      ${resolverLimitedRunEvidenceHtml}
+      ${publicReadProofHtml}
+      ${advisoryMediumProofHtml}
+    `;
     return `
       ${renderW415DemoCockpit({ state, lane, value, script, finalNavigation, storyContractW373, websiteEvidence, competitiveAdvisory })}
       <details class="idb-technical-details idb-w417-support-troubleshoot">
@@ -30932,18 +30950,7 @@
       state.pageContext = pageContext;
       ensureWebsiteEvidenceRuntime(state);
       reconcileStateAuthority(state);
-      if (websiteSignalNeedsReview(state)) {
-        state.lanePickerOpen = true;
-        saveState(state);
-        trace('one_click_build_records_blocked_for_website_review_w419', {
-          intake: normalizedIntake(state),
-          websiteSignal: websiteSignalProfile(state),
-          reason: 'Unknown website should not auto-commit a lane from notes alone.',
-          noSubmit: true
-        });
-        draw(root, state);
-        return null;
-      }
+      state.lanePickerOpen = false;
       const websiteLaneRecommendation = suggestedLaneFromIntake(state);
       const websiteConfidence = websiteConfidenceModel(state);
       const websiteRecommendedLaneId = websiteLaneRecommendation && websiteLaneRecommendation.lane &&
@@ -30952,7 +30959,7 @@
         : '';
       const laneId = websiteRecommendedLaneId || selectedLaneId || state.selectedLaneId;
       state.selectedLaneId = laneId;
-      state.laneSelectionSource = 'consultant_confirmed';
+      state.laneSelectionSource = 'automatic_website_hidden';
       state.selectedMoveIndex = 0;
       state.lanePickerOpen = false;
       state.activeView = 'review';

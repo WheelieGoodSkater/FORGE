@@ -187,7 +187,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function normalizeRunnerScriptIdW484(value) {
     const text = String(value || '').trim();
     if (!text) return DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W483;
-    if (/^customscript_ss_demo_commcenter_runner$|^customscript_scai_ss_runner_simple_w482$|^customscript_scai_ss_runner_sidecar_/i.test(text)) {
+    if (/^customscript_ss_demo_commcenter_runner$|^customscript_scai_ss_runner_simple_w482$|^customscript_scai_w483_clean$|^customscript_scai_ss_runner_sidecar_/i.test(text)) {
       return DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W483;
     }
     return text;
@@ -196,7 +196,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function normalizeRunnerDeployIdW484(value) {
     const text = String(value || '').trim();
     if (!text) return DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W483;
-    if (/^customdeploy_ss_demo_commcenter_runner$|^customdeploy_deploy_commcenter_runner$|^customdeploy_scai_ss_runner_simple_w482$|^customdeploy_scai_ss_runner_sidecar_/i.test(text)) {
+    if (/^customdeploy_ss_demo_commcenter_runner$|^customdeploy_deploy_commcenter_runner$|^customdeploy_scai_ss_runner_simple_w482$|^customdeploy_scai_w483_clean$|^customdeploy_scai_ss_runner_sidecar_/i.test(text)) {
       return DEFAULT_SIDECAR_RUNNER_DEPLOY_ID_W483;
     }
     return text;
@@ -346,19 +346,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   }
 
   function brandFromWebsiteOrProspectW457(website, prospect) {
-    const domain = domainFromWebsiteW457(website);
-    if (/bluebottlecoffee\.com|bluebottle/.test(domain)) return 'Blue Bottle';
-    if (/health-ade\.com|healthade/.test(domain)) return 'Health-Ade';
-    if (/yeti\.com|yeti/.test(domain)) return 'YETI';
-    if (/stanley1913\.com|stanley/.test(domain)) return 'Stanley';
-    if (/chobani\.com/.test(domain)) return 'Chobani';
-    if (/drinkpoppi\.com|poppi/.test(domain)) return 'Poppi';
-    if (/goodles\.com/.test(domain)) return 'Goodles';
-    if (/chomps\.com/.test(domain)) return 'Chomps';
-    if (/peakdesign\.com|peakdesign|peak-design/.test(domain)) return 'Peak Design';
-    if (/garmin\.com|garmin/.test(domain)) return 'Garmin';
-    if (/lecreuset\.com|le-creuset|le creuset/.test(domain)) return 'Le Creuset';
-    if (/corkcicle\.com|corkcicle/.test(domain)) return 'Corkcicle';
+    void website;
     const cleaned = compactText(prospect).replace(/\b(line readiness|wip proof|readiness proof|demo proof|proof|readiness|wip|demo|v\d+)\b/ig, '');
     return cleaned || compactText(prospect) || 'Demo Customer';
   }
@@ -480,34 +468,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       'Internal Combustion Trucks', 'Counterbalance Truck', 'Counterbalance Trucks',
       'Turret Truck', 'Turret Trucks', 'Very Narrow Aisle Truck',
       'Very Narrow Aisle Trucks', 'Rider Pallet Truck', 'Walkie Pallet Truck',
-      'Reach-Fork Truck', 'SP Series Order Picker', 'C-5 Series', 'C-G Series',
-      'RC Series', 'RM Series', 'RR/RD Series', 'TSP Series', 'PE Series', 'WP Series'
-      , 'Rambler', 'Rambler Tumbler', 'Rambler 20 oz Tumbler',
-      'Rambler 30 oz Tumbler', 'Rambler Bottle', 'Tundra Cooler',
-      'Roadie Cooler', 'Hopper Soft Cooler', 'Camino Carryall',
-      'LoadOut Bucket', 'Yonder Bottle', 'Quencher H2.0 FlowState Tumbler',
-      'IceFlow Flip Straw Tumbler', 'Classic Legendary Bottle',
-      'AeroLight Transit Mug', 'Adventure Quencher Travel Tumbler',
-      'Wide Mouth Bottle', 'All Around Travel Tumbler', 'All Around Tumbler',
-      'Trail Series Bottle', 'Coffee Mug', 'Karu 2 Pro Multi-Fuel Pizza Oven',
-      'Koda 16 Gas Powered Pizza Oven', 'Karu 12G Multi-Fuel Pizza Oven',
-      'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven',
-      'Stagg EKG Electric Kettle', 'Stagg EKG Pro', 'Carter Move Mug',
-      'Opus Conical Burr Grinder', 'Ode Brew Grinder', 'Clara French Press',
-      'Tally Pro Precision Scale', 'Bonfire', 'Yukon', 'Ranger', 'Mesa',
-      'Mesa XL', 'Pi Prime', 'Canyon', 'Surround Tabletop',
-      'Insulated Tumbler', 'Sport Canteen', 'Cold Cup', 'Lunch Bag',
-      'Commuter Cup', 'Coffee Mug', 'Water Bottle', 'Stemless Cup',
-      'Good Grips', 'POP Containers', 'Brew Coffee Maker',
-      'Steel Salad Spinner', 'Angled Measuring Cup', 'Tot Feeding Products',
-      'Ironwood', 'Timberline', 'Pro Series', 'Woodridge', 'Flat Top Grill',
-      'Forerunner Running Watch', 'Forerunner 265 Running Watch',
-      'Edge Cycling Computer', 'Edge 1040 Cycling Computer',
-      'Everyday Backpack', 'Travel Tripod', 'Capture Camera Clip',
-      'Slide Lite Camera Strap', 'Slide Lite', 'Tech Pouch',
-      'Camera Cube', 'Packing Cube', 'Outdoor Backpack', 'Travel Backpack',
-      'Signature Dutch Oven', 'Enameled Cast Iron Cookware',
-      'Cast Iron Cookware', 'Cookware Set'
+      'Reach-Fork Truck'
     ];
     known.forEach((term) => {
       const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/o/g, '[oō]'), 'i');
@@ -517,18 +478,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       /\b([A-Z][A-Za-z0-9-]{1,8}\s+Series\s+(?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck|Truck)s?)\b/g,
       /\b((?:Electric|Internal Combustion|Counterbalance|Rider|Walkie|Walkie Rider|Very Narrow Aisle|Reach-Fork)\s+(?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck|Truck)s?)\b/gi,
       /\b((?:Forklift|Lift Truck|Pallet Truck|Reach Truck|Order Picker|Tow Tractor|Turret Truck)s?)\b/gi,
-      /\b((?:Rambler|Tundra|Roadie|Hopper|Camino|LoadOut|Yonder)\s+(?:Tumbler|Bottle|Cooler|Soft Cooler|Carryall|Bucket|Mug|Drinkware)s?)\b/gi,
-      /\b((?:Quencher H2\.0 FlowState|IceFlow Flip Straw|Classic Legendary|AeroLight Transit|Adventure Quencher)\s+(?:Tumbler|Bottle|Mug|Travel Tumbler)s?)\b/gi,
-      /\b((?:Wide Mouth|All Around|Trail Series|Coffee)\s+(?:Bottle|Travel Tumbler|Tumbler|Mug)s?)\b/gi,
-      /\b((?:Karu 2 Pro|Karu 12G|Koda 16|Volt 12|Fyra 12)\s+(?:Multi-Fuel|Gas Powered|Electric|Wood Pellet)?\s*(?:Pizza Oven|Oven)s?)\b/gi,
-      /\b((?:Stagg EKG|Stagg EKG Pro|Carter Move|Opus Conical Burr|Ode Brew|Clara|Tally Pro)\s+(?:Electric Kettle|Kettle|Mug|Grinder|Burr Grinder|Brew Grinder|French Press|Precision Scale|Scale)s?)\b/gi,
       /\b((?:Insulated|Sport|Commuter|Classic|Cruiser|Kids?|Coffee|Stemless|Water)?\s*(?:Tumbler|Canteen|Cold Cup|Lunch Bag|Bottle|Mug|Cup)s?)\b/gi,
-      /\b((?:Bonfire|Yukon|Ranger|Mesa XL|Mesa|Canyon|Pi Prime|Surround)\s+(?:Fire Pit|Firepit|Pizza Oven|Tabletop|Stove|Grill|Shield|Stand|Hub)?s?)\b/gi,
-      /\b((?:Good Grips|POP Containers|Brew Coffee Maker|Steel Salad Spinner|Angled Measuring Cup|Tot Feeding Products?))\b/gi,
-      /\b((?:Ironwood|Timberline|Pro Series|Woodridge|Flat Top Grill)\s*(?:Pellet Grill|Wood Pellet Grill|Grill|Griddle|Products?)?)\b/gi,
-      /\b((?:Forerunner|Edge)\s*(?:\d{2,4})?\s*(?:Running Watch|GPS Watch|Smartwatch|Cycling Computer|Bike Computer|Computer)s?)\b/gi,
-      /\b((?:Everyday Backpack|Travel Tripod|Capture Camera Clip|Slide Lite Camera Strap|Slide Lite|Tech Pouch|Camera Cube|Packing Cube|Outdoor Backpack|Travel Backpack)s?)\b/gi,
-      /\b((?:Signature\s+)?(?:Dutch Oven|Round Dutch Oven|Oval Dutch Oven|Enameled Cast Iron Cookware|Cast Iron Cookware|Cookware Set)s?)\b/gi,
       /\b((?:20 oz|30 oz|40 oz|64 oz)\s+(?:Tumbler|Bottle|Quencher|Mug))\b/gi
     ].forEach((pattern) => {
       let match = pattern.exec(cleaned);
@@ -539,82 +489,13 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     });
     cleaned.split(/[\n\r|•;]+/).forEach((chunk) => {
       const candidate = compactText(chunk).replace(/^(shop|category|product|collection|nav|menu|title|name):\s*/i, '');
-      if (/^[A-Z0-9][A-Za-z0-9&'\/ -]{2,56}$/.test(candidate) && /\s|NOLA|Poppi|Chobani|Goodles|Chomps|Forklift|Truck|Picker|Tractor|Series/i.test(candidate)) phrases.push(candidate);
+      if (/^[A-Z0-9][A-Za-z0-9&'\/ -]{2,56}$/.test(candidate) && /\s|Forklift|Truck|Picker|Tractor|Series/i.test(candidate)) phrases.push(candidate);
     });
     return uniqueList(phrases).map(titleCaseEvidencePhraseW457).filter((phrase) => !isGenericCatalogCandidateW459(phrase));
   }
 
   function domainCatalogCandidatesW457(website) {
-    const domain = domainFromWebsiteW457(website);
-    if (/bluebottlecoffee\.com|bluebottle/.test(domain)) {
-      return ['NOLA', 'Craft Matcha', 'Craft Hojicha', 'Kyoto Style Espresso', 'Our Summer Blend', 'Vanilla Chicory Syrup', 'Single Origin', 'Signature Blends'];
-    }
-    if (/health-ade\.com|healthade/.test(domain)) {
-      return ['Ginger Lemon Kombucha', 'Pink Lady Apple Kombucha', 'Pomegranate Kombucha', 'Classic Kombucha', 'SunSip Prebiotic Soda'];
-    }
-    if (/chobani\.com/.test(domain)) {
-      return ['Greek Yogurt', 'Flip Yogurt', 'Zero Sugar Yogurt', 'Complete Yogurt', 'Oatmilk'];
-    }
-    if (/drinkpoppi\.com|poppi/.test(domain)) {
-      return ['Strawberry Lemon Prebiotic Soda', 'Orange Prebiotic Soda', 'Cherry Limeade Prebiotic Soda', 'Classic Cola Prebiotic Soda'];
-    }
-    if (/goodles\.com/.test(domain)) {
-      return ['Cheddy Mac', 'Shella Good', 'Lucky Penne', 'Vegan Be Heroes'];
-    }
-    if (/raos\.com|rao'?s/.test(domain)) {
-      return ['Marinara Sauce', 'Tomato Basil Sauce', 'Arrabbiata Sauce', 'Vodka Sauce', 'Roasted Garlic Sauce', 'Homemade Penne Rigate', 'Spaghetti'];
-    }
-    if (/chomps\.com/.test(domain)) {
-      return ['Original Beef Stick', 'Jalapeno Beef Stick', 'Original Turkey Stick', 'Italian Style Beef Stick'];
-    }
-    if (/peakdesign\.com|peakdesign|peak-design/.test(domain)) {
-      return ['Everyday Backpack', 'Travel Tripod', 'Capture Camera Clip', 'Slide Lite Camera Strap', 'Tech Pouch'];
-    }
-    if (/yeti\.com|yeti/.test(domain)) {
-      return ['Rambler 20 oz Tumbler', 'Tundra Cooler', 'Roadie Cooler', 'Hopper Soft Cooler', 'Camino Carryall', 'LoadOut Bucket', 'Yonder Bottle'];
-    }
-    if (/stanley1913\.com|stanley/.test(domain)) {
-      return ['Quencher H2.0 FlowState Tumbler', 'IceFlow Flip Straw Tumbler', 'Classic Legendary Bottle', 'AeroLight Transit Mug', 'Adventure Quencher Travel Tumbler'];
-    }
-    if (/hydroflask\.com|hydroflask|hydro-flask/.test(domain)) {
-      return ['Wide Mouth Bottle', 'All Around Travel Tumbler', 'All Around Tumbler', 'Trail Series Bottle', 'Coffee Mug'];
-    }
-    if (/ooni\.com|ooni/.test(domain)) {
-      return ['Karu 2 Pro Multi-Fuel Pizza Oven', 'Koda 16 Gas Powered Pizza Oven', 'Karu 12G Multi-Fuel Pizza Oven', 'Volt 12 Electric Pizza Oven', 'Fyra 12 Wood Pellet Pizza Oven'];
-    }
-    if (/fellowproducts\.com|fellowproducts|fellow/.test(domain)) {
-      return ['Stagg EKG Electric Kettle', 'Stagg EKG Pro', 'Carter Move Mug', 'Opus Conical Burr Grinder', 'Ode Brew Grinder', 'Clara French Press'];
-    }
-    if (/corkcicle\.com|corkcicle/.test(domain)) {
-      return ['Insulated Tumbler', 'Sport Canteen', 'Cold Cup', 'Lunch Bag', 'Commuter Cup', 'Coffee Mug', 'Water Bottle', 'Stemless Cup'];
-    }
-    if (/oxo\.com|oxo/.test(domain)) {
-      return ['Good Grips', 'POP Containers', 'Brew Coffee Maker', 'Steel Salad Spinner', 'Angled Measuring Cup', 'Tot Feeding Products'];
-    }
-    if (/traeger\.com|traeger/.test(domain)) {
-      return ['Ironwood Pellet Grill', 'Timberline Pellet Grill', 'Pro Series Pellet Grill', 'Woodridge Pellet Grill', 'Flat Top Grill'];
-    }
-    if (/solostove\.com|solo-stove|solo stove/.test(domain)) {
-      return ['Bonfire', 'Yukon', 'Ranger', 'Mesa', 'Mesa XL', 'Pi Prime', 'Canyon'];
-    }
-    if (/crown\.com|crown/.test(domain)) {
-      return ['Crown C-5 Series Forklift', 'Crown RC Series Stand-Up Rider Forklift', 'Crown RM Series Reach Truck', 'Crown SP Series Order Picker', 'Crown PE Series Pallet Truck'];
-    }
-    if (/hyster\.com|hyster/.test(domain)) {
-      return ['Hyster A Series Lift Truck', 'Hyster J Series Electric Forklift', 'Hyster Hyster Tracker Forklift', 'Hyster Reach Truck', 'Hyster Pallet Truck'];
-    }
-    if (/yale\.com|yale/.test(domain)) {
-      return ['Yale ERP Series Electric Lift Truck', 'Yale GP Series Internal Combustion Truck', 'Yale Reach Truck', 'Yale Order Picker', 'Yale Pallet Truck'];
-    }
-    if (/toyotaforklift\.com|toyota/.test(domain)) {
-      return ['Toyota Core Electric Forklift', 'Toyota Internal Combustion Forklift', 'Toyota Reach Truck', 'Toyota Order Picker', 'Toyota Pallet Jack'];
-    }
-    if (/garmin\.com|garmin/.test(domain)) {
-      return ['Forerunner Running Watch', 'Edge Cycling Computer', 'Forerunner 265 Running Watch', 'Edge 1040 Cycling Computer'];
-    }
-    if (/lecreuset\.com|le-creuset|le creuset/.test(domain)) {
-      return ['Signature Dutch Oven', 'Enameled Cast Iron Cookware', 'Cast Iron Cookware', 'Cookware Set'];
-    }
+    void website;
     return [];
   }
 
@@ -671,14 +552,6 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         }));
       }, 0);
     });
-    domainCatalogCandidatesW457(website).forEach((phrase) => addCatalogCandidateW457(candidates, phrase, {
-      source: 'resolver_evidence',
-      sourceUrl: website,
-      domain,
-      evidenceText: `Catalog candidate associated with ${domain || website}`,
-      confidence: 74,
-      reasons: ['domain/catalog resolver candidate']
-    }));
     const seen = {};
     const rejectedCatalogCandidates = [];
     const filtered = candidates.filter((candidate) => {
@@ -1053,9 +926,6 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
 
   function websiteProductExamplesFromRequestW472(request, website, prospect) {
     const candidates = [];
-    knownWebsiteProductExamplesW483(website, prospect).forEach(function(candidate) {
-      candidates.push(candidate);
-    });
     const urlProductName = productNameFromWebsiteUrlW473(website);
     if (urlProductName) {
       const urlProductIsProductDetail = /\/(product|products|p)\//i.test(String(website || ''));
@@ -1104,30 +974,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   }
 
   function knownWebsiteProductExamplesW483(website, prospect) {
-    const domainText = `${websiteDomainW474(website)} ${compactText(prospect)}`.toLowerCase();
-    const known = [
-      {
-        pattern: /hestanculinary\.com|hestan culinary|hestan\b/,
-        names: ['NanoBond', 'CopperBond', 'ProBond'],
-        sourceUrl: website,
-        reason: 'public Hestan Culinary product collections'
-      }
-    ];
-    for (let i = 0; i < known.length; i += 1) {
-      const entry = known[i];
-      if (!entry.pattern.test(domainText)) continue;
-      return entry.names.map(function(name) {
-        const mentioned = domainText.indexOf(String(name || '').toLowerCase()) !== -1;
-        return {
-          name,
-          source: 'known_website_product_examples_w483',
-          sourceUrl: entry.sourceUrl,
-          confidence: mentioned ? 112 : 106,
-          wipSuitabilityScore: mentioned ? 112 : 106,
-          reasons: [entry.reason]
-        };
-      });
-    }
+    void website;
+    void prospect;
     return [];
   }
 
@@ -1320,45 +1168,25 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function buildServerPrecomputedNamingPack(request) {
     const prospect = compactText(request && request.prospect && request.prospect.name) || 'Demo Customer';
     const website = compactText(request && request.prospect && request.prospect.website);
-    const explicitPack = explicitNamingPackFromRequestW468(request);
-    const industrySelection = industrySelectionFromRequestW468(request, website);
-    const basePack = explicitPack || {};
-    const websiteProductExamplesPack = websiteProductExamplesNamingPackW472(request, website, prospect);
-    const catalogSelected = Object.keys(basePack).length || websiteProductExamplesPack
-      ? { pack: null, selected: { catalogCandidates: [], rejectedCatalogCandidates: [] } }
-      : buildCatalogSelectedNamingPackW470(request, website, prospect);
-    const selectedPack = websiteProductExamplesPack || catalogSelected.pack || {};
-    const effectivePack = websiteProductExamplesPack || (Object.keys(basePack).length ? basePack : selectedPack);
+    const nllmPack = nllmWebsiteNamingPackFromRequestW490(request, website, prospect);
+    if (!nllmPack) return null;
+    const industrySelection = nllmPack.selectedIndustryChip
+      ? { label: nllmPack.selectedIndustryChip, source: nllmPack.industryChipSource || 'nllm_website_product_evidence', confidence: nllmPack.industryChipConfidence || 'high' }
+      : industrySelectionFromRequestW468(request, website);
+    const effectivePack = nllmPack;
     const rankedCatalogCandidates = (effectivePack.selectedCatalogCandidate
       ? [effectivePack.selectedCatalogCandidate].concat(effectivePack.catalogCandidates || [])
-      : (effectivePack.catalogCandidates || catalogSelected.selected.catalogCandidates || []));
+      : (effectivePack.catalogCandidates || []));
     const selectedCatalogCandidate = rankedCatalogCandidates[0] || null;
     const fallbackUsed = !selectedCatalogCandidate;
     const product = compactText(effectivePack.selectedProductName || effectivePack.primary_product_candidate || selectedCatalogCandidate && selectedCatalogCandidate.name || '');
-    const fallbackReason = fallbackUsed ? 'No ranked website catalog candidate exists.' : '';
-    const source = websiteProductExamplesPack
-      ? 'suitelet-website-product-examples-naming-pack-w472'
-      : Object.keys(basePack).length
-      ? 'suitelet-precomputed-naming-pack'
-      : (websiteProductExamplesPack ? 'suitelet-website-product-examples-naming-pack-w472' : (Object.keys(selectedPack).length ? 'suitelet-selected-catalog-naming-pack' : 'suitelet-prospect-fallback-naming-pack'));
-    const namingEvidenceSource = websiteProductExamplesPack
-      ? 'trusted_website_product_examples_w472'
-      : Object.keys(basePack).length
-      ? 'precomputed_naming_pack'
-      : (websiteProductExamplesPack ? 'trusted_website_product_examples_w472' : (Object.keys(selectedPack).length ? 'selected_catalog_candidate' : 'prospect_fallback'));
-    const confidence = websiteProductExamplesPack
-      ? 96
-      : Object.keys(basePack).length
-      ? 90
-      : (websiteProductExamplesPack ? 96 : (Object.keys(selectedPack).length ? Number(selectedCatalogCandidate && selectedCatalogCandidate.confidence || 84) : 35));
-    const fallbackComponentNames = [
-      `${prospect} Component A`,
-      `${prospect} Component B`,
-      `${prospect} Component C`
-    ];
+    const fallbackReason = fallbackUsed ? 'N/LLM naming package did not include a selected website product candidate.' : '';
+    const source = 'suitelet-nllm-website-naming-pack-w490';
+    const namingEvidenceSource = 'nllm_website_product_evidence';
+    const confidence = Number(effectivePack.confidencePercent || effectivePack.namingConfidence || 92);
     const componentNames = Array.isArray(effectivePack.component_names) && effectivePack.component_names.length === 3
       ? effectivePack.component_names
-      : fallbackComponentNames;
+      : [];
     const heroName = compactText(effectivePack.hero_item_name) || `${prospect} Finished Good`;
     const assemblyName = compactText(effectivePack.assembly_name) || `${prospect} Assembly`;
 	    const result = {
@@ -1410,29 +1238,155 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       selectedCatalogCandidate,
       selectedCatalogCandidateSource: effectivePack.selectedCatalogCandidateSource || '',
       selectedCatalogCandidateReasons: effectivePack.selectedCatalogCandidateReasons || [],
-      catalogCandidates: effectivePack.catalogCandidates || catalogSelected.selected.catalogCandidates || [],
-      rejectedCatalogCandidates: effectivePack.rejectedCatalogCandidates || catalogSelected.selected.rejectedCatalogCandidates || [],
+      catalogCandidates: effectivePack.catalogCandidates || [],
+      rejectedCatalogCandidates: effectivePack.rejectedCatalogCandidates || [],
       fallbackUsed,
       fallbackReason,
-      missingEvidence: fallbackReason ? ['website catalog product candidate', 'real public product/product-line evidence'] : [],
-      namingAuthorityOrderW468: 'server precomputed naming pack -> prospect fallback',
-      namingAuthorityOrderW470: 'server selected catalog naming pack -> runner preserve only -> prospect fallback',
-      namingAuthorityOrderW472: 'website product examples -> naming files only when website has no product evidence -> prospect fallback',
-      websiteNamingSupersedesAllPacksW472: !!websiteProductExamplesPack,
-      supersededExplicitNamingPackW472: !!(websiteProductExamplesPack && Object.keys(basePack).length),
+      missingEvidence: fallbackReason ? ['nllm selected website product candidate'] : [],
+      namingAuthorityOrderW468: 'entered website -> N/LLM website naming package -> runner preserve only',
+      namingAuthorityOrderW470: 'entered website -> N/LLM website naming package -> runner preserve only',
+      namingAuthorityOrderW472: 'entered website -> N/LLM website naming package -> runner preserve only',
+      namingAuthorityOrderW490: 'entered website -> N/LLM website naming package -> runner applies returned names; static/domain examples forbidden',
+      websiteNamingSupersedesAllPacksW472: true,
+      supersededExplicitNamingPackW472: false,
       namingAuthorityLockedW470: !!Object.keys(effectivePack).length,
       noisyExplicitNamingPackRejected: false
     };
-    if (!websiteProductExamplesPack && Object.keys(basePack).length && !effectivePack.selectedCatalogCandidate) {
-      delete result.selectedProductName;
-      delete result.primary_product_candidate;
-      delete result.selectedCatalogCandidate;
-      delete result.selectedCatalogCandidateSource;
-      delete result.selectedCatalogCandidateReasons;
-      delete result.catalogCandidates;
-      delete result.rejectedCatalogCandidates;
-    }
     return result;
+  }
+
+  function nllmWebsiteNamingRequestW490(request, website, prospect) {
+    const toggles = normalizeSelectedToggles(request);
+    return {
+      schema: 'idb.nllm-website-naming-package-request.v1',
+      objective: 'Use the entered website/domain as the product authority and return the exact NetSuite naming package the runner should apply.',
+      customer: {
+        name: prospect,
+        website,
+        domain: websiteDomainW474(website)
+      },
+      selectedToggles: toggles,
+      requiredAuthority: 'entered_website_domain_plus_nllm_product_evidence',
+      conversationNotesUse: 'Notes may shape pain, timing, ROI, competitive language, and proof story only. Notes must not choose product identity.',
+      mustReturn: [
+        'primaryProductCandidate',
+        'alternateProductCandidates',
+        'industryCategory',
+        'recordNames',
+        'componentNames',
+        'bomName',
+        'bomRevisionName',
+        'routingName',
+        'operationNamesBySeq',
+        'sourceBasis',
+        'productCandidateSource',
+        'confidencePercent',
+        'evidenceTerms',
+        'evidenceUrls'
+      ],
+      requiredRecordNames: {
+        hero_item_name: 'real product or product-line name from website evidence',
+        assembly_name: 'product-specific assembly/build name when manufacturing is selected',
+        component_names: 'exactly three plausible components or inputs for that website product',
+        bom_name: 'product-specific BOM name when manufacturing is selected',
+        bom_revision_name: 'product-specific BOM revision name when manufacturing is selected',
+        routing_name: 'product/industry-specific routing name when WIP is selected',
+        operation_names_by_seq: 'operation names keyed by 10, 20, 30'
+      },
+      forbidden: [
+        'built-in brand/product lists',
+        'generic Product Availability SKU',
+        'generic Finished Good without a website product term',
+        'random run ids',
+        'lane codes',
+        'prospect notes as product identity'
+      ],
+      websiteEvidence: request && (request.websiteEvidence || request.websiteEvidenceV1 || request.websiteResolverOutput || request.productEvidence || request.groundedProductEvidence) || null,
+      storyInputs: request && request.storyInputs || null
+    };
+  }
+
+  function nllmWebsiteNamingPackFromRequestW490(request, website, prospect) {
+    const sources = nllmWebsiteNamingSourcesW490(request);
+    for (let i = 0; i < sources.length; i += 1) {
+      const source = sources[i];
+      if (!source || !source.value) continue;
+      if (!nllmWebsiteNamingSourceAllowedW490(source.value, source.path)) continue;
+      const pack = normalizeExplicitNamingPackW468(source.value);
+      if (!pack) continue;
+      const product = compactText(source.value.primaryProductCandidate || source.value.primary_product_candidate || source.value.productSeed || source.value.selectedProductName || pack.hero_item_name);
+      if (!product || rejectedWebsiteCandidateReasonW474(product) || isGenericCatalogCandidateW459(product)) continue;
+      const components = Array.isArray(source.value.componentNames) ? source.value.componentNames : pack.component_names;
+      pack.component_names = components.map(compactText).filter(Boolean).slice(0, 3);
+      if (!pack.hero_item_name) pack.hero_item_name = product;
+      if (!pack.assembly_name) pack.assembly_name = `${product} Assembly`;
+      if (!pack.bom_name) pack.bom_name = compactText(source.value.bomName) || `BOM - ${product}`;
+      if (!pack.bom_revision_name) pack.bom_revision_name = compactText(source.value.bomRevisionName) || `Revision 1 - ${product}`;
+      if (!pack.routing_name) pack.routing_name = compactText(source.value.routingName) || `Routing - ${product}`;
+      if (!pack.component_names || pack.component_names.length !== 3) continue;
+      pack.operation_names_by_seq = source.value.operationNamesBySeq || source.value.operation_names_by_seq || pack.operation_names_by_seq || {
+        '10': `Prepare ${pack.component_names[0]}`,
+        '20': `Build ${pack.assembly_name}`,
+        '30': `QC and Release ${pack.hero_item_name}`
+      };
+      pack.selectedProductName = product;
+      pack.primary_product_candidate = product;
+      pack.selectedCatalogCandidate = {
+        name: product,
+        source: 'nllm_website_product_evidence',
+        sourceUrl: website,
+        confidence: Number(source.value.confidencePercent || source.value.confidence || 92),
+        reasons: Array.isArray(source.value.evidenceTerms) ? source.value.evidenceTerms : ['N/LLM website product evidence']
+      };
+      pack.selectedCatalogCandidateSource = 'nllm_website_product_evidence';
+      pack.selectedCatalogCandidateReasons = pack.selectedCatalogCandidate.reasons;
+      pack.catalogCandidates = [pack.selectedCatalogCandidate].concat((source.value.alternateProductCandidates || []).map(function(name) {
+        return { name: compactText(name), source: 'nllm_website_product_evidence', sourceUrl: website };
+      }).filter(function(candidate) { return candidate.name; }));
+      pack.selectedIndustryChip = compactText(source.value.industryCategory || source.value.selectedIndustryChip || source.value.industry_category) || '';
+      pack.industryChipSource = 'nllm_website_product_evidence';
+      pack.industryChipConfidence = String(source.value.confidence || 'high');
+      pack.websiteEvidenceSource = 'nllm_website_product_evidence';
+      pack.websiteEvidenceSourceUrls = Array.isArray(source.value.evidenceUrls) ? source.value.evidenceUrls : evidenceSourceUrlsW459(request, website);
+      pack.namingEvidenceSource = 'nllm_website_product_evidence';
+      pack.confidencePercent = Number(source.value.confidencePercent || 92);
+      pack.namingConfidence = pack.confidencePercent;
+      pack.componentEvidenceSource = 'nllm_website_product_evidence';
+      pack.nllmComponentNamesUsed = true;
+      pack.nllmComponentNamePromptVersion = 'w490-website-naming-package-v1';
+      pack.nllmNamingPackagePath = source.path;
+      return pack;
+    }
+    return null;
+  }
+
+  function nllmWebsiteNamingSourcesW490(request) {
+    return [
+      { path: 'request.nllmWebsiteNamingPackage', value: request && request.nllmWebsiteNamingPackage },
+      { path: 'request.recordNamingAdvisoryResponse', value: request && request.recordNamingAdvisoryResponse },
+      { path: 'request.finalNamingAdvisory', value: request && request.finalNamingAdvisory },
+      { path: 'request.dccFinalNamingResult', value: request && request.dccFinalNamingResult },
+      { path: 'request.namingAuthority.nllmWebsiteNamingPackage', value: request && request.namingAuthority && request.namingAuthority.nllmWebsiteNamingPackage },
+      { path: 'request.namingAuthority.recordNamingAdvisoryResponse', value: request && request.namingAuthority && request.namingAuthority.recordNamingAdvisoryResponse }
+    ];
+  }
+
+  function nllmWebsiteNamingSourceAllowedW490(value, path) {
+    const text = compactText([
+      path,
+      value && value.schema,
+      value && value.sourceBasis,
+      value && value.source,
+      value && value.productCandidateSource,
+      value && value.requiredAuthority,
+      value && value.namingEvidenceSource
+    ].join(' ')).toLowerCase();
+    if (!/(nllm|llm)/.test(text)) return false;
+    if (!/(website|domain|product_evidence|product evidence)/.test(text)) return false;
+    if (/notes_product_evidence/.test(text) && !/website/.test(text)) return false;
+    if (value && value.creationAllowed === true) return false;
+    if (value && value.writeAuthority && value.writeAuthority !== 'none') return false;
+    return true;
   }
 
   function rejectNoisyExplicitNamingPackW468(pack, prospect) {
@@ -1567,10 +1521,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (!namingPack || namingPack._source === 'suitelet-prospect-fallback-naming-pack') {
       return {
         fileId: null,
-        status: 'clean_naming_pack_omitted_runner_deterministic_fallback',
+        status: 'nllm_website_naming_package_required',
         namingPack: null,
         fallbackUsed: true,
-        reason: 'No clean explicit or catalog naming pack was available; runner will use old-runner deterministic naming.'
+        reason: 'Website/domain naming must come from an N/LLM website naming package. Static domain catalogs, built-in product examples, URL guesses, and prospect notes are not allowed to create live record names.',
+        nllmWebsiteNamingRequest: nllmWebsiteNamingRequestW490(request, compactText(request && request.prospect && request.prospect.website), compactText(request && request.prospect && request.prospect.name) || 'Demo Customer')
       };
     }
     const fileName = boundedFileNameW461(`scai_naming_${safeFileToken(idempotencyToken)}.json`, NAMING_FILE_NAME_LIMIT_W468);
@@ -1787,8 +1742,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       status: busy ? 'runner_busy_inprogress' : (queueSubmit.queueSubmitted ? 'pending_runner_completion' : 'not_started_no_submit'),
       idempotencyToken,
       runnerTaskId: queueSubmit.runnerTaskId,
-      retryable: busy === true,
-      retryAfterMs: busy ? queueSubmit.retryAfterMs : null,
+      retryable: busy === true || queueSubmit.queueSubmitted === true,
+      retryAfterMs: busy ? queueSubmit.retryAfterMs : 3000,
       busyReason: busy ? queueSubmit.reason : '',
       sourceRequestId: request && request.requestId ? String(request.requestId) : '',
       buildAttemptId: request && (request.buildAttemptId || request.buildAttemptProvenance && request.buildAttemptProvenance.buildAttemptId) ? String(request.buildAttemptId || request.buildAttemptProvenance.buildAttemptId) : '',
@@ -1967,7 +1922,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const expected = resultCaptureLookupProvenance(lookup);
     const actual = captureProvenanceFromJson(parsed);
     const reasons = [];
-    if (expected.runnerTaskId && actual.runnerTaskId && actual.runnerTaskId !== expected.runnerTaskId && !currentRunRunnerTaskSwitchAllowedW472(expected, actual)) {
+    if (expected.runnerTaskId && actual.runnerTaskId && actual.runnerTaskId !== expected.runnerTaskId && !currentRunRunnerTaskSwitchAllowedW472(expected, actual) && !currentRunExtIdAliasAllowedW473(expected, actual)) {
       reasons.push('runnerTaskId_mismatch');
     }
     if (expected.buildAttemptId && actual.buildAttemptId !== expected.buildAttemptId && !currentRunExtIdAliasAllowedW473(expected, actual)) {
@@ -2682,6 +2637,34 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     return { promoted: true, salesOrder, transactionResolution: completed.transactionResolution };
   }
 
+  function completedPayloadTopLevelRecordFieldsW486(payload) {
+    const source = payload || {};
+    const records = source.records || {};
+    const salesOrder = records.salesOrder || records.demoTransaction || source.salesOrder || source.demoTransaction || null;
+    return {
+      records: {
+        customer: records.customer || source.customer || null,
+        salesOrder,
+        heroItem: records.heroItem || source.heroItem || null,
+        matrixItem: records.matrixItem || records.matrixProofItem || source.matrixItem || null,
+        componentItems: source.componentItems || records.componentItems || []
+      },
+      recordsArray: source.recordsArray || source.displayReadyRecords || source.displayRecords || [],
+      displayReadyRecords: source.displayReadyRecords || source.recordsArray || source.displayRecords || [],
+      displayRecords: source.displayRecords || source.recordsArray || source.displayReadyRecords || [],
+      customer: records.customer || source.customer || null,
+      salesOrder,
+      demoTransaction: salesOrder,
+      heroItem: records.heroItem || source.heroItem || null,
+      assembly: records.assembly || source.assembly || null,
+      bom: records.bom || source.bom || null,
+      bomRevision: records.bomRevision || source.bomRevision || null,
+      workOrder: records.workOrder || source.workOrder || null,
+      routing: records.routing || source.routing || null,
+      componentItems: source.componentItems || records.componentItems || []
+    };
+  }
+
   function findResultCaptureFile(config, lookup, modules) {
     if (!config.resultCaptureFolderId) return { found: false, reason: 'result capture folder is not configured' };
     const expected = resultCaptureLookupProvenance(lookup || {});
@@ -2816,6 +2799,21 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       }
       const matchResult = resultCaptureMatchesCurrentAttempt(parsed, expected);
       if (!matchResult.matches) {
+        if (terminalKeyedSafeTokenCaptureAllowedW455(parsed, matchResult, { source: 'currentRunProvenanceBroadScanW472', token: expected.idempotencyToken || expected.sourceRequestId || expected.buildAttemptId || '' }, fileName || captureFile.name || '')) {
+          return {
+            found: true,
+            fileId,
+            fileName: String(fileName || captureFile.name || ''),
+            contents,
+            lookupSource: 'currentRunProvenanceBroadScanW472_terminal_keyed_current_safe',
+            provenance: matchResult.actual,
+            matchOverride: {
+              reason: 'terminal_keyed_current_request_alias_allowed',
+              expected: matchResult.expected,
+              actual: matchResult.actual
+            }
+          };
+        }
         staleCandidates.push({
           fileId,
           fileName: String(fileName || captureFile.name || ''),
@@ -2934,6 +2932,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (pendingSidecar.pending) {
       const promoted = promotePendingSidecarIfTransactionResolved(pendingSidecar, modules);
       if (promoted.promoted) {
+        const promotedRecordFieldsW486 = completedPayloadTopLevelRecordFieldsW486(promoted.completed);
         return {
           schema: 'idb.approved-server-adapter-result-envelope.v1',
           adapterVersion: ADAPTER_VERSION,
@@ -2969,7 +2968,21 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
           runnerLaneVocabularyPolicy: promoted.completed.runnerLaneVocabularyPolicy || null,
           finalGeneratedNamesJsonReady: true,
           activeOpenLinks: activeOpenLinksFromCompletedPayloadW470(promoted.completed),
-          generatedRecordOwner: 'governed_runner_internal_build_engine'
+          generatedRecordOwner: 'governed_runner_internal_build_engine',
+          records: promotedRecordFieldsW486.records,
+          recordsArray: promotedRecordFieldsW486.recordsArray,
+          displayReadyRecords: promotedRecordFieldsW486.displayReadyRecords,
+          displayRecords: promotedRecordFieldsW486.displayRecords,
+          customer: promotedRecordFieldsW486.customer,
+          salesOrder: promotedRecordFieldsW486.salesOrder,
+          demoTransaction: promotedRecordFieldsW486.demoTransaction,
+          heroItem: promotedRecordFieldsW486.heroItem,
+          assembly: promotedRecordFieldsW486.assembly,
+          bom: promotedRecordFieldsW486.bom,
+          bomRevision: promotedRecordFieldsW486.bomRevision,
+          workOrder: promotedRecordFieldsW486.workOrder,
+          routing: promotedRecordFieldsW486.routing,
+          componentItems: promotedRecordFieldsW486.componentItems
         };
       }
       return {
@@ -3012,6 +3025,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const keyedCompletedW455 = completedKeyedResultCaptureW455(parsed);
     if (keyedCompletedW455.ready) {
       const salesOrderPromotionW458 = promoteCompletedKeyedSalesOrderW458(keyedCompletedW455.payload, modules);
+      const keyedRecordFieldsW486 = completedPayloadTopLevelRecordFieldsW486(keyedCompletedW455.payload);
       return {
         schema: 'idb.approved-server-adapter-result-envelope.v1',
         adapterVersion: ADAPTER_VERSION,
@@ -3047,7 +3061,21 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
         sidecarGeneratedNamesJson: keyedCompletedW455.payload,
         finalGeneratedNamesJsonReady: true,
         activeOpenLinks: activeOpenLinksFromCompletedPayloadW470(keyedCompletedW455.payload),
-        generatedRecordOwner: 'governed_runner_internal_build_engine'
+        generatedRecordOwner: 'governed_runner_internal_build_engine',
+        records: keyedRecordFieldsW486.records,
+        recordsArray: keyedRecordFieldsW486.recordsArray,
+        displayReadyRecords: keyedRecordFieldsW486.displayReadyRecords,
+        displayRecords: keyedRecordFieldsW486.displayRecords,
+        customer: keyedRecordFieldsW486.customer,
+        salesOrder: keyedRecordFieldsW486.salesOrder,
+        demoTransaction: keyedRecordFieldsW486.demoTransaction,
+        heroItem: keyedRecordFieldsW486.heroItem,
+        assembly: keyedRecordFieldsW486.assembly,
+        bom: keyedRecordFieldsW486.bom,
+        bomRevision: keyedRecordFieldsW486.bomRevision,
+        workOrder: keyedRecordFieldsW486.workOrder,
+        routing: keyedRecordFieldsW486.routing,
+        componentItems: keyedRecordFieldsW486.componentItems
       };
     }
     const normalized = normalizeCompletedRunnerResult(parsed);
@@ -3135,7 +3163,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (!errors.length && queueGate.canSubmit) {
       try {
         namingPackHandoff = createNamingPackFile(request, config, idempotencyToken);
-        if (!namingPackHandoff.fileId && namingPackHandoff.status !== 'clean_naming_pack_omitted_runner_deterministic_fallback') errors.push('server naming pack file was not created before runner submit.');
+        if (!namingPackHandoff.fileId) errors.push('N/LLM website naming package was not created before runner submit.');
       } catch (namingError) {
         namingPackHandoff = {
           fileId: null,

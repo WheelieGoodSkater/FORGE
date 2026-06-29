@@ -31,6 +31,10 @@ const files = [
   {
     source: path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_forge_clean_w483.js'),
     target: path.join(targetDir, 'scai_ss_so_csv_runner_forge_clean_w483.js')
+  },
+  {
+    source: path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_forge_v2_1_0.js'),
+    target: path.join(targetDir, 'scai_ss_so_csv_runner_forge_v2_1_0.js')
   }
 ];
 

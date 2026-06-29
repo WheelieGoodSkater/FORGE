@@ -146,32 +146,33 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function executeMain() {
     const s = runtime.getCurrentScript();
 
-    const prospect = str(getScriptParamAny(s, ['custscript_w486_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
-    const website  = str(getScriptParamAny(s, ['custscript_w486_website', 'custscript_v3_runner_website', 'custscript_scai_so_runner_website']));
-    const notes    = str(getScriptParamAny(s, ['custscript_w486_notes', 'custscript_v3_runner_notes', 'custscript_scai_so_runner_notes']));
-    const agenda   = str(getScriptParamAny(s, ['custscript_w486_agenda', 'custscript_v3_runner_agenda', 'custscript_scai_so_runner_agenda']));
-    const extId    = str(getScriptParamAny(s, ['custscript_w486_extid', 'custscript_v3_runner_extid', 'custscript_scai_so_runner_extid']));
+    const prospect = str(getScriptParamAny(s, ['custscript_v210_prospect', 'custscript_w486_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
+    const website  = str(getScriptParamAny(s, ['custscript_v210_website', 'custscript_w486_website', 'custscript_v3_runner_website', 'custscript_scai_so_runner_website']));
+    const notes    = str(getScriptParamAny(s, ['custscript_v210_notes', 'custscript_w486_notes', 'custscript_v3_runner_notes', 'custscript_scai_so_runner_notes']));
+    const agenda   = str(getScriptParamAny(s, ['custscript_v210_agenda', 'custscript_w486_agenda', 'custscript_v3_runner_agenda', 'custscript_scai_so_runner_agenda']));
+    const extId    = str(getScriptParamAny(s, ['custscript_v210_extid', 'custscript_w486_extid', 'custscript_v3_runner_extid', 'custscript_scai_so_runner_extid']));
 
-    const soMappingId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_mapping', 'custscript_v3_runner_mapping', 'custscript_scai_so_runner_mapping']));
-    const soFolderId  = toIntOrNull(getScriptParamAny(s, ['custscript_w486_folder', 'custscript_v3_runner_folder', 'custscript_scai_so_runner_folder']));
-    const namingFileId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_naming_file', 'custscript_scai_runner_naming_file_id']));
-    const resultCaptureFolderId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_result_folder', 'custscript_v3_runner_result_capture_folder', 'custscript_idb_result_capture_folder_id']));
-    const confirmedBuildRequestJson = safeJsonParse(getScriptParamAny(s, ['custscript_w486_req_json', 'custscript_v3_runner_idb_request_json'])) || {};
+    const soMappingId = toIntOrNull(getScriptParamAny(s, ['custscript_v210_mapping', 'custscript_w486_mapping', 'custscript_v3_runner_mapping', 'custscript_scai_so_runner_mapping']));
+    const soFolderId  = toIntOrNull(getScriptParamAny(s, ['custscript_v210_folder', 'custscript_w486_folder', 'custscript_v3_runner_folder', 'custscript_scai_so_runner_folder']));
+    const namingFileId = toIntOrNull(getScriptParamAny(s, ['custscript_v210_naming_file', 'custscript_w486_naming_file', 'custscript_scai_runner_naming_file_id']));
+    const resultCaptureFolderId = toIntOrNull(getScriptParamAny(s, ['custscript_v210_result_folder', 'custscript_w486_result_folder', 'custscript_v3_runner_result_capture_folder', 'custscript_idb_result_capture_folder_id']));
+    const confirmedBuildRequestJson = safeJsonParse(getScriptParamAny(s, ['custscript_v210_req_json', 'custscript_w486_req_json', 'custscript_v3_runner_idb_request_json'])) || {};
 
-    const subsidiaryId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_subsidiary', 'custscript_v3_runner_subsidiary', 'custscript_scai_runner_subsidiary']));
-    const locationId   = toIntOrNull(getScriptParamAny(s, ['custscript_w486_location', 'custscript_v3_runner_location', 'custscript_scai_runner_location']));
+    const subsidiaryId = toIntOrNull(getScriptParamAny(s, ['custscript_v210_subsidiary', 'custscript_w486_subsidiary', 'custscript_v3_runner_subsidiary', 'custscript_scai_runner_subsidiary']));
+    const locationId   = toIntOrNull(getScriptParamAny(s, ['custscript_v210_location', 'custscript_w486_location', 'custscript_v3_runner_location', 'custscript_scai_runner_location']));
     const workCenterSearchIdRaw = str(
-      getScriptParamAny(s, ['custscript_w486_wc_search', 'custscript_v3_runner_wc_search', 'custscript_scai_wc_savedsearch_id', 'custscript_scai_runner_wc_search'])
+      getScriptParamAny(s, ['custscript_v210_wc_search', 'custscript_w486_wc_search', 'custscript_v3_runner_wc_search', 'custscript_scai_wc_savedsearch_id', 'custscript_scai_runner_wc_search'])
     ).trim();
     const workCenterSearchId = /^\d+$/.test(workCenterSearchIdRaw)
       ? Number(workCenterSearchIdRaw)
       : workCenterSearchIdRaw;
 
     // WIP flag (Suitelet should pass 'T' or 'F')
-    const enableWipRaw = getScriptParamAny(s, ['custscript_w486_enable_wip', 'custscript_v3_runner_enable_wip', 'custscript_scai_runner_enable_wip', 'custscript_scai_runner_enablewip']);
+    const enableWipRaw = getScriptParamAny(s, ['custscript_v210_enable_wip', 'custscript_w486_enable_wip', 'custscript_v3_runner_enable_wip', 'custscript_scai_runner_enable_wip', 'custscript_scai_runner_enablewip']);
     const enableWip = normalizeBool(enableWipRaw);
 
     const createNewHeroCandidates = {
+      custscript_v210_create_hero: s.getParameter({ name: 'custscript_v210_create_hero' }),
       custscript_w486_create_hero: s.getParameter({ name: 'custscript_w486_create_hero' }),
       custscript_v3_runner_create_new_hero: s.getParameter({ name: 'custscript_v3_runner_create_new_hero' }),
       custscript_scai_runner_create_new_hero: s.getParameter({ name: 'custscript_scai_runner_create_new_hero' }),
@@ -183,6 +184,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const createNewHeroItem = normalizeBool(createNewHeroRaw);
 
     const enableManufacturingCandidates = {
+      custscript_v210_enable_mfg: s.getParameter({ name: 'custscript_v210_enable_mfg' }),
       custscript_w486_enable_mfg: s.getParameter({ name: 'custscript_w486_enable_mfg' }),
       custscript_v3_runner_enable_mfg: s.getParameter({ name: 'custscript_v3_runner_enable_mfg' }),
       custscript_v3_runner_enable_manufacturing: s.getParameter({ name: 'custscript_v3_runner_enable_manufacturing' }),
@@ -231,6 +233,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const anchorHeroItemIdParam = toIntOrNull(anchorHeroItemIdRaw);
 
     const passedHeroItemIdRaw =
+      s.getParameter({ name: 'custscript_v210_hero_item' }) ||
       s.getParameter({ name: 'custscript_w486_hero_item' }) ||
       s.getParameter({ name: 'custscript_v3_runner_hero_item' }) ||
       s.getParameter({ name: 'custscript_scai_runner_hero_item' }) ||
@@ -289,11 +292,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       ? 'wip-target-confirmed'
       : 'wip-target-rebased-to-effective-state';
 
-    if (!prospect) throw new Error('Missing required param: custscript_scai_so_runner_prospect');
-    if (!extId) throw new Error('Missing required param: custscript_scai_so_runner_extid');
-    if (!soMappingId) throw new Error('Missing required param: custscript_scai_so_runner_mapping');
-    if (!soFolderId) throw new Error('Missing required param: custscript_scai_so_runner_folder');
-    if (!subsidiaryId) throw new Error('Missing required param: custscript_scai_runner_subsidiary');
+    if (!prospect) throw new Error('Missing required param: custscript_v210_prospect');
+    if (!extId) throw new Error('Missing required param: custscript_v210_extid');
+    if (!soMappingId) throw new Error('Missing required param: custscript_v210_mapping');
+    if (!soFolderId) throw new Error('Missing required param: custscript_v210_folder');
+    if (!subsidiaryId) throw new Error('Missing required param: custscript_v210_subsidiary');
 
     log.audit({
       title: `Runner START [${VERSION}]`,
@@ -497,6 +500,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       agenda,
       customerId: customerInfo.id,
       itemId: ids.heroItemId,
+      subsidiaryId,
       locationId
     });
 
@@ -600,8 +604,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const displayReadyRecords = Object.keys(records).map(function(key) { return records[key]; }).filter(Boolean);
     const status = args.enableWip && !args.routingId ? 'completed_with_wip_diagnostic' : 'completed';
     const sourceRequestId = firstNonBlankTextW486(
-      confirmed.sourceRequestId,
       confirmed.requestId,
+      confirmed.sourceRequestId,
       confirmed.buildAttemptProvenance && confirmed.buildAttemptProvenance.sourceRequestId,
       extId
     );
@@ -615,6 +619,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       confirmed.buildAttemptProvenance && confirmed.buildAttemptProvenance.submittedAt,
       now
     );
+    const importIdempotencyToken = firstNonBlankTextW486(
+      sourceRequestId,
+      confirmed.idempotencyToken,
+      extId
+    );
     const completedResult = {
       schema: 'forge.completed-runner-result.v3',
       sidecarVersion: SIDECAR_VERSION_W486,
@@ -626,6 +635,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       recordOwner: 'governed_runner_internal_build_engine',
       extId,
       generatedExtId: extId,
+      idempotencyToken: importIdempotencyToken,
       sourceRequestId,
       buildAttemptId,
       submittedAt,
@@ -689,13 +699,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       runnerStatus: status,
       taskStatus: status,
       partialResultState: status === 'completed_with_wip_diagnostic' ? 'partial_result_missing_wip_detail' : '',
-      idempotencyToken: extId,
+      idempotencyToken: importIdempotencyToken,
       sourceRequestId,
       buildAttemptId,
       submittedAt,
       runnerTaskId: String(args.soTaskId || ''),
       taskId: String(args.soTaskId || ''),
       queueTaskId: String(args.soTaskId || ''),
+      csvImportTaskId: String(args.soTaskId || ''),
       resultCaptureFolderId: folderId,
       finalGeneratedNamesJson: completedResult,
       completedResultJson: completedResult,
@@ -710,7 +721,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
     const saved = saveTextArtifactW486({
       folderId,
-      name: resultCaptureFileNameW486({ extId, buildAttemptId, status }),
+      name: resultCaptureFileNameW486({ extId: importIdempotencyToken, buildAttemptId, status }),
       contents: JSON.stringify(resultCapture)
     });
     return {
@@ -725,11 +736,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function captureRunnerErrorW486(error) {
     const s = runtime.getCurrentScript();
-    const prospect = str(getScriptParamAny(s, ['custscript_w486_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
-    const website = str(getScriptParamAny(s, ['custscript_w486_website', 'custscript_v3_runner_website', 'custscript_scai_so_runner_website']));
-    const extId = str(getScriptParamAny(s, ['custscript_w486_extid', 'custscript_v3_runner_extid', 'custscript_scai_so_runner_extid']));
-    const folderId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_result_folder', 'custscript_v3_runner_result_capture_folder', 'custscript_idb_result_capture_folder_id']));
-    const confirmed = safeJsonParse(getScriptParamAny(s, ['custscript_w486_req_json', 'custscript_v3_runner_idb_request_json'])) || {};
+    const prospect = str(getScriptParamAny(s, ['custscript_v210_prospect', 'custscript_w486_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
+    const website = str(getScriptParamAny(s, ['custscript_v210_website', 'custscript_w486_website', 'custscript_v3_runner_website', 'custscript_scai_so_runner_website']));
+    const extId = str(getScriptParamAny(s, ['custscript_v210_extid', 'custscript_w486_extid', 'custscript_v3_runner_extid', 'custscript_scai_so_runner_extid']));
+    const folderId = toIntOrNull(getScriptParamAny(s, ['custscript_v210_result_folder', 'custscript_w486_result_folder', 'custscript_v3_runner_result_capture_folder', 'custscript_idb_result_capture_folder_id']));
+    const confirmed = safeJsonParse(getScriptParamAny(s, ['custscript_v210_req_json', 'custscript_w486_req_json', 'custscript_v3_runner_idb_request_json'])) || {};
     const message = String(error && (error.message || error.name) || error || 'Unknown runner error');
     const name = String(error && (error.name || error.id) || 'RUNNER_ERROR');
     const buildAttemptId = firstNonBlankTextW486(confirmed.buildAttemptId, confirmed.buildAttempt && confirmed.buildAttempt.id);
@@ -3102,11 +3113,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function generateNamingPack({ prospect, website, signalText }) {
     const clippedSignal = String(signalText || '').slice(0, 1200);
-    const websitePack = buildWebsiteSignalNamingPackW486({ prospect, website, signalText: clippedSignal });
-    if (websitePack) return websitePack;
     return {
       _source: 'deterministic',
       _signalLen: clippedSignal.length,
+      namingEvidenceSource: 'deterministic_runner_fallback_no_nllm_website_package',
+      fallbackReason: 'No N/LLM website naming package file was supplied; runner did not infer product names from built-in examples or website keywords.',
       industry_category: '',
       hero_item_name: `${prospect} Finished Good`,
       assembly_name: `${prospect} Assembly`,
@@ -3121,121 +3132,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function buildWebsiteSignalNamingPackW486({ prospect, website, signalText }) {
-    const text = compactText([website, prospect, signalText].join(' '));
-    const lower = text.toLowerCase();
-    const siteProductPack = buildKnownWebsiteProductNamingPackW486({ prospect, website, signalText: text });
-    if (siteProductPack) return siteProductPack;
-    const rules = [
-      {
-        pattern: /\b(electric guitar|acoustic guitar|guitars?|bass guitar|amplifiers?|pickups?|strings?|instrument|musical)\b/,
-        product: (/\bacoustic guitar|hummingbird|j-45|dove\b/.test(lower) && !/\belectric guitar|pickup|amplifier\b/.test(lower)) ? 'Acoustic Guitar' : 'Electric Guitar',
-        industry: 'Musical Instruments Manufacturing',
-        components: ['Guitar Body', 'Guitar Neck', 'Pickup and Electronics Kit'],
-        operations: { '10': 'Body and Neck Prep', '20': 'Electronics Assembly', '30': 'Final Setup and Case Pack' },
-        evidenceTerms: ['guitar', 'musical instrument']
-      },
-      {
-        pattern: /\b(chair|seating|desk|table|sofa|furniture|ergonomic)\b/,
-        product: 'Ergonomic Chair',
-        industry: 'Furniture Manufacturing',
-        components: ['Chair Frame', 'Seat and Back Assembly', 'Hardware Kit'],
-        operations: { '10': 'Frame Prep', '20': 'Seat Assembly', '30': 'Final Inspect and Pack' },
-        evidenceTerms: ['furniture', 'seating']
-      },
-      {
-        pattern: /\b(vacuum|air purifier|purifier|hair dryer|appliance|electronics)\b/,
-        product: 'Premium Home Appliance',
-        industry: 'Premium Home Appliance Manufacturing',
-        components: ['Motor Assembly', 'Control Housing', 'Retail Packaging'],
-        operations: { '10': 'Stage Appliance Components', '20': 'Assemble and Test Unit', '30': 'Pack Retail Unit' },
-        evidenceTerms: ['appliance', 'electronics']
-      },
-      {
-        pattern: /\b(forklift|lift truck|pallet truck|warehouse equipment|industrial equipment)\b/,
-        product: 'Lift Truck',
-        industry: 'Industrial Equipment Manufacturing',
-        components: ['Chassis Assembly', 'Mast and Lift Assembly', 'Powertrain Kit'],
-        operations: { '10': 'Stage Equipment Kit', '20': 'Assemble Lift System', '30': 'Inspect and Release Unit' },
-        evidenceTerms: ['industrial equipment', 'lift truck']
-      },
-      {
-        pattern: /\b(cookware|dutch oven|cast iron|skillet|knife|cutlery|kitchenware)\b/,
-        product: 'Cookware Set',
-        industry: 'Kitchenware Manufacturing',
-        components: ['Cookware Body', 'Handle and Hardware Kit', 'Retail Packaging'],
-        operations: { '10': 'Stage Cookware Components', '20': 'Assemble and Finish Set', '30': 'Pack Retail Set' },
-        evidenceTerms: ['cookware', 'kitchenware']
-      },
-      {
-        pattern: /\b(tumbler|bottle|cooler|drinkware|mug|cup|hardgoods|outdoor)\b/,
-        product: 'Durable Hardgoods Product',
-        industry: 'Durable Consumer Goods Manufacturing',
-        components: ['Product Body', 'Accessory Kit', 'Retail Packaging'],
-        operations: { '10': 'Stage Product Kits', '20': 'Assemble Product', '30': 'Pack and Release Product' },
-        evidenceTerms: ['durable hardgoods']
-      }
-    ];
-    for (let i = 0; i < rules.length; i += 1) {
-      const rule = rules[i];
-      if (!rule.pattern.test(lower)) continue;
-      const product = rule.product;
-      return {
-        _source: 'w486-website-signal-naming-pack',
-        _signalLen: String(signalText || '').length,
-        industry_category: rule.industry,
-        industrySelection: { label: rule.industry, source: 'website_signal_text_w486', confidence: 'medium' },
-        selectedIndustryChip: rule.industry,
-        selectedProductName: product,
-        primary_product_candidate: product,
-        selectedCatalogCandidate: { name: product, source: 'website_signal_text_w486', reasons: rule.evidenceTerms },
-        catalogCandidates: [{ name: product, source: 'website_signal_text_w486', confidence: 82, reasons: rule.evidenceTerms }],
-        fallbackUsed: false,
-        fallbackReason: '',
-        evidence_terms: rule.evidenceTerms,
-        namingEvidenceSource: 'website_signal_text_w486',
-        hero_item_name: product,
-        assembly_name: `${product} Assembly`,
-        component_names: rule.components,
-        bom_name: `BOM - ${product}`,
-        bom_revision_name: `Revision 1 - ${product}`,
-        routing_name: `Routing - ${product}`,
-        operation_names_by_seq: rule.operations,
-        scenario_label: `${product} Scenario`,
-        commercial_summary: `${product} gives the demo a concrete commercial anchor while notes shape pressure, ROI, and competitive handling.`
-      };
-    }
+    void prospect;
+    void website;
+    void signalText;
     return null;
   }
 
   function buildKnownWebsiteProductNamingPackW486({ prospect, website, signalText }) {
-    const lower = compactText([website, prospect, signalText].join(' ')).toLowerCase();
-    const packs = [
-      {
-        domain: /hestanculinary\.com|hestan culinary|hestan\b/,
-        products: ['NanoBond', 'CopperBond', 'ProBond'],
-        industry: 'Premium Cookware Manufacturing',
-        category: 'premium cookware',
-        components: ['Bonded Cookware Body', 'Stainless Handle Set', 'Retail Cookware Packaging'],
-        operations: { '10': 'Stage Cookware Body', '20': 'Attach Handles and Finish', '30': 'Pack Premium Cookware' },
-        evidenceSource: 'hestanculinary.com public product collections'
-      }
-    ];
-    for (let i = 0; i < packs.length; i += 1) {
-      const pack = packs[i];
-      if (!pack.domain.test(lower)) continue;
-      const selected = selectKnownWebsiteProductW486(pack.products, lower);
-      return concreteWebsiteProductNamingPackW486({
-        prospect,
-        product: selected,
-        productExamples: pack.products,
-        industry: pack.industry,
-        category: pack.category,
-        components: pack.components,
-        operations: pack.operations,
-        evidenceSource: pack.evidenceSource,
-        website
-      });
-    }
+    void prospect;
+    void website;
+    void signalText;
     return null;
   }
 
@@ -3475,16 +3381,26 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // SO CSV + import
   // ----------------------------
-  function createSalesOrderDirectW486({ extId, prospect, website, agenda, customerId, itemId, locationId }) {
+  function createSalesOrderDirectW486({ extId, prospect, website, agenda, customerId, itemId, subsidiaryId, locationId }) {
     const existingId = findByExternalId('salesorder', extId);
     if (existingId) return Number(existingId);
 
     const templateId = findSalesOrderTemplateW486();
-    const so = templateId
+    let so = templateId
       ? record.copy({ type: 'salesorder', id: Number(templateId), isDynamic: true })
       : record.create({ type: 'salesorder', isDynamic: true });
     so.setValue({ fieldId: 'externalid', value: String(extId || '') });
-    so.setValue({ fieldId: 'entity', value: Number(customerId) });
+    if (subsidiaryId) safeTry(() => so.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) }));
+    if (!safeTryReturn(() => { so.setValue({ fieldId: 'entity', value: Number(customerId) }); return true; }) && templateId) {
+      log.audit({
+        title: `Direct Sales Order template rejected customer; retrying fresh SO [${VERSION}]`,
+        details: JSON.stringify({ templateId: Number(templateId), customerId: Number(customerId), subsidiaryId: Number(subsidiaryId || 0) })
+      });
+      so = record.create({ type: 'salesorder', isDynamic: true });
+      so.setValue({ fieldId: 'externalid', value: String(extId || '') });
+      if (subsidiaryId) safeTry(() => so.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) }));
+      so.setValue({ fieldId: 'entity', value: Number(customerId) });
+    }
     safeTry(() => so.setValue({ fieldId: 'orderstatus', value: 'B' }));
     if (locationId) safeTry(() => so.setValue({ fieldId: 'location', value: Number(locationId) }));
     safeTry(() => so.setValue({ fieldId: 'memo', value: trimLen(`SCAI Demo Reset: ${prospect || ''}${website ? ` (${extractDomain(website)})` : ''} - ${summarizeOneLine(agenda || '')}`, 999) }));

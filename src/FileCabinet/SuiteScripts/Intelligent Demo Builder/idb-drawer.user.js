@@ -7017,6 +7017,26 @@
     const websiteProductCandidates = websiteProductEvidenceCandidatesW424(websiteEvidenceV1, intake);
     const trustedProductExamples = trustedWebsiteProductExamplesW472(websiteProductCandidates);
     const productionIntake = buildPacket.productionConsultantIntake || productionConsultantIntakeV1(state, lane, namingEvidence);
+    const recordNamingAdvisoryPacket = buildPacket && Array.isArray(buildPacket.records) && buildPacket.records.length
+      ? buildPacket
+      : dryRunObjectPacket(state, lane, pageContext, recommendation);
+    const recordNamingAdvisoryRequest = (() => {
+      try {
+        return buildRecordNamingAdvisoryRequest(state, lane, recordNamingAdvisoryPacket);
+      } catch (e) {
+        return {
+          schema: 'idb.nllm-record-naming-advisory-request.v1',
+          status: 'nllm_required_request_build_failed',
+          error: e && e.message ? String(e.message) : String(e || ''),
+          customer: {
+            name: intake.customer,
+            website: intake.website,
+            websiteDomain: websiteDomain(intake.website)
+          },
+          requiredAuthority: 'entered_website_domain_plus_nllm_product_evidence'
+        };
+      }
+    })();
     const operatingMode = resolveBuildOperatingModeW214(state, lane, pageContext, recommendation, {
       source: 'confirmed_build_request'
     });
@@ -7149,6 +7169,9 @@
       modeConfidence: operatingMode.modeConfidence,
       selectedToggles: operatingMode.selectedToggles,
       namingAuthority: operatingMode.namingAuthority,
+      recordNamingAdvisoryRequest,
+      recordNamingAdvisoryResponse: state && state.recordNamingAdvisoryResponse || null,
+      nllmWebsiteNamingPackage: state && (state.nllmWebsiteNamingPackage || state.websiteNamingPackage || state.recordNamingAdvisoryResponse) || null,
       requiredRecordRoles: operatingMode.requiredRecordRoles,
       optionalRecordRoles: operatingMode.optionalRecordRoles,
       invalidRecordRoles: operatingMode.invalidRecordRoles,

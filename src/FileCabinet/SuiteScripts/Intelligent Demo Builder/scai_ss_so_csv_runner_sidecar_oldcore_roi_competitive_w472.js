@@ -3315,6 +3315,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return out;
   }
 
+  function productExampleNamesW472(examples) {
+    return mergeWebsiteProductExamplesW472([], examples || []).map(function(example) {
+      return example.name;
+    });
+  }
+
+  function productExampleCountW472(examples) {
+    return productExampleNamesW472(examples).length;
+  }
+
   function websiteProductDetailEvidenceScoreW473(example) {
     const item = example && typeof example === 'object' ? example : {};
     const url = String(item.sourceUrl || item.url || item.href || item.candidateUrl || '').toLowerCase();
@@ -3940,7 +3950,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingPackCorrectedByWebsiteAlternateW472: true,
       productAlternatePromotedW472: true,
       productAlternatePromotionReasonW472: blockedReason || 'selected naming-pack product lacked a concrete product noun',
+      precomputedNamingSupersededByWebsiteProductsW472: true,
+      websiteNamingSupersedesAllPacksW472: true,
       namingAuthorityOrderW472: 'website product examples -> promote full product alternate before fallback',
+      namingAuthorityOrderW472Original: 'website product examples -> naming files only when website has no product evidence -> prospect fallback',
       fallbackUsed: false
     });
   }
@@ -4239,6 +4252,27 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function enforceOldRunnerNamingDisciplineW468(rawNames, context) {
     const names = oldRunnerV2NamingAdapterW474(rawNames || {}, context || {});
     const namingPayload = context && context.namingPayload || {};
+    const rawSelectedCandidate = rawNames && rawNames.selectedCatalogCandidate && typeof rawNames.selectedCatalogCandidate === 'object'
+      ? rawNames.selectedCatalogCandidate.name
+      : rawNames && rawNames.selectedCatalogCandidate;
+    const rawSelectedProduct = usableWebsiteProductExampleNameW472(rawNames && (rawNames.selectedProductName || rawNames.primary_product_candidate || rawSelectedCandidate || rawNames.hero_item_name));
+    const rawWeakProductReason = weakProductNameReasonW467(rawSelectedProduct) ||
+      genericWebsiteProductNameReasonW472(rawSelectedProduct) ||
+      colorPatternOnlyProductNameReasonW472(rawSelectedProduct);
+    if (rawWeakProductReason) {
+      const promoted = promoteStrongAlternateProductNamingW472(Object.assign({}, names, rawNames || {}, {
+        blockedWeakProductName: rawSelectedProduct,
+        blockedWeakProductNameReason: rawWeakProductReason
+      }), context || {}, rawWeakProductReason);
+      if (promoted) {
+        promoted.namingPayloadFound = namingPayload.found === true;
+        promoted.namingPayloadParsed = namingPayload.parsed === true;
+        promoted.namingPayloadApplied = namingPayload.applied === true;
+        promoted.runnerNamingOverrideBlockedW470 = true;
+        promoted.namingPackAuthoritativeW470 = false;
+        return promoted;
+      }
+    }
     const components = Array.isArray(names.component_names) ? names.component_names.slice(0, 3) : [];
     names.component_names = components.map(function(name) { return trimLen(name, 60); });
     names.hero_item_name = trimLen(names.hero_item_name, 60);

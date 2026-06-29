@@ -804,10 +804,17 @@ function main() {
 	      'Link mismatch: returned',
 	      'WIP links: Routing',
 	      'Work Order',
-	      'Clear build result and run again',
-	      'Clear and start new build'
-	    ].every((needle) => drawer.includes(needle)),
-	    'Drawer should show the industry chip, returned/open-link mismatch, WIP routing/work-order status, and recovery actions.');
+	      'Build Records',
+	      'Refresh Records',
+	      'Clear/New Run'
+	    ].every((needle) => drawer.includes(needle))
+	      && ![
+	        'Clear build result and run again',
+	        'Clear and start new build',
+	        'Change lane manually',
+	        'Troubleshoot / Export'
+	      ].some((needle) => drawer.includes(needle)),
+	    'Drawer should show industry/link diagnostics with the simplified Build Records, Refresh Records, and Clear/New Run actions only.');
 
   const plainPeakToken = 'idb-build-peak-design-w472-wholesale-backpack-smoke-628159-dealer-hardgoods-dealerhardgoods';
   const runnerPeakExtId = `IDB-${plainPeakToken}`;

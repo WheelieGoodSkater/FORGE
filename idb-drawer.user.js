@@ -81,17 +81,17 @@
     build_submitted: {
       label: 'Build submitted',
       headline: 'Build submitted',
-      copy: 'Refresh build status to check whether the runner returned completed records.'
+      copy: 'Refresh Records to check whether the runner returned completed records.'
     },
     waiting_for_runner_result: {
       label: 'Waiting for records',
       headline: 'Build submitted',
-      copy: 'Refresh build status to check whether the runner returned completed records.'
+      copy: 'Refresh Records to check whether the runner returned completed records.'
     },
     records_ready_to_import: {
       label: 'Records ready',
       headline: 'Records ready',
-      copy: 'Finish the build to bring returned names, labels, and Open links into Review and Run.'
+      copy: 'Refresh Records to bring returned names, labels, and Open links into the sidecar.'
     },
     records_imported: {
       label: 'Records imported',
@@ -3928,7 +3928,7 @@
       ? 'Enter brief to run demo'
       : needsLaneReview
         ? 'Add website evidence'
-        : confidenceModel.actionLabel || (lowConfidence ? 'Confirm lane' : 'Run demo');
+        : confidenceModel.actionLabel || (lowConfidence ? 'Confirm lane' : 'Build records');
     const reason = suggested
       ? evidence.length
         ? `${confidenceModel.reason} Evidence: ${evidence.join(', ')}.`
@@ -12219,7 +12219,7 @@
       {
         id: 'start_approved_adapter_call',
         label: 'Start approved adapter call',
-        visible: serverAdapterReady && !runnerTaskId && !finalNamesImported && !adapterError,
+        visible: false,
         enabled: serverAdapterReady && oneCallAuthorized && !runnerTaskId && !finalNamesImported && !adapterError,
         action: 'server_adapter_one_call_submit_owned_by_approved_adapter',
         reason: oneCallAuthorized
@@ -12228,9 +12228,9 @@
       },
       {
         id: 'check_runner_result',
-        label: 'Check runner result',
-        visible: !!runnerTaskId && !hasCompletedW151Result && !finalNamesImported,
-        enabled: !!runnerTaskId && !hasCompletedW151Result && !finalNamesImported,
+        label: 'Refresh Records',
+        visible: !!runnerTaskId && !finalNamesImported,
+        enabled: !!runnerTaskId && !finalNamesImported,
         action: 'poll_result_capture_for_runner_task',
         runnerTaskId: runnerTaskId || null,
         reason: runnerTaskId
@@ -12240,7 +12240,7 @@
       {
         id: 'import_completed_runner_result',
         label: 'Import completed runner result',
-        visible: hasCompletedW151Result && !finalNamesImported && !adapterError,
+        visible: false,
         enabled: hasCompletedW151Result && !finalNamesImported && !adapterError,
         action: 'open_w151_completed_runner_result_import',
         reason: hasCompletedW151Result
@@ -12250,7 +12250,7 @@
       {
         id: 'targeted_open_link_test',
         label: 'Targeted Open-link test',
-        visible: finalNamesImported && !adapterError,
+        visible: false,
         enabled: finalNamesImported && !adapterError,
         action: 'start_targeted_only_open_link_verification',
         reason: finalNamesImported
@@ -12260,7 +12260,7 @@
       {
         id: 'collect_adapter_error_evidence',
         label: 'Collect adapter error evidence',
-        visible: adapterError,
+        visible: false,
         enabled: adapterError,
         action: 'stop_and_collect_operator_evidence',
         reason: 'Adapter errors stop the drawer safely without mutating final names.'
@@ -20386,7 +20386,6 @@
       'Manufacturing',
       'WIP',
       'Build demo records',
-      'Run demo',
       'Open links after records exist'
     ];
     const adminDebugRelocationMap = [
@@ -20487,7 +20486,6 @@
       'Build demo records',
       'Check status after build starts',
       'Finish build after records are ready',
-      'Run demo',
       'Open links after records exist'
     ];
     const statusCopy = [
@@ -22866,10 +22864,10 @@
         <div class="idb-strong">${escapeHtml(model.headline)}</div>
         <div class="idb-w362-competitive-chips" role="group" aria-label="Competitive advisory chips">
           ${model.chips.map((chip) => `
-            <button class="idb-w362-competitive-chip" type="button" title="${escapeHtml(chip.copy)}">
+            <span class="idb-w362-competitive-chip" title="${escapeHtml(chip.copy)}">
               <span class="idb-w361-chip-title">${escapeHtml(chip.title)}</span>
               <span class="idb-w361-chip-copy">${escapeHtml(compactText(chip.copy, maxCopy))}</span>
-            </button>
+            </span>
           `).join('')}
         </div>
         <div class="idb-w362-competitive-note">${escapeHtml(opts.note || model.runCue)}</div>
@@ -24076,23 +24074,6 @@
         font-weight: 700;
         letter-spacing: .04em;
       }
-      .idb-bug-button {
-        border: 1px solid #e1bd56;
-        border-radius: 6px;
-        background: #efc85f;
-        color: #112435;
-        min-block-size: 22px !important;
-        min-height: 22px;
-        inline-size: 86px;
-        max-inline-size: 86px;
-        padding: 0 7px;
-        font-size: 10px;
-        line-height: 1;
-        font-weight: 850;
-        cursor: pointer;
-      }
-      .idb-bug-button:hover { background: #f4d36f; }
-      .idb-bug-button[aria-disabled="true"] { cursor: default; }
       .idb-icon-button {
         border: 1px solid rgba(255,255,255,.76);
         border-radius: var(--rw-radius-xs);
@@ -25907,25 +25888,25 @@
 
   function renderLaneButtons(state) {
     return CONTRACT.lanes.map((lane) => `
-      <button class="idb-lane-button ${lane.id === state.selectedLaneId ? 'idb-selected' : ''}" data-idb-lane="${escapeHtml(lane.id)}">
+      <span class="idb-lane-button ${lane.id === state.selectedLaneId ? 'idb-selected' : ''}">
         ${escapeHtml(lane.name)}
-      </button>
+      </span>
     `).join('');
   }
 
   function renderMoveButtons(lane, state) {
     return lane.moves.map((move, index) => `
-      <button class="idb-move-button ${index === state.selectedMoveIndex ? 'idb-selected' : ''}" data-idb-move="${index}">
+      <span class="idb-move-button ${index === state.selectedMoveIndex ? 'idb-selected' : ''}">
         ${index + 1}. ${escapeHtml(move)}
-      </button>
+      </span>
     `).join('');
   }
 
   function renderActionButtons(state) {
     return ACTION_MODEL.map((action) => `
-      <button class="idb-action-button ${action.id === state.selectedActionId ? 'idb-selected' : ''}" data-idb-action="${escapeHtml(action.id)}">
+      <span class="idb-action-button ${action.id === state.selectedActionId ? 'idb-selected' : ''}">
         ${escapeHtml(action.label)}
-      </button>
+      </span>
     `).join('');
   }
 
@@ -26423,14 +26404,12 @@
 
   function renderRunActionChips(state) {
     return ACTION_MODEL.map((action) => `
-      <button
+      <span
         class="idb-action-chip ${action.id === state.selectedActionId ? 'idb-selected' : ''}"
-        data-idb-action="${escapeHtml(action.id)}"
-        aria-pressed="${action.id === state.selectedActionId ? 'true' : 'false'}"
         title="${escapeHtml(action.copy)}"
       >
         ${escapeHtml(action.label)}
-      </button>
+      </span>
     `).join('');
   }
 
@@ -26492,10 +26471,10 @@
     return `
       <div class="idb-w361-script-chips idb-w367-presenter-steps" role="group" aria-label="Say Show Close presenter steps">
         ${rows.map(([label, copy]) => `
-          <button class="idb-w361-script-chip" type="button" title="${escapeHtml(copy || '')}">
+          <span class="idb-w361-script-chip" title="${escapeHtml(copy || '')}">
             <span class="idb-w361-chip-title">${escapeHtml(label)}</span>
             <span class="idb-w361-chip-copy">${escapeHtml(compactText(copy || '', 92))}</span>
-          </button>
+          </span>
         `).join('')}
       </div>
     `;
@@ -27271,7 +27250,6 @@
             <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(productModelW444.productCandidateSource))}</span>
             ${productModelW444.confidencePercent ? `<span class="idb-mini-chip">Confidence: ${escapeHtml(productModelW444.confidencePercent)}%</span>` : ''}
             ${productModelW444.namingAdvisoryUsed ? '<span class="idb-mini-chip">Naming advisory</span>' : ''}
-            <button class="idb-secondary idb-compact-button" type="button" data-idb-w444-fresh-candidate-intent="${escapeHtml(productModelW444.nextCandidateHint)}">Use fresh candidate next run</button>
           </div>
         </details>
         ${wipFlowComponentW449}
@@ -27292,7 +27270,6 @@
             <div class="idb-chip-row">
               <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
               <span class="idb-mini-chip">Confidence: ${escapeHtml(detailModelW444.roi.confidencePercent)}%</span>
-              <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'roi' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="roi" aria-pressed="${activeDetailW444 === 'roi' ? 'true' : 'false'}">Why this ROI?</button>
             </div>
           </div>
           <div class="idb-w415-cockpit-panel idb-w415-competitive-panel ${activeDetailW444 === 'competitive' ? 'idb-w445-active-detail-card' : ''}">
@@ -27302,7 +27279,6 @@
             <div class="idb-chip-row">
               <span class="idb-mini-chip">Source: ${escapeHtml(consultantLabel(valueNarrativeW443 && valueNarrativeW443.source || 'website_industry_fallback'))}</span>
               <span class="idb-mini-chip">Confidence: ${escapeHtml(detailModelW444.competitive.confidencePercent)}%</span>
-              <button class="idb-secondary idb-compact-button ${activeDetailW444 === 'competitive' ? 'idb-selected' : ''}" type="button" data-idb-w444-detail="competitive" aria-pressed="${activeDetailW444 === 'competitive' ? 'true' : 'false'}">Competitive angle</button>
             </div>
           </div>
         </div>
@@ -27314,11 +27290,9 @@
           <div class="idb-copy">${escapeHtml(lastRunReceipt.toggles.join(' / '))}</div>
           <div class="idb-copy">Run: ${escapeHtml([storedLastRunSnapshotW446 && storedLastRunSnapshotW446.timestamp, storedLastRunSnapshotW446 && storedLastRunSnapshotW446.extId, storedLastRunSnapshotW446 && storedLastRunSnapshotW446.taskId].filter(Boolean).join(' / ') || [lastRunReceipt.timestamp, lastRunReceipt.extId, lastRunReceipt.taskId].filter(Boolean).join(' / ') || 'no task receipt')}</div>
           ${state.w446LastRunRestoreMessage ? `<div class="idb-copy">${escapeHtml(state.w446LastRunRestoreMessage)}</div>` : ''}
-          <button class="idb-secondary idb-compact-button" type="button" data-idb-w446-restore-last-run>${escapeHtml(hasPreviousDistinctRunW446 ? 'Restore previous run' : 'Restore saved run')}</button>
         </details>
         <div class="idb-actions idb-w444-run-actions">
-          <button class="idb-secondary" type="button" data-idb-w445-start-new-run>Start new run</button>
-          <button class="idb-primary" type="button" data-idb-w444-troubleshoot-export>Troubleshoot / Export</button>
+          <button class="idb-secondary" type="button" data-idb-w445-start-new-run>Clear/New Run</button>
         </div>
         <div class="idb-w415-claim-caution">
           <div class="idb-status-key">Claim caution</div>
@@ -27405,27 +27379,7 @@
   }
 
   function renderStateTabs(state) {
-    const active = normalizedView(state);
-    const views = [
-      ['plan', 'Plan'],
-      ['review', 'Build'],
-      ['value', 'ROI / Competitive'],
-      ['run', 'Run'],
-      ['trace', 'Trace']
-    ];
-    const activeIndex = Math.max(0, views.findIndex(([view]) => view === active));
-    return `
-      <div class="idb-state-tabs" aria-label="Drawer workflow state">
-        ${views.map(([view, label]) => `
-          <button class="idb-tab ${active === view ? 'idb-selected' : ''}" data-idb-view="${escapeHtml(view)}">
-            ${escapeHtml(label)}
-          </button>
-        `).join('')}
-      </div>
-      <div class="idb-progress-rail" aria-hidden="true">
-        ${views.map(([, label], index) => `<span class="idb-progress-step ${index < activeIndex ? 'idb-complete' : index === activeIndex ? 'idb-active' : ''}" title="${escapeHtml(label)}"></span>`).join('')}
-      </div>
-    `;
+    return '';
   }
 
   function runnerErrorTruthW451(state) {
@@ -27512,13 +27466,13 @@
       },
       waiting_for_records: {
         title: 'FORGE is building records',
-        copy: 'FORGE submitted the request. Refresh build status until completed record names and Open links return.',
-        next: 'Refresh build status'
+        copy: 'FORGE submitted the request. Refresh Records until completed record names and Open links return.',
+        next: 'Refresh Records'
       },
       resolving_records: {
         title: 'FORGE is resolving returned records',
-        copy: 'The runner returned the sidecar result. Refresh build status while NetSuite finishes the Sales Order/import resolution before Open links appear.',
-        next: 'Refresh build status'
+        copy: 'The runner returned the sidecar result. Refresh Records while NetSuite finishes the Sales Order/import resolution before Open links appear.',
+        next: 'Refresh Records'
       },
       fix_build: {
         title: runnerErrorW451.terminal ? 'FORGE ERROR' : 'Fix the build setup',
@@ -27582,19 +27536,12 @@
         <div class="idb-section-title">Not ready yet</div>
         <div class="idb-strong">${escapeHtml(title)}</div>
         <div class="idb-copy">${escapeHtml(copy)}</div>
-        <div class="idb-actions">
-          <button class="idb-primary" data-idb-view="plan">${escapeHtml(actionLabel || 'Go to request')}</button>
-        </div>
       </div>
     `;
   }
 
   function renderW416SupportNavigation(state, stageModel) {
-    return `
-      <div class="idb-w444-footer-actions">
-        <button class="idb-secondary" type="button" data-idb-w444-troubleshoot-export>Troubleshoot / Export</button>
-      </div>
-    `;
+    return '';
   }
 
   function renderW416ConsultantDayInLife(state, lane, page, recommendation, selectedMove, action, summary) {
@@ -27711,10 +27658,6 @@
                 <span class="idb-chip idb-open">${escapeHtml(plan.creationMode)}</span>
               </div>
             </div>
-            <div class="idb-story-actions">
-              <button class="idb-story-collapse" data-idb-toggle-story-bar>Expand</button>
-              <button class="idb-reset-button" data-idb-clear-session title="Clear the active demo context">Clear all</button>
-            </div>
           </div>
         </div>
       `;
@@ -27728,11 +27671,6 @@
             <div class="idb-story-sub">${escapeHtml(lane.name)} / ${escapeHtml(lane.proofAnchor)} / ${escapeHtml(product.product)}</div>
             <div class="idb-footer-note">Naming source: ${escapeHtml(naming.authority)} / ${escapeHtml(naming.confidence)} / ${escapeHtml(naming.domain)}</div>
             <div class="idb-story-hook">${escapeHtml(valueHook)}</div>
-          </div>
-          <div class="idb-story-actions">
-            <span class="idb-story-pill">${escapeHtml(plan.creationMode)}</span>
-            <button class="idb-story-collapse" data-idb-toggle-story-bar>Collapse</button>
-            <button class="idb-reset-button" data-idb-clear-session title="Clear the active demo context">Clear all</button>
           </div>
         </div>
         <div class="idb-story-proof">
@@ -27812,7 +27750,6 @@
             <div class="idb-guided-question">${escapeHtml(step.question)}</div>
             <div class="idb-guided-step-title">${escapeHtml(step.title)}</div>
           </div>
-          <button class="idb-secondary" data-idb-view="${escapeHtml(step.nextView)}" ${disabled ? 'disabled' : ''}>${escapeHtml(step.nextLabel)}</button>
         </div>
         <div class="idb-guided-step-copy">${escapeHtml(step.copy)}</div>
       </div>
@@ -27831,11 +27768,11 @@
         state: 'records_imported',
         statusLabel: 'Records ready',
         stepLabel: 'Run',
-        primaryLabel: 'Run demo',
-        primaryAction: 'run_demo',
+        primaryLabel: 'Review returned records',
+        primaryAction: 'review_returned_records',
         primaryDisabled: false,
         secondaryLabel: 'Review records',
-        summaryActionLabel: 'Run demo',
+        summaryActionLabel: 'Review returned records',
         nextAction: postImport.nextActionLabel,
         nextCopy: postImport.nextActionCopy,
         demoPathLabel: `${consultantLabel(handoff.selectedPack)} / ${handoff.selectedScenario}`,
@@ -27899,13 +27836,13 @@
       state: 'confirmed_ready',
       statusLabel: 'Demo path confirmed',
       stepLabel: 'Run',
-      primaryLabel: 'Run demo',
-      primaryAction: 'run_demo',
-      primaryDisabled: false,
-      secondaryLabel: 'Edit request',
-      summaryActionLabel: 'Run demo',
-      nextAction: 'Run demo or build records.',
-      nextCopy: 'The demo path is confirmed. Run the story, build demo records, or review value guidance.',
+        primaryLabel: 'Build records',
+        primaryAction: 'one_click_build_records',
+        primaryDisabled: false,
+        secondaryLabel: 'Autosaved locally',
+        summaryActionLabel: 'Build records',
+        nextAction: 'Build records.',
+        nextCopy: 'The demo path is confirmed. Build records or review returned value guidance.',
       demoPathLabel: `${consultantLabel(handoff.selectedPack)} / ${handoff.selectedScenario}`,
       demoPathCopy: 'Lane, proof path, and demo path are aligned.',
       showIntake: false,
@@ -27964,12 +27901,8 @@
       const contextCaptured = productionIntake.consultantFacingRequiredInputs.length - productionIntake.missing.length;
       const oneClickDisabled = !!intakeGuide.needsContext;
       const primaryAction = authority.confirmedLaneId
-        ? `
-          <button class="idb-primary" data-idb-view="run">Run demo</button>
-          <button class="idb-secondary" data-idb-view="review">Build records</button>
-          <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
-        `
-        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${oneClickDisabled ? 'true' : 'false'}" aria-disabled="${oneClickDisabled ? 'true' : 'false'}">Build records</button>`;
+        ? `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(lane.id)}" data-idb-submit-disabled="${oneClickDisabled ? 'true' : 'false'}" aria-disabled="${oneClickDisabled ? 'true' : 'false'}">Build Records</button>`
+        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${oneClickDisabled ? 'true' : 'false'}" aria-disabled="${oneClickDisabled ? 'true' : 'false'}">Build Records</button>`;
       return `
         <div class="idb-card idb-accent idb-compact idb-w98-request-summary">
           <div class="idb-section-title">Request summary</div>
@@ -27978,7 +27911,6 @@
               <div class="idb-strong">${escapeHtml(intake.customer)}</div>
               <div class="idb-copy">${escapeHtml(websiteDomain(intake.website))} / ${escapeHtml(lane.name)} / ${escapeHtml(handoff.selectedScenario)}</div>
             </div>
-            <button class="idb-secondary" data-idb-edit-setup>Edit</button>
           </div>
           <div class="idb-run-action-card">
             <div class="idb-status-key">Objective</div>
@@ -28005,9 +27937,9 @@
             <span class="idb-mini-chip">${escapeHtml(flow.statusLabel)}</span>
             <span class="idb-mini-chip">${escapeHtml(consultantLabel(intakeGuide.confidenceModel.state))}</span>
           </div>
-          <div class="idb-actions">
-            ${primaryAction}
-          </div>
+        <div class="idb-actions">
+          ${primaryAction}
+        </div>
         </div>
       `;
     }
@@ -28097,15 +28029,10 @@
         <div class="idb-actions">
           ${briefPrepared
             ? stateAuthorityModel(state).confirmedLaneId
-              ? `
-                <button class="idb-primary" data-idb-view="run">Run demo</button>
-                <button class="idb-secondary" data-idb-view="review">Build records</button>
-                <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
-              `
-              : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${intakeGuide.needsContext ? 'true' : 'false'}" aria-disabled="${intakeGuide.needsContext ? 'true' : 'false'}">Build records</button>`
-            : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${flow.primaryDisabled ? 'true' : 'false'}" aria-disabled="${flow.primaryDisabled ? 'true' : 'false'}">Build records</button>`}
-          ${briefPrepared ? '<button class="idb-secondary" data-idb-edit-setup>Edit request</button>' : '<span class="idb-mini-chip">Draft autosaved</span>'}
-          <button class="idb-secondary" data-idb-toggle-lanes>Change lane manually</button>
+              ? `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(lane.id)}" data-idb-submit-disabled="${intakeGuide.needsContext ? 'true' : 'false'}" aria-disabled="${intakeGuide.needsContext ? 'true' : 'false'}">Build Records</button>`
+              : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${intakeGuide.needsContext ? 'true' : 'false'}" aria-disabled="${intakeGuide.needsContext ? 'true' : 'false'}">Build Records</button>`
+            : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(intakeGuide.recommendedLane.id)}" data-idb-submit-disabled="${flow.primaryDisabled ? 'true' : 'false'}" aria-disabled="${flow.primaryDisabled ? 'true' : 'false'}">Build Records</button>`}
+          ${briefPrepared ? '<span class="idb-mini-chip">Request saved</span>' : '<span class="idb-mini-chip">Draft autosaved</span>'}
         </div>
       </div>
     `;
@@ -28268,9 +28195,6 @@
             <span class="idb-detail-line"><strong>Trace required:</strong> record IDs, URLs, operation, and recoverable errors.</span>
           </span>
         </details>
-        <div class="idb-actions">
-          <button class="idb-secondary" data-idb-build-plan>Refresh plan</button>
-        </div>
       </div>
     `;
   }
@@ -28331,7 +28255,6 @@
             <div class="idb-strong">${escapeHtml(readiness.headline)}</div>
             <div class="idb-copy">${escapeHtml(resultUx.summary)}</div>
           </div>
-          <button class="idb-primary" data-idb-view="run">Go to run</button>
         </div>
         <div class="idb-chip-row">
           <span class="idb-chip idb-open">${escapeHtml(readiness.writePathType)}</span>
@@ -28439,29 +28362,12 @@
           </ol>
           <div class="idb-footer-note">Exported packet is for SuiteScript review only; it is not submitted automatically and keeps consultantConfirmed false.</div>
         </details>
-        <div class="idb-actions">
-          <button class="idb-secondary" data-idb-build-plan>Refresh packet</button>
-          <button class="idb-secondary" data-idb-export-packet>Export technical packet</button>
-          <button class="idb-secondary" disabled>${escapeHtml(resultUx.disabledButtonLabel)}</button>
-        </div>
       </div>
     `;
   }
 
   function renderLaneSelector(state, lane) {
-    if (!state.lanePickerOpen) {
-      return '';
-    }
-    return `
-      <div class="idb-card">
-        <div class="idb-section-title">Manual lane override</div>
-        <div class="idb-copy">Use this only when the website or SC request proves the recommended family is wrong.</div>
-        <div class="idb-grid">${renderLaneButtons(state)}</div>
-        <div class="idb-actions">
-          <button class="idb-secondary" data-idb-toggle-lanes>Done</button>
-        </div>
-      </div>
-    `;
+    return '';
   }
 
   function renderValueLens(lane) {
@@ -28602,12 +28508,8 @@
     const primaryAction = !briefPrepared
       ? ''
       : authority.confirmedLaneId
-        ? `
-          <button class="idb-primary" data-idb-view="run">Run demo</button>
-                <button class="idb-secondary" data-idb-view="review">Build records</button>
-          <button class="idb-secondary" data-idb-view="value">ROI / Competitive</button>
-        `
-        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(lane.id)}">Build records</button>`;
+        ? `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(lane.id)}">Build Records</button>`
+        : `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(lane.id)}">Build Records</button>`;
     const classificationLabel = briefPrepared ? (evidence.recommendedLaneName || lane.name) : 'Waiting for brief';
     const confidenceLabel = briefPrepared ? postImport.planConfidenceLabel : 'Not prepared';
     const confidenceDetail = briefPrepared ? postImport.planConfidenceDetail : 'Build records';
@@ -28783,8 +28685,7 @@
               ${runnerErrorW451.extId ? `<span class="idb-mini-chip">${escapeHtml(runnerErrorW451.extId)}</span>` : ''}
             </div>
             <div class="idb-actions">
-              <button class="idb-secondary" type="button" data-idb-w444-troubleshoot-export>Troubleshoot / Export</button>
-              <button class="idb-secondary" type="button" data-idb-start-new-run>Start new run</button>
+              <button class="idb-secondary" type="button" data-idb-w445-start-new-run>Clear/New Run</button>
             </div>
           </div>
         `;
@@ -28793,7 +28694,7 @@
       const showBuildButton = actions.showBuildButton === true;
       const showPollButton = actions.showRefreshButton === true;
       const showImportButton = actions.showFinishButton === true;
-      const pollButtonLabel = 'Refresh build status';
+      const pollButtonLabel = 'Refresh Records';
       const chipTone = showBuildButton || showPollButton || showImportButton ? 'ready' : oneClickBuild.status === 'build_failed_ask_admin' ? 'danger' : 'partial';
       const approvedBuildTouched = w262BuildUx.stateFacts.adapterReady === true ||
         w262BuildUx.stateFacts.runnerTaskCaptured === true ||
@@ -28839,13 +28740,9 @@
             </div>
           </div>
           <div class="idb-actions">
-            ${showBuildButton ? '<button class="idb-primary" data-idb-real-adapter-action="submit_w144_once">Build records</button>' : ''}
+            ${showBuildButton ? '<button class="idb-primary" data-idb-real-adapter-action="submit_w144_once">Build Records</button>' : ''}
             ${showPollButton ? `<button class="idb-secondary" data-idb-build-return-action="check_runner_result">${escapeHtml(pollButtonLabel)}</button>` : ''}
-            ${showImportButton ? '<button class="idb-primary" data-idb-build-return-action="import_completed_runner_result">Finish build</button>' : ''}
-            ${actions.showContinueToRun ? '<button class="idb-secondary" data-idb-view="run">Continue to Run</button>' : ''}
-            ${w262BuildUx.stateFacts.runnerTaskCaptured || w262BuildUx.stateFacts.completedResultReady ? '<button class="idb-secondary" type="button" data-idb-w444-clear-run="keep">Clear build result and run again</button>' : ''}
-            ${w262BuildUx.stateFacts.runnerTaskCaptured || w262BuildUx.stateFacts.completedResultReady ? '<button class="idb-secondary" type="button" data-idb-w445-start-new-run>Clear and start new build</button>' : ''}
-            ${actions.showContinueToRun ? '<span class="idb-mini-chip">Smoke can continue</span>' : ''}
+            ${w262BuildUx.stateFacts.runnerTaskCaptured || w262BuildUx.stateFacts.completedResultReady ? '<button class="idb-secondary" type="button" data-idb-w445-start-new-run>Clear/New Run</button>' : ''}
             ${oneClickBuild.automation && oneClickBuild.automation.showAskAdminMessage && !w262BuildUx.stateFacts.runnerTaskCaptured ? '<span class="idb-mini-chip">Build failed, ask admin</span>' : ''}
           </div>
           ${pendingTransactionResolution ? '' : (invalidCompletedResultRecoveryHtml || importRecoverySurfaceHtml)}
@@ -28981,9 +28878,6 @@
           <div class="idb-chip-row">
             ${realW144Execution.gates.map((gate) => `<span class="idb-mini-chip">${escapeHtml(gate.ready ? 'Ready' : 'Blocked')}: ${escapeHtml(gate.label)}</span>`).join('')}
           </div>
-          <div class="idb-actions">
-            <button class="idb-primary" data-idb-real-adapter-action="submit_w144_once">Submit W144 once</button>
-          </div>
           <div class="idb-copy">Expected first response: runnerTaskId or adapter error. Record URLs must wait for result capture and W151 import.</div>
         </div>
         </details>
@@ -29015,9 +28909,6 @@
             <span class="idb-mini-chip">${escapeHtml(stateMachineUi.importCta.guardOwner)}</span>
             <span class="idb-mini-chip">Build handoff JSON rejected</span>
             <span class="idb-mini-chip">${stateMachineUi.visualTestingBlocked ? 'Visual testing blocked' : 'Visual testing ready'}</span>
-          </div>
-          <div class="idb-actions">
-            <button class="idb-secondary" data-idb-view="trace" ${stateMachineUi.importCta.enabled ? '' : 'disabled'}>${escapeHtml(stateMachineUi.importCta.label)}</button>
           </div>
         </div>
       </div>
@@ -29489,10 +29380,6 @@
             </div>
           </div>
         ` : ''}
-        <div class="idb-button-row">
-          ${isAdminDebug ? `<button class="idb-secondary" data-idb-export-dcc-handoff ${isReady ? '' : 'disabled'}>Export debug handoff</button>` : ''}
-          <button class="idb-secondary" data-idb-view="run">Go to run</button>
-        </div>
         ${isAdminDebug ? `<details class="idb-technical-details">
           <summary>Internal build details</summary>
           <div class="idb-copy">Preview only. Operator approval evidence, preview fields, build setup fields, and result fields stay here. The drawer still cannot submit, queue, invoke scripts, or write.</div>
@@ -29535,11 +29422,6 @@
             <span class="idb-mini-chip">Status: ${escapeHtml(consultantLabel(operatorEvidenceIntake.status))}</span>
             <span class="idb-mini-chip">Preview bridge: ${escapeHtml(consultantLabel(operatorEvidenceIntake.previewBridgeStatus))}</span>
             <span class="idb-mini-chip">Submit from drawer: no</span>
-          </div>
-          <div class="idb-button-row">
-            <button class="idb-secondary" data-idb-operator-approval-status="approved">Mark preview approved</button>
-            <button class="idb-secondary" data-idb-operator-approval-status="rejected">Reject preview</button>
-            <button class="idb-secondary" data-idb-clear-operator-approval>Clear operator evidence</button>
           </div>
           <div class="idb-section-title">Internal preview bridge</div>
           <ol class="idb-tight-list">
@@ -29731,10 +29613,6 @@
           <ol class="idb-value-list">
             ${model.recovery.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
           </ol>
-          <div class="idb-actions idb-wrap">
-            <button class="idb-secondary" data-idb-view="trace">Import / clear pilot result</button>
-            <button class="idb-secondary" data-idb-clear-session>Clear session</button>
-          </div>
         </details>
       </div>
     `;
@@ -29798,12 +29676,6 @@
             <span class="idb-detail-line"><strong>Boundary:</strong> Customer first, Proof Item after Customer ID/URL, no Sales Order write.</span>
           </div>
         </details>
-        <div class="idb-actions">
-          <button class="idb-secondary" data-idb-build-plan>Refresh review</button>
-          <button class="idb-primary" data-idb-export-dcc-handoff>Export handoff</button>
-          <button class="idb-secondary" data-idb-export-packet>Export technical packet</button>
-          <button class="idb-primary" data-idb-view="run">Go to run</button>
-        </div>
       </div>
     `;
   }
@@ -29855,9 +29727,6 @@
             <div class="idb-status-key">Run readiness</div>
             <div class="idb-strong">${escapeHtml(headline)}</div>
             <div class="idb-copy">${escapeHtml(body)}</div>
-          </div>
-          <div class="idb-actions">
-            <button class="idb-secondary" data-idb-view="review">Go to Build</button>
           </div>
         </div>
         <details class="idb-technical-details">
@@ -29981,13 +29850,12 @@
             </div>`
           : `<div class="idb-card">
               <div class="idb-section-title">Today's moves</div>
-              <div class="idb-grid">${renderMoveButtons(lane, state)}</div>
               <div class="idb-copy"><strong>Selected:</strong> ${escapeHtml(selectedMove)}</div>
             </div>
             <div class="idb-card idb-guard-accent">
               <div class="idb-section-title">Guardrails</div>
               <div class="idb-guardrail-row">
-                ${lane.guardrails.map((guardrail, index) => `<button class="idb-chip idb-guard" data-idb-guardrail="${index}">${escapeHtml(laneConsistentSupportCopyW373(guardrail, storyContractW373))}</button>`).join('')}
+                ${lane.guardrails.map((guardrail) => `<span class="idb-chip idb-guard">${escapeHtml(laneConsistentSupportCopyW373(guardrail, storyContractW373))}</span>`).join('')}
               </div>
             </div>`}
       </details>
@@ -30055,13 +29923,6 @@
             <div class="idb-copy">Full trace detail is preserved in export.</div>
           </div>
         </div>
-        <div class="idb-actions">
-          ${showAdminResultImport ? '<button class="idb-primary" data-idb-export-dcc-handoff>Export debug handoff</button>' : ''}
-          <button class="idb-secondary" data-idb-copy-operator-summary>Copy operator summary</button>
-          <button class="idb-primary" data-idb-export>Export trace</button>
-          <button class="idb-secondary" data-idb-clear>Clear trace</button>
-          <button class="idb-secondary" data-idb-clear-session>Clear session</button>
-        </div>
         ${showAdminResultImport ? `<label class="idb-checkbox-line"><input type="checkbox" data-idb-operator-summary-diagnostics ${state.includeOperatorSummaryDiagnostics ? 'checked' : ''}> Include diagnostics appendix</label>` : ''}
         ${copyStatus ? `<div class="idb-footer-note">${escapeHtml(copyStatus)}</div>` : ''}
         <div class="idb-footer-note">Clear session resets setup, lane choice, review packet, and trace for the next prospect.</div>
@@ -30088,10 +29949,6 @@
           <span class="idb-mini-chip">Secrets redacted</span>
         </div>
         <textarea class="idb-textarea" data-idb-dcc-final-naming-json placeholder='Paste completed runner result JSON with numeric customer, transaction, hero item, matrix/proof item, and component item ids plus supported NetSuite URLs.'></textarea>
-        <div class="idb-actions">
-          <button class="idb-primary" data-idb-import-dcc-final-naming>Import runner result</button>
-          <button class="idb-secondary" data-idb-clear-dcc-final-naming ${state.dccFinalNamingResult ? '' : 'disabled'}>Clear imported names</button>
-        </div>
       </div>` : ''}
       ${lanePackProposalReview ? renderLanePackDiffReviewW252(lanePackProposalReview) : ''}
       ${showAdminResultImport ? `<div class="idb-card idb-accent idb-w90-evidence-checklist">
@@ -30139,14 +29996,6 @@
           </div>
           <div class="idb-header-meta">
             <div class="idb-version-pill">${escapeHtml(drawerDisplayVersionW346())}</div>
-            <button
-              class="idb-bug-button"
-              type="button"
-              data-idb-feedback-placeholder="w259"
-              aria-label="${escapeHtml(feedbackPlaceholder.ariaLabel)}"
-              aria-disabled="true"
-              title="${escapeHtml(feedbackPlaceholder.title)}"
-            >${escapeHtml(feedbackPlaceholder.buttonLabel)}</button>
           </div>
           <button class="idb-icon-button" data-idb-close title="Close drawer">×</button>
         </div>
@@ -30710,33 +30559,6 @@
       state.activeView = 'plan';
       saveState(state);
       draw(root, state);
-    });
-    const laneToggle = root.querySelector('[data-idb-toggle-lanes]');
-    if (laneToggle) laneToggle.addEventListener('click', () => {
-      state.lanePickerOpen = !state.lanePickerOpen;
-      saveState(state);
-      draw(root, state);
-    });
-    root.querySelectorAll('[data-idb-lane]').forEach((button) => {
-      button.addEventListener('click', () => {
-        state.selectedLaneId = button.getAttribute('data-idb-lane');
-        state.laneSelectionSource = 'manual';
-        state.selectedMoveIndex = 0;
-        state.acceptedPacket = null;
-        state.briefPrepared = true;
-        state.lanePickerOpen = false;
-        saveState(state);
-        trace('lane_selected', { selectedLaneId: state.selectedLaneId });
-        draw(root, state);
-      });
-    });
-    root.querySelectorAll('[data-idb-move]').forEach((button) => {
-      button.addEventListener('click', () => {
-        state.selectedMoveIndex = Number(button.getAttribute('data-idb-move') || 0);
-        saveState(state);
-        trace('move_selected', { selectedMoveIndex: state.selectedMoveIndex, laneId: state.selectedLaneId });
-        draw(root, state);
-      });
     });
     root.querySelectorAll('[data-idb-intake]').forEach((field) => {
       const handleIntakeFieldChange = () => {
@@ -31634,30 +31456,10 @@
           });
           if (button) {
             button.disabled = false;
-            button.textContent = originalButtonText || 'Refresh build status';
+            button.textContent = originalButtonText || 'Refresh Records';
           }
           draw(root, state);
         }
-      });
-    });
-    root.querySelectorAll('[data-idb-action]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const pageContext = currentPageContext();
-        const lane = getLane(state);
-        const recommendation = recommendMove(lane, pageContext);
-        const selectedMove = lane.moves[state.selectedMoveIndex] || lane.moves[0];
-        state.selectedActionId = button.getAttribute('data-idb-action');
-        state.pageContext = pageContext;
-        saveState(state);
-        trace('story_action_selected', {
-          actionId: state.selectedActionId,
-          laneId: state.selectedLaneId,
-          selectedMove,
-          liveRunScript: liveRunScript(state, lane, pageContext, selectedMove, recommendation, getAction(state)).tracePayload,
-          recommendation,
-          pageContext
-        });
-        draw(root, state);
       });
     });
     root.querySelectorAll('[data-idb-guardrail]').forEach((button) => {
@@ -31780,11 +31582,6 @@
       resizeHandle.addEventListener('pointerup', finishResize);
       resizeHandle.addEventListener('pointercancel', () => { resizeState = null; });
     }
-    const feedbackPlaceholderButton = root.querySelector('[data-idb-feedback-placeholder]');
-    if (feedbackPlaceholderButton) feedbackPlaceholderButton.addEventListener('click', (event) => {
-      event.preventDefault();
-      feedbackPlaceholderActionW259();
-    });
     const exporter = root.querySelector('[data-idb-export]');
     if (exporter) exporter.addEventListener('click', () => exportTrace(state));
     const operatorSummaryCopier = root.querySelector('[data-idb-copy-operator-summary]');

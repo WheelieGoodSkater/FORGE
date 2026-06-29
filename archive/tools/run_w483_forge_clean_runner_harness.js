@@ -12,7 +12,7 @@ const {
 
 const runnerRel = path.join('netsuite', 'runner', 'scai_ss_so_csv_runner_forge_clean_w483.js');
 const cabinetRunnerRel = path.join('src', 'FileCabinet', 'SuiteScripts', 'Intelligent Demo Builder', 'scai_ss_so_csv_runner_forge_clean_w483.js');
-const objectRel = path.join('src', 'Objects', 'customscript_scai_ss_runner_forge_clean_w483.xml');
+const objectRel = path.join('src', 'Objects', 'customscript_scai_w483_clean.xml');
 const oldRunnerPath = '/Users/aaronsunshine/Downloads/scai_ss_so_csv_runner (12).js';
 
 function readRel(rel) {
@@ -123,8 +123,9 @@ function main() {
 
   assertCase(results, 'w483-suitecloud-object-defines-script-deployment-and-params',
     fs.existsSync(path.join(root, objectRel)) &&
-      objectXml.includes('<scheduledscript scriptid="customscript_scai_ss_runner_forge_clean_w483">') &&
-      objectXml.includes('<scriptdeployment scriptid="customdeploy_scai_ss_runner_forge_clean_w483">') &&
+      objectXml.includes('<scheduledscript scriptid="customscript_scai_w483_clean">') &&
+      objectXml.includes('<scriptdeployment scriptid="customdeploy_scai_w483_clean">') &&
+      !/scriptid="[^"]{41,}"/.test(objectXml) &&
       objectXml.includes('<scriptfile>[/SuiteScripts/Intelligent Demo Builder/scai_ss_so_csv_runner_forge_clean_w483.js]</scriptfile>') &&
       allPresent(objectXml, [
         'custscript_w483_prospect',

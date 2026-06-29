@@ -1,4 +1,4 @@
-<scheduledscript scriptid="customscript_scai_ss_runner_forge_clean_w483">
+<scheduledscript scriptid="customscript_scai_w483_clean">
   <description>FORGE W483 clean scheduled runner. Uses the attached (12) old runner naming and creation flow, then writes compact FORGE sidecar ROI and competitive results.</description>
   <isinactive>F</isinactive>
   <name>FORGE W483 Clean Runner</name>
@@ -247,7 +247,7 @@
     </scriptcustomfield>
   </scriptcustomfields>
   <scriptdeployments>
-    <scriptdeployment scriptid="customdeploy_scai_ss_runner_forge_clean_w483">
+    <scriptdeployment scriptid="customdeploy_scai_w483_clean">
       <isdeployed>T</isdeployed>
       <loglevel>AUDIT</loglevel>
       <status>NOTSCHEDULED</status>

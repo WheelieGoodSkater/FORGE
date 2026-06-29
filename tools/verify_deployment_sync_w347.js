@@ -7,8 +7,9 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const mirrorDir = path.join(root, 'src', 'FileCabinet', 'SuiteScripts', 'Intelligent Demo Builder');
 
-const EXPECTED_DRAWER_VERSION = '2.0.6-w483';
-const EXPECTED_VISIBLE_MARKER = 'Drawer 2.0.6-w483 / W483';
+const EXPECTED_DRAWER_VERSION = '2.1.0';
+const EXPECTED_UX_BLOCK = 'V2.1.0';
+const EXPECTED_VISIBLE_MARKER = 'Drawer 2.1.0 / V2.1.0';
 const RAW_USERSCRIPT_URL = 'https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js';
 
 const TARGETS = [
@@ -59,6 +60,14 @@ const TARGETS = [
     mirrorPath: path.join(mirrorDir, 'scai_ss_so_csv_runner_forge_clean_w483.js'),
     downloadArgs: ['sidecar-runner-w483-download', 'sidecar-runner-w483'],
     updatePath: 'SuiteCloud Deploy Project is required to create/update the W483 scheduled script File Cabinet file.'
+  },
+  {
+    id: 'forge-runner-v210',
+    label: 'FORGE V2.1.0 records Scheduled Script',
+    rootPath: path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_forge_v2_1_0.js'),
+    mirrorPath: path.join(mirrorDir, 'scai_ss_so_csv_runner_forge_v2_1_0.js'),
+    downloadArgs: ['forge-runner-v210-download', 'forge-runner-v210'],
+    updatePath: 'SuiteCloud Deploy Project is required to create/update the V2.1.0 scheduled script File Cabinet file.'
   }
 ];
 
@@ -141,10 +150,10 @@ function drawerMetadataChecks(rootText, mirrorText) {
     {
       id: 'visible_w346_marker',
       pass: rootText.includes(`const DRAWER_USERSCRIPT_VERSION = '${EXPECTED_DRAWER_VERSION}';`) &&
-        rootText.includes("const CURRENT_UX_BLOCK_W346 = 'W483';") &&
+        rootText.includes(`const CURRENT_UX_BLOCK_W346 = '${EXPECTED_UX_BLOCK}';`) &&
         rootText.includes('return `Drawer ${DRAWER_USERSCRIPT_VERSION} / ${CURRENT_UX_BLOCK_W346}`;') &&
         mirrorText.includes(`const DRAWER_USERSCRIPT_VERSION = '${EXPECTED_DRAWER_VERSION}';`) &&
-        mirrorText.includes("const CURRENT_UX_BLOCK_W346 = 'W483';") &&
+        mirrorText.includes(`const CURRENT_UX_BLOCK_W346 = '${EXPECTED_UX_BLOCK}';`) &&
         mirrorText.includes('return `Drawer ${DRAWER_USERSCRIPT_VERSION} / ${CURRENT_UX_BLOCK_W346}`;'),
       expected: EXPECTED_VISIBLE_MARKER
     },

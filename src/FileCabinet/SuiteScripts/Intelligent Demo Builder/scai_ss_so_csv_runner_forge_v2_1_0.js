@@ -42,10 +42,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v1.12.13-w483-forge-clean';
-  const RUNNER_EXECUTION_CORE_W483 = 'old-runner-v1.12.13';
-  const SIDECAR_VERSION_W483 = 'w483-forge-clean-runner';
-  const RESULT_CAPTURE_FILENAME_LIMIT_W483 = 180;
+  const VERSION = 'v1.12.13-forge-v2.1.0';
+  const RUNNER_EXECUTION_CORE_W486 = 'old-runner-v1.12.13';
+  const SIDECAR_VERSION_W486 = 'forge-v2.1.0-records-runner';
+  const RESULT_CAPTURE_FILENAME_LIMIT_W486 = 180;
 
   const ANCHORS = {
     customer: 'SCAI_ANCHOR_CUSTOMER',
@@ -138,7 +138,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     try {
       return executeMain();
     } catch (e) {
-      captureRunnerErrorW483(e);
+      captureRunnerErrorW486(e);
       throw e;
     }
   }
@@ -146,33 +146,33 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function executeMain() {
     const s = runtime.getCurrentScript();
 
-    const prospect = str(getScriptParamAny(s, ['custscript_w483_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
-    const website  = str(getScriptParamAny(s, ['custscript_w483_website', 'custscript_v3_runner_website', 'custscript_scai_so_runner_website']));
-    const notes    = str(getScriptParamAny(s, ['custscript_w483_notes', 'custscript_v3_runner_notes', 'custscript_scai_so_runner_notes']));
-    const agenda   = str(getScriptParamAny(s, ['custscript_w483_agenda', 'custscript_v3_runner_agenda', 'custscript_scai_so_runner_agenda']));
-    const extId    = str(getScriptParamAny(s, ['custscript_w483_extid', 'custscript_v3_runner_extid', 'custscript_scai_so_runner_extid']));
+    const prospect = str(getScriptParamAny(s, ['custscript_w486_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
+    const website  = str(getScriptParamAny(s, ['custscript_w486_website', 'custscript_v3_runner_website', 'custscript_scai_so_runner_website']));
+    const notes    = str(getScriptParamAny(s, ['custscript_w486_notes', 'custscript_v3_runner_notes', 'custscript_scai_so_runner_notes']));
+    const agenda   = str(getScriptParamAny(s, ['custscript_w486_agenda', 'custscript_v3_runner_agenda', 'custscript_scai_so_runner_agenda']));
+    const extId    = str(getScriptParamAny(s, ['custscript_w486_extid', 'custscript_v3_runner_extid', 'custscript_scai_so_runner_extid']));
 
-    const soMappingId = toIntOrNull(getScriptParamAny(s, ['custscript_w483_mapping', 'custscript_v3_runner_mapping', 'custscript_scai_so_runner_mapping']));
-    const soFolderId  = toIntOrNull(getScriptParamAny(s, ['custscript_w483_folder', 'custscript_v3_runner_folder', 'custscript_scai_so_runner_folder']));
-    const namingFileId = toIntOrNull(getScriptParamAny(s, ['custscript_w483_naming_file', 'custscript_scai_runner_naming_file_id']));
-    const resultCaptureFolderId = toIntOrNull(getScriptParamAny(s, ['custscript_w483_result_folder', 'custscript_v3_runner_result_capture_folder', 'custscript_idb_result_capture_folder_id']));
-    const confirmedBuildRequestJson = safeJsonParse(getScriptParamAny(s, ['custscript_w483_req_json', 'custscript_v3_runner_idb_request_json'])) || {};
+    const soMappingId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_mapping', 'custscript_v3_runner_mapping', 'custscript_scai_so_runner_mapping']));
+    const soFolderId  = toIntOrNull(getScriptParamAny(s, ['custscript_w486_folder', 'custscript_v3_runner_folder', 'custscript_scai_so_runner_folder']));
+    const namingFileId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_naming_file', 'custscript_scai_runner_naming_file_id']));
+    const resultCaptureFolderId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_result_folder', 'custscript_v3_runner_result_capture_folder', 'custscript_idb_result_capture_folder_id']));
+    const confirmedBuildRequestJson = safeJsonParse(getScriptParamAny(s, ['custscript_w486_req_json', 'custscript_v3_runner_idb_request_json'])) || {};
 
-    const subsidiaryId = toIntOrNull(getScriptParamAny(s, ['custscript_w483_subsidiary', 'custscript_v3_runner_subsidiary', 'custscript_scai_runner_subsidiary']));
-    const locationId   = toIntOrNull(getScriptParamAny(s, ['custscript_w483_location', 'custscript_v3_runner_location', 'custscript_scai_runner_location']));
+    const subsidiaryId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_subsidiary', 'custscript_v3_runner_subsidiary', 'custscript_scai_runner_subsidiary']));
+    const locationId   = toIntOrNull(getScriptParamAny(s, ['custscript_w486_location', 'custscript_v3_runner_location', 'custscript_scai_runner_location']));
     const workCenterSearchIdRaw = str(
-      getScriptParamAny(s, ['custscript_w483_wc_search', 'custscript_v3_runner_wc_search', 'custscript_scai_wc_savedsearch_id', 'custscript_scai_runner_wc_search'])
+      getScriptParamAny(s, ['custscript_w486_wc_search', 'custscript_v3_runner_wc_search', 'custscript_scai_wc_savedsearch_id', 'custscript_scai_runner_wc_search'])
     ).trim();
     const workCenterSearchId = /^\d+$/.test(workCenterSearchIdRaw)
       ? Number(workCenterSearchIdRaw)
       : workCenterSearchIdRaw;
 
     // WIP flag (Suitelet should pass 'T' or 'F')
-    const enableWipRaw = getScriptParamAny(s, ['custscript_w483_enable_wip', 'custscript_v3_runner_enable_wip', 'custscript_scai_runner_enable_wip', 'custscript_scai_runner_enablewip']);
+    const enableWipRaw = getScriptParamAny(s, ['custscript_w486_enable_wip', 'custscript_v3_runner_enable_wip', 'custscript_scai_runner_enable_wip', 'custscript_scai_runner_enablewip']);
     const enableWip = normalizeBool(enableWipRaw);
 
     const createNewHeroCandidates = {
-      custscript_w483_create_hero: s.getParameter({ name: 'custscript_w483_create_hero' }),
+      custscript_w486_create_hero: s.getParameter({ name: 'custscript_w486_create_hero' }),
       custscript_v3_runner_create_new_hero: s.getParameter({ name: 'custscript_v3_runner_create_new_hero' }),
       custscript_scai_runner_create_new_hero: s.getParameter({ name: 'custscript_scai_runner_create_new_hero' }),
       custscript_scai_create_new_hero: s.getParameter({ name: 'custscript_scai_create_new_hero' }),
@@ -183,7 +183,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const createNewHeroItem = normalizeBool(createNewHeroRaw);
 
     const enableManufacturingCandidates = {
-      custscript_w483_enable_mfg: s.getParameter({ name: 'custscript_w483_enable_mfg' }),
+      custscript_w486_enable_mfg: s.getParameter({ name: 'custscript_w486_enable_mfg' }),
       custscript_v3_runner_enable_mfg: s.getParameter({ name: 'custscript_v3_runner_enable_mfg' }),
       custscript_v3_runner_enable_manufacturing: s.getParameter({ name: 'custscript_v3_runner_enable_manufacturing' }),
       custscript_scai_runner_enable_mfg: s.getParameter({ name: 'custscript_scai_runner_enable_mfg' }),
@@ -231,7 +231,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const anchorHeroItemIdParam = toIntOrNull(anchorHeroItemIdRaw);
 
     const passedHeroItemIdRaw =
-      s.getParameter({ name: 'custscript_w483_hero_item' }) ||
+      s.getParameter({ name: 'custscript_w486_hero_item' }) ||
       s.getParameter({ name: 'custscript_v3_runner_hero_item' }) ||
       s.getParameter({ name: 'custscript_scai_runner_hero_item' }) ||
       s.getParameter({ name: 'custscript_scai_runner_heroitem' }) ||
@@ -447,7 +447,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     // 6) Manufacturing-only setup
     let woId = null;
     if (finalEnableManufacturing && ids.assemblyId && ids.bomId) {
-      const bomAttachResult = safeManufacturingStepW483('BOM attach to assembly', () => {
+      const bomAttachResult = safeManufacturingStepW486('BOM attach to assembly', () => {
         attachBomToAssembly({ assemblyId: ids.assemblyId, bomId: ids.bomId });
         return { assemblyId: ids.assemblyId, bomId: ids.bomId };
       });
@@ -456,7 +456,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         log.audit({
           title: `Work Order seed skipped (diagnostic) [${VERSION}]`,
           details: JSON.stringify({
-            reason: 'work_order_create_blocks_w483_live_run',
+            reason: 'work_order_create_blocks_w486_live_run',
             assemblyId: ids.assemblyId,
             bomId: ids.bomId,
             extId
@@ -486,11 +486,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     // 9) Seed SOs via CSV import
-    const customerInfo = getOrCreateFreshCustomerW483({ extId, prospect, website, subsidiaryId });
+    const customerInfo = getOrCreateFreshCustomerW486({ extId, prospect, website, subsidiaryId });
     const soCsv = buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey: ids.heroItemCsvKey || ids.heroItemExternalId || ANCHORS.heroItem, customerKey: customerInfo.externalId });
     const soFileId = saveCsvToFileCabinet({ folderId: soFolderId, filename: `scai_so_${extId}.csv`, contents: soCsv });
     const soTaskId = submitCsvImport({ mappingId: soMappingId, fileId: soFileId });
-    const directSalesOrderId = createSalesOrderDirectW483({
+    const directSalesOrderId = createSalesOrderDirectW486({
       extId,
       prospect,
       website,
@@ -560,7 +560,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       })
     });
 
-    const sidecarCapture = writeForgeSidecarResultW483({
+    const sidecarCapture = writeForgeSidecarResultW486({
       folderId: resultCaptureFolderId,
       prospect,
       website,
@@ -590,36 +590,35 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
   }
 
-  function writeForgeSidecarResultW483(args) {
+  function writeForgeSidecarResultW486(args) {
     const folderId = Number(args && args.folderId || 0);
     if (!folderId) return null;
     const now = new Date().toISOString();
     const confirmed = args.confirmedBuildRequestJson || {};
     const extId = str(args.extId);
-    const records = buildReturnedRecordsW483(args);
+    const records = buildReturnedRecordsW486(args);
     const displayReadyRecords = Object.keys(records).map(function(key) { return records[key]; }).filter(Boolean);
-    const roiCompetitive = buildRoiCompetitiveSidecarW483(args, records);
     const status = args.enableWip && !args.routingId ? 'completed_with_wip_diagnostic' : 'completed';
-    const sourceRequestId = firstNonBlankTextW483(
+    const sourceRequestId = firstNonBlankTextW486(
       confirmed.sourceRequestId,
       confirmed.requestId,
       confirmed.buildAttemptProvenance && confirmed.buildAttemptProvenance.sourceRequestId,
       extId
     );
-    const buildAttemptId = firstNonBlankTextW483(
+    const buildAttemptId = firstNonBlankTextW486(
       confirmed.buildAttemptId,
       confirmed.buildAttemptProvenance && confirmed.buildAttemptProvenance.buildAttemptId,
       extId
     );
-    const submittedAt = firstNonBlankTextW483(
+    const submittedAt = firstNonBlankTextW486(
       confirmed.submittedAt,
       confirmed.buildAttemptProvenance && confirmed.buildAttemptProvenance.submittedAt,
       now
     );
     const completedResult = {
       schema: 'forge.completed-runner-result.v3',
-      sidecarVersion: SIDECAR_VERSION_W483,
-      runnerExecutionCore: RUNNER_EXECUTION_CORE_W483,
+      sidecarVersion: SIDECAR_VERSION_W486,
+      runnerExecutionCore: RUNNER_EXECUTION_CORE_W486,
       status,
       runStatus: status,
       partialResultState: status === 'completed_with_wip_diagnostic' ? 'partial_result_missing_wip_detail' : '',
@@ -673,23 +672,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingDiscoveryMode: args.namingPayload && args.namingPayload.discoveryMode || '',
       namingSource: args.names && (args.names._source || args.names.namingEvidenceSource) || '',
       namingAuthorityOrder: 'old runner precomputed naming pack -> old runner deterministic fallback',
-      productBuildPlanW483: buildProductBuildPlanW483(args),
-      roiCompetitiveReview: roiCompetitive.roiCompetitiveReview,
-      roiCompetitiveSourceBasis: roiCompetitive.roiCompetitiveSourceBasis,
-      roiAudit: roiCompetitive.roiAudit,
-      competitive: roiCompetitive.competitive,
-      competitiveAdvisory: roiCompetitive.competitiveAdvisory,
-      roiCompetitiveDetailModelW444: roiCompetitive.roiCompetitiveDetailModelW444,
-      competitiveAdvisoryModelW362: roiCompetitive.competitiveAdvisoryModelW362,
-      valueReviewPacket: roiCompetitive.valueReviewPacket,
+      productBuildPlanW486: buildProductBuildPlanW486(args),
+      futureExpansion: {
+        roiCompetitive: 'reserved_for_later_block',
+        enabled: false
+      },
       warnings: args.enableWip && !args.routingId ? ['WIP was requested; routing did not return a routing id.'] : [],
       errors: []
     };
     const resultCapture = {
-      schema: 'idb.runner-result-capture.w483.forge-clean.v1',
+      schema: 'idb.runner-result-capture.w486.forge-clean.v1',
       completedResultSchema: 'forge.completed-runner-result.v3',
-      sidecarVersion: SIDECAR_VERSION_W483,
-      runnerExecutionCore: RUNNER_EXECUTION_CORE_W483,
+      sidecarVersion: SIDECAR_VERSION_W486,
+      runnerExecutionCore: RUNNER_EXECUTION_CORE_W486,
       status,
       runnerStatus: status,
       taskStatus: status,
@@ -711,18 +706,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       recordsArray: displayReadyRecords,
       displayRecords: displayReadyRecords,
       routingResult: args.enableWip ? (args.routingResult || null) : null,
-      roiCompetitiveReview: roiCompetitive.roiCompetitiveReview,
-      roiCompetitiveSourceBasis: roiCompetitive.roiCompetitiveSourceBasis,
-      roiAudit: roiCompetitive.roiAudit,
-      competitive: roiCompetitive.competitive,
-      competitiveAdvisory: roiCompetitive.competitiveAdvisory,
-      roiCompetitiveDetailModelW444: roiCompetitive.roiCompetitiveDetailModelW444,
-      competitiveAdvisoryModelW362: roiCompetitive.competitiveAdvisoryModelW362,
-      valueReviewPacket: roiCompetitive.valueReviewPacket
+      futureExpansion: completedResult.futureExpansion
     };
-    const saved = saveTextArtifactW483({
+    const saved = saveTextArtifactW486({
       folderId,
-      name: resultCaptureFileNameW483({ extId, buildAttemptId, status }),
+      name: resultCaptureFileNameW486({ extId, buildAttemptId, status }),
       contents: JSON.stringify(resultCapture)
     });
     return {
@@ -735,20 +723,20 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function captureRunnerErrorW483(error) {
+  function captureRunnerErrorW486(error) {
     const s = runtime.getCurrentScript();
-    const prospect = str(getScriptParamAny(s, ['custscript_w483_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
-    const website = str(getScriptParamAny(s, ['custscript_w483_website', 'custscript_v3_runner_website', 'custscript_scai_so_runner_website']));
-    const extId = str(getScriptParamAny(s, ['custscript_w483_extid', 'custscript_v3_runner_extid', 'custscript_scai_so_runner_extid']));
-    const folderId = toIntOrNull(getScriptParamAny(s, ['custscript_w483_result_folder', 'custscript_v3_runner_result_capture_folder', 'custscript_idb_result_capture_folder_id']));
-    const confirmed = safeJsonParse(getScriptParamAny(s, ['custscript_w483_req_json', 'custscript_v3_runner_idb_request_json'])) || {};
+    const prospect = str(getScriptParamAny(s, ['custscript_w486_prospect', 'custscript_v3_runner_prospect', 'custscript_scai_so_runner_prospect']));
+    const website = str(getScriptParamAny(s, ['custscript_w486_website', 'custscript_v3_runner_website', 'custscript_scai_so_runner_website']));
+    const extId = str(getScriptParamAny(s, ['custscript_w486_extid', 'custscript_v3_runner_extid', 'custscript_scai_so_runner_extid']));
+    const folderId = toIntOrNull(getScriptParamAny(s, ['custscript_w486_result_folder', 'custscript_v3_runner_result_capture_folder', 'custscript_idb_result_capture_folder_id']));
+    const confirmed = safeJsonParse(getScriptParamAny(s, ['custscript_w486_req_json', 'custscript_v3_runner_idb_request_json'])) || {};
     const message = String(error && (error.message || error.name) || error || 'Unknown runner error');
     const name = String(error && (error.name || error.id) || 'RUNNER_ERROR');
-    const buildAttemptId = firstNonBlankTextW483(confirmed.buildAttemptId, confirmed.buildAttempt && confirmed.buildAttempt.id);
-    const sourceRequestId = firstNonBlankTextW483(confirmed.requestId, confirmed.sourceRequestId, confirmed.idempotencyToken);
-    const submittedAt = firstNonBlankTextW483(confirmed.submittedAt, new Date().toISOString());
+    const buildAttemptId = firstNonBlankTextW486(confirmed.buildAttemptId, confirmed.buildAttempt && confirmed.buildAttempt.id);
+    const sourceRequestId = firstNonBlankTextW486(confirmed.requestId, confirmed.sourceRequestId, confirmed.idempotencyToken);
+    const submittedAt = firstNonBlankTextW486(confirmed.submittedAt, new Date().toISOString());
     const result = {
-      schema: 'forge.w483.runner-result.v1',
+      schema: 'forge.w486.runner-result.v1',
       status: 'completed_with_wip_diagnostic',
       runStatus: 'completed_with_wip_diagnostic',
       partialResultState: 'partial_result_failed_before_records',
@@ -756,13 +744,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       recordOwner: 'governed_runner_internal_build_engine',
       sourceRequestId,
       buildAttemptId,
-      idempotencyToken: firstNonBlankTextW483(confirmed.idempotencyToken, sourceRequestId, extId),
+      idempotencyToken: firstNonBlankTextW486(confirmed.idempotencyToken, sourceRequestId, extId),
       submittedAt,
       prospect,
       website,
       extId,
-      sidecarVersion: SIDECAR_VERSION_W483,
-      runnerExecutionCore: RUNNER_EXECUTION_CORE_W483,
+      sidecarVersion: SIDECAR_VERSION_W486,
+      runnerExecutionCore: RUNNER_EXECUTION_CORE_W486,
       error: {
         name,
         message,
@@ -787,26 +775,26 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       details: JSON.stringify({ name, message, extId, sourceRequestId, buildAttemptId, folderId })
     });
     if (!folderId) return null;
-    return saveTextArtifactW483({
+    return saveTextArtifactW486({
       folderId,
-      name: resultCaptureFileNameW483({ extId, buildAttemptId, status: 'completed_with_wip_diagnostic' }),
+      name: resultCaptureFileNameW486({ extId, buildAttemptId, status: 'completed_with_wip_diagnostic' }),
       contents: JSON.stringify(result, null, 2)
     });
   }
 
-  function buildReturnedRecordsW483(args) {
+  function buildReturnedRecordsW486(args) {
     const ids = args.ids || {};
     const names = args.names || {};
     const records = {};
     const customerId = args.customerId || findByExternalId('customer', ANCHORS.customer);
-    records.customer = normalizeSidecarRecordW483({
+    records.customer = normalizeSidecarRecordW486({
       role: 'customer',
       type: 'customer',
       label: 'Customer',
       name: `${args.prospect} Customer Account`,
       id: customerId
     });
-    records.demoTransaction = normalizeSidecarRecordW483({
+    records.demoTransaction = normalizeSidecarRecordW486({
       role: 'sales_order',
       type: 'salesorder',
       label: 'Sales Order',
@@ -817,7 +805,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     records.demoTransaction.csvImportFileId = String(args.soFileId || '');
     records.demoTransaction.csvImportTaskId = String(args.soTaskId || '');
     records.demoTransaction.expectedExternalId = args.extId || '';
-    records.heroItem = normalizeSidecarRecordW483({
+    records.heroItem = normalizeSidecarRecordW486({
       role: 'hero_item',
       type: 'inventoryitem',
       label: args.enableManufacturing ? 'Sellable item' : 'Hero item',
@@ -825,21 +813,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       id: ids.heroItemId
     });
     if (args.enableManufacturing) {
-      records.assembly = normalizeSidecarRecordW483({
+      records.assembly = normalizeSidecarRecordW486({
         role: 'assembly',
         type: 'assemblyitem',
         label: 'Assembly',
         name: names.assembly_name || `${args.prospect} Assembly`,
         id: ids.assemblyId
       });
-      records.bom = normalizeSidecarRecordW483({
+      records.bom = normalizeSidecarRecordW486({
         role: 'bom',
         type: 'bom',
         label: 'BOM',
         name: names.bom_name || `BOM - ${args.prospect}`,
         id: ids.bomId
       });
-      records.bomRevision = normalizeSidecarRecordW483({
+      records.bomRevision = normalizeSidecarRecordW486({
         role: 'bom_revision',
         type: 'bomrevision',
         label: 'BOM revision',
@@ -852,7 +840,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         { id: ids.comp2Id, name: componentNames[1] || `${args.prospect} Component B` },
         { id: ids.comp3Id, name: componentNames[2] || `${args.prospect} Component C` }
       ].forEach(function(component, index) {
-        records[`componentItem${index + 1}`] = normalizeSidecarRecordW483({
+        records[`componentItem${index + 1}`] = normalizeSidecarRecordW486({
           role: 'component_item',
           type: 'inventoryitem',
           label: `Component item ${index + 1}`,
@@ -862,7 +850,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         records[`componentItem${index + 1}`].componentIndex = index;
       });
       if (args.woId) {
-        records.workOrder = normalizeSidecarRecordW483({
+        records.workOrder = normalizeSidecarRecordW486({
           role: 'work_order',
           type: 'workorder',
           label: 'Work Order',
@@ -882,7 +870,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         };
       }
       if (args.routingId) {
-        records.routing = normalizeSidecarRecordW483({
+        records.routing = normalizeSidecarRecordW486({
           role: 'routing',
           type: 'manufacturingrouting',
           label: 'Routing',
@@ -906,11 +894,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return records;
   }
 
-  function normalizeSidecarRecordW483(input) {
+  function normalizeSidecarRecordW486(input) {
     const id = input && input.id ? String(input.id) : '';
     const type = input && input.type || '';
     const plannedOnly = !!(input && input.plannedOnly);
-    const url = id && !plannedOnly ? recordUrlW483(type, id) : '';
+    const url = id && !plannedOnly ? recordUrlW486(type, id) : '';
     return {
       role: input && input.role || '',
       type,
@@ -931,7 +919,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function recordUrlW483(type, id) {
+  function recordUrlW486(type, id) {
     const internalId = String(id || '').trim();
     if (!internalId) return '';
     const pathByType = {
@@ -945,18 +933,18 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       workorder: '/app/accounting/transactions/workord.nl'
     };
     const path = pathByType[String(type || '').toLowerCase()] || '/app/common/search/searchresults.nl';
-    return `${netsuiteOriginW483()}${path}?id=${encodeURIComponent(internalId)}`;
+    return `${netsuiteOriginW486()}${path}?id=${encodeURIComponent(internalId)}`;
   }
 
-  function netsuiteOriginW483() {
+  function netsuiteOriginW486() {
     const acct = String(runtime.accountId || '').replace(/_/g, '-').toLowerCase();
     return `https://${acct || 'system'}.app.netsuite.com`;
   }
 
-  function buildProductBuildPlanW483(args) {
+  function buildProductBuildPlanW486(args) {
     const names = args.names || {};
     return {
-      schema: 'idb.product-build-plan.w483.old-runner-naming.v1',
+      schema: 'idb.product-build-plan.w486.old-runner-naming.v1',
       primaryProductCandidate: names.primary_product_candidate || names.selectedProductName || names.hero_item_name || args.prospect || '',
       alternateProductCandidates: Array.isArray(names.alternate_product_candidates) ? names.alternate_product_candidates : [],
       selectedProductReason: 'Old runner naming pack applied before record rename.',
@@ -967,11 +955,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function buildRoiCompetitiveSidecarW483(args, records) {
+  function buildRoiCompetitiveSidecarW486(args, records) {
     const confirmed = args && args.confirmedBuildRequestJson || {};
     const storyInputs = confirmed.storyInputs || {};
     const names = args.names || {};
-    const selectedProduct = firstNonBlankTextW483(
+    const selectedProduct = firstNonBlankTextW486(
       confirmed.selectedProduct,
       confirmed.selectedProductName,
       names.selectedProductName,
@@ -994,9 +982,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       : (mode === 'manufacturing'
         ? 'Sales Order, sellable item, assembly, BOM, and component readiness'
         : 'Customer, Sales Order, and item availability readiness');
-    const painSignal = firstNonBlankTextW483(storyInputs.pain, storyInputs.buyerPain, extractPainSignalW483(notes), storyInputs.buyerNeed);
-    const baseline = firstNonBlankTextW483(storyInputs.buyerBaseline, confirmed.buyerBaseline, confirmed.roiBaseline);
-    const competitors = competitorTokensW483([
+    const painSignal = firstNonBlankTextW486(storyInputs.pain, storyInputs.buyerPain, extractPainSignalW486(notes), storyInputs.buyerNeed);
+    const baseline = firstNonBlankTextW486(storyInputs.buyerBaseline, confirmed.buyerBaseline, confirmed.roiBaseline);
+    const competitors = competitorTokensW486([
       storyInputs.competitors,
       storyInputs.competitor,
       storyInputs.incumbents,
@@ -1005,7 +993,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       confirmed.competitor,
       confirmed.incumbents,
       confirmed.incumbent,
-      extractCompetitorEvidenceW483(notes)
+      extractCompetitorEvidenceW486(notes)
     ]);
     const competitor = competitors.join(', ');
     const metricDirection = mode === 'wip'
@@ -1020,7 +1008,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const competitiveContrast = competitor
       ? `Compare NetSuite against ${competitor} only as buyer-supplied context; prove the same workflow through returned records before making any win claim.`
       : 'Handle competitive pressure as advisory discovery until the buyer names the incumbent workflow.';
-    const sourceBasis = uniqueTextValuesW483([
+    const sourceBasis = uniqueTextValuesW486([
       notes ? 'conversation_notes' : '',
       selectedProduct ? 'old_runner_naming_pack' : '',
       args.website ? 'prospect_website' : '',
@@ -1034,7 +1022,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       'prove_with_returned_records_from_sidecar_result'
     ];
     const roiPoint = {
-      schema: 'idb.w483-roi-point.v1',
+      schema: 'idb.w486-roi-point.v1',
       advisoryOnly: true,
       metricDirection,
       proofSignalLabel: proofPath,
@@ -1044,7 +1032,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       buyerBaselinePresent: !!baseline
     };
     const valueReviewPacket = confirmed.roiCompetitiveReview || {
-      schema: 'idb.w483-runner-sidecar-value-review.v1',
+      schema: 'idb.w486-runner-sidecar-value-review.v1',
       source: 'runner_simple_advisory',
       customer: args.prospect || '',
       product: selectedProduct,
@@ -1059,7 +1047,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       guardrails
     };
     const roiAudit = Object.assign({
-      schema: 'idb.w483-runner-roi-audit.v1',
+      schema: 'idb.w486-runner-roi-audit.v1',
       advisoryOnly: true,
       claim: roiClaim,
       metricDirection,
@@ -1073,7 +1061,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       caution: baseline ? 'Keep quantified language tied to the buyer-confirmed baseline.' : 'Do not claim measured ROI, savings, or improvement percentages.'
     }, confirmed.roiAudit && typeof confirmed.roiAudit === 'object' ? confirmed.roiAudit : {});
     const competitive = Object.assign({
-      schema: 'idb.w483-runner-competitive.v1',
+      schema: 'idb.w486-runner-competitive.v1',
       advisoryOnly: true,
       namedCompetitor: competitor || '',
       namedCompetitors: competitors,
@@ -1086,7 +1074,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }, confirmed.competitive && typeof confirmed.competitive === 'object' ? confirmed.competitive : {});
     const competitiveAdvisory = Object.assign({
       schema: 'idb.w362-consultant-safe-competitive-intelligence.v1',
-      sidecarSchema: 'idb.w483-runner-competitive-advisory.v1',
+      sidecarSchema: 'idb.w486-runner-competitive-advisory.v1',
       status: 'advisory_competitive_ready',
       advisoryOnly: true,
       authorityLabel: competitor ? 'Buyer-supplied competitor context; verify before claiming' : 'Advisory prep only',
@@ -1097,7 +1085,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       guardrails
     }, confirmed.competitiveAdvisory && typeof confirmed.competitiveAdvisory === 'object' ? confirmed.competitiveAdvisory : {});
     const detailModel = Object.assign({
-      schema: 'idb.w483-runner-roi-competitive-detail-model.v1',
+      schema: 'idb.w486-runner-roi-competitive-detail-model.v1',
       roi: {
         source: 'runner_simple_advisory',
         confidence,
@@ -1120,7 +1108,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       }
     }, confirmed.roiCompetitiveDetailModelW444 && typeof confirmed.roiCompetitiveDetailModelW444 === 'object' ? confirmed.roiCompetitiveDetailModelW444 : {});
     return {
-      schema: 'idb.w483-runner-roi-competitive-sidecar.v1',
+      schema: 'idb.w486-runner-roi-competitive-sidecar.v1',
       roiCompetitiveReview: valueReviewPacket,
       roiCompetitiveSourceBasis: confirmed.roiCompetitiveSourceBasis || detailModel,
       roiAudit,
@@ -1139,9 +1127,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function saveTextArtifactW483(args) {
+  function saveTextArtifactW486(args) {
     const f = file.create({
-      name: boundedFileNameW483(args.name || `idb_runner_sidecar_${Date.now()}.json`, RESULT_CAPTURE_FILENAME_LIMIT_W483),
+      name: boundedFileNameW486(args.name || `idb_runner_sidecar_${Date.now()}.json`, RESULT_CAPTURE_FILENAME_LIMIT_W486),
       fileType: file.Type.PLAINTEXT,
       contents: String(args.contents || ''),
       folder: Number(args.folderId)
@@ -1149,15 +1137,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return { fileId: Number(f.save()), fileName: f.name };
   }
 
-  function resultCaptureFileNameW483(args) {
-    const extId = safeCodeW483(args && args.extId || 'idb');
-    const attempt = safeCodeW483(args && args.buildAttemptId || '').slice(0, 48);
-    const status = safeCodeW483(args && args.status || 'result');
+  function resultCaptureFileNameW486(args) {
+    const extId = safeCodeW486(args && args.extId || 'idb');
+    const attempt = safeCodeW486(args && args.buildAttemptId || '').slice(0, 48);
+    const status = safeCodeW486(args && args.status || 'result');
     const stem = attempt || extId || status || 'idb';
-    return boundedFileNameW483(`idb_result_${status}_${stem}_${extId}.json`, RESULT_CAPTURE_FILENAME_LIMIT_W483);
+    return boundedFileNameW486(`idb_result_${status}_${stem}_${extId}.json`, RESULT_CAPTURE_FILENAME_LIMIT_W486);
   }
 
-  function boundedFileNameW483(name, maxLen) {
+  function boundedFileNameW486(name, maxLen) {
     const limit = Math.max(32, Math.min(Number(maxLen || 180), 180));
     const cleaned = String(name || 'idb_result.json').replace(/[\\/:*?"<>|#%{}~&]/g, '_').replace(/\s+/g, '_');
     if (cleaned.length <= limit) return cleaned;
@@ -1166,11 +1154,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return `${cleaned.slice(0, limit - suffix.length - 1)}_${suffix}`.replace(/_\./, '.');
   }
 
-  function safeCodeW483(value) {
+  function safeCodeW486(value) {
     return String(value || '').replace(/[^A-Za-z0-9_\-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '').slice(0, 80);
   }
 
-  function firstNonBlankTextW483() {
+  function firstNonBlankTextW486() {
     for (let i = 0; i < arguments.length; i += 1) {
       const value = arguments[i];
       if (value !== undefined && value !== null && String(value).trim() !== '') return String(value).trim();
@@ -1178,7 +1166,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return '';
   }
 
-  function extractPainSignalW483(notes) {
+  function extractPainSignalW486(notes) {
     const text = compactText(notes);
     if (!text) return '';
     const parts = text.split(/[.!?;]\s+/);
@@ -1189,13 +1177,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return summarizeOneLine(text);
   }
 
-  function extractCompetitorEvidenceW483(notes) {
+  function extractCompetitorEvidenceW486(notes) {
     const text = String(notes || '');
     const match = text.match(/\b(?:competitors?|incumbents?|alternatives?|currently using|current system|against|versus|vs\.?)\s*(?:are|is|include|includes|like|maybe|:|-)?\s*([^.;\n]{2,160})/i);
     return match ? match[1] : '';
   }
 
-  function competitorTokensW483(values) {
+  function competitorTokensW486(values) {
     const out = [];
     (values || []).forEach(function(value) {
       const source = Array.isArray(value) ? value.join(',') : String(value || '');
@@ -1207,10 +1195,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         if (token && token.length >= 2 && token.length <= 60 && !/^(?:none|unknown|competitor|incumbent|alternative)$/i.test(token)) out.push(token);
       });
     });
-    return uniqueTextValuesW483(out).slice(0, 5);
+    return uniqueTextValuesW486(out).slice(0, 5);
   }
 
-  function uniqueTextValuesW483(values) {
+  function uniqueTextValuesW486(values) {
     const seen = {};
     const out = [];
     (values || []).forEach(function(value) {
@@ -1931,7 +1919,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // Work Order seed (includes start + end dates)
   // ----------------------------
-  function safeManufacturingStepW483(label, fn) {
+  function safeManufacturingStepW486(label, fn) {
     log.audit({ title: `${label} START [${VERSION}]`, details: JSON.stringify({ label }) });
     try {
       const value = fn();
@@ -2062,7 +2050,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function adoptFreshHeroItem({ itemId, subsidiaryId, locationId, extId, prospect }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
-    const externalId = `SCAI_HERO_${safeExternalIdTokenW483(extId || itemId)}`;
+    const externalId = `SCAI_HERO_${safeExternalIdTokenW486(extId || itemId)}`;
     const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
 
     safeTry(() => record.submitFields({
@@ -2109,7 +2097,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function createFreshHeroItem({ subsidiaryId, locationId, extId, prospect }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
-    const externalId = `SCAI_HERO_${safeExternalIdTokenW483(extId || new Date().getTime())}`;
+    const externalId = `SCAI_HERO_${safeExternalIdTokenW486(extId || new Date().getTime())}`;
     const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
 
     let rec = null;
@@ -2553,8 +2541,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return copied.length > 0;
   }
 
-  function getOrCreateFreshCustomerW483({ extId, prospect, website, subsidiaryId }) {
-    const externalId = `SCAI_CUST_${safeExternalIdTokenW483(extId || prospect || new Date().getTime())}`;
+  function getOrCreateFreshCustomerW486({ extId, prospect, website, subsidiaryId }) {
+    const externalId = `SCAI_CUST_${safeExternalIdTokenW486(extId || prospect || new Date().getTime())}`;
     let id = findByExternalId('customer', externalId);
     const companyName = trimLen(`${prospect || 'FORGE Prospect'} Customer Account`, 83);
     const values = {
@@ -2600,17 +2588,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return String(s || '').replace(/[^A-Za-z0-9_\-]/g, '_').slice(0, 40);
   }
 
-  function safeExternalIdTokenW483(s) {
+  function safeExternalIdTokenW486(s) {
     const clean = String(s || '').replace(/[^A-Za-z0-9_\-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
     if (!clean) return String(new Date().getTime());
-    const hash = hashTokenW483(clean);
+    const hash = hashTokenW486(clean);
     if (clean.length <= 61) return `${clean}_${hash}`.slice(0, 70);
     const head = clean.slice(0, 34).replace(/_+$/g, '');
     const tail = clean.slice(-22).replace(/^_+/g, '');
     return `${head}_${tail}_${hash}`.slice(0, 70);
   }
 
-  function hashTokenW483(s) {
+  function hashTokenW486(s) {
     let hash = 2166136261;
     const text = String(s || '');
     for (let i = 0; i < text.length; i++) {
@@ -3114,7 +3102,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function generateNamingPack({ prospect, website, signalText }) {
     const clippedSignal = String(signalText || '').slice(0, 1200);
-    const websitePack = buildWebsiteSignalNamingPackW483({ prospect, website, signalText: clippedSignal });
+    const websitePack = buildWebsiteSignalNamingPackW486({ prospect, website, signalText: clippedSignal });
     if (websitePack) return websitePack;
     return {
       _source: 'deterministic',
@@ -3132,10 +3120,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function buildWebsiteSignalNamingPackW483({ prospect, website, signalText }) {
+  function buildWebsiteSignalNamingPackW486({ prospect, website, signalText }) {
     const text = compactText([website, prospect, signalText].join(' '));
     const lower = text.toLowerCase();
-    const siteProductPack = buildKnownWebsiteProductNamingPackW483({ prospect, website, signalText: text });
+    const siteProductPack = buildKnownWebsiteProductNamingPackW486({ prospect, website, signalText: text });
     if (siteProductPack) return siteProductPack;
     const rules = [
       {
@@ -3192,19 +3180,19 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (!rule.pattern.test(lower)) continue;
       const product = rule.product;
       return {
-        _source: 'w483-website-signal-naming-pack',
+        _source: 'w486-website-signal-naming-pack',
         _signalLen: String(signalText || '').length,
         industry_category: rule.industry,
-        industrySelection: { label: rule.industry, source: 'website_signal_text_w483', confidence: 'medium' },
+        industrySelection: { label: rule.industry, source: 'website_signal_text_w486', confidence: 'medium' },
         selectedIndustryChip: rule.industry,
         selectedProductName: product,
         primary_product_candidate: product,
-        selectedCatalogCandidate: { name: product, source: 'website_signal_text_w483', reasons: rule.evidenceTerms },
-        catalogCandidates: [{ name: product, source: 'website_signal_text_w483', confidence: 82, reasons: rule.evidenceTerms }],
+        selectedCatalogCandidate: { name: product, source: 'website_signal_text_w486', reasons: rule.evidenceTerms },
+        catalogCandidates: [{ name: product, source: 'website_signal_text_w486', confidence: 82, reasons: rule.evidenceTerms }],
         fallbackUsed: false,
         fallbackReason: '',
         evidence_terms: rule.evidenceTerms,
-        namingEvidenceSource: 'website_signal_text_w483',
+        namingEvidenceSource: 'website_signal_text_w486',
         hero_item_name: product,
         assembly_name: `${product} Assembly`,
         component_names: rule.components,
@@ -3219,7 +3207,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return null;
   }
 
-  function buildKnownWebsiteProductNamingPackW483({ prospect, website, signalText }) {
+  function buildKnownWebsiteProductNamingPackW486({ prospect, website, signalText }) {
     const lower = compactText([website, prospect, signalText].join(' ')).toLowerCase();
     const packs = [
       {
@@ -3235,8 +3223,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     for (let i = 0; i < packs.length; i += 1) {
       const pack = packs[i];
       if (!pack.domain.test(lower)) continue;
-      const selected = selectKnownWebsiteProductW483(pack.products, lower);
-      return concreteWebsiteProductNamingPackW483({
+      const selected = selectKnownWebsiteProductW486(pack.products, lower);
+      return concreteWebsiteProductNamingPackW486({
         prospect,
         product: selected,
         productExamples: pack.products,
@@ -3251,7 +3239,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return null;
   }
 
-  function selectKnownWebsiteProductW483(products, lower) {
+  function selectKnownWebsiteProductW486(products, lower) {
     for (let i = 0; i < (products || []).length; i += 1) {
       const product = String(products[i] || '');
       if (product && lower.indexOf(product.toLowerCase()) !== -1) return product;
@@ -3259,33 +3247,33 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return products && products[0] || '';
   }
 
-  function concreteWebsiteProductNamingPackW483(args) {
+  function concreteWebsiteProductNamingPackW486(args) {
     const product = args.product;
     const examples = Array.isArray(args.productExamples) ? args.productExamples : [product];
     const candidates = examples.filter(Boolean).map(function(name, index) {
       return {
         name,
-        source: 'website_product_examples_w483',
+        source: 'website_product_examples_w486',
         confidence: index === 0 ? 96 : 91,
         reasons: [args.evidenceSource || 'public website product examples']
       };
     });
     return {
-      _source: 'website-product-examples-w483',
+      _source: 'website-product-examples-w486',
       _signalLen: String(args.website || '').length,
       industry_category: args.industry,
-      industrySelection: { label: args.industry, source: 'website_product_examples_w483', confidence: 'high' },
+      industrySelection: { label: args.industry, source: 'website_product_examples_w486', confidence: 'high' },
       selectedIndustryChip: args.industry,
       selectedProductName: product,
       primary_product_candidate: product,
-      websiteProductExamplesW483: examples,
+      websiteProductExamplesW486: examples,
       selectedCatalogCandidate: candidates[0],
       catalogCandidates: candidates,
       fallbackUsed: false,
       fallbackReason: '',
       evidence_terms: examples.concat([args.category || 'website product']),
-      namingEvidenceSource: 'website_product_examples_w483',
-      websiteEvidenceSource: 'website_product_examples_w483',
+      namingEvidenceSource: 'website_product_examples_w486',
+      websiteEvidenceSource: 'website_product_examples_w486',
       websiteEvidenceSourceUrls: args.website ? [args.website] : [],
       hero_item_name: product,
       assembly_name: `${product} Assembly`,
@@ -3487,11 +3475,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // SO CSV + import
   // ----------------------------
-  function createSalesOrderDirectW483({ extId, prospect, website, agenda, customerId, itemId, locationId }) {
+  function createSalesOrderDirectW486({ extId, prospect, website, agenda, customerId, itemId, locationId }) {
     const existingId = findByExternalId('salesorder', extId);
     if (existingId) return Number(existingId);
 
-    const templateId = findSalesOrderTemplateW483();
+    const templateId = findSalesOrderTemplateW486();
     const so = templateId
       ? record.copy({ type: 'salesorder', id: Number(templateId), isDynamic: true })
       : record.create({ type: 'salesorder', isDynamic: true });
@@ -3524,7 +3512,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return id;
   }
 
-  function findSalesOrderTemplateW483() {
+  function findSalesOrderTemplateW486() {
     try {
       const rs = search.create({
         type: 'salesorder',

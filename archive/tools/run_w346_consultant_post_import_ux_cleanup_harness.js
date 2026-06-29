@@ -47,14 +47,17 @@ function main() {
   const valueText = stripTags(value);
   const runText = stripTags(run);
   const scriptText = [script.title, script.say, script.show, script.close].join(' ');
+  const userscriptVersionMatch = userscript.match(/@version\s+([^\s]+)/);
+  const userscriptVersion = userscriptVersionMatch ? userscriptVersionMatch[1] : '';
+  const visibleVersionRegex = new RegExp(`Drawer ${userscriptVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} / `);
 
   assertCase(results, 'userscript-visible-version-is-current-not-legacy-header',
-    /@version\s+2\.0\.6-w481/.test(userscript) &&
-      marker.userscriptVersion === '2.0.6-w481' &&
-      marker.visibleVersionLabel === 'Drawer 2.0.6-w481 / W481' &&
-      /Drawer 2\.0\.6-w481 \/ W481/.test(drawer) &&
+    !!userscriptVersion &&
+      marker.userscriptVersion === userscriptVersion &&
+      marker.visibleVersionLabel.indexOf(`Drawer ${userscriptVersion} / `) === 0 &&
+      visibleVersionRegex.test(drawer) &&
       !/idb-version-pill">V1\.0\.0</.test(drawer),
-    JSON.stringify({ marker, headerHasW481: /Drawer 2\.0\.6-w481 \/ W481/.test(drawer) }));
+    JSON.stringify({ marker, userscriptVersion, headerHasCurrentVersion: visibleVersionRegex.test(drawer) }));
 
   assertCase(results, 'post-import-plan-separates-build-and-website-confidence',
     postImport.importedProofReady === true &&

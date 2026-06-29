@@ -34,7 +34,8 @@ function main() {
       'runner-download': path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_v4_0_0_runner_sandbox.js'),
       'sidecar-runner-w472-download': path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_sidecar_oldcore_roi_competitive_w472.js'),
       'sidecar-runner-w482-download': path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_oldcore_simple_sidecar_w482.js'),
-      'sidecar-runner-w483-download': path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_forge_clean_w483.js')
+      'sidecar-runner-w483-download': path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_forge_clean_w483.js'),
+      'forge-runner-v210-download': path.join(root, 'netsuite', 'runner', 'scai_ss_so_csv_runner_forge_v2_1_0.js')
     }
   });
   const missingDownload = runVerification({
@@ -46,7 +47,7 @@ function main() {
 
   assertCase(results, 'w347-local-root-mirror-hash-guard-passes',
     local.status === 'PASS' &&
-      local.targets.length === 6 &&
+      local.targets.length === 7 &&
       local.targets.every((target) => target.root.sha256 && target.root.sha256 === target.mirror.sha256),
     JSON.stringify(local.targets.map((target) => ({ id: target.id, pass: target.pass, hash: target.root.sha256 }))));
 
@@ -61,10 +62,10 @@ function main() {
     JSON.stringify(missingDownload.targets.find((target) => target.id === 'drawer')));
 
   assertCase(results, 'w347-drawer-baseline-and-auto-update-metadata-locked',
-    userscript.includes("const DRAWER_USERSCRIPT_VERSION = '2.0.6-w483';") &&
-      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'W483';") &&
+    userscript.includes("const DRAWER_USERSCRIPT_VERSION = '2.1.0';") &&
+      userscript.includes("const CURRENT_UX_BLOCK_W346 = 'V2.1.0';") &&
       userscript.includes('return `Drawer ${DRAWER_USERSCRIPT_VERSION} / ${CURRENT_UX_BLOCK_W346}`;') &&
-      /@version\s+2\.0\.6-w483/.test(userscript) &&
+      /@version\s+2\.1\.0/.test(userscript) &&
       /@updateURL\s+https:\/\/raw\.githubusercontent\.com\/WheelieGoodSkater\/FORGE\/main\/idb-drawer\.user\.js/.test(userscript) &&
       /@downloadURL\s+https:\/\/raw\.githubusercontent\.com\/WheelieGoodSkater\/FORGE\/main\/idb-drawer\.user\.js/.test(userscript),
     EXPECTED_VISIBLE_MARKER);

@@ -453,18 +453,15 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       });
 
       if (bomAttachResult.ok) {
-        const workOrderResult = safeManufacturingStepW483('Work Order seed', () => {
-          const id = createWorkOrder({
+        log.audit({
+          title: `Work Order seed skipped (diagnostic) [${VERSION}]`,
+          details: JSON.stringify({
+            reason: 'work_order_create_blocks_w483_live_run',
             assemblyId: ids.assemblyId,
-            subsidiaryId,
-            locationId,
-            quantity: 10,
-            memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded`
-          });
-          return { woId: id, extId };
+            bomId: ids.bomId,
+            extId
+          })
         });
-        woId = workOrderResult.ok && workOrderResult.value ? Number(workOrderResult.value.woId || 0) || null : null;
-        if (woId) log.audit({ title: `Work Order seeded [${VERSION}]`, details: JSON.stringify({ woId, extId }) });
       }
     } else {
       log.audit({ title: `Manufacturing flow disabled [${VERSION}]`, details: JSON.stringify({ enableManufacturing: finalEnableManufacturing, extId, heroItemId: ids.heroItemId }) });
@@ -474,30 +471,38 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     let routingResult = null;
     let routingId = null;
     if (effectiveEnableWip && finalEnableManufacturing && ids.assemblyId && ids.bomId) {
-      routingResult = createAndAttachRoutingIfPossible({
-        subsidiaryId,
-        locationId,
-        bomId: ids.bomId,
-        assemblyId: ids.assemblyId,
-        extId,
-        prospect,
-        signalText: signal.text,
-        workCenterSearchId,
-        names
+      routingResult = {
+        decision: 'routing-diagnostic-skipped-live-create',
+        error: 'Routing create/attach is diagnostic-only for this account because the manufacturingrouting billofmaterials field rejects the active BOM.',
+        routingId: null,
+        chosen: { centers: [], templates: [] }
+      };
+      log.audit({
+        title: `WIP routing skipped (diagnostic) [${VERSION}]`,
+        details: JSON.stringify({ assemblyId: ids.assemblyId, bomId: ids.bomId, decision: routingResult.decision })
       });
-      routingId = routingResult && routingResult.routingId ? Number(routingResult.routingId) : null;
     } else {
       log.audit({ title: `WIP not enabled (skipping routing) [${VERSION}]`, details: JSON.stringify({ enableWipRaw, enableWip, effectiveEnableWip, enableManufacturing: finalEnableManufacturing, requestedWipTargetMode, wipTargetMode, wipHandshakeAction }) });
     }
 
     // 9) Seed SOs via CSV import
-    const soCsv = buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey: ids.heroItemCsvKey || ids.heroItemExternalId || ANCHORS.heroItem });
+    const customerInfo = getOrCreateFreshCustomerW483({ extId, prospect, website, subsidiaryId });
+    const soCsv = buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey: ids.heroItemCsvKey || ids.heroItemExternalId || ANCHORS.heroItem, customerKey: customerInfo.externalId });
     const soFileId = saveCsvToFileCabinet({ folderId: soFolderId, filename: `scai_so_${extId}.csv`, contents: soCsv });
     const soTaskId = submitCsvImport({ mappingId: soMappingId, fileId: soFileId });
+    const directSalesOrderId = createSalesOrderDirectW483({
+      extId,
+      prospect,
+      website,
+      agenda,
+      customerId: customerInfo.id,
+      itemId: ids.heroItemId,
+      locationId
+    });
 
     log.audit({
       title: `SO CSV Import SUBMITTED [${VERSION}]`,
-      details: JSON.stringify({ extId, fileId: soFileId, csvImportTaskId: soTaskId })
+      details: JSON.stringify({ extId, fileId: soFileId, csvImportTaskId: soTaskId, directSalesOrderId })
     });
 
     log.audit({
@@ -546,6 +551,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         extId,
         soFileId,
         soTaskId,
+        soId: directSalesOrderId,
         woId,
         routingId,
         routingResult,
@@ -565,9 +571,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       names,
       soFileId,
       soTaskId,
+      soId: directSalesOrderId,
       woId,
       routingId,
       routingResult,
+      customerId: customerInfo.id,
       enableManufacturing: finalEnableManufacturing,
       enableWip: effectiveEnableWip,
       createNewHeroItem: effectiveCreateNewHeroItem,
@@ -790,7 +798,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const ids = args.ids || {};
     const names = args.names || {};
     const records = {};
-    const customerId = findByExternalId('customer', ANCHORS.customer);
+    const customerId = args.customerId || findByExternalId('customer', ANCHORS.customer);
     records.customer = normalizeSidecarRecordW483({
       role: 'customer',
       type: 'customer',
@@ -803,8 +811,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       type: 'salesorder',
       label: 'Sales Order',
       name: `Sales Order - ${args.prospect}`,
-      id: '',
-      plannedOnly: true
+      id: args.soId || '',
+      plannedOnly: !args.soId
     });
     records.demoTransaction.csvImportFileId = String(args.soFileId || '');
     records.demoTransaction.csvImportTaskId = String(args.soTaskId || '');
@@ -2545,6 +2553,37 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return copied.length > 0;
   }
 
+  function getOrCreateFreshCustomerW483({ extId, prospect, website, subsidiaryId }) {
+    const externalId = `SCAI_CUST_${safeExternalIdTokenW483(extId || prospect || new Date().getTime())}`;
+    let id = findByExternalId('customer', externalId);
+    const companyName = trimLen(`${prospect || 'FORGE Prospect'} Customer Account`, 83);
+    const values = {
+      externalid: externalId,
+      companyname: companyName,
+      entityid: companyName,
+      comments: trimLen(`SCAI Demo Reset: ${extId || ''} | ${prospect || ''} | ${website || ''}`, 999)
+    };
+    if (website) values.url = normalizeUrl(website);
+    if (subsidiaryId) values.subsidiary = Number(subsidiaryId);
+
+    if (!id) {
+      const rec = record.create({ type: 'customer', isDynamic: false });
+      Object.keys(values).forEach((fieldId) => safeTry(() => rec.setValue({ fieldId, value: values[fieldId] })));
+      id = Number(rec.save({ enableSourcing: true, ignoreMandatoryFields: true }));
+      log.audit({ title: `Fresh customer created [${VERSION}]`, details: JSON.stringify({ id, externalId, companyName }) });
+    } else {
+      record.submitFields({
+        type: 'customer',
+        id: Number(id),
+        values,
+        options: { enableSourcing: true, ignoreMandatoryFields: true }
+      });
+      log.audit({ title: `Fresh customer reused [${VERSION}]`, details: JSON.stringify({ id: Number(id), externalId, companyName }) });
+    }
+
+    return { id: Number(id), externalId, companyName };
+  }
+
   function findItemLocationConfigId(recordType, itemId, locationId) {
     const results = search.create({
       type: recordType,
@@ -2564,10 +2603,21 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function safeExternalIdTokenW483(s) {
     const clean = String(s || '').replace(/[^A-Za-z0-9_\-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
     if (!clean) return String(new Date().getTime());
-    if (clean.length <= 70) return clean;
-    const head = clean.slice(0, 38).replace(/_+$/g, '');
-    const tail = clean.slice(-28).replace(/^_+/g, '');
-    return `${head}_${tail}`.slice(0, 70);
+    const hash = hashTokenW483(clean);
+    if (clean.length <= 61) return `${clean}_${hash}`.slice(0, 70);
+    const head = clean.slice(0, 34).replace(/_+$/g, '');
+    const tail = clean.slice(-22).replace(/^_+/g, '');
+    return `${head}_${tail}_${hash}`.slice(0, 70);
+  }
+
+  function hashTokenW483(s) {
+    let hash = 2166136261;
+    const text = String(s || '');
+    for (let i = 0; i < text.length; i++) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619) >>> 0;
+    }
+    return hash.toString(36).toUpperCase().slice(0, 8);
   }
 
   // ----------------------------
@@ -3437,7 +3487,57 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // SO CSV + import
   // ----------------------------
-  function buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey }) {
+  function createSalesOrderDirectW483({ extId, prospect, website, agenda, customerId, itemId, locationId }) {
+    const existingId = findByExternalId('salesorder', extId);
+    if (existingId) return Number(existingId);
+
+    const templateId = findSalesOrderTemplateW483();
+    const so = templateId
+      ? record.copy({ type: 'salesorder', id: Number(templateId), isDynamic: true })
+      : record.create({ type: 'salesorder', isDynamic: true });
+    so.setValue({ fieldId: 'externalid', value: String(extId || '') });
+    so.setValue({ fieldId: 'entity', value: Number(customerId) });
+    safeTry(() => so.setValue({ fieldId: 'orderstatus', value: 'B' }));
+    if (locationId) safeTry(() => so.setValue({ fieldId: 'location', value: Number(locationId) }));
+    safeTry(() => so.setValue({ fieldId: 'memo', value: trimLen(`SCAI Demo Reset: ${prospect || ''}${website ? ` (${extractDomain(website)})` : ''} - ${summarizeOneLine(agenda || '')}`, 999) }));
+
+    safeTry(() => {
+      const count = so.getLineCount({ sublistId: 'item' }) || 0;
+      for (let i = count - 1; i >= 0; i--) so.removeLine({ sublistId: 'item', line: i, ignoreRecalc: true });
+    });
+
+    [
+      { quantity: 6, rate: 20.83333333 },
+      { quantity: 9, rate: 25 },
+      { quantity: 14, rate: 25 }
+    ].forEach((line) => {
+      so.selectNewLine({ sublistId: 'item' });
+      so.setCurrentSublistValue({ sublistId: 'item', fieldId: 'item', value: Number(itemId) });
+      if (locationId) safeTry(() => so.setCurrentSublistValue({ sublistId: 'item', fieldId: 'location', value: Number(locationId) }));
+      so.setCurrentSublistValue({ sublistId: 'item', fieldId: 'quantity', value: Number(line.quantity) });
+      safeTry(() => so.setCurrentSublistValue({ sublistId: 'item', fieldId: 'rate', value: Number(line.rate) }));
+      so.commitLine({ sublistId: 'item' });
+    });
+
+    const id = Number(so.save({ enableSourcing: true, ignoreMandatoryFields: true }));
+    log.audit({ title: `Direct Sales Order created [${VERSION}]`, details: JSON.stringify({ id, extId, customerId, itemId, templateId: templateId || null }) });
+    return id;
+  }
+
+  function findSalesOrderTemplateW483() {
+    try {
+      const rs = search.create({
+        type: 'salesorder',
+        filters: [['mainline', 'is', 'T'], 'and', ['memo', 'contains', 'SCAI Demo Reset']],
+        columns: [search.createColumn({ name: 'internalid', sort: search.Sort.DESC })]
+      }).run().getRange({ start: 0, end: 1 }) || [];
+      return rs.length ? Number(rs[0].getValue({ name: 'internalid' })) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function buildSoCsv({ extId, prospect, website, agenda, locationId, itemKey, customerKey }) {
     const memoBase = `SCAI Demo Reset: ${prospect}${website ? ` (${extractDomain(website)})` : ''}`;
     const memo = agenda ? memoBase + ' - ' + summarizeOneLine(agenda) : memoBase;
 
@@ -3462,7 +3562,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       'Supply Required by Date'
     ].join(',');
 
-    const custKey = ANCHORS.customer;
+    const custKey = String(customerKey || ANCHORS.customer);
     const itemKeyResolved = String(itemKey || ANCHORS.heroItem);
     const loc = locationId ? String(locationId) : '';
 

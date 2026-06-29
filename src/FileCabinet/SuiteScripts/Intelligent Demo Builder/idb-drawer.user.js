@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Intelligent Demo Builder Drawer
 // @namespace    https://local.intelligent-demo-builder.drawer
-// @version      2.0.7-w485
+// @version      2.1.0
 // @description  Right-side NetSuite consultant drawer for V5 six-lane proof assistance and trace export.
 // @updateURL    https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
 // @downloadURL  https://raw.githubusercontent.com/WheelieGoodSkater/FORGE/main/idb-drawer.user.js
@@ -21,8 +21,8 @@
   const TRACE_KEY = 'idb.drawer.activeSession.trace.v1';
   const LAST_RUN_STORAGE_KEY_W446 = 'idb.drawer.lastRun.snapshot.w446.v1';
   const IN_FLIGHT_BUILD_STORAGE_KEY_W472 = 'idb.drawer.inFlightBuild.w472.v1';
-  const DRAWER_USERSCRIPT_VERSION = '2.0.7-w485';
-  const CURRENT_UX_BLOCK_W346 = 'W485';
+  const DRAWER_USERSCRIPT_VERSION = '2.1.0';
+  const CURRENT_UX_BLOCK_W346 = 'V2.1.0';
   const LEGACY_STORAGE_KEYS = ['idb.drawer.state.v1', 'idb.drawer.trace.v1'];
   const LAUNCHER_POSITION_STORAGE_KEY = 'idb.drawer.launcher.position.v1';
   const RESOLVER_ENDPOINT_STORAGE_KEY = 'idb.websiteResolver.endpoint.v1';
@@ -1091,7 +1091,7 @@
   };
 
   const CONTRACT = {
-    product: { name: 'Intelligent Demo Builder', version: 'V2.0.7-w485' },
+    product: { name: 'Intelligent Demo Builder', version: 'V2.1.0' },
     nonRegression: {
       noNewIndustries: false,
       apparelAccessoriesLaneAuthorized: true,

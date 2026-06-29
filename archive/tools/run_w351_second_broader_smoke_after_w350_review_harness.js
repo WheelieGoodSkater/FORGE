@@ -88,7 +88,7 @@ function main() {
   assertCase(results, 'w351-deployment-preflight-remains-green-for-w350',
       deployment.status === 'PASS' &&
       deployment.baseline &&
-      deployment.baseline.visibleMarker === 'Drawer 2.0.6-w481 / W481' &&
+      /^Drawer 2\.1\.0 \/ V2\.1\.0$/.test(deployment.baseline.visibleMarker || '') &&
       deployment.targets.every((target) => target.root.sha256 === target.mirror.sha256),
     JSON.stringify({ status: deployment.status, baseline: deployment.baseline }));
 

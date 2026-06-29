@@ -82,12 +82,14 @@ function main() {
   const prefixLeaks = allSurfaces
     .map(([surface, text]) => ({ surface, match: forbiddenNotePrefixMatch(text), sample: text }))
     .filter((item) => item.match);
+  const userscriptVersionMatch = userscript.match(/@version\s+([^\s]+)/);
+  const userscriptVersion = userscriptVersionMatch ? userscriptVersionMatch[1] : '';
 
   assertCase(results, 'w350-userscript-version-and-marker-bumped-for-auto-update',
-    /@version\s+2\.0\.6-w481/.test(userscript) &&
-      hooks.drawerDisplayVersionW346() === 'Drawer 2.0.6-w481 / W481' &&
+    !!userscriptVersion &&
+      hooks.drawerDisplayVersionW346().indexOf(`Drawer ${userscriptVersion} / `) === 0 &&
       /stripConsultantNotePrefixesW350/.test(userscript),
-    JSON.stringify({ version: /@version\s+([^\n]+)/.exec(userscript) && RegExp.$1, marker: hooks.drawerDisplayVersionW346() }));
+    JSON.stringify({ version: userscriptVersion, marker: hooks.drawerDisplayVersionW346() }));
 
   assertCase(results, 'w350-border-states-surfaces-do-not-leak-note-prefixes',
     borderSurfaces.every(([, text]) => !forbiddenNotePrefixMatch(text)) &&

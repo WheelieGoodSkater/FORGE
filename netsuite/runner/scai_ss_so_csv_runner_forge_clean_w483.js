@@ -362,7 +362,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       })
     });
 
-    // 1) Ensure hero / manufacturing records based on mode flags
+    // 1) Website signal + naming pack. This must happen before fresh item creation
+    // so the first itemid NetSuite sees is website-derived, not prospect-generic.
+    const websiteSignalResult = safeGetWebsiteSignal({ website: website, prospect: prospect, extId: extId });
+    const signal = websiteSignalResult.signal || { domain: extractDomain(website), text: `Domain: ${extractDomain(website) || ''}. Infer industry from the entered website.` };
+    log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
+
+    const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
+    const names = namingPayload.payload;
+    log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({ source: namingPayload.source || names._source || 'deterministic', signalLen: names._signalLen || 0, industry_category: names.industry_category || '', namingFileId: namingPayload.fileId || namingFileId || null, namingPayloadFound: !!namingPayload.found, namingPayloadParsed: !!namingPayload.parsed, namingPayloadApplied: !!namingPayload.applied, namingDiscoveryMode: namingPayload.discoveryMode || 'none', selectedProductName: names.selectedProductName || names.primary_product_candidate || names.hero_item_name || '' }) });
+
+    // 2) Ensure hero / manufacturing records based on mode flags
     log.audit({
       title: `Manufacturing final gate [${VERSION}]`,
       details: JSON.stringify({
@@ -409,11 +419,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       enableManufacturing: finalEnableManufacturing,
       extId,
       prospect,
-      passedHeroItemId
+      passedHeroItemId,
+      names
     });
     log.audit({ title: `Demo records ensured [${VERSION}]`, details: JSON.stringify(ids) });
 
-    // 2) Planning auto-calc OFF for Hero + Components (when present)
+    // 3) Planning auto-calc OFF for Hero + Components (when present)
     if (finalEnableManufacturing && ids.comp1Id && ids.comp2Id && ids.comp3Id) {
       forcePlanningAutoCalcOffForItems({
         vendorId: mustFindByExternalId('vendor', ANCHORS.vendor),
@@ -427,15 +438,6 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         compIds: []
       }));
     }
-
-    // 3) Website signal + naming pack (industry-agnostic fallback)
-    const websiteSignalResult = safeGetWebsiteSignal({ website: website, prospect: prospect, extId: extId });
-    const signal = websiteSignalResult.signal || { domain: extractDomain(website), text: `Domain: ${extractDomain(website) || ''}. Infer industry from the company name and notes.` };
-    log.audit({ title: `Website signal [${VERSION}]`, details: JSON.stringify({ status: websiteSignalResult.status, domain: signal.domain, len: (signal.text || '').length, errorName: websiteSignalResult.errorName || '', fallbackUsed: !!websiteSignalResult.fallbackUsed }) });
-
-    const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
-    const names = namingPayload.payload;
-    log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({ source: namingPayload.source || names._source || 'deterministic', signalLen: names._signalLen || 0, industry_category: names.industry_category || '', namingFileId: namingPayload.fileId || namingFileId || null, namingPayloadFound: !!namingPayload.found, namingPayloadParsed: !!namingPayload.parsed, namingPayloadApplied: !!namingPayload.applied, namingDiscoveryMode: namingPayload.discoveryMode || 'none' }) });
 
     // 4) Apply naming + one-line sales/purchase descriptions
     applyNamingToAnchors(ids, names, { enableManufacturing: finalEnableManufacturing, createNewHeroItem: effectiveCreateNewHeroItem, extId });
@@ -599,6 +601,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const records = buildReturnedRecordsW483(args);
     const displayReadyRecords = Object.keys(records).map(function(key) { return records[key]; }).filter(Boolean);
     const roiCompetitive = buildRoiCompetitiveSidecarW483(args, records);
+    const productBuildPlan = buildProductBuildPlanW483(args);
+    const selectedProductName = productBuildPlan.primaryProductCandidate || args.names && (args.names.selectedProductName || args.names.primary_product_candidate || args.names.hero_item_name) || '';
     const status = args.enableWip && !args.routingId ? 'completed_with_wip_diagnostic' : 'completed';
     const sourceRequestId = firstNonBlankTextW483(
       confirmed.sourceRequestId,
@@ -636,6 +640,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       notes: args.notes,
       agenda: args.agenda,
       notesDigest: summarizeOneLine(args.notes || args.agenda || ''),
+      selectedProduct: selectedProductName,
+      selectedProductName,
+      primaryProductCandidate: selectedProductName,
       enableManufacturing: !!args.enableManufacturing,
       enableWip: !!args.enableWip,
       toggles: {
@@ -673,7 +680,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingDiscoveryMode: args.namingPayload && args.namingPayload.discoveryMode || '',
       namingSource: args.names && (args.names._source || args.names.namingEvidenceSource) || '',
       namingAuthorityOrder: 'old runner precomputed naming pack -> old runner deterministic fallback',
-      productBuildPlanW483: buildProductBuildPlanW483(args),
+      productBuildPlanW432: productBuildPlan,
+      productBuildPlanW483: productBuildPlan,
+      productBuildPlan,
       roiCompetitiveReview: roiCompetitive.roiCompetitiveReview,
       roiCompetitiveSourceBasis: roiCompetitive.roiCompetitiveSourceBasis,
       roiAudit: roiCompetitive.roiAudit,
@@ -710,6 +719,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       displayReadyRecords,
       recordsArray: displayReadyRecords,
       displayRecords: displayReadyRecords,
+      selectedProduct: selectedProductName,
+      selectedProductName,
+      primaryProductCandidate: selectedProductName,
+      productBuildPlanW432: productBuildPlan,
+      productBuildPlanW483: productBuildPlan,
+      productBuildPlan,
       routingResult: args.enableWip ? (args.routingResult || null) : null,
       roiCompetitiveReview: roiCompetitive.roiCompetitiveReview,
       roiCompetitiveSourceBasis: roiCompetitive.roiCompetitiveSourceBasis,
@@ -797,6 +812,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function buildReturnedRecordsW483(args) {
     const ids = args.ids || {};
     const names = args.names || {};
+    const productBuildPlan = buildProductBuildPlanW483(args);
     const records = {};
     const customerId = args.customerId || findByExternalId('customer', ANCHORS.customer);
     records.customer = normalizeSidecarRecordW483({
@@ -821,9 +837,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       role: 'hero_item',
       type: 'inventoryitem',
       label: args.enableManufacturing ? 'Sellable item' : 'Hero item',
-      name: names.hero_item_name || `${args.prospect} Finished Good`,
+      name: authoritativeProductNameW483(names) || 'Website Product',
       id: ids.heroItemId
     });
+    records.heroItem.productBuildPlanW432 = productBuildPlan;
+    records.heroItem.productBuildPlan = productBuildPlan;
     if (args.enableManufacturing) {
       records.assembly = normalizeSidecarRecordW483({
         role: 'assembly',
@@ -955,15 +973,16 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function buildProductBuildPlanW483(args) {
     const names = args.names || {};
+    const product = authoritativeProductNameW483(names);
     return {
       schema: 'idb.product-build-plan.w483.old-runner-naming.v1',
-      primaryProductCandidate: names.primary_product_candidate || names.selectedProductName || names.hero_item_name || args.prospect || '',
+      primaryProductCandidate: product,
       alternateProductCandidates: Array.isArray(names.alternate_product_candidates) ? names.alternate_product_candidates : [],
-      selectedProductReason: 'Old runner naming pack applied before record rename.',
-      productCandidateSource: names._source || names.namingEvidenceSource || 'old_runner_naming_pack',
+      selectedProductReason: product ? 'Authoritative FORGE naming pack applied before record names.' : 'No authoritative naming product returned.',
+      productCandidateSource: names._source || names.namingEvidenceSource || 'forge_authoritative_naming_pack',
       confidencePercent: Number(names.confidencePercent || names.confidence_percent || 0) || null,
       evidenceTerms: Array.isArray(names.evidence_terms) ? names.evidence_terms : [],
-      namingAuthorityOrder: 'old runner precomputed naming pack -> old runner deterministic fallback'
+      namingAuthorityOrder: 'FORGE authoritative naming pack -> record names; drawer/prospect/duplicate logic cannot override'
     };
   }
 
@@ -1980,9 +1999,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   // Demo record mode resolution
   // ----------------------------
-  function ensureDemoRecords({ subsidiaryId, locationId, createNewHeroItem, enableManufacturing: finalEnableManufacturing, extId, prospect, passedHeroItemId }) {
+  function ensureDemoRecords({ subsidiaryId, locationId, createNewHeroItem, enableManufacturing: finalEnableManufacturing, extId, prospect, passedHeroItemId, names }) {
     const heroItem = createNewHeroItem
-      ? getOrCreateFreshHeroItem({ subsidiaryId, locationId, extId, prospect, passedHeroItemId })
+      ? getOrCreateFreshHeroItem({ subsidiaryId, locationId, extId, prospect, passedHeroItemId, names })
       : getExistingHeroItem();
 
     log.audit({
@@ -2032,9 +2051,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
-  function getOrCreateFreshHeroItem({ subsidiaryId, locationId, extId, prospect, passedHeroItemId }) {
+  function getOrCreateFreshHeroItem({ subsidiaryId, locationId, extId, prospect, passedHeroItemId, names }) {
     if (passedHeroItemId) {
-      const adopted = adoptFreshHeroItem({ itemId: Number(passedHeroItemId), subsidiaryId, locationId, extId, prospect });
+      const adopted = adoptFreshHeroItem({ itemId: Number(passedHeroItemId), subsidiaryId, locationId, extId, prospect, names });
       log.audit({
         title: `Runner hero mode [${VERSION}]`,
         details: JSON.stringify({
@@ -2047,7 +2066,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       return adopted;
     }
 
-    const created = createFreshHeroItem({ subsidiaryId, locationId, extId, prospect });
+    const created = createFreshHeroItem({ subsidiaryId, locationId, extId, prospect, names });
     log.audit({
       title: `Runner hero mode [${VERSION}]`,
       details: JSON.stringify({
@@ -2060,10 +2079,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return created;
   }
 
-  function adoptFreshHeroItem({ itemId, subsidiaryId, locationId, extId, prospect }) {
+  function adoptFreshHeroItem({ itemId, subsidiaryId, locationId, extId, prospect, names }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
     const externalId = `SCAI_HERO_${safeExternalIdTokenW483(extId || itemId)}`;
-    const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
+    const differentiated = buildDifferentiatedNames(websiteHeroNameForCreateW483(names, prospect), extId);
 
     safeTry(() => record.submitFields({
       type: 'inventoryitem',
@@ -2107,20 +2126,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return { id: Number(itemId), externalId, csvKey: externalId };
   }
 
-  function createFreshHeroItem({ subsidiaryId, locationId, extId, prospect }) {
+  function createFreshHeroItem({ subsidiaryId, locationId, extId, prospect, names }) {
     const anchorHeroId = mustFindByExternalId('inventoryitem', ANCHORS.heroItem);
     const externalId = `SCAI_HERO_${safeExternalIdTokenW483(extId || new Date().getTime())}`;
-    const differentiated = buildDifferentiatedNames(prospect || 'Demo Hero', extId);
+    let differentiated = buildDifferentiatedNames(websiteHeroNameForCreateW483(names, prospect), uniqueItemNameSeedW483(extId));
 
-    let rec = null;
-    let clonedFromAnchor = false;
-
-    try {
-      rec = record.copy({ type: 'inventoryitem', id: Number(anchorHeroId), isDynamic: false });
-      clonedFromAnchor = true;
-    } catch (e) {
-      rec = record.create({ type: 'inventoryitem', isDynamic: false });
-    }
+    const rec = record.create({ type: 'inventoryitem', isDynamic: false });
+    const clonedFromAnchor = false;
 
     rec.setValue({ fieldId: 'externalid', value: externalId });
     rec.setValue({ fieldId: 'itemid', value: differentiated.itemIdName });
@@ -2131,7 +2143,31 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     try { rec.setValue({ fieldId: 'subsidiary', value: [Number(subsidiaryId)] }); }
     catch (e) { safeTry(() => rec.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) })); }
 
-    const id = Number(rec.save({ enableSourcing: true, ignoreMandatoryFields: true }));
+    let id;
+    let lastDuplicateError = null;
+    for (let attempt = 0; attempt < 4 && !id; attempt++) {
+      try {
+        if (attempt > 0) {
+          differentiated = buildDifferentiatedNames(websiteHeroNameForCreateW483(names, prospect), uniqueItemNameSeedW483(`${extId || ''}_${attempt}`));
+          rec.setValue({ fieldId: 'itemid', value: differentiated.itemIdName });
+          safeTry(() => rec.setValue({ fieldId: 'displayname', value: differentiated.displayName }));
+        }
+        id = Number(rec.save({ enableSourcing: true, ignoreMandatoryFields: true }));
+      } catch (e) {
+        if (!isDuplicateItemErrorW483(e)) throw e;
+        lastDuplicateError = e;
+        log.audit({
+          title: `Fresh HERO duplicate itemid retry [${VERSION}]`,
+          details: JSON.stringify({
+            reason: 'DUP_ITEM',
+            attempt: attempt + 1,
+            retryItemId: differentiated.itemIdName,
+            selectedProductName: names && (names.selectedProductName || names.primary_product_candidate || names.hero_item_name) || ''
+          })
+        });
+      }
+    }
+    if (!id) throw lastDuplicateError || new Error('Fresh HERO item save failed');
 
     const persistence = applyFreshHeroPersistence({
       itemId: id,
@@ -2161,6 +2197,30 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     });
 
     return { id, externalId, csvKey: externalId };
+  }
+
+  function websiteHeroNameForCreateW483(names, prospect) {
+    return authoritativeProductNameW483(names) || 'Website Product';
+  }
+
+  function authoritativeProductNameW483(names) {
+    const selected = firstNonBlankTextW483(
+      names && names.selectedProductName,
+      names && names.primary_product_candidate,
+      names && names.hero_item_name
+    );
+    return selected && !isWeakGeneratedProductNameW483(selected) ? selected : '';
+  }
+
+  function isDuplicateItemErrorW483(error) {
+    const text = String((error && (error.name || error.id || error.message || error.details)) || error || '');
+    return /DUP_ITEM|duplicate item|already exists/i.test(text);
+  }
+
+  function uniqueItemNameSeedW483(seed) {
+    const now = new Date().toISOString();
+    const rand = Math.floor(Math.random() * 1000000000);
+    return `${seed || now}_${now}_${rand}`;
   }
 
 
@@ -3177,19 +3237,24 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const clippedSignal = fullSignal.slice(0, 2400);
     const websitePack = buildWebsiteSignalNamingPackW483({ prospect, website, signalText: fullSignal });
     if (websitePack) return websitePack;
+    const product = 'Website Product';
     return {
       _source: 'deterministic',
       _signalLen: clippedSignal.length,
       industry_category: '',
-      hero_item_name: `${prospect} Finished Good`,
-      assembly_name: `${prospect} Assembly`,
+      hero_item_name: product,
+      selectedProductName: '',
+      primary_product_candidate: '',
+      assembly_name: `${product} Assembly`,
       component_names: [
-        `${prospect} Component A`,
-        `${prospect} Component B`,
-        `${prospect} Component C`
+        `${product} Component A`,
+        `${product} Component B`,
+        `${product} Component C`
       ],
-      bom_name: `BOM - ${prospect}`,
-      bom_revision_name: `Revision 1 - ${prospect}`
+      bom_name: `BOM - ${product}`,
+      bom_revision_name: `Revision 1 - ${product}`,
+      fallbackUsed: true,
+      fallbackReason: 'authoritative website naming pack missing'
     };
   }
 
@@ -3222,7 +3287,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       normalized === 'finished good variety pack' ||
       normalized === 'demo product' ||
       normalized === 'product availability sku' ||
-      /\bfinished good\b/.test(normalized);
+      /\bfinished good\b/.test(normalized) ||
+      /\b(product|sku|item)\b$/.test(normalized);
   }
 
   function buildWebsiteSignalNamingPackW483({ prospect, website, signalText }) {
@@ -3466,11 +3532,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const enableManufacturing = !opts || opts.enableManufacturing !== false;
     const createNewHeroItem = !!(opts && opts.createNewHeroItem);
     const extId = opts && opts.extId;
-    const heroNamePair = buildDifferentiatedNames(names.hero_item_name, extId);
-    const heroSalesDesc = `${names.hero_item_name} finished good ready for sale.`;
-    const heroPurchDesc = `Purchased inputs supporting ${names.hero_item_name} production.`;
+    const authoritativeProduct = authoritativeProductNameW483(names) || 'Website Product';
+    const heroNamePair = buildDifferentiatedNames(authoritativeProduct, extId);
+    const heroSalesDesc = `${authoritativeProduct} finished good ready for sale.`;
+    const heroPurchDesc = `Purchased inputs supporting ${authoritativeProduct} production.`;
 
-    const asmNameBase = names.assembly_name || names.hero_item_name;
+    const asmNameBase = firstNonBlankTextW483(names.assembly_name, `${authoritativeProduct} Assembly`);
     const asmNamePair = buildDifferentiatedNames(asmNameBase, extId);
     const asmSalesDesc  = `${asmNameBase} buildable finished good for customer orders.`;
     const asmPurchDesc  = `Assembly supply inputs used to build ${asmNameBase}.`;
@@ -3835,9 +3902,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function buildDifferentiatedNames(baseName, extId) {
     const cleanBase = String(baseName || 'Demo').replace(/^SCAI\s*-\s*/i, '').trim() || 'Demo';
     const suffix = shortExtSuffix(extId);
+    const itemPrefix = 'SCAI - ';
+    const itemSuffix = ` - ${suffix}`;
+    const itemBaseLimit = Math.max(8, 60 - itemPrefix.length - itemSuffix.length);
+    const itemBase = trimLen(cleanBase, itemBaseLimit);
     return {
       displayName: trimLen(`SCAI - ${cleanBase}`, 120),
-      itemIdName: trimLen(`SCAI - ${cleanBase} - ${suffix}`, 60),
+      itemIdName: `${itemPrefix}${itemBase}${itemSuffix}`,
       suffix
     };
   }

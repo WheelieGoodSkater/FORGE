@@ -4,7 +4,7 @@
  * @NApiVersion 2.1
  * @NScriptType Suitelet
  */
-define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, log, file, search) => {
+define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runtime, task, log, file, search, https) => {
   const ADAPTER_VERSION = 'v2.1.0-records-runner-adapter';
   const SIDECAR_RUNNER_VERSION_W483 = 'V2.1.0';
   const DEFAULT_SIDECAR_RUNNER_SCRIPT_ID_W483 = 'customscript_scai_forge_v210';
@@ -1168,7 +1168,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function buildServerPrecomputedNamingPack(request) {
     const prospect = compactText(request && request.prospect && request.prospect.name) || 'Demo Customer';
     const website = compactText(request && request.prospect && request.prospect.website);
-    const nllmPack = nllmWebsiteNamingPackFromRequestW490(request, website, prospect) ||
+    const nllmPack = liveWebsiteNamingPackW500(request, website, prospect) ||
+      nllmWebsiteNamingPackFromRequestW490(request, website, prospect) ||
       websiteEvidenceNamingPackForNllmRouteW490(request, website, prospect);
     if (!nllmPack) return null;
     const industrySelection = nllmPack.selectedIndustryChip
@@ -1309,6 +1310,228 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     pack.nllmWebsiteEvidencePromotedByAdapterW490 = true;
     pack.namingAuthorityOrderW490 = 'entered website evidence -> adapter naming package file -> runner preserve only';
     return pack;
+  }
+
+  function liveWebsiteNamingPackW500(request, website, prospect) {
+    const examples = liveWebsiteProductExamplesW500(website, prospect);
+    if (!examples.length) return null;
+    const primary = examples[0].name;
+    const toggles = normalizeSelectedToggles(request);
+    const manufacturing = toggles.enableManufacturing === true || toggles.enableWip === true;
+    const componentNames = genericComponentNamesForProductW500(primary);
+    const assemblyName = manufacturing ? `${primary} Assembly` : `${primary} Availability Flow`;
+    const industryChip = productIndustryChipFromNameW500(primary, website, prospect);
+    return {
+      hero_item_name: primary,
+      assembly_name: assemblyName,
+      component_names: componentNames,
+      componentEvidenceSource: 'live_entered_website_product_fetch_w500',
+      componentInferenceReason: 'generic component model from selected website product name',
+      componentFallbackUsed: false,
+      componentRejectedCandidates: [],
+      nllmComponentNamesUsed: false,
+      nllmComponentNamePromptVersion: 'w500-live-website-product-only',
+      bom_name: manufacturing ? `BOM - ${primary}` : `${primary} Availability Plan`,
+      bom_revision_name: manufacturing ? `Revision 1 - ${primary}` : `${primary} Replenishment Plan`,
+      routing_name: manufacturing ? `Routing - ${primary}` : `${primary} Fulfillment Flow`,
+      operation_names_by_seq: {
+        '10': `Prepare ${componentNames[0]}`,
+        '20': manufacturing ? `Build ${assemblyName}` : `Allocate ${primary} Demand`,
+        '30': `Release ${primary}`
+      },
+      selectedProductName: primary,
+      primary_product_candidate: primary,
+      alternate_product_candidates: examples.slice(1).map(function(candidate) { return candidate.name; }),
+      selectedCatalogCandidate: examples[0],
+      selectedCatalogCandidateSource: examples[0].source || 'live_entered_website_product_fetch_w500',
+      selectedCatalogCandidateReasons: examples[0].reasons || [],
+      catalogCandidates: examples,
+      websiteProductExamplesW500: examples.map(function(candidate) { return candidate.name; }),
+      websiteEvidenceSource: 'live_entered_website_product_fetch_w500',
+      websiteEvidenceSourceUrls: examples.map(function(candidate) { return candidate.sourceUrl || website; }).filter(Boolean),
+      selectedIndustryChip: industryChip.selectedIndustryChip,
+      industryChipSource: industryChip.industryChipSource,
+      industryChipEvidence: industryChip.industryChipEvidence,
+      industryChipConfidence: industryChip.industryChipConfidence,
+      namingEvidenceSource: 'live_entered_website_product_fetch_w500',
+      confidencePercent: examples[0].confidence || 88,
+      namingConfidence: examples[0].confidence || 88,
+      nllmWebsiteEvidencePromotedByAdapterW490: false,
+      namingAuthorityOrderW500: 'entered website -> live product feed/html extraction -> adapter naming package file -> runner preserve only'
+    };
+  }
+
+  function liveWebsiteProductExamplesW500(website, prospect) {
+    const baseUrl = normalizeWebsiteRootW500(website);
+    if (!baseUrl) return [];
+    const candidates = [];
+    const sourceUrls = [
+      `${baseUrl}/products.json?limit=30`,
+      `${baseUrl}/collections/all/products.json?limit=30`,
+      baseUrl
+    ];
+    sitemapProductUrlsW500(baseUrl).slice(0, 24).forEach(function(url) {
+      sourceUrls.push(url);
+    });
+    sourceUrls.forEach(function(url, index) {
+      const body = fetchTextW500(url);
+      if (!body) return;
+      const source = index < 2 ? 'entered_website_product_json_w500' : index === 2 ? 'entered_website_html_w500' : 'entered_website_product_page_w500';
+      if (index > 2) {
+        const slugName = productNameFromProductUrlW500(url);
+        if (slugName) {
+          candidates.push({
+            name: slugName,
+            source: 'entered_website_product_url_w500',
+            sourceUrl: url,
+            confidence: 90,
+            wipSuitabilityScore: 90,
+            reasons: ['product name derived from entered website product URL']
+          });
+        }
+      }
+      extractLiveWebsiteProductNamesW500(body).forEach(function(name) {
+        const clean = usableWebsiteProductExampleW472(name, { prospect });
+        if (!clean) return;
+        candidates.push({
+          name: clean,
+          source,
+          sourceUrl: url,
+          confidence: source === 'entered_website_product_json_w500' ? 94 : 84,
+          wipSuitabilityScore: source === 'entered_website_product_json_w500' ? 94 : 84,
+          reasons: ['product name extracted from entered website']
+        });
+      });
+    });
+    const seen = {};
+    return candidates.filter(function(candidate) {
+      const key = compactText(candidate.name).toLowerCase();
+      if (!key || seen[key]) return false;
+      seen[key] = true;
+      return true;
+    }).slice(0, 8);
+  }
+
+  function sitemapProductUrlsW500(baseUrl) {
+    const urls = [];
+    [`${baseUrl}/sitemap.xml`, `${baseUrl}/sitemap-index.xml`, `${baseUrl}/sitemap-0.xml`, `${baseUrl}/products-sitemap.xml`].forEach(function(url) {
+      const body = fetchTextW500(url);
+      if (!body) return;
+      extractUrlsW500(body).forEach(function(found) {
+        if (/\/products?\//i.test(found) || /\/collections\/[^/?#]+/i.test(found)) urls.push(found);
+        if (/\/sitemap[^/?#]*\.xml/i.test(found)) {
+          extractUrlsW500(fetchTextW500(found)).forEach(function(nested) {
+            if (/\/products?\//i.test(nested) || /\/collections\/[^/?#]+/i.test(nested)) urls.push(nested);
+          });
+        }
+      });
+    });
+    const seen = {};
+    return urls.filter(function(url) {
+      const clean = compactText(url).replace(/&amp;/g, '&');
+      if (!clean || seen[clean] || /\/(contact|privacy|terms|account|cart|checkout|login|faqs?|recipes?)\//i.test(clean)) return false;
+      seen[clean] = true;
+      return true;
+    }).slice(0, 40);
+  }
+
+  function extractUrlsW500(body) {
+    const out = [];
+    let match;
+    const locRe = /<loc>\s*([^<]+)\s*<\/loc>/gi;
+    while ((match = locRe.exec(String(body || ''))) !== null) out.push(match[1]);
+    const hrefRe = /href=["']([^"']+)["']/gi;
+    while ((match = hrefRe.exec(String(body || ''))) !== null) out.push(match[1]);
+    return out;
+  }
+
+  function productNameFromProductUrlW500(url) {
+    const match = String(url || '').match(/\/(?:products?|collections)\/([^/?#]+)/i);
+    if (!match) return '';
+    const slug = decodeURIComponentSafeW500(match[1]).replace(/[-_]+/g, ' ');
+    return usableWebsiteProductExampleW472(titleCaseEvidencePhraseW457(slug), {});
+  }
+
+  function normalizeWebsiteRootW500(website) {
+    const url = compactText(website);
+    if (!url) return '';
+    const withScheme = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+    const match = withScheme.match(/^(https?:\/\/[^/?#]+)/i);
+    return match ? match[1].replace(/\/+$/, '') : '';
+  }
+
+  function fetchTextW500(url) {
+    try {
+      const response = https.get({
+        url,
+        headers: {
+          'Accept': 'application/json,text/html;q=0.9,*/*;q=0.8',
+          'User-Agent': 'FORGEWebsiteNaming/2.1'
+        }
+      });
+      const code = Number(response && response.code || 0);
+      if (code < 200 || code >= 400) return '';
+      return String(response && response.body || '').slice(0, 250000);
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function extractLiveWebsiteProductNamesW500(body) {
+    const text = String(body || '');
+    const out = [];
+    try {
+      const parsed = JSON.parse(text);
+      const products = parsed && Array.isArray(parsed.products) ? parsed.products : [];
+      products.forEach(function(product) {
+        if (product && product.title) out.push(product.title);
+        if (product && product.name) out.push(product.name);
+      });
+    } catch (e) {}
+    let match;
+    const jsonNameRe = /"(?:title|name)"\s*:\s*"([^"]{3,90})"/gi;
+    while ((match = jsonNameRe.exec(text)) !== null) out.push(match[1]);
+    const productLinkRe = /<a\b[^>]*href=["'][^"']*\/products\/[^"']*["'][^>]*>([\s\S]{0,300}?)<\/a>/gi;
+    while ((match = productLinkRe.exec(text)) !== null) out.push(stripHtml(match[1]));
+    const productSlugRe = /\/products\/([a-z0-9][a-z0-9\-_%]{2,90})/gi;
+    while ((match = productSlugRe.exec(text)) !== null) out.push(titleCaseEvidencePhraseW457(decodeURIComponentSafeW500(String(match[1] || '')).replace(/[-_]+/g, ' ')));
+    return uniqueList(out.map(function(value) {
+      return compactText(value)
+        .replace(/\\u0026/g, '&')
+        .replace(/\s+-\s+.*$/, '')
+        .replace(/\s+\|\s+.*$/, '');
+    }));
+  }
+
+  function genericComponentNamesForProductW500(product) {
+    return [
+      `${product} Core Inventory`,
+      `${product} Replenishment Lot`,
+      `${product} Fulfillment Packaging`
+    ].map(function(name) { return trimTextW468(name, 60); });
+  }
+
+  function productIndustryChipFromNameW500(product, website, prospect) {
+    const text = `${product || ''} ${websiteDomainW474(website)} ${prospect || ''}`.toLowerCase();
+    if (/sauce|noodle|meal|snack|drink|water|tea|beverage|coffee|food|candy|chocolate|cookie|bakery|pasta|spice|seasoning/.test(text)) {
+      return { selectedIndustryChip: 'Food and Beverage Distribution', industryChipSource: 'entered_website_product_name_w500', industryChipEvidence: product, industryChipConfidence: 'medium' };
+    }
+    if (/shirt|shoe|apparel|clothing|bag|pack|wallet|jacket|hat/.test(text)) {
+      return { selectedIndustryChip: 'Consumer Goods Distribution', industryChipSource: 'entered_website_product_name_w500', industryChipEvidence: product, industryChipConfidence: 'medium' };
+    }
+    return { selectedIndustryChip: 'General Commerce', industryChipSource: 'entered_website_product_name_w500', industryChipEvidence: product || websiteDomainW474(website), industryChipConfidence: 'medium' };
+  }
+
+  function stripHtml(value) {
+    return compactText(String(value || '').replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' '));
+  }
+
+  function decodeURIComponentSafeW500(value) {
+    try {
+      return decodeURIComponent(String(value || ''));
+    } catch (e) {
+      return String(value || '');
+    }
   }
 
   function nllmWebsiteNamingRequestW490(request, website, prospect) {

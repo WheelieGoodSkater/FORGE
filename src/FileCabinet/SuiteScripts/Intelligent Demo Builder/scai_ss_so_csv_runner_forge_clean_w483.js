@@ -370,7 +370,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     const namingPayload = loadPrecomputedNamingPack({ fileId: namingFileId, extId, prospect, website, signalText: signal.text });
     const names = namingPayload.payload;
-    log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({ source: namingPayload.source || names._source || 'authoritative-pack', signalLen: names._signalLen || 0, industry_category: names.industry_category || '', namingFileId: namingPayload.fileId || namingFileId || null, namingPayloadFound: !!namingPayload.found, namingPayloadParsed: !!namingPayload.parsed, namingPayloadApplied: !!namingPayload.applied, namingDiscoveryMode: namingPayload.discoveryMode || 'none', selectedProductName: names.selectedProductName || names.primary_product_candidate || names.hero_item_name || '' }) });
+    log.audit({ title: `Naming pack selected [${VERSION}]`, details: JSON.stringify({ source: namingPayload.source || names._source || 'authoritative-pack', signalLen: names._signalLen || 0, industry_category: names.industry_category || '', namingFileId: namingPayload.fileId || namingFileId || null, namingPayloadFound: !!namingPayload.found, namingPayloadParsed: !!namingPayload.parsed, namingPayloadApplied: !!namingPayload.applied, namingDiscoveryMode: namingPayload.discoveryMode || 'none', selectedProductName: names.selectedProductName || names.primary_product_candidate || names.hero_item_name || '', websiteNamingAuditTrail: namingAuditSummaryW508(names) }) });
 
     assertAuthoritativeNamingPackW508(names, {
       enableManufacturing: finalEnableManufacturing,
@@ -685,6 +685,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       namingDiscoveryMode: args.namingPayload && args.namingPayload.discoveryMode || '',
       namingSource: args.names && (args.names._source || args.names.namingEvidenceSource) || '',
       namingAuthorityOrder: 'authoritative precomputed naming pack only',
+      websiteNamingAuditTrail: args.names && (args.names.websiteNamingAuditTrailW508 || args.names.websiteNamingAuditTrail) || null,
+      websiteNamingAuditTrailW508: args.names && (args.names.websiteNamingAuditTrailW508 || args.names.websiteNamingAuditTrail) || null,
+      websiteNamingEvidenceUrls: args.names && (args.names.websiteNamingEvidenceUrls || []),
+      websiteNamingProductCandidates: args.names && (args.names.websiteNamingProductCandidates || []),
+      websiteNamingAppliedNames: args.names && (args.names.websiteNamingAppliedNames || null),
       productBuildPlanW432: productBuildPlan,
       productBuildPlanW483: productBuildPlan,
       productBuildPlan,
@@ -727,6 +732,11 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       selectedProduct: selectedProductName,
       selectedProductName,
       primaryProductCandidate: selectedProductName,
+      websiteNamingAuditTrail: args.names && (args.names.websiteNamingAuditTrailW508 || args.names.websiteNamingAuditTrail) || null,
+      websiteNamingAuditTrailW508: args.names && (args.names.websiteNamingAuditTrailW508 || args.names.websiteNamingAuditTrail) || null,
+      websiteNamingEvidenceUrls: args.names && (args.names.websiteNamingEvidenceUrls || []),
+      websiteNamingProductCandidates: args.names && (args.names.websiteNamingProductCandidates || []),
+      websiteNamingAppliedNames: args.names && (args.names.websiteNamingAppliedNames || null),
       productBuildPlanW432: productBuildPlan,
       productBuildPlanW483: productBuildPlan,
       productBuildPlan,
@@ -3242,6 +3252,28 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       component_names: [],
       namingPackRequired: true,
       namingPackMissingReason: reason || 'authoritative naming pack missing'
+    };
+  }
+
+  function namingAuditSummaryW508(names) {
+    const audit = names && (names.websiteNamingAuditTrailW508 || names.websiteNamingAuditTrail) || {};
+    const applied = audit.appliedNames || names || {};
+    return {
+      auditSchema: audit.schema || '',
+      auditSource: audit.source || '',
+      selectedProductName: audit.selectedProductName || names && (names.selectedProductName || names.primary_product_candidate || names.hero_item_name) || '',
+      selectedCandidate: audit.selectedCandidate || null,
+      candidateCount: Array.isArray(audit.productCandidates) ? audit.productCandidates.length : 0,
+      evidenceUrls: Array.isArray(audit.evidenceUrls) ? audit.evidenceUrls.slice(0, 6) : [],
+      appliedNames: {
+        hero_item_name: applied.hero_item_name || '',
+        assembly_name: applied.assembly_name || '',
+        component_names: Array.isArray(applied.component_names) ? applied.component_names.slice(0, 3) : [],
+        bom_name: applied.bom_name || '',
+        bom_revision_name: applied.bom_revision_name || '',
+        routing_name: applied.routing_name || '',
+        operation_names_by_seq: applied.operation_names_by_seq || null
+      }
     };
   }
 

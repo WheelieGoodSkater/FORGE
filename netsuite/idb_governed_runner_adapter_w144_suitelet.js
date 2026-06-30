@@ -932,11 +932,19 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
     const prospect = compactText(request && request.prospect && request.prospect.name) || 'Demo Customer';
     const website = compactText(request && request.prospect && request.prospect.website);
     const nllmPack = nllmWebsiteNamingPackFromRequestW490(request, website, prospect);
-    if (!nllmPack) return null;
-    const industrySelection = nllmPack.selectedIndustryChip
+    const liveWebsitePack = nllmPack ? null : liveWebsiteNamingPackW500(request, website, prospect);
+    if (!nllmPack && !liveWebsitePack) return null;
+    const industrySelection = nllmPack && nllmPack.selectedIndustryChip
       ? { label: nllmPack.selectedIndustryChip, source: nllmPack.industryChipSource || 'nllm_website_product_evidence', confidence: nllmPack.industryChipConfidence || 'high' }
       : industrySelectionFromRequestW468(request, website);
-    const effectivePack = nllmPack;
+    const effectivePack = nllmPack || liveWebsitePack;
+    const auditTrail = websiteNamingAuditTrailW508({
+      request,
+      website,
+      prospect,
+      source: nllmPack ? 'nllm_website_naming_package' : 'live_entered_website_fetch',
+      effectivePack
+    });
     const rankedCatalogCandidates = (effectivePack.selectedCatalogCandidate
       ? [effectivePack.selectedCatalogCandidate].concat(effectivePack.catalogCandidates || [])
       : (effectivePack.catalogCandidates || []));
@@ -944,8 +952,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
     const fallbackUsed = !selectedCatalogCandidate;
     const product = compactText(effectivePack.selectedProductName || effectivePack.primary_product_candidate || selectedCatalogCandidate && selectedCatalogCandidate.name || '');
     const fallbackReason = fallbackUsed ? 'N/LLM naming package did not include a selected website product candidate.' : '';
-    const source = 'suitelet-nllm-website-naming-pack-w490';
-    const namingEvidenceSource = 'nllm_website_product_evidence';
+    const source = effectivePack._source || (nllmPack ? 'suitelet-nllm-website-naming-pack-w490' : 'suitelet-live-entered-website-package-w508');
+    const namingEvidenceSource = effectivePack.namingEvidenceSource || (nllmPack ? 'nllm_website_product_evidence' : 'live_entered_website_product_package');
     const confidence = Number(effectivePack.confidencePercent || effectivePack.namingConfidence || 92);
     const componentNames = Array.isArray(effectivePack.component_names) && effectivePack.component_names.length === 3
       ? effectivePack.component_names
@@ -969,6 +977,11 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
 	      industryChipConfidence: effectivePack.industryChipConfidence || industrySelection.confidence || '',
 	      websiteEvidenceSource: effectivePack.websiteEvidenceSource || (website ? 'website_industry_best_guess' : 'none'),
       websiteEvidenceSourceUrls: evidenceSourceUrlsW459(request, website),
+      websiteNamingAuditTrail: auditTrail,
+      websiteNamingAuditTrailW508: auditTrail,
+      websiteNamingEvidenceUrls: auditTrail.evidenceUrls,
+      websiteNamingProductCandidates: auditTrail.productCandidates,
+      websiteNamingAppliedNames: auditTrail.appliedNames,
       hero_item_name: trimTextW468(heroName, 60),
       assembly_name: trimTextW468(assemblyName, 60),
 	      component_names: componentNames.map(function(name) { return trimTextW468(compactText(name), 60); }),
@@ -1005,7 +1018,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
       namingAuthorityOrderW468: 'entered website -> N/LLM website naming package -> runner preserve only',
       namingAuthorityOrderW470: 'entered website -> N/LLM website naming package -> runner preserve only',
       namingAuthorityOrderW472: 'entered website -> N/LLM website naming package -> runner preserve only',
-      namingAuthorityOrderW490: 'entered website -> N/LLM website naming package -> runner applies returned names; static/domain examples forbidden',
+      namingAuthorityOrderW490: 'entered website -> N/LLM website naming package or live website product package -> runner applies returned names; static/domain examples forbidden',
+      namingAuthorityOrderW508: 'entered website fetch -> product/package evidence audit -> authoritative record names; prospect and duplicate-item logic cannot override',
       nllmWebsiteEvidencePromotedByAdapterW490: effectivePack.nllmWebsiteEvidencePromotedByAdapterW490 === true,
       websiteNamingSupersedesAllPacksW472: true,
       supersededExplicitNamingPackW472: false,
@@ -1020,7 +1034,65 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
   }
 
   function liveWebsiteNamingPackW500(request, website, prospect) {
-    return null;
+    const examples = liveWebsiteProductExamplesW500(website, prospect);
+    if (!examples.length) return null;
+    const selected = examples[0];
+    const product = compactText(selected && selected.name);
+    if (!product || rejectedWebsiteCandidateReasonW474(product) || isGenericCatalogCandidateW459(product)) return null;
+    const productText = compactText(selected.evidenceText || '');
+    const ingredientNames = extractIngredientNamesW507(productText).slice(0, 2);
+    const components = authoritativeComponentNamesFromWebsiteW508(product, ingredientNames);
+    const operations = authoritativeOperationsFromWebsiteProductW508(product);
+    return {
+      _source: 'suitelet-live-entered-website-package-w508',
+      namingEvidenceSource: 'live_entered_website_product_package',
+      namingConfidence: Number(selected.confidence || 90),
+      confidencePercent: Number(selected.confidence || 90),
+      industrySelection: { label: '', source: 'live_entered_website_product_package', confidence: 'website-product' },
+      industry_category: '',
+      selectedIndustryChip: '',
+      industryChipSource: 'live_entered_website_product_package',
+      industryChipEvidence: product,
+      industryChipConfidence: 'website-product',
+      websiteEvidenceSource: 'live_entered_website_product_package',
+      websiteEvidenceSourceUrls: uniqueList(examples.map(function(candidate) { return candidate.sourceUrl; }).filter(Boolean)),
+      hero_item_name: product,
+      assembly_name: `${product} Finished Good Assembly`,
+      component_names: components,
+      componentEvidenceSource: ingredientNames.length ? 'live_website_ingredient_text_plus_packaging' : 'live_website_product_package_packaging',
+      componentInferenceReason: ingredientNames.length
+        ? 'Ingredient names were extracted from the entered website product text; packaging input completes the buildable BOM.'
+        : 'Entered website returned product/package evidence but no ingredient list; component names stay product-specific packaging/manufacturing inputs.',
+      componentFallbackUsed: false,
+      componentRejectedCandidates: [],
+      nllmComponentNamesUsed: false,
+      nllmComponentNamePromptVersion: 'none-live-website-package-w508',
+      bom_name: `BOM - ${product}`,
+      bom_revision_name: `Revision 1 - ${product}`,
+      routing_name: `Routing - ${product}`,
+      operation_names_by_seq: operations,
+      sales_descriptions: {
+        hero: `${product} finished good discovered from the entered website.`,
+        assembly: `${product} buildable finished good for customer orders.`,
+        components
+      },
+      purchase_descriptions: {
+        hero: `Purchased inputs supporting ${product} production.`,
+        assembly: `Assembly supply inputs used to build ${product}.`,
+        components
+      },
+      selectedProductName: product,
+      primary_product_candidate: product,
+      selectedCatalogCandidate: selected,
+      selectedCatalogCandidateSource: selected.source || 'live_entered_website_product_package',
+      selectedCatalogCandidateReasons: selected.reasons || [],
+      catalogCandidates: examples,
+      rejectedCatalogCandidates: [],
+      fallbackUsed: false,
+      fallbackReason: '',
+      missingEvidence: [],
+      liveWebsiteProductPackageW508: true
+    };
   }
 
   function liveWebsiteProductExamplesW500(website, prospect) {
@@ -1181,11 +1253,91 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
   }
 
   function extractIngredientNamesW507(text) {
-    return [];
+    const source = stripHtml(text || '');
+    const match = source.match(/\bIngredients?\s*[:\-]\s*([^.;\n\r]{8,260})/i);
+    if (!match) return [];
+    return uniqueList(match[1]
+      .split(/,|\band\b|\(|\)|\u2022|;/i)
+      .map(function(part) {
+        return titleCaseEvidencePhraseW457(compactText(part)
+          .replace(/\b(organic|natural|contains|less than|and\/or|with)\b/gi, '')
+          .replace(/\s+/g, ' ')
+          .trim());
+      })
+      .filter(function(name) {
+        return name.length >= 3 && name.length <= 38 && !/^(salt|water|sugar|oil|flavor|flavors|vitamins?)$/i.test(name);
+      })).slice(0, 4);
   }
 
   function packagingComponentNameW507(product) {
-    return '';
+    return `${compactText(product)} Retail Carton`;
+  }
+
+  function authoritativeComponentNamesFromWebsiteW508(product, ingredients) {
+    const cleanProduct = compactText(product);
+    const names = [];
+    (ingredients || []).forEach(function(ingredient) {
+      if (names.length < 2) names.push(`${cleanProduct} ${compactText(ingredient)} Input`);
+    });
+    if (names.length < 1) names.push(`${cleanProduct} Formula Input`);
+    if (names.length < 2) names.push(packagingComponentNameW507(cleanProduct));
+    names.push(`${cleanProduct} Master Case`);
+    return names.slice(0, 3);
+  }
+
+  function authoritativeOperationsFromWebsiteProductW508(product) {
+    const cleanProduct = compactText(product);
+    return {
+      '10': `${cleanProduct} Input Prep`,
+      '20': `${cleanProduct} Pack Build`,
+      '30': `${cleanProduct} Case Pack`
+    };
+  }
+
+  function websiteNamingAuditTrailW508(args) {
+    const pack = args.effectivePack || {};
+    const selected = pack.selectedCatalogCandidate || {};
+    const candidates = (pack.catalogCandidates || []).slice(0, 8).map(function(candidate) {
+      return {
+        name: compactText(candidate && candidate.name),
+        source: compactText(candidate && candidate.source),
+        sourceUrl: compactText(candidate && candidate.sourceUrl),
+        confidence: Number(candidate && candidate.confidence || candidate && candidate.wipSuitabilityScore || 0),
+        reasons: Array.isArray(candidate && candidate.reasons) ? candidate.reasons.slice(0, 5).map(compactText) : []
+      };
+    }).filter(function(candidate) { return candidate.name; });
+    const appliedNames = {
+      hero_item_name: compactText(pack.hero_item_name),
+      assembly_name: compactText(pack.assembly_name),
+      component_names: Array.isArray(pack.component_names) ? pack.component_names.map(compactText).filter(Boolean) : [],
+      bom_name: compactText(pack.bom_name),
+      bom_revision_name: compactText(pack.bom_revision_name),
+      routing_name: compactText(pack.routing_name),
+      operation_names_by_seq: pack.operation_names_by_seq || null
+    };
+    return {
+      schema: 'forge.website-naming-audit-trail.w508.v1',
+      source: args.source || '',
+      website: args.website || '',
+      domain: websiteDomainW474(args.website),
+      prospect: args.prospect || '',
+      selectedProductName: compactText(pack.selectedProductName || pack.primary_product_candidate || appliedNames.hero_item_name),
+      selectedCandidate: {
+        name: compactText(selected.name || pack.selectedProductName || pack.primary_product_candidate),
+        source: compactText(selected.source || pack.selectedCatalogCandidateSource || pack.namingEvidenceSource),
+        sourceUrl: compactText(selected.sourceUrl || args.website),
+        confidence: Number(selected.confidence || pack.confidencePercent || pack.namingConfidence || 0),
+        reasons: Array.isArray(selected.reasons) ? selected.reasons.slice(0, 5).map(compactText) : (pack.selectedCatalogCandidateReasons || [])
+      },
+      productCandidates: candidates,
+      rejectedCandidates: (pack.rejectedCatalogCandidates || []).slice(0, 8),
+      evidenceUrls: uniqueList([args.website].concat(pack.websiteEvidenceSourceUrls || [], candidates.map(function(candidate) { return candidate.sourceUrl; })).filter(Boolean)),
+      appliedNames,
+      componentEvidenceSource: pack.componentEvidenceSource || '',
+      componentInferenceReason: pack.componentInferenceReason || '',
+      namingAuthority: 'entered website product/package evidence only',
+      blockedOverrides: ['prospect name', 'drawer fallback text', 'duplicate-item labels', 'old static product libraries']
+    };
   }
 
   function productIndustryChipFromNameW500(product, website, prospect) {

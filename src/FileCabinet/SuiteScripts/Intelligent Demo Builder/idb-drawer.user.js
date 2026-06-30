@@ -28779,7 +28779,7 @@
             </div>
           </div>
           <div class="idb-actions">
-            ${showBuildButton ? '<button class="idb-primary" data-idb-real-adapter-action="submit_w144_once">Build Records</button>' : ''}
+            ${showBuildButton ? `<button class="idb-primary" data-idb-one-click-build-records="${escapeHtml(lane.id)}">Build Records</button>` : ''}
             ${showPollButton ? `<button class="idb-secondary" data-idb-build-return-action="check_runner_result">${escapeHtml(pollButtonLabel)}</button>` : ''}
             ${w262BuildUx.stateFacts.runnerTaskCaptured || w262BuildUx.stateFacts.completedResultReady ? '<button class="idb-secondary" type="button" data-idb-w445-start-new-run>Clear/New Run</button>' : ''}
             ${oneClickBuild.automation && oneClickBuild.automation.showAskAdminMessage && !w262BuildUx.stateFacts.runnerTaskCaptured ? '<span class="idb-mini-chip">Build failed, ask admin</span>' : ''}
@@ -31195,7 +31195,12 @@
       button.addEventListener('click', async () => {
         const actionId = button.getAttribute('data-idb-real-adapter-action');
         if (actionId !== 'submit_w144_once') return;
-        await submitBuildRecordsOnce(button, { source: 'explicit_build_records_button' });
+        syncIntakeFromVisibleFields(root, state);
+        updateBuildDemoPlanAction(root, state);
+        const selectedLaneId = button.getAttribute('data-idb-one-click-build-records') || state.selectedLaneId;
+        const prepared = prepareOneClickBuildRecordsPath(selectedLaneId);
+        if (!prepared) return;
+        await submitBuildRecordsOnce(button, Object.assign({}, prepared, { source: 'one_click_build_records_w419' }));
       });
     });
     root.querySelectorAll('[data-idb-build-return-action]').forEach((button) => {

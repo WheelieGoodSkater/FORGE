@@ -449,21 +449,17 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
     // 6) Manufacturing-only setup
     let woId = null;
+    let workOrderResult = null;
     if (finalEnableManufacturing && ids.assemblyId && ids.bomId) {
       const bomAttachResult = safeManufacturingStepW486('BOM attach to assembly', () => {
         attachBomToAssembly({ assemblyId: ids.assemblyId, bomId: ids.bomId });
         return { assemblyId: ids.assemblyId, bomId: ids.bomId };
       });
 
-      if (bomAttachResult.ok) {
+      if (!bomAttachResult.ok) {
         log.audit({
-          title: `Work Order seed skipped (diagnostic) [${VERSION}]`,
-          details: JSON.stringify({
-            reason: 'work_order_create_blocks_w486_live_run',
-            assemblyId: ids.assemblyId,
-            bomId: ids.bomId,
-            extId
-          })
+          title: `Work Order seed waiting on BOM attach [${VERSION}]`,
+          details: JSON.stringify({ assemblyId: ids.assemblyId, bomId: ids.bomId, extId, error: bomAttachResult.error || '' })
         });
       }
     } else {
@@ -474,16 +470,58 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     let routingResult = null;
     let routingId = null;
     if (effectiveEnableWip && finalEnableManufacturing && ids.assemblyId && ids.bomId) {
-      routingResult = {
-        decision: 'routing-diagnostic-skipped-live-create',
-        error: 'Routing create/attach is diagnostic-only for this account because the manufacturingrouting billofmaterials field rejects the active BOM.',
-        routingId: null,
-        chosen: { centers: [], templates: [] }
-      };
-      log.audit({
-        title: `WIP routing skipped (diagnostic) [${VERSION}]`,
-        details: JSON.stringify({ assemblyId: ids.assemblyId, bomId: ids.bomId, decision: routingResult.decision })
-      });
+      try {
+        routingResult = createAndAttachRoutingIfPossible({
+          subsidiaryId,
+          locationId,
+          bomId: ids.bomId,
+          assemblyId: ids.assemblyId,
+          extId,
+          prospect,
+          signalText: signal.text,
+          workCenterSearchId,
+          names
+        });
+      } catch (routingError) {
+        routingResult = {
+          status: 'failed_best_effort',
+          decision: 'routing-create-or-reuse-failed',
+          attachResult: 'not-attached-routing-failed',
+          routingId: null,
+          existingRoutingId: null,
+          errorName: routingError && routingError.name || '',
+          error: routingError && routingError.message || String(routingError || '')
+        };
+        log.error({ title: `WIP routing failed [${VERSION}]`, details: JSON.stringify(routingResult) });
+      }
+      routingId = routingResult && routingResult.routingId ? Number(routingResult.routingId) : null;
+      if (routingId) {
+        let woResult = safeManufacturingStepW486('Work Order seed', () => createWorkOrder({
+          assemblyId: ids.assemblyId,
+          subsidiaryId,
+          locationId,
+          routingId,
+          bomId: ids.bomId,
+          bomRevId: ids.bomRevId,
+          quantity: 10,
+          memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded`
+        }));
+        if (!woResult.ok) {
+          woResult = safeManufacturingStepW486('Work Order seed fallback', () => createWorkOrder({
+            assemblyId: ids.assemblyId,
+            subsidiaryId,
+            quantity: 10,
+            memo: `SCAI Demo Reset: ${extId} | ${prospect} | WO seeded fallback`
+          }));
+        }
+        workOrderResult = woResult;
+        woId = woResult.ok ? Number(woResult.value || 0) || null : null;
+      } else {
+        log.audit({
+          title: `Work Order seed skipped (routing unavailable) [${VERSION}]`,
+          details: JSON.stringify({ assemblyId: ids.assemblyId, bomId: ids.bomId, extId, routingResult })
+        });
+      }
     } else {
       log.audit({ title: `WIP not enabled (skipping routing) [${VERSION}]`, details: JSON.stringify({ enableWipRaw, enableWip, effectiveEnableWip, enableManufacturing: finalEnableManufacturing, requestedWipTargetMode, wipTargetMode, wipHandshakeAction }) });
     }
@@ -559,6 +597,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         woId,
         routingId,
         routingResult,
+        workOrderResult,
         mfg: ids,
         names
       })
@@ -579,6 +618,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       woId,
       routingId,
       routingResult,
+      workOrderResult,
       customerId: customerInfo.id,
       enableManufacturing: finalEnableManufacturing,
       enableWip: effectiveEnableWip,
@@ -602,7 +642,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const extId = str(args.extId);
     const records = buildReturnedRecordsW486(args);
     const displayReadyRecords = Object.keys(records).map(function(key) { return records[key]; }).filter(Boolean);
-    const status = args.enableWip && !args.routingId ? 'completed_with_wip_diagnostic' : 'completed';
+    const missingWipDetail = !!(args.enableWip && (!args.routingId || !args.woId));
+    const status = missingWipDetail ? 'completed_with_wip_diagnostic' : 'completed';
     const sourceRequestId = firstNonBlankTextW486(
       confirmed.requestId,
       confirmed.sourceRequestId,
@@ -687,7 +728,10 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         roiCompetitive: 'reserved_for_later_block',
         enabled: false
       },
-      warnings: args.enableWip && !args.routingId ? ['WIP was requested; routing did not return a routing id.'] : [],
+      warnings: missingWipDetail ? [
+        !args.routingId ? 'WIP was requested; routing did not return a routing id.' : '',
+        !args.woId ? 'WIP was requested; work order did not return a work order id.' : ''
+      ].filter(Boolean) : [],
       errors: []
     };
     const resultCapture = {
@@ -877,7 +921,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
           internalId: '',
           id: '',
           diagnosticOnly: true,
-          linkAuthority: { status: 'diagnostic_only', openable: false, url: '' }
+          linkAuthority: { status: 'diagnostic_only', openable: false, url: '' },
+          workOrderResult: args.workOrderResult || null
         };
       }
       if (args.routingId) {
@@ -1225,7 +1270,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // WIP Routing (create + attach)
   // ----------------------------
   function createAndAttachRoutingIfPossible({ subsidiaryId, locationId, bomId, assemblyId, extId, prospect, signalText, workCenterSearchId, names }) {
-    const subs = Number(subsidiaryId);
+    const subs = lookupBomSubsidiaryIdForRoutingW490(bomId) || Number(subsidiaryId);
     const loc = locationId ? Number(locationId) : null;
 
     // Step 1: Find candidates
@@ -1415,6 +1460,29 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
         ops: opNames
       }
     };
+  }
+
+  function lookupBomSubsidiaryIdForRoutingW490(bomId) {
+    try {
+      const fields = search.lookupFields({
+        type: 'bom',
+        id: Number(bomId),
+        columns: ['subsidiary']
+      }) || {};
+      const value = fields.subsidiary;
+      if (Array.isArray(value) && value.length) {
+        const id = Number(value[0] && (value[0].value || value[0].id));
+        return Number.isFinite(id) && id > 0 ? id : null;
+      }
+      const id = Number(value && (value.value || value.id) || value);
+      return Number.isFinite(id) && id > 0 ? id : null;
+    } catch (e) {
+      log.audit({
+        title: `BOM subsidiary lookup for routing failed [${VERSION}]`,
+        details: JSON.stringify({ bomId: Number(bomId || 0), errorName: e && e.name || '', error: e && e.message || String(e || '') })
+      });
+      return null;
+    }
   }
 
   function attachRoutingToAssemblySafe({ assemblyId, routingId }) {
@@ -1946,14 +2014,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
   }
 
-  function createWorkOrder({ assemblyId, subsidiaryId, locationId, quantity, memo }) {
-    const wo = record.create({ type: 'workorder', isDynamic: false });
+  function createWorkOrder({ assemblyId, subsidiaryId, locationId, quantity, memo, routingId, bomId, bomRevId }) {
+    const wo = record.create({ type: 'workorder', isDynamic: true });
 
     wo.setValue({ fieldId: 'subsidiary', value: Number(subsidiaryId) });
     if (locationId) safeTry(() => wo.setValue({ fieldId: 'location', value: Number(locationId) }));
 
     let setAssemblyOk = false;
-    ['assemblyitem', 'item'].forEach(fid => {
+    ['item', 'assemblyitem'].forEach(fid => {
       if (setAssemblyOk) return;
       const ok = safeTryReturn(() => {
         wo.setValue({ fieldId: fid, value: Number(assemblyId) });
@@ -1962,6 +2030,12 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       if (ok) setAssemblyOk = true;
     });
     if (!setAssemblyOk) throw new Error(`Work Order: could not set assembly item (assemblyId=${assemblyId})`);
+
+    if (routingId) safeTry(() => wo.setValue({ fieldId: 'manufacturingrouting', value: Number(routingId) }));
+    if (routingId) safeTry(() => wo.setValue({ fieldId: 'routing', value: Number(routingId) }));
+    if (bomId) safeTry(() => wo.setValue({ fieldId: 'billofmaterials', value: Number(bomId) }));
+    if (bomRevId) safeTry(() => wo.setValue({ fieldId: 'billofmaterialsrevision', value: Number(bomRevId) }));
+    if (bomRevId) safeTry(() => wo.setValue({ fieldId: 'bomrevision', value: Number(bomRevId) }));
 
     wo.setValue({ fieldId: 'quantity', value: Number(quantity || 10) });
     if (memo) safeTry(() => wo.setValue({ fieldId: 'memo', value: String(memo).slice(0, 300) }));
@@ -1972,6 +2046,14 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     // Allocation Strategy accounts can require dates
     safeTry(() => wo.setValue({ fieldId: 'startdate', value: start }));
     safeTry(() => wo.setValue({ fieldId: 'enddate', value: end }));
+
+    safeTry(() => {
+      const sublistId = 'item';
+      wo.selectNewLine({ sublistId });
+      wo.setCurrentSublistValue({ sublistId, fieldId: 'item', value: Number(assemblyId) });
+      wo.setCurrentSublistValue({ sublistId, fieldId: 'quantity', value: Number(quantity || 10) });
+      wo.commitLine({ sublistId });
+    });
 
     return Number(wo.save({ enableSourcing: true, ignoreMandatoryFields: true }));
   }
@@ -3132,17 +3214,184 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function buildWebsiteSignalNamingPackW486({ prospect, website, signalText }) {
-    void prospect;
-    void website;
-    void signalText;
-    return null;
+    const known = buildKnownWebsiteProductNamingPackW486({ prospect, website, signalText });
+    if (known) return known;
+
+    const domain = extractDomain(website);
+    const brand = inferBrandFromWebsiteW486({ domain, signalText, prospect });
+    const text = compactText(String(signalText || ''));
+    const lower = text.toLowerCase();
+    const product = selectWebsiteProductCandidateW486({ brand, text, lower });
+    if (!product) return null;
+
+    const category = inferWebsiteCategoryW486(lower, product);
+    return concreteWebsiteProductNamingPackW486({
+      prospect,
+      website,
+      product,
+      productExamples: [product],
+      category,
+      industry: inferWebsiteIndustryW486(lower, category),
+      components: buildRealisticComponentNamesW486(product, category, lower),
+      operations: buildOperationNamesW486(product, category, lower),
+      evidenceSource: 'entered website text and product/category signals'
+    });
   }
 
   function buildKnownWebsiteProductNamingPackW486({ prospect, website, signalText }) {
-    void prospect;
-    void website;
-    void signalText;
-    return null;
+    const domain = extractDomain(website);
+    const brand = inferBrandFromWebsiteW486({ domain, signalText, prospect });
+    const lower = String(signalText || '').toLowerCase();
+    const category = inferWebsiteCategoryW486(lower, '');
+    if (!brand || !category) return null;
+
+    const product = `${brand} ${category}`;
+    return concreteWebsiteProductNamingPackW486({
+      prospect,
+      website,
+      product,
+      productExamples: [product],
+      category,
+      industry: inferWebsiteIndustryW486(lower, category),
+      components: buildRealisticComponentNamesW486(product, category, lower),
+      operations: buildOperationNamesW486(product, category, lower),
+      evidenceSource: 'entered website domain plus product/category signals'
+    });
+  }
+
+  function namingPackLooksGenericW486(names) {
+    const text = [
+      names && names.hero_item_name,
+      names && names.assembly_name,
+      names && names.selectedProductName,
+      names && names.primary_product_candidate,
+      names && names.bom_name,
+      names && names.routing_name
+    ].join(' ').toLowerCase();
+    if (!text) return true;
+    return /product availability sku|catalog product|product \/ sku|supporting sku|finished good|component [abc]\b|demo product|generic|placeholder/.test(text);
+  }
+
+  function inferBrandFromWebsiteW486(args) {
+    const domain = extractDomain(args && args.domain || '');
+    const fromDomain = domain
+      .replace(/^www\./, '')
+      .split('.')[0]
+      .replace(/[-_]+/g, ' ')
+      .replace(/\b(inc|llc|co|com|shop|store|usa|us)\b/gi, ' ')
+      .trim();
+    const fromTitle = (String(args && args.signalText || '').match(/(?:^|\|\s*)Title:\s*([^|]+)/i) || [,''])[1];
+    const titleBrand = String(fromTitle || '').split(/[-|:]/)[0].replace(/\b(official|home|shop|store|usa|us)\b/gi, ' ').trim();
+    return titleCaseW486(titleBrand || fromDomain || args && args.prospect || 'Website');
+  }
+
+  function selectWebsiteProductCandidateW486(args) {
+    const brand = args.brand || '';
+    const text = args.text || '';
+    const lower = args.lower || '';
+    const extracted = extractProductNamesFromSignalW486(text, brand);
+    if (extracted.length) return extracted[0];
+
+    const category = inferWebsiteCategoryW486(lower, '');
+    if (!category || isGenericProductNameW486(category)) return '';
+    return `${brand} ${category}`.trim();
+  }
+
+  function extractProductNamesFromSignalW486(text, brand) {
+    const cleanBrand = String(brand || '').toLowerCase();
+    const out = [];
+    const phrases = compactText(text)
+      .replace(/\s[|]\s/g, '. ')
+      .split(/[.;\n]/)
+      .map(s => compactText(s))
+      .filter(Boolean);
+
+    for (let i = 0; i < phrases.length; i += 1) {
+      const phrase = phrases[i];
+      const matches = phrase.match(/\b(?:the\s+)?[A-Z][A-Za-z0-9+&' -]{3,55}\b/g) || [];
+      for (let j = 0; j < matches.length; j += 1) {
+        let candidate = compactProductNameW486(matches[j]);
+        if (!candidate || isGenericProductNameW486(candidate)) continue;
+        if (cleanBrand && candidate.toLowerCase() === cleanBrand) continue;
+        if (cleanBrand && candidate.toLowerCase().indexOf(cleanBrand + ' ') !== 0 && candidate.length < 18) {
+          candidate = `${brand} ${candidate}`;
+        }
+        if (!isGenericProductNameW486(candidate) && out.indexOf(candidate) === -1) out.push(candidate);
+        if (out.length >= 5) return out;
+      }
+    }
+    return out;
+  }
+
+  function compactProductNameW486(name) {
+    let s = compactText(name)
+      .replace(/^(Title|Description|PageText|Domain)\s*:\s*/i, '')
+      .replace(/\b(Shop|Buy|Sale|New|Featured|Products?|Collections?|Categories?|Official Site|Home)\b$/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    s = s.replace(/^the\s+/i, '');
+    return trimLen(s, 58);
+  }
+
+  function isGenericProductNameW486(name) {
+    const s = String(name || '').toLowerCase();
+    if (!s || s.length < 4) return true;
+    if (/product availability sku|catalog product|product \/ sku|supporting sku|finished good|component [abc]\b|official site|homepage|login|privacy|terms/.test(s)) return true;
+    if (/^(product|products|shop|store|collection|collections|category|categories|home|about|contact|support|search)$/.test(s)) return true;
+    return false;
+  }
+
+  function inferWebsiteCategoryW486(lower, product) {
+    const text = `${String(lower || '')} ${String(product || '').toLowerCase()}`;
+    const categoryRules = [
+      { re: /(espresso|barista|coffee maker|coffee machine|grinder|brew)/, name: 'Espresso Machine' },
+      { re: /(toaster oven|smart oven|air fryer|convection oven|oven)/, name: 'Countertop Oven' },
+      { re: /(food processor|processor|chopper)/, name: 'Food Processor' },
+      { re: /(blender|smoothie|juicer|juice)/, name: 'Blender' },
+      { re: /(kettle|tea maker|electric kettle)/, name: 'Electric Kettle' },
+      { re: /(cookware|pan|skillet|saucepan|stockpot|fry pan)/, name: 'Cookware Set' },
+      { re: /(grill|smoker|bbq|barbecue)/, name: 'Grill' },
+      { re: /(cooler|drinkware|tumbler|bottle|hydration)/, name: 'Insulated Drinkware' },
+      { re: /(snack|protein|jerky|stick|meat stick)/, name: 'Protein Snack' },
+      { re: /(shirt|jacket|sock|apparel|footwear|shoe|boot)/, name: 'Apparel SKU' },
+      { re: /(bike|bicycle|helmet|cycling)/, name: 'Bicycle SKU' },
+      { re: /(tool|drill|saw|fastener|hardware)/, name: 'Tool SKU' }
+    ];
+    for (let i = 0; i < categoryRules.length; i += 1) {
+      if (categoryRules[i].re.test(text)) return categoryRules[i].name;
+    }
+    return '';
+  }
+
+  function inferWebsiteIndustryW486(lower, category) {
+    const text = `${String(lower || '')} ${String(category || '').toLowerCase()}`;
+    if (/(espresso|coffee|oven|food processor|blender|kettle|cookware|grill)/.test(text)) return 'Consumer Appliances';
+    if (/(snack|protein|jerky|meat stick|food|beverage|ingredients|nutrition)/.test(text)) return 'Food and Beverage';
+    if (/(bike|bicycle|cycling|apparel|footwear|shirt|sock|jacket)/.test(text)) return 'Consumer Goods';
+    if (/(tool|drill|fastener|industrial|electrical|supply)/.test(text)) return 'Industrial Supply';
+    return 'Website Product';
+  }
+
+  function buildRealisticComponentNamesW486(product, category, lower) {
+    const text = `${String(lower || '')} ${String(category || '').toLowerCase()} ${String(product || '').toLowerCase()}`;
+    if (/(espresso|coffee|grinder|brew)/.test(text)) return ['Brew Group Assembly', 'Heating Element', 'Control Panel Kit'];
+    if (/(oven|air fryer|toaster)/.test(text)) return ['Heating Element', 'Control Board', 'Door Assembly'];
+    if (/(food processor|blender|juicer)/.test(text)) return ['Motor Base', 'Blade Assembly', 'Bowl and Lid Kit'];
+    if (/(kettle)/.test(text)) return ['Heating Plate', 'Stainless Vessel', 'Switch Assembly'];
+    if (/(cookware|pan|skillet)/.test(text)) return ['Stainless Body', 'Handle Kit', 'Retail Packaging'];
+    if (/(snack|protein|jerky|meat stick)/.test(text)) return ['Seasoned Protein Blend', 'Casing Sleeve', 'Retail Carton'];
+    return ['Core Assembly', 'Accessory Kit', 'Retail Packaging'];
+  }
+
+  function buildOperationNamesW486(product, category, lower) {
+    const text = `${String(lower || '')} ${String(category || '').toLowerCase()} ${String(product || '').toLowerCase()}`;
+    if (/(snack|protein|jerky|meat stick)/.test(text)) return ['Prepare ingredients', 'Form and cook batch', 'Pack finished goods'];
+    if (/(apparel|footwear|shirt|sock|jacket)/.test(text)) return ['Cut materials', 'Assemble product', 'Pack finished goods'];
+    return ['Prepare components', 'Assemble product', 'Inspect and pack'];
+  }
+
+  function titleCaseW486(s) {
+    return compactText(s).toLowerCase().replace(/\b[a-z]/g, function(c) { return c.toUpperCase(); });
   }
 
   function selectKnownWebsiteProductW486(products, lower) {

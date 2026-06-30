@@ -1168,7 +1168,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
   function buildServerPrecomputedNamingPack(request) {
     const prospect = compactText(request && request.prospect && request.prospect.name) || 'Demo Customer';
     const website = compactText(request && request.prospect && request.prospect.website);
-    const nllmPack = nllmWebsiteNamingPackFromRequestW490(request, website, prospect);
+    const nllmPack = nllmWebsiteNamingPackFromRequestW490(request, website, prospect) ||
+      websiteEvidenceNamingPackForNllmRouteW490(request, website, prospect);
     if (!nllmPack) return null;
     const industrySelection = nllmPack.selectedIndustryChip
       ? { label: nllmPack.selectedIndustryChip, source: nllmPack.industryChipSource || 'nllm_website_product_evidence', confidence: nllmPack.industryChipConfidence || 'high' }
@@ -1247,12 +1248,67 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
       namingAuthorityOrderW470: 'entered website -> N/LLM website naming package -> runner preserve only',
       namingAuthorityOrderW472: 'entered website -> N/LLM website naming package -> runner preserve only',
       namingAuthorityOrderW490: 'entered website -> N/LLM website naming package -> runner applies returned names; static/domain examples forbidden',
+      nllmWebsiteEvidencePromotedByAdapterW490: effectivePack.nllmWebsiteEvidencePromotedByAdapterW490 === true,
       websiteNamingSupersedesAllPacksW472: true,
       supersededExplicitNamingPackW472: false,
       namingAuthorityLockedW470: !!Object.keys(effectivePack).length,
       noisyExplicitNamingPackRejected: false
     };
     return result;
+  }
+
+  function websiteEvidenceNamingPackForNllmRouteW490(request, website, prospect) {
+    const pack = websiteProductExamplesNamingPackW472(request, website, prospect);
+    if (!pack || !pack.selectedCatalogCandidate || !compactText(pack.selectedCatalogCandidate.name)) return null;
+    const candidates = (pack.catalogCandidates || []).filter(function(candidate) {
+      const source = compactText(candidate && candidate.source).toLowerCase();
+      return source &&
+        source !== 'website_product_url_slug_w473' &&
+        source.indexOf('domain') === -1 &&
+        source.indexOf('fallback') === -1;
+    });
+    if (!candidates.length) return null;
+    const product = candidates[0].name;
+    const toggles = normalizeSelectedToggles(request);
+    const manufacturing = toggles.enableManufacturing === true || toggles.enableWip === true;
+    const industryChip = selectIndustryChipW474(website, product, prospect);
+    const componentModel = productSpecificComponentNamesW474(product, industryChip.selectedIndustryChip);
+    const componentNames = componentModel.componentNames;
+    const assemblyName = manufacturing ? `${product} Assembly` : `${product} Availability Flow`;
+    pack.selectedCatalogCandidate = candidates[0];
+    pack.catalogCandidates = candidates;
+    pack.selectedProductName = product;
+    pack.primary_product_candidate = product;
+    pack.hero_item_name = product;
+    pack.assembly_name = assemblyName;
+    pack.component_names = componentNames.slice(0, 3);
+    pack.componentEvidenceSource = componentModel.componentEvidenceSource;
+    pack.componentInferenceReason = componentModel.componentInferenceReason;
+    pack.componentFallbackUsed = componentModel.componentFallbackUsed;
+    pack.componentRejectedCandidates = componentModel.componentRejectedCandidates;
+    pack.nllmComponentNamesUsed = componentModel.nllmComponentNamesUsed;
+    pack.nllmComponentNamePromptVersion = componentModel.nllmComponentNamePromptVersion;
+    pack.bom_name = manufacturing ? `BOM - ${product}` : `${product} Availability Plan`;
+    pack.bom_revision_name = manufacturing ? `Revision 1 - ${product}` : `${product} Replenishment Plan`;
+    pack.routing_name = manufacturing ? `Routing - ${product}` : `${product} Fulfillment Flow`;
+    pack.operation_names_by_seq = {
+      '10': `Prepare ${componentNames[0]}`,
+      '20': manufacturing ? `Build ${assemblyName}` : `Allocate ${product} Demand`,
+      '30': `Release ${product}`
+    };
+    pack.alternate_product_candidates = candidates.slice(1).map(function(candidate) { return candidate.name; });
+    pack.websiteProductExamplesW472 = candidates.map(function(candidate) { return candidate.name; });
+    pack.selectedIndustryChip = industryChip.selectedIndustryChip;
+    pack.industryChipSource = industryChip.industryChipSource;
+    pack.industryChipEvidence = industryChip.industryChipEvidence;
+    pack.industryChipConfidence = industryChip.industryChipConfidence;
+    pack.selectedCatalogCandidateSource = candidates[0].source || 'website_product_evidence_nllm_route_w490';
+    pack.selectedCatalogCandidateReasons = candidates[0].reasons || ['concrete product extracted from entered website evidence'];
+    pack.websiteEvidenceSource = 'website_product_evidence_nllm_route_w490';
+    pack.namingEvidenceSource = 'nllm_website_product_evidence';
+    pack.nllmWebsiteEvidencePromotedByAdapterW490 = true;
+    pack.namingAuthorityOrderW490 = 'entered website evidence -> adapter naming package file -> runner preserve only';
+    return pack;
   }
 
   function nllmWebsiteNamingRequestW490(request, website, prospect) {
@@ -1518,7 +1574,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     const folderId = config.resultCaptureFolderId || config.folderId;
     if (!folderId) return { fileId: null, status: 'naming_folder_missing' };
     const namingPack = buildServerPrecomputedNamingPack(request);
-    if (!namingPack || namingPack._source === 'suitelet-prospect-fallback-naming-pack') {
+    if (!namingPack || namingPack._source === 'suitelet-prospect-fallback-naming-pack' || namingPack.fallbackUsed === true || !compactText(namingPack.selectedProductName || namingPack.primary_product_candidate)) {
       return {
         fileId: null,
         status: 'nllm_website_naming_package_required',

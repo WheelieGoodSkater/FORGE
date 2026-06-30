@@ -2874,7 +2874,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const startUrl = normalizeUrl(website);
     const first = fetchHtmlWithRedirects(startUrl, 6);
 
-    let bestText = extractSignalText(first.html, domain);
+    const productNames = collectWebsiteProductNamesW483(startUrl, first.html, domain);
+    let bestText = appendWebsiteProductCandidatesW483(extractSignalText(first.html, domain), productNames);
     let bestLen = bestText.length;
 
     if (bestLen >= 500) return { domain, text: bestText };
@@ -2886,7 +2887,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       const u = topToTry[i];
       try {
         const r = fetchHtmlWithRedirects(u, 4);
-        const t = extractSignalText(r.html, domain);
+        const linkProductNames = collectWebsiteProductNamesW483(u, r.html, domain);
+        const t = appendWebsiteProductCandidatesW483(extractSignalText(r.html, domain), productNames.concat(linkProductNames));
         if (t.length > bestLen) {
           bestLen = t.length;
           bestText = t;
@@ -2900,6 +2902,50 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
 
     return { domain, text: bestText };
+  }
+
+  function collectWebsiteProductNamesW483(url, html, domain) {
+    const names = [];
+    const origin = originFromUrlW483(url || normalizeUrl(domain));
+    pushUniqueStringsW483(names, extractProductNamesFromJsonLdW483(html));
+    pushUniqueStringsW483(names, extractProductNamesFromLinksW483(html, domain));
+
+    [
+      `${origin}/products.json?limit=20`,
+      `${origin}/collections/all/products.json?limit=20`,
+      `${origin}/sitemap_products_1.xml`,
+      `${origin}/sitemap.xml`
+    ].forEach(function(feedUrl) {
+      try {
+        const resp = https.get({
+          url: feedUrl,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (NetSuite SCAI Demo Reset)',
+            'Accept': 'application/json,text/xml,application/xml,text/plain,*/*'
+          }
+        });
+        const body = String(resp && resp.body || '');
+        if (!body) return;
+        pushUniqueStringsW483(names, extractProductNamesFromFeedW483(body));
+        pushUniqueStringsW483(names, extractProductNamesFromProductUrlsW483(body));
+      } catch (e) {}
+    });
+
+    return names.slice(0, 20);
+  }
+
+  function appendWebsiteProductCandidatesW483(signalText, names) {
+    const clean = rankWebsiteProductCandidatesW483(names);
+    if (!clean.length) return signalText;
+    const productSignal = `WebsiteProductCandidates: ${clean.slice(0, 12).join(' | ')}`;
+    const out = [productSignal, signalText].filter(Boolean).join(' | ');
+    return out.length <= 3200 ? out : out.slice(0, 3200);
+  }
+
+  function originFromUrlW483(url) {
+    const normalized = normalizeUrl(url);
+    const m = normalized.match(/^(https?:\/\/[^\/?#]+)/i);
+    return m && m[1] ? m[1] : '';
   }
 
   function fetchHtmlWithRedirects(url, maxHops) {
@@ -3065,6 +3111,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       const raw = String(f.getContents() || '{}');
       const parsed = safeJsonParse(raw) || {};
       const out = Object.assign({}, deterministic, parsed || {});
+      applyWebsiteProductNameIfStrongerW483(out, deterministic);
       if (!Array.isArray(out.component_names) || out.component_names.length !== 3) out.component_names = deterministic.component_names;
       out.hero_item_name = trimLen(out.hero_item_name, 60);
       out.assembly_name = trimLen(out.assembly_name, 60);
@@ -3132,171 +3179,235 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     };
   }
 
+  function applyWebsiteProductNameIfStrongerW483(out, websitePack) {
+    if (!out || !websitePack || !websitePack.hero_item_name) return;
+    const current = String(out.hero_item_name || out.selectedProductName || out.primary_product_candidate || '');
+    if (current && !isWeakGeneratedProductNameW483(current)) return;
+    const product = websitePack.hero_item_name;
+    out.selectedProductName = product;
+    out.primary_product_candidate = product;
+    out.hero_item_name = product;
+    out.assembly_name = `${product} Assembly`;
+    out.component_names = websitePack.component_names;
+    out.bom_name = `BOM - ${product}`;
+    out.bom_revision_name = `Revision 1 - ${product}`;
+    out.routing_name = `Routing - ${product}`;
+    out.operation_names_by_seq = websitePack.operation_names_by_seq;
+    out.catalogCandidates = websitePack.catalogCandidates;
+    out.selectedCatalogCandidate = websitePack.selectedCatalogCandidate;
+    out.websiteProductExamplesW483 = websitePack.websiteProductExamplesW483;
+    out.namingEvidenceSource = websitePack.namingEvidenceSource;
+    out.websiteEvidenceSource = websitePack.websiteEvidenceSource;
+    out._source = `${out._source || 'precomputed'}+website-product-signal-w483`;
+  }
+
+  function isWeakGeneratedProductNameW483(name) {
+    const normalized = compactText(String(name || '')).toLowerCase();
+    return !normalized ||
+      normalized === 'finished good' ||
+      normalized === 'finished good variety pack' ||
+      normalized === 'demo product' ||
+      normalized === 'product availability sku' ||
+      /\bfinished good\b/.test(normalized);
+  }
+
   function buildWebsiteSignalNamingPackW483({ prospect, website, signalText }) {
-    const text = compactText([website, prospect, signalText].join(' '));
-    const lower = text.toLowerCase();
-    const siteProductPack = buildKnownWebsiteProductNamingPackW483({ prospect, website, signalText: text });
-    if (siteProductPack) return siteProductPack;
-    const rules = [
-      {
-        pattern: /\b(electric guitar|acoustic guitar|guitars?|bass guitar|amplifiers?|pickups?|strings?|instrument|musical)\b/,
-        product: (/\bacoustic guitar|hummingbird|j-45|dove\b/.test(lower) && !/\belectric guitar|pickup|amplifier\b/.test(lower)) ? 'Acoustic Guitar' : 'Electric Guitar',
-        industry: 'Musical Instruments Manufacturing',
-        components: ['Guitar Body', 'Guitar Neck', 'Pickup and Electronics Kit'],
-        operations: { '10': 'Body and Neck Prep', '20': 'Electronics Assembly', '30': 'Final Setup and Case Pack' },
-        evidenceTerms: ['guitar', 'musical instrument']
-      },
-      {
-        pattern: /\b(chair|seating|desk|table|sofa|furniture|ergonomic)\b/,
-        product: 'Ergonomic Chair',
-        industry: 'Furniture Manufacturing',
-        components: ['Chair Frame', 'Seat and Back Assembly', 'Hardware Kit'],
-        operations: { '10': 'Frame Prep', '20': 'Seat Assembly', '30': 'Final Inspect and Pack' },
-        evidenceTerms: ['furniture', 'seating']
-      },
-      {
-        pattern: /\b(vacuum|air purifier|purifier|hair dryer|appliance|electronics)\b/,
-        product: 'Premium Home Appliance',
-        industry: 'Premium Home Appliance Manufacturing',
-        components: ['Motor Assembly', 'Control Housing', 'Retail Packaging'],
-        operations: { '10': 'Stage Appliance Components', '20': 'Assemble and Test Unit', '30': 'Pack Retail Unit' },
-        evidenceTerms: ['appliance', 'electronics']
-      },
-      {
-        pattern: /\b(forklift|lift truck|pallet truck|warehouse equipment|industrial equipment)\b/,
-        product: 'Lift Truck',
-        industry: 'Industrial Equipment Manufacturing',
-        components: ['Chassis Assembly', 'Mast and Lift Assembly', 'Powertrain Kit'],
-        operations: { '10': 'Stage Equipment Kit', '20': 'Assemble Lift System', '30': 'Inspect and Release Unit' },
-        evidenceTerms: ['industrial equipment', 'lift truck']
-      },
-      {
-        pattern: /\b(cookware|dutch oven|cast iron|skillet|knife|cutlery|kitchenware)\b/,
-        product: 'Cookware Set',
-        industry: 'Kitchenware Manufacturing',
-        components: ['Cookware Body', 'Handle and Hardware Kit', 'Retail Packaging'],
-        operations: { '10': 'Stage Cookware Components', '20': 'Assemble and Finish Set', '30': 'Pack Retail Set' },
-        evidenceTerms: ['cookware', 'kitchenware']
-      },
-      {
-        pattern: /\b(tumbler|bottle|cooler|drinkware|mug|cup|hardgoods|outdoor)\b/,
-        product: 'Durable Hardgoods Product',
-        industry: 'Durable Consumer Goods Manufacturing',
-        components: ['Product Body', 'Accessory Kit', 'Retail Packaging'],
-        operations: { '10': 'Stage Product Kits', '20': 'Assemble Product', '30': 'Pack and Release Product' },
-        evidenceTerms: ['durable hardgoods']
-      }
-    ];
-    for (let i = 0; i < rules.length; i += 1) {
-      const rule = rules[i];
-      if (!rule.pattern.test(lower)) continue;
-      const product = rule.product;
-      return {
-        _source: 'w483-website-signal-naming-pack',
-        _signalLen: String(signalText || '').length,
-        industry_category: rule.industry,
-        industrySelection: { label: rule.industry, source: 'website_signal_text_w483', confidence: 'medium' },
-        selectedIndustryChip: rule.industry,
-        selectedProductName: product,
-        primary_product_candidate: product,
-        selectedCatalogCandidate: { name: product, source: 'website_signal_text_w483', reasons: rule.evidenceTerms },
-        catalogCandidates: [{ name: product, source: 'website_signal_text_w483', confidence: 82, reasons: rule.evidenceTerms }],
-        fallbackUsed: false,
-        fallbackReason: '',
-        evidence_terms: rule.evidenceTerms,
-        namingEvidenceSource: 'website_signal_text_w483',
-        hero_item_name: product,
-        assembly_name: `${product} Assembly`,
-        component_names: rule.components,
-        bom_name: `BOM - ${product}`,
-        bom_revision_name: `Revision 1 - ${product}`,
-        routing_name: `Routing - ${product}`,
-        operation_names_by_seq: rule.operations,
-        scenario_label: `${product} Scenario`,
-        commercial_summary: `${product} gives the demo a concrete commercial anchor while notes shape pressure, ROI, and competitive handling.`
-      };
-    }
-    return null;
-  }
-
-  function buildKnownWebsiteProductNamingPackW483({ prospect, website, signalText }) {
-    const lower = compactText([website, prospect, signalText].join(' ')).toLowerCase();
-    const packs = [
-      {
-        domain: /hestanculinary\.com|hestan culinary|hestan\b/,
-        products: ['NanoBond', 'CopperBond', 'ProBond'],
-        industry: 'Premium Cookware Manufacturing',
-        category: 'premium cookware',
-        components: ['Bonded Cookware Body', 'Stainless Handle Set', 'Retail Cookware Packaging'],
-        operations: { '10': 'Stage Cookware Body', '20': 'Attach Handles and Finish', '30': 'Pack Premium Cookware' },
-        evidenceSource: 'hestanculinary.com public product collections'
-      }
-    ];
-    for (let i = 0; i < packs.length; i += 1) {
-      const pack = packs[i];
-      if (!pack.domain.test(lower)) continue;
-      const selected = selectKnownWebsiteProductW483(pack.products, lower);
-      return concreteWebsiteProductNamingPackW483({
-        prospect,
-        product: selected,
-        productExamples: pack.products,
-        industry: pack.industry,
-        category: pack.category,
-        components: pack.components,
-        operations: pack.operations,
-        evidenceSource: pack.evidenceSource,
-        website
-      });
-    }
-    return null;
-  }
-
-  function selectKnownWebsiteProductW483(products, lower) {
-    for (let i = 0; i < (products || []).length; i += 1) {
-      const product = String(products[i] || '');
-      if (product && lower.indexOf(product.toLowerCase()) !== -1) return product;
-    }
-    return products && products[0] || '';
-  }
-
-  function concreteWebsiteProductNamingPackW483(args) {
-    const product = args.product;
-    const examples = Array.isArray(args.productExamples) ? args.productExamples : [product];
-    const candidates = examples.filter(Boolean).map(function(name, index) {
+    const candidates = rankWebsiteProductCandidatesW483(extractWebsiteProductCandidatesFromSignalW483(signalText));
+    if (!candidates.length) return null;
+    const product = candidates[0];
+    const catalogCandidates = candidates.slice(0, 8).map(function(name, index) {
       return {
         name,
-        source: 'website_product_examples_w483',
-        confidence: index === 0 ? 96 : 91,
-        reasons: [args.evidenceSource || 'public website product examples']
+        source: 'website_product_signal_w483',
+        confidence: index === 0 ? 94 : 86,
+        reasons: ['public website product candidate']
       };
     });
     return {
-      _source: 'website-product-examples-w483',
-      _signalLen: String(args.website || '').length,
-      industry_category: args.industry,
-      industrySelection: { label: args.industry, source: 'website_product_examples_w483', confidence: 'high' },
-      selectedIndustryChip: args.industry,
+      _source: 'website-product-signal-w483',
+      _signalLen: String(signalText || '').length,
+      industry_category: '',
+      industrySelection: { label: '', source: 'website_product_signal_w483', confidence: 'website-product-only' },
+      selectedIndustryChip: '',
       selectedProductName: product,
       primary_product_candidate: product,
-      websiteProductExamplesW483: examples,
-      selectedCatalogCandidate: candidates[0],
-      catalogCandidates: candidates,
+      websiteProductExamplesW483: candidates.slice(0, 8),
+      selectedCatalogCandidate: catalogCandidates[0],
+      catalogCandidates: catalogCandidates,
       fallbackUsed: false,
       fallbackReason: '',
-      evidence_terms: examples.concat([args.category || 'website product']),
-      namingEvidenceSource: 'website_product_examples_w483',
-      websiteEvidenceSource: 'website_product_examples_w483',
-      websiteEvidenceSourceUrls: args.website ? [args.website] : [],
+      evidence_terms: candidates.slice(0, 8),
+      namingEvidenceSource: 'website_product_signal_w483',
+      websiteEvidenceSource: 'website_product_signal_w483',
+      websiteEvidenceSourceUrls: website ? [website] : [],
       hero_item_name: product,
       assembly_name: `${product} Assembly`,
-      component_names: args.components,
+      component_names: [
+        `${product} Core`,
+        `${product} Packaging`,
+        `${product} Quality Kit`
+      ],
       bom_name: `BOM - ${product}`,
       bom_revision_name: `Revision 1 - ${product}`,
       routing_name: `Routing - ${product}`,
-      operation_names_by_seq: args.operations,
+      operation_names_by_seq: {
+        '10': `Stage ${product}`,
+        '20': `Build ${product}`,
+        '30': `Inspect and Pack ${product}`
+      },
       scenario_label: `${product} Availability Proof`,
       commercial_summary: `${product} gives the demo a concrete product anchor from the public website.`
     };
+  }
+
+  function extractWebsiteProductCandidatesFromSignalW483(signalText) {
+    const text = String(signalText || '');
+    const out = [];
+    const candidateLine = text.match(/WebsiteProductCandidates:\s*([^|]+(?:\s*\|\s*[^|]+)*)/i);
+    if (candidateLine && candidateLine[1]) {
+      candidateLine[1].split('|').forEach(function(part) {
+        const clean = compactText(part);
+        if (/^[A-Za-z][A-Za-z0-9 ]{1,30}:\s/.test(clean)) return;
+        out.push(clean);
+      });
+    }
+    pushUniqueStringsW483(out, extractProductNamesFromJsonLdW483(text));
+    pushUniqueStringsW483(out, extractProductNamesFromProductUrlsW483(text));
+    return out;
+  }
+
+  function extractProductNamesFromJsonLdW483(raw) {
+    const text = String(raw || '');
+    const out = [];
+    let match;
+    const nameRe = /"name"\s*:\s*"([^"]{2,90})"/gi;
+    while ((match = nameRe.exec(text)) !== null) out.push(match[1]);
+    return out;
+  }
+
+  function extractProductNamesFromFeedW483(raw) {
+    const text = String(raw || '');
+    const out = [];
+    try {
+      const parsed = JSON.parse(text);
+      const products = parsed && Array.isArray(parsed.products) ? parsed.products : [];
+      products.forEach(function(product) {
+        if (product && product.title) out.push(product.title);
+        if (product && product.name) out.push(product.name);
+      });
+    } catch (e) {}
+    pushUniqueStringsW483(out, extractProductNamesFromJsonLdW483(text));
+    return out;
+  }
+
+  function extractProductNamesFromProductUrlsW483(raw) {
+    const text = String(raw || '');
+    const out = [];
+    let match;
+    const re = /\/products\/([a-z0-9][a-z0-9\-_%]{2,90})/gi;
+    while ((match = re.exec(text)) !== null) {
+      out.push(titleFromSlugW483(decodeURIComponentSafeW483(match[1])));
+    }
+    return out;
+  }
+
+  function extractProductNamesFromLinksW483(html, domain) {
+    const raw = String(html || '');
+    const out = [];
+    let match;
+    const re = /<a\b[^>]*href=["']([^"']*\/products\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    while ((match = re.exec(raw)) !== null) {
+      const href = String(match[1] || '');
+      if (href && domain && href.indexOf(domain) === -1 && /^https?:\/\//i.test(href)) continue;
+      const label = compactText(stripHtml(match[2] || ''));
+      if (label) out.push(label);
+      pushUniqueStringsW483(out, extractProductNamesFromProductUrlsW483(href));
+    }
+    return out;
+  }
+
+  function rankWebsiteProductCandidatesW483(rawCandidates) {
+    const seen = {};
+    return (rawCandidates || [])
+      .map(cleanWebsiteProductCandidateW483)
+      .filter(Boolean)
+      .filter(function(name) {
+        const key = name.toLowerCase();
+        if (seen[key]) return false;
+        seen[key] = true;
+        return true;
+      })
+      .map(function(name, index) {
+        return {
+          name,
+          score: scoreWebsiteProductCandidateW483(name) + Math.max(0, 200 - (index * 10))
+        };
+      })
+      .filter(function(x) { return x.score > 0; })
+      .sort(function(a, b) { return b.score - a.score; })
+      .map(function(x) { return x.name; });
+  }
+
+  function cleanWebsiteProductCandidateW483(value) {
+    let out = decodeHtmlEntitiesW483(String(value || ''));
+    out = out.replace(/\s+\|\s+.*$/, '');
+    out = out.replace(/\s+[-–]\s+(Shop|Buy|Official|Online Store|Products?).*$/i, '');
+    out = out.replace(/\b(Add to cart|Quick view|Choose options|Sold out|Sale price|Regular price)\b.*$/i, '');
+    out = compactText(out.replace(/[_]+/g, ' '));
+    if (!out || out.length < 3 || out.length > 70) return '';
+    if (/^https?:\/\//i.test(out) || /[{}<>]/.test(out)) return '';
+    if (/^(home|shop|products?|collections?|catalog|menu|search|cart|account|login|privacy|terms)$/i.test(out)) return '';
+    if (/^(finished good|finished good variety pack|demo product|product availability sku)$/i.test(out)) return '';
+    if (out.split(/\s+/).length > 8) return '';
+    return titleCaseProductCandidateW483(out);
+  }
+
+  function scoreWebsiteProductCandidateW483(name) {
+    const words = String(name || '').split(/\s+/).filter(Boolean);
+    if (!words.length) return 0;
+    let score = 20;
+    score += Math.min(30, words.length * 6);
+    if (/[A-Z][a-z]/.test(name)) score += 8;
+    if (/\d/.test(name)) score += 5;
+    if (words.length === 1 && name.length < 6) score -= 12;
+    if (/^(the|and|for|with)$/i.test(words[0])) score -= 10;
+    return score;
+  }
+
+  function titleFromSlugW483(slug) {
+    return String(slug || '')
+      .replace(/\?.*$/, '')
+      .replace(/[-_]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function titleCaseProductCandidateW483(value) {
+    return String(value || '').replace(/\b([a-z])([a-z0-9']*)/g, function(_, first, rest) {
+      const word = first + rest;
+      if (/^(and|or|for|with|in|of|the)$/i.test(word)) return word.toLowerCase();
+      return first.toUpperCase() + rest;
+    });
+  }
+
+  function decodeURIComponentSafeW483(value) {
+    try { return decodeURIComponent(String(value || '')); } catch (e) { return String(value || ''); }
+  }
+
+  function decodeHtmlEntitiesW483(value) {
+    return String(value || '')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&reg;|&trade;/g, '')
+      .replace(/&nbsp;/g, ' ');
+  }
+
+  function pushUniqueStringsW483(target, values) {
+    (values || []).forEach(function(value) {
+      const clean = String(value || '').trim();
+      if (clean) target.push(clean);
+    });
   }
 
   function applyNamingToAnchors(ids, names, opts) {

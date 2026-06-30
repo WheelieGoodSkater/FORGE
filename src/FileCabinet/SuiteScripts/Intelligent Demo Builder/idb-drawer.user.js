@@ -18986,8 +18986,10 @@
     const productionAutomation = productionConsultantIntakeAndBuildAutomationSimplificationW206V1(state, lane, pageContext, recommendation);
     const finalNaming = dccFinalNamingResultV1(state && state.dccFinalNamingResult, state, lane, pageContext, recommendation);
     const normalizedRunner = normalizeApprovedServerAdapterTransportResponseV1(state && state.integratedBuildRunnerResult);
-    const adapterError = normalizedRunner.status === 'adapter_error' ||
-      state && state.integratedBuildRunnerResult && state.integratedBuildRunnerResult.status === 'adapter_error';
+    const adapterError = normalizedRunner.status === 'adapter_transport_error_drawer_safe' ||
+      state && state.integratedBuildRunnerResult && (state.integratedBuildRunnerResult.status === 'adapter_error' ||
+        state.integratedBuildRunnerResult.status === 'blocked_validation_failed' ||
+        state.integratedBuildRunnerResult.adapterSafeErrorState === true);
     let consultantStatus = 'build_needs_admin_setup';
     if (finalNaming.finalNamesImported) consultantStatus = 'records_ready';
     else if (productionAutomation.automationStates.completedResultReady) consultantStatus = 'records_ready_to_finish';
@@ -31119,22 +31121,37 @@
         executeLiveCall: true,
         transport: () => adapterPayload
       });
+      const normalizedAdapterPayload = normalizeApprovedServerAdapterTransportResponseV1(adapterPayload || {});
       if (transportResult.runnerTaskIdCapturePath && transportResult.runnerTaskIdCapturePath.statePatch && transportResult.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult) {
         state.integratedBuildRunnerResult = transportResult.runnerTaskIdCapturePath.statePatch.integratedBuildRunnerResult;
-      } else if (adapterPayload && (adapterPayload.error || adapterPayload.status === 'adapter_error')) {
+      } else if (adapterPayload && (adapterPayload.error || adapterPayload.status === 'adapter_error' || adapterPayload.status === 'blocked_validation_failed' || normalizedAdapterPayload.status === 'adapter_transport_error_drawer_safe')) {
         const recoverableRunnerTaskIdW472 = firstNonBlank(
           adapterPayload.runnerTaskId,
           adapterPayload.resultCapture && adapterPayload.resultCapture.runnerTaskId
+        );
+        const validationErrorsW491 = arrayValue(adapterPayload.validation && adapterPayload.validation.errors);
+        const adapterErrorMessageW491 = firstNonBlank(
+          adapterPayload.errorMessage,
+          adapterPayload.message,
+          validationErrorsW491.join(' '),
+          adapterPayload.namingPackHandoff && adapterPayload.namingPackHandoff.errorMessage,
+          adapterPayload.status === 'blocked_validation_failed' ? 'The approved adapter blocked submit during server validation.' : ''
         );
         state.integratedBuildRunnerResult = Object.assign({}, adapterPayload, {
           status: recoverableRunnerTaskIdW472 ? 'queued_result_capture_pending' : (adapterPayload.status || 'adapter_error'),
           runnerTaskId: recoverableRunnerTaskIdW472 || null,
           queueSubmitted: !!recoverableRunnerTaskIdW472,
+          adapterResponseStatus: normalizedAdapterPayload.status,
+          adapterSafeErrorState: normalizedAdapterPayload.status === 'adapter_transport_error_drawer_safe',
+          error: recoverableRunnerTaskIdW472 ? adapterPayload.error === true : true,
+          errorMessage: adapterErrorMessageW491,
           resultCapture: Object.assign(
             { status: recoverableRunnerTaskIdW472 ? 'pending_runner_completion' : 'adapter_error' },
             adapterPayload.resultCapture || {},
             {
               status: recoverableRunnerTaskIdW472 ? 'pending_runner_completion' : (adapterPayload.resultCapture && adapterPayload.resultCapture.status || 'adapter_error'),
+              error: recoverableRunnerTaskIdW472 ? adapterPayload.resultCapture && adapterPayload.resultCapture.error === true : true,
+              errorMessage: adapterErrorMessageW491,
               runnerTaskId: recoverableRunnerTaskIdW472 || null
             }
           ),

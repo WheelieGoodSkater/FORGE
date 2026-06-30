@@ -2818,75 +2818,6 @@
       : confidenceState === WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION
         ? 'medium'
         : 'low';
-    const deterministicWebsite = governedWebsiteResolver(state);
-    const operatorSuppliedWebsiteEvidence = Boolean(evidence.operatorSuppliedWebsiteEvidenceW355);
-    const websiteFirstDeterministicLane = deterministicWebsite &&
-      !operatorSuppliedWebsiteEvidence &&
-      deterministicWebsite.laneId &&
-      (deterministicWebsite.sourceKind === 'known_domain_website_primary' || (deterministicWebsite.sourceKind === 'website_category_classifier' && !best)) &&
-      (!best || best.laneId !== deterministicWebsite.laneId || confidenceState !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED);
-    if (websiteFirstDeterministicLane) {
-      return applyWebsiteProductEvidenceW424({
-        authority: 'website_evidence_v1_with_w423_website_first_category_guard',
-        resolverVersion: evidence.resolverVersion || 'websiteEvidenceV1-runtime',
-        resolverSource: 'websiteEvidenceV1',
-        laneId: deterministicWebsite.laneId,
-        domain: evidence.domain || websiteDomain(intake.website),
-        evidence: `${deterministicWebsite.evidence}; W423 keeps website/category evidence ahead of notes-only contradictory language.`,
-        suppliedWebsiteEvidence: intake.websiteEvidence,
-        product: deterministicWebsite.product || '',
-        productFamily: deterministicWebsite.productFamily || '',
-        demandMoment: deterministicWebsite.demandMoment || '',
-        confidence: deterministicWebsite.sourceKind === 'known_domain_website_primary' ? 'high' : 'medium',
-        confidenceState,
-        confidenceScore: Math.max(Number(evidence.confidence && evidence.confidence.score) || 0, deterministicWebsite.sourceKind === 'known_domain_website_primary' ? 0.82 : 0.68),
-        fallbackReason: '',
-        sourceUrls: evidence.sourceUrls || [intake.website],
-        extractedEvidence: evidence.extractedEvidence || {},
-        resolverAdapter: evidence.resolverAdapter || {},
-        failureState: evidence.failureState || '',
-        fetchErrors: evidence.fetchErrors || [],
-        competingCandidates: candidates.slice(0, 4).map((candidate) => ({
-          laneId: candidate.laneId,
-          sourceKind: 'websiteEvidenceV1',
-          score: candidate.score,
-          evidence: (candidate.evidence || []).join(', ') || 'Competing resolver website evidence candidate'
-        })),
-        websiteEvidenceOwnedFields: ['laneId', 'productSeed', 'productFamily', 'demandMoment'],
-        notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach']
-      }, evidence, intake);
-    }
-    if (confidenceState !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED && buildingMaterialsContractorEvidenceW394(state)) {
-      return {
-        authority: 'website_evidence_v1_with_w394_building_materials_guard',
-        resolverVersion: evidence.resolverVersion || 'websiteEvidenceV1-runtime',
-        resolverSource: 'websiteEvidenceV1',
-        laneId: 'building_materials',
-        domain: evidence.domain || websiteDomain(intake.website),
-        evidence: 'Resolver-limited evidence contained Building Materials contractor/project fulfillment signals; W394 keeps it out of manufacturing fallback.',
-        suppliedWebsiteEvidence: intake.websiteEvidence,
-        product: 'Contractor Job Order',
-        productFamily: 'Building Materials Contractor Supply',
-        demandMoment: 'Project fulfillment confidence',
-        confidence: 'medium',
-        confidenceState,
-        confidenceScore: Math.max(Number(evidence.confidence && evidence.confidence.score) || 0, 0.68),
-        fallbackReason: '',
-        sourceUrls: evidence.sourceUrls || [intake.website],
-        extractedEvidence: evidence.extractedEvidence || {},
-        resolverAdapter: evidence.resolverAdapter || {},
-        failureState: evidence.failureState || '',
-        fetchErrors: evidence.fetchErrors || [],
-        competingCandidates: candidates.slice(0, 4).map((candidate) => ({
-          laneId: candidate.laneId,
-          sourceKind: 'websiteEvidenceV1',
-          score: candidate.score,
-          evidence: (candidate.evidence || []).join(', ') || 'Competing resolver-limited website evidence candidate'
-        })),
-        websiteEvidenceOwnedFields: ['laneId', 'productSeed', 'productFamily', 'demandMoment'],
-        notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach']
-      };
-    }
     if (!best) {
       return {
         authority: 'website_evidence_v1',
@@ -2953,42 +2884,20 @@
     const domain = websiteDomain(intake.website);
     const runtimeEvidence = websiteEvidenceV1Profile(state);
     if (runtimeEvidence) return runtimeEvidence;
-    const resolved = governedWebsiteResolver(state);
-    if (!resolved) {
-      return {
-        authority: intake.website ? 'website_unknown' : 'missing_website',
-        resolverVersion: 'w47',
-        resolverSource: 'none',
-        laneId: '',
-        domain,
-        evidence: intake.website ? 'website provided, but no known product-family pattern matched' : 'website not entered',
-        product: '',
-        productFamily: '',
-        demandMoment: '',
-        confidence: intake.website ? 'low' : 'none',
-        fallbackReason: 'Use conversation notes and industry fallback until website signal is stronger.'
-      };
-    }
     return {
-      authority: resolved.sourceKind === 'known_domain_website_primary'
-        ? 'website_primary'
-        : resolved.sourceKind === 'website_category_classifier'
-          ? 'website_category'
-          : resolved.sourceAuthority || 'website_secondary',
+      authority: intake.website ? 'website_unknown' : 'missing_website',
       resolverVersion: 'w47',
-      resolverSource: resolved.sourceKind,
-      laneId: resolved.laneId,
+      resolverSource: 'none',
+      laneId: '',
       domain,
-      evidence: resolved.evidence,
-      suppliedWebsiteEvidence: intake.websiteEvidence,
-      product: resolved.productSeed || resolved.product,
-      productFamily: resolved.productFamily,
-      demandMoment: resolved.demandMoment,
-      confidence: resolved.confidence || (resolved.sourceKind === 'known_domain_website_primary' ? 'high' : 'medium'),
-      fallbackReason: '',
-      competingCandidates: resolved.competingCandidates || [],
-      websiteEvidenceOwnedFields: resolved.websiteEvidenceOwnedFields || ['laneId', 'productSeed', 'productFamily', 'demandMoment'],
-      notesOwnedFields: resolved.notesOwnedFields || ['pain', 'roi', 'competitive', 'objections', 'runCoach']
+      evidence: intake.website ? 'website entered; waiting for fetched website product/category text' : 'website not entered',
+      product: '',
+      productFamily: '',
+      demandMoment: '',
+      confidence: intake.website ? 'low' : 'none',
+      fallbackReason: 'Website text must be fetched before FORGE can name records.',
+      websiteEvidenceOwnedFields: ['laneId', 'productSeed', 'productFamily', 'demandMoment'],
+      notesOwnedFields: ['pain', 'roi', 'competitive', 'objections', 'runCoach']
     };
   }
 
@@ -3012,6 +2921,9 @@
     if (!hasRequiredBrief) {
       stateLabel = WEBSITE_CONFIDENCE_STATE.INSUFFICIENT;
       reason = 'Enter prospect, website, and conversation notes so the drawer can recommend a website-led lane.';
+    } else if (intake.website && !profile.laneId) {
+      stateLabel = WEBSITE_CONFIDENCE_STATE.INSUFFICIENT;
+      reason = 'FORGE needs fetched website product/category evidence before it can name records.';
     } else if (!suggested || !suggested.lane) {
       stateLabel = WEBSITE_CONFIDENCE_STATE.INSUFFICIENT;
       reason = profile.authority === 'website_unknown'
@@ -3177,7 +3089,6 @@
 
   function websitePackageClassifier(state) {
     const signal = websiteSignalProfile(state);
-    const resolved = governedWebsiteResolver(state);
     const nllmReason = signal.confidence === 'high'
       ? ''
       : signal.product
@@ -3190,14 +3101,14 @@
       resolverSource: signal.resolverSource,
       laneId: signal.laneId,
       domain: signal.domain,
-      categoryId: resolved && resolved.categoryId ? resolved.categoryId : '',
+      categoryId: '',
       productSeed: signal.product,
       productFamily: signal.productFamily,
       demandMoment: signal.demandMoment,
       evidence: signal.evidence,
       confidence: signal.confidence,
       competingCandidates: signal.competingCandidates || [],
-      sourceOfTruth: 'governedWebsiteResolver',
+      sourceOfTruth: 'fetchedWebsiteEvidence',
       antiLeakTags: [
         'website_before_notes',
         'notes_drive_story_not_package',
@@ -3360,6 +3271,180 @@
     return uniqueValues(terms.filter((term) => lower.includes(term)));
   }
 
+  function directWebsiteFetchV491(url) {
+    if (!url || typeof GM_xmlhttpRequest !== 'function') return Promise.reject(new Error('direct website fetch unavailable'));
+    const fetchUrl = /^https?:\/\//i.test(String(url || '').trim()) ? String(url || '').trim() : `https://${String(url || '').trim()}`;
+    return new Promise((resolve, reject) => {
+      GM_xmlhttpRequest({
+        method: 'GET',
+        url: fetchUrl,
+        timeout: 12000,
+        headers: { Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
+        onload: (response) => resolve(response || {}),
+        onerror: () => reject(new Error('website fetch failed')),
+        ontimeout: () => reject(new Error('website fetch timed out'))
+      });
+    });
+  }
+
+  function htmlToWebsiteTextV491(html) {
+    const source = String(html || '')
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ');
+    const meta = [];
+    source.replace(/<title[^>]*>([\s\S]*?)<\/title>/i, (_, value) => {
+      meta.push(value);
+      return _;
+    });
+    source.replace(/<meta[^>]+(?:name|property)=["'](?:description|og:description|og:title|twitter:description|twitter:title)["'][^>]+content=["']([^"']+)["'][^>]*>/gi, (_, value) => {
+      meta.push(value);
+      return _;
+    });
+    const body = source
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&#39;/g, "'")
+      .replace(/&[a-z0-9#]+;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return compactText(meta.join(' ') + ' ' + body, 5000);
+  }
+
+  function productNamingFromWebsiteTextV491(websiteText, intake) {
+    const text = String(websiteText || '').toLowerCase();
+    const foodTerms = browserWebsiteEvidenceTerms(text, ['cookie', 'cookies', 'bakery', 'baked', 'bake shop', 'brownie', 'snack', 'snacks', 'cracker', 'crackers', 'biscuit', 'biscuits', 'cake', 'food', 'grocery', 'flavor', 'chocolate']);
+    const beverageTerms = browserWebsiteEvidenceTerms(text, ['beverage', 'drink', 'water', 'sparkling', 'juice', 'tea', 'coffee', 'soda', 'yerba', 'mate']);
+    const apparelTerms = browserWebsiteEvidenceTerms(text, ['apparel', 'footwear', 'shoe', 'shoes', 'boot', 'boots', 'style', 'size', 'color', 'collection']);
+    const hardgoodsTerms = browserWebsiteEvidenceTerms(text, ['bike', 'bicycle', 'cooler', 'drinkware', 'tool', 'hardware', 'parts', 'equipment']);
+    const industrialTerms = browserWebsiteEvidenceTerms(text, ['industrial supply', 'warehouse', 'distribution', 'distributor', 'branch', 'mro', 'fastener', 'pipe', 'valve']);
+    let laneId = '';
+    let productSeed = '';
+    let productFamily = '';
+    let demandMoment = '';
+    let evidence = [];
+    if (foodTerms.length || beverageTerms.length) {
+      laneId = 'food_beverage';
+      evidence = uniqueValues(foodTerms.concat(beverageTerms));
+      productFamily = beverageTerms.length && !foodTerms.length ? 'Packaged Beverage' : 'Packaged Bakery and Snack Food';
+      productSeed = foodTerms.some((term) => /cookie|bakery|baked|bake shop|biscuit|brownie|cake/.test(term))
+        ? 'Cookie and Bakery Variety Pack'
+        : beverageTerms.length
+          ? 'Beverage Variety Pack'
+          : 'Packaged Snack Variety Pack';
+      demandMoment = 'finished-good, packaging, and retail replenishment readiness';
+    } else if (industrialTerms.length) {
+      laneId = 'industrial_distribution';
+      evidence = industrialTerms;
+      productSeed = 'Distributor SKU';
+      productFamily = 'Industrial Distribution SKU';
+      demandMoment = 'stock, replenishment, and fulfillment readiness';
+    } else if (hardgoodsTerms.length) {
+      laneId = 'dealer_hardgoods';
+      evidence = hardgoodsTerms;
+      productSeed = 'Product SKU';
+      productFamily = 'Dealer Hardgoods SKU';
+      demandMoment = 'product availability and replenishment readiness';
+    } else if (apparelTerms.length) {
+      laneId = 'apparel_accessories';
+      evidence = apparelTerms;
+      productSeed = 'Style SKU Matrix';
+      productFamily = 'Apparel and Footwear Style';
+      demandMoment = 'style, size, and channel availability';
+    }
+    if (!laneId) return null;
+    return {
+      laneId,
+      productSeed,
+      productFamily,
+      demandMoment,
+      evidence,
+      evidenceSummary: `Website text from ${websiteDomain(intake && intake.website)} contains ${evidence.join(', ')} product/category terms.`
+    };
+  }
+
+  function directWebsiteEvidenceV1FromFetchedHtmlV491(state, response) {
+    const intake = normalizedIntake(state);
+    const domain = websiteDomain(intake.website).replace(/^www\./, '');
+    const fetchUrl = /^https?:\/\//i.test(String(intake.website || '').trim()) ? String(intake.website || '').trim() : `https://${String(intake.website || '').trim()}`;
+    const websiteText = htmlToWebsiteTextV491(response && response.responseText);
+    const naming = productNamingFromWebsiteTextV491(websiteText, intake);
+    const requestKey = resolverServiceRequestKey(state);
+    const base = {
+      schema: 'idb.website-evidence.v1',
+      resolverVersion: 'w491.direct-website-text.v1',
+      inputUrl: intake.website,
+      normalizedUrl: fetchUrl,
+      domain,
+      fetchErrors: [],
+      pagesSampled: [{ role: 'direct_public_website_text', url: fetchUrl, status: response && response.status || 0 }],
+      sourceUrls: [fetchUrl],
+      capturedAt: nowIso(),
+      resolverAdapter: {
+        schema: 'idb.w64-drawer-resolver-service-adapter.v1',
+        serviceName: WEBSITE_RESOLVER_SERVICE_VERSION,
+        mode: 'direct_website_text',
+        requestKey,
+        endpointConfigured: false,
+        localFallbackEnabled: false,
+        notesAuthority: 'story_only_no_identity_override'
+      },
+      writeAuthority: 'none',
+      nllmAdvisoryOnly: true
+    };
+    if (!naming) {
+      return Object.assign({}, base, {
+        fetchStatus: 'runtime_fetched_no_product_match',
+        extractedEvidence: {
+          pageTitle: `${domain} website text`,
+          metaDescription: compactText(websiteText, 240),
+          h1Text: [],
+          h2Text: [],
+          navigationLabels: [],
+          productCategoryTerms: [],
+          industryLanguage: [],
+          locationServiceClues: [],
+          ecommerceSignals: browserWebsiteEvidenceTerms(websiteText, ['shop', 'store', 'retail', 'buy']),
+          manufacturingSignals: [],
+          distributionSignals: []
+        },
+        signals: { laneCandidates: [], productSeed: '', productFamily: '', demandMoment: '' },
+        confidence: { state: WEBSITE_CONFIDENCE_STATE.INSUFFICIENT, score: 0, requiresConfirmation: true },
+        failureState: 'thin'
+      });
+    }
+    return Object.assign({}, base, {
+      fetchStatus: 'runtime_fetched',
+      extractedEvidence: {
+        pageTitle: `${domain} website text`,
+        metaDescription: naming.evidenceSummary,
+        h1Text: [],
+        h2Text: [],
+        navigationLabels: naming.evidence,
+        productCategoryTerms: naming.evidence,
+        industryLanguage: naming.laneId === 'food_beverage' ? ['food', 'beverage', 'bakery'].filter((term) => websiteText.toLowerCase().includes(term)) : naming.evidence,
+        locationServiceClues: browserWebsiteEvidenceTerms(websiteText, ['retail', 'store', 'where to buy']),
+        ecommerceSignals: browserWebsiteEvidenceTerms(websiteText, ['shop', 'store', 'retail', 'buy']),
+        manufacturingSignals: browserWebsiteEvidenceTerms(websiteText, ['batch', 'production', 'packaging']),
+        distributionSignals: browserWebsiteEvidenceTerms(websiteText, ['distribution', 'warehouse', 'retailer'])
+      },
+      signals: {
+        laneCandidates: [{ laneId: naming.laneId, score: 0.86, evidence: naming.evidence }],
+        productSeed: naming.productSeed,
+        productFamily: naming.productFamily,
+        demandMoment: naming.demandMoment
+      },
+      confidence: { state: WEBSITE_CONFIDENCE_STATE.RECOMMENDED, score: 0.86, requiresConfirmation: false },
+      failureState: null,
+      noRegression: {
+        noSuiteScriptInvocation: true,
+        noWriteAuthority: true,
+        noHiddenLaneOverride: true,
+        notesCannotOwnIdentification: true,
+        transactionWriteEnabled: false
+      }
+    });
+  }
+
   function operatorSuppliedWebsiteEvidenceReadinessW355(intake, domain) {
     const evidenceText = String(intake && intake.websiteEvidence || '').trim();
     if (evidenceText.length < 80) return null;
@@ -3437,86 +3522,65 @@
     const intake = normalizedIntake(state);
     if (!intake.website) return null;
     const requestKey = resolverServiceRequestKey(state);
-    const resolved = governedWebsiteResolver(Object.assign({}, state, { websiteEvidenceV1: null }));
     const domain = websiteDomain(intake.website).replace(/^www\./, '');
     const operatorEvidence = operatorSuppliedWebsiteEvidenceReadinessW355(intake, domain);
-    const sourceText = `${domain} ${intake.websiteEvidence} ${resolved ? resolved.evidence : ''} ${resolved ? resolved.productSeed || resolved.product || '' : ''} ${resolved ? resolved.productFamily || '' : ''}`;
-    const productTerms = browserWebsiteEvidenceTerms(sourceText, [
-      'apparel', 'accessories', 'boots', 'boot', 'footwear', 'shoes', 'shoe', 'workwear', 'outdoor gear', 'style', 'size', 'color', 'collection',
-      'bicycle', 'bikes', 'cycling', 'cooler', 'drinkware', 'industrial supply', 'distribution', 'warehouse', 'manufacturing', 'production', 'assembly',
-      'lab', 'scientific', 'instrument', 'reagents', 'electrical', 'wire', 'cable', 'conduit', 'lighting', 'switchgear'
-    ]);
     const laneCandidates = operatorEvidence
       ? [{
         laneId: operatorEvidence.laneId,
         score: operatorEvidence.confidenceScore,
         evidence: operatorEvidence.evidenceTerms.slice(0, 4)
       }]
-      : resolved && resolved.laneId
-      ? [{
-        laneId: resolved.laneId,
-        score: resolved.confidence === 'high' ? 0.9 : resolved.confidence === 'medium' ? 0.74 : 0.55,
-        evidence: uniqueValues([resolved.evidence, resolved.productSeed || resolved.product, resolved.productFamily].filter(Boolean)).slice(0, 4)
-      }].concat((resolved.competingCandidates || []).map((candidate) => ({
-        laneId: candidate.laneId,
-        score: candidate.score ? Math.min(0.7, Number(candidate.score) / 100) : 0.45,
-        evidence: [candidate.evidence || candidate.categoryId || 'competing website candidate']
-      })))
       : [];
     const stateLabel = operatorEvidence
       ? operatorEvidence.confidenceState
-      : resolved && resolved.confidence === 'high'
-      ? WEBSITE_CONFIDENCE_STATE.RECOMMENDED
-      : resolved
-        ? WEBSITE_CONFIDENCE_STATE.NEEDS_CONFIRMATION
-        : WEBSITE_CONFIDENCE_STATE.INSUFFICIENT;
+      : WEBSITE_CONFIDENCE_STATE.INSUFFICIENT;
     return {
       schema: 'idb.website-evidence.v1',
-      resolverVersion: operatorEvidence ? 'w355.operator-supplied-website-evidence.v1' : 'w60.drawer-runtime-local.v1',
+      resolverVersion: operatorEvidence ? 'w355.operator-supplied-website-evidence.v1' : 'w491.no-static-local-identity.v1',
       inputUrl: intake.website,
       normalizedUrl: intake.website,
       domain,
-      fetchStatus: operatorEvidence ? 'operator_supplied_website_evidence' : resolved ? 'runtime_resolved' : 'thin',
+      fetchStatus: operatorEvidence ? 'operator_supplied_website_evidence' : 'not_fetched',
       fetchErrors: [],
       pagesSampled: [{
-        role: operatorEvidence ? 'operator_supplied_public_website_category_text' : 'url_domain_and_runtime_hint',
+        role: operatorEvidence ? 'operator_supplied_public_website_category_text' : 'direct_website_fetch_required',
         url: intake.website,
-        status: operatorEvidence || resolved ? 200 : 0
+        status: operatorEvidence ? 200 : 0
       }],
       extractedEvidence: operatorEvidence ? operatorEvidence.extractedEvidence : {
-        pageTitle: resolved ? `${domain} website evidence` : '',
-        metaDescription: resolved ? resolved.evidence : '',
+        pageTitle: '',
+        metaDescription: '',
         h1Text: [],
         h2Text: [],
-        navigationLabels: productTerms,
-        productCategoryTerms: productTerms,
-        industryLanguage: browserWebsiteEvidenceTerms(sourceText, ['retail', 'ecommerce', 'dealer', 'distribution', 'manufacturing', 'industrial', 'service', 'wholesale']),
-        locationServiceClues: browserWebsiteEvidenceTerms(sourceText, ['retail', 'store', 'service', 'dealer']),
-        ecommerceSignals: browserWebsiteEvidenceTerms(sourceText, ['shop', 'ecommerce', 'retail']),
-        manufacturingSignals: browserWebsiteEvidenceTerms(sourceText, ['manufacturing', 'production', 'assembly']),
-        distributionSignals: browserWebsiteEvidenceTerms(sourceText, ['distribution', 'warehouse', 'wholesale', 'dealer'])
+        navigationLabels: [],
+        productCategoryTerms: [],
+        industryLanguage: [],
+        locationServiceClues: [],
+        ecommerceSignals: [],
+        manufacturingSignals: [],
+        distributionSignals: []
       },
       signals: {
         laneCandidates,
-        productSeed: operatorEvidence ? operatorEvidence.productSeed : resolved ? resolved.productSeed || resolved.product || '' : '',
-        productFamily: operatorEvidence ? operatorEvidence.productFamily : resolved ? resolved.productFamily || '' : '',
-        demandMoment: operatorEvidence ? operatorEvidence.demandMoment : resolved ? resolved.demandMoment || '' : ''
+        productSeed: operatorEvidence ? operatorEvidence.productSeed : '',
+        productFamily: operatorEvidence ? operatorEvidence.productFamily : '',
+        demandMoment: operatorEvidence ? operatorEvidence.demandMoment : ''
       },
       confidence: {
         state: stateLabel,
         score: laneCandidates[0] ? laneCandidates[0].score : 0,
         requiresConfirmation: stateLabel !== WEBSITE_CONFIDENCE_STATE.RECOMMENDED
       },
-      failureState: operatorEvidence || resolved ? null : 'thin',
+      failureState: operatorEvidence ? null : 'not_fetched',
       sourceUrls: [intake.website],
       capturedAt: nowIso(),
       resolverAdapter: {
         schema: 'idb.w64-drawer-resolver-service-adapter.v1',
         serviceName: WEBSITE_RESOLVER_SERVICE_VERSION,
-        mode: operatorEvidence ? 'operator_supplied_local_fallback' : 'local_fallback',
+        mode: operatorEvidence ? 'operator_supplied_local_fallback' : 'website_fetch_required',
         requestKey,
         endpointConfigured: resolverServiceAdapterConfig().endpointConfigured,
-        localFallbackEnabled: true,
+        localFallbackEnabled: false,
         operatorSuppliedWebsiteEvidence: Boolean(operatorEvidence),
         notesAuthority: 'story_only_no_identity_override'
       },
@@ -3659,8 +3723,59 @@
     const config = resolverServiceAdapterConfig();
     const intake = normalizedIntake(state);
     const requestKey = resolverServiceRequestKey(state);
-    if (!intake.website || !config.endpointConfigured) {
-      return Promise.resolve({ status: 'skipped', reason: 'endpoint_not_configured', state });
+    if (!intake.website) {
+      return Promise.resolve({ status: 'skipped', reason: 'missing_website', state });
+    }
+    if (!config.endpointConfigured) {
+      resolverRuntimePatch(state, {
+        mode: 'direct_website_text',
+        requestKey,
+        endpointConfigured: false,
+        tokenConfigured: config.tokenConfigured,
+        localFallbackEnabled: false,
+        hostedOnlyMode: config.hostedOnlyMode,
+        status: 'pending',
+        failureState: state.websiteEvidenceV1 && state.websiteEvidenceV1.failureState ? state.websiteEvidenceV1.failureState : ''
+      });
+      return directWebsiteFetchV491(intake.website)
+        .then((response) => {
+          const evidence = directWebsiteEvidenceV1FromFetchedHtmlV491(state, response);
+          const validation = validateResolverServiceEvidence(evidence, state, requestKey);
+          if (!validation.ok) {
+            state.websiteEvidenceV1 = localWebsiteEvidenceV1FromState(state);
+            resolverRuntimePatch(state, {
+              mode: 'direct_website_text_rejected',
+              requestKey,
+              status: 'rejected',
+              failureState: 'unavailable',
+              error: validation.reason
+            });
+            return { status: 'rejected', reason: validation.reason, state };
+          }
+          state.websiteEvidenceV1 = evidence;
+          resolverRuntimePatch(state, {
+            mode: 'direct_website_text',
+            requestKey,
+            status: evidence.failureState ? 'insufficient_evidence' : 'resolved',
+            failureState: evidence.failureState || ''
+          });
+          return { status: evidence.failureState ? 'insufficient_evidence' : 'resolved', evidence: state.websiteEvidenceV1, state };
+        })
+        .catch((err) => {
+          state.websiteEvidenceV1 = Object.assign({}, localWebsiteEvidenceV1FromState(state), {
+            fetchStatus: 'runtime_fetch_error',
+            fetchErrors: [{ message: err && err.message ? err.message : 'website fetch failed' }],
+            failureState: 'unavailable'
+          });
+          resolverRuntimePatch(state, {
+            mode: 'direct_website_text_error',
+            requestKey,
+            status: 'error',
+            failureState: 'unavailable',
+            error: err && err.message ? err.message : 'website fetch failed'
+          });
+          return { status: 'error', reason: err && err.message ? err.message : 'website fetch failed', state };
+        });
     }
     resolverRuntimePatch(state, {
       mode: state.websiteEvidenceV1 ? 'service_pending_local_fallback' : 'service_pending',
@@ -3728,7 +3843,7 @@
     const config = resolverServiceAdapterConfig();
     const intake = normalizedIntake(state);
     const requestKey = resolverServiceRequestKey(state);
-    if (!intake.website || !config.endpointConfigured || WEBSITE_RESOLVER_REQUESTS_IN_FLIGHT.has(requestKey)) return;
+    if (!intake.website || WEBSITE_RESOLVER_REQUESTS_IN_FLIGHT.has(requestKey)) return;
     if (state.websiteResolverRuntime && state.websiteResolverRuntime.requestKey === requestKey && state.websiteResolverRuntime.status === 'resolved') return;
     WEBSITE_RESOLVER_REQUESTS_IN_FLIGHT.add(requestKey);
     resolveWebsiteEvidenceViaServiceAdapter(state).then((result) => {
@@ -3834,21 +3949,6 @@
   }
 
   function suggestedLaneCandidate(state) {
-    if (buildingMaterialsContractorEvidenceW394(state)) {
-      const buildingLane = laneById('building_materials');
-      if (buildingLane) {
-        const breakdown = laneSignalBreakdown(buildingLane, state);
-        return {
-          lane: buildingLane,
-          score: Math.max(10, breakdown.total),
-          breakdown: Object.assign({}, breakdown, {
-            total: Math.max(10, breakdown.total),
-            confidence: breakdown.confidence === 'none' ? 'medium' : breakdown.confidence,
-            reasons: (breakdown.reasons || []).concat('W394 Building Materials contractor/project fulfillment guard')
-          })
-        };
-      }
-    }
     const profile = websiteSignalProfile(state);
     if (profile && profile.resolverSource === 'websiteEvidenceV1' && profile.laneId) {
       const lane = laneById(profile.laneId);
@@ -31203,6 +31303,22 @@
           return;
         }
         const selectedLaneId = button.getAttribute('data-idb-one-click-build-records') || state.selectedLaneId;
+        const originalButtonText = button.textContent;
+        button.textContent = 'Discovering Website...';
+        await resolveWebsiteEvidenceViaServiceAdapter(state);
+        saveState(state);
+        button.textContent = originalButtonText;
+        if (websiteSignalNeedsReview(state)) {
+          trace('w491_build_records_blocked_no_fetched_website_identity', {
+            source: 'one_click_build_records_w419',
+            resolverRuntime: state.websiteResolverRuntime,
+            fetchStatus: state.websiteEvidenceV1 && state.websiteEvidenceV1.fetchStatus,
+            failureState: state.websiteEvidenceV1 && state.websiteEvidenceV1.failureState,
+            noDrawerWrites: true
+          });
+          draw(root, state);
+          return;
+        }
         const prepared = prepareOneClickBuildRecordsPath(selectedLaneId);
         if (!prepared) return;
         await submitBuildRecordsOnce(button, Object.assign({}, prepared, { source: 'one_click_build_records_w419' }));
@@ -31215,6 +31331,22 @@
         syncIntakeFromVisibleFields(root, state);
         updateBuildDemoPlanAction(root, state);
         const selectedLaneId = button.getAttribute('data-idb-one-click-build-records') || state.selectedLaneId;
+        const originalButtonText = button.textContent;
+        button.textContent = 'Discovering Website...';
+        await resolveWebsiteEvidenceViaServiceAdapter(state);
+        saveState(state);
+        button.textContent = originalButtonText;
+        if (websiteSignalNeedsReview(state)) {
+          trace('w491_build_records_blocked_no_fetched_website_identity', {
+            source: 'real_adapter_submit_w144_once',
+            resolverRuntime: state.websiteResolverRuntime,
+            fetchStatus: state.websiteEvidenceV1 && state.websiteEvidenceV1.fetchStatus,
+            failureState: state.websiteEvidenceV1 && state.websiteEvidenceV1.failureState,
+            noDrawerWrites: true
+          });
+          draw(root, state);
+          return;
+        }
         const prepared = prepareOneClickBuildRecordsPath(selectedLaneId);
         if (!prepared) return;
         await submitBuildRecordsOnce(button, Object.assign({}, prepared, { source: 'one_click_build_records_w419' }));

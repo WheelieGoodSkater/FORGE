@@ -2871,22 +2871,39 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     const domain = extractDomain(website);
     if (!domain) return { domain: '', text: '' };
 
-    const startUrl = normalizeUrl(website);
-    const first = fetchHtmlWithRedirects(startUrl, 6);
+    const startUrls = buildWebsiteStartUrlsW483(website, domain);
+    let first = null;
+    let productNames = [];
+    let bestText = '';
+    let bestLen = 0;
 
-    const productNames = collectWebsiteProductNamesW483(startUrl, first.html, domain);
-    let bestText = appendWebsiteProductCandidatesW483(extractSignalText(first.html, domain), productNames);
-    let bestLen = bestText.length;
+    for (let i = 0; i < startUrls.length; i += 1) {
+      const startUrl = startUrls[i];
+      try {
+        const fetched = fetchHtmlWithRedirects(startUrl, 2);
+        if (!fetched || !fetched.html) continue;
+        if (!first) first = fetched;
+        const startProductNames = collectWebsiteProductNamesW483(startUrl, fetched.html, domain);
+        pushUniqueStringsW483(productNames, startProductNames);
+        const text = appendWebsiteProductCandidatesW483(extractSignalText(fetched.html, domain), productNames);
+        if (text.length > bestLen) {
+          bestLen = text.length;
+          bestText = text;
+          first = fetched;
+        }
+        if (bestLen >= 900) break;
+      } catch (e) {}
+    }
 
     if (bestLen >= 500) return { domain, text: bestText };
 
-    const candidates = pickHighSignalLinks(first.html, domain, 8);
+    const candidates = first && first.html ? pickHighSignalLinks(first.html, domain, 8) : [];
     const topToTry = candidates.slice(0, 3);
 
     for (let i = 0; i < topToTry.length; i++) {
       const u = topToTry[i];
       try {
-        const r = fetchHtmlWithRedirects(u, 4);
+        const r = fetchHtmlWithRedirects(u, 2);
         const linkProductNames = collectWebsiteProductNamesW483(u, r.html, domain);
         const t = appendWebsiteProductCandidatesW483(extractSignalText(r.html, domain), productNames.concat(linkProductNames));
         if (t.length > bestLen) {
@@ -2904,32 +2921,28 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return { domain, text: bestText };
   }
 
+  function buildWebsiteStartUrlsW483(website, domain) {
+    const normalized = normalizeUrl(website);
+    const bareDomain = String(domain || '').replace(/^www\./i, '');
+    const urls = [
+      normalized,
+      `https://${bareDomain}/`,
+      `https://www.${bareDomain}/`
+    ];
+    const seen = {};
+    return urls.filter(function(url) {
+      const clean = normalizeUrl(url);
+      if (!clean || seen[clean]) return false;
+      seen[clean] = true;
+      return true;
+    });
+  }
+
   function collectWebsiteProductNamesW483(url, html, domain) {
     const names = [];
-    const origin = originFromUrlW483(url || normalizeUrl(domain));
     pushUniqueStringsW483(names, extractProductNamesFromJsonLdW483(html));
     pushUniqueStringsW483(names, extractProductNamesFromLinksW483(html, domain));
-
-    [
-      `${origin}/products.json?limit=20`,
-      `${origin}/collections/all/products.json?limit=20`,
-      `${origin}/sitemap_products_1.xml`,
-      `${origin}/sitemap.xml`
-    ].forEach(function(feedUrl) {
-      try {
-        const resp = https.get({
-          url: feedUrl,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (NetSuite SCAI Demo Reset)',
-            'Accept': 'application/json,text/xml,application/xml,text/plain,*/*'
-          }
-        });
-        const body = String(resp && resp.body || '');
-        if (!body) return;
-        pushUniqueStringsW483(names, extractProductNamesFromFeedW483(body));
-        pushUniqueStringsW483(names, extractProductNamesFromProductUrlsW483(body));
-      } catch (e) {}
-    });
+    pushUniqueStringsW483(names, extractProductNamesFromWebsiteTextW483(extractSignalText(html, domain)));
 
     return names.slice(0, 20);
   }
@@ -3160,8 +3173,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function generateNamingPack({ prospect, website, signalText }) {
-    const clippedSignal = String(signalText || '').slice(0, 1200);
-    const websitePack = buildWebsiteSignalNamingPackW483({ prospect, website, signalText: clippedSignal });
+    const fullSignal = String(signalText || '');
+    const clippedSignal = fullSignal.slice(0, 2400);
+    const websitePack = buildWebsiteSignalNamingPackW483({ prospect, website, signalText: fullSignal });
     if (websitePack) return websitePack;
     return {
       _source: 'deterministic',
@@ -3273,6 +3287,42 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     }
     pushUniqueStringsW483(out, extractProductNamesFromJsonLdW483(text));
     pushUniqueStringsW483(out, extractProductNamesFromProductUrlsW483(text));
+    pushUniqueStringsW483(out, extractProductNamesFromWebsiteTextW483(text));
+    return out;
+  }
+
+  function extractProductNamesFromWebsiteTextW483(raw) {
+    const text = decodeHtmlEntitiesW483(String(raw || ''))
+      .replace(/\\n/g, ' ')
+      .replace(/\s+/g, ' ');
+    const out = [];
+    const description = (text.match(/Description:\s*([^|]{8,320})/i) || [,''])[1];
+    const pageText = (text.match(/PageText:\s*([^|]{8,1600})/i) || [,''])[1];
+    [description, pageText].forEach(function(section) {
+      if (!section) return;
+      extractNamedProductPhrasesW483(section).forEach(function(candidate) {
+        out.push(candidate);
+      });
+    });
+    return out;
+  }
+
+  function extractNamedProductPhrasesW483(section) {
+    const out = [];
+    const normalized = compactText(section)
+      .replace(/\b(Damn|Very|Really|Proud|Loud|Delicious|Crafted|Iconic|Premium|Official)\b/gi, ' ')
+      .replace(/\s+/g, ' ');
+    normalized.split(/[.,;+•]|(?:\s+and\s+)|(?:\s+crafted\b)|(?:\s+made\b)|(?:\s+from\b)/i).forEach(function(part) {
+      if (/^[a-z]/.test(compactText(part))) return;
+      const clean = cleanWebsiteProductCandidateW483(part);
+      if (clean) out.push(clean);
+    });
+    let match;
+    const phraseRe = /\b([A-Z][A-Za-z0-9'&-]*(?:\s+[A-Z][A-Za-z0-9'&-]*){0,4})\b/g;
+    while ((match = phraseRe.exec(section)) !== null) {
+      const clean = cleanWebsiteProductCandidateW483(match[1]);
+      if (clean) out.push(clean);
+    }
     return out;
   }
 
@@ -3356,7 +3406,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     out = compactText(out.replace(/[_]+/g, ' '));
     if (!out || out.length < 3 || out.length > 70) return '';
     if (/^https?:\/\//i.test(out) || /[{}<>]/.test(out)) return '';
-    if (/^(home|shop|products?|collections?|catalog|menu|search|cart|account|login|privacy|terms)$/i.test(out)) return '';
+    if (/^(home|shop|products?|collections?|catalog|menu|search|cart|account|login|privacy|terms|title|description|pagetext|domain)$/i.test(out)) return '';
     if (/^(finished good|finished good variety pack|demo product|product availability sku)$/i.test(out)) return '';
     if (out.split(/\s+/).length > 8) return '';
     return titleCaseProductCandidateW483(out);
@@ -3371,6 +3421,8 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (/\d/.test(name)) score += 5;
     if (words.length === 1 && name.length < 6) score -= 12;
     if (/^(the|and|for|with)$/i.test(words[0])) score -= 10;
+    if (/\b(noodles?|sauces?|salsas?|dressings?|seasonings?|starters?|mixes?|snacks?|beverages?|drinks?|meals?|kits?|packs?)\b/i.test(name)) score += 42;
+    if (/\b(flavors?|chefs?|partnership|official|homepage|welcome)\b/i.test(name)) score -= 60;
     return score;
   }
 

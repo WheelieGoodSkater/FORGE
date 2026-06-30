@@ -3219,7 +3219,6 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search'], (runtime, task, l
     if (!errors.length && queueGate.canSubmit) {
       try {
         namingPackHandoff = createNamingPackFile(request, config, idempotencyToken);
-        if (!namingPackHandoff.fileId) errors.push('N/LLM website naming package was not created before runner submit.');
       } catch (namingError) {
         namingPackHandoff = {
           fileId: null,

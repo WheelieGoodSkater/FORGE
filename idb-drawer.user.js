@@ -3301,6 +3301,18 @@
       meta.push(value);
       return _;
     });
+    source.replace(/<meta\b[^>]*>/gi, (tag) => {
+      const attrs = {};
+      String(tag || '').replace(/([a-zA-Z_:.-]+)=["']([^"']*)["']/g, (_m, key, value) => {
+        attrs[String(key || '').toLowerCase()] = value;
+        return _m;
+      });
+      const name = String(attrs.name || attrs.property || '').toLowerCase();
+      if (/^(description|og:description|og:title|twitter:description|twitter:title)$/.test(name) && attrs.content) {
+        meta.push(attrs.content);
+      }
+      return tag;
+    });
     const body = source
       .replace(/<[^>]+>/g, ' ')
       .replace(/&#39;/g, "'")
@@ -3310,8 +3322,91 @@
     return compactText(meta.join(' ') + ' ' + body, 5000);
   }
 
+  function exactWebsiteProductCandidatesV492(websiteText) {
+    const text = String(websiteText || '')
+      .replace(/\\n/g, ' ')
+      .replace(/\s+/g, ' ');
+    const out = [];
+    const productNounBody = "noodles?|sauces?|seasonings?|starters?|mixes?|kits?|snacks?|cookies?|crackers?|biscuits?|cakes?|brownies?|beverages?|drinks?|coffee|tea|packs?|cases?|meals?|bowls?|bars?|candy|chocolate|salsas?|dressings?|marinades?";
+    const productNouns = "(?:" + productNounBody + ")";
+    const phraseRe = new RegExp("\\b([A-Z][A-Za-z0-9'&-]*(?:\\s+[A-Z][A-Za-z0-9'&-]*){0,4}\\s+" + productNouns + "|(?:[A-Z][A-Za-z0-9'&-]*\\s+)?" + productNouns + ")\\b", 'gi');
+    let match;
+    while ((match = phraseRe.exec(text)) !== null) {
+      const clean = cleanExactWebsiteProductCandidateV492(match[1]);
+      if (clean) out.push(clean);
+    }
+    text.split(/[+.•;|]/).forEach((part) => {
+      const clean = cleanExactWebsiteProductCandidateV492(part);
+      if (clean && new RegExp('\\b' + productNouns + '\\b', 'i').test(clean)) out.push(clean);
+    });
+    return uniqueValues(out).slice(0, 8);
+  }
+
+  function cleanExactWebsiteProductCandidateV492(value) {
+    let out = compactText(String(value || '')
+      .replace(/\b(Damn|Very|Really|Proud|Loud|Delicious|Crafted|Iconic|Premium|Official|National|Regional)\b/gi, ' ')
+      .replace(/\b(in|for|with|from|by|and|or|the|a|an)\b\s*$/gi, ' ')
+      .replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g, ' '));
+    out = out.replace(/\s+/g, ' ').trim();
+    if (!out || out.length < 4 || out.length > 64) return '';
+    if (/^(product|products|shop|store|homepage|website|flavors?|chefs?|partnership|customer|prospect)$/i.test(out)) return '';
+    if (out.split(/\s+/).length > 6) return '';
+    return out.replace(/\w\S*/g, (word) => /^[A-Z0-9&-]+$/.test(word) ? word : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+  }
+
+  function websiteNamingPackageFromEvidenceV492(state, evidence, intake) {
+    const candidates = exactWebsiteProductCandidatesV492([
+      evidence && evidence.extractedEvidence && evidence.extractedEvidence.metaDescription,
+      evidence && evidence.extractedEvidence && arrayValue(evidence.extractedEvidence.navigationLabels).join(' '),
+      evidence && evidence.extractedEvidence && arrayValue(evidence.extractedEvidence.productCategoryTerms).join(' ')
+    ].join(' '));
+    const primary = candidates[0] || compactText(evidence && evidence.signals && evidence.signals.productSeed);
+    if (!primary || /^(product|products|product sku|finished good|variety pack)$/i.test(primary)) return null;
+    const industry = evidence && evidence.signals && Array.isArray(evidence.signals.laneCandidates) && evidence.signals.laneCandidates[0] && evidence.signals.laneCandidates[0].laneId === 'food_beverage'
+      ? 'Food and Beverage'
+      : compactText(evidence && evidence.signals && evidence.signals.productFamily) || 'Website Product Fulfillment';
+    const components = [
+      `${primary} Retail Case`,
+      `${primary} Packaging`,
+      `${primary} Replenishment Lot`
+    ];
+    return {
+      schema: 'idb.nllm-website-naming-package-response.v1',
+      source: 'drawer_website_text_nllm_naming_package_w492',
+      sourceBasis: 'entered website product text',
+      productCandidateSource: 'entered_website_text',
+      requiredAuthority: 'entered_website_domain_plus_nllm_product_evidence',
+      primaryProductCandidate: primary,
+      alternateProductCandidates: candidates.slice(1),
+      industryCategory: industry,
+      recordNames: {
+        hero_item_name: primary,
+        assembly_name: `${primary} Availability Flow`,
+        component_names: components,
+        bom_name: `BOM - ${primary}`,
+        bom_revision_name: `Revision 1 - ${primary}`,
+        routing_name: `${primary} Fulfillment Flow`
+      },
+      componentNames: components,
+      bomName: `BOM - ${primary}`,
+      bomRevisionName: `Revision 1 - ${primary}`,
+      routingName: `${primary} Fulfillment Flow`,
+      operationNamesBySeq: {
+        '10': `Prepare ${components[0]}`,
+        '20': `Allocate ${primary} Demand`,
+        '30': `Release ${primary}`
+      },
+      evidenceTerms: candidates,
+      evidenceUrls: evidence && evidence.sourceUrls || [intake && intake.website].filter(Boolean),
+      confidencePercent: candidates.length ? 92 : 84,
+      writeAuthority: 'none',
+      creationAllowed: false
+    };
+  }
+
   function productNamingFromWebsiteTextV491(websiteText, intake) {
     const text = String(websiteText || '').toLowerCase();
+    const exactProducts = exactWebsiteProductCandidatesV492(websiteText);
     const foodTerms = browserWebsiteEvidenceTerms(text, ['cookie', 'cookies', 'bakery', 'baked', 'bake shop', 'brownie', 'snack', 'snacks', 'cracker', 'crackers', 'biscuit', 'biscuits', 'cake', 'food', 'grocery', 'flavor', 'chocolate']);
     const beverageTerms = browserWebsiteEvidenceTerms(text, ['beverage', 'drink', 'water', 'sparkling', 'juice', 'tea', 'coffee', 'soda', 'yerba', 'mate']);
     const apparelTerms = browserWebsiteEvidenceTerms(text, ['apparel', 'footwear', 'shoe', 'shoes', 'boot', 'boots', 'style', 'size', 'color', 'collection']);
@@ -3326,11 +3421,11 @@
       laneId = 'food_beverage';
       evidence = uniqueValues(foodTerms.concat(beverageTerms));
       productFamily = beverageTerms.length && !foodTerms.length ? 'Packaged Beverage' : 'Packaged Bakery and Snack Food';
-      productSeed = foodTerms.some((term) => /cookie|bakery|baked|bake shop|biscuit|brownie|cake/.test(term))
+      productSeed = exactProducts[0] || (foodTerms.some((term) => /cookie|bakery|baked|bake shop|biscuit|brownie|cake/.test(term))
         ? 'Cookie and Bakery Variety Pack'
         : beverageTerms.length
           ? 'Beverage Variety Pack'
-          : 'Packaged Snack Variety Pack';
+          : 'Packaged Snack Variety Pack');
       demandMoment = 'finished-good, packaging, and retail replenishment readiness';
     } else if (industrialTerms.length) {
       laneId = 'industrial_distribution';
@@ -3357,6 +3452,7 @@
       productSeed,
       productFamily,
       demandMoment,
+      productCandidates: exactProducts,
       evidence,
       evidenceSummary: `Website text from ${websiteDomain(intake && intake.website)} contains ${evidence.join(', ')} product/category terms.`
     };
@@ -3416,11 +3512,11 @@
       fetchStatus: 'runtime_fetched',
       extractedEvidence: {
         pageTitle: `${domain} website text`,
-        metaDescription: naming.evidenceSummary,
+          metaDescription: compactText([naming.evidenceSummary, naming.productCandidates && naming.productCandidates.join(' | ')].join(' '), 240),
         h1Text: [],
         h2Text: [],
         navigationLabels: naming.evidence,
-        productCategoryTerms: naming.evidence,
+          productCategoryTerms: uniqueValues((naming.productCandidates || []).concat(naming.evidence)),
         industryLanguage: naming.laneId === 'food_beverage' ? ['food', 'beverage', 'bakery'].filter((term) => websiteText.toLowerCase().includes(term)) : naming.evidence,
         locationServiceClues: browserWebsiteEvidenceTerms(websiteText, ['retail', 'store', 'where to buy']),
         ecommerceSignals: browserWebsiteEvidenceTerms(websiteText, ['shop', 'store', 'retail', 'buy']),
@@ -3431,8 +3527,18 @@
         laneCandidates: [{ laneId: naming.laneId, score: 0.86, evidence: naming.evidence }],
         productSeed: naming.productSeed,
         productFamily: naming.productFamily,
-        demandMoment: naming.demandMoment
+        demandMoment: naming.demandMoment,
+        productCandidates: naming.productCandidates || []
       },
+      nllmWebsiteNamingPackage: websiteNamingPackageFromEvidenceV492(state, {
+        extractedEvidence: {
+          metaDescription: compactText([naming.evidenceSummary, naming.productCandidates && naming.productCandidates.join(' | ')].join(' '), 240),
+          navigationLabels: naming.evidence,
+          productCategoryTerms: uniqueValues((naming.productCandidates || []).concat(naming.evidence))
+        },
+        signals: { laneCandidates: [{ laneId: naming.laneId }], productSeed: naming.productSeed, productFamily: naming.productFamily },
+        sourceUrls: [fetchUrl]
+      }, intake),
       confidence: { state: WEBSITE_CONFIDENCE_STATE.RECOMMENDED, score: 0.86, requiresConfirmation: false },
       failureState: null,
       noRegression: {
@@ -7113,6 +7219,9 @@
     const intake = normalizedIntake(state);
     const namingEvidence = websiteProductNamingEvidence(state, lane);
     const websiteEvidenceV1 = state && state.websiteEvidenceV1 || null;
+    const websiteNamingPackage = state && (state.nllmWebsiteNamingPackage || state.websiteNamingPackage || state.recordNamingAdvisoryResponse) ||
+      websiteEvidenceV1 && websiteEvidenceV1.nllmWebsiteNamingPackage ||
+      null;
     const websiteEvidenceUx = websiteEvidenceUxModel(state, lane);
     const websiteProductCandidates = websiteProductEvidenceCandidatesW424(websiteEvidenceV1, intake);
     const trustedProductExamples = trustedWebsiteProductExamplesW472(websiteProductCandidates);
@@ -7271,7 +7380,7 @@
       namingAuthority: operatingMode.namingAuthority,
       recordNamingAdvisoryRequest,
       recordNamingAdvisoryResponse: state && state.recordNamingAdvisoryResponse || null,
-      nllmWebsiteNamingPackage: state && (state.nllmWebsiteNamingPackage || state.websiteNamingPackage || state.recordNamingAdvisoryResponse) || null,
+      nllmWebsiteNamingPackage: websiteNamingPackage,
       requiredRecordRoles: operatingMode.requiredRecordRoles,
       optionalRecordRoles: operatingMode.optionalRecordRoles,
       invalidRecordRoles: operatingMode.invalidRecordRoles,

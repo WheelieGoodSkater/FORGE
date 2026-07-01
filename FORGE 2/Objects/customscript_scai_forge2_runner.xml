@@ -1,0 +1,53 @@
+<scheduledscript scriptid="customscript_scai_forge2_runner">
+  <description>FORGE 2 old-core scheduled runner. Exact copy of the attached scai_ss_so_csv_runner (12).js runner, isolated for FORGE 2.</description>
+  <isinactive>F</isinactive>
+  <name>FORGE 2.0 Old-Core Runner</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <scriptfile>[/SuiteScripts/FORGE 2/scai_ss_so_csv_runner_forge2_v1_12_13.js]</scriptfile>
+  <scriptcustomfields>
+    <scriptcustomfield scriptid="custscript_scai_so_runner_prospect">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>TEXT</fieldtype><ismandatory>T</ismandatory><label>Company Name (Prospect)</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_so_runner_website">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>TEXT</fieldtype><ismandatory>F</ismandatory><label>Website</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_so_runner_notes">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>TEXTAREA</fieldtype><ismandatory>F</ismandatory><label>Conversation Notes</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_so_runner_agenda">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>TEXTAREA</fieldtype><ismandatory>F</ismandatory><label>Agenda</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_so_runner_extid">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>TEXT</fieldtype><ismandatory>T</ismandatory><label>External ID</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_so_runner_mapping">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>INTEGER</fieldtype><ismandatory>T</ismandatory><label>CSV Mapping ID</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_so_runner_folder">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>INTEGER</fieldtype><ismandatory>T</ismandatory><label>CSV Folder ID</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_runner_naming_file_id">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>INTEGER</fieldtype><ismandatory>F</ismandatory><label>Naming File ID</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_runner_subsidiary">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>INTEGER</fieldtype><ismandatory>T</ismandatory><label>Subsidiary ID</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_runner_location">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>INTEGER</fieldtype><ismandatory>F</ismandatory><label>Location ID</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_wc_savedsearch_id">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>TEXT</fieldtype><ismandatory>F</ismandatory><label>Work Center Saved Search</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_runner_enable_wip">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>CHECKBOX</fieldtype><ismandatory>F</ismandatory><label>Enable WIP</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_runner_create_new_hero">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>CHECKBOX</fieldtype><ismandatory>F</ismandatory><label>Create New Hero Item</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_scai_runner_enable_mfg">
+      <accesslevel>2</accesslevel><displaytype>NORMAL</displaytype><fieldtype>CHECKBOX</fieldtype><ismandatory>F</ismandatory><label>Enable Manufacturing Flow</label><storevalue>T</storevalue>
+    </scriptcustomfield>
+  </scriptcustomfields>
+</scheduledscript>

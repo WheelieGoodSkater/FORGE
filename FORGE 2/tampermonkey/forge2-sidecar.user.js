@@ -153,7 +153,7 @@
       create: findCheckboxByLabel(/create new hero item|create new item/i),
       mfg: findCheckboxByLabel(/enable manufacturing flow|manufacturing/i),
       wip: findCheckboxByLabel(/enable wip|wip/i),
-      run: findButton(/run demo reset|build records|submit/i),
+      run: findButton(/run demo reset|build records|build proof package|submit/i),
       refresh: findButton(/refresh all links|refresh records|refresh/i)
     };
   }
@@ -192,14 +192,35 @@
     const readyMatch = text.match(/Demo Ready:\s*([A-Z _-]+)/i);
     const externalMatch = text.match(/External ID:\s*([^\n]+)/i);
     const summaryMatch = text.match(/Commercial Summary:\s*([^\n]+)/i);
+    const completedMatch = text.match(/Reset Completed\s*—\s*([^\n]+)/i);
+    const resetKeyMatch = text.match(/Reset Key:\s*([^\n]+)/i);
+    const clientMatch = text.match(/CLIENT\s*\n([^\n]+)/i);
+    const laneMatch = text.match(/OPERATING LANE\s*\n([^\n]+)/i);
+    const readinessMatch = text.match(/READINESS\s*\n([^\n]+)/i);
+    const proofMatch = text.match(/PRIMARY PROOF\s*\n([^\n]+)/i);
+    const validationMatch = text.match(/NEXT VALIDATION\s*\n([^\n]+)/i);
+    const briefMatch = text.match(/CONSULTANT BRIEF\s*\n(?:[^\n]*\n)?([^\n]+(?:\n[^\n]+)?)/i);
 
     return {
       ready: readyMatch ? normalizeText(readyMatch[1]) : '',
       externalId: externalMatch ? normalizeText(externalMatch[1]) : '',
       summary: summaryMatch ? normalizeText(summaryMatch[1]) : '',
+      completed: completedMatch ? normalizeText(completedMatch[1]) : '',
+      resetKey: resetKeyMatch ? normalizeText(resetKeyMatch[1]) : '',
+      client: clientMatch ? normalizeText(clientMatch[1]) : '',
+      lane: laneMatch ? normalizeText(laneMatch[1]) : '',
+      readiness: readinessMatch ? normalizeText(readinessMatch[1]) : '',
+      proof: proofMatch ? normalizeText(proofMatch[1]) : '',
+      validation: validationMatch ? normalizeText(validationMatch[1]) : '',
+      brief: briefMatch ? normalizeText(briefMatch[1]) : '',
       chips,
       links
     };
+  }
+
+  function storyCard(label, value) {
+    if (!value) return '';
+    return `<div class="forge2-story-card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`;
   }
 
   function renderResult() {
@@ -208,8 +229,24 @@
     $('#forge2-status-title').textContent = result.ready && result.ready !== 'PENDING'
       ? `Demo Ready: ${result.ready}`
       : title;
-    $('#forge2-status-subtitle').textContent = result.externalId || result.summary || 'The sidecar is driving the proven old Command Center runner page.';
+    $('#forge2-status-subtitle').textContent = result.completed || result.externalId || result.summary || 'The sidecar is driving the proven old Command Center runner page.';
     $('#forge2-result').innerHTML = [
+      result.resetKey || result.client || result.lane
+        ? `<div class="forge2-storyboard">
+            <div class="forge2-board-head">
+              <span>Storyboard</span>
+              ${result.resetKey ? `<em>${escapeHtml(result.resetKey)}</em>` : ''}
+            </div>
+            <div class="forge2-story-grid">
+              ${storyCard('Client', result.client)}
+              ${storyCard('Lane', result.lane)}
+              ${storyCard('Readiness', result.readiness)}
+              ${storyCard('Primary proof', result.proof)}
+            </div>
+            ${result.validation ? `<div class="forge2-proof-line"><span>Validate</span>${escapeHtml(result.validation)}</div>` : ''}
+            ${result.brief ? `<div class="forge2-brief">${escapeHtml(result.brief)}</div>` : ''}
+          </div>`
+        : '',
       result.chips.length ? `<div class="forge2-chips">${result.chips.map((chip) => `<span>${escapeHtml(chip)}</span>`).join('')}</div>` : '',
       result.links.length ? `<div class="forge2-links">${result.links.map((link) => `<a href="${escapeAttr(link.href)}" target="_blank" rel="noreferrer">${escapeHtml(link.label)}</a>`).join('')}</div>` : '<div class="forge2-empty">Links appear after the working runner page returns them.</div>'
     ].join('');
@@ -277,20 +314,27 @@
     root.id = 'forge2-sidecar';
     root.innerHTML = `
       <div class="forge2-head">
-        <div class="forge2-logo">FORGE</div>
+        <div class="forge2-logo-wrap">
+          <div class="forge2-logo">FORGE</div>
+          <div class="forge2-logo-sub">SC Demo Creation Tool</div>
+        </div>
         <div class="forge2-version">2.0</div>
         <a class="forge2-open" href="${URL_6594}">Script 6594</a>
       </div>
-      <section class="forge2-card">
+      <section class="forge2-card forge2-hero-card">
         <div class="forge2-kicker">Consultant Day In Life</div>
         <h1 id="forge2-status-title">Enter the FORGE 2.0 request</h1>
         <p id="forge2-status-subtitle">This sidecar drives the existing working runner page and reads its returned links.</p>
       </section>
       <section class="forge2-card">
         <div class="forge2-kicker">FORGE 2 Request</div>
+        <div class="forge2-steps">
+          <span>1 Prospect</span><span>2 Website</span><span>3 Notes</span>
+        </div>
         <label>Customer / Prospect Name<input id="forge2-company" type="text" placeholder="Company or account name"></label>
         <label>Website<input id="forge2-website" type="url" placeholder="https://example.com"></label>
         <label>Conversation Notes<textarea id="forge2-notes" placeholder="Buyer pressure, proof goal, timing, and context."></textarea></label>
+        <div class="forge2-run-kicker">Run Options</div>
         <div class="forge2-options">
           <label><input id="forge2-create" type="checkbox"> Create new item</label>
           <label><input id="forge2-mfg" type="checkbox"> Manufacturing</label>
@@ -328,31 +372,50 @@
   function injectStyles() {
     const style = document.createElement('style');
     style.textContent = `
-      #forge2-sidecar{position:fixed;top:0;right:0;width:430px;max-width:42vw;height:100vh;z-index:2147483647;background:#f7faf9;color:#1d2a3a;font-family:Arial,Helvetica,sans-serif;box-shadow:-8px 0 24px rgba(16,36,52,.18);overflow:auto;border-left:4px solid #0c7890}
+      #forge2-sidecar{position:fixed;top:0;right:0;width:430px;max-width:42vw;height:100vh;z-index:2147483647;background:#f4f8f8;color:#172436;font-family:Arial,Helvetica,sans-serif;box-shadow:-10px 0 28px rgba(12,36,56,.2);overflow:auto;border-left:4px solid #08748a}
       #forge2-sidecar *{box-sizing:border-box}
-      .forge2-head{height:78px;background:#5d9fac;color:#fff;display:flex;align-items:center;gap:14px;padding:14px 18px}
-      .forge2-logo{font-size:26px;font-weight:900;letter-spacing:0;background:#12253f;color:#ffd74d;border-radius:6px;padding:8px 12px}
-      .forge2-version{font-size:18px;font-weight:800;margin-right:auto}
-      .forge2-open{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.55);border-radius:6px;padding:7px 9px;font-size:12px;font-weight:800}
-      .forge2-card{margin:12px;border:1px solid #d6e1e8;border-radius:7px;background:#fff;padding:14px 16px;box-shadow:0 2px 8px rgba(12,36,56,.08)}
-      .forge2-kicker{font-size:12px;text-transform:uppercase;font-weight:900;color:#5a6c81;letter-spacing:.06em;margin-bottom:8px}
-      #forge2-sidecar h1{font-size:22px;line-height:1.15;margin:0 0 8px;color:#172436}
-      #forge2-sidecar p{font-size:14px;line-height:1.35;margin:0;color:#33475f}
-      #forge2-sidecar label{display:block;font-size:12px;text-transform:uppercase;font-weight:900;color:#53657a;margin:10px 0 6px}
-      #forge2-sidecar input[type=text],#forge2-sidecar input[type=url],#forge2-sidecar textarea{width:100%;border:1px solid #ccd8e1;border-radius:6px;padding:10px;font-size:14px;text-transform:none;font-weight:400;color:#172436}
-      #forge2-sidecar textarea{min-height:82px;resize:vertical}
-      .forge2-options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
-      .forge2-options label{display:flex;align-items:center;gap:7px;margin:0;padding:8px;border:1px solid #d9e4ea;border-radius:6px;text-transform:none;color:#26374b}
-      .forge2-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-      .forge2-actions button{border:1px solid #ccd8e1;border-radius:6px;background:#fff;color:#172436;font-weight:900;padding:10px 12px;cursor:pointer}
+      .forge2-head{height:92px;background:#5d9fac;color:#fff;display:flex;align-items:center;gap:16px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.22)}
+      .forge2-logo-wrap{background:#10253f;border:2px solid rgba(255,255,255,.18);border-radius:8px;padding:8px 13px 7px;box-shadow:inset 0 0 0 1px rgba(255,215,77,.2)}
+      .forge2-logo{font-size:30px;line-height:1;font-weight:900;letter-spacing:0;color:#ffd74d}
+      .forge2-logo-sub{font-size:7px;line-height:1.1;text-transform:uppercase;letter-spacing:.12em;color:#fff;margin-top:4px;font-weight:900}
+      .forge2-version{font-size:22px;font-weight:900;margin-right:auto;color:#fff}
+      .forge2-open{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.6);border-radius:7px;padding:8px 10px;font-size:12px;font-weight:900;background:rgba(255,255,255,.08)}
+      .forge2-card{margin:13px;border:1px solid #d6e1e8;border-radius:8px;background:#fff;padding:15px 16px;box-shadow:0 3px 11px rgba(12,36,56,.1);border-left:5px solid #08748a}
+      .forge2-hero-card{padding:17px 18px}
+      .forge2-kicker,.forge2-run-kicker{font-size:12px;text-transform:uppercase;font-weight:900;color:#5a6c81;letter-spacing:.07em;margin-bottom:9px}
+      .forge2-run-kicker{margin-top:12px}
+      #forge2-sidecar h1{font-size:24px;line-height:1.12;margin:0 0 9px;color:#172436;letter-spacing:0}
+      #forge2-sidecar p{font-size:15px;line-height:1.38;margin:0;color:#2b415a}
+      .forge2-steps{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:2px 0 12px}
+      .forge2-steps span{border:1px solid #d5e1e8;background:#f7fafc;color:#53657a;border-radius:7px;padding:9px 10px;font-size:12px;font-weight:900}
+      #forge2-sidecar label{display:block;font-size:12px;text-transform:uppercase;font-weight:900;color:#53657a;margin:10px 0 6px;letter-spacing:.02em}
+      #forge2-sidecar input[type=text],#forge2-sidecar input[type=url],#forge2-sidecar textarea{width:100%;border:1px solid #cddbe4;border-radius:7px;padding:11px 12px;font-size:15px;text-transform:none;font-weight:400;color:#172436;background:#fff}
+      #forge2-sidecar input[type=text]:focus,#forge2-sidecar input[type=url]:focus,#forge2-sidecar textarea:focus{outline:2px solid rgba(8,116,138,.25);border-color:#08748a}
+      #forge2-sidecar textarea{min-height:86px;resize:vertical}
+      .forge2-options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0 12px}
+      .forge2-options label{display:flex;align-items:center;gap:8px;margin:0;padding:10px 9px;border:1px solid #d9e4ea;border-radius:7px;text-transform:none;color:#26374b;background:#f8fbfc;min-height:48px}
+      .forge2-options input{width:17px;height:17px;accent-color:#08748a;flex:0 0 auto}
+      .forge2-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+      .forge2-actions button{border:1px solid #cfdce5;border-radius:7px;background:#fff;color:#172436;font-weight:900;padding:11px 13px;cursor:pointer;box-shadow:0 1px 0 rgba(12,36,56,.04)}
+      .forge2-actions button:hover{border-color:#8fb5c2}
       #forge2-build{background:#08748a;color:#fff;border-color:#08748a}
-      #forge2-result{margin-top:12px}
+      #forge2-result{margin-top:13px}
+      .forge2-storyboard{border:1px solid #d7e7ed;background:#f6fbfd;border-radius:8px;padding:10px;margin:4px 0 10px}
+      .forge2-board-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;color:#53657a;font-size:12px;text-transform:uppercase;font-weight:900;letter-spacing:.06em}
+      .forge2-board-head em{font-style:normal;text-transform:none;letter-spacing:0;color:#08748a;background:#e8f4f7;border-radius:999px;padding:4px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+      .forge2-story-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      .forge2-story-card{background:#fff;border:1px solid #dbe8ee;border-radius:7px;padding:9px;min-height:58px}
+      .forge2-story-card span{display:block;color:#607184;font-size:10px;text-transform:uppercase;font-weight:900;letter-spacing:.05em;margin-bottom:4px}
+      .forge2-story-card strong{display:block;color:#172436;font-size:13px;line-height:1.25}
+      .forge2-proof-line{margin-top:8px;border-left:3px solid #08748a;background:#fff;border-radius:6px;padding:8px 9px;color:#253a50;font-size:13px;line-height:1.3}
+      .forge2-proof-line span{display:block;color:#607184;font-size:10px;text-transform:uppercase;font-weight:900;letter-spacing:.05em;margin-bottom:3px}
+      .forge2-brief{margin-top:8px;color:#2b415a;font-size:13px;line-height:1.32;background:#fff;border:1px solid #dbe8ee;border-radius:7px;padding:9px}
       .forge2-chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
       .forge2-chips span{font-size:11px;font-weight:800;color:#52667c;background:#eef5f8;border:1px solid #d8e6ec;border-radius:999px;padding:5px 7px}
-      .forge2-links{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px}
-      .forge2-links a{display:block;text-decoration:none;color:#0a5970;background:#f4fafc;border:1px solid #d8e8ee;border-radius:6px;padding:8px;font-weight:800;font-size:13px}
-      .forge2-empty{font-size:13px;color:#657789;background:#f5f8fa;border:1px dashed #cbd9e2;border-radius:6px;padding:10px}
-      @media(max-width:900px){#forge2-sidecar{width:100vw;max-width:none}.forge2-options{grid-template-columns:1fr}}
+      .forge2-links{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}
+      .forge2-links a{display:block;text-decoration:none;color:#0a5970;background:#f3fafc;border:1px solid #d5e7ee;border-radius:7px;padding:9px 10px;font-weight:900;font-size:13px}
+      .forge2-empty{font-size:13px;color:#657789;background:#f5f8fa;border:1px dashed #cbd9e2;border-radius:7px;padding:10px}
+      @media(max-width:900px){#forge2-sidecar{width:100vw;max-width:none}.forge2-options,.forge2-story-grid{grid-template-columns:1fr}.forge2-board-head{align-items:flex-start;flex-direction:column}.forge2-board-head em{max-width:100%}}
     `;
     document.head.appendChild(style);
   }

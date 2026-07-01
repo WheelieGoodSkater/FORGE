@@ -3,11 +3,7 @@
 // @namespace    scai.forge2
 // @version      2.0.0
 // @description  FORGE 2.0 sidecar for the proven old Command Center runner page.
-// @match        https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl?script=6594&deploy=1*
-// @match        https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl?script=6392&deploy=1*
 // @match        https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl*
-// @match        https://td3021666.app.netsuite.com/app/site/hosting/*
-// @include      https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl*
 // @run-at       document-idle
 // @grant        none
 // ==/UserScript==
@@ -18,8 +14,17 @@
   const STATE_KEY = 'forge2.sidecar.request.v1';
   const URL_6594 = 'https://td3021666.app.netsuite.com/app/site/hosting/scriptlet.nl?script=6594&deploy=1';
 
+  if (!isForge2RunnerPage()) return;
+
   const state = loadState();
   let status = 'ready';
+
+  function isForge2RunnerPage() {
+    if (/\bscript=6594\b/.test(window.location.search || '')) return true;
+    const text = normalizeText(document.body ? document.body.textContent : '');
+    return /Sunshine's Demo Command Center v5\.0\.0-production/i.test(document.title || text)
+      && /Reset Completed|Submission Controls|Build Proof Package|Generate Advisor Brief/i.test(text);
+  }
 
   function loadState() {
     try {
@@ -177,13 +182,34 @@
     return c;
   }
 
+  function pageTextWithoutChrome(limit) {
+    const walker = document.createTreeWalker(document.body || document.documentElement, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const parent = node && node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+        if (parent.closest('#forge2-sidecar, script, style, noscript')) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const parts = [];
+    let total = 0;
+    let node = walker.nextNode();
+    while (node && total < limit) {
+      const value = node.nodeValue || '';
+      parts.push(value);
+      total += value.length;
+      node = walker.nextNode();
+    }
+    return parts.join('\n').slice(0, limit);
+  }
+
   function extractResult() {
-    const text = document.body ? document.body.innerText : '';
+    const text = pageTextWithoutChrome(50000);
     const links = Array.from(document.querySelectorAll('a[href]'))
       .filter((a) => !a.closest('#forge2-sidecar'))
       .map((a) => ({ label: normalizeText(a.textContent), href: a.href }))
       .filter((a) => a.label && /customer|sales order|item|bom|revision|work order|routing|view|open/i.test(a.label))
-      .slice(0, 12);
+      .slice(0, 20);
 
     const chips = [];
     const chipMatch = text.match(/Customer:\s*([^\n]+)|Industry:\s*([^\n]+)|Scenario:\s*([^\n]+)|Flow:\s*([^\n]+)|Hero Item:\s*([^\n]+)/gi) || [];
@@ -213,9 +239,155 @@
       proof: proofMatch ? normalizeText(proofMatch[1]) : '',
       validation: validationMatch ? normalizeText(validationMatch[1]) : '',
       brief: briefMatch ? normalizeText(briefMatch[1]) : '',
+      runStory: buildRunStory({
+        client: clientMatch ? normalizeText(clientMatch[1]) : '',
+        resetKey: resetKeyMatch ? normalizeText(resetKeyMatch[1]) : '',
+        proof: proofMatch ? normalizeText(proofMatch[1]) : '',
+        links
+      }),
       chips,
       links
     };
+  }
+
+  function cleanBusinessName(value) {
+    return normalizeText(value)
+      .replace(/\bFORGE\s*2(?:\.0)?\b/ig, '')
+      .replace(/\bFORGE2\b/ig, '')
+      .replace(/\bWIP\b/ig, '')
+      .replace(/\bSmoke\b/ig, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
+  function linkLabel(links, regex, fallback) {
+    const found = (links || []).find((link) => regex.test(link.label));
+    return found ? found.label : fallback;
+  }
+
+  function buildRunStory(result) {
+    const customer = result.client || state.company || $('#forge2-company') && $('#forge2-company').value || '';
+    if (!customer) return '';
+
+    const salesOrder = result.resetKey || linkLabel(result.links, /sales order/i, result.proof || 'Sales Order');
+    if (!hasReturnedRecordLinks(result.links)) {
+      return `Build or refresh records for Customer ${customer}; actual item, BOM, routing, and component names will appear only after the runner returns NetSuite record links.`;
+    }
+    return `Loading actual item, BOM, component, work order, and purchase order names for Customer ${customer} and Sales Order ${salesOrder}.`;
+  }
+
+  function hasReturnedRecordLinks(links) {
+    return (links || []).some((link) => /custjob\.nl|item\.nl|workord\.nl|bom|bomrevision|assembly|transaction/i.test(link.href || ''));
+  }
+
+  function hrefFor(links, regex) {
+    const found = (links || []).find((link) => regex.test(`${link.label || ''} ${link.href || ''}`));
+    return found ? found.href : '';
+  }
+
+  function firstMatch(text, patterns) {
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match && match[1]) return normalizeText(match[1]);
+    }
+    return '';
+  }
+
+  function parseRecordName(html, fallback) {
+    const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+    const text = normalizeText(doc.body ? doc.body.textContent : '');
+    const title = normalizeText((doc.querySelector('title') || {}).textContent || '')
+      .replace(/\s*-\s*NetSuite.*$/i, '');
+    const h1 = normalizeText((doc.querySelector('h1, .uir-record-name') || {}).textContent || '');
+    const fieldName = firstMatch(text, [
+      /(?:ITEM NAME\/NUMBER|ITEM ID|NAME|DISPLAY NAME)\s+([^|]{3,90}?)(?:\s+(?:SUBSIDIARY|TYPE|DISPLAY NAME|DESCRIPTION|INACTIVE|PRICE|UNITS|CLASS|DEPARTMENT)|$)/i,
+      /(?:BILL OF MATERIALS NAME|BOM NAME|REVISION NAME|NAME)\s+([^|]{3,90}?)(?:\s+(?:SUBSIDIARY|LOCATION|EFFECTIVE|INACTIVE|MEMO|COMPONENTS)|$)/i,
+      /(?:COMPANY NAME|CUSTOMER ID|ENTITY ID|NAME)\s+([^|]{3,90}?)(?:\s+(?:EMAIL|PHONE|SUBSIDIARY|STATUS|TYPE)|$)/i
+    ]);
+    return h1 || fieldName || title || fallback || '';
+  }
+
+  function parseComponents(html) {
+    const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+    const text = normalizeText(doc.body ? doc.body.textContent : '');
+    const names = [];
+    const patterns = [
+      /(?:COMPONENT|ITEM)\s+((?:SCAI\s*-\s*)?[^|,;]{4,80}?)(?:\s+(?:QUANTITY|BOM QUANTITY|UNITS|EFFECTIVE|YIELD)|[,;]|$)/ig,
+      /((?:SCAI\s*-\s*)?[^|,;]{4,80}?(?:Can|Carton|Packaging|Label|Tray|Case|Tin|Seafood|Component|Ingredient)[^|,;]{0,40})/ig
+    ];
+    patterns.forEach((pattern) => {
+      let match = pattern.exec(text);
+      while (match && names.length < 3) {
+        const candidate = normalizeText(match[1])
+          .replace(/\s+(Edit|Open|View|Remove|History|System Notes).*$/i, '');
+        if (candidate && !/component\s*$/i.test(candidate) && !names.some((n) => n.toLowerCase() === candidate.toLowerCase())) {
+          names.push(candidate);
+        }
+        match = pattern.exec(text);
+      }
+    });
+    return names;
+  }
+
+  async function fetchRecordName(href, fallback) {
+    if (!href) return '';
+    try {
+      const response = await fetchWithTimeout(href);
+      if (!response.ok) return '';
+      return parseRecordName(await response.text(), fallback);
+    } catch (e) {
+      return '';
+    }
+  }
+
+  async function fetchComponents(href) {
+    if (!href) return [];
+    try {
+      const response = await fetchWithTimeout(href);
+      if (!response.ok) return [];
+      return parseComponents(await response.text());
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async function fetchWithTimeout(href) {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 3500);
+    try {
+      return await fetch(href, { credentials: 'same-origin', signal: controller.signal });
+    } finally {
+      window.clearTimeout(timer);
+    }
+  }
+
+  async function hydrateActualRunStory(result) {
+    const slot = document.querySelector('#forge2-actual-run-story');
+    if (!slot || !result.client) return;
+    if (!hasReturnedRecordLinks(result.links)) return;
+    const customerHref = hrefFor(result.links, /customer|custjob\.nl|entity\/custjob/i);
+    const itemHref = hrefFor(result.links, /finished good|item|item\.nl/i);
+    const bomHref = hrefFor(result.links, /bom|revision|assembly|billofmaterials|bomrevision|ingredient|packaging|structure|line/i);
+    const routingLabel = linkLabel(result.links, /routing|line|promotion|replenishment|packaging/i, '');
+
+    const customerName = await fetchRecordName(customerHref, result.client) || result.client;
+    const itemName = await fetchRecordName(itemHref, '') || '';
+    const bomName = await fetchRecordName(bomHref, '') || '';
+    const componentNames = await fetchComponents(bomHref);
+    const salesOrder = result.resetKey || linkLabel(result.links, /sales order/i, result.proof || 'Sales Order');
+
+    const actualParts = [];
+    if (itemName) actualParts.push(`demand for ${itemName}`);
+    if (componentNames.length) actualParts.push(`components ${componentNames.join(', ')}`);
+    if (bomName) actualParts.push(`BOM ${bomName}`);
+    if (routingLabel) actualParts.push(`routing ${routingLabel}`);
+
+    if (!actualParts.length) {
+      slot.textContent = `Customer ${customerName} purchases through Sales Order ${salesOrder}. Actual item, BOM, and component names were not visible on the returned NetSuite pages.`;
+      return;
+    }
+
+    slot.textContent = `Customer ${customerName} purchases through Sales Order ${salesOrder}, driving ${actualParts.join('; ')}; FORGE creates the linked work order and purchase order path from those actual records.`;
   }
 
   function storyCard(label, value) {
@@ -237,6 +409,7 @@
               <span>Storyboard</span>
               ${result.resetKey ? `<em>${escapeHtml(result.resetKey)}</em>` : ''}
             </div>
+            ${result.runStory ? `<div id="forge2-actual-run-story" class="forge2-run-story">${escapeHtml(result.runStory)}</div>` : ''}
             <div class="forge2-story-grid">
               ${storyCard('Client', result.client)}
               ${storyCard('Lane', result.lane)}
@@ -250,6 +423,7 @@
       result.chips.length ? `<div class="forge2-chips">${result.chips.map((chip) => `<span>${escapeHtml(chip)}</span>`).join('')}</div>` : '',
       result.links.length ? `<div class="forge2-links">${result.links.map((link) => `<a href="${escapeAttr(link.href)}" target="_blank" rel="noreferrer">${escapeHtml(link.label)}</a>`).join('')}</div>` : '<div class="forge2-empty">Links appear after the working runner page returns them.</div>'
     ].join('');
+    hydrateActualRunStory(result);
   }
 
   function escapeHtml(value) {
@@ -403,6 +577,7 @@
       .forge2-storyboard{border:1px solid #d7e7ed;background:#f6fbfd;border-radius:8px;padding:10px;margin:4px 0 10px}
       .forge2-board-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;color:#53657a;font-size:12px;text-transform:uppercase;font-weight:900;letter-spacing:.06em}
       .forge2-board-head em{font-style:normal;text-transform:none;letter-spacing:0;color:#08748a;background:#e8f4f7;border-radius:999px;padding:4px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+      .forge2-run-story{background:#fff;border:1px solid #dbe8ee;border-left:3px solid #08748a;border-radius:7px;padding:9px 10px;margin-bottom:9px;color:#172436;font-size:13px;line-height:1.34;font-weight:800}
       .forge2-story-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
       .forge2-story-card{background:#fff;border:1px solid #dbe8ee;border-radius:7px;padding:9px;min-height:58px}
       .forge2-story-card span{display:block;color:#607184;font-size:10px;text-transform:uppercase;font-weight:900;letter-spacing:.05em;margin-bottom:4px}

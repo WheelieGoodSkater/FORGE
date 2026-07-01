@@ -905,6 +905,72 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
     return compactText(value).replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0].toLowerCase();
   }
 
+  function authoritativeWebsiteProductNameW509(rawProduct, opts) {
+    const prospect = compactText(opts && opts.prospect);
+    const website = compactText(opts && opts.website);
+    const candidates = opts && opts.candidates || [];
+    const cleaned = cleanWebsiteProductNameW509(rawProduct, prospect, website);
+    if (cleaned) return cleaned;
+    for (let i = 0; i < candidates.length; i += 1) {
+      const candidate = cleanWebsiteProductNameW509(candidates[i] && candidates[i].name, prospect, website);
+      if (candidate) return candidate;
+    }
+    return '';
+  }
+
+  function cleanWebsiteProductNameW509(value, prospect, website) {
+    const domainBrand = websiteDomainW474(website).split('.')[0] || '';
+    let text = compactText(value)
+      .replace(/\bSCAI\b/ig, ' ')
+      .replace(/\bFORGE2?\b/ig, ' ')
+      .replace(/\b(WIP|Smoke|Test|Demo|Naming|Verify|Prospect|Customer|Account|Runner|Script)\b/ig, ' ')
+      .replace(/\b(Finished Goods?|Finished Good Assembly|Assembly|BOM Revision|Revision 1|BOM|Routing)\b/ig, ' ')
+      .replace(/\s[-–—]\s*[A-Z0-9]{4,}$/i, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    compactText(prospect).split(/\s+/).forEach(function(token) {
+      const cleanToken = token.replace(/[^A-Za-z0-9]/g, '');
+      if (cleanToken.length < 3) return;
+      if (/^(forge2?|wip|smoke|test|demo|naming|verify|customer|account|prospect)$/i.test(cleanToken)) return;
+      text = text.replace(new RegExp('\\b' + escapeRegExpW509(cleanToken) + '\\b', 'ig'), ' ');
+    });
+    if (domainBrand && domainBrand.length >= 3) {
+      text = text.replace(new RegExp('\\b' + escapeRegExpW509(domainBrand) + '\\b', 'ig'), ' ');
+    }
+
+    text = compactText(text).replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9)]+$/g, '').trim();
+    if (!text || text.length < 4 || text.length > 70) return '';
+    if (namingPackNameContaminatedW509(text, prospect)) return '';
+    if (websiteProductNameMismatchesDomainW509(text, website)) return '';
+    if (rejectedWebsiteCandidateReasonW474(text) || isGenericCatalogCandidateW459(text)) {
+      if (!hasConcreteProductSignalW464(text)) return '';
+    }
+    return titleCaseEvidencePhraseW457(text);
+  }
+
+  function namingPackNameContaminatedW509(value, prospect) {
+    const text = compactText(value);
+    if (!text) return false;
+    if (/\b(FORGE2?|Smoke|Test|Demo|Naming|Verify|WIP|Prospect|Runner|Script)\b/i.test(text)) return true;
+    const prospectClean = compactText(prospect).replace(/\b(FORGE2?|Smoke|Test|Demo|Naming|Verify|WIP|Customer|Account|Prospect)\b/ig, '').trim();
+    return !!(prospectClean && text.toLowerCase().indexOf(prospectClean.toLowerCase()) !== -1);
+  }
+
+  function websiteProductNameMismatchesDomainW509(value, website) {
+    const text = compactText(value).toLowerCase();
+    const domainBrand = websiteDomainW474(website).split('.')[0] || '';
+    if (!text || !domainBrand) return false;
+    if (text.indexOf('ardgoods') !== -1) return true;
+    if (text.indexOf('lodge') !== -1 && domainBrand !== 'lodge') return true;
+    if (text.indexOf('cast iron') !== -1 && domainBrand !== 'lodge') return true;
+    return false;
+  }
+
+  function escapeRegExpW509(value) {
+    return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   function selectIndustryChipW474(website, product, prospect) {
     void website;
     void product;
@@ -932,34 +998,51 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
     const prospect = compactText(request && request.prospect && request.prospect.name) || 'Demo Customer';
     const website = compactText(request && request.prospect && request.prospect.website);
     const nllmPack = nllmWebsiteNamingPackFromRequestW490(request, website, prospect);
-    const liveWebsitePack = nllmPack ? null : liveWebsiteNamingPackW500(request, website, prospect);
-    if (!nllmPack && !liveWebsitePack) return null;
+    const liveWebsitePack = liveWebsiteNamingPackW500(request, website, prospect);
+    const nllmProduct = nllmPack ? authoritativeWebsiteProductNameW509(
+      compactText(nllmPack.selectedProductName || nllmPack.primary_product_candidate || nllmPack.selectedCatalogCandidate && nllmPack.selectedCatalogCandidate.name || ''),
+      {
+        prospect,
+        website,
+        candidates: (nllmPack.selectedCatalogCandidate ? [nllmPack.selectedCatalogCandidate].concat(nllmPack.catalogCandidates || []) : (nllmPack.catalogCandidates || []))
+      }
+    ) : '';
+    const effectivePack = nllmProduct ? nllmPack : liveWebsitePack;
+    if (!effectivePack) return null;
     const industrySelection = nllmPack && nllmPack.selectedIndustryChip
       ? { label: nllmPack.selectedIndustryChip, source: nllmPack.industryChipSource || 'nllm_website_product_evidence', confidence: nllmPack.industryChipConfidence || 'high' }
       : industrySelectionFromRequestW468(request, website);
-    const effectivePack = nllmPack || liveWebsitePack;
     const auditTrail = websiteNamingAuditTrailW508({
       request,
       website,
       prospect,
-      source: nllmPack ? 'nllm_website_naming_package' : 'live_entered_website_fetch',
+      source: effectivePack === nllmPack ? 'nllm_website_naming_package' : 'live_entered_website_fetch',
       effectivePack
     });
     const rankedCatalogCandidates = (effectivePack.selectedCatalogCandidate
       ? [effectivePack.selectedCatalogCandidate].concat(effectivePack.catalogCandidates || [])
       : (effectivePack.catalogCandidates || []));
     const selectedCatalogCandidate = rankedCatalogCandidates[0] || null;
+    const rawProduct = compactText(effectivePack.selectedProductName || effectivePack.primary_product_candidate || selectedCatalogCandidate && selectedCatalogCandidate.name || '');
+    const product = authoritativeWebsiteProductNameW509(rawProduct, {
+      prospect,
+      website,
+      candidates: rankedCatalogCandidates
+    });
+    if (!product) return null;
     const fallbackUsed = !selectedCatalogCandidate;
-    const product = compactText(effectivePack.selectedProductName || effectivePack.primary_product_candidate || selectedCatalogCandidate && selectedCatalogCandidate.name || '');
     const fallbackReason = fallbackUsed ? 'N/LLM naming package did not include a selected website product candidate.' : '';
-    const source = effectivePack._source || (nllmPack ? 'suitelet-nllm-website-naming-pack-w490' : 'suitelet-live-entered-website-package-w508');
-    const namingEvidenceSource = effectivePack.namingEvidenceSource || (nllmPack ? 'nllm_website_product_evidence' : 'live_entered_website_product_package');
+    const source = effectivePack._source || (effectivePack === nllmPack ? 'suitelet-nllm-website-naming-pack-w490' : 'suitelet-live-entered-website-package-w508');
+    const namingEvidenceSource = effectivePack.namingEvidenceSource || (effectivePack === nllmPack ? 'nllm_website_product_evidence' : 'live_entered_website_product_package');
     const confidence = Number(effectivePack.confidencePercent || effectivePack.namingConfidence || 92);
-    const componentNames = Array.isArray(effectivePack.component_names) && effectivePack.component_names.length === 3
-      ? effectivePack.component_names
+    const originalComponentNames = Array.isArray(effectivePack.component_names) && effectivePack.component_names.length === 3
+      ? effectivePack.component_names.map(compactText)
       : [];
-    const heroName = compactText(effectivePack.hero_item_name);
-    const assemblyName = compactText(effectivePack.assembly_name);
+    const componentNames = namingPackNameContaminatedW509(originalComponentNames.join(' '), prospect)
+      ? authoritativeComponentNamesFromWebsiteW508(product, [])
+      : originalComponentNames;
+    const heroName = namingPackNameContaminatedW509(effectivePack.hero_item_name, prospect) ? product : compactText(effectivePack.hero_item_name || product);
+    const assemblyName = namingPackNameContaminatedW509(effectivePack.assembly_name, prospect) ? `${product} Assembly` : compactText(effectivePack.assembly_name || `${product} Assembly`);
 	    const result = {
       _source: source,
       namingEvidenceSource,
@@ -991,10 +1074,10 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
 	      componentRejectedCandidates: effectivePack.componentRejectedCandidates || [],
 	      nllmComponentNamesUsed: effectivePack.nllmComponentNamesUsed === true,
 	      nllmComponentNamePromptVersion: effectivePack.nllmComponentNamePromptVersion || '',
-      bom_name: trimTextW468(compactText(effectivePack.bom_name), 80),
-      bom_revision_name: trimTextW468(compactText(effectivePack.bom_revision_name), 80),
-      routing_name: trimTextW468(compactText(effectivePack.routing_name), 80),
-      operation_names_by_seq: effectivePack.operation_names_by_seq || null,
+      bom_name: trimTextW468(namingPackNameContaminatedW509(effectivePack.bom_name, prospect) ? `BOM - ${product}` : compactText(effectivePack.bom_name || `BOM - ${product}`), 80),
+      bom_revision_name: trimTextW468(namingPackNameContaminatedW509(effectivePack.bom_revision_name, prospect) ? `Revision 1 - ${product}` : compactText(effectivePack.bom_revision_name || `Revision 1 - ${product}`), 80),
+      routing_name: trimTextW468(namingPackNameContaminatedW509(effectivePack.routing_name, prospect) ? `Routing - ${product}` : compactText(effectivePack.routing_name || `Routing - ${product}`), 80),
+      operation_names_by_seq: effectivePack.operation_names_by_seq || authoritativeOperationsFromWebsiteProductW508(product),
       sales_descriptions: effectivePack.sales_descriptions || {
         hero: `${heroName} finished good ready for sale.`,
         assembly: `${assemblyName} buildable finished good for customer orders.`,
@@ -1005,8 +1088,8 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
         assembly: `Assembly supply inputs used to build ${assemblyName}.`,
         components: componentNames
       },
-      selectedProductName: selectedCatalogCandidate ? product : null,
-      primary_product_candidate: selectedCatalogCandidate ? product : null,
+      selectedProductName: product,
+      primary_product_candidate: product,
       selectedCatalogCandidate,
       selectedCatalogCandidateSource: effectivePack.selectedCatalogCandidateSource || '',
       selectedCatalogCandidateReasons: effectivePack.selectedCatalogCandidateReasons || [],
@@ -1024,7 +1107,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
       websiteNamingSupersedesAllPacksW472: true,
       supersededExplicitNamingPackW472: false,
       namingAuthorityLockedW470: !!Object.keys(effectivePack).length,
-      noisyExplicitNamingPackRejected: false
+      noisyExplicitNamingPackRejected: false,
+      websiteProductNameScrubbedW509: product !== rawProduct,
+      rejectedRawProductNameW509: product !== rawProduct ? rawProduct : ''
     };
     return result;
   }
@@ -1155,7 +1240,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
       if (!body) return;
       extractUrlsW500(body).forEach(function(found) {
         if (/\/products?\//i.test(found) || /\/collections\/[^/?#]+/i.test(found)) urls.push(found);
-        if (/\/sitemap[^/?#]*\.xml/i.test(found)) {
+        if (/\/sitemap(?:\/|[^?#])*\.xml/i.test(found)) {
           extractUrlsW500(fetchTextW500(found)).forEach(function(nested) {
             if (/\/products?\//i.test(nested) || /\/collections\/[^/?#]+/i.test(nested)) urls.push(nested);
           });
@@ -2279,6 +2364,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
     const heroItem = firstCanonicalRecord(canonicalRecords, ['finished_food_or_batch_item', 'finished_or_assembly_item', 'hero_sku', 'style_sku', 'product_sku', 'branch_or_product_sku', 'heroItem']) || normalizeRecord(null, 'inventoryitem');
     const matrixProofItem = firstCanonicalRecord(canonicalRecords, ['formula_or_batch_structure', 'availability_or_replenishment_flow', 'style_matrix_or_availability_flow', 'dealer_availability_or_replenishment_flow', 'replenishment_or_availability_flow', 'matrixProofItem', 'matrixItem']) || normalizeRecord(null, 'matrixitem');
     const componentItem = firstCanonicalRecord(canonicalRecords, ['supporting_sku', 'ingredient_or_component_item', 'component_item', 'componentItem']) || normalizeRecord(null, 'inventoryitem');
+    const componentItems = canonicalRecords
+      .filter((record) => ['supporting_sku', 'ingredient_or_component_item', 'component_item', 'componentItem'].indexOf(record.role) !== -1 || ['component_item', 'componentItem'].indexOf(record.legacyRole) !== -1)
+      .filter((record, index, list) => numericId(record.internalId) && list.findIndex((candidate) => String(candidate.internalId) === String(record.internalId)) === index);
     const completed = {
       schema: 'idb.completed-runner-result-json.v1',
       status: 'completed',
@@ -2303,7 +2391,7 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
       demoTransaction,
       heroItem,
       matrixItem: matrixProofItem,
-      componentItems: [componentItem]
+      componentItems: componentItems.length ? componentItems : [componentItem]
     };
     const required = [customer, demoTransaction, heroItem, matrixProofItem, componentItem];
     const errors = [];
@@ -2644,7 +2732,9 @@ define(['N/runtime', 'N/task', 'N/log', 'N/file', 'N/search', 'N/https'], (runti
     completed.demoTransaction = completed.records.demoTransaction;
     completed.heroItem = completed.records.heroItem;
     completed.matrixItem = completed.records.matrixProofItem;
-    completed.componentItems = [completed.records.componentItem];
+    completed.componentItems = (records.componentItems || completed.componentItems || [completed.records.componentItem])
+      .map((record) => normalizeRecord(record, 'inventoryitem'))
+      .filter((record, index, list) => numericId(record.internalId) && list.findIndex((candidate) => String(candidate.internalId) === String(record.internalId)) === index);
     const normalized = normalizeCompletedRunnerResult(completed);
     return normalized.valid
       ? { promoted: true, completed: normalized.completed, transactionResolution: completed.transactionResolution }

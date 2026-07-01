@@ -42,7 +42,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v1.12.13-forge-v2.1.0';
+  const VERSION = 'v1.12.16-forge-v2.1.0';
   const RUNNER_EXECUTION_CORE_W486 = 'old-runner-v1.12.13';
   const SIDECAR_VERSION_W486 = 'forge-v2.1.0-records-runner';
   const RESULT_CAPTURE_FILENAME_LIMIT_W486 = 180;
@@ -3122,6 +3122,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   // ----------------------------
   function loadPrecomputedNamingPack({ fileId, extId, prospect, website, signalText }) {
     const deterministic = generateNamingPack({ prospect, website, signalText });
+    const websiteAuthority = buildWebsiteSignalNamingPackW486({ prospect, website, signalText });
     let candidateFileId = toIntOrNull(fileId);
     let discoveryMode = candidateFileId ? 'direct-param' : 'discover-by-extid';
 
@@ -3147,6 +3148,22 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       const parsed = safeJsonParse(raw) || {};
       const out = Object.assign({}, deterministic, parsed || {});
       if (!Array.isArray(out.component_names) || out.component_names.length !== 3) out.component_names = deterministic.component_names;
+      if (websiteAuthority && namingPackViolatesEnteredWebsiteW509(out, { prospect, website })) {
+        const rejectedName = [
+          out.selectedProductName,
+          out.primary_product_candidate,
+          out.hero_item_name,
+          out.assembly_name,
+          out.bom_name,
+          out.routing_name
+        ].filter(Boolean).join(' | ');
+        Object.keys(out).forEach(function(k) { delete out[k]; });
+        Object.assign(out, websiteAuthority, {
+          _source: 'entered-website-authority-over-precomputed-w509',
+          namingEvidenceSource: 'entered_website_product_package_rejected_contaminated_precomputed',
+          rejectedPrecomputedNameW509: trimLen(rejectedName, 220)
+        });
+      }
       out.hero_item_name = trimLen(out.hero_item_name, 60);
       out.assembly_name = trimLen(out.assembly_name, 60);
       out.component_names = out.component_names.map(n => trimLen(n, 60));
@@ -3194,6 +3211,13 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function generateNamingPack({ prospect, website, signalText }) {
+    const websitePack = buildWebsiteSignalNamingPackW486({ prospect, website, signalText });
+    if (websitePack) {
+      websitePack._source = 'entered-website-deterministic-w509';
+      websitePack.namingEvidenceSource = 'entered_website_product_package_deterministic';
+      return websitePack;
+    }
+
     const clippedSignal = String(signalText || '').slice(0, 1200);
     return {
       _source: 'deterministic',
@@ -3214,6 +3238,23 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   }
 
   function buildWebsiteSignalNamingPackW486({ prospect, website, signalText }) {
+    const liveProduct = liveWebsiteProductFromSitemapW509(website);
+    if (liveProduct) {
+      const lowerLive = compactText([signalText, liveProduct.evidenceText, liveProduct.name].join(' ')).toLowerCase();
+      const liveCategory = inferWebsiteCategoryW486(lowerLive, liveProduct.name);
+      return concreteWebsiteProductNamingPackW486({
+        prospect,
+        website,
+        product: liveProduct.name,
+        productExamples: [liveProduct.name],
+        category: liveCategory,
+        industry: inferWebsiteIndustryW486(lowerLive, liveCategory),
+        components: buildRealisticComponentNamesW486(liveProduct.name, liveCategory, lowerLive),
+        operations: buildOperationNamesW486(liveProduct.name, liveCategory, lowerLive),
+        evidenceSource: liveProduct.source
+      });
+    }
+
     const known = buildKnownWebsiteProductNamingPackW486({ prospect, website, signalText });
     if (known) return known;
 
@@ -3272,6 +3313,140 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     return /product availability sku|catalog product|product \/ sku|supporting sku|finished good|component [abc]\b|demo product|generic|placeholder/.test(text);
   }
 
+  function liveWebsiteProductFromSitemapW509(website) {
+    const root = normalizeWebsiteRootW509(website);
+    if (!root) return null;
+    const urls = [];
+    const sitemapUrls = [`${root}/sitemap.xml`, `${root}/sitemap-index.xml`, `${root}/products-sitemap.xml`];
+    for (let i = 0; i < sitemapUrls.length; i += 1) {
+      const body = safeFetchTextW509(sitemapUrls[i]);
+      if (!body) continue;
+      const found = extractLocUrlsW509(body);
+      for (let j = 0; j < found.length; j += 1) {
+        const url = found[j];
+        if (/\/sitemap(?:\/|[^?#])*\.xml/i.test(url)) {
+          extractLocUrlsW509(safeFetchTextW509(url)).forEach(function(nested) { urls.push(nested); });
+        } else {
+          urls.push(url);
+        }
+      }
+    }
+
+    const seen = {};
+    for (let k = 0; k < urls.length; k += 1) {
+      const url = compactText(urls[k]).replace(/&amp;/g, '&');
+      if (!url || seen[url] || url.indexOf(root.replace(/^https?:\/\//i, '')) === -1) continue;
+      seen[url] = true;
+      if (!/\/products?\//i.test(url)) continue;
+      if (/\/(replacement|gasket|lid|cap|straw|accessor|parts?)\b/i.test(url)) continue;
+      const name = productNameFromProductUrlW509(url);
+      if (name && !isGenericProductNameW486(name)) {
+        return {
+          name,
+          source: 'entered website sitemap product URL',
+          sourceUrl: url,
+          evidenceText: url
+        };
+      }
+    }
+    return null;
+  }
+
+  function normalizeWebsiteRootW509(website) {
+    const url = normalizeUrl(website || '');
+    const match = String(url || '').match(/^(https?:\/\/[^/?#]+)/i);
+    return match ? match[1].replace(/\/+$/, '') : '';
+  }
+
+  function safeFetchTextW509(url) {
+    try {
+      const resp = https.get({
+        url,
+        headers: {
+          'User-Agent': 'FORGEWebsiteNaming/2.1',
+          'Accept': 'application/xml,text/xml,text/html;q=0.9,*/*;q=0.8'
+        }
+      });
+      const code = Number(resp && resp.code || 0);
+      if (code < 200 || code >= 400) return '';
+      return String(resp && resp.body || '').slice(0, 220000);
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function extractLocUrlsW509(body) {
+    const out = [];
+    let match;
+    const re = /<loc>\s*([^<]+)\s*<\/loc>/gi;
+    while ((match = re.exec(String(body || ''))) !== null) out.push(compactText(match[1]));
+    return out;
+  }
+
+  function productNameFromProductUrlW509(url) {
+    const match = String(url || '').match(/\/products?\/([^/?#]+)/i);
+    if (!match) return '';
+    const name = compactProductNameW486(decodeURIComponentSafeW509(match[1]).replace(/[-_]+/g, ' '));
+    return titleCaseW486(name)
+      .replace(/\bOz\b/g, 'oz')
+      .replace(/\bXl\b/g, 'XL')
+      .replace(/\bIi\b/g, 'II')
+      .replace(/\bV(\d)\b/g, 'V$1');
+  }
+
+  function decodeURIComponentSafeW509(value) {
+    try { return decodeURIComponent(String(value || '')); } catch (e) { return String(value || ''); }
+  }
+
+  function namingPackViolatesEnteredWebsiteW509(names, opts) {
+    const website = String(opts && opts.website || '');
+    const prospect = String(opts && opts.prospect || '');
+    if (!website) return false;
+
+    const domainBrand = inferBrandFromWebsiteW486({ domain: extractDomain(website), signalText: '', prospect: '' });
+    const allowedTerms = splitImportantTermsW509(`${domainBrand} ${prospect}`);
+    const text = [
+      names && names.selectedProductName,
+      names && names.primary_product_candidate,
+      names && names.hero_item_name,
+      names && names.assembly_name,
+      names && names.bom_name,
+      names && names.bom_revision_name,
+      names && names.routing_name
+    ].concat(Array.isArray(names && names.component_names) ? names.component_names : []).join(' ');
+    const lower = text.toLowerCase();
+
+    if (!lower.trim()) return true;
+    if (/(forge2?|smoke|test|verify|clean|demo|prospect|customer|account|naming)\b/i.test(text)) return true;
+    if (/\b(finished good|component [abc]|catalog product|product availability sku|supporting sku)\b/i.test(text)) return true;
+
+    if (lower.indexOf('ardgoods') !== -1) return true;
+    if (lower.indexOf('lodge') !== -1 && allowedTerms.indexOf('lodge') === -1) return true;
+    if (lower.indexOf('cast iron') !== -1 && allowedTerms.indexOf('lodge') === -1 && allowedTerms.indexOf('cast') === -1) return true;
+
+    const product = String(
+      names && (names.selectedProductName || names.primary_product_candidate || names.hero_item_name || names.assembly_name) || ''
+    ).toLowerCase();
+    if (domainBrand && product && product.indexOf(domainBrand.toLowerCase()) === -1) {
+      const domainTerms = splitImportantTermsW509(domainBrand);
+      const hasDomainTerm = domainTerms.some(function(term) { return term.length > 2 && product.indexOf(term) !== -1; });
+      if (!hasDomainTerm && /(assembly|bom|routing|revision|finished good)/.test(product)) return true;
+    }
+
+    return false;
+  }
+
+  function splitImportantTermsW509(s) {
+    const stop = {
+      the: true, and: true, for: true, inc: true, llc: true, co: true, company: true,
+      forge: true, forge2: true, naming: true, smoke: true, test: true, verify: true,
+      clean: true, proof: true, demo: true, customer: true, prospect: true
+    };
+    return compactText(s).toLowerCase().split(/[^a-z0-9]+/).filter(function(term) {
+      return term && !stop[term] && term.length > 1;
+    });
+  }
+
   function inferBrandFromWebsiteW486(args) {
     const domain = extractDomain(args && args.domain || '');
     const fromDomain = domain
@@ -3326,6 +3501,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
   function compactProductNameW486(name) {
     let s = compactText(name)
       .replace(/^(Title|Description|PageText|Domain)\s*:\s*/i, '')
+      .replace(/\b(FORGE2?|Smoke|Test|Demo|Naming|Verify|Prospect|Customer|Account|Runner|Script)\b/ig, ' ')
       .replace(/\b(Shop|Buy|Sale|New|Featured|Products?|Collections?|Categories?|Official Site|Home)\b$/gi, '')
       .replace(/\s+/g, ' ')
       .trim();

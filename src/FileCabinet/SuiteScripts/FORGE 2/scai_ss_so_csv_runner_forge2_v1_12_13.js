@@ -1,6 +1,14 @@
 /**
- * SCAI SO CSV Runner v1.12.13
+ * SCAI SO CSV Runner v1.12.15
  *
+ * v1.12.15
+ * - Scrubs precomputed naming packs at the merge point so smoke/test/prospect text cannot survive in product record names.
+ * - Rebuilds BOM, BOM revision, and components from the cleaned website product name when a pack is contaminated.
+ *
+ * v1.12.14
+ * - Tightens deterministic naming so a supplied website drives product naming before prospect/test text.
+ * - Extracts generic product candidates from product JSON, product links, titles, and page text.
+ * - Rejects smoke/test/prospect labels as product names when website candidates exist.
  *
  * v1.12.7
  * - Adds a fallback discovery path for precomputed naming files using extId when the explicit naming file parameter is missing or unavailable.
@@ -42,7 +50,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
    * - Prevents passed/inferred hero item ids from forcing fresh-HERO mode when create-new is off.
    * - Adds hero-mode audit logging so runner resolution is visible in execution logs.
    */
-  const VERSION = 'v1.12.13';
+  const VERSION = 'v1.12.15';
 
   const ANCHORS = {
     customer: 'SCAI_ANCHOR_CUSTOMER',
@@ -2205,6 +2213,9 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
     if (title) parts.push(`Title: ${compactText(title).slice(0, 160)}`);
     if (metaDesc) parts.push(`Description: ${compactText(metaDesc).slice(0, 240)}`);
 
+    const productCandidates = extractWebsiteProductCandidates(raw, domain, 12);
+    if (productCandidates.length) parts.push(`ProductCandidates: ${productCandidates.join(' ; ')}`);
+
     const best = (clipped || bodyText.slice(0, 2200)).trim();
     if (best) parts.push(`PageText: ${best}`);
 
@@ -2257,6 +2268,118 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       .map(x => x.url);
   }
 
+  function extractWebsiteProductCandidates(html, domain, limit) {
+    const raw = String(html || '');
+    const candidates = [];
+
+    function add(value, source, score) {
+      const cleaned = cleanWebsiteProductCandidate(value, domain);
+      if (!cleaned) return;
+      candidates.push({ name: cleaned, source, score: score || 1 });
+    }
+
+    const title = (raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [,''])[1];
+    add(title, 'title', 2);
+
+    const metaTitle =
+      (raw.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i) || [,''])[1] ||
+      (raw.match(/<meta[^>]+name=["']twitter:title["'][^>]+content=["']([^"']+)["']/i) || [,''])[1] ||
+      '';
+    add(metaTitle, 'meta-title', 3);
+
+    const jsonNameRe = /"name"\s*:\s*"([^"]{3,120})"/gi;
+    let jm;
+    while ((jm = jsonNameRe.exec(raw)) !== null && candidates.length < 80) {
+      add(decodeHtmlEntities(jm[1]), 'json-name', /"@type"\s*:\s*"Product"/i.test(raw.slice(Math.max(0, jm.index - 1000), jm.index + 1000)) ? 9 : 4);
+    }
+
+    const linkRe = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    let lm;
+    while ((lm = linkRe.exec(raw)) !== null && candidates.length < 140) {
+      const href = String(lm[1] || '');
+      const text = stripHtml(lm[2] || '');
+      const lowerHref = href.toLowerCase();
+      if (!/(\/products?\/|\/collections?\/|\/shop\/|\/store\/|\/catalog\/|\/p\/)/.test(lowerHref)) continue;
+      add(text, 'product-link-text', /\/products?\//.test(lowerHref) ? 8 : 5);
+      const slug = lowerHref.split(/[?#]/)[0].split('/').filter(Boolean).pop() || '';
+      add(slugToTitle(slug), 'product-link-slug', /\/products?\//.test(lowerHref) ? 7 : 4);
+    }
+
+    const body = compactText(stripHtml(raw)).slice(0, 9000);
+    const cueRe = /\b(?:shop|buy|view|discover|explore|new|best sellers?|featured)\s+([A-Z][A-Za-z0-9'&+.-]*(?:\s+[A-Z0-9][A-Za-z0-9'&+.-]*){0,5})/g;
+    let cm;
+    while ((cm = cueRe.exec(body)) !== null && candidates.length < 180) {
+      add(cm[1], 'body-cue', 3);
+    }
+
+    const byName = {};
+    candidates.forEach((c) => {
+      const key = c.name.toLowerCase();
+      if (!byName[key] || byName[key].score < c.score) byName[key] = c;
+    });
+
+    return Object.keys(byName)
+      .map(k => byName[k])
+      .filter(c => isStrongWebsiteProductName(c.name, domain))
+      .sort((a, b) => b.score - a.score || b.name.length - a.name.length)
+      .slice(0, limit)
+      .map(c => c.name);
+  }
+
+  function cleanWebsiteProductCandidate(value, domain) {
+    let s = decodeHtmlEntities(value);
+    s = compactText(s)
+      .replace(/\|.*$/g, '')
+      .replace(/\s[-–—]\s.*$/g, '')
+      .replace(/\b(Official Site|Homepage|Home Page|Shop|Products?|Collections?|New Arrivals|Best Sellers?|Featured|View All|Learn More|Add To Cart|Quick View)\b/ig, '')
+      .replace(new RegExp('\\b' + escapeRegExp(String(domain || '').replace(/^www\./, '').split('.')[0] || '') + '\\b', 'ig'), '')
+      .replace(/[™®©]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    s = s.replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9)]+$/g, '').trim();
+    if (s.length > 70) s = s.slice(0, 70).replace(/\s+\S*$/, '').trim();
+    return s;
+  }
+
+  function isStrongWebsiteProductName(name, domain) {
+    const s = String(name || '').trim();
+    const lower = s.toLowerCase();
+    if (s.length < 4 || s.length > 70) return false;
+    if (!/[a-z]/i.test(s)) return false;
+    if (/^(home|shop|products?|collections?|catalog|store|account|login|cart|checkout|search|privacy|terms|returns?|shipping|contact|about|blog|faq|support)$/i.test(s)) return false;
+    if (/\b(forge2?|smoke|test|demo|prospect|customer|account|wip|runner|script|netsuite|finished good|assembly|component|bom|revision)\b/i.test(s)) return false;
+    if (domain) {
+      const brand = String(domain).replace(/^www\./, '').split('.')[0].toLowerCase();
+      if (lower === brand || lower === brand.replace(/[-_]/g, ' ')) return false;
+    }
+    if (lower.split(/\s+/).length > 8) return false;
+    return true;
+  }
+
+  function decodeHtmlEntities(value) {
+    return String(value || '')
+      .replace(/\\u0026/g, '&')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&apos;/g, "'")
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, ' ');
+  }
+
+  function slugToTitle(value) {
+    return String(value || '')
+      .replace(/\.(html?|php|aspx?)$/i, '')
+      .replace(/[-_+]+/g, ' ')
+      .replace(/\b\w/g, c => c.toUpperCase())
+      .trim();
+  }
+
+  function escapeRegExp(value) {
+    return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   function normalizeUrl(u) {
     const s = String(u || '').trim();
     if (!s) return '';
@@ -2294,6 +2417,7 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
       const raw = String(f.getContents() || '{}');
       const parsed = safeJsonParse(raw) || {};
       const out = Object.assign({}, deterministic, parsed || {});
+      sanitizeNamingPackAfterMerge(out, deterministic, { prospect, website });
       if (!Array.isArray(out.component_names) || out.component_names.length !== 3) out.component_names = deterministic.component_names;
       out.hero_item_name = trimLen(out.hero_item_name, 60);
       out.assembly_name = trimLen(out.assembly_name, 60);
@@ -2343,20 +2467,160 @@ define(['N/runtime', 'N/log', 'N/search', 'N/record', 'N/https', 'N/task', 'N/fi
 
   function generateNamingPack({ prospect, website, signalText }) {
     const clippedSignal = String(signalText || '').slice(0, 1200);
+    const domain = extractDomain(website);
+    const productCandidates = parseProductCandidatesFromSignal(signalText, domain, prospect);
+    const productName = productCandidates[0] || websiteProductNameFromDomain(domain) || scrubProspectNameForFallback(prospect) || 'Website Product';
+    const productFamily = productFamilyFromProduct(productName);
+    const componentNames = componentNamesForProduct(productName, productFamily);
     return {
-      _source: 'deterministic',
+      _source: productCandidates.length ? 'website-product-candidates' : 'website-domain-product-fallback',
       _signalLen: clippedSignal.length,
+      namingEvidenceSource: productCandidates.length ? 'website_product_candidates' : 'website_domain_only',
+      product_candidates: productCandidates,
+      primary_product_candidate: productName,
       industry_category: '',
-      hero_item_name: `${prospect} Finished Good`,
-      assembly_name: `${prospect} Assembly`,
-      component_names: [
-        `${prospect} Component A`,
-        `${prospect} Component B`,
-        `${prospect} Component C`
-      ],
-      bom_name: `BOM - ${prospect}`,
-      bom_revision_name: `Revision 1 - ${prospect}`
+      hero_item_name: `${productName} Finished Good`,
+      assembly_name: `${productName} Assembly`,
+      component_names: componentNames,
+      bom_name: `${productName} BOM`,
+      bom_revision_name: `${productName} BOM Revision 1`
     };
+  }
+
+  function sanitizeNamingPackAfterMerge(out, deterministic, opts) {
+    const prospect = opts && opts.prospect ? String(opts.prospect) : '';
+    const website = opts && opts.website ? String(opts.website) : '';
+    const domain = extractDomain(website);
+    const fields = [
+      out.hero_item_name,
+      out.assembly_name,
+      out.bom_name,
+      out.bom_revision_name
+    ].concat(Array.isArray(out.component_names) ? out.component_names : []);
+    const contaminated = fields.some(name => nameLooksLikeProspectOrTest(name, prospect));
+    if (!contaminated) return out;
+
+    const cleanedProduct =
+      cleanMergedProductName(out.primary_product_candidate, prospect, domain) ||
+      cleanMergedProductName(out.selectedProductName, prospect, domain) ||
+      cleanMergedProductName(out.hero_item_name, prospect, domain) ||
+      cleanMergedProductName(out.assembly_name, prospect, domain) ||
+      cleanMergedProductName(deterministic.primary_product_candidate, prospect, domain) ||
+      'Website Product';
+
+    const family = productFamilyFromProduct(cleanedProduct);
+    out.primary_product_candidate = cleanedProduct;
+    out.selectedProductName = cleanedProduct;
+    out.hero_item_name = `${cleanedProduct} Finished Good`;
+    out.assembly_name = `${cleanedProduct} Assembly`;
+    out.component_names = componentNamesForProduct(cleanedProduct, family);
+    out.bom_name = `${cleanedProduct} BOM`;
+    out.bom_revision_name = `${cleanedProduct} BOM Revision 1`;
+    out._source = 'suitelet-precomputed-scrubbed-website-product';
+    out.namingEvidenceSource = 'website_product_pack_scrubbed';
+    out.namingScrubbed = true;
+    return out;
+  }
+
+  function cleanMergedProductName(value, prospect, domain) {
+    let s = String(value || '')
+      .replace(/\bSCAI\b/ig, '')
+      .replace(/\b(Finished Good|Assembly|BOM Revision 1|BOM Revision|Revision 1|BOM|Component|Primary Material|Component Set|Packaging Kit)\b/ig, ' ')
+      .replace(/\bFORGE2?\b/ig, ' ')
+      .replace(/\b(WIP|Smoke|Test|Demo|Naming|Customer|Account|Prospect)\b/ig, ' ')
+      .replace(/\s[-–—]\s*[A-Z0-9]{4,}$/i, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    String(prospect || '').split(/\s+/).forEach((token) => {
+      const t = token.replace(/[^A-Za-z0-9]/g, '');
+      if (t.length < 3) return;
+      if (/^(forge2?|wip|smoke|test|demo|naming|customer|account|prospect)$/i.test(t)) return;
+      s = s.replace(new RegExp('\\b' + escapeRegExp(t) + '\\b', 'ig'), ' ');
+    });
+
+    s = cleanWebsiteProductCandidate(s, domain);
+    if (!s || !isStrongWebsiteProductName(s, domain)) return '';
+    return s;
+  }
+
+  function parseProductCandidatesFromSignal(signalText, domain, prospect) {
+    const out = [];
+    const raw = String(signalText || '');
+    const candidateLine = (raw.match(/ProductCandidates:\s*([^|]+)/i) || [,''])[1];
+    if (candidateLine) {
+      candidateLine.split(/\s*;\s*/).forEach(v => addCandidate(v));
+    }
+
+    const text = raw.replace(/https?:\/\/\S+/g, ' ');
+    const cueRe = /\b(?:Product|Products|Shop|Collection|Collections|Featured|Best Seller|Buy|New)\s*:?\s*([A-Z][A-Za-z0-9'&+.-]*(?:\s+[A-Z0-9][A-Za-z0-9'&+.-]*){0,5})/g;
+    let m;
+    while ((m = cueRe.exec(text)) !== null && out.length < 10) addCandidate(m[1]);
+
+    function addCandidate(value) {
+      const c = cleanWebsiteProductCandidate(value, domain);
+      if (!c) return;
+      if (nameLooksLikeProspectOrTest(c, prospect)) return;
+      if (!isStrongWebsiteProductName(c, domain)) return;
+      const key = c.toLowerCase();
+      if (!out.some(x => x.toLowerCase() === key)) out.push(c);
+    }
+
+    return out.slice(0, 8);
+  }
+
+  function nameLooksLikeProspectOrTest(name, prospect) {
+    const n = String(name || '').toLowerCase();
+    const p = String(prospect || '').toLowerCase();
+    if (!n) return true;
+    if (/\b(forge2?|smoke|test|demo|wip)\b/.test(n)) return true;
+    const cleanedProspect = p.replace(/\b(forge2?|smoke|test|demo|wip|customer|account)\b/g, '').replace(/\s+/g, ' ').trim();
+    return cleanedProspect && (n === cleanedProspect || cleanedProspect.indexOf(n) !== -1 || n.indexOf(cleanedProspect) !== -1);
+  }
+
+  function websiteProductNameFromDomain(domain) {
+    const root = String(domain || '').replace(/^www\./, '').split('.')[0] || '';
+    const cleaned = slugToTitle(root);
+    return isStrongWebsiteProductName(cleaned, domain) ? `${cleaned} Product` : '';
+  }
+
+  function scrubProspectNameForFallback(prospect) {
+    const cleaned = String(prospect || '')
+      .replace(/\bFORGE2?\b/ig, '')
+      .replace(/\b(WIP|Smoke|Test|Demo|Customer|Account|Prospect)\b/ig, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return cleaned || '';
+  }
+
+  function productFamilyFromProduct(productName) {
+    const lower = String(productName || '').toLowerCase();
+    if (/\b(backpack|bag|sling|tote|duffel|pack|case|pouch|strap)\b/.test(lower)) return 'Softgoods';
+    if (/\b(camera|tripod|mount|clip|capture)\b/.test(lower)) return 'Camera Hardware';
+    if (/\b(shoe|boot|sneaker|sandal)\b/.test(lower)) return 'Footwear';
+    if (/\b(jacket|shirt|pant|hoodie|short|dress)\b/.test(lower)) return 'Apparel';
+    if (/\b(bottle|mug|cup|tumbler)\b/.test(lower)) return 'Drinkware';
+    return 'Product';
+  }
+
+  function componentNamesForProduct(productName, productFamily) {
+    const base = String(productName || 'Product').replace(/\b(Finished Good|Assembly)\b/ig, '').trim();
+    if (productFamily === 'Softgoods') {
+      return [`${base} Shell Fabric`, `${base} Hardware Set`, `${base} Packaging Kit`];
+    }
+    if (productFamily === 'Camera Hardware') {
+      return [`${base} Machined Body`, `${base} Fastener Kit`, `${base} Retail Packaging`];
+    }
+    if (productFamily === 'Footwear') {
+      return [`${base} Upper`, `${base} Outsole`, `${base} Packaging Kit`];
+    }
+    if (productFamily === 'Apparel') {
+      return [`${base} Cut Fabric`, `${base} Trim Set`, `${base} Hangtag Packaging`];
+    }
+    if (productFamily === 'Drinkware') {
+      return [`${base} Vessel Body`, `${base} Lid Assembly`, `${base} Carton Packaging`];
+    }
+    return [`${base} Primary Material`, `${base} Component Set`, `${base} Packaging Kit`];
   }
 
   function applyNamingToAnchors(ids, names, opts) {
